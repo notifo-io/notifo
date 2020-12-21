@@ -23,6 +23,10 @@ export interface FormErrorProps {
 export const FormError = (props: FormErrorProps) => {
     const { className, error, size } = props;
 
+    if (error && error['statusCode'] === 401) {
+        return null;
+    }
+
     let errorString: string;
 
     if (Types.isString(error)) {
