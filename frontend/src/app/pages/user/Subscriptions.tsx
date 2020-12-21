@@ -1,0 +1,146 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+ */
+
+import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
+import { SubscriptionDto } from '@app/service';
+import { deleteSubscriptionAsync, loadSubscriptionsAsync, openPublishDialog, useApps, useSubscriptions } from '@app/state';
+import { texts } from '@app/texts';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import { Button, Card, CardBody, Col, Row, Table } from 'reactstrap';
+import { SubscriptionDialog } from './SubscriptionDialog';
+import { SubscriptionRow } from './SubscriptionRow';
+
+export interface SubscriptionsProps {
+    // The user id.
+    userId: string;
+}
+
+export const Subscriptions = (props: SubscriptionsProps) => {
+    const { userId } = props;
+
+    const dispatch = useDispatch();
+    const appId = useApps(x => x.appId);
+    const dialogEdit = useDialog();
+    const dialogNew = useDialog();
+    const subscriptions = useSubscriptions(x => x.subscriptions);
+    const [editSubscription, setEditSubscription] = React.useState<SubscriptionDto>();
+
+    React.useEffect(() => {
+        ReactTooltip.rebuild();
+    });
+
+    React.useEffect(() => {
+        dispatch(loadSubscriptionsAsync(appId, userId, {}, true));
+    }, [appId, userId]);
+
+    const doRefresh = React.useCallback(() => {
+        dispatch(loadSubscriptionsAsync(appId, userId));
+    }, [appId, userId]);
+
+    const doLoad = React.useCallback((q?: Query) => {
+        dispatch(loadSubscriptionsAsync(appId, userId, q));
+    }, [appId, userId]);
+
+    const doDelete = React.useCallback((subscription: SubscriptionDto) => {
+        dispatch(deleteSubscriptionAsync(appId, userId, subscription.topicPrefix));
+    }, [appId, userId]);
+
+    const doPublish = React.useCallback((subscription: SubscriptionDto) => {
+        dispatch(openPublishDialog({ topic: subscription.topicPrefix }));
+    }, []);
+
+    const doEdit = React.useCallback((subscription: SubscriptionDto) => {
+        dialogEdit.open();
+
+        setEditSubscription(subscription);
+    }, [dialogEdit.open]);
+
+    return (
+        <>
+            <Row className='align-items-center header'>
+                <Col xs='auto'>
+                    <h4>
+                        {texts.subscriptions.header}
+                    </h4>
+                </Col>
+                <Col>
+                    {subscriptions.isLoading ? (
+                        <Loader visible={subscriptions.isLoading} />
+                    ) : (
+                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                            <Icon className='text-lg' type='refresh' />
+                        </Button>
+                    )}
+                </Col>
+                <Col xs='auto'>
+                    <ListSearch list={subscriptions} onSearch={doLoad} placeholder={texts.subscriptions.searchPlaceholder} />
+                </Col>
+                <Col xs='auto'>
+                    <Button color='success' onClick={dialogNew.open}>
+                        <Icon type='add' /> {texts.subscriptions.createButton}
+                    </Button>
+                </Col>
+            </Row>
+
+            <FormError error={subscriptions.error} />
+
+            {dialogNew.isOpen &&
+                <SubscriptionDialog userId={userId} onClose={dialogNew.close} />
+            }
+
+            <Card>
+                <CardBody>
+                    <Table className='table-fixed table-simple table-middle'>
+                        <colgroup>
+                            <col />
+                            <col style={{ width: 170 }} />
+                        </colgroup>
+
+                        <thead>
+                            <tr>
+                                <th>
+                                    <span className='truncate'>{texts.common.topic}</span>
+                                </th>
+                                <th className='text-right'>
+                                    <span className='truncate'>{texts.common.actions}</span>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {subscriptions.items &&
+                                <>
+                                    {subscriptions.items.map(subscription => (
+                                        <SubscriptionRow key={subscription.topicPrefix} subscription={subscription}
+                                            onPublish={doPublish}
+                                            onDelete={doDelete}
+                                            onEdit={doEdit}
+                                        />
+                                    ))}
+                                </>
+                            }
+
+                            {!subscriptions.isLoading && subscriptions.items && subscriptions.items.length === 0 &&
+                                <tr>
+                                    <td colSpan={4}>{texts.subscriptions.subscriptionsNotFound}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </Table>
+
+                    <ListPager list={subscriptions} onChange={doLoad} />
+                </CardBody>
+            </Card>
+
+            {dialogEdit.isOpen &&
+                <SubscriptionDialog userId={userId} subscription={editSubscription} onClose={dialogEdit.close} />
+            }
+        </>
+    );
+};

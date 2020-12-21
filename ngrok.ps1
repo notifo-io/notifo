@@ -1,0 +1,1 @@
+ngrok http --hostname=squidex.eu.ngrok.io --region eu 5003

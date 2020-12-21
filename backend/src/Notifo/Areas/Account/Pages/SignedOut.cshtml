@@ -1,0 +1,12 @@
+@page
+@inject IHtmlLocalizer<AppResources> T
+@model SignedOutModel
+@{
+    ViewData["Title"] = T["SignedOutTitle"];
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p class="text-muted">
+    @T["SignedOutText"]
+</p>

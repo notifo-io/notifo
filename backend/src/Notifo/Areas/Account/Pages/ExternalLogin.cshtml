@@ -1,0 +1,46 @@
+@page
+@inject IHtmlLocalizer<AppResources> T
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = T["RegisterTitle"];
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p class="text-muted">
+    @T["ExternalLoginText", Model.LoginProvider]
+</p>
+
+<form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+    @if (Model.MustAcceptsTermsOfService)
+    {
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="Input.AcceptTermsOfService" class="form-check-input" />
+                <label asp-for="Input.AcceptTermsOfService" class="form-check-label">
+                    @T["AgreeToTermsOfService", Model.TermsOfServiceUrl]
+                </label>
+
+                <span asp-validation-for="Input.AcceptTermsOfService" class="invalid-feedback"></span>
+            </div>
+        </div>
+    }
+
+    @if (Model.MustAcceptsPrivacyPolicy)
+    {
+        <div class="form-group">
+            <div class="form-check">
+                <input asp-for="Input.AcceptPrivacyPolicy" class="form-check-input" />
+                <label asp-for="Input.AcceptPrivacyPolicy" class="form-check-label">
+                    @T["AgreeToPrivacyPolicy", Model.PrivacyPolicyUrl]
+                </label>
+
+                <span asp-validation-for="Input.AcceptPrivacyPolicy" class="invalid-feedback"></span>
+            </div>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">@T["RegisterButton"]</button>
+</form>

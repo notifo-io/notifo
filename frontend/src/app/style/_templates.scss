@@ -1,0 +1,47 @@
+@import '_vars';
+@import '_mixins';
+
+.templates {
+    max-width: 1200px;
+
+    .card-header {
+        & {
+            padding-bottom: .5rem;
+            padding-top: .5rem;
+        }
+
+        table {
+            margin: 0;
+        }
+    }
+
+    tr {
+        &:first-child {
+            td {
+                border: 0;
+            }
+        }
+    }
+
+    $left-width: 500px;
+
+    .overview {
+        & {
+            max-width: $left-width;
+            min-width: $left-width;
+        }
+
+        &-inner {
+            @include fixed(100px, null, 10px);
+            width: $left-width - 30px;
+        }
+
+        .card {
+            @include absolute(57px, null, 0);
+        }
+
+        .card-body {
+            overflow-y: auto;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+﻿@page
+@inject IHtmlLocalizer<AppResources> T
+@model LockoutModel
+@{
+    ViewData["Title"] = T["LockedOutTitle"];
+}
+
+<h1>@ViewData["Title"]</h1>
+<p>
+    @T["LockedOutText"]
+</p>

@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "baseUrl": ".",
+    "incremental": true,
+    "importHelpers": true,
+    "jsx": "react",
+    "lib": ["es6", "dom", "WebWorker"],
+    "moduleResolution": "node",
+    "module": "es2015",
+    "noEmitHelpers": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "strictNullChecks": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5",
+    "paths": {
+      "@app*": [
+        "src/app*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}

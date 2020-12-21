@@ -1,0 +1,48 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build_dev
+    image: docker
+    commands:
+      - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+      - docker build -t notifo --build-arg SQUIDEX__VERSION=3.0.0-$${DRONE_BUILD_NUMBER} .
+      - docker tag notifo squidex/notifo:latest
+      - docker tag notifo squidex/notifo:1
+      - docker tag notifo squidex/notifo:dev-$${DRONE_BUILD_NUMBER}
+      - docker push squidex/notifo:latest
+      - docker push squidex/notifo:1
+      - docker push squidex/notifo:dev-$${DRONE_BUILD_NUMBER}
+    volumes:
+      - name: docker1
+        path: /var/run/docker.sock
+      - name: docker2
+        path: /var/lib/docker
+    environment:
+      DOCKER_USERNAME:
+        from_secret: DOCKER_USERNAME
+      DOCKER_PASSWORD:
+        from_secret: DOCKER_PASSWORD
+    when:
+      event:
+        - push
+      branch:
+        - master
+
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: slack_webhook
+    when:
+      status:
+        - failure
+        - success
+      
+volumes:
+  - name: docker1
+    host:
+      path: /var/run/docker.sock
+  - name: docker2
+    host:
+      path: /var/lib/docker

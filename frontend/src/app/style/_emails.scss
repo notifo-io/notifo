@@ -1,0 +1,211 @@
+@import '_vars';
+@import '_mixins';
+
+// sass-lint:disable class-name-format
+
+$color: #263238;
+$color-border2: darken($color-border, 5%);
+$color-active: #ff5370;
+$color-background: #efefef;
+
+$size-email-header: 5rem;
+
+.email {
+    &-container {
+        @include fixed($size-header + $size-email-header, 0, 0, $size-sidebar);
+        background: $color-white;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    &-menu {
+        padding: 1rem 1.5rem;
+    }
+}
+
+.email-header {
+    @include fixed($size-header, 0, 0, $size-sidebar);
+    height: $size-email-header;
+    padding: 1rem 1.5rem;
+    padding-right: 1.5rem;
+
+    h2 {
+        margin: 0;
+        margin-right: 2rem;
+    }
+
+    .nav {
+        border: 0;
+        font-size: 1.1rem;
+        font-weight: normal;
+    }
+
+    .nav-link {
+        cursor: pointer;
+    }
+}
+
+.email-none {
+    padding-top: 10rem;
+    text-align: center;
+    text-decoration: none;
+
+    label {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: normal;
+        margin-bottom: 2rem;
+    }
+}
+
+.email-body {
+    & {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    textarea {
+        border: 0;
+        border-radius: 0;
+        height: 100%;
+    }
+
+    &.hidden {
+        flex-grow: 0;
+        height: 0;
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+}
+
+.email-subject {
+    & {
+        position: relative;
+    }
+
+    .form-group {
+        margin: 0;
+    }
+
+    label {
+        @include absolute(13px, null, null, .75rem);
+        color: $color-border-dark;
+        font-size: .9rem;
+        font-weight: normal;
+        user-select: none;
+    }
+
+    input {
+        border: 0;
+        border-bottom: 1px solid $color-border2;
+        border-radius: 0;
+        border-top: 1px solid $color-border2;
+        padding-left: 5rem;
+    }
+}
+
+.email-editor {
+    & {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    & > div {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    textarea {
+        background-color: $color-white !important;
+        border: 0;
+        resize: none;
+        width: 100%;
+    }
+
+    &.white {
+        .gutter {
+            &.gutter-horizontal {
+                background: $color-border;
+            }
+        }
+    }
+
+    .left {
+        position: relative;
+
+        .CodeMirror {
+            @include absolute(0, 0, 0, 0);
+            height: auto;
+        }
+    }
+
+    .right {
+        background: $color-background;
+        border: 0;
+        position: relative;
+
+        iframe {
+            @include absolute(0, 0, 0, 0);
+            min-height: 100%;
+            min-width: 100%;
+        }
+    }
+}
+
+.CodeMirror {
+    pre {
+        font-size: 1rem !important;
+    }
+
+    &-linenumber {
+        font-size: 1rem !important;
+    }
+
+    &-hints {
+        background: darken($color, 2%);
+        border: 0;
+    }
+
+    &-hint {
+        color: darken($color-white, 40%);
+        font-size: 1rem;
+        font-weight: normal;
+        padding: 4px;
+    }
+
+    &-hint-active {
+        background: none !important;
+        border: 0;
+        color: $color-active;
+    }
+
+    &-lint-tooltip {
+        background: darken($color, 2%);
+        border: 0;
+        color: $color-white;
+        font-size: 1rem;
+        font-weight: normal;
+        padding: 10px;
+    }
+
+    &-lint-message-error {
+        background-image: none;
+        border: 0;
+        font-size: 1rem;
+        font-weight: normal;
+        padding-left: 0;
+    }
+}
+
+.gutter {
+    &.gutter-horizontal {
+        background: $color;
+        background-image: none;
+        border: 0;
+        cursor: ew-resize;
+    }
+}

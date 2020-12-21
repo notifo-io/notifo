@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <base href="/">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>@ViewBag.Title - Notifo</title>
+
+    <environment names="Production">
+        <link rel="stylesheet" asp-append-version="true" href="@Url.Content("~/build/app.css")" />
+    </environment>
+
+    <environment names="Development">
+        <link rel="stylesheet" href="https://localhost:3002/app.css" />
+    </environment>
+
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
+
+    @if (IsSectionDefined("header"))
+    {
+        @await RenderSectionAsync("header")
+    }
+
+    <style>
+        .profile {
+            margin: 0 auto;
+            max-width: 600px;
+            padding-left: 3rem;
+            padding-right: 3rem;
+        }
+
+        .profile p {
+            font-weight: 400;
+            font-size: 90%;
+        }
+
+        .profile-logo {
+            margin-bottom: 1rem;
+            margin-top: 5rem;
+            max-height: 50px;
+        }
+
+        .login-separator {
+            border-top: 1px solid #ddd;
+            color: #ddd;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .login-separator span {
+            background: #fff;
+            display: inline-block;
+            padding: 5px;
+            padding-bottom: 0;
+            transform: translateY(-20px)
+        }
+    </style>
+</head>
+<body>
+    <div class="profile @ViewBag.Class">
+        <img class="profile-logo" alt="Notifo" src="@Url.Content("~/logo.svg")" />
+
+        <div class="card">
+            <div class="card-body">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+</body>
+</html>

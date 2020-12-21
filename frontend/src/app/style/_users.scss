@@ -1,0 +1,14 @@
+@import '_vars';
+@import '_mixins';
+
+.users {
+    max-width: 1200px;
+}
+
+.user {
+    max-width: 1600px;
+
+    &-info {
+        width: 400px;
+    }
+}

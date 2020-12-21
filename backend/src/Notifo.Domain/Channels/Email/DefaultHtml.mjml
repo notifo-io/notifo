@@ -1,0 +1,85 @@
+﻿<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column width="30%">
+        <mj-image align="left" alt="Logo" src="https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo4.png" padding="15px" />
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" font-family="Open Sans" padding-left="15px" padding-bottom="0">Your Notifications</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-wrapper background-color="white" padding="15px">
+      <mj-section padding="0 0 10px 0">
+        <mj-column>
+          <mj-text font-family="Open Sans" font-size="16px" padding-left="0">Hello {{ user.fullname | default: 'User' }}</mj-text>
+          <mj-text font-family="Open Sans" font-size="14px" padding-left="0" padding-bottom="0">We have some notifications from {{ app.name }} for you.</mj-text>
+        </mj-column>
+      </mj-section>
+
+      {% for notification in notifications %}
+      {% if notification.imageSmall %}
+      {% assign width = "84%" %}
+      {% else %}
+      {% assign width = "100%" %}
+      {% endif %}
+      <mj-section padding="10px 0 0 0">
+        <mj-group>
+          <mj-column width="{{ width }}">
+            <mj-text font-family="Open Sans" font-size="16px" font-weight="bold" padding="0px 10px 10px 0px">{{ notification.subject }}</mj-text>
+            <mj-text font-family="Open Sans" font-size="14px" padding="0px 0px 5px 0px">{{ notification.body }}</mj-text>
+
+            {% if notification.linkUrl and notification.linkText %}
+            <mj-text font-family="Open Sans" font-size="14px" padding="10px 0px 5px 0px">
+              <a href="{{ notification.linkUrl }}">{{ notification.linkText }}</a>
+            </mj-text>
+            {% endif %}
+          </mj-column>
+          {% if notification.imageSmall %}
+          <mj-column width="16%">
+            <mj-image src="{{ notification.imageSmall }}" padding="0px 10px 0px 0px" />
+          </mj-column>
+          {% endif %}
+        </mj-group>
+      </mj-section>
+      {% if notification.confirmUrl and notification.confirmText %}
+      <mj-section padding-top="6px">
+        <mj-column>
+          <mj-button align="left" background-color="#175DA8" border-radius="4px" font-family="Open Sans" font-size="16px" padding="0px" href="{{ notification.confirmUrl }}">{{ notification.confirmText }}</mj-button>
+        </mj-column>
+      </mj-section>
+      {% endif %}
+      <mj-section padding="0">
+        <mj-column>
+          <mj-image src="{{ notification.trackingUrl }}" width="0" height="0" />
+
+          <mj-divider padding="5px" border-color="#ddd" border-width="1px" />
+        </mj-column>
+      </mj-section>
+      {% endfor %}
+
+      <mj-section padding="0">
+        <mj-column>
+          <mj-text font-family="Open Sans" font-size="14px" padding-left="0">Best regards,</mj-text>
+          <mj-text font-family="Open Sans" font-size="14px" padding-left="0">Your {{ app.name }} team.</mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section>
+      <mj-column>
+        <mj-social font-family="Open Sans" font-size="15px" icon-size="20px" mode="horizontal">
+          <mj-social-element name="facebook" href="https://notifo.io/">Facebook</mj-social-element>
+          <mj-social-element name="google" href="https://notifo.io/">Google</mj-social-element>
+          <mj-social-element name="twitter" href="https://notifo.io/">Twitter</mj-social-element>
+        </mj-social>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="10px">
+      <mj-column>
+        <mj-text font-family="Open Sans" font-size="12px" padding="4px" align="center">Acme Corporation, Inc.</mj-text>
+        <mj-text font-family="Open Sans" font-size="12px" padding="4px" align="center">New York City, United Stated</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

@@ -1,0 +1,23 @@
+@import '_vars';
+@import '_mixins';
+
+.settings {
+    & {
+        max-width: 600px;
+    }
+
+    &-email-verification {
+        & {
+            font-size: 90%;
+            margin-bottom: 1rem;
+            margin-top: -.5rem;
+        }
+    }
+}
+
+.firebase-credential {
+    textarea {
+        height: 500px;
+        resize: none;
+    }
+}

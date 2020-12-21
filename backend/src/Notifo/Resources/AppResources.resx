@@ -1,0 +1,405 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AcceptPrivacyPolicyError" xml:space="preserve">
+    <value>You must accept the privacy policy to create an account.</value>
+  </data>
+  <data name="AcceptTermsOfServiceError" xml:space="preserve">
+    <value>You must accept the terms of service to create an account.</value>
+  </data>
+  <data name="AccessDeniedText" xml:space="preserve">
+    <value>Access is denied. Please contact the site administrator to unlock your account.</value>
+  </data>
+  <data name="AccessDeniedTitle" xml:space="preserve">
+    <value>Access denied</value>
+  </data>
+  <data name="AgreeToPrivacyPolicy" xml:space="preserve">
+    <value>I agree to the &lt;a href="{0}" target="_blank"&gt;Terms of service&lt;/a&gt;.</value>
+  </data>
+  <data name="AgreeToTermsOfService" xml:space="preserve">
+    <value>I agree to the &lt;a href="{0}" target="_blank"&gt;Privacy policy&lt;/a&gt;.</value>
+  </data>
+  <data name="ChangePasswordButton" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ChangePasswordLink" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ChangePasswordTitle" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ConfirmEmailText" xml:space="preserve">
+    <value>Thank you for confirming your email address.</value>
+  </data>
+  <data name="ConfirmEmailTitle" xml:space="preserve">
+    <value>Email confirmed</value>
+  </data>
+  <data name="ConfirmHeadline" xml:space="preserve">
+    <value>Notification confirmed</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>confirm password</value>
+  </data>
+  <data name="ConfirmPasswordLabel" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="ConfirmText" xml:space="preserve">
+    <value>Thank you for confirming that you have received the confirmation. This is only needed for urgent or important notifications. You can close this window now.</value>
+  </data>
+  <data name="ConfirmTitle" xml:space="preserve">
+    <value>Notfication confirmed</value>
+  </data>
+  <data name="ConsentApplicationAccess" xml:space="preserve">
+    <value>Applications</value>
+  </data>
+  <data name="ConsentNo" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConsentPersonalInformation" xml:space="preserve">
+    <value>Personal information</value>
+  </data>
+  <data name="ConsentText" xml:space="preserve">
+    <value>wants the following permissions</value>
+  </data>
+  <data name="ConsentTitle" xml:space="preserve">
+    <value>Consent</value>
+  </data>
+  <data name="ConsentUncheck" xml:space="preserve">
+    <value>Uncheck the permissions you do not wish to grant.</value>
+  </data>
+  <data name="ConsentYes" xml:space="preserve">
+    <value>Give consent</value>
+  </data>
+  <data name="EmailLabel" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="ErrorInfo" xml:space="preserve">
+    <value>That's an error.</value>
+  </data>
+  <data name="ErrorText" xml:space="preserve">
+    <value>Sorry, an error occurred. The team is already working on that.</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Error occurred</value>
+  </data>
+  <data name="ExternalCallbackText" xml:space="preserve">
+    <value>You've successfully authenticated with &lt;strong&gt;{0}&lt;/strong&gt;. Please enter an email address for this site below and click the Register button to finish logging in.</value>
+  </data>
+  <data name="ExternalLoginError" xml:space="preserve">
+    <value>Failed to login: {0}</value>
+  </data>
+  <data name="ExternalLoginsLink" xml:space="preserve">
+    <value>Logins</value>
+  </data>
+  <data name="ExternalLoginsList" xml:space="preserve">
+    <value>External logins</value>
+  </data>
+  <data name="ExternalLoginsNew" xml:space="preserve">
+    <value>Add another service to log in.</value>
+  </data>
+  <data name="ExternalLoginsRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ExternalLoginsTitle" xml:space="preserve">
+    <value>Manage your external logins</value>
+  </data>
+  <data name="ExternalLoginText" xml:space="preserve">
+    <value>Login with {0}</value>
+  </data>
+  <data name="ExternalSeperator" xml:space="preserve">
+    <value>- Or -</value>
+  </data>
+  <data name="ForgotPasswordButton" xml:space="preserve">
+    <value>Send Email</value>
+  </data>
+  <data name="ForgotPasswordConfirmationText" xml:space="preserve">
+    <value>We have sent you an email with instructions how to reset your password. Please go to your email client and follow the link in the email we sent you.</value>
+  </data>
+  <data name="ForgotPasswordConfirmationTitle" xml:space="preserve">
+    <value>Recovery email sent</value>
+  </data>
+  <data name="ForgotPasswordQuestion" xml:space="preserve">
+    <value>Forgot your password?</value>
+  </data>
+  <data name="ForgotPasswordText" xml:space="preserve">
+    <value>Enter your email address. We will send you instructions how to reset your password.</value>
+  </data>
+  <data name="ForgotPasswordTitle" xml:space="preserve">
+    <value>Reset your password</value>
+  </data>
+  <data name="GithubEmailPrivateError" xml:space="preserve">
+    <value>Your Github Email address is private.</value>
+  </data>
+  <data name="IndexTitle" xml:space="preserve">
+    <value>Welcome</value>
+  </data>
+  <data name="InvalidLoginAttempt" xml:space="preserve">
+    <value>Invalid login attempt.</value>
+  </data>
+  <data name="InvalidLoginAttempt1" xml:space="preserve">
+    <value>Username or password not correct.</value>
+  </data>
+  <data name="InvalidRequestFormat" xml:space="preserve">
+    <value>Invalid request format.</value>
+  </data>
+  <data name="InvalidSelectionErrorMessage" xml:space="preserve">
+    <value>Invalid selection.</value>
+  </data>
+  <data name="Legal" xml:space="preserve">
+    <value>Legal</value>
+  </data>
+  <data name="LockedOutText" xml:space="preserve">
+    <value>Your account has been locked. Please contact the support.</value>
+  </data>
+  <data name="LockedOutTitle" xml:space="preserve">
+    <value>Account locked.</value>
+  </data>
+  <data name="LoginButton" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LoginTitle" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="LoginWithFacebook" xml:space="preserve">
+    <value>Login with Facebook</value>
+  </data>
+  <data name="LoginWithGitHub" xml:space="preserve">
+    <value>Login with Github</value>
+  </data>
+  <data name="LoginWithGoogle" xml:space="preserve">
+    <value>Login with Google</value>
+  </data>
+  <data name="LoginWithMicrosoft" xml:space="preserve">
+    <value>Login with Microsoft</value>
+  </data>
+  <data name="LoginWithTwitter" xml:space="preserve">
+    <value>Login with Twitter</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="MustChooseOneErrorMessage" xml:space="preserve">
+    <value>You must make an selection.</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>new password</value>
+  </data>
+  <data name="NewPasswordLabel" xml:space="preserve">
+    <value>New password</value>
+  </data>
+  <data name="NoAccountQuestion" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="OfflineAccessDescription" xml:space="preserve">
+    <value>Allow the client to stay logged in even after 30 days.</value>
+  </data>
+  <data name="OfflineAccessDisplayName" xml:space="preserve">
+    <value>Offline access.</value>
+  </data>
+  <data name="OldPassword" xml:space="preserve">
+    <value>old password</value>
+  </data>
+  <data name="OldPasswordLabel" xml:space="preserve">
+    <value>Old password</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>password</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PasswordsNotSame" xml:space="preserve">
+    <value>Passwords are not  the same</value>
+  </data>
+  <data name="Permissions" xml:space="preserve">
+    <value>Squidex Permissions</value>
+  </data>
+  <data name="PrivacyPolicy" xml:space="preserve">
+    <value>Privacy policy</value>
+  </data>
+  <data name="ProfileLink" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="ProfileTitle" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="PwnedEmailError" xml:space="preserve">
+    <value>This e-email has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it!</value>
+  </data>
+  <data name="PwnedPasswordError" xml:space="preserve">
+    <value>This password has previously appeared in a data breach and should never be used. If you've ever used it anywhere before, change it!</value>
+  </data>
+  <data name="RegisterButton" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="RegisterTitle" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="RememberConsent" xml:space="preserve">
+    <value>Remember</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Required</value>
+  </data>
+  <data name="ResetPasswordButton" xml:space="preserve">
+    <value>Change password</value>
+  </data>
+  <data name="ResetPasswordConfirmText" xml:space="preserve">
+    <value>Your password has been changed.</value>
+  </data>
+  <data name="ResetPasswordConfirmTitle" xml:space="preserve">
+    <value>Password changed</value>
+  </data>
+  <data name="ResetPasswordTitle" xml:space="preserve">
+    <value>Reset password</value>
+  </data>
+  <data name="SendVerificationEmail" xml:space="preserve">
+    <value>Send verification email</value>
+  </data>
+  <data name="SetPasswordButton" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="SetPasswordText" xml:space="preserve">
+    <value>You do not have a local username/password for this site. Add a local account so you can log in without an external login.</value>
+  </data>
+  <data name="SetPasswordTitle" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="SignedOutText" xml:space="preserve">
+    <value>You have been signed out</value>
+  </data>
+  <data name="SignedOutTitle" xml:space="preserve">
+    <value>Signed out</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>username</value>
+  </data>
+  <data name="UserNameLabel" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="ValidationError" xml:space="preserve">
+    <value>Validation error.</value>
+  </data>
+  <data name="VerificationEmailSent" xml:space="preserve">
+    <value>Email has been sent.</value>
+  </data>
+</root>

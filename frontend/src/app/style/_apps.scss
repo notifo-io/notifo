@@ -1,0 +1,24 @@
+@import '_vars';
+@import '_mixins';
+
+.app {
+    &-link {
+        & {
+            color: inherit;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        &:hover,
+        &:focus {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+
+    &-card {
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+        width: 17rem;
+    }
+}

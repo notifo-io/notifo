@@ -1,0 +1,21 @@
+﻿@page
+@inject IHtmlLocalizer<AppResources> T
+@model ErrorModel
+@{
+    ViewData["Title"] = T["ErrorTitle"];
+}
+
+<h1>
+    <strong>400</strong> @T["ErrorInfo"]
+</h1>
+
+<p class="text-muted">
+    @T["ErrorText"]
+</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p>
+        <strong>@T["Error"]: @Model.ErrorMessage</strong>
+    </p>
+}

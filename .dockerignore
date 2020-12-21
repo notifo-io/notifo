@@ -1,0 +1,35 @@
+# User-specific files
+*.suo
+*.user
+*.vs
+*.log
+
+.vs
+.git
+
+# Build results
+**/bin
+**/build
+**/obj
+**/out
+
+# Test Output
+**/_test-output
+
+# NodeJS 
+**/node_modules
+
+backend/src/Squidex/Assets/*.*
+
+**/appsettings.Development.json
+**/appsettings.Production.json
+**/launchSettings.json
+
+# Build
+.drone.yml
+
+build.ps1
+build.sh
+
+# Documentation
+CHANGELOG.md

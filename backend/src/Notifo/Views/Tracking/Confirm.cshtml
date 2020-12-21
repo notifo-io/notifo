@@ -1,0 +1,46 @@
+﻿@inject IHtmlLocalizer<AppResources> T
+
+@{
+    ViewData["Title"] = T["ConfirmTitle"];
+
+    Layout = "~/Views/Tracking/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: #efefef;
+    }
+
+    h3 {
+        margin-bottom: 1rem;
+    }
+
+    .inner {
+        margin-top: 5rem;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 30rem;
+    }
+
+    .powered {
+        font-size: 90%;
+        font-weight: normal;
+    }
+
+</style>
+
+<div class="inner">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="mb-4">@T["ConfirmHeadline"]</h3>
+
+            <div>@T["ConfirmText"]</div>
+        </div>
+    </div>
+
+    <div class="powered text-muted text-center mt-4">
+        Powered by Notifo
+    </div>
+</div>

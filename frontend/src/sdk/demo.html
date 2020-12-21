@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base href="/">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>notifo</title>
+</head>
+
+<body>
+</body>
+    <span id="button1"></span>
+
+    <span id="topic1"></span>
+    <span id="topic2"></span>
+    <span id="topic3"></span>
+    <span id="topic4"></span>
+
+    <script>
+        var notifo = notifo || [];
+        notifo.push(['init', {
+            apiUrl: 'https://localhost:5002',
+
+            onNotification: (notification) => {
+                    console.log(JSON.stringify(notification));
+            },
+
+            userToken: 'tvo7vldi2c72wwoqkmkx9yoeledleak8gxggpefwityx'
+        }]);
+
+        notifo.push(['show-notifications', 'button1', { style: 'notifo' }]);
+
+        notifo.push(['show-topic', 'topic1', 'updates/lego', { style: 'heart' }]);
+        notifo.push(['show-topic', 'topic2', 'updates/tech', { style: 'alarm' }]);
+        notifo.push(['show-topic', 'topic3', 'updates/sport',  { style: 'bell' }]);
+        notifo.push(['show-topic', 'topic4', 'updates/games', { style: 'star' }]);
+
+        notifo.push(['subscribe']);
+    </script>
+</html>

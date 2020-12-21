@@ -1,0 +1,25 @@
+@import '_overrides';
+
+// Load bootstrap first to overload vars.
+@import 'argon/scss/argon-design-system';
+
+@import '~codemirror/lib/codemirror';
+@import '~codemirror/addon/hint/show-hint.css';
+@import '~codemirror/addon/lint/lint.css';
+@import '~codemirror/theme/material';
+
+@import '_common';
+@import '_apps';
+@import '_dashboard';
+@import '_emails';
+@import '_events';
+@import '_media';
+@import '_settings';
+@import '_templates';
+@import '_users';
+
+// Import React Toastify
+@import '~react-toastify/dist/ReactToastify.css';
+
+// Icomoon styles
+@import 'icons/style.css';

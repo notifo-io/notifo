@@ -1,0 +1,55 @@
+@import '_vars';
+@import '_mixins';
+
+.media-card {
+    & {
+        display: inline-block;
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+        width: 200px;
+    }
+
+    .card-body {
+        background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAIAAAC1nk4lAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuMWMqnEsAAACbSURBVGhD7c6hDQAxAMPA33+m7vYlJh7AoFKOBMbfyfyZRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4E3o9kA7YFFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgQejz7nPYYKl8IqSfgAAAABJRU5ErkJggg==');
+        max-height: 150px;
+        min-height: 150px;
+        padding: 0;
+    }
+
+    .card-footer {
+        padding: 1rem;
+        position: relative;
+    }
+
+    .btn {
+        @include absolute(1rem, 1rem);
+        display: none;
+    }
+
+    &:hover {
+        .btn {
+            display: block;
+        }
+    }
+}
+
+.file-drop {
+    & {
+        border: 2px dashed darken($color-border, 5%);
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    input {
+        display: none;
+    }
+
+    &-text {
+        display: block;
+        font-size: .9;
+        font-weight: normal;
+        margin-top: 2rem;
+    }
+}

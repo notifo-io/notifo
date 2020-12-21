@@ -1,0 +1,10 @@
+@import '_vars';
+@import '_mixins';
+
+.dashboard {
+    max-width: 1000px;
+
+    h2 {
+        margin-bottom: 1.5rem;
+    }
+}
