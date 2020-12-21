@@ -1,21 +1,4 @@
 #
-# Stage 0, Build SDK
-#
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as sdk
-
-WORKDIR /src
-
-COPY backend/stylecop.json .
-COPY backend/Notifo.ruleset .
-COPY backend/sdk sdk/
-
-# Build SDK
-RUN dotnet pack sdk/Notifo.SDK/Notifo.SDK.csproj --configuration Release
-
-# Publish to nuget
-RUN cd sdk/Notifo.SDK/bin/Release && dotnet nuget push *.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k oy2mrtttnxj6hjax23iqhokcdpcimr6efnchhevcmj7h64
-
-#
 # Stage 1, Build Backend
 #
 FROM mcr.microsoft.com/dotnet/sdk:5.0 as backend

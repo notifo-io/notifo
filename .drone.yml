@@ -2,6 +2,21 @@ kind: pipeline
 name: default
 
 steps:
+  - name: build_sdk
+    image: mcr.microsoft.com/dotnet/sdk:5.0
+    commands:
+      - cd backend/sdk/
+      - dotnet pack Notifo.SDK/Notifo.SDK.csproj --configuration Release
+      - dotnet nuget push **/*.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k $${NUGET_KEY}
+    environment:
+      NUGET_KEY:
+        from_secret: NUGET_KEY
+    when:
+      event:
+        - push
+      branch:
+        - main
+
   - name: build_dev
     image: docker
     commands:
@@ -23,21 +38,13 @@ steps:
         from_secret: DOCKER_USERNAME
       DOCKER_PASSWORD:
         from_secret: DOCKER_PASSWORD
+      NUGET_KEY:
+        from_secret: NUGET_KEY
     when:
       event:
         - push
       branch:
-        - master
-
-  - name: slack
-    image: plugins/slack
-    settings:
-      webhook:
-        from_secret: slack_webhook
-    when:
-      status:
-        - failure
-        - success
+        - main
       
 volumes:
   - name: docker1
