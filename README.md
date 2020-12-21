@@ -79,7 +79,7 @@ Notifo uses the following technologies.
 * Formik
 * Redux
 * Typescript
-* Bootstrap
+* Bootstrap with custom Sass and [Argon Design](https://www.creative-tim.com/product/argon-design-system) Theme.
 * ...many more libraries.
 
 ## Where is it used?
