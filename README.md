@@ -1,5 +1,7 @@
 # Notifo - Notification Service
 
+[![Build Status](https://build.squidex.io/api/badges/SebastianStehle/notifo/status.svg)](https://build.squidex.io/SebastianStehle/notifo)
+
 Try it out at https://app.notifo.io
 
 Notifo is a multi-channel notification service for collaboration tools, e-commerce, news, magazines and everybody who wants to notify their users.
@@ -66,9 +68,10 @@ Notifo uses the following technologies.
 
 ### Server
 
-* ASP.NET Core 5
+* ASP.NET Core 5 for Multi-Platform Support
 * SignalR for Sockets
 * MongoDB (support for more Databases is planned)
+* Identity Server
 
 ### Frontend
 
@@ -77,7 +80,7 @@ Notifo uses the following technologies.
 * Formik
 * Redux
 * Typescript
-* Bootstrap
+* Bootstrap with custom Sass and [Argon Design](https://www.creative-tim.com/product/argon-design-system) Theme.
 * ...many more libraries.
 
 ## Where is it used?
