@@ -68,9 +68,10 @@ Notifo uses the following technologies.
 
 ### Server
 
-* ASP.NET Core 5
+* ASP.NET Core 5 for Multi-Platform Support
 * SignalR for Sockets
 * MongoDB (support for more Databases is planned)
+* Identity Server
 
 ### Frontend
 
