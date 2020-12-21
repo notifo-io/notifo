@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FakeItEasy;
@@ -27,9 +28,9 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             sut = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
             {
-                PhoneNumber = "436703097770",
+                PhoneNumber = Environment.GetEnvironmentVariable("MESSAGEBIRD_PHONENUMBER")!,
                 PhoneNumbers = null,
-                AccessKey = "NcbomgrYBLnw3EXgVyXiCiBmf"
+                AccessKey = Environment.GetEnvironmentVariable("MESSAGEBIRD_KEY")!
             }));
         }
 
