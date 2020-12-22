@@ -18,11 +18,25 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyEmailChannel(this IServiceCollection services, IConfiguration config)
         {
+            config.ConfigureByOption("email:type", new Alternatives
+            {
+                ["AmazonSES"] = () =>
+                {
+                    services.AddAmazonSES(config);
+                },
+                ["SMTP"] = () =>
+                {
+                    services.AddSmtp(config);
+                },
+                ["None"] = () =>
+                {
+                    services.AddSingletonAs<NoopEmailServer>()
+                        .As<IEmailServer>();
+                }
+            });
+
             services.AddHttpClient("notifo-mjml");
             services.AddMjmlServices();
-
-            services.Configure<AmazonSESOptions>(
-                config.GetSection($"{Providers.Email}:ses"));
 
             services.AddSingletonAs<EmailChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();
@@ -33,10 +47,23 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<EmailFormatter>()
                 .As<IEmailFormatter>();
 
+            services.AddScheduler<EmailJob>(new SchedulerOptions { QueueName = Providers.Email });
+        }
+
+        private static void AddSmtp(this IServiceCollection services, IConfiguration config)
+        {
+            services.ConfigureAndValidate<SmtpOptions>(config, "email:smtp");
+
+            services.AddSingletonAs<SmtpEmailServer>()
+                .As<IEmailServer>();
+        }
+
+        private static void AddAmazonSES(this IServiceCollection services, IConfiguration config)
+        {
+            services.ConfigureAndValidate<AmazonSESOptions>(config, "email:amazonSES");
+
             services.AddSingletonAs<AmazonSESEmailServer>()
                 .As<IEmailServer>();
-
-            services.AddScheduler<EmailJob>(new SchedulerOptions { QueueName = Providers.Email });
         }
     }
 }

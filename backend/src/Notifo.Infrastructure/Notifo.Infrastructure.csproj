@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="5.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.11.4" />
     <PackageReference Include="NodaTime" Version="3.0.3" />
     <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0" />

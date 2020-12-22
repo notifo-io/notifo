@@ -8,121 +8,39 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
-using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Notifo.Infrastructure.Initialization;
 
 namespace Notifo.Domain.Channels.Email
 {
-    public sealed class AmazonSESEmailServer : IEmailServer, IInitializable
+    public sealed class AmazonSESEmailServer : SmtpEmailServerBase, IEmailServer, IInitializable
     {
         private const int MaxEmailAddressesPerRequest = 100;
-        private static readonly ContentType Plain = new ContentType("text/plain");
-        private static readonly ContentType Html = new ContentType("text/html");
-        private readonly ObjectPool<SmtpClient> clientPool;
         private readonly AmazonSESOptions options;
         private AmazonSimpleEmailServiceClient amazonSES;
 
-        internal sealed class SmtpClientPolicy : PooledObjectPolicy<SmtpClient>
-        {
-            private readonly AmazonSESOptions options;
-
-            public SmtpClientPolicy(AmazonSESOptions options)
-            {
-                this.options = options;
-            }
-
-            public override SmtpClient Create()
-            {
-                return new SmtpClient(options.Host, options.Port)
-                {
-                    Credentials = new NetworkCredential(
-                        options.Username,
-                        options.Password),
-
-                    EnableSsl = options.Secure,
-
-                    Timeout = options.Timeout
-                };
-            }
-
-            public override bool Return(SmtpClient obj)
-            {
-                return true;
-            }
-        }
-
         public AmazonSESEmailServer(IOptions<AmazonSESOptions> options)
+            : base(options.Value)
         {
-            clientPool = new DefaultObjectPoolProvider().Create(new SmtpClientPolicy(options.Value));
-
             this.options = options.Value;
         }
 
         public Task InitializeAsync(CancellationToken ct = default)
         {
-            amazonSES = new AmazonSimpleEmailServiceClient(options.AwsAccessKeyId, options.AwsSecretAccessKey, RegionEndpoint.EUCentral1);
+            amazonSES = new AmazonSimpleEmailServiceClient(
+                options.AwsAccessKeyId,
+                options.AwsSecretAccessKey,
+                RegionEndpoint.GetBySystemName(options.Region));
 
             return Task.CompletedTask;
         }
 
-        public async Task SendAsync(EmailMessage message, CancellationToken ct = default)
-        {
-            var smtpClient = clientPool.Get();
-            try
-            {
-                using (ct.Register(smtpClient.SendAsyncCancel))
-                {
-                    var smtpMessage = new MailMessage
-                    {
-                        From = new MailAddress(message.FromEmail, message.FromName)
-                    };
-
-                    smtpMessage.To.Add(new MailAddress(message.ToEmail, message.ToName));
-
-                    var hasHtml = !string.IsNullOrWhiteSpace(message.BodyHtml);
-                    var hasText = !string.IsNullOrWhiteSpace(message.BodyText);
-
-                    smtpMessage.IsBodyHtml = hasHtml;
-
-                    if (hasHtml && hasText)
-                    {
-                        smtpMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(message.BodyHtml!, Html));
-                        smtpMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(message.BodyText!, Plain));
-                    }
-                    else if (hasHtml)
-                    {
-                        smtpMessage.Body = message.BodyHtml;
-                    }
-                    else if (hasText)
-                    {
-                        smtpMessage.Body = message.BodyText;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Cannot send email without text body or html body");
-                    }
-
-                    smtpMessage.Subject = message.Subject;
-
-                    await smtpClient.SendMailAsync(smtpMessage, ct);
-                }
-            }
-            finally
-            {
-                clientPool.Return(smtpClient);
-            }
-        }
-
-        public async Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public override async Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct = default)
         {
             var request = new DeleteIdentityRequest
             {
@@ -132,7 +50,7 @@ namespace Notifo.Domain.Channels.Email
             await amazonSES.DeleteIdentityAsync(request, ct);
         }
 
-        public async Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public override async Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct = default)
         {
             await RemoveEmailAddressAsync(emailAddress, ct);
 
@@ -160,7 +78,7 @@ namespace Notifo.Domain.Channels.Email
             return MapStatus(status.Value.VerificationStatus);
         }
 
-        public async Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct = default)
+        public override async Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct = default)
         {
             var result = new Dictionary<string, EmailVerificationStatus>();
 

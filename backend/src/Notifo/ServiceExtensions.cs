@@ -6,18 +6,21 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Utils;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class UtilsServiceExtensions
+    public static class ServiceExtensions
     {
-        public static void AddMyUtils(this IServiceCollection services, IConfiguration config)
+        public static void AddMyStorage(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<ImageFormatterOptions>(config, "url");
-
-            services.AddSingletonAs<ImageFormatter>()
-                .As<IImageFormatter>();
+            config.ConfigureByOption("storage:type", new Alternatives
+            {
+                ["MongoDB"] = () =>
+                {
+                    services.AddMyMongoDb(config);
+                    services.AddMyMongoDbIdentity();
+                }
+            });
         }
     }
 }

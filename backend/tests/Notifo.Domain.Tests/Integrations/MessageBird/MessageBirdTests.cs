@@ -9,6 +9,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FakeItEasy;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -28,9 +29,9 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             sut = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
             {
-                PhoneNumber = Environment.GetEnvironmentVariable("MESSAGEBIRD_PHONENUMBER")!,
+                PhoneNumber = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumber"),
                 PhoneNumbers = null,
-                AccessKey = Environment.GetEnvironmentVariable("MESSAGEBIRD_KEY")!
+                AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")
             }));
         }
 

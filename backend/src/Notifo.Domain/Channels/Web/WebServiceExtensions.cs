@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class WebServiceExtensions
     {
-        public static void AddByWebChannel(this IServiceCollection services)
+        public static void AddMyWebChannel(this IServiceCollection services)
         {
             services.AddSingletonAs<WebChannel>()
                 .As<ICommunicationChannel>();

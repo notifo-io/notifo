@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
+using Notifo.Infrastructure.Configuration;
 using Notifo.Infrastructure.Initialization;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
@@ -96,7 +97,9 @@ namespace Notifo.Infrastructure.MongoDb
             }
             catch (Exception ex)
             {
-                throw new ConfigurationException($"MongoDb connection failed to connect to database {Database.DatabaseNamespace.DatabaseName}", ex);
+                var error = new ConfigurationError($"MongoDb connection failed to connect to database {Database.DatabaseNamespace.DatabaseName}");
+
+                throw new ConfigurationException(error, ex);
             }
         }
 

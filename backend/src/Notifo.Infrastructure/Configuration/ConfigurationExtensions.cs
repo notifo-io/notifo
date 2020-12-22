@@ -6,14 +6,33 @@
 // ==========================================================================
 
 using System.Globalization;
-using System.Linq;
-using Notifo.Infrastructure;
-using Squidex.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Notifo.Infrastructure.Configuration;
 
 namespace Microsoft.Extensions.Configuration
 {
     public static class ConfigurationExtensions
     {
+        public static void AddMyOptions(this IServiceCollection services)
+        {
+            services.AddSingletonAs<ValidationInitializer>()
+                .AsSelf();
+        }
+
+        public static void Configure<T>(this IServiceCollection services, IConfiguration config, string path) where T : class
+        {
+            services.AddOptions<T>().Bind(config.GetSection(path));
+        }
+
+        public static void ConfigureAndValidate<T>(this IServiceCollection services, IConfiguration config, string path) where T : class, IValidatableOptions
+        {
+            services.AddOptions<T>().Bind(config.GetSection(path));
+
+            services.AddSingletonAs(c => ActivatorUtilities.CreateInstance<OptionsErrorProvider<T>>(c, path))
+                .As<IErrorProvider>();
+        }
+
         public static T GetOptionalValue<T>(this IConfiguration config, string path, T defaultValue = default)
         {
             var value = config.GetValue(path, defaultValue!);
@@ -39,9 +58,9 @@ namespace Microsoft.Extensions.Configuration
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                var name = string.Join(" ", path.Split(':').Select(x => x.ToPascalCase()));
+                var error = new ConfigurationError("Value is required.", path);
 
-                throw new ConfigurationException($"Configure the {name} with '{path}'.");
+                throw new ConfigurationException(error);
             }
 
             return value;
@@ -55,13 +74,11 @@ namespace Microsoft.Extensions.Configuration
             {
                 action();
             }
-            else if (options.Default != null)
-            {
-                options.Default();
-            }
             else
             {
-                throw new ConfigurationException($"Unsupported value '{value}' for '{path}', supported: {string.Join(" ", options.Keys)}.");
+                var error = new ConfigurationError($"Unsupported value '{value}', supported: {string.Join(" ", options.Keys)}.", path);
+
+                throw new ConfigurationException(error);
             }
 
             return value;

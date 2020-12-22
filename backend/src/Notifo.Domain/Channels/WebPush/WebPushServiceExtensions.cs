@@ -16,8 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyWebPushChannel(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<WebPushOptions>(
-                config.GetSection(Providers.WebPush));
+            services.ConfigureAndValidate<WebPushOptions>(config, "webPush");
 
             services.AddSingletonAs<WebPushChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<WebPushJob>>().As<IWebPushService>();

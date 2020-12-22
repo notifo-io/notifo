@@ -17,20 +17,23 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
 {
     public sealed class GooglePubSubProducer<T> : IAbstractProducer<T>, IInitializable
     {
-        private readonly TopicName topicName;
+        private readonly GooglePubSubOptions options;
+        private readonly string topicId;
         private readonly IJsonSerializer serializer;
         private PublisherClient publisherClient;
 
         public GooglePubSubProducer(IOptions<GooglePubSubOptions> options, string topicId,
             IJsonSerializer serializer)
         {
+            this.options = options.Value;
+            this.topicId = topicId;
             this.serializer = serializer;
-
-            topicName = new TopicName(options.Value.ProjectId, options.Value.Prefix + topicId);
         }
 
         public async Task InitializeAsync(CancellationToken ct = default)
         {
+            var topicName = new TopicName(options.ProjectId, $"{options.Prefix}{topicId}");
+
             publisherClient = await PublisherClient.CreateAsync(topicName);
         }
 

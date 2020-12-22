@@ -43,8 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void AddMyKafkaMessaging(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<KafkaOptions>(
-                config.GetSection("messaging:kafka"));
+            services.ConfigureAndValidate<KafkaOptions>(config, "messaging:kafka");
 
             services.AddSingletonAs<KafkaProvider>()
                 .As<IMessagingProvider>().AsSelf();
@@ -58,8 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void AddMyRabbitMqMessaging(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<RabbitMqOptions>(
-                config.GetSection("messaging:rabbitMq"));
+            services.ConfigureAndValidate<RabbitMqOptions>(config, "messaging:rabbitMq");
 
             services.AddSingletonAs<RabbitMqProvider>()
                 .As<IMessagingProvider>().AsSelf();
@@ -70,8 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void AddMyGooglePubSubMessaging(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<GooglePubSubOptions>(
-                config.GetSection("messaging:pubsub"));
+            services.ConfigureAndValidate<GooglePubSubOptions>(config, "messaging:googlePubSub");
 
             services.AddSingletonAs<GooglePubSubProvider>()
                 .As<IMessagingProvider>();

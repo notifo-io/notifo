@@ -5,24 +5,40 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
+using Notifo.Infrastructure.Configuration;
+
 namespace Notifo.Domain.Channels.Email
 {
-    public sealed class AmazonSESOptions
+    public sealed class AmazonSESOptions : SmtpOptions
     {
-        public string Host { get; set; }
-
-        public string Username { get; set; }
-
-        public string Password { get; set; }
+        public string Region { get; set; } = "eu-central-1";
 
         public string AwsAccessKeyId { get; set; }
 
         public string AwsSecretAccessKey { get; set; }
 
-        public bool Secure { get; set; } = true;
+        public override IEnumerable<ConfigurationError> Validate()
+        {
+            foreach (var error in base.Validate())
+            {
+                yield return error;
+            }
 
-        public int Timeout { get; set; } = 2000;
+            if (string.IsNullOrWhiteSpace(Region))
+            {
+                yield return new ConfigurationError("Value is required.", nameof(Region));
+            }
 
-        public int Port { get; set; } = 587;
+            if (string.IsNullOrWhiteSpace(AwsAccessKeyId))
+            {
+                yield return new ConfigurationError("Value is required.", nameof(AwsAccessKeyId));
+            }
+
+            if (string.IsNullOrWhiteSpace(AwsSecretAccessKey))
+            {
+                yield return new ConfigurationError("Value is required.", nameof(AwsSecretAccessKey));
+            }
+        }
     }
 }

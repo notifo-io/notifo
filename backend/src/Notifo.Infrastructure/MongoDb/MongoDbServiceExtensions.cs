@@ -19,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMyMongoDb(this IServiceCollection services, IConfiguration config)
         {
             InstantSerializer.Register();
+
             LocalDateSerializer.Register();
             LocalTimeSerializer.Register();
 
@@ -27,8 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 new EnumRepresentationConvention(BsonType.String)
             }, t => true);
 
-            services.Configure<MongoDbOptions>(
-                config.GetSection("mongoDb"));
+            services.ConfigureAndValidate<MongoDbOptions>(config, "storage:mongoDb");
 
             services.AddSingletonAs(c =>
                 {

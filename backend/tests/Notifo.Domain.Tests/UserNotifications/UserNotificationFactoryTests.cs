@@ -25,7 +25,7 @@ namespace Notifo.Domain.UserNotifications
     {
         private readonly IClock clock = A.Fake<IClock>();
         private readonly ILogStore logStore = A.Fake<ILogStore>();
-        private readonly App app = App.Create(Guid.NewGuid().ToString(), null);
+        private readonly App app = App.Create(Guid.NewGuid().ToString());
         private readonly User user = new User();
         private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
         private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();

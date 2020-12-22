@@ -73,7 +73,6 @@ namespace Notifo
                 })
                 .AddRazorRuntimeCompilation();
 
-            services.AddByWebChannel();
             services.AddMyApi(config);
             services.AddMyApps();
             services.AddMyAssets(config);
@@ -85,14 +84,14 @@ namespace Notifo
             services.AddMyJson();
             services.AddMyLog();
             services.AddMyMedia();
-            services.AddMyMessageBird(config);
             services.AddMyMessaging(config);
             services.AddMyMobilePushChannel();
-            services.AddMyMongoDb(config);
             services.AddMyNodaTime();
             services.AddMyOpenApi();
+            services.AddMyOptions();
             services.AddMyScheduling();
-            services.AddMySmsChannel();
+            services.AddMySmsChannel(config);
+            services.AddMyStorage(config);
             services.AddMySubscriptions();
             services.AddMyTemplates();
             services.AddMyTopics();
@@ -100,6 +99,7 @@ namespace Notifo
             services.AddMyUserNotifications();
             services.AddMyUsers();
             services.AddMyUtils(config);
+            services.AddMyWebChannel();
             services.AddMyWebhookChannel();
             services.AddMyWebPipeline(config);
             services.AddMyWebPushChannel(config);

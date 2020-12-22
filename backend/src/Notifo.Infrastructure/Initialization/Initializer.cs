@@ -31,7 +31,7 @@ namespace Notifo.Infrastructure.Initialization
         {
             foreach (var initializable in initializables.OrderBy(x => x.InitializationOrder))
             {
-                log.LogInformation(w => w
+                log.LogDebug(w => w
                     .WriteProperty("action", "InitializeService")
                     .WriteProperty("status", "Started")
                     .WriteProperty("service", initializable.ToString()));
@@ -51,7 +51,7 @@ namespace Notifo.Infrastructure.Initialization
             {
                 try
                 {
-                    log.LogInformation(w => w
+                    log.LogDebug(w => w
                         .WriteProperty("action", "ReleaseService")
                         .WriteProperty("status", "Started")
                         .WriteProperty("service", initializable.GetType().FullName));

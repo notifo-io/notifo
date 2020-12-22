@@ -37,5 +37,11 @@
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
 </Project>

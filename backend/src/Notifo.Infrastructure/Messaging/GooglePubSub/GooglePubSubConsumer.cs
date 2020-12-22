@@ -20,7 +20,8 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
 {
     public sealed class GooglePubSubConsumer<TConsumer, T> : IInitializable where TConsumer : IAbstractConsumer<T>
     {
-        private readonly SubscriptionName subcriptionName;
+        private readonly GooglePubSubOptions options;
+        private readonly string topicId;
         private readonly TConsumer consumer;
         private readonly IJsonSerializer serializer;
         private readonly ISemanticLog log;
@@ -29,12 +30,12 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
         public GooglePubSubConsumer(IOptions<GooglePubSubOptions> options, string topicId,
             TConsumer consumer, IJsonSerializer serializer, ISemanticLog log)
         {
+            this.options = options.Value;
+            this.topicId = topicId;
             this.consumer = consumer;
             this.serializer = serializer;
 
             this.log = log;
-
-            subcriptionName = new SubscriptionName(options.Value.ProjectId, options.Value.Prefix + topicId);
         }
 
         public async Task ReleaseAsync(CancellationToken ct = default)
@@ -47,6 +48,8 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
 
         public async Task InitializeAsync(CancellationToken ct = default)
         {
+            var subcriptionName = new SubscriptionName(options.ProjectId, $"{options.Prefix}{topicId}");
+
             subscriberClient = await SubscriberClient.CreateAsync(subcriptionName);
 
             subscriberClient.StartAsync(async (pubSubMessage, subscriberToken) =>

@@ -32,8 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var identityOptions = config.GetSection("identity").Get<NotifoIdentityOptions>() ?? new NotifoIdentityOptions();
 
-            services.Configure<NotifoIdentityOptions>(
-                config.GetSection("identity"));
+            services.Configure<NotifoIdentityOptions>(config, "identity");
 
             services.AddIdentity<NotifoUser, NotifoRole>()
                 .AddDefaultTokenProviders();
@@ -41,17 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<UserResolver>()
                 .As<IUserResolver>();
 
-            services.AddSingletonAs<MongoDbUserStore>()
-                .As<IUserStore<NotifoUser>>().As<IUserFactory>();
-
-            services.AddSingletonAs<MongoDbRoleStore>()
-                .As<IRoleStore<NotifoRole>>();
-
-            services.AddSingletonAs<MongoDbPersistedGrantStore>()
-                .As<IPersistedGrantStore>();
-
-            services.AddSingletonAs<MongoDbKeyStore>()
-                .As<ISigningCredentialStore>().As<IValidationKeysStore>();
+            AddMyMongoDbIdentity(services);
 
             services.AddSingletonAs<UserCreator>()
                 .AsSelf();
@@ -72,10 +61,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddAuthorization();
             services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = AlternativeSchema;
-                    options.DefaultChallengeScheme = AlternativeSchema;
-                })
+            {
+                options.DefaultAuthenticateScheme = AlternativeSchema;
+                options.DefaultChallengeScheme = AlternativeSchema;
+            })
                 .AddPolicyScheme(AlternativeSchema, null, options =>
                 {
                     options.ForwardDefaultSelector = context =>
@@ -94,8 +83,32 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddIdentityServerJwt();
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<IdentityServerOptions>, IdentityOptions>());
+        }
 
-            services.AddMyCertStore();
+        public static void AddMyMongoDbIdentity(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbUserStore>()
+                .As<IUserStore<NotifoUser>>().As<IUserFactory>();
+
+            services.AddSingletonAs<MongoDbRoleStore>()
+                .As<IRoleStore<NotifoRole>>();
+
+            services.AddSingletonAs<MongoDbPersistedGrantStore>()
+                .As<IPersistedGrantStore>();
+
+            services.AddSingletonAs<MongoDbKeyStore>()
+                .As<ISigningCredentialStore>().As<IValidationKeysStore>();
+
+            services.AddSingletonAs<MongoDbXmlRepository>()
+                .As<IXmlRepository>();
+
+            services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(s =>
+            {
+                return new ConfigureOptions<KeyManagementOptions>(options =>
+                {
+                    options.XmlRepository = s.GetRequiredService<IXmlRepository>();
+                });
+            });
         }
 
         internal class IdentityOptions : IConfigureOptions<IdentityServerOptions>
@@ -109,20 +122,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
                 options.UserInteraction.ErrorUrl = "/account/error";
             }
-        }
-
-        private static void AddMyCertStore(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbXmlRepository>()
-                .As<IXmlRepository>();
-
-            services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(s =>
-            {
-                return new ConfigureOptions<KeyManagementOptions>(options =>
-                {
-                    options.XmlRepository = s.GetRequiredService<IXmlRepository>();
-                });
-            });
         }
     }
 }

@@ -23,8 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         private static void AddServices(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<SemanticLogOptions>(
-                config.GetSection("logging"));
+            services.Configure<SemanticLogOptions>(config, "logging");
 
             if (config.GetValue<bool>("logging:human"))
             {

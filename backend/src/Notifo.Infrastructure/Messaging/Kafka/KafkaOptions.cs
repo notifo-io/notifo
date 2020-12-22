@@ -5,11 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using Confluent.Kafka;
+using Notifo.Infrastructure.Configuration;
 
 namespace Notifo.Infrastructure.Messaging.Kafka
 {
-    public sealed class KafkaOptions : ConsumerConfig
+    public sealed class KafkaOptions : ConsumerConfig, IValidatableOptions
     {
         public T Configure<T>(T config) where T : ClientConfig
         {
@@ -24,6 +26,14 @@ namespace Notifo.Infrastructure.Messaging.Kafka
             }
 
             return config;
+        }
+
+        public IEnumerable<ConfigurationError> Validate()
+        {
+            if (string.IsNullOrWhiteSpace(BootstrapServers))
+            {
+                yield return new ConfigurationError("Value is required.", nameof(BootstrapServers));
+            }
         }
     }
 }

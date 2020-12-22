@@ -14,8 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyMessageBird(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<MessageBirdOptions>(
-                config.GetSection($"messageBird"));
+            services.ConfigureAndValidate<MessageBirdOptions>(config, "messageBird");
 
             services.AddSingletonAs<MessageBirdClient>()
                 .AsSelf();

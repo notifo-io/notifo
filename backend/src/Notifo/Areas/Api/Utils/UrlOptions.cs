@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Configuration;
 
 namespace Notifo.Areas.Api.Utils
 {
@@ -110,7 +111,9 @@ namespace Notifo.Areas.Api.Utils
         {
             if (string.IsNullOrWhiteSpace(BaseUrl))
             {
-                throw new ConfigurationException("Configure BaseUrl with 'urls:baseUrl'.");
+                var error = new ConfigurationError("urls:baseurl", "Value is required.");
+
+                throw new ConfigurationException(error);
             }
 
             return BaseUrl.BuildFullUrl(path, trailingSlash);
@@ -130,12 +133,16 @@ namespace Notifo.Areas.Api.Utils
         {
             if (string.IsNullOrWhiteSpace(BaseUrl))
             {
-                throw new ConfigurationException("Configure BaseUrl with 'urls:baseUrl'.");
+                var error = new ConfigurationError("urls:baseurl", "Value is required.");
+
+                throw new ConfigurationException(error);
             }
 
             if (!TryBuildHost(BaseUrl, out var host))
             {
-                throw new ConfigurationException("Configure BaseUrl with 'urls:baseUrl' host name.");
+                var error = new ConfigurationError("urls:baseurl", "Value is required.");
+
+                throw new ConfigurationException(error);
             }
 
             return host;

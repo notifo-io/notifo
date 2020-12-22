@@ -5,16 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Collections.Generic;
 
-namespace Microsoft.Extensions.Configuration
+namespace Notifo.Infrastructure.Configuration
 {
-    public sealed class Alternatives : Dictionary<string, Action>
+    public interface IValidatableOptions
     {
-        public Alternatives()
-            : base(StringComparer.OrdinalIgnoreCase)
-        {
-        }
+        IEnumerable<ConfigurationError> Validate();
     }
 }

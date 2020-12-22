@@ -5,15 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 
-namespace Microsoft.Extensions.Configuration
+namespace Notifo.Domain.Channels.Email
 {
-    public sealed class Alternatives : Dictionary<string, Action>
+    public sealed class SmtpEmailServer : SmtpEmailServerBase
     {
-        public Alternatives()
-            : base(StringComparer.OrdinalIgnoreCase)
+        public SmtpEmailServer(IOptions<SmtpOptions> options)
+            : base(options.Value)
         {
         }
     }
