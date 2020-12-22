@@ -2,7 +2,7 @@
 
 [![Build Status](https://build.squidex.io/api/badges/SebastianStehle/notifo/status.svg)](https://build.squidex.io/SebastianStehle/notifo)
 
-Try it out at https://app.notifo.io
+Try it out at https://app.notifo.io!
 
 Notifo is a multi-channel notification service for collaboration tools, e-commerce, news, magazines and everybody who wants to notify their users.
 
