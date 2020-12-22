@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Infrastructure.Scheduling;
 
@@ -17,6 +18,11 @@ namespace Notifo.Infrastructure.Messaging.Scheduling
         public SchedulingProducer(IScheduler<T> scheduler)
         {
             this.scheduler = scheduler;
+        }
+
+        public Task InitializeAsync(CancellationToken ct = default)
+        {
+            return Task.CompletedTask;
         }
 
         public Task ProduceAsync(string key, T message)

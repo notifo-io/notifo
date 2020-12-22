@@ -125,6 +125,8 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
                 }
             }
 
+            result.Counters ??= new CounterMap();
+
             return result;
         }
     }

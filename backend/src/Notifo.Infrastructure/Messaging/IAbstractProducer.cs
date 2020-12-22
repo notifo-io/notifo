@@ -6,10 +6,11 @@
 // ==========================================================================
 
 using System.Threading.Tasks;
+using Notifo.Infrastructure.Initialization;
 
 namespace Notifo.Infrastructure.Messaging
 {
-    public interface IAbstractProducer<in T>
+    public interface IAbstractProducer<in T> : IInitializable
     {
         Task ProduceAsync(string key, T message);
     }

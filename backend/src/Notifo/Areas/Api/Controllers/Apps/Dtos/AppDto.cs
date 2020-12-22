@@ -53,6 +53,8 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
                 result.Role = userRole;
             }
 
+            result.Counters ??= new CounterMap();
+
             return result;
         }
     }

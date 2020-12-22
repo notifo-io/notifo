@@ -45,7 +45,7 @@ namespace Notifo.Domain.Apps
 
         public Dictionary<string, string> Contributors { get; set; } = new Dictionary<string, string>();
 
-        public CounterMap? Counters { get; private set; }
+        public CounterMap? Counters { get; set; } = new CounterMap();
 
         public string Language => Languages[0];
 
