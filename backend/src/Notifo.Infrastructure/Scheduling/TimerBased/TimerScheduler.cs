@@ -13,18 +13,17 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using NodaTime;
 using Notifo.Infrastructure.Initialization;
-using Notifo.Infrastructure.Scheduling;
 using Notifo.Infrastructure.Timers;
 using Squidex.Log;
 
-namespace Notifo.Infrastructure.MongoDb.Scheduling
+namespace Notifo.Infrastructure.Scheduling.TimerBased
 {
-    public sealed class MongoDbScheduler<T> : IScheduler<T>, IInitializable
+    public sealed class TimerScheduler<T> : IScheduler<T>, IInitializable
     {
         private readonly List<CompletionTimer> timers = new List<CompletionTimer>();
-        private readonly MongoDbSchedulerStore<T> schedulerStore;
+        private readonly ISchedulerStore<T> schedulerStore;
         private readonly SchedulerOptions schedulerOptions;
-        private readonly ActionBlock<MongoDbSchedulerDocument<T>> actionBlock;
+        private readonly ActionBlock<SchedulerBatch<T>> actionBlock;
         private readonly IClock clock;
         private readonly ISemanticLog log;
         private IScheduleHandler<T>? currentHandler;
@@ -34,13 +33,13 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
             get { return clock.GetCurrentInstant(); }
         }
 
-        public MongoDbScheduler(MongoDbSchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
+        public TimerScheduler(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
             IClock clock, ISemanticLog log)
         {
             this.schedulerStore = schedulerStore;
             this.schedulerOptions = schedulerOptions;
 
-            actionBlock = new ActionBlock<MongoDbSchedulerDocument<T>>(HandleAsync, new ExecutionDataflowBlockOptions
+            actionBlock = new ActionBlock<SchedulerBatch<T>>(HandleAsync, new ExecutionDataflowBlockOptions
             {
                 BoundedCapacity = schedulerOptions.MaxParallelism * 4,
                 MaxDegreeOfParallelism = schedulerOptions.MaxParallelism,
@@ -65,6 +64,8 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
 
             await Task.WhenAll(timers.Select(x => x.StopAsync()));
             await actionBlock.Completion;
+
+            await schedulerStore.ReleaseAsync(ct);
         }
 
         public void Subscribe(IScheduleHandler<T> handler)
@@ -122,7 +123,7 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
             }
         }
 
-        private async Task HandleAsync(MongoDbSchedulerDocument<T> document)
+        private async Task HandleAsync(SchedulerBatch<T> document)
         {
             var canRetry = document.RetryCount < schedulerOptions.ExecutionRetries.Length;
 

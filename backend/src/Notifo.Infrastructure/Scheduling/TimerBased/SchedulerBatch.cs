@@ -8,9 +8,9 @@
 using System.Collections.Generic;
 using NodaTime;
 
-namespace Notifo.Infrastructure.MongoDb.Scheduling
+namespace Notifo.Infrastructure.Scheduling.TimerBased
 {
-    public sealed class MongoDbSchedulerDocument<T>
+    public sealed class SchedulerBatch<T>
     {
         public string Id { get; set; }
 

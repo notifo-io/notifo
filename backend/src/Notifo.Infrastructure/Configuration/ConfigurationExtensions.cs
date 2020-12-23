@@ -7,7 +7,6 @@
 
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Notifo.Infrastructure.Configuration;
 
 namespace Microsoft.Extensions.Configuration

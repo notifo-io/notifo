@@ -23,9 +23,9 @@ namespace Notifo.Domain.Channels.Email
 
         protected SmtpEmailServerBase(SmtpOptions options)
         {
-            clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
-
             this.options = options;
+
+            clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
         }
 
         public async Task SendAsync(EmailMessage message, CancellationToken ct = default)

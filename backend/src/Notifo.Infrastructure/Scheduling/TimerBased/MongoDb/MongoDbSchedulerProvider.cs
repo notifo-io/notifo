@@ -7,16 +7,15 @@
 
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Infrastructure.Scheduling;
 
-namespace Notifo.Infrastructure.MongoDb.Scheduling
+namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
 {
     public sealed class MongoDbSchedulerProvider : ISchedulerProvider
     {
         public IScheduler<T> GetScheduler<T>(IServiceProvider serviceProvider, SchedulerOptions options)
         {
             var schedulerStore = ActivatorUtilities.CreateInstance<MongoDbSchedulerStore<T>>(serviceProvider, options);
-            var scheduler = ActivatorUtilities.CreateInstance<MongoDbScheduler<T>>(serviceProvider, options, schedulerStore);
+            var scheduler = ActivatorUtilities.CreateInstance<TimerScheduler<T>>(serviceProvider, options, schedulerStore);
 
             return scheduler;
         }

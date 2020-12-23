@@ -11,11 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using NodaTime;
-using Notifo.Infrastructure.Scheduling;
+using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Infrastructure.MongoDb.Scheduling
+namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
 {
-    public sealed class MongoDbSchedulerStore<T> : MongoDbRepository<MongoDbSchedulerDocument<T>>
+    public sealed class MongoDbSchedulerStore<T> : MongoDbRepository<SchedulerBatch<T>>, ISchedulerStore<T>
     {
         private readonly SchedulerOptions options;
 
@@ -30,10 +30,10 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
             return $"Scheduler_{options.QueueName.ToLowerInvariant()}";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbSchedulerDocument<T>> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<SchedulerBatch<T>> collection, CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<MongoDbSchedulerDocument<T>>(
+                new CreateIndexModel<SchedulerBatch<T>>(
                     IndexKeys
                         .Ascending(x => x.Key)
                         .Ascending(x => x.Progressing)
@@ -41,13 +41,13 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
                 null, ct);
 
             await collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<MongoDbSchedulerDocument<T>>(
+                new CreateIndexModel<SchedulerBatch<T>>(
                     IndexKeys
                         .Ascending(x => x.Progressing)),
                 null, ct);
         }
 
-        public async Task<MongoDbSchedulerDocument<T>?> DequeueAsync(Instant time)
+        public async Task<SchedulerBatch<T>?> DequeueAsync(Instant time)
         {
             return await Collection.FindOneAndUpdateAsync(x => !x.Progressing && x.DueTime <= time,
                 Update
