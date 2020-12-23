@@ -21,22 +21,9 @@ namespace Notifo.Domain.Channels.Email
         private readonly ObjectPool<SmtpClient> clientPool;
         private readonly SmtpOptions options;
 
-        internal sealed class SmtpClientPolicy : PooledObjectPolicy<SmtpClient>
-        {
-            public override SmtpClient Create()
-            {
-                return new SmtpClient();
-            }
-
-            public override bool Return(SmtpClient obj)
-            {
-                return true;
-            }
-        }
-
         protected SmtpEmailServerBase(SmtpOptions options)
         {
-            clientPool = new DefaultObjectPoolProvider().Create(new SmtpClientPolicy());
+            clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
 
             this.options = options;
         }
