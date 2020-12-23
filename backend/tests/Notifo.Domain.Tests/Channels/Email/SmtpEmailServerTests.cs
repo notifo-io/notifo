@@ -16,7 +16,7 @@ namespace Notifo.Domain.Channels.Email
     {
         protected override IEmailServer CreateServer()
         {
-            return new SmtpEmailServer(Options.Create(new AmazonSESOptions
+            return new SmtpEmailServer(Options.Create(new SmtpOptions
             {
                 Host = TestHelpers.Configuration.GetValue<string>("email:smtp:host"),
                 Password = TestHelpers.Configuration.GetValue<string>("email:smtp:password"),
