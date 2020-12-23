@@ -89,7 +89,6 @@ namespace Notifo
             services.AddMyNodaTime();
             services.AddMyOpenApi();
             services.AddMyOptions();
-            services.AddMyScheduling();
             services.AddMySmsChannel(config);
             services.AddMyStorage(config);
             services.AddMySubscriptions();

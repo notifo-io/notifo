@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class MongoDbSchedulerServiceExtensions
     {
-        public static void AddMongoScheduler(this IServiceCollection services)
+        public static void AddMyMongoDbScheduler(this IServiceCollection services)
         {
             services.AddSingletonAs<MongoDbSchedulerProvider>()
                 .As<ISchedulerProvider>();

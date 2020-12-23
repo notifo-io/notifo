@@ -11,11 +11,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class SchedulerServiceExtensions
     {
-        public static void AddMyScheduling(this IServiceCollection services)
-        {
-            services.AddMongoScheduler();
-        }
-
         public static void AddScheduler<T>(this IServiceCollection services, SchedulerOptions options)
         {
             services.AddSingletonAs(c => c.GetRequiredService<ISchedulerProvider>().GetScheduler<T>(c, options))

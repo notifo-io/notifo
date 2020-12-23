@@ -19,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     services.AddMyMongoDb(config);
                     services.AddMyMongoDbIdentity();
+                    services.AddMyMongoDbScheduler();
                 }
             });
         }
