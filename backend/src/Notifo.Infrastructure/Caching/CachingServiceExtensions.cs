@@ -11,7 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyCaching(this IServiceCollection services)
         {
-            services.AddReplicatedCache();
+            services.AddReplicatedCache(options =>
+            {
+                options.Enable = true;
+            });
+
             services.AddAsyncLocalCache();
             services.AddSimplePubSub();
         }

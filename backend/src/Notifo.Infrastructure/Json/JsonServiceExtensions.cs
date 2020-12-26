@@ -32,6 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             options.Converters.Add(new JsonStringEnumConverter());
+            options.Converters.Add(new JsonTimeSpanConverter());
             options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
             return options;
