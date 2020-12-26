@@ -5,7 +5,7 @@ steps:
   - name: build_pr
     image: docker
     commands:
-      - docker build --build-arg NOTIFO__VERSION=3.0.0-$${DRONE_BUILD_NUMBER} .
+      - docker build .
     volumes:
       - name: docker1
         path: /var/run/docker.sock
