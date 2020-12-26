@@ -197,6 +197,9 @@ export interface SDKConfig {
     // The url to the styles.
     styleUrl: string;
 
+    // True to negotiate the connection, otherwise sockets are used.
+    negotiate: boolean;
+
     // A callback that is invoked when a notification is retrieved.
     onNotification?: (notification: any) => void;
 

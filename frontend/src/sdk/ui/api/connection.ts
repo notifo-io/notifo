@@ -23,18 +23,25 @@ export class Connection {
     constructor(
         config: SDKConfig,
     ) {
+        const signalRConfig: signalR.IHttpConnectionOptions = {
+            headers: {
+                ...getAuthHeader(config),
+            },
+            accessTokenFactory: () => {
+                return config.userToken;
+            },
+            withCredentials: false,
+        };
+
+        if (!config.negotiate) {
+            signalRConfig.skipNegotiation = true;
+            signalRConfig.transport = signalR.HttpTransportType.WebSockets;
+        }
+
         const connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Information)
             .withAutomaticReconnect(new Retry())
-            .withUrl(`${config.apiUrl}/hub`, {
-                headers: {
-                    ...getAuthHeader(config),
-                },
-                accessTokenFactory: () => {
-                    return config.userToken;
-                },
-                withCredentials: false,
-            })
+            .withUrl(`${config.apiUrl}/hub`, signalRConfig)
             .build();
 
         this.signalR = connection;

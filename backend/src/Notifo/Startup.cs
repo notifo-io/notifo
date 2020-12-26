@@ -78,6 +78,7 @@ namespace Notifo
             services.AddMyAssets(config);
             services.AddMyCaching();
             services.AddMyCounters();
+            services.AddMyClustering(config);
             services.AddMyEmailChannel(config);
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
@@ -122,6 +123,8 @@ namespace Notifo
                 options.SupportedCultures = cultures;
                 options.SupportedUICultures = cultures;
             });
+
+            app.UseMyHealthChecks();
 
             app.ConfigureApi();
             app.ConfigureFrontend();
