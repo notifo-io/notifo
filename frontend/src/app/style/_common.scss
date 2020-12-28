@@ -383,7 +383,7 @@ div {
     }
 
     &-btn {
-        @include absolute(-5px, 0, auto, auto);
+        @include absolute(-1px, 0, auto, auto);
         font-size: 1.2rem;
         padding-left: 1rem;
         padding-right: 1rem;
