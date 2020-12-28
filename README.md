@@ -8,8 +8,6 @@ Notifo is a multi-channel notification service for collaboration tools, e-commer
 
 ![Notifo Email Templates](media/screenshot1.PNG "Notifo Email Templates")
 
-![Notifo Events View](media/screenshot2.PNG "Notifo Events View")
-
 ## Features
 
 * Powerful and rich REST API with OpenAPI documentation.
@@ -102,3 +100,5 @@ There is still a lot to do:
 * More channels (e.g. WhatsApp or Voice).
 * Testing and tests
 * Automated API and UI tests and more tests in general.
+
+![Notifo Events View](media/screenshot2.PNG "Notifo Events View")
