@@ -1,6 +1,6 @@
 # Notifo - Notification Service
 
-[![Build Status](https://build.squidex.io/api/badges/SebastianStehle/notifo/status.svg)](https://build.squidex.io/SebastianStehle/notifo)
+[![Build Status](https://build.squidex.io/api/badges/notifo-io/notifo/status.svg)](https://build.squidex.io/SebastianStehle/notifo)
 
 Try it out at https://app.notifo.io!
 
