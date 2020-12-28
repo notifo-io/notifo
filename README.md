@@ -6,7 +6,7 @@ Try it out at https://app.notifo.io!
 
 Notifo is a multi-channel notification service for collaboration tools, e-commerce, news, magazines and everybody who wants to notify their users.
 
-![Notifo Email Templates](media/Screenshot_Emails.PNG "Notifo Email Templates")
+![Notifo Email Templates](media/Screenshot_Emails.png "Notifo Email Templates")
 
 ## Features
 
@@ -105,16 +105,16 @@ There is still a lot to do:
 
 User Management:
 
-![User Management](media/Screenshot_Users.PNG "User Management")
+![User Management](media/Screenshot_Users.png "User Management")
 
 Event Templates:
 
-![Event Templates](media/Screenshot_Templates.PNG "Event Templates")
+![Event Templates](media/Screenshot_Templates.png "Event Templates")
 
 Media Gallery:
 
-![Media Gallery](media/Screenshot_Media.PNG "Media Gallery")
+![Media Gallery](media/Screenshot_Media.png "Media Gallery")
 
 Debug Log:
 
-![Debug Log](media/Screenshot_Log.PNG "Debug Log")
+![Debug Log](media/Screenshot_Log.png "Debug Log")
