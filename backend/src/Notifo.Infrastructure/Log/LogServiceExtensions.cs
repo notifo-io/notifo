@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Notifo.Infrastructure.Log;
 using Squidex.Log;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -48,6 +49,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingletonAs(_ => new ConsoleLogChannel(useColors))
                 .As<ILogChannel>();
+
+            services.AddSingletonAs<StackdriverSeverityLogAppender>()
+                .As<ILogAppender>();
 
             services.AddSingletonAs<TimestampLogAppender>()
                 .As<ILogAppender>();
