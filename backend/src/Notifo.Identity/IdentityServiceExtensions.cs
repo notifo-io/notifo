@@ -5,10 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Threading.Tasks;
 using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -37,13 +39,11 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddIdentity<NotifoUser, NotifoRole>()
                 .AddDefaultTokenProviders();
 
-            services.AddSingletonAs<UserResolver>()
-                .As<IUserResolver>();
-
-            AddMyMongoDbIdentity(services);
-
             services.AddSingletonAs<UserCreator>()
                 .AsSelf();
+
+            services.AddSingletonAs<UserResolver>()
+                .As<IUserResolver>();
 
             services.AddIdentityServer()
                 .AddAspNetIdentity<NotifoUser>()
@@ -61,10 +61,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddAuthorization();
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = AlternativeSchema;
-                options.DefaultChallengeScheme = AlternativeSchema;
-            })
+                {
+                    options.DefaultAuthenticateScheme = AlternativeSchema;
+                    options.DefaultChallengeScheme = AlternativeSchema;
+                })
                 .AddPolicyScheme(AlternativeSchema, null, options =>
                 {
                     options.ForwardDefaultSelector = context =>
@@ -81,6 +81,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddGithub(identityOptions)
                 .AddApiKey()
                 .AddIdentityServerJwt();
+
+            services.AddSingleton<IConfigureOptions<JwtBearerOptions>, IdentityOptions>();
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<IConfigureOptions<IdentityServerOptions>, IdentityOptions>());
         }
@@ -111,16 +113,45 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        internal class IdentityOptions : IConfigureOptions<IdentityServerOptions>
+        internal class IdentityOptions : IConfigureOptions<IdentityServerOptions>, IConfigureNamedOptions<JwtBearerOptions>
         {
+            private readonly UrlOptions urlOptions;
+
+            public IdentityOptions(IOptions<UrlOptions> urlOptions)
+            {
+                this.urlOptions = urlOptions.Value;
+            }
+
             public void Configure(IdentityServerOptions options)
             {
+                options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+
                 options.Events.RaiseErrorEvents = true;
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-                options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+
                 options.UserInteraction.ErrorUrl = "/account/error";
+            }
+
+            public void Configure(string name, JwtBearerOptions options)
+            {
+                var original = options.Events?.OnMessageReceived;
+
+                options.Events ??= new JwtBearerEvents();
+                options.Events.OnMessageReceived = async context =>
+                {
+                    if (original != null)
+                    {
+                        await original(context);
+                    }
+
+                    context.Options.TokenValidationParameters.ValidIssuer = urlOptions.BaseUrl.TrimEnd('/');
+                };
+            }
+
+            public void Configure(JwtBearerOptions options)
+            {
             }
         }
     }

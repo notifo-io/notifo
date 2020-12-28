@@ -11,6 +11,7 @@ using Notifo.Areas.Api.Utils;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Channels.Web;
 using Notifo.Domain.UserNotifications;
+using Notifo.Identity;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

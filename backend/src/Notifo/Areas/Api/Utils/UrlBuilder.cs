@@ -9,6 +9,7 @@ using System;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.UserNotifications;
+using Notifo.Identity;
 
 namespace Notifo.Areas.Api.Utils
 {

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Configuration;
 
-namespace Notifo.Areas.Api.Utils
+namespace Notifo.Identity
 {
     public sealed class UrlOptions
     {
