@@ -44,6 +44,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddIdentityServer(options =>
                 {
+                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
+
+                    options.UserInteraction.ErrorUrl = "/account/error";
                 })
                 .AddAspNetIdentity<NotifoUser>()
                 .AddClients()
@@ -55,15 +63,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 var urlBuilder = c.GetRequiredService<IUrlGenerator>();
 
                 options.IssuerUri = urlBuilder.BuildUrl();
-
-                options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
-
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
-
-                options.UserInteraction.ErrorUrl = "/account/error";
             });
 
             services.Configure<ApiAuthorizationOptions>(options =>
