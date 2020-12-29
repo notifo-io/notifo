@@ -75,3 +75,15 @@ volumes:
   - name: docker2
     host:
       path: /var/lib/docker
+---
+kind: secret
+name: NUGET_KEY
+data: ZjRocsNgswJU9c1vBfJ+lOaVb+YN66lLogNDNTMKEUp/GQgFgAN2AxqCq2yMLSqJDufsxwnQUwrnljOsPngEjmIjaYt1194NVxR0lMvvS4kKFUe9/JVMGQ==
+---
+kind: secret
+name: DOCKER_USERNAME
+data: IbbfO+au9mXXI4PrKesvLH3zUGXc4R4uIMz6XdJQoA90vSvZ4rzgLXwViw==
+---
+kind: secret
+name: DOCKER_PASSWORD
+data: gbKxZu1+/kCmpA2QcNNX3h67rjYOSGdn/vDMBfzOtfkd+p8ojvVM
