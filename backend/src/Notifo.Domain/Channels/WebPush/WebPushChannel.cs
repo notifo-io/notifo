@@ -177,7 +177,7 @@ namespace Notifo.Domain.Channels.WebPush
             }
             catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
             {
-                await logStore.LogAsync(task.AppId, Texts.MobilePush_TokenRemoved, ct);
+                await logStore.LogAsync(task.AppId, Texts.WebPush_TokenRemoved, ct);
 
                 var command = new RemoveUserWebPushSubscription
                 {
