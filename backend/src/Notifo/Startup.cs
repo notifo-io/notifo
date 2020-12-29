@@ -17,7 +17,6 @@ using Notifo.Areas.Frontend;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Topics;
 using Notifo.Pipeline;
-using Squidex.Hosting.Web;
 
 namespace Notifo
 {
@@ -77,7 +76,7 @@ namespace Notifo
                 })
                 .AddRazorRuntimeCompilation();
 
-            services.AddMyApi(config);
+            services.AddMyApi();
             services.AddMyApps();
             services.AddMyAssets(config);
             services.AddMyCaching();
@@ -104,7 +103,7 @@ namespace Notifo
             services.AddMyUtils(config);
             services.AddMyWebChannel();
             services.AddMyWebhookChannel();
-            services.AddMyWebPipeline(config);
+            services.AddMyWebPipeline();
             services.AddMyWebPushChannel(config);
 
             services.AddInitializer();

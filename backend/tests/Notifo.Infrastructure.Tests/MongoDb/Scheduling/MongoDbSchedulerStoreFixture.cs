@@ -8,6 +8,7 @@
 using System;
 using MongoDB.Driver;
 using Notifo.Infrastructure.Scheduling;
+using Notifo.Infrastructure.Scheduling.TimerBased.MongoDb;
 
 namespace Notifo.Infrastructure.MongoDb.Scheduling
 {

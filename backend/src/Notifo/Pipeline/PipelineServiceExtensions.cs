@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Net.Http.Headers;
@@ -22,7 +21,7 @@ namespace Notifo.Pipeline
 {
     public static class PipelineServiceExtensions
     {
-        public static void AddMyWebPipeline(this IServiceCollection services, IConfiguration config)
+        public static void AddMyWebPipeline(this IServiceCollection services)
         {
             services.AddHealthChecks();
 
