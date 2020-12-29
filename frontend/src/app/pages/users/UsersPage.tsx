@@ -33,7 +33,7 @@ export const UsersPage = () => {
     });
 
     React.useEffect(() => {
-        dispatch(loadUsersAsync(appId, {}, true));
+        dispatch(loadUsersAsync(appId, {}));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {

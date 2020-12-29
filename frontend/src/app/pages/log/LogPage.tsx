@@ -25,7 +25,7 @@ export const LogPage = () => {
     });
 
     React.useEffect(() => {
-        dispatch(loadLogAsync(appId, {}, true));
+        dispatch(loadLogAsync(appId, {}));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {

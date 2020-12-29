@@ -26,7 +26,7 @@ export const TemplatesPage = () => {
     }, [templates, templateCode]);
 
     React.useEffect(() => {
-        dispatch(loadTemplatesAsync(appId, true));
+        dispatch(loadTemplatesAsync(appId));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {

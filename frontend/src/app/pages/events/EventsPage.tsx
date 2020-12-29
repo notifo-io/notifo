@@ -26,7 +26,7 @@ export const EventsPage = () => {
     });
 
     React.useEffect(() => {
-        dispatch(loadEventsAsync(appId, undefined, true));
+        dispatch(loadEventsAsync(appId, undefined));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {

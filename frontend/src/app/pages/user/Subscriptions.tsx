@@ -36,7 +36,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     });
 
     React.useEffect(() => {
-        dispatch(loadSubscriptionsAsync(appId, userId, {}, true));
+        dispatch(loadSubscriptionsAsync(appId, userId, {}));
     }, [appId, userId]);
 
     const doRefresh = React.useCallback(() => {
