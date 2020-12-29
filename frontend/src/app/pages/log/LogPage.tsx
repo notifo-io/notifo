@@ -63,7 +63,7 @@ export const LogPage = () => {
                     <Table className='table-fixed table-simple table-middle'>
                         <colgroup>
                             <col />
-                            <col style={{ width: 80 }} />
+                            <col style={{ width: 160 }} />
                             <col style={{ width: 200 }} />
                             <col style={{ width: 200 }} />
                         </colgroup>

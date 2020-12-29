@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FromNow } from '@app/framework';
+import { FromNow, Numbers } from '@app/framework';
 import { LogEntryDto } from '@app/service';
 import * as React from 'react';
 
@@ -23,7 +23,7 @@ export const LogEntryRow = (props: LogEntryRowProps) => {
                 <span className='truncate'>{entry.message}</span>
             </td>
             <td>
-                <span className='truncate'>{entry.count}</span>
+                <span className='truncate'>{Numbers.formatNumber(entry.count)}</span>
             </td>
             <td>
                 <span className='truncate'>
