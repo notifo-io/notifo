@@ -17,50 +17,15 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void ConfigureForMe(this ILoggingBuilder builder, IConfiguration config)
         {
             builder.ClearProviders();
-            builder.AddSemanticLog();
+            builder.ConfigureSemanticLog(config);
 
-            builder.Services.AddServices(config);
+            builder.Services.AddServices();
         }
 
-        private static void AddServices(this IServiceCollection services, IConfiguration config)
+        private static void AddServices(this IServiceCollection services)
         {
-            services.Configure<SemanticLogOptions>(config, "logging");
-
-            if (config.GetValue<bool>("logging:human"))
-            {
-                services.AddSingletonAs(_ => JsonLogWriterFactory.Readable())
-                    .As<IObjectWriterFactory>();
-            }
-            else
-            {
-                services.AddSingletonAs(_ => JsonLogWriterFactory.Default())
-                    .As<IObjectWriterFactory>();
-            }
-
-            var loggingFile = config.GetValue<string>("logging:file");
-
-            if (!string.IsNullOrWhiteSpace(loggingFile))
-            {
-                services.AddSingletonAs(_ => new FileChannel(loggingFile))
-                    .As<ILogChannel>();
-            }
-
-            var useColors = config.GetValue<bool>("logging:colors");
-
-            services.AddSingletonAs(_ => new ConsoleLogChannel(useColors))
-                .As<ILogChannel>();
-
             services.AddSingletonAs<StackdriverSeverityLogAppender>()
                 .As<ILogAppender>();
-
-            services.AddSingletonAs<TimestampLogAppender>()
-                .As<ILogAppender>();
-
-            services.AddSingletonAs<DebugLogChannel>()
-                .As<ILogChannel>();
-
-            services.AddSingletonAs<SemanticLog>()
-                .As<ISemanticLog>();
         }
     }
 }

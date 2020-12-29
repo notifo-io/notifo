@@ -14,8 +14,8 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.MongoDb;
+using Squidex.Hosting;
 
 namespace Notifo.Domain.Subscriptions.MongoDb
 {

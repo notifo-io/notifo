@@ -9,7 +9,7 @@ using System;
 using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Kafka

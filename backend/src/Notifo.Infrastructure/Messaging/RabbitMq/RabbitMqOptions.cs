@@ -7,7 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using Notifo.Infrastructure.Configuration;
+using Squidex.Hosting.Configuration;
 
 namespace Notifo.Infrastructure.Messaging.RabbitMq
 {

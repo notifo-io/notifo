@@ -9,32 +9,32 @@ using System;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.UserNotifications;
-using Notifo.Identity;
+using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Utils
 {
     public sealed class UrlBuilder : IUserNotificationUrl, ISmsUrl
     {
-        private readonly UrlOptions urlOptions;
+        private readonly IUrlGenerator urlGenerator;
 
-        public UrlBuilder(IOptions<UrlOptions> urlOptions)
+        public UrlBuilder(IUrlGenerator urlGenerator)
         {
-            this.urlOptions = urlOptions.Value;
+            this.urlGenerator = urlGenerator;
         }
 
         public string TrackConfirmed(Guid notificationId, string language)
         {
-            return urlOptions.BuildUrl($"api/tracking/notifications/{notificationId}/confirm?culture={language}");
+            return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/confirm?culture={language}");
         }
 
         public string TrackSeen(Guid notificationId, string language)
         {
-            return urlOptions.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
+            return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
         }
 
         public string WebhookUrl()
         {
-            return urlOptions.BuildCallbackUrl("api/callback/sms");
+            return urlGenerator.BuildCallbackUrl("api/callback/sms");
         }
     }
 }

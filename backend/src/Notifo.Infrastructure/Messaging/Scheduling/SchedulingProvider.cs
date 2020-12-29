@@ -8,8 +8,8 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Scheduling;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging.Scheduling
 {

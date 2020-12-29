@@ -8,7 +8,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Scheduling
 {

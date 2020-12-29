@@ -11,9 +11,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Tasks;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.GooglePubSub

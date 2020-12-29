@@ -7,8 +7,8 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Json;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging.RabbitMq
 {

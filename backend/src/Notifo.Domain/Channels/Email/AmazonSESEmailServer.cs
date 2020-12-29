@@ -14,7 +14,7 @@ using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 
 namespace Notifo.Domain.Channels.Email
 {

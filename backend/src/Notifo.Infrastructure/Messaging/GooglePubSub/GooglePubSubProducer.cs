@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Json;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging.GooglePubSub
 {

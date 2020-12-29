@@ -10,10 +10,10 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.RabbitMq

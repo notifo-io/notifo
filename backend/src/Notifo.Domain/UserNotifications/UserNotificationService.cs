@@ -18,8 +18,8 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Scheduling;
+using Squidex.Hosting;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserNotifications

@@ -11,9 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
-using Notifo.Infrastructure.Initialization;
 using Squidex.Assets;
 using Squidex.Assets.ImageSharp;
+using Squidex.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

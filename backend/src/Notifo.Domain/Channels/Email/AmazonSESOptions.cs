@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
-using Notifo.Infrastructure.Configuration;
+using Squidex.Hosting.Configuration;
 
 namespace Notifo.Domain.Channels.Email
 {

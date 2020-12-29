@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 using Confluent.Kafka;
-using Notifo.Infrastructure.Configuration;
+using Squidex.Hosting.Configuration;
 
 namespace Notifo.Infrastructure.Messaging.Kafka
 {

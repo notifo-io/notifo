@@ -7,7 +7,7 @@
 
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging.GooglePubSub
 {

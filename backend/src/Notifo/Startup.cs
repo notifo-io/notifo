@@ -17,6 +17,7 @@ using Notifo.Areas.Frontend;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Topics;
 using Notifo.Pipeline;
+using Squidex.Hosting.Web;
 
 namespace Notifo
 {
@@ -31,6 +32,9 @@ namespace Notifo
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDefaultWebServices(config);
+            services.AddDefaultForwardRules();
+
             services.AddCors();
 
             services.AddLocalization(options =>
@@ -89,7 +93,6 @@ namespace Notifo
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
             services.AddMyOpenApi();
-            services.AddMyOptions();
             services.AddMySmsChannel(config);
             services.AddMyStorage(config);
             services.AddMySubscriptions();
@@ -104,12 +107,12 @@ namespace Notifo
             services.AddMyWebPipeline(config);
             services.AddMyWebPushChannel(config);
 
-            services.AddMyInitialization();
+            services.AddInitializer();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMyForwardingRules();
+            app.UseDefaultForwardRules();
 
             var cultures = new[]
             {

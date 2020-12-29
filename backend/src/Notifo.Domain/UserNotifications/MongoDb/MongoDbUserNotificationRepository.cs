@@ -15,8 +15,8 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using NodaTime;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.MongoDb;
+using Squidex.Hosting;
 
 namespace Notifo.Domain.UserNotifications.MongoDb
 {

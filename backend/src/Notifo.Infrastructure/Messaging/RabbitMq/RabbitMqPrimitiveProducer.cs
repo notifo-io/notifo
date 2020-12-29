@@ -10,8 +10,8 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Infrastructure.Initialization;
 using RabbitMQ.Client;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.RabbitMq

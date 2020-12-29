@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Identity

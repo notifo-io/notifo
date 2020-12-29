@@ -10,8 +10,8 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
-using Notifo.Infrastructure.Configuration;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
+using Squidex.Hosting.Configuration;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 

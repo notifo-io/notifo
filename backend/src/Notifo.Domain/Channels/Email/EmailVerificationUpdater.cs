@@ -10,8 +10,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Timers;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Domain.Channels.Email

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using IdentityServer4.Configuration;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
@@ -12,11 +13,11 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Notifo.Identity;
 using Notifo.Identity.MongoDb;
 using Notifo.Infrastructure.Identity;
+using Squidex.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -43,23 +44,27 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddIdentityServer(options =>
                 {
-                    var urlOptions = config.GetSection("url").Get<UrlOptions>();
-
-                    options.IssuerUri = urlOptions.BaseUrl;
-
-                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
-
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseInformationEvents = true;
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
-
-                    options.UserInteraction.ErrorUrl = "/account/error";
                 })
                 .AddAspNetIdentity<NotifoUser>()
                 .AddClients()
                 .AddIdentityResources()
                 .AddApiResources();
+
+            services.Configure<IdentityServerOptions>((c, options) =>
+            {
+                var urlBuilder = c.GetRequiredService<IUrlGenerator>();
+
+                options.IssuerUri = urlBuilder.BuildUrl();
+
+                options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
+
+                options.UserInteraction.ErrorUrl = "/account/error";
+            });
 
             services.Configure<ApiAuthorizationOptions>(options =>
             {
@@ -110,12 +115,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<MongoDbXmlRepository>()
                 .As<IXmlRepository>();
 
-            services.AddSingleton<IConfigureOptions<KeyManagementOptions>>(s =>
+            services.Configure<KeyManagementOptions>((c, options) =>
             {
-                return new ConfigureOptions<KeyManagementOptions>(options =>
-                {
-                    options.XmlRepository = s.GetRequiredService<IXmlRepository>();
-                });
+                options.XmlRepository = c.GetRequiredService<IXmlRepository>();
             });
         }
     }

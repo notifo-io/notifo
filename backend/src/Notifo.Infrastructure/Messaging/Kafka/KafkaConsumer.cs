@@ -11,8 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Json;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Kafka

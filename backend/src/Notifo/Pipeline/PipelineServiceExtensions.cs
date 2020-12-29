@@ -8,18 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using Notifo.Identity;
 using Notifo.Infrastructure.Json;
 
 namespace Notifo.Pipeline
@@ -32,29 +28,6 @@ namespace Notifo.Pipeline
 
             services.AddSingletonAs<FileCallbackResultExecutor>()
                 .AsSelf();
-
-            var urlsOptions = config.GetSection("url").Get<UrlOptions>();
-
-            var host = urlsOptions.BuildHost();
-
-            if (urlsOptions.EnforceHost)
-            {
-                services.AddHostFiltering(options =>
-                {
-                    options.AllowEmptyHosts = true;
-                    options.AllowedHosts.Add(host.Host);
-
-                    options.IncludeFailureMessage = false;
-                });
-            }
-
-            if (urlsOptions.EnforceHTTPS && !string.Equals(host.Host, "localhost", StringComparison.OrdinalIgnoreCase))
-            {
-                services.AddHttpsRedirection(options =>
-                {
-                    options.HttpsPort = urlsOptions.HttpsPort;
-                });
-            }
         }
 
         public static IApplicationBuilder UseMyHealthChecks(this IApplicationBuilder app)
@@ -94,53 +67,6 @@ namespace Notifo.Pipeline
             });
 
             return app;
-        }
-
-        public static void UseMyForwardingRules(this IApplicationBuilder app)
-        {
-            var urlsOptions = app.ApplicationServices.GetRequiredService<IOptions<UrlOptions>>().Value;
-
-            if (urlsOptions.EnableForwardHeaders)
-            {
-                var options = new ForwardedHeadersOptions
-                {
-                    AllowedHosts = new List<string>
-                    {
-                        new Uri(urlsOptions.BaseUrl).Host
-                    },
-                    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost,
-                    ForwardLimit = null,
-                    RequireHeaderSymmetry = false
-                };
-
-                options.KnownNetworks.Clear();
-                options.KnownProxies.Clear();
-
-                if (urlsOptions.KnownProxies != null)
-                {
-                    foreach (var proxy in urlsOptions.KnownProxies)
-                    {
-                        if (IPAddress.TryParse(proxy, out var address))
-                        {
-                            options.KnownProxies.Add(address);
-                        }
-                    }
-                }
-
-                app.UseForwardedHeaders(options);
-            }
-
-            app.UseMiddleware<CleanupHostMiddleware>();
-
-            if (urlsOptions.EnforceHost)
-            {
-                app.UseHostFiltering();
-            }
-
-            if (urlsOptions.EnforceHTTPS)
-            {
-                app.UseHttpsRedirection();
-            }
         }
     }
 }

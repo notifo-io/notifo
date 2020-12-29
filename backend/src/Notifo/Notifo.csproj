@@ -4,13 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Protos\**" />
-    <Content Remove="Protos\**" />
-    <EmbeddedResource Remove="Protos\**" />
-    <None Remove="Protos\**" />
-  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.5.0.56" />

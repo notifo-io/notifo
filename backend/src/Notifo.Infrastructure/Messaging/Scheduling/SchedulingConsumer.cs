@@ -9,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Scheduling;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Scheduling

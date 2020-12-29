@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using System;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging
 {

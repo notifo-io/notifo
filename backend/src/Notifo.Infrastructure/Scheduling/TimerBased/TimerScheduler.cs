@@ -12,8 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using NodaTime;
-using Notifo.Infrastructure.Initialization;
 using Notifo.Infrastructure.Timers;
+using Squidex.Hosting;
 using Squidex.Log;
 
 namespace Notifo.Infrastructure.Scheduling.TimerBased

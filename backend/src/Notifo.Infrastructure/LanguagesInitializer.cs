@@ -8,7 +8,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure
 {

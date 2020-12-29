@@ -8,8 +8,8 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Notifo.Infrastructure.Initialization;
 using RabbitMQ.Client;
+using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging.RabbitMq
 {
