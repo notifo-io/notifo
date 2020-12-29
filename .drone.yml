@@ -78,7 +78,7 @@ volumes:
 ---
 kind: secret
 name: NUGET_KEY
-data: ZjRocsNgswJU9c1vBfJ+lOaVb+YN66lLogNDNTMKEUp/GQgFgAN2AxqCq2yMLSqJDufsxwnQUwrnljOsPngEjmIjaYt1194NVxR0lMvvS4kKFUe9/JVMGQ==
+data: 1X0FrTNVcL+1+AaJgi0fDjnflTXE44ez2ltmNtKVLc3G4YuSmOvua+hyJD1YmJzxjmT5wRJVH+41YjIAmIlGJIC8xdYXml4384w=
 ---
 kind: secret
 name: DOCKER_USERNAME
