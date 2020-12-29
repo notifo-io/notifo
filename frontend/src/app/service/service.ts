@@ -2226,6 +2226,8 @@ export interface UserDto {
     preferredLanguage?: string;
     /** The timezone of the user. */
     preferredTimezone?: string;
+    /** True when only whitelisted topic are allowed. */
+    requiresWhitelistedTopics?: boolean;
     /** Notification settings per channel. */
     settings?: NotificationSettingsDto;
     /** The statistics counters. */
@@ -2520,11 +2522,11 @@ export interface PublishRequestDto {
     /** A custom timestamp. */
     timestamp?: Date;
     /** Preformatting when no template is used. */
-    preformatted?: NotificationFormattingDto;
+    preformatted?: NotificationFormattingDto | undefined;
     /** The notification settings. */
-    settings?: { [key: string]: NotificationSettingDto; };
+    settings?: { [key: string]: NotificationSettingDto; } | undefined;
     /** User defined properties. */
-    properties?: EventProperties;
+    properties?: EventProperties | undefined;
     /** The scheduling options. */
     scheduling?: SchedulingDto | undefined;
     /** True when silent. */

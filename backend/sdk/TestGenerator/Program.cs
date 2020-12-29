@@ -15,8 +15,8 @@ namespace TestGenerator
 {
     public static class Program
     {
-        private const string AppId = "d3e2c84c-4c99-4229-abc9-3c8fcc06ea43";
-        private const string ApiKey = "hxpuwdtoxkvy2k5uich6qxwbl64rrftuys3uhuylzz4x";
+        private const string AppId = "eea1fb7d-ddcf-41f2-b7f1-93ae11710023";
+        private const string ApiKey = "wag7nx5oh10vo5b00xjdehkcxpzvt6gmxqykujxwbgsx";
         private const string TopicPrefix = "products";
         private const string Topic = "users/123";
 
@@ -94,7 +94,7 @@ namespace TestGenerator
                         {
                             ["en"] = "Hello Title {{var}}",
                             ["de"] = "Hallo Title {{var}}"
-                        },
+                        }
                     };
 
                     request.Properties = new EventProperties
@@ -103,6 +103,8 @@ namespace TestGenerator
                     };
 
                     request.Preformatted = formatting;
+
+                    request.Timestamp = DateTimeOffset.UtcNow;
 
                     await client.Events.PostEventsAsync(AppId, new PublishManyRequestDto
                     {

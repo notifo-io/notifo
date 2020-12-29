@@ -14,7 +14,7 @@ namespace Notifo.Areas.Api.Controllers
 {
     [ApiController]
     [ApiExceptionFilter]
-    [ApiModelValidation(false)]
+    [ApiModelValidation(true)]
     public abstract class BaseController : Controller
     {
         protected string UserId => User.UserId() ?? User.OpenIdSubject()!;

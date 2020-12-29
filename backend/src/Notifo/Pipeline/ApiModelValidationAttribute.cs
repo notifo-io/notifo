@@ -6,11 +6,11 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Pipeline

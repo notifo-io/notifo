@@ -43,17 +43,17 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// Preformatting when no template is used.
         /// </summary>
-        public NotificationFormattingDto Preformatted { get; set; }
+        public NotificationFormattingDto? Preformatted { get; set; }
 
         /// <summary>
         /// The notification settings.
         /// </summary>
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
 
         /// <summary>
         /// User defined properties.
         /// </summary>
-        public EventProperties Properties { get; set; }
+        public EventProperties? Properties { get; set; }
 
         /// <summary>
         /// The scheduling options.

@@ -4995,6 +4995,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredTimezone { get; set; }
     
+        /// <summary>True when only whitelisted topic are allowed.</summary>
+        [Newtonsoft.Json.JsonProperty("requiresWhitelistedTopics", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool RequiresWhitelistedTopics { get; set; }
+    
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public NotificationSettingsDto Settings { get; set; }
@@ -5586,15 +5590,15 @@ namespace Notifo.SDK
         public System.DateTimeOffset Timestamp { get; set; }
     
         /// <summary>Preformatting when no template is used.</summary>
-        [Newtonsoft.Json.JsonProperty("preformatted", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("preformatted", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public NotificationFormattingDto Preformatted { get; set; }
     
         /// <summary>The notification settings.</summary>
-        [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
         /// <summary>User defined properties.</summary>
-        [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public EventProperties Properties { get; set; }
     
         /// <summary>The scheduling options.</summary>
