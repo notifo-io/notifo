@@ -23,13 +23,13 @@ namespace Notifo.Identity
         private readonly ISemanticLog log;
         private readonly NotifoIdentityUser[]? users;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public UserCreator(IServiceProvider serviceProvider, IOptions<NotifoIdentityOptions> options, ISemanticLog log)
         {
             this.serviceProvider = serviceProvider;
 
-            this.users = options.Value.Users;
+            users = options.Value.Users;
 
             this.log = log;
         }

@@ -30,9 +30,11 @@ namespace Notifo.Domain.Channels.Sms
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly ISemanticLog log;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public string Name => Providers.Sms;
+
+        string ISystem.Name => $"Providers({Providers.Sms})";
 
         public SmsChannel(ISemanticLog log, ILogStore logStore,
             ISmsSender smsSender,

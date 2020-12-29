@@ -33,6 +33,8 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             get { return clock.GetCurrentInstant(); }
         }
 
+        public string Name => $"TimerScheduler({schedulerOptions.QueueName})";
+
         public TimerScheduler(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
             IClock clock, ISemanticLog log)
         {

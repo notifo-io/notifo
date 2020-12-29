@@ -35,9 +35,11 @@ namespace Notifo.Domain.Channels.Email
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserStore userStore;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public string Name => Providers.Email;
+
+        string ISystem.Name => $"Providers({Providers.Email})";
 
         public EmailChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,

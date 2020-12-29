@@ -21,6 +21,8 @@ namespace Notifo.Infrastructure.Messaging.Kafka
         private readonly IJsonSerializer serializer;
         private IProducer<string, T>? producer;
 
+        public string Name => $"KafkaProducer({topicName})";
+
         public KafkaProducer(string topicName, KafkaProvider provider, IJsonSerializer serializer)
         {
             this.provider = provider;

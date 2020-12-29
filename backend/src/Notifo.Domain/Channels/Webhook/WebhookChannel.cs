@@ -31,9 +31,11 @@ namespace Notifo.Domain.Channels.Webhook
         private readonly ISemanticLog log;
         private readonly ILogStore logStore;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public string Name => Providers.Webhook;
+
+        string ISystem.Name => $"Providers({Providers.Webhook})";
 
         public bool IsSystem => true;
 

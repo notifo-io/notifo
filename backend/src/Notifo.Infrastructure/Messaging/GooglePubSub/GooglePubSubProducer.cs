@@ -22,6 +22,8 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
         private readonly IJsonSerializer serializer;
         private PublisherClient publisherClient;
 
+        public string Name => $"GooglePubSubProducer({topicId})";
+
         public GooglePubSubProducer(IOptions<GooglePubSubOptions> options, string topicId,
             IJsonSerializer serializer)
         {

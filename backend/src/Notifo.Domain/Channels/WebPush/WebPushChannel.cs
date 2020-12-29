@@ -38,9 +38,11 @@ namespace Notifo.Domain.Channels.WebPush
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly ISemanticLog log;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public string Name => Providers.WebPush;
+
+        string ISystem.Name => $"Providers({Providers.WebPush})";
 
         public string PublicKey { get; }
 

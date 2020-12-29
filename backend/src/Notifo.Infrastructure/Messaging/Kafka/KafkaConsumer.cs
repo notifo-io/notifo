@@ -27,6 +27,8 @@ namespace Notifo.Infrastructure.Messaging.Kafka
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Thread consumerThread;
 
+        public string Name => $"KafkaConsumer({topicName})";
+
         public KafkaConsumer(string topicName, TConsumer consumer, IJsonSerializer serializer,
             IOptions<KafkaOptions> options, ISemanticLog log)
         {

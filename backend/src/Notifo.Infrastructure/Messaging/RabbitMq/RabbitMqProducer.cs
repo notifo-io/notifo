@@ -18,6 +18,8 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
         private readonly string queueName;
         private readonly IJsonSerializer serializer;
 
+        public string Name => $"RabbitMqProducer({queueName})";
+
         public RabbitMqProducer(RabbitMqPrimitiveProducer primitivePublisher, string queueName, IJsonSerializer serializer)
         {
             this.primitivePublisher = primitivePublisher;

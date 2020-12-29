@@ -96,7 +96,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IAssetThumbnailGenerator>();
 
             services.AddSingletonAs(c => new DelegateInitializer(
-                    c.GetRequiredService<IAssetStore>().GetType().FullName!,
+                    c.GetRequiredService<IAssetStore>().GetType().Name!,
                     c.GetRequiredService<IAssetStore>().InitializeAsync))
                 .As<IInitializable>();
         }

@@ -35,9 +35,11 @@ namespace Notifo.Domain.Channels.MobilePush
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserStore userStore;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public string Name => Providers.MobilePush;
+
+        string ISystem.Name => $"Providers({Providers.MobilePush})";
 
         public MobilePushChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,

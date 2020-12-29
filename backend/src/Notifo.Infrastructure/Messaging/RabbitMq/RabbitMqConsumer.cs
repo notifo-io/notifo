@@ -28,6 +28,8 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
         private readonly IAbstractConsumer<T> consumer;
         private readonly ISemanticLog log;
 
+        public string Name => $"RabbitMqConsumer({queueName})";
+
         public RabbitMqConsumer(RabbitMqProvider connection, RabbitMqOptions options, string queueName, IJsonSerializer serializer,
             IAbstractConsumer<T> consumer, ISemanticLog log)
         {

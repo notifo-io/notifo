@@ -25,7 +25,7 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
         private readonly Thread retryThread;
         private IModel channel;
 
-        public int InitializationOrder => -1;
+        public int Order => -1;
 
         public RabbitMqPrimitiveProducer(RabbitMqProvider connection, ISemanticLog log)
         {

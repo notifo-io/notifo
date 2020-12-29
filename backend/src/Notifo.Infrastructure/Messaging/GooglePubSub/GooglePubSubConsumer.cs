@@ -27,6 +27,8 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
         private readonly ISemanticLog log;
         private SubscriberClient subscriberClient;
 
+        public string Name => $"GooglePubSubConsumer({topicId})";
+
         public GooglePubSubConsumer(IOptions<GooglePubSubOptions> options, string topicId,
             TConsumer consumer, IJsonSerializer serializer, ISemanticLog log)
         {

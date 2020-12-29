@@ -35,7 +35,7 @@ namespace Notifo.Domain.UserNotifications
         private readonly ILogStore logStore;
         private readonly IClock clock;
 
-        public int InitializationOrder => 1000;
+        public int Order => 1000;
 
         public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
             IAppStore appStore,
