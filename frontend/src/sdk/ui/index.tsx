@@ -6,8 +6,8 @@
  */
 
 import { render } from 'preact';
-import { buildNotificationsOptions, buildTopicOptions, NotificationsOptions, SDKConfig, TopicOptions } from './../shared';
-import { isString, loadStyle, logError } from './../utils';
+
+import { buildNotificationsOptions, buildTopicOptions, isString, loadStyle, logError, NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
 import { renderNotifications, renderTopic } from './components';
 
 export interface UIOptions {
@@ -16,7 +16,7 @@ export interface UIOptions {
 
 export module UI {
     export async function setupNotifications(elementOrId: string | HTMLElement, opts: NotificationsOptions, config: SDKConfig) {
-        const options = buildNotificationsOptions(opts, config);
+        const options = buildNotificationsOptions(opts);
 
         const element = findElement(elementOrId);
 
@@ -32,7 +32,7 @@ export module UI {
     }
 
     export async function setupTopic(elementOrId: string | HTMLElement, topic: string, opts: TopicOptions, config: SDKConfig) {
-        const options = buildTopicOptions(opts, config);
+        const options = buildTopicOptions(opts);
 
         const element = findElement(elementOrId);
 

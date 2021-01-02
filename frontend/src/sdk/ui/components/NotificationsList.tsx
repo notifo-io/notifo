@@ -7,11 +7,10 @@
 
 /** @jsx h */
 import { h } from 'preact';
-import { useCallback } from 'preact/hooks';
-import { useNotifoState } from '../model';
 
-import { NotifoNotification } from './../../api';
-import { NotificationsOptions, SDKConfig } from './../../shared';
+import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
+import { useStore } from '@sdk/ui/model';
+import { useCallback } from 'preact/hooks';
 import { Icon } from './Icon';
 import { Loader } from './Loader';
 import { NotificationItem } from './NotificationItem';
@@ -46,20 +45,23 @@ export const NotificationsList = (props: NotificationsListProps) => {
         parent,
     } = props;
 
-    const [state] = useNotifoState();
-    const notifications = state.notifications;
-    const isLoaded = state.notificationsTransition === 'InProgress';
-    const isConnected = state.isConnected;
+    const notifications = useStore(x => x.notifications);
+    const isLoaded = useStore(x => x.notificationsTransition !== 'InProgress');
+    const isConnected = useStore(x => x.isConnected);
 
-    const doShowProfile = useCallback(() => {
-        onShowProfile && onShowProfile(false);
+    const doShowProfile = useCallback((event: Event) => {
+        onShowProfile && onShowProfile(true);
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
     }, [onShowProfile]);
 
     return (
         <div>
             <div>
                 <button type='button' onClick={doShowProfile}>
-                    <Icon type='back' size={20} />
+                    <Icon type='profile' size={20} />
                 </button>
             </div>
 

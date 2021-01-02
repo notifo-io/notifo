@@ -36,7 +36,7 @@ namespace Notifo.Domain.Users
         {
             public Validator()
             {
-                RuleFor(x => x.EmailAddress).EmailAddress();
+                RuleFor(x => x.EmailAddress).EmailAddress().Unless(x => string.IsNullOrWhiteSpace(x.EmailAddress));
                 RuleFor(x => x.PreferredLanguage).Language();
                 RuleFor(x => x.PreferredTimezone).Timezone();
                 RuleFor(x => x.PhoneNumber).PhoneNumber();

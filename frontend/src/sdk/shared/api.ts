@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { SDKConfig } from './../shared';
-import { combineUrl, isString } from './../utils';
+import { SDKConfig } from './config';
+import { combineUrl, isString } from './utils';
 
 export interface NotifoNotification {
     // The optional id.
@@ -70,19 +70,19 @@ export function parseShortNotification(value: any): NotifoNotification {
 
 export type NotificationChannel = { send?: boolean };
 export type NotificationSettings = { [channel: string]: NotificationChannel };
-export type Subscription = { settings: NotificationSettings, topic: string };
+export type Subscription = { settings: NotificationSettings };
 
 export type Profile = {
     emailAddress?: string,
     fullName?: string,
     preferredLanguage: string,
     preferredTimezone: string,
-    allowedLanguages: ReadonlyArray<string>,
-    allowedTimezones: ReadonlyArray<string>,
+    supportedLanguages: ReadonlyArray<string>,
+    supportedTimezones: ReadonlyArray<string>,
     settings: NotificationSettings,
 };
 
-export async function apiPostSubscription(config: SDKConfig, subscription: Subscription): Promise<Subscription | null> {
+export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topic: string }): Promise<Subscription | null> {
     const url = combineUrl(config.apiUrl, `api/me/subscriptions/`);
 
     const request: RequestInit = {
@@ -109,7 +109,7 @@ export async function apiGetSubscription(config: SDKConfig, topic: string): Prom
     const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topic}`);
 
     const request: RequestInit = {
-        method: 'POST',
+        method: 'GET',
         headers: {
             ...getAuthHeader(config),
         },
@@ -130,7 +130,7 @@ export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> 
     const url = combineUrl(config.apiUrl, `api/me/`);
 
     const request: RequestInit = {
-        method: 'POST',
+        method: 'GET',
         headers: {
             ...getAuthHeader(config),
         },
@@ -147,8 +147,31 @@ export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> 
     }
 }
 
-export async function apiDeleteSubscription(config: SDKConfig, subscription: Subscription): Promise<any> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${subscription.topic}`);
+export async function apiPostProfile(config: SDKConfig, profile: Profile): Promise<Profile> {
+    const url = combineUrl(config.apiUrl, `api/me/`);
+
+    const request: RequestInit = {
+        method: 'POST',
+        headers: {
+            ...getAuthHeader(config),
+            'Content-Type': 'text/json',
+        },
+        body: JSON.stringify(profile),
+    };
+
+    const response = await fetch(url, request);
+
+    if (response.status === 404) {
+        return profile;
+    } else if (response.ok) {
+        return await response.json();
+    } else {
+        throw new Error(`Request failed with {response.statusCode}`);
+    }
+}
+
+export async function apiDeleteSubscription(config: SDKConfig, topic: string): Promise<any> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topic}`);
 
     const request: RequestInit = {
         method: 'DELETE',
@@ -160,16 +183,33 @@ export async function apiDeleteSubscription(config: SDKConfig, subscription: Sub
     await fetch(url, request);
 }
 
-export async function apiUpdateWebPush(config: SDKConfig, params: any, method: string, subscription: PushSubscription) {
+export async function apiPostWebPush(config: SDKConfig, subscription: PushSubscription) {
     const url = combineUrl(config.apiUrl, 'api/webpush');
 
     const response = await fetch(url, {
-        method,
+        method: 'POST',
         headers: {
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
-        body: JSON.stringify({ subscription, params }),
+        body: JSON.stringify({ subscription }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`Request failed with {response.statusCode}`);
+    }
+}
+
+export async function apiDeleteWebPush(config: SDKConfig, subscription: PushSubscription) {
+    const url = combineUrl(config.apiUrl, 'api/webpush');
+
+    const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            ...getAuthHeader(config),
+            'Content-Type': 'text/json',
+        },
+        body: JSON.stringify({ subscription }),
     });
 
     if (!response.ok) {

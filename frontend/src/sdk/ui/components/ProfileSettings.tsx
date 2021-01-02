@@ -7,12 +7,13 @@
 
 /** @jsx h */
 import { h } from 'preact';
+
+import { NotificationsOptions, Profile, SDKConfig } from '@sdk/shared';
+import { loadProfile, saveProfile, useDispatch, useStore } from '@sdk/ui/model';
 import { useCallback, useEffect, useState } from 'preact/hooks';
-import { Profile } from 'src/sdk/api';
-import { loadProfile, useNotifoState } from '../model';
-import { NotificationsOptions, SDKConfig } from './../../shared';
 import { Icon } from './Icon';
 import { Loader } from './Loader';
+import { Toggle } from './Toggle';
 
 export interface ProfileSettingsProps {
     // The main config.
@@ -31,26 +32,48 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
         onShowProfile,
     } = props;
 
-    const [state, dispatch] = useNotifoState();
-    const [profile, setProfile] = useState<Profile>(null);
+    const dispatch = useDispatch();
+    const profile = useStore(x => x.profile);
+    const profileTransition = useStore(x => x.profileTransition);
+    const [profileToEdit, setProfileToEdit] = useState<Profile>(null);
 
     useEffect(() => {
         loadProfile(config, dispatch);
     }, []);
 
     useEffect(() => {
-        if (state.profile) {
-            setProfile(state.profile);
+        if (profile) {
+            setProfileToEdit({ ...profile });
         }
-    }, [state.profile]);
+    }, [profile]);
 
-    const doHideProfile = useCallback(() => {
+    const doSave = useCallback((event: Event) => {
+        if (profileToEdit) {
+            saveProfile(config, profileToEdit, dispatch);
+        }
+
+        event.preventDefault();
+    }, [profileToEdit]);
+
+    const doSetEmail = useCallback((send: boolean | undefined) => {
+        setChannel(profileToEdit, 'email', send);
+    }, [profileToEdit]);
+
+    const doSetPush = useCallback((send: boolean | undefined) => {
+        setChannel(profileToEdit, 'webpush', send);
+    }, [profileToEdit]);
+
+    const doHideProfile = useCallback((event: Event) => {
         onShowProfile && onShowProfile(false);
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
     }, [onShowProfile]);
 
     const doChange = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement> | h.JSX.TargetedEvent<HTMLSelectElement>) => {
-        profile[event.currentTarget.id] = event.currentTarget.value;
-    }, [profile]);
+        profileToEdit[event.currentTarget.id] = event.currentTarget.value;
+    }, [profileToEdit]);
 
     return (
         <div>
@@ -60,53 +83,87 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                 </button>
             </div>
 
-            {!profile ? (
+            {!profileToEdit ? (
                 <div class='notifo-loading'>
                     <Loader size={18} visible={true} />
                 </div>
             ) : (
-                <div>
+                <form onSubmit={doSave}>
                     <div class='notifo-form-group'>
-                        <label for='fullName'>{config.texts.fullName}</label>
+                        <Toggle indeterminate value={profileToEdit.settings?.email?.send}
+                            onChange={doSetEmail} />
 
-                        <input type='text' id='fullName' value={profile.fullName} onChange={doChange} />
+                        <label class='notifo-toggle-label'>{config.texts.notifyBeEmail}</label>
                     </div>
 
                     <div class='notifo-form-group'>
-                        <label for='emailAddress'>{config.texts.email}</label>
+                        <Toggle indeterminate value={profileToEdit.settings?.webpush?.send}
+                            onChange={doSetPush} />
 
-                        <input type='email' id='emailAddress' value={profile.emailAddress} onChange={doChange} />
+                        <label class='notifo-toggle-label'>{config.texts.notifyBeWebPush}</label>
+                    </div>
+
+                    <hr />
+
+                    <div class='notifo-form-group'>
+                        <label class='notifo-label' for='fullName'>{config.texts.fullName}</label>
+
+                        <input class='notifo-control' type='text' id='fullName' value={profileToEdit.fullName} onChange={doChange} />
                     </div>
 
                     <div class='notifo-form-group'>
-                        <label for='preferredLanguage'>{config.texts.language}</label>
+                        <label class='notifo-label' for='emailAddress'>{config.texts.email}</label>
 
-                        <select id='preferredLanguage' value={profile.preferredLanguage} onChange={doChange}>
-                            {profile.allowedLanguages.map(language =>
+                        <input class='notifo-control' type='email' id='emailAddress' value={profileToEdit.emailAddress} onChange={doChange} />
+                    </div>
+
+                    <div class='notifo-form-group'>
+                        <label class='notifo-label' for='preferredLanguage'>{config.texts.language}</label>
+
+                        <select class='notifo-control' id='preferredLanguage' value={profile.preferredLanguage} onChange={doChange}>
+                            {profileToEdit.supportedLanguages.map(language =>
                                 <option key={language} value={language}>{language}</option>,
                             )}
                         </select>
                     </div>
 
                     <div class='notifo-form-group'>
-                        <label for='preferredTimezone'>{config.texts.timezone}</label>
+                        <label class='notifo-label' for='preferredTimezone'>{config.texts.timezone}</label>
 
-                        <select id='preferredTimezone' value={profile.preferredTimezone} onChange={doChange}>
-                            {profile.allowedTimezones.map(timezone =>
+                        <select class='notifo-control' id='preferredTimezone' value={profile.preferredTimezone} onChange={doChange}>
+                            {profileToEdit.supportedTimezones.map(timezone =>
                                 <option key={timezone} value={timezone}>{timezone}</option>,
                             )}
                         </select>
                     </div>
 
-                    <button class='notifo-button' type='submit'>
-                        {state.profileTransition === 'InProgress' &&
-                            <Loader size={12} visible={true} />
-                        }
+                    <div class='notifo-form-group'>
+                        <button class='notifo-action-button' type='submit' onClick={doHideProfile}>
+                            {config.texts.cancel}
+                        </button>
 
-                        {config.texts.save}
-                    </button>
-                </div>
+                        <button class='notifo-action-button notifo-action-button-primary' type='submit'>
+                            {profileTransition === 'InProgress' &&
+                                <Loader size={12} visible={true} />
+                            }
+
+                            {config.texts.save}
+                        </button>
+                    </div>
+                </form>
             )}
         </div>
     );
 };
+
+function setChannel(profile: Profile, channel: string, send?: boolean) {
+    if (!profile.settings) {
+        profile.settings = {};
+    }
+
+    if (!profile.settings[channel]) {
+        profile.settings[channel] = { send };
+    } else {
+        profile.settings[channel].send = send;
+    }
+}

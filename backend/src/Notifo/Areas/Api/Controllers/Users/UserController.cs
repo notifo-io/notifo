@@ -37,12 +37,12 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpGet("api/me")]
         [AppPermission(Roles.User)]
-        [Produces(typeof(UserDto))]
+        [Produces(typeof(ProfileDto))]
         public async Task<IActionResult> GetUser()
         {
             var user = await userStore.GetAsync(App.Id, UserId, HttpContext.RequestAborted);
 
-            var response = UserDto.FromDomainObject(user!);
+            var response = ProfileDto.FromDomainObject(user!, App);
 
             return Ok(response);
         }
@@ -55,15 +55,15 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => Users upserted.
         /// </returns>
         [HttpPost("api/me")]
-        [AppPermission(Roles.Admin)]
-        [Produces(typeof(UserDto))]
+        [AppPermission(Roles.User)]
+        [Produces(typeof(ProfileDto))]
         public async Task<IActionResult> PostUser([FromBody] UpdateProfileDto request)
         {
             var update = request.ToUpdate();
 
             var user = await userStore.UpsertAsync(App.Id, UserId, update, HttpContext.RequestAborted);
 
-            var response = UserDto.FromDomainObject(user!);
+            var response = ProfileDto.FromDomainObject(user!, App);
 
             return Ok(response);
         }

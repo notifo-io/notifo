@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { isFunction } from 'src/sdk/utils';
+import { isFunction } from '@sdk/shared';
 
 export type Dispatch<TAction> = (action: TAction) => void;
 

@@ -5,10 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { apiUpdateWebPush, NotifoNotification, parseShortNotification } from './api';
-import { SWMessage } from './push/shared';
-import { SDKConfig } from './shared';
-import { logWarn } from './utils';
+import { SWMessage } from '@sdk/push/shared';
+import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseShortNotification, SDKConfig } from '@sdk/shared';
 
 (function (self: ServiceWorkerGlobalScope) {
     self.addEventListener('install', () => {
@@ -112,7 +110,7 @@ async function subscribeToWebPush(sw: ServiceWorkerRegistration, config: SDKConf
 
     const subscription = await sw.pushManager.subscribe(options);
 
-    await apiUpdateWebPush(config, {}, 'POST', subscription);
+    await apiPostWebPush(config, subscription);
 }
 
 async function unsubscribeFromWebPush(sw: ServiceWorkerRegistration, config: SDKConfig) {
@@ -128,7 +126,7 @@ async function unsubscribeFromWebPush(sw: ServiceWorkerRegistration, config: SDK
         return;
     }
 
-    await apiUpdateWebPush(config, {}, 'DELETE', subscription);
+    await apiDeleteWebPush(config, subscription);
 }
 
 function urlB64ToUint8Array(base64String: string) {

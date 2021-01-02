@@ -7,14 +7,16 @@
 
 // tslint:disable: no-parameter-reassignment
 
+import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, Subscription } from '@sdk/shared';
 import { useEffect, useState } from 'preact/hooks';
-import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostSubscription, NotifoNotification, Profile, Subscription } from './../../api';
 import { SDKConfig } from './../../shared';
 import { Dispatch, set, Store } from './store';
 
+type Transition = 'InProgress' | 'Failed' | 'Success';
+
 export type SubscriptionState = {
     // The load state.
-    transition: 'InProgress' | 'Failed' | 'Success',
+    transition: Transition,
 
     // The subscription.
     subscription?: Subscription,
@@ -27,10 +29,10 @@ export type NotifoState = {
     notifications: ReadonlyArray<NotifoNotification>,
 
     // The notifications state.
-    notificationsTransition: 'InProgress' | 'Loaded';
+    notificationsTransition: Transition;
 
     // The profile state.
-    profileTransition?: 'InProgress' | 'Failed' | 'Success',
+    profileTransition?: Transition,
 
     // The loaded profile
     profile?: Profile,
@@ -71,6 +73,24 @@ function reducer(state: NotifoState, action: NotifoAction) {
     switch (action.type) {
         case NotifoActionType.SetConnected: {
             return { ...state, isConnected: action.isConnected };
+        }
+        case NotifoActionType.LoadProfileStarted: {
+            return { ...state, profileTransition: 'InProgress' };
+        }
+        case NotifoActionType.LoadProfileFailed: {
+            return { ...state, profileTransition: 'Failed' };
+        }
+        case NotifoActionType.LoadProfileSuccess: {
+            return { ...state, profileTransition: 'Success', profile: action.profile };
+        }
+        case NotifoActionType.SaveProfileStarted: {
+            return { ...state, profileTransition: 'InProgress' };
+        }
+        case NotifoActionType.SaveProfileFailed: {
+            return { ...state, profileTransition: 'Failed' };
+        }
+        case NotifoActionType.SaveProfileSuccess: {
+            return { ...state, profileTransition: 'Success', profile: action.profile };
         }
         case NotifoActionType.LoadSubscriptionStarted: {
             const subscriptions =
@@ -139,10 +159,10 @@ function reducer(state: NotifoState, action: NotifoAction) {
             const newNotifications: ReadonlyArray<NotifoNotification> = action.notifications;
 
             if (newNotifications.length === 0) {
-                if (state.notificationsTransition === 'Loaded') {
+                if (state.notificationsTransition === 'Success') {
                     return state;
                 } else {
-                    return { ...state, notificationsTransition: 'Loaded' } as any;
+                    return { ...state, notificationsTransition: 'Success' } as any;
                 }
             }
 
@@ -185,12 +205,16 @@ const initialState: NotifoState = {
 
 const store = new Store<NotifoState, NotifoAction>(initialState, reducer);
 
-export function useNotifoState(): [NotifoState, NotifoDispatch, Store<NotifoState, NotifoAction>] {
-    const [state, setState] = useState(store.current);
+export function useDispatch() {
+    return store.dispatch;
+}
+
+export function useStore<T>(selector: (state: NotifoState) => T) {
+    const [state, setState] = useState(() => selector(store.current));
 
     useEffect(() => {
         const listener = (newState: NotifoState) => {
-            setState(newState);
+            setState(selector(newState));
         };
 
         store.subscribe(listener);
@@ -200,7 +224,7 @@ export function useNotifoState(): [NotifoState, NotifoDispatch, Store<NotifoStat
         };
     }, []);
 
-    return [state, store.dispatch, store];
+    return state;
 }
 
 export function getUnseen(state: NotifoState) {
@@ -227,6 +251,30 @@ export async function loadSubscription(config: SDKConfig, topic: string, dispatc
     }
 }
 
+export async function subscribe(config: SDKConfig, topic: string, subscription: Subscription, dispatch: NotifoDispatch) {
+    try {
+        dispatch({ type: NotifoActionType.SubscribeStarted, topic });
+
+        subscription = await apiPostSubscription(config, { topic, ...subscription });
+
+        dispatch({ type: NotifoActionType.SubscribeSuccess, topic, subscription });
+    } catch (ex) {
+        dispatch({ type: NotifoActionType.SubscribeFailed, ex, topic });
+    }
+}
+
+export async function unsubscribe(config: SDKConfig, topic: string, dispatch: NotifoDispatch) {
+    try {
+        dispatch({ type: NotifoActionType.UnsubscribeStarted, topic });
+
+        await apiDeleteSubscription(config, topic);
+
+        dispatch({ type: NotifoActionType.UnsubscribeSuccess, topic });
+    } catch (ex) {
+        dispatch({ type: NotifoActionType.UnsubscribeFailed, ex, topic });
+    }
+}
+
 export async function loadProfile(config: SDKConfig, dispatch: NotifoDispatch) {
     try {
         dispatch({ type: NotifoActionType.LoadProfileStarted });
@@ -239,27 +287,15 @@ export async function loadProfile(config: SDKConfig, dispatch: NotifoDispatch) {
     }
 }
 
-export async function subscribe(config: SDKConfig, subscription: Subscription, dispatch: NotifoDispatch) {
+export async function saveProfile(config: SDKConfig, profile: Profile, dispatch: NotifoDispatch) {
     try {
-        dispatch({ type: NotifoActionType.SubscribeStarted, subscription });
+        dispatch({ type: NotifoActionType.SaveProfileStarted });
 
-        subscription = await apiPostSubscription(config, subscription);
+        const newProfile = await apiPostProfile(config, profile);
 
-        dispatch({ type: NotifoActionType.SubscribeSuccess, subscription });
+        dispatch({ type: NotifoActionType.SaveProfileSuccess, profile: newProfile });
     } catch (ex) {
-        dispatch({ type: NotifoActionType.SubscribeFailed, ex, subscription });
-    }
-}
-
-export async function unsubscribe(config: SDKConfig, subscription: Subscription, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: NotifoActionType.UnsubscribeStarted, subscription });
-
-        await apiDeleteSubscription(config, subscription);
-
-        dispatch({ type: NotifoActionType.UnsubscribeSuccess, subscription });
-    } catch (ex) {
-        dispatch({ type: NotifoActionType.UnsubscribeFailed, ex, subscription });
+        dispatch({ type: NotifoActionType.SaveProfileFailed, ex });
     }
 }
 

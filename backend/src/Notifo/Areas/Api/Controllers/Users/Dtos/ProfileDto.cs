@@ -5,7 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Counters;
+using System.Linq;
+using NodaTime;
+using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
@@ -53,9 +55,12 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// </summary>
         public NotificationSettingsDto Settings { get; set; }
 
-        public static UserDto FromDomainObject(User user)
+        public static ProfileDto FromDomainObject(User user, App app)
         {
-            var result = SimpleMapper.Map(user, new UserDto());
+            var result = SimpleMapper.Map(user, new ProfileDto());
+
+            result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
+            result.SupportedLanguages = app.Languages;
 
             if (user.Settings != null)
             {
@@ -72,11 +77,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
             else
             {
                 result.Settings = new NotificationSettingsDto();
-            }
-
-            if (result.Counters == null)
-            {
-                result.Counters = new CounterMap();
             }
 
             return result;

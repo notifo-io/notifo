@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { SDKConfig } from './../shared';
+import { SDKConfig } from '@sdk/shared';
 
 export type SWMessage =
     SWRegisterMessage |

@@ -10,7 +10,7 @@ import { h } from 'preact';
 
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { SDKConfig, TopicOptions } from './../../shared';
-import { loadSubscription, useNotifoState } from './../model';
+import { loadSubscription, useDispatch, useStore } from './../model';
 import { TopicButton } from './TopicButton';
 import { TopicModal } from './TopicModal';
 
@@ -31,9 +31,9 @@ export const TopicContainer = (props: TopicProps) => {
         topic,
     } = props;
 
-    const [state, dispatch] = useNotifoState();
+    const dispatch = useDispatch();
+    const subscription = useStore(x => x.subscriptions[topic]?.subscription);
     const [isOpen, setIsOpen] = useState(false);
-    const subscription = state.subscriptions[topic]?.subscription;
 
     useEffect(() => {
         if (subscription === undefined) {
@@ -45,12 +45,17 @@ export const TopicContainer = (props: TopicProps) => {
         setIsOpen(true);
     }, []);
 
+    const doHide = useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
     return (
         <div className='notifo'>
             <TopicButton options={options} subscription={subscription} onClick={doShow} />
 
             {isOpen &&
-                <TopicModal config={config} options={options} />
+                <TopicModal config={config} options={options}
+                    onClickOutside={doHide} />
             }
         </div>
     );

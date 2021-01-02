@@ -8,9 +8,8 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { useState } from 'preact/hooks';
-import { NotifoNotification } from './../../api';
-import { NotificationsOptions, SDKConfig } from './../../shared';
 import { Modal } from './Modal';
 import { NotificationsList } from './NotificationsList';
 import { ProfileSettings } from './ProfileSettings';
@@ -42,7 +41,7 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
     } = props;
 
     const [ref, setRef] = useState<HTMLDivElement>(null);
-    const [showProfile, setShowProfile] = useState(false);
+    const [showProfile, setShowProfile] = useState(true);
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>

@@ -22,6 +22,9 @@
     "paths": {
       "@app*": [
         "src/app*"
+      ],
+      "@sdk*": [
+        "src/sdk*"
       ]
     }
   },

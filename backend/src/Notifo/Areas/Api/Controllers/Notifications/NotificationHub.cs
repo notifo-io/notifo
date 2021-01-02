@@ -40,10 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
 
             var dtos = notifications.Select(NotificationDto.FromNotification).ToArray();
 
-            if (dtos.Length > 0)
-            {
-                await Clients.Caller.SendAsync("notifications", dtos, Context.ConnectionAborted);
-            }
+            await Clients.Caller.SendAsync("notifications", dtos, Context.ConnectionAborted);
         }
 
         public async Task ConfirmMany(TrackNotificationDto request)

@@ -8,10 +8,9 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES } from '@sdk/shared';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
-import { NotifoNotification } from './../../api';
-import { NotificationsOptions, SDKConfig, SUPPORTED_LOCALES } from './../../shared';
 import { Loader } from './Loader';
 import { useInView } from './observer';
 

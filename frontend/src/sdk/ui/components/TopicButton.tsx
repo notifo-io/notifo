@@ -8,9 +8,8 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { Subscription, TopicOptions } from '@sdk/shared';
 import { useCallback } from 'preact/hooks';
-import { Subscription } from 'src/sdk/api';
-import { TopicOptions } from './../../shared';
 import { Icon } from './Icon';
 
 export interface TopicButtonProps {

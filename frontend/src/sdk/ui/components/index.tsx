@@ -8,7 +8,7 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import { NotificationsOptions, SDKConfig, TopicOptions } from './../../shared';
+import { NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
 import { NotificationsContainer } from './Notifications';
 import { TopicContainer } from './Topic';
 
