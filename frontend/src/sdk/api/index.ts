@@ -68,25 +68,48 @@ export function parseShortNotification(value: any): NotifoNotification {
     };
 }
 
-export async function apiMarkConfirmed(notification: NotifoNotification): Promise<any> {
-    if (notification.confirmUrl) {
-        await fetch(notification.confirmUrl);
-    }
-}
+export type NotificationChannel = { send?: boolean };
+export type NotificationSettings = { [channel: string]: NotificationChannel };
+export type Subscription = { settings: NotificationSettings, topic: string };
 
-export async function apiMarkSeen(notification: NotifoNotification): Promise<any> {
-    if (notification.trackingUrl) {
-        await fetch(notification.trackingUrl);
-    }
-}
+export type Profile = {
+    emailAddress?: string,
+    fullName?: string,
+    preferredLanguage: string,
+    preferredTimezone: string,
+    allowedLanguages: ReadonlyArray<string>,
+    allowedTimezones: ReadonlyArray<string>,
+    settings: NotificationSettings,
+};
 
-export type ApiResult = { etag: number, notifications: NotifoNotification[] };
-
-export async function apiUpdateSubscription(config: SDKConfig, method: string, topic: string): Promise<boolean> {
-    const url = combineUrl(config.apiUrl, `api/web/subscriptions/${topic}`);
+export async function apiPostSubscription(config: SDKConfig, subscription: Subscription): Promise<Subscription | null> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/`);
 
     const request: RequestInit = {
-        method,
+        method: 'POST',
+        headers: {
+            ...getAuthHeader(config),
+            'Content-Type': 'text/json',
+        },
+        body: JSON.stringify(subscription),
+    };
+
+    const response = await fetch(url, request);
+
+    if (response.status === 404) {
+        return null;
+    } else if (response.ok) {
+        return await response.json();
+    } else {
+        throw new Error(`Request failed with {response.statusCode}`);
+    }
+}
+
+export async function apiGetSubscription(config: SDKConfig, topic: string): Promise<Subscription | null> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topic}`);
+
+    const request: RequestInit = {
+        method: 'POST',
         headers: {
             ...getAuthHeader(config),
         },
@@ -95,21 +118,50 @@ export async function apiUpdateSubscription(config: SDKConfig, method: string, t
     const response = await fetch(url, request);
 
     if (response.status === 404) {
-        return false;
+        return null;
     } else if (response.ok) {
-        return true;
+        return await response.json();
     } else {
         throw new Error(`Request failed with {response.statusCode}`);
     }
 }
 
+export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> {
+    const url = combineUrl(config.apiUrl, `api/me/`);
+
+    const request: RequestInit = {
+        method: 'POST',
+        headers: {
+            ...getAuthHeader(config),
+        },
+    };
+
+    const response = await fetch(url, request);
+
+    if (response.status === 404) {
+        return null;
+    } else if (response.ok) {
+        return await response.json();
+    } else {
+        throw new Error(`Request failed with {response.statusCode}`);
+    }
+}
+
+export async function apiDeleteSubscription(config: SDKConfig, subscription: Subscription): Promise<any> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${subscription.topic}`);
+
+    const request: RequestInit = {
+        method: 'DELETE',
+        headers: {
+            ...getAuthHeader(config),
+        },
+    };
+
+    await fetch(url, request);
+}
+
 export async function apiUpdateWebPush(config: SDKConfig, params: any, method: string, subscription: PushSubscription) {
     const url = combineUrl(config.apiUrl, 'api/webpush');
-
-    const body: any = {
-        subscription,
-        ...params,
-    };
 
     const response = await fetch(url, {
         method,
@@ -117,7 +169,7 @@ export async function apiUpdateWebPush(config: SDKConfig, params: any, method: s
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({ subscription, params }),
     });
 
     if (!response.ok) {

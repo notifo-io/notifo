@@ -86,7 +86,7 @@ namespace Notifo.Areas.Api.Controllers.Emails
         }
 
         [HttpPost("/api/email/preview")]
-        public async Task<IActionResult> GetEmailPreview([FromBody] PreviewRequestDto request)
+        public async Task<IActionResult> GetEmailPreview([FromBody] RequestPreviewDto request)
         {
             var app = new App
             {

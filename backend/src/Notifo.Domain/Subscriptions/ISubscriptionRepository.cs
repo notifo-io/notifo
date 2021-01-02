@@ -18,14 +18,12 @@ namespace Notifo.Domain.Subscriptions
 
         Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query, CancellationToken ct = default);
 
-        Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
+        Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
 
-        Task<Subscription> SubscribeAsync(string appId, SubscriptionUpdate update, CancellationToken ct = default);
+        Task UpsertAsync(Subscription subscription, string? oldEtag, CancellationToken ct);
 
-        Task SubscribeWhenNotFoundAsync(string appId, SubscriptionUpdate update, CancellationToken ct = default);
+        Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct);
 
-        Task UnsubscribeAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
-
-        Task UnsubscribeByPrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
+        Task DeletePrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
     }
 }

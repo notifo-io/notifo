@@ -58,7 +58,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
 
         [HttpPost("/api/notifications/handled")]
         [AppPermission(Roles.User)]
-        public async Task Confirm([FromBody] HandledRequestDto request)
+        public async Task Confirm([FromBody] TrackNotificationDto request)
         {
             if (request.Confirmed.HasValue)
             {

@@ -36,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Registration
 
         [HttpPost("api/web/register")]
         [AppPermission(Roles.WebManager, Roles.User)]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
         {
             string? userId = null;
             string? userToken = null;
@@ -51,16 +51,19 @@ namespace Notifo.Areas.Api.Controllers.Registration
 
                 if (request.Topics?.Any() == true)
                 {
-                    var subscription = new SubscriptionUpdate();
+                    var command = new Subscribe
+                    {
+                        TopicSettings = new NotificationSettings()
+                    };
 
-                    subscription.TopicSettings[Providers.WebPush] = new NotificationSetting
+                    command.TopicSettings[Providers.WebPush] = new NotificationSetting
                     {
                         Send = true
                     };
 
                     if (!string.IsNullOrEmpty(request.EmailAddress))
                     {
-                        subscription.TopicSettings[Providers.Email] = new NotificationSetting
+                        command.TopicSettings[Providers.Email] = new NotificationSetting
                         {
                             Send = true
                         };
@@ -68,16 +71,16 @@ namespace Notifo.Areas.Api.Controllers.Registration
 
                     foreach (var topic in request.Topics)
                     {
-                        subscription.TopicPrefix = topic;
+                        var topicId = new TopicId(topic);
 
-                        await subscriptionStore.SubscribeWhenNotFoundAsync(App.Id, subscription, HttpContext.RequestAborted);
+                        await subscriptionStore.UpsertAsync(App.Id, userId, topicId, command, HttpContext.RequestAborted);
                     }
                 }
 
                 userToken = user.ApiKey;
             }
 
-            var response = new RegisterResponseDto
+            var response = new RegisteredUserDto
             {
                 PublicKey = webPushService.PublicKey,
                 UserId = userId,

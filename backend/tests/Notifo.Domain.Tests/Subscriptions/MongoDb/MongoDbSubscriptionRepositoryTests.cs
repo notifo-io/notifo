@@ -152,7 +152,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         private Task SubscribeAsync(string userId, string topicPrefix, bool sendEmail = false)
         {
-            var update = new SubscriptionUpdate { TopicPrefix = topicPrefix, UserId = userId };
+            var update = new Subscribe { TopicPrefix = topicPrefix, UserId = userId };
 
             if (sendEmail)
             {

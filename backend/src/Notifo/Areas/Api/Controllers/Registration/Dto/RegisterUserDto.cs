@@ -12,7 +12,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Registration.Dto
 {
-    public sealed class RegisterRequestDto
+    public sealed class RegisterUserDto
     {
         public bool CreateUser { get; set; }
 

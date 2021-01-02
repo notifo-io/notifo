@@ -46,7 +46,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
             }
         }
 
-        public async Task ConfirmMany(HandledRequestDto request)
+        public async Task ConfirmMany(TrackNotificationDto request)
         {
             if (request.Confirmed.HasValue)
             {

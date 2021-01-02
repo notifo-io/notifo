@@ -5,13 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
-
-namespace Notifo.Areas.Api.Controllers.MobilePush.Dto
+namespace Notifo.Areas.Api.Controllers.Emails.Dto
 {
-    public sealed class MobilePushRequestDto
+    public sealed class RequestPreviewDto
     {
-        [Required]
-        public string Token { get; set; }
+        public string Template { get; set; }
+
+        public PreviewType TemplateType { get; set; }
+
+        public string AppName { get; set; }
     }
 }

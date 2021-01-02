@@ -79,7 +79,12 @@ namespace Notifo.Domain.Users
 
             if (Settings != null)
             {
-                user.Settings = Settings;
+                user.Settings ??= new NotificationSettings();
+
+                foreach (var (key, value) in Settings)
+                {
+                    user.Settings[key] = value;
+                }
             }
 
             if (string.IsNullOrWhiteSpace(user.ApiKey))

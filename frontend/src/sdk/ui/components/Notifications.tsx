@@ -13,7 +13,7 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 import { NotifoNotification } from './../../api';
 import { NotificationsOptions, SDKConfig } from './../../shared';
 import { Connection } from './../api/connection';
-import { addNotifications, getUnseen, useNotifoState } from './../model';
+import { addNotifications, getUnseen, setConnected, useNotifoState } from './../model';
 import { NotificationsButton } from './NotificationsButton';
 import { NotificationsModal } from './NotificationsModal';
 
@@ -26,17 +26,20 @@ export interface NotificationsProps {
 }
 
 export const NotificationsContainer = (props: NotificationsProps) => {
-    const { config, options } = props;
+    const {
+        config,
+        options,
+    } = props;
 
     const [state, dispatch] = useNotifoState();
     const [isOpen, setIsOpen] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
     const [connection] = useState(() => new Connection(config));
 
     useEffect(() => {
         connection.onNotifications(notifications => {
             addNotifications(notifications, dispatch);
         });
+
         connection.onNotification(notification => {
             addNotifications([notification], dispatch);
 
@@ -50,15 +53,15 @@ export const NotificationsContainer = (props: NotificationsProps) => {
         });
 
         connection.onReconnected(() => {
-            setIsConnected(true);
+            setConnected(true, dispatch);
         });
 
         connection.onReconnecting(() => {
-            setIsConnected(false);
+            setConnected(false, dispatch);
         });
 
         connection.start().then(() => {
-            setIsConnected(true);
+            setConnected(true, dispatch);
         });
     }, [config]);
 
@@ -91,9 +94,6 @@ export const NotificationsContainer = (props: NotificationsProps) => {
             {isOpen &&
                 <NotificationsModal
                     config={config}
-                    loaded={true}
-                    isConnected={isConnected}
-                    notifications={state.notifications}
                     onClickOutside={doHide}
                     onConfirm={doConfirm}
                     onSeen={doSee}

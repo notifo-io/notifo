@@ -22,7 +22,8 @@ namespace Notifo.Domain.Users
         private readonly IReplicatedCache cache;
         private readonly CounterCollector<(string, string)> collector;
 
-        public UserStore(IUserRepository repository, IServiceProvider serviceProvider, IReplicatedCache cache)
+        public UserStore(IUserRepository repository,
+            IServiceProvider serviceProvider, IReplicatedCache cache)
         {
             this.repository = repository;
             this.serviceProvider = serviceProvider;

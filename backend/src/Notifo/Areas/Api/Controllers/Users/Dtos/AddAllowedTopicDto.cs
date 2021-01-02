@@ -9,7 +9,7 @@ using Notifo.Domain.Users;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {
-    public sealed class AddAllowedTopicRequest
+    public sealed class AddAllowedTopicDto
     {
         /// <summary>
         /// The topic to add.

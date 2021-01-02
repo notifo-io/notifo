@@ -11,6 +11,7 @@ import { h } from 'preact';
 export type IconType =
     'alarm_off' |
     'alarm' |
+    'back' |
     'bell_off' |
     'bell' |
     'chat' |
@@ -20,6 +21,7 @@ export type IconType =
     'loader' |
     'message' |
     'notifo' |
+    'profile' |
     'star_off' |
     'star';
 
@@ -104,6 +106,18 @@ export const Icon = ({ size, type }: IconProps) => {
             return (
                 <svg version='1.1' xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24'>
                     <path d='M12 17.25l-6.188 3.75 1.641-7.031-5.438-4.734 7.172-0.609 2.813-6.609 2.813 6.609 7.172 0.609-5.438 4.734 1.641 7.031z'></path>
+                </svg>
+            );
+        case 'profile':
+            return (
+                <svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
+                    <path d='M12 14.016q2.531 0 5.273 1.102t2.742 2.883v2.016h-16.031v-2.016q0-1.781 2.742-2.883t5.273-1.102zM12 12q-1.641 0-2.813-1.172t-1.172-2.813 1.172-2.836 2.813-1.195 2.813 1.195 1.172 2.836-1.172 2.813-2.813 1.172z'></path>
+                </svg>
+            );
+        case 'back':
+            return (
+                <svg version='1.1' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'>
+                    <path d='M21 11.016v1.969h-14.156l3.563 3.609-1.406 1.406-6-6 6-6 1.406 1.406-3.563 3.609h14.156z'></path>
                 </svg>
             );
         case 'loader':

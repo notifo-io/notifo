@@ -8,10 +8,11 @@
 /** @jsx h */
 import { h } from 'preact';
 
-import { useCallback, useEffect } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { SDKConfig, TopicOptions } from './../../shared';
-import { loadSubscription, subscribe, unsubscribe, useNotifoState } from './../model';
+import { loadSubscription, useNotifoState } from './../model';
 import { TopicButton } from './TopicButton';
+import { TopicModal } from './TopicModal';
 
 export interface TopicProps {
     config: SDKConfig;
@@ -24,28 +25,33 @@ export interface TopicProps {
 }
 
 export const TopicContainer = (props: TopicProps) => {
-    const { config, options, topic } = props;
+    const {
+        config,
+        options,
+        topic,
+    } = props;
 
     const [state, dispatch] = useNotifoState();
-    const subscription = state.subscriptions[topic] || 'Unknown';
+    const [isOpen, setIsOpen] = useState(false);
+    const subscription = state.subscriptions[topic]?.subscription;
 
     useEffect(() => {
-        if (subscription === 'Unknown') {
+        if (subscription === undefined) {
             loadSubscription(config, topic, dispatch);
         }
     }, []);
 
-    const doToggle = useCallback(() => {
-        if (subscription === 'Subscribed') {
-            unsubscribe(config, topic, dispatch);
-        } else if (subscription === 'NotSubscribed') {
-            subscribe(config, topic, dispatch);
-        }
-    }, [subscription]);
+    const doShow = useCallback(() => {
+        setIsOpen(true);
+    }, []);
 
     return (
         <div className='notifo'>
-            <TopicButton options={options} subscription={subscription} onClick={doToggle} />
+            <TopicButton options={options} subscription={subscription} onClick={doShow} />
+
+            {isOpen &&
+                <TopicModal config={config} options={options} />
+            }
         </div>
     );
 };

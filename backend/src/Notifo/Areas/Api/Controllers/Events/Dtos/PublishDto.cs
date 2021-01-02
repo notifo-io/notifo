@@ -13,7 +13,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Events.Dtos
 {
-    public class PublishRequestDto
+    public class PublishDto
     {
         /// <summary>
         /// The topic path.

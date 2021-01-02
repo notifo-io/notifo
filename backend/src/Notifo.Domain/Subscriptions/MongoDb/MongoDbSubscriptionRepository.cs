@@ -19,7 +19,7 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Subscriptions.MongoDb
 {
-    public sealed class MongoDbSubscriptionRepository : MongoDbRepository<MongoDbSubscription>, ISubscriptionRepository, IInitializable
+    public sealed class MongoDbSubscriptionRepository : MongoDbStore<MongoDbSubscription>, ISubscriptionRepository, IInitializable
     {
         public MongoDbSubscriptionRepository(IMongoDatabase database)
             : base(database)
@@ -125,7 +125,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             }
         }
 
-        public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
         {
             var topicPrefix = prefix.Id;
 
@@ -133,47 +133,28 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 await Collection.Find(x => x.AppId == appId && x.UserId == userId && x.TopicPrefix == topicPrefix)
                     .FirstOrDefaultAsync(ct);
 
-            return document?.ToSubscription();
+            return (document?.ToSubscription(), document?.Etag);
         }
 
-        public async Task<Subscription> SubscribeAsync(string appId, SubscriptionUpdate update, CancellationToken ct = default)
+        public Task UpsertAsync(Subscription subscription, string? oldEtag, CancellationToken ct)
         {
-            var document = MongoDbSubscription.FromSubscription(appId, update);
+            var document = MongoDbSubscription.FromSubscription(subscription);
 
-            await Collection.ReplaceOneAsync(x => x.DocId == document.DocId, document, UpsertReplace, ct);
-
-            return document.ToSubscription();
+            return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
         }
 
-        public Task UnsubscribeAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
         {
             var id = MongoDbSubscription.CreateId(appId, userId, prefix);
 
             return Collection.DeleteOneAsync(x => x.DocId == id, ct);
         }
 
-        public Task UnsubscribeByPrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public Task DeletePrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
         {
             var filter = CreatePrefixFilter(appId, userId, prefix, true);
 
             return Collection.DeleteManyAsync(filter, ct);
-        }
-
-        public async Task SubscribeWhenNotFoundAsync(string appId, SubscriptionUpdate update, CancellationToken ct = default)
-        {
-            var document = MongoDbSubscription.FromSubscription(appId, update);
-
-            try
-            {
-                await Collection.InsertOneAsync(document, null, ct);
-            }
-            catch (MongoWriteException ex)
-            {
-                if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
-                {
-                    return;
-                }
-            }
         }
 
         private static FilterDefinition<MongoDbSubscription> CreatePrefixFilter(string appId, string? userId, TopicId topic, bool withUser)

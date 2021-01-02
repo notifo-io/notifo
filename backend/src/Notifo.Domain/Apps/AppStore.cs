@@ -24,8 +24,7 @@ namespace Notifo.Domain.Apps
         private readonly IReplicatedCache cache;
 
         public AppStore(IAppRepository repository,
-            IServiceProvider serviceProvider,
-            IReplicatedCache cache)
+            IServiceProvider serviceProvider, IReplicatedCache cache)
         {
             this.repository = repository;
             this.serviceProvider = serviceProvider;

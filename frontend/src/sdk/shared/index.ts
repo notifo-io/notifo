@@ -6,6 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
+import { isObject } from 'lodash';
 import { isNumber, isString, logWarn } from './../utils';
 
 export const SUPPORTED_LOCALES = {
@@ -13,8 +14,8 @@ export const SUPPORTED_LOCALES = {
     ['de']: de,
 };
 
-const Texts = {
-    empty: {
+const DefaultTexts: Texts<{ de: string, en: string }> = {
+    notificationsEmpty: {
         de: 'Keine Benachrichtigungen vorhanden',
         en: 'You have no notifications yet.',
     },
@@ -25,6 +26,38 @@ const Texts = {
     unsubscribe: {
         de: 'Deabbonieren',
         en: 'Unsubscribe',
+    },
+    email: {
+        de: 'E-Mail Adresse',
+        en: 'E-Mail Address',
+    },
+    fullName: {
+        de: 'Name',
+        en: 'Name',
+    },
+    timezone: {
+        de: 'Zeitzone',
+        en: 'Timezone',
+    },
+    language: {
+        de: 'Sprache',
+        en: 'Language',
+    },
+    save: {
+        de: 'Speichern',
+        en: 'Save',
+    },
+    settings: {
+        de: 'Einstellungen',
+        en: 'Settings',
+    },
+    notifyBeEmail: {
+        de: 'Benachrichtige mich per Email',
+        en: 'Notify me by Email',
+    },
+    notifyBeWebPush: {
+        de: 'Benachrichtige mich per Push Notification',
+        en: 'Notify me by Push Notification',
     },
 };
 
@@ -95,10 +128,20 @@ export function buildSDKConfig(opts: SDKConfig) {
         return null;
     }
 
+    if (!isObject(options.texts)) {
+        options.texts = {} as any;
+    }
+
+    for (const key of TextKeys) {
+        if (!isString(options.texts[key]) || !options.texts[key]) {
+            options.texts[key] = DefaultTexts[key][options.locale];
+        }
+    }
+
     return options;
 }
 
-export function buildNotificationsOptions(opts: NotificationsOptions, config: SDKConfig) {
+export function buildNotificationsOptions(opts: NotificationsOptions) {
     const options: NotificationsOptions = <any>{ ...opts || {} };
 
     if (!isEnumOption(options.position, SUPPORTED_POSITIONS)) {
@@ -128,15 +171,20 @@ export function buildNotificationsOptions(opts: NotificationsOptions, config: SD
         options.queryInterval = 3000;
     }
 
-    if (!options.textEmpty) {
-        options.textEmpty = Texts.empty[config.locale];
-    }
-
     return options;
 }
 
-export function buildTopicOptions(opts: TopicOptions, config: SDKConfig) {
+export function buildTopicOptions(opts: TopicOptions) {
     const options: TopicOptions = <any>{ ...opts || {} };
+
+    if (!isEnumOption(options.position, SUPPORTED_POSITIONS)) {
+        logWarn(`show-topic.position is not one these values: ${SUPPORTED_POSITIONS.join(', ')}`);
+        options.position = undefined;
+    }
+
+    if (!options.position) {
+        options.position = SUPPORTED_POSITIONS[0];
+    }
 
     if (!isEnumOption(options.style, SUPPORTED_TOPIC_STYLES)) {
         logWarn(`show-topic.style must be one of these values: ${SUPPORTED_TOPIC_STYLES.join(',')}`);
@@ -145,10 +193,6 @@ export function buildTopicOptions(opts: TopicOptions, config: SDKConfig) {
 
     if (!options.style) {
         options.style = SUPPORTED_TOPIC_STYLES[0];
-    }
-
-    if (!options.textUnsubscribe) {
-        options.textUnsubscribe = Texts.unsubscribe[config.locale];
     }
 
     return options;
@@ -200,14 +244,17 @@ export interface SDKConfig {
     // True to negotiate the connection, otherwise sockets are used.
     negotiate: boolean;
 
-    // A callback that is invoked when a notification is retrieved.
-    onNotification?: (notification: any) => void;
-
     // The url to the service worker.
     serviceWorkerUrl: string;
 
     // The locale settings for date formatting.
     locale: string;
+
+    // All needed texts.
+    texts: Texts<string>;
+
+    // A callback that is invoked when a notification is retrieved.
+    onNotification?: (notification: any) => void;
 }
 
 export interface SubscribeOptions {
@@ -222,11 +269,8 @@ export interface TopicOptions {
     // The style of the button.
     style: OptionTopicStyle;
 
-    // The subscription text.
-    textSubscribe: string;
-
-    // The unsubscribe text.
-    textUnsubscribe: string;
+    // The position of the modal.
+    position: OptionsPosition;
 }
 
 type OptionsPosition = 'bottom-left' | 'bottom-right';
@@ -242,9 +286,34 @@ export interface NotificationsOptions  {
     // The style of the button.
     style: OptionMainStyle;
 
-    // The text when no notifications are there.
-    textEmpty: string;
-
     // The interval to query.
     queryInterval: number;
 }
+
+type Texts<T> = {
+    email: T,
+    fullName: T,
+    language: T,
+    notificationsEmpty: T,
+    notifyBeEmail: T
+    notifyBeWebPush: T,
+    save: T,
+    settings: T,
+    subscribe: T,
+    timezone: T,
+    unsubscribe: T,
+};
+
+const TextKeys: ReadonlyArray<keyof Texts<any>> = [
+    'email',
+    'fullName',
+    'language',
+    'notificationsEmpty',
+    'notifyBeEmail',
+    'notifyBeWebPush',
+    'save',
+    'settings',
+    'subscribe',
+    'timezone',
+    'unsubscribe',
+];
