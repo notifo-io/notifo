@@ -6,7 +6,7 @@
  */
 
 /** @jsx h */
-import { h } from 'preact';
+import { Fragment, h } from 'preact';
 
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { useStore } from '@sdk/ui/model';
@@ -58,12 +58,10 @@ export const NotificationsList = (props: NotificationsListProps) => {
     }, [onShowProfile]);
 
     return (
-        <div>
-            <div>
-                <button class='notifo-profile-button' type='button' onClick={doShowProfile}>
-                    <Icon type='settings' size={20} />
-                </button>
-            </div>
+        <Fragment>
+            <button class='notifo-profile-button' type='button' onClick={doShowProfile}>
+                <Icon type='settings' size={20} />
+            </button>
 
             {!isConnected || !isLoaded &&
                 <div class='notifo-loading'>
@@ -76,7 +74,7 @@ export const NotificationsList = (props: NotificationsListProps) => {
             }
 
             {isLoaded && notifications.length > 0 &&
-                <div>
+                <Fragment>
                     {notifications.map(x => (
                         <NotificationItem key={x.id}
                             config={config}
@@ -87,8 +85,8 @@ export const NotificationsList = (props: NotificationsListProps) => {
                             modal={parent}
                         />
                     ))}
-                </div>
+                </Fragment>
             }
-        </div>
+        </Fragment>
     );
 };

@@ -6,7 +6,7 @@
  */
 
 /** @jsx h */
-import { h } from 'preact';
+import { Fragment, h } from 'preact';
 
 import { booleanToSend, NotificationsOptions, SDKConfig, sendToBoolean, UpdateProfile } from '@sdk/shared';
 import { loadProfile, saveProfile, useDispatch, useStore } from '@sdk/ui/model';
@@ -82,7 +82,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
     }, [profileToEdit]);
 
     return (
-        <div>
+        <Fragment>
             <div>
                 <button type='button' onClick={doHideProfile}>
                     <Icon type='back' size={20} />
@@ -112,7 +112,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                     </div>
 
                     {config.allowProfile &&
-                        <div>
+                        <Fragment>
                             <hr />
 
                             <div class='notifo-form-group'>
@@ -146,7 +146,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                                     )}
                                 </select>
                             </div>
-                        </div>
+                        </Fragment>
                     }
 
                     <hr />
@@ -164,7 +164,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                     </div>
                 </form>
             )}
-        </div>
+        </Fragment>
     );
 };
 
