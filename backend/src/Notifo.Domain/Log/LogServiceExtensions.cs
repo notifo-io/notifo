@@ -14,11 +14,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyLog(this IServiceCollection services)
         {
-            services.AddSingletonAs<MongoDbLogRepository>()
-                .As<ILogRepository>();
-
             services.AddSingletonAs<LogStore>()
                 .As<ILogStore>();
+        }
+
+        public static void AddMyMongoLog(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbLogRepository>()
+                .As<ILogRepository>();
         }
     }
 }

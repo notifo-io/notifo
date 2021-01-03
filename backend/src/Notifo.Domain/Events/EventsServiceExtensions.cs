@@ -22,14 +22,19 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddMessagingConsumer<EventConsumer, EventMessage>(options.ChannelName);
             services.AddMessagingProducer<EventMessage>(options.ChannelName);
 
-            services.AddSingletonAs<MongoDbEventRepository>()
-                .As<IEventRepository>();
-
             services.AddSingletonAs<EventStore>()
                 .As<IEventStore>().As<ICounterTarget>();
 
             services.AddSingletonAs<EventPublisher>()
                 .As<IEventPublisher>();
+        }
+
+        public static void AddMyMongoEvents(this IServiceCollection services)
+        {
+            NotificationSendSerializer.Register();
+
+            services.AddSingletonAs<MongoDbEventRepository>()
+                .As<IEventRepository>();
         }
     }
 }

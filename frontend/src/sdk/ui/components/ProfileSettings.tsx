@@ -8,7 +8,7 @@
 /** @jsx h */
 import { h } from 'preact';
 
-import { booleanToSend, NotificationsOptions, Profile, SDKConfig, sendToBoolean } from '@sdk/shared';
+import { booleanToSend, NotificationsOptions, SDKConfig, sendToBoolean, UpdateProfile } from '@sdk/shared';
 import { loadProfile, saveProfile, useDispatch, useStore } from '@sdk/ui/model';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Icon } from './Icon';
@@ -35,7 +35,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
     const dispatch = useDispatch();
     const profile = useStore(x => x.profile);
     const profileTransition = useStore(x => x.profileTransition);
-    const [profileToEdit, setProfileToEdit] = useState<Profile>(null);
+    const [profileToEdit, setProfileToEdit] = useState<UpdateProfile>(null);
 
     useEffect(() => {
         loadProfile(config, dispatch);
@@ -43,7 +43,13 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
 
     useEffect(() => {
         if (profile) {
-            setProfileToEdit({ ...profile });
+            const {
+                supportedLanguages,
+                supportedTimezones,
+                ...editable
+            } = profile;
+
+            setProfileToEdit(editable);
         }
     }, [profile]);
 
@@ -125,7 +131,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                                 <label class='notifo-form-label' for='preferredLanguage'>{config.texts.language}</label>
 
                                 <select class='notifo-form-control' id='preferredLanguage' value={profile.preferredLanguage} onChange={doChange}>
-                                    {profileToEdit.supportedLanguages.map(language =>
+                                    {profile.supportedLanguages.map(language =>
                                         <option key={language} value={language}>{language}</option>,
                                     )}
                                 </select>
@@ -135,7 +141,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                                 <label class='notifo-form-label' for='preferredTimezone'>{config.texts.timezone}</label>
 
                                 <select class='notifo-form-control' id='preferredTimezone' value={profile.preferredTimezone} onChange={doChange}>
-                                    {profileToEdit.supportedTimezones.map(timezone =>
+                                    {profile.supportedTimezones.map(timezone =>
                                         <option key={timezone} value={timezone}>{timezone}</option>,
                                     )}
                                 </select>
@@ -162,7 +168,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
     );
 };
 
-function setChannel(profile: Profile, channel: string, value?: boolean) {
+function setChannel(profile: UpdateProfile, channel: string, value?: boolean) {
     if (!profile.settings) {
         profile.settings = {};
     }

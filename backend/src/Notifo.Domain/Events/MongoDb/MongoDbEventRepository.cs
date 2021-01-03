@@ -23,8 +23,6 @@ namespace Notifo.Domain.Events.MongoDb
     {
         static MongoDbEventRepository()
         {
-            NotificationSendSerializer.Register();
-
             BsonClassMap.RegisterClassMap<MongoDbEvent>(cm =>
             {
                 cm.AutoMap();

@@ -14,8 +14,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Areas.Api;
 using Notifo.Areas.Frontend;
-using Notifo.Domain.Counters;
-using Notifo.Domain.Topics;
 using Notifo.Pipeline;
 
 namespace Notifo

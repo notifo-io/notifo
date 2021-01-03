@@ -7,7 +7,7 @@
 
 // tslint:disable: no-parameter-reassignment
 
-import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription } from '@sdk/shared';
+import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, UpdateProfile } from '@sdk/shared';
 import { useEffect, useState } from 'preact/hooks';
 import { Dispatch, set, Store } from './store';
 
@@ -286,13 +286,13 @@ export async function loadProfile(config: SDKConfig, dispatch: NotifoDispatch) {
     }
 }
 
-export async function saveProfile(config: SDKConfig, profile: Profile, dispatch: NotifoDispatch) {
+export async function saveProfile(config: SDKConfig, update: UpdateProfile, dispatch: NotifoDispatch) {
     try {
         dispatch({ type: NotifoActionType.SaveProfileStarted });
 
-        const newProfile = await apiPostProfile(config, profile);
+        const profile = await apiPostProfile(config, update);
 
-        dispatch({ type: NotifoActionType.SaveProfileSuccess, profile: newProfile });
+        dispatch({ type: NotifoActionType.SaveProfileSuccess, profile });
     } catch (ex) {
         dispatch({ type: NotifoActionType.SaveProfileFailed, ex });
     }

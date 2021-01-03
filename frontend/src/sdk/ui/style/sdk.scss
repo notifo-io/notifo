@@ -81,7 +81,6 @@ $size-toggle: 20px;
             box-shadow: 0 4px 4px $color-shadow;
             margin-top: 5px;
             max-height: 450px;
-            min-height: 100px;
             overflow-x: hidden;
             overflow-y: auto;
             padding: 1.5rem 1.25rem;
@@ -94,6 +93,8 @@ $size-toggle: 20px;
             }
 
             &-inner {
+                max-height: none;
+                min-height: 100px;
                 position: relative;
             }
         }
@@ -235,10 +236,10 @@ $size-toggle: 20px;
         }
 
         &-empty, &-loading {
+            @include absolute(30%, 0, null, 0);
             color: $color-empty;
             font-size: 80%;
             font-weight: normal;
-            margin-top: 1.25rem;
             text-align: center;
             text-decoration: none;
         }

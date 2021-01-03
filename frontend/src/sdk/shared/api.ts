@@ -99,7 +99,15 @@ export interface Subscription {
     topicSettings?: NotificationSettings;
 }
 
-export interface Profile {
+export interface Profile extends UpdateProfile {
+    // The support languages configured in the app.
+    supportedLanguages: ReadonlyArray<string>;
+
+    // All available timeones.
+    supportedTimezones: ReadonlyArray<string>;
+}
+
+export interface UpdateProfile {
     // The email address.
     emailAddress?: string;
 
@@ -111,12 +119,6 @@ export interface Profile {
 
     // The preferred timezone.
     preferredTimezone: string;
-
-    // The support languages configured in the app.
-    supportedLanguages: ReadonlyArray<string>;
-
-    // All available timeones.
-    supportedTimezones: ReadonlyArray<string>;
 
     // The notification settings.
     settings?: NotificationSettings;
@@ -141,7 +143,7 @@ export async function apiPostSubscription(config: SDKConfig, subscription: Subsc
     } else if (response.ok) {
         return await response.json();
     } else {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error(`Request failed with ${response.status}`);
     }
 }
 
@@ -162,7 +164,7 @@ export async function apiGetSubscription(config: SDKConfig, topicPrefix: string)
     } else if (response.ok) {
         return await response.json();
     } else {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error(`Request failed with ${response.status}`);
     }
 }
 
@@ -183,11 +185,11 @@ export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> 
     } else if (response.ok) {
         return await response.json();
     } else {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error(`Request failed with ${response.status}`);
     }
 }
 
-export async function apiPostProfile(config: SDKConfig, profile: Profile): Promise<Profile> {
+export async function apiPostProfile(config: SDKConfig, update: UpdateProfile): Promise<Profile> {
     const url = combineUrl(config.apiUrl, `api/me/`);
 
     const request: RequestInit = {
@@ -196,17 +198,17 @@ export async function apiPostProfile(config: SDKConfig, profile: Profile): Promi
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
-        body: JSON.stringify(profile),
+        body: JSON.stringify(update),
     };
 
     const response = await fetch(url, request);
 
     if (response.status === 404) {
-        return profile;
+        throw new Error(`Request failed with ${response.status}`);
     } else if (response.ok) {
         return await response.json();
     } else {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error(`Request failed with ${response.status}`);
     }
 }
 
@@ -236,7 +238,7 @@ export async function apiPostWebPush(config: SDKConfig, subscription: PushSubscr
     });
 
     if (!response.ok) {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error(`Request failed with ${response.status}`);
     }
 }
 
@@ -253,7 +255,7 @@ export async function apiDeleteWebPush(config: SDKConfig, subscription: PushSubs
     });
 
     if (!response.ok) {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error(`Request failed with ${response.status}`);
     }
 }
 
