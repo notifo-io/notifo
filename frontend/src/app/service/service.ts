@@ -7,6 +7,282 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
+export class UserClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : <any>window;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:5002";
+    }
+
+    /**
+     * Get the current user.
+     * @return User returned.
+     */
+    getUser(): Promise<ProfileDto> {
+        let url_ = this.baseUrl + "/api/me";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetUser(_response);
+        });
+    }
+
+    protected processGetUser(response: Response): Promise<ProfileDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <ProfileDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ProfileDto>(<any>null);
+    }
+
+    /**
+     * Update the user.
+     * @param request The upsert request.
+     * @return Users upserted.
+     */
+    postUser(request: UpdateProfileDto): Promise<ProfileDto> {
+        let url_ = this.baseUrl + "/api/me";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPostUser(_response);
+        });
+    }
+
+    protected processPostUser(response: Response): Promise<ProfileDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <ProfileDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ProfileDto>(<any>null);
+    }
+
+    /**
+     * Gets a user subscription.
+     * @param topic The topic path.
+     * @return Subscription exists.
+     */
+    getSubscription(topic: string): Promise<SubscriptionDto> {
+        let url_ = this.baseUrl + "/api/me/subscriptions/{topic}";
+        if (topic === undefined || topic === null)
+            throw new Error("The parameter 'topic' must be defined.");
+        url_ = url_.replace("{topic}", encodeURIComponent("" + topic));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSubscription(_response);
+        });
+    }
+
+    protected processGetSubscription(response: Response): Promise<SubscriptionDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <SubscriptionDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Subscription does not exist.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SubscriptionDto>(<any>null);
+    }
+
+    /**
+     * Deletes a user subscription.
+     * @param topic The topic path.
+     * @return Topic deleted.
+     */
+    deleteSubscription(topic: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/me/subscriptions/{topic}";
+        if (topic === undefined || topic === null)
+            throw new Error("The parameter 'topic' must be defined.");
+        url_ = url_.replace("{topic}", encodeURIComponent("" + topic));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteSubscription(_response);
+        });
+    }
+
+    protected processDeleteSubscription(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    /**
+     * Creates a user subscription.
+     * @param request The subscription settings.
+     * @return Topic created.
+     */
+    postSubscription(request: SubscriptionDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/me/subscriptions";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPostSubscription(_response);
+        });
+    }
+
+    protected processPostSubscription(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+}
+
 export class UsersClient {
     private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
     private baseUrl: string;
@@ -340,7 +616,7 @@ export class UsersClient {
      * @param request The subscription object.
      * @return User subscribed.
      */
-    postSubscription(appId: string, id: string, request: SubscribeDto): Promise<void> {
+    postSubscription(appId: string, id: string, request: SubscriptionDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -465,7 +741,7 @@ export class UsersClient {
      * @param request The upsert request.
      * @return User updated.
      */
-    postAllowedTopic(appId: string, id: string, request: AddAllowedTopicRequest): Promise<void> {
+    postAllowedTopic(appId: string, id: string, request: AddAllowedTopicDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/allowed-topics";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -658,160 +934,6 @@ export class TopicsClient {
             });
         }
         return Promise.resolve<ListResponseDtoOfTopicDto>(<any>null);
-    }
-
-    /**
-     * Gets a user subscription.
-     * @param topic The topic path.
-     * @return Subscription exists.
-     */
-    getSubscription(topic: string): Promise<void> {
-        let url_ = this.baseUrl + "/api/web/subscriptions/{topic}";
-        if (topic === undefined || topic === null)
-            throw new Error("The parameter 'topic' must be defined.");
-        url_ = url_.replace("{topic}", encodeURIComponent("" + topic));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "GET",
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetSubscription(_response);
-        });
-    }
-
-    protected processGetSubscription(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status === 404) {
-            return response.text().then((_responseText) => {
-            return throwException("Subscription does not exist.", status, _responseText, _headers);
-            });
-        } else if (status === 500) {
-            return response.text().then((_responseText) => {
-            let result500: any = null;
-            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return throwException("Operation failed", status, _responseText, _headers, result500);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return throwException("Validation error", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(<any>null);
-    }
-
-    /**
-     * Creates a user subscription.
-     * @param topic The topic path.
-     * @return Topic created.
-     */
-    subscribe(topic: string): Promise<void> {
-        let url_ = this.baseUrl + "/api/web/subscriptions/{topic}";
-        if (topic === undefined || topic === null)
-            throw new Error("The parameter 'topic' must be defined.");
-        url_ = url_.replace("{topic}", encodeURIComponent("" + topic));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "POST",
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processSubscribe(_response);
-        });
-    }
-
-    protected processSubscribe(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status === 500) {
-            return response.text().then((_responseText) => {
-            let result500: any = null;
-            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return throwException("Operation failed", status, _responseText, _headers, result500);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return throwException("Validation error", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(<any>null);
-    }
-
-    /**
-     * Deletes a user subscription.
-     * @param topic The topic path.
-     * @return Topic deleted.
-     */
-    unsubscribe(topic: string): Promise<void> {
-        let url_ = this.baseUrl + "/api/web/subscriptions/{topic}";
-        if (topic === undefined || topic === null)
-            throw new Error("The parameter 'topic' must be defined.");
-        url_ = url_.replace("{topic}", encodeURIComponent("" + topic));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ = <RequestInit>{
-            method: "DELETE",
-            headers: {
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processUnsubscribe(_response);
-        });
-    }
-
-    protected processUnsubscribe(response: Response): Promise<void> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
-            return response.text().then((_responseText) => {
-            return;
-            });
-        } else if (status === 500) {
-            return response.text().then((_responseText) => {
-            let result500: any = null;
-            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return throwException("Operation failed", status, _responseText, _headers, result500);
-            });
-        } else if (status === 400) {
-            return response.text().then((_responseText) => {
-            let result400: any = null;
-            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return throwException("Validation error", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<void>(<any>null);
     }
 }
 
@@ -1449,7 +1571,7 @@ export class EventsClient {
      * @param request The publish request.
      * @return Events created.
      */
-    postEvents(appId: string, request: PublishManyRequestDto): Promise<void> {
+    postEvents(appId: string, request: PublishManyDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2204,6 +2326,66 @@ export class AppsClient {
     }
 }
 
+export interface ProfileDto {
+    /** The full name of the user. */
+    fullName?: string;
+    /** The email of the user. */
+    emailAddress?: string;
+    /** The phone number. */
+    phoneNumber?: string;
+    /** The preferred language of the user. */
+    preferredLanguage?: string;
+    /** The timezone of the user. */
+    preferredTimezone?: string;
+    /** The supported languages. */
+    supportedLanguages?: string[];
+    /** The supported timezones. */
+    supportedTimezones?: string[];
+    /** Notification settings per channel. */
+    settings?: NotificationSettingsDto;
+}
+
+export interface NotificationSettingsDto {
+
+    [key: string]: NotificationSettingDto | any; 
+}
+
+export interface NotificationSettingDto {
+    /** True or false to send the notification for the channel. */
+    send?: NotificationSend;
+    /** The delay in seconds. */
+    delayInSeconds?: number | undefined;
+}
+
+export enum NotificationSend {
+    Inherit = "Inherit",
+    Send = "Send",
+    NotSending = "NotSending",
+    NotAllowed = "NotAllowed",
+}
+
+export interface UpdateProfileDto {
+    /** The full name of the user. */
+    fullName?: string | undefined;
+    /** The email of the user. */
+    emailAddress?: string | undefined;
+    /** The phone number. */
+    phoneNumber?: string | undefined;
+    /** The preferred language of the user. */
+    preferredLanguage?: string | undefined;
+    /** The timezone of the user. */
+    preferredTimezone?: string | undefined;
+    /** Notification settings per channel. */
+    settings?: NotificationSettingsDto | undefined;
+}
+
+export interface SubscriptionDto {
+    /** The topic to add. */
+    topicPrefix?: string;
+    /** Notification settings per channel. */
+    topicSettings?: NotificationSettingsDto | undefined;
+}
+
 export interface ListResponseDtoOfUserDto {
     /** The items. */
     items?: UserDto[];
@@ -2234,18 +2416,6 @@ export interface UserDto {
     counters?: CounterMap;
 }
 
-export interface NotificationSettingsDto {
-
-    [key: string]: NotificationSettingDto | any; 
-}
-
-export interface NotificationSettingDto {
-    /** True or false to send the notification for the channel. */
-    send?: boolean | undefined;
-    /** The delay in seconds. */
-    delayInSeconds?: number | undefined;
-}
-
 export interface CounterMap {
 
     [key: string]: number | any; 
@@ -2256,20 +2426,6 @@ export interface ListResponseDtoOfSubscriptionDto {
     items?: SubscriptionDto[];
     /** The total number of items. */
     total?: number;
-}
-
-export interface SubscriptionDto {
-    /** The topic to add. */
-    topicPrefix?: string;
-    /** Notification settings per channel. */
-    topicSettings?: NotificationSettingsDto;
-}
-
-export interface SubscribeDto {
-    /** The topic to add. */
-    topicPrefix?: string;
-    /** Notification settings per channel. */
-    topicSettings?: NotificationSettingsDto;
 }
 
 export interface UpsertUsersDto {
@@ -2296,7 +2452,7 @@ export interface UpsertUserDto {
     settings?: NotificationSettingsDto | undefined;
 }
 
-export interface AddAllowedTopicRequest {
+export interface AddAllowedTopicDto {
     /** The topic to add. */
     prefix?: string;
 }
@@ -2505,12 +2661,12 @@ export enum IsoDayOfWeek {
     Sunday = "Sunday",
 }
 
-export interface PublishManyRequestDto {
+export interface PublishManyDto {
     /** The publish requests. */
-    requests?: PublishRequestDto[];
+    requests?: PublishDto[];
 }
 
-export interface PublishRequestDto {
+export interface PublishDto {
     /** The topic path. */
     topic?: string;
     /** A custom id to identity the creator. */

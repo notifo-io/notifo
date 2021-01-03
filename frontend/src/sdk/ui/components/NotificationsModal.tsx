@@ -41,7 +41,7 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
     } = props;
 
     const [ref, setRef] = useState<HTMLDivElement>(null);
-    const [showProfile, setShowProfile] = useState(true);
+    const [showProfile, setShowProfile] = useState(false);
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>

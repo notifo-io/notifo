@@ -29,9 +29,9 @@ namespace Notifo.Domain.UserEvents
 
         public Instant Created { get; set; }
 
-        public NotificationSettings EventSettings { get; set; }
+        public NotificationSettings? EventSettings { get; set; }
 
-        public NotificationSettings SubscriptionSettings { get; set; }
+        public NotificationSettings? SubscriptionSettings { get; set; }
 
         public NotificationFormatting<LocalizedText> Formatting { get; set; }
 

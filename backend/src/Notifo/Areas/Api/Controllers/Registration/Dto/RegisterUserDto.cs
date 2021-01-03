@@ -36,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dto
             {
                 [Providers.WebPush] = new NotificationSetting
                 {
-                    Send = true
+                    Send = NotificationSend.Send
                 }
             };
 
@@ -44,7 +44,7 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dto
             {
                 result.Settings[Providers.Email] = new NotificationSetting
                 {
-                    Send = true
+                    Send = NotificationSend.Send
                 };
             }
 

@@ -17,7 +17,7 @@ export interface TopicButtonProps {
     options: TopicOptions;
 
     // True when subscribed.
-    subscription?: Subscription | null;
+    subscription: Subscription | null;
 
     // Invoked when the button is clicked.
     onClick: () => void;
@@ -35,10 +35,6 @@ export const TopicButton = (props: TopicButtonProps) => {
 
         event.preventDefault();
     }, [onClick]);
-
-    if (subscription === undefined) {
-        return null;
-    }
 
     let type = options.style;
 

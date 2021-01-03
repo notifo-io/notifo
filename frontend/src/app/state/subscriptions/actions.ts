@@ -6,7 +6,7 @@
  */
 
 import { buildError, List, Query } from '@app/framework';
-import { Clients, SubscribeDto, SubscriptionDto } from '@app/service';
+import { Clients, SubscriptionDto } from '@app/service';
 import { Dispatch, Middleware, Reducer } from 'redux';
 import { APP_SELECTED } from './../shared';
 import { SubscriptionsState } from './state';
@@ -28,7 +28,7 @@ export const loadSubscriptionsAsync = (appId: string, userId: string, q?: Partia
     return list.load(q, { appId, userId }, reset);
 };
 
-export const upsertSubscriptionAsync = (appId: string, userId: string, params: SubscribeDto) => {
+export const upsertSubscriptionAsync = (appId: string, userId: string, params: SubscriptionDto) => {
     return async (dispatch: Dispatch) => {
         dispatch({ type: SUBSCRIPTION_UPSERT_STARTED });
 

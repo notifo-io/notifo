@@ -68,21 +68,61 @@ export function parseShortNotification(value: any): NotifoNotification {
     };
 }
 
-export type NotificationChannel = { send?: boolean };
+export type NotificationSend = 'Inherit' | 'Send' | 'DoNotSend';
+export type NotificationChannel = { send: NotificationSend };
 export type NotificationSettings = { [channel: string]: NotificationChannel };
-export type Subscription = { settings: NotificationSettings };
 
-export type Profile = {
-    emailAddress?: string,
-    fullName?: string,
-    preferredLanguage: string,
-    preferredTimezone: string,
-    supportedLanguages: ReadonlyArray<string>,
-    supportedTimezones: ReadonlyArray<string>,
-    settings: NotificationSettings,
-};
+export function booleanToSend(send: boolean | undefined) {
+    switch (send) {
+        case true:
+            return 'Send';
+        case false:
+            return 'DoNotSend';
+        default:
+            return 'Inherit';
+    }
+}
 
-export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topic: string }): Promise<Subscription | null> {
+export function sendToBoolean(send: NotificationSend | undefined) {
+    switch (send) {
+        case 'Send':
+            return true;
+        case 'DoNotSend':
+            return false;
+        default:
+            return undefined;
+    }
+}
+
+export interface Subscription {
+    // The notification settings.
+    topicSettings?: NotificationSettings;
+}
+
+export interface Profile {
+    // The email address.
+    emailAddress?: string;
+
+    // The full name.
+    fullName?: string;
+
+    // The preferred language.
+    preferredLanguage: string;
+
+    // The preferred timezone.
+    preferredTimezone: string;
+
+    // The support languages configured in the app.
+    supportedLanguages: ReadonlyArray<string>;
+
+    // All available timeones.
+    supportedTimezones: ReadonlyArray<string>;
+
+    // The notification settings.
+    settings?: NotificationSettings;
+}
+
+export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topicPrefix: string }): Promise<Subscription | null> {
     const url = combineUrl(config.apiUrl, `api/me/subscriptions/`);
 
     const request: RequestInit = {
@@ -105,8 +145,8 @@ export async function apiPostSubscription(config: SDKConfig, subscription: Subsc
     }
 }
 
-export async function apiGetSubscription(config: SDKConfig, topic: string): Promise<Subscription | null> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topic}`);
+export async function apiGetSubscription(config: SDKConfig, topicPrefix: string): Promise<Subscription | null> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
 
     const request: RequestInit = {
         method: 'GET',
@@ -170,8 +210,8 @@ export async function apiPostProfile(config: SDKConfig, profile: Profile): Promi
     }
 }
 
-export async function apiDeleteSubscription(config: SDKConfig, topic: string): Promise<any> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topic}`);
+export async function apiDeleteSubscription(config: SDKConfig, topicPrefix: string): Promise<any> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
 
     const request: RequestInit = {
         method: 'DELETE',

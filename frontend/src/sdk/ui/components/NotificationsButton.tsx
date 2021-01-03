@@ -37,7 +37,7 @@ export const NotificationsButton = (props: NotificationsButtonProps) => {
             <Icon type={options.style} size={24} />
 
             {!!unseen &&
-                <div class='notifo-label'>
+                <div class='notifo-seen-label'>
                     {unseen}
                 </div>
             }

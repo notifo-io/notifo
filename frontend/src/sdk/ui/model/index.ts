@@ -7,42 +7,41 @@
 
 // tslint:disable: no-parameter-reassignment
 
-import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, Subscription } from '@sdk/shared';
+import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription } from '@sdk/shared';
 import { useEffect, useState } from 'preact/hooks';
-import { SDKConfig } from './../../shared';
 import { Dispatch, set, Store } from './store';
 
-type Transition = 'InProgress' | 'Failed' | 'Success';
+export type Transition = 'InProgress' | 'Failed' | 'Success';
 
-export type SubscriptionState = {
+export interface SubscriptionState {
     // The load state.
-    transition: Transition,
+    transition: Transition;
 
     // The subscription.
-    subscription?: Subscription,
-};
+    subscription?: Subscription;
+}
 
 export type SubscriptionsState = { [prefix: string]: SubscriptionState };
 
-export type NotifoState = {
+export interface NotifoState {
     // The current notifications.
-    notifications: ReadonlyArray<NotifoNotification>,
+    notifications: ReadonlyArray<NotifoNotification>;
 
     // The notifications state.
     notificationsTransition: Transition;
 
     // The profile state.
-    profileTransition?: Transition,
+    profileTransition?: Transition;
 
     // The loaded profile
-    profile?: Profile,
+    profile?: Profile;
 
     // True when connected.
-    isConnected?: boolean,
+    isConnected?: boolean;
 
     // The subscriptions.
     subscriptions: SubscriptionsState;
-};
+}
 
 type NotifoDispatch = Dispatch<NotifoAction>;
 type NotifoAction = { type: NotifoActionType, [x: string]: any  };
@@ -69,7 +68,7 @@ enum NotifoActionType {
     SetConnected,
 }
 
-function reducer(state: NotifoState, action: NotifoAction) {
+function reducer(state: NotifoState, action: NotifoAction): NotifoState {
     switch (action.type) {
         case NotifoActionType.SetConnected: {
             return { ...state, isConnected: action.isConnected };
@@ -94,63 +93,63 @@ function reducer(state: NotifoState, action: NotifoAction) {
         }
         case NotifoActionType.LoadSubscriptionStarted: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
-                    s => ({ ...s, transition: 'InProgress' } as any));
+                set(state.subscriptions, action.topicPrefix,
+                    s => ({ ...s, transition: 'InProgress' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.LoadSubscriptionFailed: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
-                    s => ({ ...s, transition: 'Failed' } as any));
+                set(state.subscriptions, action.topicPrefix,
+                    s => ({ ...s, transition: 'Failed' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.LoadSubscriptionSuccess: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
+                set(state.subscriptions, action.topicPrefix,
                     { transition: 'Success', subscription: action.subscription });
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.SubscribeStarted: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
-                    s => ({ ...s, transition: 'InProgress' } as any));
+                set(state.subscriptions, action.topicPrefix,
+                    s => ({ ...s, transition: 'InProgress' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.SubscribeFailed: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
-                    s => ({ ...s, transition: 'Failed' } as any));
+                set(state.subscriptions, action.topicPrefix,
+                    s => ({ ...s, transition: 'Failed' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.SubscribeSuccess: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
+                set(state.subscriptions, action.topicPrefix,
                     { transition: 'Success', subscription: action.subscription });
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.UnsubscribeStarted: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
-                    s => ({ ...s, transition: 'InProgress' } as any));
+                set(state.subscriptions, action.topicPrefix,
+                    s => ({ ...s, transition: 'InProgress' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.UnsubscribeFailed: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
-                    s => ({ ...s, transition: 'Failed' } as any));
+                set(state.subscriptions, action.topicPrefix,
+                    s => ({ ...s, transition: 'Failed' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case NotifoActionType.UnsubscribeSuccess: {
             const subscriptions =
-                set(state.subscriptions, action.topic,
+                set(state.subscriptions, action.topicPrefix,
                     { transition: 'Success', subscription: null });
 
             return { ...state, subscriptions };
@@ -162,7 +161,7 @@ function reducer(state: NotifoState, action: NotifoAction) {
                 if (state.notificationsTransition === 'Success') {
                     return state;
                 } else {
-                    return { ...state, notificationsTransition: 'Success' } as any;
+                    return { ...state, notificationsTransition: 'Success' };
                 }
             }
 
@@ -187,7 +186,7 @@ function reducer(state: NotifoState, action: NotifoAction) {
                 return x > y ? 1 : x < y ? -1 : 0;
             });
 
-            return { ...state, notifications, notificationsTransition: 'Loaded' };
+            return { ...state, notifications, notificationsTransition: 'Success' };
         }
     }
 
@@ -239,39 +238,39 @@ export function getUnseen(state: NotifoState) {
     return count;
 }
 
-export async function loadSubscription(config: SDKConfig, topic: string, dispatch: NotifoDispatch) {
+export async function loadSubscription(config: SDKConfig, topicPrefix: string, dispatch: NotifoDispatch) {
     try {
-        dispatch({ type: NotifoActionType.LoadSubscriptionStarted, topic });
+        dispatch({ type: NotifoActionType.LoadSubscriptionStarted, topicPrefix });
 
-        const subscription = await apiGetSubscription(config, topic);
+        const subscription = await apiGetSubscription(config, topicPrefix);
 
-        dispatch({ type: NotifoActionType.LoadSubscriptionSuccess, topic, subscription });
+        dispatch({ type: NotifoActionType.LoadSubscriptionSuccess, topicPrefix, subscription });
     } catch (ex) {
-        dispatch({ type: NotifoActionType.LoadSubscriptionFailed, ex, topic });
+        dispatch({ type: NotifoActionType.LoadSubscriptionFailed, ex, topicPrefix });
     }
 }
 
-export async function subscribe(config: SDKConfig, topic: string, subscription: Subscription, dispatch: NotifoDispatch) {
+export async function subscribe(config: SDKConfig, topicPrefix: string, subscription: Subscription, dispatch: NotifoDispatch) {
     try {
-        dispatch({ type: NotifoActionType.SubscribeStarted, topic });
+        dispatch({ type: NotifoActionType.SubscribeStarted, topicPrefix });
 
-        subscription = await apiPostSubscription(config, { topic, ...subscription });
+        subscription = await apiPostSubscription(config, { topicPrefix, ...subscription });
 
-        dispatch({ type: NotifoActionType.SubscribeSuccess, topic, subscription });
+        dispatch({ type: NotifoActionType.SubscribeSuccess, topicPrefix, subscription });
     } catch (ex) {
-        dispatch({ type: NotifoActionType.SubscribeFailed, ex, topic });
+        dispatch({ type: NotifoActionType.SubscribeFailed, ex, topicPrefix });
     }
 }
 
-export async function unsubscribe(config: SDKConfig, topic: string, dispatch: NotifoDispatch) {
+export async function unsubscribe(config: SDKConfig, topicPrefix: string, dispatch: NotifoDispatch) {
     try {
-        dispatch({ type: NotifoActionType.UnsubscribeStarted, topic });
+        dispatch({ type: NotifoActionType.UnsubscribeStarted, topicPrefix });
 
-        await apiDeleteSubscription(config, topic);
+        await apiDeleteSubscription(config, topicPrefix);
 
-        dispatch({ type: NotifoActionType.UnsubscribeSuccess, topic });
+        dispatch({ type: NotifoActionType.UnsubscribeSuccess, topicPrefix });
     } catch (ex) {
-        dispatch({ type: NotifoActionType.UnsubscribeFailed, ex, topic });
+        dispatch({ type: NotifoActionType.UnsubscribeFailed, ex, topicPrefix });
     }
 }
 

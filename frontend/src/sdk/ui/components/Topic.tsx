@@ -8,9 +8,9 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
+import { loadSubscription, useDispatch, useStore } from '@sdk/ui/model';
 import { useCallback, useEffect, useState } from 'preact/hooks';
-import { SDKConfig, TopicOptions } from './../../shared';
-import { loadSubscription, useDispatch, useStore } from './../model';
 import { TopicButton } from './TopicButton';
 import { TopicModal } from './TopicModal';
 
@@ -21,33 +21,39 @@ export interface TopicProps {
     options: TopicOptions;
 
     // The topic to watch.
-    topic: string;
+    topicPrefix: string;
 }
 
 export const TopicContainer = (props: TopicProps) => {
     const {
         config,
         options,
-        topic,
+        topicPrefix,
     } = props;
 
     const dispatch = useDispatch();
-    const subscription = useStore(x => x.subscriptions[topic]?.subscription);
+    const subscriptionState = useStore(x => x.subscriptions[topicPrefix]);
+    const subscription = subscriptionState?.subscription;
+    const subscriptionTransition = subscriptionState?.transition;
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        if (subscription === undefined) {
-            loadSubscription(config, topic, dispatch);
+        if (isUndefined(subscription)) {
+            loadSubscription(config, topicPrefix, dispatch);
         }
     }, []);
 
     const doShow = useCallback(() => {
         setIsOpen(true);
-    }, []);
+    }, [subscription]);
 
     const doHide = useCallback(() => {
         setIsOpen(false);
     }, []);
+
+    if (isUndefined(subscription)) {
+        return null;
+    }
 
     return (
         <div className='notifo'>
@@ -55,6 +61,9 @@ export const TopicContainer = (props: TopicProps) => {
 
             {isOpen &&
                 <TopicModal config={config} options={options}
+                    subscription={subscription}
+                    subscriptionTransition={subscriptionTransition}
+                    topicPrefix={topicPrefix}
                     onClickOutside={doHide} />
             }
         </div>

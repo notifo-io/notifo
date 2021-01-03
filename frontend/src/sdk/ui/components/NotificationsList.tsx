@@ -60,8 +60,8 @@ export const NotificationsList = (props: NotificationsListProps) => {
     return (
         <div>
             <div>
-                <button type='button' onClick={doShowProfile}>
-                    <Icon type='profile' size={20} />
+                <button class='notifo-profile-button' type='button' onClick={doShowProfile}>
+                    <Icon type='settings' size={20} />
                 </button>
             </div>
 

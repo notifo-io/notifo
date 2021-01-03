@@ -56,7 +56,7 @@ export const Toggle = (props: ToggleProps) => {
         setInternalValue(newValue);
     };
 
-    let clazz = 'notifo-toggle';
+    let clazz = 'notifo-form-toggle';
 
     if (internalValue) {
         clazz += ' checked';
@@ -68,7 +68,7 @@ export const Toggle = (props: ToggleProps) => {
 
     return (
         <div class={clazz} onClick={doToggle}>
-            <span class='notifo-toggle-slider' />
+            <span class='notifo-form-toggle-slider' />
         </div>
     );
 };

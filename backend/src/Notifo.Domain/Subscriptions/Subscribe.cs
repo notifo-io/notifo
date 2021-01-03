@@ -19,6 +19,8 @@ namespace Notifo.Domain.Subscriptions
     {
         public NotificationSettings? TopicSettings { get; set; }
 
+        public bool CanCreate => true;
+
         public async Task ExecuteAsync(Subscription target, IServiceProvider serviceProvider, CancellationToken ct)
         {
             var userStore = serviceProvider.GetRequiredService<IUserStore>();
@@ -27,6 +29,8 @@ namespace Notifo.Domain.Subscriptions
 
             if (TopicSettings != null)
             {
+                target.TopicSettings ??= new NotificationSettings();
+
                 foreach (var (key, value) in TopicSettings)
                 {
                     target.TopicSettings[key] = value;

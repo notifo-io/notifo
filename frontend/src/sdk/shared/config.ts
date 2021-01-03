@@ -7,7 +7,7 @@
 
 import { de, enUS } from 'date-fns/locale';
 import { isObject } from 'lodash';
-import { isNumber, isString, logWarn } from './utils';
+import { isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     ['en']: enUS,
@@ -16,8 +16,8 @@ export const SUPPORTED_LOCALES = {
 
 const DefaultTexts: Texts<{ de: string, en: string }> = {
     cancel: {
-        de: 'Cancel',
-        en: 'Abbrechen',
+        de: 'Abbrechen',
+        en: 'Cancel',
     },
     email: {
         de: 'E-Mail Adresse',
@@ -33,11 +33,11 @@ const DefaultTexts: Texts<{ de: string, en: string }> = {
     },
     notifyBeEmail: {
         de: 'Benachrichtige mich per Email',
-        en: 'Notify me by Email',
+        en: 'Notify me via Email',
     },
     notifyBeWebPush: {
         de: 'Benachrichtige mich per Push Notification',
-        en: 'Notify me by Push Notification',
+        en: 'Notify me via Push Notification',
     },
     notificationsEmpty: {
         de: 'Keine Benachrichtigungen vorhanden',
@@ -65,7 +65,7 @@ const DefaultTexts: Texts<{ de: string, en: string }> = {
     },
 };
 
-const IS_DEV = window.location.host.indexOf('localhost:3002') >= 0;
+const IS_DEV = global['window'] && window.location.host.indexOf('localhost:3002') >= 0;
 
 export function buildSDKConfig(opts: SDKConfig) {
     const options: SDKConfig = <any>{ ...opts || {} };
@@ -126,6 +126,14 @@ export function buildSDKConfig(opts: SDKConfig) {
         options.locale = 'en';
     }
 
+    if (isUndefined(options.allowEmails)) {
+        options.allowEmails = true;
+    }
+
+    if (isUndefined(options.allowProfile)) {
+        options.allowProfile = true;
+    }
+
     if (!isStringOption(options.apiUrl) && !isStringOption(options.apiKey)) {
         logWarn('init.apiUrl or init.apIKey must be defined');
 
@@ -164,15 +172,6 @@ export function buildNotificationsOptions(opts: NotificationsOptions) {
 
     if (!options.style) {
         options.style = SUPPORTED_MAIN_STYLES[0];
-    }
-
-    if (options.queryInterval && (!isNumber(options.queryInterval) || options.queryInterval < 2000)) {
-        logWarn(`show-notifications.queryInterval must be a number and greater than 2000ms.`);
-        options.queryInterval = undefined;
-    }
-
-    if (!options.queryInterval) {
-        options.queryInterval = 3000;
     }
 
     return options;
@@ -248,6 +247,12 @@ export interface SDKConfig {
     // True to negotiate the connection, otherwise sockets are used.
     negotiate: boolean;
 
+    // True when emails are allowed.
+    allowEmails: boolean;
+
+    // True when profile can be edited.
+    allowProfile: boolean;
+
     // The url to the service worker.
     serviceWorkerUrl: string;
 
@@ -289,9 +294,6 @@ export interface NotificationsOptions  {
 
     // The style of the button.
     style: OptionMainStyle;
-
-    // The interval to query.
-    queryInterval: number;
 }
 
 type Texts<T> = {

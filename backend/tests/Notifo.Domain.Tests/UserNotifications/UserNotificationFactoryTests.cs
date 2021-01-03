@@ -221,7 +221,7 @@ namespace Notifo.Domain.UserNotifications
             {
                 [Providers.Email] = new NotificationSetting
                 {
-                    Send = true
+                    Send = NotificationSend.Send
                 },
                 [Providers.MobilePush] = new NotificationSetting
                 {
@@ -233,7 +233,7 @@ namespace Notifo.Domain.UserNotifications
             {
                 [Providers.Email] = new NotificationSetting
                 {
-                    Send = true
+                    Send = NotificationSend.Send
                 }
             };
 
@@ -241,7 +241,7 @@ namespace Notifo.Domain.UserNotifications
             {
                 [Providers.Email] = new NotificationSetting
                 {
-                    Send = false
+                    Send = NotificationSend.NotSending
                 }
             };
 
@@ -252,7 +252,7 @@ namespace Notifo.Domain.UserNotifications
                 {
                     [Providers.Email] = new NotificationSetting
                     {
-                        Send = false
+                        Send = NotificationSend.NotSending
                     },
                     [Providers.MobilePush] = new NotificationSetting
                     {

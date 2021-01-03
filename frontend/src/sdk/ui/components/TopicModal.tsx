@@ -8,8 +8,10 @@
 /** @jsx h */
 import { h } from 'preact';
 
-import { SDKConfig, Subscription, TopicOptions } from '@sdk/shared';
+import { booleanToSend, SDKConfig, sendToBoolean, Subscription, TopicOptions } from '@sdk/shared';
+import { subscribe, Transition, unsubscribe, useDispatch } from '@sdk/ui/model';
 import { useCallback, useEffect, useState } from 'preact/hooks';
+import { Loader } from './Loader';
 import { Modal } from './Modal';
 import { Toggle } from './Toggle';
 
@@ -21,7 +23,13 @@ export interface TopicModalProps {
     options: TopicOptions;
 
     // The subscription.
-    subscription?: Subscription;
+    subscription: Subscription | null;
+
+    // The subscription.
+    subscriptionTransition: Transition;
+
+    // The topic to watch.
+    topicPrefix: string;
 
     // Triggered when clicked outside.
     onClickOutside?: () => void;
@@ -33,61 +41,86 @@ export const TopicModal = (props: TopicModalProps) => {
         onClickOutside,
         options,
         subscription,
+        subscriptionTransition,
+        topicPrefix,
     } = props;
 
-    const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription>({ settings: {} });
+    const dispatch = useDispatch();
+    const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription>({ topicSettings: {} });
 
     useEffect(() => {
-        setSubscriptionToEdit(subscription || { settings: {} });
+        setSubscriptionToEdit(subscription || { topicSettings: {} });
     }, [subscription]);
 
     const doSetEmail = useCallback((send: boolean | undefined) => {
         setChannel(subscriptionToEdit, 'email', send);
-    }, [setSubscriptionToEdit]);
+    }, [subscriptionToEdit]);
 
     const doSetPush = useCallback((send: boolean | undefined) => {
         setChannel(subscriptionToEdit, 'webpush', send);
-    }, [setSubscriptionToEdit]);
+    }, [subscriptionToEdit]);
+
+    const doSubscribe = useCallback(() => {
+        subscribe(config, topicPrefix, subscriptionToEdit, dispatch);
+    }, [subscriptionToEdit, topicPrefix]);
+
+    const doUnsubscribe = useCallback(() => {
+        unsubscribe(config, topicPrefix, dispatch);
+    }, [topicPrefix]);
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>
             <div>
-                <div class='notifo-form-group'>
-                    <Toggle indeterminate value={subscriptionToEdit.settings?.email?.send}
-                        onChange={doSetEmail} />
+                {config.allowEmails &&
+                    <div class='notifo-form-group'>
+                        <Toggle indeterminate value={sendToBoolean(subscriptionToEdit.topicSettings?.email?.send)}
+                            onChange={doSetEmail} />
 
-                    <label class='notifo-toggle-label'>{config.texts.notifyBeEmail}</label>
-                </div>
+                        <label class='notifo-form-toggle-label'>{config.texts.notifyBeEmail}</label>
+                    </div>
+                }
 
                 <div class='notifo-form-group'>
-                    <Toggle indeterminate value={subscriptionToEdit.settings?.webpush?.send}
+                    <Toggle indeterminate value={sendToBoolean(subscriptionToEdit.topicSettings?.webpush?.send)}
                         onChange={doSetPush} />
 
-                    <label class='notifo-toggle-label'>{config.texts.notifyBeWebPush}</label>
+                    <label class='notifo-form-toggle-label'>{config.texts.notifyBeWebPush}</label>
                 </div>
 
+                <hr />
+
                 <div class='notifo-form-group'>
-                    <button class='notifo-action-button'>
-                        {config.texts.unsubscribe}
+                    <button class='notifo-form-button primary' onClick={doSubscribe}>
+                        {subscription ? (
+                            <span>{config.texts.save}</span>
+                        ) : (
+                            <span>{config.texts.subscribe}</span>
+                        )}
                     </button>
 
-                    <button class='notifo-action-button notifo-action-button-primary'>
-                        {config.texts.save}
-                    </button>
+                    {subscription &&
+                        <button class='notifo-form-button' onClick={doUnsubscribe}>
+                            {config.texts.unsubscribe}
+                        </button>
+                    }
+
+                    <Loader size={16} visible={subscriptionTransition === 'InProgress'} />
                 </div>
             </div>
         </Modal>
     );
 };
 
-function setChannel(subscription: Subscription, channel: string, send?: boolean) {
-    if (!subscription.settings) {
-        subscription.settings = {};
+function setChannel(subscription: Subscription, channel: string, value?: boolean) {
+    if (!subscription.topicSettings) {
+        subscription.topicSettings = {};
     }
 
-    if (!subscription.settings[channel]) {
-        subscription.settings[channel] = { send };
+    const send = booleanToSend(value);
+
+    if (!subscription.topicSettings[channel]) {
+        subscription.topicSettings[channel] = { send };
     } else {
-        subscription.settings[channel].send = send;
+        subscription.topicSettings[channel].send = send;
     }
 }
