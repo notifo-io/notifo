@@ -5,11 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { apiRegister } from './api';
-import { PUSH } from './push';
-import { buildSDKConfig, SDKConfig } from './shared';
-import { UI } from './ui';
-import { isArray, JobQueue, logError, logWarn } from './utils';
+import { PUSH } from '@sdk/push';
+import { apiRegister, buildSDKConfig, isArray, JobQueue, logError, logWarn, SDKConfig } from '@sdk/shared';
+import { UI } from '@sdk/ui';
 
 import './ui/style/sdk.scss';
 

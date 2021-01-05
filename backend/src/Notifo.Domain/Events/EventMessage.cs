@@ -30,7 +30,7 @@ namespace Notifo.Domain.Events
 
         public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 
-        public NotificationSettings Settings { get; set; } = new NotificationSettings();
+        public NotificationSettings? Settings { get; set; } = new NotificationSettings();
 
         public EventProperties Properties { get; set; }
 

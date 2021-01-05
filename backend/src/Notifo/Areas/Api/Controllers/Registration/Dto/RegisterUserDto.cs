@@ -12,7 +12,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Registration.Dto
 {
-    public sealed class RegisterRequestDto
+    public sealed class RegisterUserDto
     {
         public bool CreateUser { get; set; }
 
@@ -36,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dto
             {
                 [Providers.WebPush] = new NotificationSetting
                 {
-                    Send = true
+                    Send = NotificationSend.Send
                 }
             };
 
@@ -44,7 +44,7 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dto
             {
                 result.Settings[Providers.Email] = new NotificationSetting
                 {
-                    Send = true
+                    Send = NotificationSend.Send
                 };
             }
 

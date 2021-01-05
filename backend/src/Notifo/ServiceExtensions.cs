@@ -55,8 +55,17 @@ namespace Microsoft.Extensions.DependencyInjection
                 ["MongoDB"] = () =>
                 {
                     services.AddMyMongoDb(config);
+                    services.AddMyMongoApps();
                     services.AddMyMongoDbIdentity();
                     services.AddMyMongoDbScheduler();
+                    services.AddMyMongoEvents();
+                    services.AddMyMongoLog();
+                    services.AddMyMongoMedia();
+                    services.AddMyMongoSubscriptions();
+                    services.AddMyMongoTemplates();
+                    services.AddMyMongoTopics();
+                    services.AddMyMongoUserNotifications();
+                    services.AddMyMongoUsers();
                 }
             });
         }

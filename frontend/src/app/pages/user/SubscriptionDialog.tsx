@@ -6,7 +6,7 @@
  */
 
 import { FormError, Forms, Loader } from '@app/framework';
-import { SubscribeDto, SubscriptionDto } from '@app/service';
+import { SubscriptionDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { upsertSubscriptionAsync, useApps, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
@@ -60,7 +60,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
         }
     }, []);
 
-    const doSave = React.useCallback((params: SubscribeDto) => {
+    const doSave = React.useCallback((params: SubscriptionDto) => {
         dispatch(upsertSubscriptionAsync(appId, userId, params));
     }, [appId, userId]);
 
@@ -68,7 +68,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
 
     return (
         <Modal isOpen={true} size='lg' toggle={doCloseForm}>
-            <Formik<SubscribeDto> initialValues={initialValues} onSubmit={doSave} enableReinitialize validationSchema={FormSchema}>
+            <Formik<SubscriptionDto> initialValues={initialValues} onSubmit={doSave} enableReinitialize validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

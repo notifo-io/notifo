@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.Linq;
 using NodaTime;
 using Notifo.Domain;
 using Notifo.Domain.Events;
@@ -13,7 +14,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Events.Dtos
 {
-    public class PublishRequestDto
+    public class PublishDto
     {
         /// <summary>
         /// The topic path.
@@ -74,8 +75,10 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
                 result.Formatting = Preformatted.ToDomainObject();
             }
 
-            if (Settings != null)
+            if (Settings?.Any() == true)
             {
+                result.Settings = new NotificationSettings();
+
                 foreach (var (key, value) in Settings)
                 {
                     if (value != null)

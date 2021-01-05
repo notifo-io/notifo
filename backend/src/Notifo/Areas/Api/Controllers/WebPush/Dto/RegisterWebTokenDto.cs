@@ -7,7 +7,7 @@
 
 namespace Notifo.Areas.Api.Controllers.WebPush
 {
-    public sealed class WebPushRequestDto
+    public sealed class RegisterWebTokenDto
     {
         public WebPushSubscriptionDto Subscription { get; set; }
     }

@@ -15,6 +15,13 @@ namespace Notifo.Domain.Subscriptions
 
         public TopicId TopicPrefix { get; set; }
 
-        public NotificationSettings TopicSettings { get; set; }
+        public NotificationSettings? TopicSettings { get; set; }
+
+        public static Subscription Create(string appId, string userId, TopicId prefix)
+        {
+            var subscription = new Subscription { AppId = appId, UserId = userId, TopicPrefix = prefix };
+
+            return subscription;
+        }
     }
 }

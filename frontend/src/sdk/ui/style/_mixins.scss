@@ -23,6 +23,20 @@
     }
 }
 
+@mixin size($w, $h) {
+    display: inline-block;
+    height: $h;
+    max-height: $h;
+    max-width: $w;
+    min-height: $h;
+    min-width: $w;
+    width: $w;
+}
+
+@mixin middle {
+    vertical-align: middle;
+}
+
 @mixin position($t: null, $r: null, $b: null, $l: null) {
     bottom: $b; left: $l; right: $r; top: $t;
 }

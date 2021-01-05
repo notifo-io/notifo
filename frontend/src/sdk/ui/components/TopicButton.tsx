@@ -8,9 +8,8 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { Subscription, TopicOptions } from '@sdk/shared';
 import { useCallback } from 'preact/hooks';
-import { TopicOptions } from './../../shared';
-import { TopicState } from './../model';
 import { Icon } from './Icon';
 
 export interface TopicButtonProps {
@@ -18,14 +17,18 @@ export interface TopicButtonProps {
     options: TopicOptions;
 
     // True when subscribed.
-    subscription: TopicState;
+    subscription: Subscription | null;
 
     // Invoked when the button is clicked.
     onClick: () => void;
 }
 
 export const TopicButton = (props: TopicButtonProps) => {
-    const { onClick, options, subscription } = props;
+    const {
+        onClick,
+        options,
+        subscription,
+    } = props;
 
     const doClick = useCallback((event: Event) => {
         onClick && onClick();
@@ -33,13 +36,9 @@ export const TopicButton = (props: TopicButtonProps) => {
         event.preventDefault();
     }, [onClick]);
 
-    if (subscription === 'Pending' || subscription === 'Unknown') {
-        return null;
-    }
-
     let type = options.style;
 
-    if (subscription === 'NotSubscribed') {
+    if (subscription === null) {
         type += '_off';
     }
 

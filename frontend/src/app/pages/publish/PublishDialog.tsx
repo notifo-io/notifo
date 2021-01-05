@@ -6,7 +6,7 @@
  */
 
 import { FormError, Forms, Loader } from '@app/framework';
-import { PublishRequestDto } from '@app/service';
+import { PublishDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { getApp, hidePublishDialog, publishAsync, useApps, usePublish } from '@app/state';
 import { texts } from '@app/texts';
@@ -55,7 +55,7 @@ export const PublishDialog = () => {
         dispatch(hidePublishDialog());
     }, []);
 
-    const doPublish = React.useCallback((params: PublishRequestDto) => {
+    const doPublish = React.useCallback((params: PublishDto) => {
         dispatch(publishAsync(appId, params));
     }, [appId]);
 
@@ -63,7 +63,7 @@ export const PublishDialog = () => {
 
     return (
         <Modal isOpen={dialogOpen} size='lg' backdrop={false} toggle={doCloseForm}>
-            <Formik<PublishRequestDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>
+            <Formik<PublishDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>
                 {({ handleSubmit, values }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

@@ -166,14 +166,14 @@ namespace Notifo.Domain.UserNotifications
             {
                 if (channel.IsSystem)
                 {
-                    var preference = new NotificationSetting
+                    var setting = new NotificationSetting
                     {
-                        Send = true
+                        Send = NotificationSend.Send
                     };
 
-                    if (channel.CanSend(notification, preference, user, app))
+                    if (channel.CanSend(notification, setting, user, app))
                     {
-                        notification.Settings[channel.Name] = preference;
+                        notification.Settings[channel.Name] = setting;
 
                         targets.Add(channel);
                     }

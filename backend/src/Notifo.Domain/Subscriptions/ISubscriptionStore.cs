@@ -20,16 +20,12 @@ namespace Notifo.Domain.Subscriptions
 
         Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
 
-        Task<Subscription> SubscribeAsync(string appId, SubscriptionUpdate update, CancellationToken ct = default);
+        Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> update, CancellationToken ct = default);
 
-        Task SubscribeWhenNotFoundAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
+        Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
 
-        Task SubscribeWhenNotFoundAsync(string appId, SubscriptionUpdate update, CancellationToken ct = default);
+        Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
 
-        Task UnsubscribeAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
-
-        Task AddAllowedTopicAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
-
-        Task RemoveAllowedTopicAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
+        Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default);
     }
 }

@@ -6,14 +6,13 @@
  */
 
 /** @jsx h */
-import { isFunction } from 'lodash';
 import { h } from 'preact';
 
+import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
+import { Connection } from '@sdk/ui/api/connection';
+import { addNotifications, setConnected, useDispatch } from '@sdk/ui/model';
+import { isFunction } from 'lodash';
 import { useCallback, useEffect, useState } from 'preact/hooks';
-import { NotifoNotification } from './../../api';
-import { NotificationsOptions, SDKConfig } from './../../shared';
-import { Connection } from './../api/connection';
-import { addNotifications, getUnseen, useNotifoState } from './../model';
 import { NotificationsButton } from './NotificationsButton';
 import { NotificationsModal } from './NotificationsModal';
 
@@ -26,17 +25,20 @@ export interface NotificationsProps {
 }
 
 export const NotificationsContainer = (props: NotificationsProps) => {
-    const { config, options } = props;
+    const {
+        config,
+        options,
+    } = props;
 
-    const [state, dispatch] = useNotifoState();
-    const [isOpen, setIsOpen] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
+    const dispatch = useDispatch();
+    const [isOpen, setIsOpen] = useState(true);
     const [connection] = useState(() => new Connection(config));
 
     useEffect(() => {
         connection.onNotifications(notifications => {
             addNotifications(notifications, dispatch);
         });
+
         connection.onNotification(notification => {
             addNotifications([notification], dispatch);
 
@@ -50,15 +52,15 @@ export const NotificationsContainer = (props: NotificationsProps) => {
         });
 
         connection.onReconnected(() => {
-            setIsConnected(true);
+            setConnected(true, dispatch);
         });
 
         connection.onReconnecting(() => {
-            setIsConnected(false);
+            setConnected(false, dispatch);
         });
 
         connection.start().then(() => {
-            setIsConnected(true);
+            setConnected(true, dispatch);
         });
     }, [config]);
 
@@ -82,18 +84,13 @@ export const NotificationsContainer = (props: NotificationsProps) => {
         setIsOpen(false);
     }, []);
 
-    const unseen = getUnseen(state);
-
     return (
         <div className='notifo'>
-            <NotificationsButton options={options} unseen={unseen} onClick={doShow} />
+            <NotificationsButton options={options} onClick={doShow} />
 
             {isOpen &&
                 <NotificationsModal
                     config={config}
-                    loaded={true}
-                    isConnected={isConnected}
-                    notifications={state.notifications}
                     onClickOutside={doHide}
                     onConfirm={doConfirm}
                     onSeen={doSee}

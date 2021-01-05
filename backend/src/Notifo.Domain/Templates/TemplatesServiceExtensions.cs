@@ -14,11 +14,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyTemplates(this IServiceCollection services)
         {
-            services.AddSingletonAs<MongoDbTemplateRepository>()
-                .As<ITemplateRepository>();
-
             services.AddSingletonAs<TemplateStore>()
                 .As<ITemplateStore>();
+        }
+
+        public static void AddMyMongoTemplates(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbTemplateRepository>()
+                .As<ITemplateRepository>();
         }
     }
 }

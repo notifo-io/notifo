@@ -27,7 +27,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
 
         [HttpPost("api/mobilepush")]
         [AppPermission(Roles.User)]
-        public async Task<IActionResult> PostToken([FromBody] MobilePushRequestDto request)
+        public async Task<IActionResult> PostToken([FromBody] RegisterMobileTokenDto request)
         {
             var command = new AddUserMobileToken
             {
@@ -41,7 +41,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
 
         [HttpDelete("api/mobilepush")]
         [AppPermission(Roles.User)]
-        public async Task<IActionResult> DeleteToken([FromBody] MobilePushRequestDto request)
+        public async Task<IActionResult> DeleteToken([FromBody] RegisterMobileTokenDto request)
         {
             var command = new RemoveUserMobileToken
             {

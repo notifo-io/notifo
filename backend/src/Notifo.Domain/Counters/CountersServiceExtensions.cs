@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Counters;
 
-namespace Notifo.Domain.Counters
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class CountersServiceExtensions
     {

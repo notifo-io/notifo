@@ -8,10 +8,11 @@
 /** @jsx h */
 import { h } from 'preact';
 
-import { useCallback, useEffect } from 'preact/hooks';
-import { SDKConfig, TopicOptions } from './../../shared';
-import { loadSubscription, subscribe, unsubscribe, useNotifoState } from './../model';
+import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
+import { loadSubscription, useDispatch, useStore } from '@sdk/ui/model';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { TopicButton } from './TopicButton';
+import { TopicModal } from './TopicModal';
 
 export interface TopicProps {
     config: SDKConfig;
@@ -20,32 +21,51 @@ export interface TopicProps {
     options: TopicOptions;
 
     // The topic to watch.
-    topic: string;
+    topicPrefix: string;
 }
 
 export const TopicContainer = (props: TopicProps) => {
-    const { config, options, topic } = props;
+    const {
+        config,
+        options,
+        topicPrefix,
+    } = props;
 
-    const [state, dispatch] = useNotifoState();
-    const subscription = state.subscriptions[topic] || 'Unknown';
+    const dispatch = useDispatch();
+    const subscriptionState = useStore(x => x.subscriptions[topicPrefix]);
+    const subscription = subscriptionState?.subscription;
+    const subscriptionTransition = subscriptionState?.transition;
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        if (subscription === 'Unknown') {
-            loadSubscription(config, topic, dispatch);
+        if (isUndefined(subscription)) {
+            loadSubscription(config, topicPrefix, dispatch);
         }
     }, []);
 
-    const doToggle = useCallback(() => {
-        if (subscription === 'Subscribed') {
-            unsubscribe(config, topic, dispatch);
-        } else if (subscription === 'NotSubscribed') {
-            subscribe(config, topic, dispatch);
-        }
+    const doShow = useCallback(() => {
+        setIsOpen(true);
     }, [subscription]);
+
+    const doHide = useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
+    if (isUndefined(subscription)) {
+        return null;
+    }
 
     return (
         <div className='notifo'>
-            <TopicButton options={options} subscription={subscription} onClick={doToggle} />
+            <TopicButton options={options} subscription={subscription} onClick={doShow} />
+
+            {isOpen &&
+                <TopicModal config={config} options={options}
+                    subscription={subscription}
+                    subscriptionTransition={subscriptionTransition}
+                    topicPrefix={topicPrefix}
+                    onClickOutside={doHide} />
+            }
         </div>
     );
 };

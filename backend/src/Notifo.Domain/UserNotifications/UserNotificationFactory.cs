@@ -92,6 +92,10 @@ namespace Notifo.Domain.UserNotifications
                     notification.Formatting.ConfirmText = DefaultConfirmText;
                 }
             }
+            else
+            {
+                notification.Formatting.ConfirmText = null;
+            }
 
             notification.TrackingUrl = url.TrackSeen(notification.Id, language);
         }

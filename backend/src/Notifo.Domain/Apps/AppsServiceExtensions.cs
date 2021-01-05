@@ -15,11 +15,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyApps(this IServiceCollection services)
         {
-            services.AddSingletonAs<MongoDbAppRepository>()
-                .As<IAppRepository>();
-
             services.AddSingletonAs<AppStore>()
                 .As<IAppStore>().As<ICounterTarget>();
+        }
+
+        public static void AddMyMongoApps(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbAppRepository>()
+                .As<IAppRepository>();
         }
     }
 }

@@ -28,6 +28,21 @@ const CONFIRM_MODES = [{
     },
 ];
 
+const SEND_MODES = [{
+        value: 'Inherit',
+        label: texts.common.sendModes.inherit,
+    }, {
+        value: 'Send',
+        label: texts.common.sendModes.send,
+    }, {
+        value: 'DoNotSend',
+        label: texts.common.sendModes.doNotSend,
+    }, {
+        value: 'DoNotAllow',
+        label: texts.common.sendModes.doNotAllow,
+    },
+];
+
 export module NotificationsForm {
     export interface FormattingProps {
         // The name of the field.
@@ -126,8 +141,7 @@ export module NotificationsForm {
             <fieldset key={channel}>
                 <legend>{texts.notificationSettings[channel].title}</legend>
 
-                <Forms.Boolean name={`${field}.${channel}.send`} disabled={disabled} indeterminate
-                    label={texts.notificationSettings[channel].send} />
+                <Forms.Select name={`${field}.${channel}.send`} disabled={disabled} options={SEND_MODES} />
 
                 <Forms.Number name={`${field}.${channel}.delayInSeconds`}
                     label={texts.notificationSettings.delayInSeconds} min={0} max={6000} />

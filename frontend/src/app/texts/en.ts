@@ -74,6 +74,12 @@ export const EN = {
         refresh: 'Refresh',
         save: 'Save',
         send: 'Send',
+        sendModes: {
+            inherit: 'Inherit',
+            send: 'Send',
+            doNotSend: 'Do not send',
+            doNotAllow: 'Do not allow',
+        },
         sent: 'Sent',
         settings: 'Settings',
         silent: 'Silent',

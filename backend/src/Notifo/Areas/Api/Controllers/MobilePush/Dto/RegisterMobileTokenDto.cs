@@ -5,14 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.Registration.Dto
+using System.ComponentModel.DataAnnotations;
+
+namespace Notifo.Areas.Api.Controllers.MobilePush.Dto
 {
-    public sealed class RegisterResponseDto
+    public sealed class RegisterMobileTokenDto
     {
-        public string PublicKey { get; set; }
-
-        public string? UserId { get; set; }
-
-        public string? UserToken { get; set; }
+        [Required]
+        public string Token { get; set; }
     }
 }

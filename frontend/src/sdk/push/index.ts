@@ -5,9 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { isFunction } from 'lodash';
-import { SDKConfig, SubscribeOptions } from './../shared';
-import { logError, logWarn } from './../utils';
+import { isFunction, logError, logWarn, SDKConfig, SubscribeOptions } from '@sdk/shared';
 
 export module PUSH {
     export async function subscribe(config: SDKConfig, options?: SubscribeOptions) {

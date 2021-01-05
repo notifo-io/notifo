@@ -6,8 +6,7 @@
  */
 
 import * as signalR from '@microsoft/signalr';
-import { NotifoNotification } from './../../api';
-import { SDKConfig } from './../../shared';
+import { NotifoNotification, SDKConfig } from '@sdk/shared';
 
 class Retry implements signalR.IRetryPolicy {
     private readonly timeouts = [1000, 5000, 1000, 30000];

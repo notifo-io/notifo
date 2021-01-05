@@ -104,7 +104,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 "tenant1/updates/news"
             }, subscriptions_0);
 
-            await _.Repository.UnsubscribeAsync(appId, userId1, "tenant1/updates");
+            await _.Repository.DeleteAsync(appId, userId1, "tenant1/updates");
 
             var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
@@ -132,7 +132,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 "tenant2/updates/news"
             }, subscriptions_0);
 
-            await _.Repository.UnsubscribeByPrefixAsync(appId, userId1, "tenant2");
+            await _.Repository.DeletePrefixAsync(appId, userId1, "tenant2");
 
             var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
@@ -152,17 +152,25 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         private Task SubscribeAsync(string userId, string topicPrefix, bool sendEmail = false)
         {
-            var update = new SubscriptionUpdate { TopicPrefix = topicPrefix, UserId = userId };
+            var subscription = new Subscription
+            {
+                UserId = userId,
+                TopicPrefix = topicPrefix,
+                TopicSettings = new NotificationSettings()
+            };
 
             if (sendEmail)
             {
-                update.TopicSettings[Providers.Email] = new NotificationSetting
+                subscription.TopicSettings = new NotificationSettings
                 {
-                    Send = sendEmail
+                    [Providers.Email] = new NotificationSetting
+                    {
+                        Send = NotificationSend.Send
+                    }
                 };
             }
 
-            return _.Repository.SubscribeAsync(appId, update);
+            return _.Repository.UpsertAsync(subscription, null, default);
         }
 
         private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)

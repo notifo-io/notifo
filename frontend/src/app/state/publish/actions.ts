@@ -6,7 +6,7 @@
  */
 
 import { buildError } from '@app/framework';
-import { Clients, PublishRequestDto } from '@app/service';
+import { Clients, PublishDto } from '@app/service';
 import { Dispatch, Reducer } from 'redux';
 import { PublishState } from './state';
 
@@ -16,7 +16,7 @@ export const PUBLISH_PUBLISH_FAILED = 'PUBLISH_PUBLISH_FAILED';
 export const PUBLISH_DIALOG_SHOW = 'PUBLISH_DIALOG_SHOW';
 export const PUBLISH_DIALOG_HIDE = 'PUBLISH_DIALOG_HIDE';
 
-export const openPublishDialog = (params?: Partial<PublishRequestDto>) => {
+export const openPublishDialog = (params?: Partial<PublishDto>) => {
     return { type: PUBLISH_DIALOG_SHOW, params };
 };
 
@@ -24,7 +24,7 @@ export const hidePublishDialog = () => {
     return { type: PUBLISH_DIALOG_HIDE };
 };
 
-export const publishAsync = (appId: string, params: PublishRequestDto) => {
+export const publishAsync = (appId: string, params: PublishDto) => {
     return async (dispatch: Dispatch) => {
         dispatch({ type: PUBLISH_PUBLISH_STARTED });
 
