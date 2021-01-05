@@ -76,6 +76,14 @@ export function logError(message: string) {
     console.error(`NOTIFO SDK: ${message}`);
 }
 
+export function withPreset(src: string, preset: string) {
+    if (src.indexOf('?') >= 0) {
+        return `${src}&preset=${preset}`;
+    } else {
+        return `${src}?preset=${preset}`;
+    }
+}
+
 export function combineUrl(baseUrl: string, relativeUrl: string) {
     let b = baseUrl;
 

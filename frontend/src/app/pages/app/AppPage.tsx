@@ -99,16 +99,19 @@ export const AppPage = () => {
     const app = useApps(getApp);
     const appId = match.params['appId'];
     const loading = useApps(x => x.apps.isLoading);
+    const [appSelected, setAppSelected] = React.useState(false);
 
     React.useEffect(() => {
         dispatch(selectApp(appId));
+
+        setAppSelected(true);
     }, [appId]);
 
     const doPublish = React.useCallback(() => {
         dispatch(openPublishDialog());
     }, []);
 
-    if (loading) {
+    if (loading || !appSelected) {
         return null;
     }
 

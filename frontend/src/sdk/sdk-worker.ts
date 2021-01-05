@@ -6,7 +6,7 @@
  */
 
 import { SWMessage } from '@sdk/push/shared';
-import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseShortNotification, SDKConfig } from '@sdk/shared';
+import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseShortNotification, SDKConfig, withPreset } from '@sdk/shared';
 
 (function (self: ServiceWorkerGlobalScope) {
     self.addEventListener('install', () => {
@@ -86,11 +86,11 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
                     }
 
                     if (notification.imageSmall) {
-                        options.icon = `${notification.imageSmall}?preset=WebPushSmall`;
+                        options.icon = withPreset(notification.imageSmall, 'WebPushSmall');
                     }
 
                     if (notification.imageLarge) {
-                        options.image = `${notification.imageLarge}?preset=WebPushLarge`;
+                        options.image = withPreset(notification.imageLarge, 'WebPushSmall');
                     }
 
                     return self.registration.showNotification(notification.subject, options);
