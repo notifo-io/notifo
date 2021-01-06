@@ -52,8 +52,8 @@ export const UserDialog = (props: UserDialogProps) => {
         }
     }, []);
 
-    const doSave = React.useCallback((values: UpsertUserDto) => {
-        dispatch(upsertUserAsync(appId, values));
+    const doSave = React.useCallback((params: UpsertUserDto) => {
+        dispatch(upsertUserAsync({ appId, params }));
     }, [appId]);
 
     const initialValues: any = user || {};

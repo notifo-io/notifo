@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@microsoft/signalr": "^5.0.0",
+    "@reduxjs/toolkit": "^1.5.0",
     "bootstrap": "4.5.3",
     "codemirror": "5.58.2",
     "core-js": "3.7.0",

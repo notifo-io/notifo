@@ -66,8 +66,8 @@ export const AppSettings = (props: AppSettingsProps) => {
         return languages.map(x => x.value);
     }, [languages]);
 
-    const doSave = React.useCallback((values: UpsertAppDto) => {
-        dispatch(upsertAppAsync(appDetails.id, values));
+    const doSave = React.useCallback((params: UpsertAppDto) => {
+        dispatch(upsertAppAsync({ appId: appDetails.id, params }));
     }, [appDetails.id]);
 
     return (

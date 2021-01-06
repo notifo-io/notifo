@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Dispatch } from 'redux';
+import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { buildError, ErrorDto, Types } from './../utils';
 
 export interface ListState<T, TExtra = any> extends Query {
@@ -52,149 +52,128 @@ export interface Query {
 
 export interface SearchRequest extends Query {
     [x: string]: any;
+
+    // The number of items to take.
+    take: number;
+
+    // The number of items to skip.
+    skip: number;
 }
 
-export class List<T, TExtra = any> {
-    private readonly LOADING_STARTED = `${this.name.toUpperCase()}_LOADING_STARTED`;
-    private readonly LOADING_FAILED = `${this.name.toUpperCase()}_LOADING_FAILED`;
-    private readonly LOADING_SUCCESS = `${this.name.toUpperCase()}_LOADING_SUCCESS`;
+type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>, total: number, extra?: TExtra }>;
+type ListArgs = { query?: Partial<Query>, reset?: boolean } & { [x: string]: any };
 
-    constructor(
-        private readonly prefix: string,
-        private readonly name: string,
-        private readonly loader: (request: SearchRequest) => Promise<{ items: ReadonlyArray<T>, total: number, extra?: TExtra }>,
-    ) {
+export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
+    const action = createAsyncThunk(`${prefix}/${key}/load`, async (args: ListArgs, thunkApi) => {
+        const { query, ...params } = args || {};
+
+        const mergedQuery = mergeQuery(query, thunkApi.getState()[prefix][key]);
+
+        try {
+            const loaderRequest: SearchRequest = {
+                ...mergedQuery,
+                take: mergedQuery.pageSize,
+                skip: mergedQuery.pageSize * mergedQuery.page,
+                ...params,
+            };
+
+            const { items, total, extra } = await loader(loaderRequest);
+
+            return { items, total, extra };
+        } catch (err) {
+            const error = buildError(err.status, err.message);
+
+            return thunkApi.rejectWithValue(error);
+        }
+    }, {
+        condition: (_, thunkApi) => {
+            const state = thunkApi.getState()[prefix][key] as ListState<TItem>;
+
+            return !state.isLoading;
+        },
+    });
+
+    const initialize = function (builder: ActionReducerMapBuilder<T>) {
+        builder.addCase(action.pending, (state, action) => {
+            const list = state[key] as ListState<TItem>;
+
+            const newQuery = mergeQuery(action.meta.arg.query, list);
+
+            list.error = null;
+            list.isLoading = true;
+            list.isLoadingMore = !!list.items;
+            list.page = newQuery.page;
+            list.pageSize = newQuery.pageSize;
+            list.search = newQuery.search;
+            list.sorting = newQuery.sorting;
+
+            if (action.meta.arg.reset && Types.isArray(list.items)) {
+                list.items = [];
+            }
+        });
+
+        builder.addCase(action.fulfilled, (state, action) => {
+            const list = state[key] as ListState<TItem>;
+
+            if (Types.isNumber(action.payload.total)) {
+                list.total = action.payload.total;
+            }
+
+            list.error = null;
+            list.extra = action.payload.extra;
+            list.isLoading = false;
+            list.isLoadingMore = false;
+            list.items = action.payload.items;
+        });
+
+        builder.addCase(action.fulfilled, (state, action) => {
+            const list = state[key] as ListState<TItem>;
+
+            if (Types.isNumber(action.payload.total)) {
+                list.total = action.payload.total;
+            }
+
+            list.error = null;
+            list.extra = action.payload.extra;
+            list.isLoading = false;
+            list.isLoadingMore = false;
+            list.items = action.payload.items;
+        });
+
+        builder.addCase(action.rejected, (state, action) => {
+            const list = state['name'] as ListState<TItem>;
+
+            list.error = action.payload as ErrorDto;
+            list.isLoading = false;
+            list.isLoadingMore = false;
+        });
+
+        return builder;
+    };
+
+    function mergeQuery(newQuery: Partial<Query> = {}, oldQuery: Query): Query {
+        const mergedQuery = newQuery || {};
+
+        if (newQuery.search !== oldQuery.search) {
+            mergedQuery.page = 0;
+        } else if (Types.isNumber(mergedQuery.page)) {
+            mergedQuery.page = oldQuery.page;
+        }
+
+        if (!Types.isNumber(mergedQuery.pageSize)) {
+            mergedQuery.pageSize = oldQuery.pageSize;
+        }
+
+        return mergedQuery as any;
     }
 
-    public createInitial(pageSize = 20): ListState<T, TExtra> {
+    const createInitial = function (pageSize = 20): ListState<TItem, TExtra> {
         return {
             page: 0,
             pageSize,
             total: 0,
         };
-    }
+    };
 
-    public load(request: Partial<Query> = {}, params?: any, reset = false) {
-        return async (dispatch: Dispatch, getState: () => any) => {
-            const state = this.getCurrentState(getState);
-
-            if (state.isLoading) {
-                return;
-            }
-
-            const newRequest = request || {};
-
-            if (newRequest.search !== state.search) {
-                newRequest.page = 0;
-            } else if (!Types.isNumber(newRequest.page)) {
-                newRequest.page = state.page;
-            }
-
-            if (!Types.isNumber(newRequest.pageSize)) {
-                newRequest.pageSize = state.pageSize;
-            }
-
-            dispatch({ type: this.LOADING_STARTED, ...newRequest, reset });
-
-            try {
-                const { items, total, extra } = await this.loader({ ...newRequest, ...params });
-
-                dispatch({ type: this.LOADING_SUCCESS, items, total, extra });
-            } catch (err) {
-                const error = buildError(err.status, err.message);
-
-                dispatch({ type: this.LOADING_FAILED, error });
-            }
-        };
-    }
-
-    public changeItems(state: any, updater: (items: ReadonlyArray<T>, state: ListState<T>) => ReadonlyArray<T> | undefined) {
-        const list = state[this.name];
-
-        if (!list.items) {
-            return list;
-        }
-
-        const newItems = updater(list.items, list);
-
-        if (newItems === list.items) {
-            return list;
-        } else {
-            const newList = { ...list };
-
-            newList.items = newItems;
-            newList.total += (newItems.length - list.items.length);
-
-            return newList;
-        }
-    }
-
-    public handleAction(state: any, action: { type: string } & any) {
-        switch (action.type) {
-            case this.LOADING_STARTED: {
-                    const newList = { ...state[this.name], ...action };
-
-                    newList.error = null;
-                    newList.isLoading = true;
-                    newList.isLoadingMore = !!state.items;
-
-                    if (action.reset && Types.isArray(newList.items)) {
-                        newList.items = [];
-                    }
-
-                    const newState = { ...state, [this.name]: newList };
-
-                    return newState;
-                }
-            case this.LOADING_SUCCESS: {
-                    const newList = { ...state[this.name] };
-
-                    if (Types.isNumber(action.total)) {
-                        newList.total = action.total;
-                    }
-
-                    newList.error = null;
-                    newList.extra = action.extra;
-                    newList.isLoading = false;
-                    newList.isLoadingMore = false;
-                    newList.items = action.items;
-
-                    const newState = { ...state, [this.name]: newList };
-
-                    return newState;
-                }
-            case this.LOADING_FAILED: {
-                    const newList = { ...state[this.name] };
-
-                    newList.error = action.error;
-                    newList.isLoading = false;
-                    newList.isLoadingMore = false;
-
-                    const newState = { ...state, [this.name]: newList };
-
-                    return newState;
-                }
-            default:
-                return state;
-        }
-
-    }
-
-    private getCurrentState(getState: () => any): ListState<T> {
-        return getState()[this.prefix][this.name];
-    }
-}
-
-export function addOrModify<T>(items: ReadonlyArray<T>, item: T, key: keyof T) {
-    const found = items.find(x => x[key] === item[key]);
-
-    if (found) {
-        return items.map(x => x[key] === item[key] ? item : x);
-    } else {
-        return [item, ...items];
-    }
-}
-
-export function remove<T>(items: ReadonlyArray<T>, id: any, key: keyof T) {
-    return items.filter(x => x[key] !== id);
+    return { action, initialize, createInitial };
 }

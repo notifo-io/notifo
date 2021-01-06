@@ -6,7 +6,7 @@
  */
 
 import { Icon } from '@app/framework';
-import { getApp, openPublishDialog, selectApp, useApps } from '@app/state';
+import { getApp, selectApp, togglePublishDialog, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -108,7 +108,7 @@ export const AppPage = () => {
     }, [appId]);
 
     const doPublish = React.useCallback(() => {
-        dispatch(openPublishDialog());
+        dispatch(togglePublishDialog());
     }, []);
 
     if (loading || !appSelected) {

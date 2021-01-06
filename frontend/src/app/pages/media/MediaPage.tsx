@@ -33,12 +33,12 @@ export const MediaPage = () => {
     }, [appId]);
 
     const doDelete = React.useCallback((media: MediaDto) => {
-        dispatch(deleteMediaAsync(appId, media.fileName));
+        dispatch(deleteMediaAsync({ appId, fileName: media.fileName }));
     }, [appId]);
 
     const doUpload = React.useCallback((files: File[]) => {
         for (const file of files) {
-            dispatch(uploadMediaAsync(appId, file));
+            dispatch(uploadMediaAsync({ appId, file }));
         }
     }, [appId]);
 
