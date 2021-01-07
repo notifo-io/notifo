@@ -20,7 +20,7 @@ const list = listThunk<TemplatesState, TemplateDto>('templates', 'templates', as
 export const selectTemplate = createAction<{ code: string | undefined }>('templates/select');
 
 export const loadTemplatesAsync = (appId: string, reset = false) => {
-    return list.action({ params: { appId }, reset });
+    return list.action({ appId, reset });
 };
 
 export const upsertTemplateAsync = createApiThunk('templates/upsert',
@@ -30,7 +30,7 @@ export const upsertTemplateAsync = createApiThunk('templates/upsert',
         return response[0];
     });
 
-export const deleteTemplateAsync = createApiThunk('templates/upsert',
+export const deleteTemplateAsync = createApiThunk('templates/delete',
     (arg: { appId: string, code: string }) => {
         return Clients.Templates.deleteTemplate(arg.appId, arg.code);
     });

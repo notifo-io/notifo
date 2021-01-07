@@ -26,7 +26,7 @@ export const updateEmailTemplateAsync = createApiThunk('emailTemplates/upsert',
         return Clients.Apps.putEmailTemplate(arg.appId, arg.language, arg.template);
     });
 
-export const deleteEmailTemplateAsync = createApiThunk('emailTemplates/create',
+export const deleteEmailTemplateAsync = createApiThunk('emailTemplates/delete',
     (arg: { appId: string, language: string }) => {
         return Clients.Apps.deleteEmailTemplate(arg.appId, arg.language);
     });
@@ -37,7 +37,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(loadEmailTemplatesAsync.pending, state => {
+    .addCase(loadEmailTemplatesAsync.pending, (state) => {
         state.loading = true,
         state.loadingError = undefined;
     })
@@ -50,7 +50,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         state.loadingError = undefined;
         state.emailTemplates = action.payload;
     })
-    .addCase(createEmailTemplateAsync.pending, state => {
+    .addCase(createEmailTemplateAsync.pending, (state) => {
         state.creating = true,
         state.creatingError = undefined;
     })
@@ -63,7 +63,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         state.creatingError = undefined;
         state.emailTemplates[action.meta.arg.language] = action.payload;
     })
-    .addCase(deleteEmailTemplateAsync.pending, state => {
+    .addCase(deleteEmailTemplateAsync.pending, (state) => {
         state.deleting = true,
         state.deletingError = undefined;
     })

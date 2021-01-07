@@ -75,7 +75,7 @@ export const logoutDoneAsync = () => {
     };
 };
 
-export const loginMiddleware: Middleware = state => next => action => {
+export const loginMiddleware: Middleware = (state) => next => action => {
     if (action.payload?.statusCode === 401) {
         const userManager = AuthService.getUserManager();
 
@@ -99,13 +99,13 @@ export const loginReducer = createReducer(initialState, builder => builder
     .addCase(loginStarted, (state) => {
         state.isAuthenticating = true;
     })
-    .addCase(loginStarted, (state, action) => {
+    .addCase(loginDoneSilent, (state, action) => {
         state.isAuthenticating = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
     })
-    .addCase(loginStarted, (state, action) => {
+    .addCase(loginDoneRedirect, (state, action) => {
         state.isAuthenticating = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
     }));
 
 function getUser(user: Oidc.User): User {

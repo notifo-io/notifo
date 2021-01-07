@@ -19,7 +19,7 @@ const list = listThunk<SubscriptionsState, SubscriptionDto>('subscriptions', 'su
 });
 
 export const loadSubscriptionsAsync = (appId: string, userId: string, query?: Partial<Query>, reset = false) => {
-    return list.action({ query, appId, userId, reset });
+    return list.action({ appId, userId, query, reset });
 };
 
 export const upsertSubscriptionAsync = createApiThunk('subscriptions/upsert',
@@ -52,7 +52,7 @@ export const subscriptionsReducer = createReducer(initialState, builder => list.
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(upsertSubscriptionAsync.pending, state => {
+    .addCase(upsertSubscriptionAsync.pending, (state) => {
         state.upserting = true,
         state.upsertingError = undefined;
     })
@@ -60,7 +60,7 @@ export const subscriptionsReducer = createReducer(initialState, builder => list.
         state.upserting = false;
         state.upsertingError = action.payload as ErrorDto;
     })
-    .addCase(upsertSubscriptionAsync.fulfilled, state => {
+    .addCase(upsertSubscriptionAsync.fulfilled, (state) => {
         state.upserting = false;
         state.upsertingError = undefined;
     }));

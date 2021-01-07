@@ -20,8 +20,8 @@ const list = listThunk<MediaState, MediaDto>('media', 'media', async params => {
 
 export const selectMedia = createAction<{ fileName: string }>('media/select');
 
-export const loadMediaAsync = (appId: string, request?: Partial<Query>, reset = false) => {
-    return list.action({ query: request, params: { appId }, reset });
+export const loadMediaAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+    return list.action({ appId, query, reset });
 };
 
 export const uploadMediaAsync = createApiThunk('media/upload',

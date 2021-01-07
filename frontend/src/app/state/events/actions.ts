@@ -18,7 +18,7 @@ const list = listThunk<EventsState, EventDto>('events', 'events', async params =
 });
 
 export const loadEventsAsync = (appId: string, query?: Partial<Query>, reset = false) => {
-    return list.action({ query, appId, reset });
+    return list.action({ appId, query, reset });
 };
 
 const initialState: EventsState = {

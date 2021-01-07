@@ -102,7 +102,7 @@ export const AppPage = () => {
     const [appSelected, setAppSelected] = React.useState(false);
 
     React.useEffect(() => {
-        dispatch(selectApp(appId));
+        dispatch(selectApp({ appId }));
 
         setAppSelected(true);
     }, [appId]);

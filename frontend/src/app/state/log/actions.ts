@@ -11,18 +11,18 @@ import { createReducer } from '@reduxjs/toolkit';
 import { selectApp } from './../shared';
 import { LogState } from './state';
 
-const list = listThunk<LogState, LogEntryDto>('events', 'events', async params => {
+const list = listThunk<LogState, LogEntryDto>('log', 'entries', async params => {
     const { items, total } = await Clients.Logs.getLogs(params.appId, params.search, params.take, params.skip);
 
     return { items, total };
 });
 
-export const loadLogAsync = (appId: string, q?: Partial<Query>, reset = false) => {
-    return list.action({ query: q, params: { appId }, reset });
+export const loadLogAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+    return list.action({ appId, query, reset });
 };
 
 const initialState: LogState = {
-    logEntries: list.createInitial(),
+    entries: list.createInitial(),
 };
 
 export const logReducer = createReducer(initialState, builder => list.initialize(builder)

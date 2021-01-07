@@ -19,7 +19,7 @@ const list = listThunk<UsersState, UserDto>('users', 'users', async (params) => 
 });
 
 export const loadUsersAsync = (appId: string, query?: Partial<Query>, reset = false) => {
-    return list.action({ query, appId, reset });
+    return list.action({ appId, query, reset });
 };
 
 export const loadUserAsync = createApiThunk('users/load',

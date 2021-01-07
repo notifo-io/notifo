@@ -27,7 +27,7 @@ export const publishReducer = createReducer(initialState, builder => builder
         state.publishing = false;
         state.publishingError = undefined;
     })
-    .addCase(publishAsync.pending, state => {
+    .addCase(publishAsync.pending, (state) => {
         state.publishing = true;
         state.publishingError = undefined;
     })
@@ -35,7 +35,7 @@ export const publishReducer = createReducer(initialState, builder => builder
         state.publishing = false;
         state.publishingError = action.payload as ErrorDto;
     })
-    .addCase(publishAsync.fulfilled, state => {
+    .addCase(publishAsync.fulfilled, (state) => {
         state.publishing = false;
         state.publishingError = undefined;
     }));

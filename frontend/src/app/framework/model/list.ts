@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, createAction, Dispatch } from '@reduxjs/toolkit';
 import { buildError, ErrorDto, Types } from './../utils';
 
 export interface ListState<T, TExtra = any> extends Query {
@@ -61,111 +61,108 @@ export interface SearchRequest extends Query {
 }
 
 type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>, total: number, extra?: TExtra }>;
-type ListArgs = { query?: Partial<Query>, reset?: boolean } & { [x: string]: any };
+type ListArg = { query?: Partial<Query>, reset?: boolean } & { [x: string]: any };
 
 export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
-    const action = createAsyncThunk(`${prefix}/${key}/load`, async (args: ListArgs, thunkApi) => {
-        const { query, ...params } = args || {};
+    const name = `${prefix}/${key}/load`;
 
-        const mergedQuery = mergeQuery(query, thunkApi.getState()[prefix][key]);
+    type ActionPendingType = { reset?: boolean, request: SearchRequest };
+    type ActionFulfilledType = { items: readonly TItem[], extra?: TExtra, total: number };
+    type ActionRejectedType = { error: ErrorDto };
 
-        try {
-            const loaderRequest: SearchRequest = {
-                ...mergedQuery,
-                take: mergedQuery.pageSize,
-                skip: mergedQuery.pageSize * mergedQuery.page,
-                ...params,
-            };
+    const actionPending = createAction<ActionPendingType>(`${name}/pending`);
+    const actionFulfilled = createAction<ActionFulfilledType>(`${name}/fulfilled`);
+    const actionRejected = createAction<ActionRejectedType>(`${name}/rejected`);
 
-            const { items, total, extra } = await loader(loaderRequest);
+    const action = (arg: ListArg) => {
+        return async (dispatch: Dispatch, getState: () => any) => {
+            const state = getState()[prefix][key] as ListState<T>;
 
-            return { items, total, extra };
-        } catch (err) {
-            const error = buildError(err.status, err.message);
+            if (state.isLoading) {
+                return;
+            }
 
-            return thunkApi.rejectWithValue(error);
-        }
-    }, {
-        condition: (_, thunkApi) => {
-            const state = thunkApi.getState()[prefix][key] as ListState<TItem>;
+            const { query, reset, ...params } = arg || {};
 
-            return !state.isLoading;
-        },
-    });
+            const request: SearchRequest = { ...query || {}, ...params } as any;
+
+            if (query?.search !== state.search) {
+                request.page = 0;
+            }
+
+            if (!Types.isNumber(request.page)) {
+                request.page = state.page;
+            }
+
+            if (!Types.isNumber(request.pageSize)) {
+                request.pageSize = state.pageSize;
+            }
+
+            request.take = request.pageSize;
+            request.skip = request.pageSize * request.page;
+
+            dispatch(actionPending({ reset, request }));
+
+            try {
+                const result = await loader(request);
+
+                dispatch(actionFulfilled(result));
+            } catch (err) {
+                const error = buildError(err.status, err.message);
+
+                dispatch(actionRejected({ error }));
+            }
+        };
+    };
 
     const initialize = function (builder: ActionReducerMapBuilder<T>) {
-        builder.addCase(action.pending, (state, action) => {
+        builder.addCase(actionPending, (state, action) => {
             const list = state[key] as ListState<TItem>;
+            const loaded = Types.isArray(list.items);
 
-            const newQuery = mergeQuery(action.meta.arg.query, list);
+            const { request, reset } = action.payload;
 
             list.error = null;
             list.isLoading = true;
-            list.isLoadingMore = !!list.items;
-            list.page = newQuery.page;
-            list.pageSize = newQuery.pageSize;
-            list.search = newQuery.search;
-            list.sorting = newQuery.sorting;
+            list.isLoadingMore = loaded;
+            list.page = request.page;
+            list.pageSize = request.pageSize;
+            list.search = request.search;
+            list.sorting = request.sorting;
 
-            if (action.meta.arg.reset && Types.isArray(list.items)) {
+            if (reset && loaded) {
                 list.items = [];
             }
         });
 
-        builder.addCase(action.fulfilled, (state, action) => {
+        builder.addCase(actionFulfilled, (state, action) => {
             const list = state[key] as ListState<TItem>;
 
-            if (Types.isNumber(action.payload.total)) {
-                list.total = action.payload.total;
-            }
+            const { extra, items, total } = action.payload;
 
             list.error = null;
-            list.extra = action.payload.extra;
+            list.extra = extra;
             list.isLoading = false;
             list.isLoadingMore = false;
-            list.items = action.payload.items;
+            list.items = items;
+
+            if (Types.isNumber(total)) {
+                list.total = total;
+            }
         });
 
-        builder.addCase(action.fulfilled, (state, action) => {
+        builder.addCase(actionRejected, (state, action) => {
             const list = state[key] as ListState<TItem>;
 
-            if (Types.isNumber(action.payload.total)) {
-                list.total = action.payload.total;
-            }
+            const { error } = action.payload;
 
-            list.error = null;
-            list.extra = action.payload.extra;
-            list.isLoading = false;
-            list.isLoadingMore = false;
-            list.items = action.payload.items;
-        });
-
-        builder.addCase(action.rejected, (state, action) => {
-            const list = state['name'] as ListState<TItem>;
-
-            list.error = action.payload as ErrorDto;
+            list.error = error;
             list.isLoading = false;
             list.isLoadingMore = false;
         });
 
         return builder;
     };
-
-    function mergeQuery(newQuery: Partial<Query> = {}, oldQuery: Query): Query {
-        const mergedQuery = newQuery || {};
-
-        if (newQuery.search !== oldQuery.search) {
-            mergedQuery.page = 0;
-        } else if (Types.isNumber(mergedQuery.page)) {
-            mergedQuery.page = oldQuery.page;
-        }
-
-        if (!Types.isNumber(mergedQuery.pageSize)) {
-            mergedQuery.pageSize = oldQuery.pageSize;
-        }
-
-        return mergedQuery as any;
-    }
 
     const createInitial = function (pageSize = 20): ListState<TItem, TExtra> {
         return {
