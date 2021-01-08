@@ -5,13 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Events.Dtos;
 using Notifo.Domain;
 using Notifo.Domain.Events;
+using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -70,7 +70,7 @@ namespace Notifo.Areas.Api.Controllers.Events
             {
                 if (request.Requests.Length > 100)
                 {
-                    throw new ValidationException($"Only 100 events can be update in one request, found: {request.Requests.Length}");
+                    throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
                 }
 
                 foreach (var dto in request.Requests)
