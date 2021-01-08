@@ -13,7 +13,9 @@ import { LoginState, User } from './state';
 
 const loginStarted = createAction('login/started');
 const loginDoneSilent = createAction<{ user: User }>('login/done/silent');
-const loginDoneRedirect = createAction<{ user: User }>('login/redirect');
+const loginDoneRedirect = createAction<{ user: User }>('login/done/redirect');
+const loginFailed = createAction<{ user: User }>('login/failed');
+
 const logoutStarted = createAction('logout/started');
 const logoutDoneRedirect = createAction<{ user: User }>('logout/redirect');
 
@@ -23,7 +25,15 @@ export const loginStartAsync = () => {
 
         const userManager = AuthService.getUserManager();
 
-        const currentUser = await userManager.getUser();
+        let currentUser = await userManager.getUser();
+
+        if (!currentUser) {
+            try {
+                currentUser = await userManager.signinSilent();
+            } catch {
+                currentUser = null;
+            }
+        }
 
         if (!currentUser) {
             await userManager.signinRedirect();
@@ -41,7 +51,9 @@ export const loginDoneAsync = () => {
 
         const currentUser = await userManager.signinCallback();
 
-        if (currentUser) {
+        if (!currentUser) {
+            dispatch(loginFailed());
+        } else if (currentUser) {
             const user = getUser(currentUser);
 
             dispatch(loginDoneRedirect({ user }));
@@ -76,7 +88,7 @@ export const logoutDoneAsync = () => {
 };
 
 export const loginMiddleware: Middleware = (state) => next => action => {
-    if (action.payload?.statusCode === 401) {
+    if (action.payload?.statusCode === 401 || action.payload?.error?.statusCode === 401) {
         const userManager = AuthService.getUserManager();
 
         userManager.signoutRedirect();
@@ -84,7 +96,7 @@ export const loginMiddleware: Middleware = (state) => next => action => {
 
     const result = next(action);
 
-    if (loginDoneRedirect.match(action) || logoutDoneRedirect.match(action)) {
+    if (loginDoneRedirect.match(action) || logoutDoneRedirect.match(action) || loginFailed.match(action)) {
         state.dispatch(routerActions.push('/'));
     }
 
@@ -106,6 +118,10 @@ export const loginReducer = createReducer(initialState, builder => builder
     .addCase(loginDoneRedirect, (state, action) => {
         state.isAuthenticating = false;
         state.user = action.payload.user;
+    })
+    .addCase(loginFailed, (state, action) => {
+        state.isAuthenticating = false;
+        state.user = null;
     }));
 
 function getUser(user: Oidc.User): User {

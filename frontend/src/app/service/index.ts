@@ -95,22 +95,26 @@ export module Clients {
                 delete init.headers['Authorization'];
             }
 
-            let result = await fetch(url, init);
+            try {
+                let result = await fetch(url, init);
 
-            if (result.status === 401) {
-                try {
-                    const user = await AuthService.getUserManager().signinSilent();
+                if (result.status === 401) {
+                    try {
+                        const user = await AuthService.getUserManager().signinSilent();
 
-                    init.headers = init.headers || {};
-                    init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
-                } catch (error) {
-                    delete init.headers['Authorization'];
+                        init.headers = init.headers || {};
+                        init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
+                    } catch (error) {
+                        delete init.headers['Authorization'];
+                    }
+
+                    result = await fetch(url, init);
                 }
 
-                result = await fetch(url, init);
+                return result;
+            } catch (error) {
+                throw error;
             }
-
-            return result;
         }
     }
 

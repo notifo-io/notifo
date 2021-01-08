@@ -76,7 +76,11 @@ export function logError(message: string) {
     console.error(`NOTIFO SDK: ${message}`);
 }
 
-export function withPreset(src: string, preset: string) {
+export function withPreset(src: string | undefined | null, preset: string) {
+    if (!src) {
+        return src;
+    }
+
     if (src.indexOf('?') >= 0) {
         return `${src}&preset=${preset}`;
     } else {

@@ -11,6 +11,7 @@ import { h } from 'preact';
 import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { Image } from './Image';
 import { Loader } from './Loader';
 import { useInView } from './observer';
 
@@ -105,18 +106,10 @@ export const NotificationItem = (props: NotificationItemProps) => {
                 <span class='notifo-notification-new'></span>
             }
 
-            {notification.imageLarge &&
-                <div class='notifo-notification-image-large'>
-                    <img src={withPreset(notification.imageLarge, 'WebLarge')}/>
-                </div>
-            }
+            <Image className='notifo-notification-image-large' src={withPreset(notification.imageLarge, 'WebLarge')} />
 
             <div class='notifo-notification-row2'>
-                {notification.imageSmall &&
-                    <div class='notifo-notification-image-small notifo-notification-left'>
-                        <img src={withPreset(notification.imageSmall, 'WebSmall')}/>
-                    </div>
-                }
+                <Image className='notifo-notification-image-small notifo-notification-left' src={withPreset(notification.imageSmall, 'WebSmall')} />
 
                 <div class='notifo-notification-right'>
                     {notification.subject &&
