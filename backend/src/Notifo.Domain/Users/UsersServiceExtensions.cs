@@ -15,11 +15,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyUsers(this IServiceCollection services)
         {
-            services.AddSingletonAs<MongoDbUserRepository>()
-                .As<IUserRepository>();
-
             services.AddSingletonAs<UserStore>()
                 .As<IUserStore>().As<ICounterTarget>();
+        }
+
+        public static void AddMyMongoUsers(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbUserRepository>()
+                .As<IUserRepository>();
         }
     }
 }

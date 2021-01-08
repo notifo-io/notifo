@@ -14,9 +14,6 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyMedia(this IServiceCollection services)
         {
-            services.AddSingletonAs<MongoDbMediaRepository>()
-                .As<IMediaRepository>();
-
             services.AddSingletonAs<DefaultMediaFileStore>()
                 .As<IMediaFileStore>();
 
@@ -25,6 +22,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingletonAs<ImageMediaMetadataSource>()
                 .As<IMediaMetadataSource>();
+        }
+
+        public static void AddMyMongoMedia(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbMediaRepository>()
+                .As<IMediaRepository>();
         }
     }
 }

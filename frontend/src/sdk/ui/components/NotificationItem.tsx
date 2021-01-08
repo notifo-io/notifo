@@ -8,10 +8,9 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
-import { NotifoNotification } from './../../api';
-import { NotificationsOptions, SDKConfig, SUPPORTED_LOCALES } from './../../shared';
 import { Loader } from './Loader';
 import { useInView } from './observer';
 
@@ -108,14 +107,14 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
             {notification.imageLarge &&
                 <div class='notifo-notification-image-large'>
-                    <img src={`${notification.imageLarge}?preset=WebLarge`} />
+                    <img src={withPreset(notification.imageLarge, 'WebLarge')}/>
                 </div>
             }
 
             <div class='notifo-notification-row2'>
                 {notification.imageSmall &&
                     <div class='notifo-notification-image-small notifo-notification-left'>
-                        <img src={`${notification.imageSmall}?preset=WebSmall`} />
+                        <img src={withPreset(notification.imageSmall, 'WebSmall')}/>
                     </div>
                 }
 
@@ -148,7 +147,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
                         </div>
                     }
 
-                    {notification.confirmText && !notification.isConfirmed &&
+                    {notification.confirmText && notification.confirmUrl && !notification.isConfirmed &&
                         <button class='notifo-notification-confirm' onClick={doConfirm}>
                             <Loader size={12} visible={markingConfirm === 'InProgress'} />
 

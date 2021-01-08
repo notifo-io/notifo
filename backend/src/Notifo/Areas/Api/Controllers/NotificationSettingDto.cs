@@ -15,7 +15,7 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// True or false to send the notification for the channel.
         /// </summary>
-        public bool? Send { get; set; }
+        public NotificationSend Send { get; set; }
 
         /// <summary>
         /// The delay in seconds.

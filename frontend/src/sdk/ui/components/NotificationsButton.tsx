@@ -8,23 +8,23 @@
 /** @jsx h */
 import { h } from 'preact';
 
+import { NotificationsOptions } from '@sdk/shared';
+import { getUnseen, useStore } from '@sdk/ui/model';
 import { useCallback } from 'preact/hooks';
-import { NotificationsOptions } from './../../shared';
 import { Icon } from './Icon';
 
 export interface NotificationsButtonProps {
     // The options.
     options: NotificationsOptions;
 
-    // The number of unseen messages.
-    unseen?: number;
-
     // Invoked when the button is clicked.
     onClick: () => void;
 }
 
 export const NotificationsButton = (props: NotificationsButtonProps) => {
-    const { onClick, options, unseen } = props;
+    const { onClick, options } = props;
+
+    const unseen = useStore(x => getUnseen(x));
 
     const doClick = useCallback((event: Event) => {
         onClick && onClick();
@@ -37,7 +37,7 @@ export const NotificationsButton = (props: NotificationsButtonProps) => {
             <Icon type={options.style} size={24} />
 
             {!!unseen &&
-                <div class='notifo-label'>
+                <div class='notifo-seen-label'>
                     {unseen}
                 </div>
             }

@@ -36,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Registration
 
         [HttpPost("api/web/register")]
         [AppPermission(Roles.WebManager, Roles.User)]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto request)
+        public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
         {
             string? userId = null;
             string? userToken = null;
@@ -51,33 +51,37 @@ namespace Notifo.Areas.Api.Controllers.Registration
 
                 if (request.Topics?.Any() == true)
                 {
-                    var subscription = new SubscriptionUpdate();
-
-                    subscription.TopicSettings[Providers.WebPush] = new NotificationSetting
+                    var command = new Subscribe
                     {
-                        Send = true
+                        TopicSettings = new NotificationSettings
+                        {
+                            [Providers.WebPush] = new NotificationSetting
+                            {
+                                Send = NotificationSend.Send
+                            }
+                        }
                     };
 
                     if (!string.IsNullOrEmpty(request.EmailAddress))
                     {
-                        subscription.TopicSettings[Providers.Email] = new NotificationSetting
+                        command.TopicSettings[Providers.Email] = new NotificationSetting
                         {
-                            Send = true
+                            Send = NotificationSend.Send
                         };
                     }
 
                     foreach (var topic in request.Topics)
                     {
-                        subscription.TopicPrefix = topic;
+                        var topicId = new TopicId(topic);
 
-                        await subscriptionStore.SubscribeWhenNotFoundAsync(App.Id, subscription, HttpContext.RequestAborted);
+                        await subscriptionStore.UpsertAsync(App.Id, userId, topicId, command, HttpContext.RequestAborted);
                     }
                 }
 
                 userToken = user.ApiKey;
             }
 
-            var response = new RegisterResponseDto
+            var response = new RegisteredUserDto
             {
                 PublicKey = webPushService.PublicKey,
                 UserId = userId,

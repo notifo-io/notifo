@@ -25,7 +25,7 @@ namespace Notifo.Domain
                 {
                     if (TryGetValue(key, out var existing))
                     {
-                        if (value.Send.HasValue)
+                        if (value.Send != NotificationSend.Inherit && existing.Send != NotificationSend.NotAllowed)
                         {
                             existing.Send = value.Send;
                         }

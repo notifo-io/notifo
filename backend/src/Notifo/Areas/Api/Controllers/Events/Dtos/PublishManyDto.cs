@@ -5,16 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-
-namespace Notifo.Areas.Api.Controllers.Notifications.Dto
+namespace Notifo.Areas.Api.Controllers.Events.Dtos
 {
-    public sealed class HandledRequestDto
+    public sealed class PublishManyDto
     {
-        public Guid? Confirmed { get; set; }
-
-        public Guid[]? Seen { get; set; }
-
-        public string? Channel { get; set; }
+        /// <summary>
+        /// The publish requests.
+        /// </summary>
+        public PublishDto[] Requests { get; set; }
     }
 }

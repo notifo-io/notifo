@@ -117,7 +117,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/subscriptions")]
         [AppPermission(Roles.Admin)]
-        public async Task<IActionResult> PostSubscription(string appId, string id, [FromBody] SubscribeDto request)
+        public async Task<IActionResult> PostSubscription(string appId, string id, [FromBody] SubscriptionDto request)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
 
@@ -126,9 +126,9 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            var update = request.ToUpdate(id);
+            var update = request.ToUpdate();
 
-            await subscriptionStore.SubscribeAsync(appId, update, HttpContext.RequestAborted);
+            await subscriptionStore.UpsertAsync(appId, UserId, request.TopicPrefix, update, HttpContext.RequestAborted);
 
             return NoContent();
         }
@@ -154,7 +154,7 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            await subscriptionStore.UnsubscribeAsync(appId, id, prefix, HttpContext.RequestAborted);
+            await subscriptionStore.DeleteAsync(appId, id, prefix, HttpContext.RequestAborted);
 
             return NoContent();
         }
@@ -205,7 +205,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpPost("api/apps/{appId}/users/{id}/allowed-topics")]
         [AppPermission(Roles.Admin)]
         [Produces(typeof(List<UserDto>))]
-        public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicRequest request)
+        public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicDto request)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
 

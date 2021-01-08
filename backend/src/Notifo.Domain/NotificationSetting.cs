@@ -9,13 +9,13 @@ namespace Notifo.Domain
 {
     public sealed class NotificationSetting
     {
-        public bool? Send { get; set; }
+        public NotificationSend Send { get; set; }
 
         public int? DelayInSeconds { get; set; }
 
         public bool ShouldSend
         {
-            get { return Send == true; }
+            get { return Send == NotificationSend.Send; }
         }
 
         public int DelayInSecondsOrZero

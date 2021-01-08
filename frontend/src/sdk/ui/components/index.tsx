@@ -8,7 +8,7 @@
 /** @jsx h */
 import { h, render } from 'preact';
 
-import { NotificationsOptions, SDKConfig, TopicOptions } from './../../shared';
+import { NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
 import { NotificationsContainer } from './Notifications';
 import { TopicContainer } from './Topic';
 
@@ -16,8 +16,8 @@ export function renderNotifications(element: Element, options: NotificationsOpti
     render(<NotificationsContainer config={config} options={options} />, element);
 }
 
-export function renderTopic(element: Element, topic: string, options: TopicOptions, config: SDKConfig) {
-    render(<TopicContainer config={config} topic={topic} options={options} />, element);
+export function renderTopic(element: Element, topicPrefix: string, options: TopicOptions, config: SDKConfig) {
+    render(<TopicContainer config={config} topicPrefix={topicPrefix} options={options} />, element);
 }
 
 export function destroy(element: Element) {

@@ -1,19 +1,27 @@
 @import '_mixins';
 
-$color-button: #666;
-$color-border: #eee;
-$color-scrollbar: #b3bbbf;
-$color-empty: #888;
-$color-label: #f00;
-$color-label-text: #fff;
-$color-background: #fff;
-$color-link: #675df8;
-$color-shadow: rgba(0, 0, 0, .2);
+$color-background:  #fff;
+$color-border:      #eee;
+$color-button:      #666;
+$color-control:     #ccc;
+$color-empty:       #888;
+$color-error:       #f5365c;
+$color-input:       #ddd;
+$color-label-text:  #fff;
+$color-label:       #f00;
+$color-link:        #675df8;
+$color-scrollbar:   #b3bbbf;
+$color-shadow:      rgba(0, 0, 0, .2);
+$color-success:     #2dce89;
+$color-text:        #222;
+
+$size-toggle: 20px;
 
 .notifo {
     @import '~reset-scss/reset';
 
     & {
+        color: $color-text;
         display: inline-block;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
         font-weight: normal;
@@ -22,6 +30,13 @@ $color-shadow: rgba(0, 0, 0, .2);
 
     * {
         @include scrollbars(8px, $color-scrollbar, transparent);
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid $color-border;
+        margin-bottom: 1.5rem;
+        margin-top: 1.5rem;
     }
 
     .notifo {
@@ -40,7 +55,7 @@ $color-shadow: rgba(0, 0, 0, .2);
                 opacity: .8;
             }
 
-            .notifo-label {
+            .notifo-seen-label {
                 animation: fade-in .5s;
                 background: $color-label;
                 border: 0;
@@ -66,16 +81,22 @@ $color-shadow: rgba(0, 0, 0, .2);
             box-shadow: 0 4px 4px $color-shadow;
             margin-top: 5px;
             max-height: 450px;
-            min-height: 100px;
             overflow-x: hidden;
             overflow-y: auto;
             padding: 1.5rem 1.25rem;
+            padding-top: 2rem;
             position: absolute;
             width: 450px;
             z-index: 10000;
 
             &-right {
                 right: 0;
+            }
+
+            &-inner {
+                max-height: none;
+                min-height: 100px;
+                position: relative;
             }
         }
 
@@ -112,13 +133,12 @@ $color-shadow: rgba(0, 0, 0, .2);
 
             &-new {
                 @include absolute(5px, null, null, -14px);
+                @include size(10px, 10px);
                 animation: fade-out 2s;
                 background: $color-label;
                 border: 0;
                 border-radius: 20px;
                 display: inline-block;
-                min-height: 10px;
-                min-width: 10px;
                 opacity: 0;
             }
 
@@ -201,19 +221,154 @@ $color-shadow: rgba(0, 0, 0, .2);
         }
 
         &-loader {
+            @include middle;
+
             img {
                 display: inline-block;
             }
         }
 
-        &-empty,
-        &-loading {
+        &-profile-button {
+            @include absolute(-1.5rem, -1rem);
+
+            svg {
+                fill: $color-button;
+            }
+        }
+
+        &-empty, &-loading {
+            @include absolute(30%, 0, null, 0);
             color: $color-empty;
             font-size: 80%;
             font-weight: normal;
-            margin-top: 1.25rem;
             text-align: center;
             text-decoration: none;
+        }
+
+        &-form {
+            &-group {
+                margin-top: .75rem;
+            }
+
+            &-label {
+                font-size: 80%;
+                font-weight: bolder;
+                opacity: 75%;
+            }
+
+            &-control, &-button {
+                background: $color-background;
+                border: 1px solid $color-input;
+                border-radius: 3px;
+                font-size: 90%;
+                font-weight: normal;
+                padding: .5rem .75rem;
+            }
+
+            &-control {
+                transition: border-color .5s ease;
+                width: 100%;
+
+                &:hover {
+                    border-color: $color-link;
+                }
+
+                &:focus {
+                    border-color: $color-link;
+                }
+            }
+
+            &-button {
+                margin: 0;
+                margin-right: .5rem;
+                transition: background-color .5s ease;
+
+                &:hover {
+                    background: $color-border;
+                }
+
+                &:focus {
+                    background: darken($color-border, 5%);
+                }
+
+                &.primary {
+                    background: $color-link;
+                    border-color: $color-link;
+                    color: $color-background;
+
+                    &:hover {
+                        background: darken($color-link, 5%);
+                    }
+
+                    &:focus {
+                        background: darken($color-link, 10%);
+                    }
+                }
+            }
+
+            &-toggle {
+                @include size($size-toggle * 2, $size-toggle);
+                @include middle;
+                background: $color-border;
+                border: $color-border;
+                border-radius: $size-toggle;
+                box-shadow: inset 0 .5px 1px $color-shadow;
+                padding-left: 2px;
+                padding-top: 2px;
+                position: relative;
+                transition: background-color .3s ease;
+
+                &-slider {
+                    @include size($size-toggle - 4px, $size-toggle - 4px);
+                    @include absolute(2px, null, null, 2px);
+                    background: $color-background;
+                    border: 0;
+                    border-radius: $size-toggle;
+                    box-shadow: 0 2px 2px $color-shadow;
+                    transition: transform .3s ease;
+                }
+
+                &-label {
+                    @include middle;
+                    font-size: 90%;
+                    font-weight: normal;
+                    margin-left: .5rem;
+                }
+
+                &.checked {
+                    background: $color-success;
+
+                    .notifo-form-toggle-slider {
+                        transform: translateX($size-toggle);
+                    }
+                }
+
+                &.unchecked {
+                    background: $color-error;
+
+                    .notifo-form-toggle-slider {
+                        transform: translateX(0);
+                    }
+                }
+
+                &.indeterminate {
+                    .notifo-form-toggle-slider {
+                        transform: translateX($size-toggle * .5);
+                    }
+                }
+            }
+        }
+
+        &-powered {
+            @include absolute(null, -1rem, -1.25rem);
+
+            * {
+                vertical-align: middle;
+            }
+
+            span {
+                font-size: 80%;
+            }
         }
     }
 }

@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { isFunction } from '@sdk/shared';
+
 export type Dispatch<TAction> = (action: TAction) => void;
 
 export type Recucer<TState, TAction> = (state: TState, action: TAction) => TState;
@@ -45,11 +47,19 @@ export class Store<TState, TAction> {
     }
 }
 
-export function set<T>(states: { [key: string]: T }, id: string, value: T) {
-    if (states[id] !== value) {
+export function set<T>(states: { [key: string]: T }, id: string, update: T | ((previous: T) => T)) {
+    let newValue: T;
+
+    if (isFunction(update)) {
+        newValue = update(states[id]);
+    } else {
+        newValue = update;
+    }
+
+    if (states[id] !== newValue) {
         const updated = { ...states };
 
-        updated[id] = value;
+        updated[id] = newValue;
 
         return updated;
     }

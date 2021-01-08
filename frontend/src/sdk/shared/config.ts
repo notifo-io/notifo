@@ -1,0 +1,327 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+ */
+
+import { de, enUS } from 'date-fns/locale';
+import { isObject } from 'lodash';
+import { isString, isUndefined, logWarn } from './utils';
+
+export const SUPPORTED_LOCALES = {
+    ['en']: enUS,
+    ['de']: de,
+};
+
+const DefaultTexts: Texts<{ de: string, en: string }> = {
+    cancel: {
+        de: 'Abbrechen',
+        en: 'Cancel',
+    },
+    email: {
+        de: 'E-Mail Adresse',
+        en: 'E-Mail Address',
+    },
+    fullName: {
+        de: 'Name',
+        en: 'Name',
+    },
+    language: {
+        de: 'Sprache',
+        en: 'Language',
+    },
+    notifyBeEmail: {
+        de: 'Benachrichtige mich per Email',
+        en: 'Notify me via Email',
+    },
+    notifyBeWebPush: {
+        de: 'Benachrichtige mich per Push Notification',
+        en: 'Notify me via Push Notification',
+    },
+    notificationsEmpty: {
+        de: 'Keine Benachrichtigungen vorhanden',
+        en: 'You have no notifications yet.',
+    },
+    save: {
+        de: 'Speichern',
+        en: 'Save',
+    },
+    settings: {
+        de: 'Einstellungen',
+        en: 'Settings',
+    },
+    subscribe: {
+        de: 'Abbonnieren',
+        en: 'Subscribe',
+    },
+    timezone: {
+        de: 'Zeitzone',
+        en: 'Timezone',
+    },
+    unsubscribe: {
+        de: 'Deabbonieren',
+        en: 'Unsubscribe',
+    },
+};
+
+const IS_DEV = global['window'] && window.location.host.indexOf('localhost:3002') >= 0;
+
+export function buildSDKConfig(opts: SDKConfig) {
+    const options: SDKConfig = <any>{ ...opts || {} };
+
+    if (!isStringOption(options.apiUrl)) {
+        logWarn('init.apiURL must be a string if defined, fallback to default.');
+        options.apiUrl = undefined;
+    }
+
+    if (!options.apiUrl) {
+        options.apiUrl = 'https://app.notifo.io';
+    }
+
+    if (!isStringOption(options.styleUrl)) {
+        logWarn('init.styleUrl must be a string if defined, fallback to default.');
+        options.styleUrl = undefined;
+    }
+
+    if (!options.styleUrl && !IS_DEV) {
+        options.styleUrl = `${options.apiUrl}/build/notifo-sdk.css`;
+    }
+
+    if (!isStringOption(options.serviceWorkerUrl)) {
+        logWarn('init.serviceWorkerUrl must be a string if defined.');
+        options.serviceWorkerUrl = undefined;
+    }
+
+    if (!options.serviceWorkerUrl) {
+        options.serviceWorkerUrl = IS_DEV ? '/notifo-sdk-worker.js' : '/notifo-sw.js';
+    }
+
+    if (!isStringOption(options.userToken)) {
+        logWarn('init.userToken must be a string if defined.');
+    }
+
+    if (!isStringOption(options.userEmail)) {
+        logWarn('init.userEmail must be a string if defined.');
+    }
+
+    if (!isStringOption(options.userName)) {
+        logWarn('init.userName must be a string if defined.');
+    }
+
+    if (!isStringOption(options.userTimezone)) {
+        logWarn('init.userTimezone must be a string if defined.');
+    }
+
+    if (!isStringOption(options.userLanguage)) {
+        logWarn('init.userLanguage must be a string if defined.');
+    }
+
+    if (!isLocaleOption(options.locale)) {
+        logWarn(`init.locale must be a valid locale. Allowed: ${Object.keys(SUPPORTED_LOCALES).join(',')}`);
+        options.locale = undefined;
+    }
+
+    if (!options.locale) {
+        options.locale = 'en';
+    }
+
+    if (isUndefined(options.allowEmails)) {
+        options.allowEmails = true;
+    }
+
+    if (isUndefined(options.allowProfile)) {
+        options.allowProfile = true;
+    }
+
+    if (!isStringOption(options.apiUrl) && !isStringOption(options.apiKey)) {
+        logWarn('init.apiUrl or init.apIKey must be defined');
+
+        return null;
+    }
+
+    if (!isObject(options.texts)) {
+        options.texts = {} as any;
+    }
+
+    for (const key of TextKeys) {
+        if (!isString(options.texts[key]) || !options.texts[key]) {
+            options.texts[key] = DefaultTexts[key][options.locale];
+        }
+    }
+
+    return options;
+}
+
+export function buildNotificationsOptions(opts: NotificationsOptions) {
+    const options: NotificationsOptions = <any>{ ...opts || {} };
+
+    if (!isEnumOption(options.position, SUPPORTED_POSITIONS)) {
+        logWarn(`show-notifications.position is not one these values: ${SUPPORTED_POSITIONS.join(', ')}`);
+        options.position = undefined;
+    }
+
+    if (!options.position) {
+        options.position = SUPPORTED_POSITIONS[0];
+    }
+
+    if (!isEnumOption(options.style, SUPPORTED_MAIN_STYLES)) {
+        logWarn(`show-notifications.style must be one of these values: ${SUPPORTED_MAIN_STYLES.join(',')}`);
+        options.style = undefined;
+    }
+
+    if (!options.style) {
+        options.style = SUPPORTED_MAIN_STYLES[0];
+    }
+
+    return options;
+}
+
+export function buildTopicOptions(opts: TopicOptions) {
+    const options: TopicOptions = <any>{ ...opts || {} };
+
+    if (!isEnumOption(options.position, SUPPORTED_POSITIONS)) {
+        logWarn(`show-topic.position is not one these values: ${SUPPORTED_POSITIONS.join(', ')}`);
+        options.position = undefined;
+    }
+
+    if (!options.position) {
+        options.position = SUPPORTED_POSITIONS[0];
+    }
+
+    if (!isEnumOption(options.style, SUPPORTED_TOPIC_STYLES)) {
+        logWarn(`show-topic.style must be one of these values: ${SUPPORTED_TOPIC_STYLES.join(',')}`);
+        options.style = undefined;
+    }
+
+    if (!options.style) {
+        options.style = SUPPORTED_TOPIC_STYLES[0];
+    }
+
+    return options;
+}
+
+function isStringOption(value: any) {
+    return !value || isString(value);
+}
+
+function isEnumOption(value: any, allowed: string[]) {
+    return !value || allowed.indexOf(value) >= 0;
+}
+
+function isLocaleOption(value: any) {
+    return isEnumOption(value, Object.keys(SUPPORTED_LOCALES));
+}
+
+export interface SDKConfig {
+    // The API URL
+    apiUrl: string;
+
+    // The API KEY when registration is needed.
+    apiKey?: string;
+
+    // The public key for web push encryption.
+    publicKey?: string;
+
+    // The email address of the user.
+    userEmail?: string;
+
+    // The timezone of the user.
+    userTimezone?: string;
+
+    // The language of the user.
+    userLanguage?: string;
+
+    // The username.
+    userName?: string;
+
+    // The user api token, set on registration.
+    userToken?: string;
+
+    // The topics, when the user is registered.
+    topics?: string[];
+
+    // The url to the styles.
+    styleUrl: string;
+
+    // True to negotiate the connection, otherwise sockets are used.
+    negotiate: boolean;
+
+    // True when emails are allowed.
+    allowEmails: boolean;
+
+    // True when profile can be edited.
+    allowProfile: boolean;
+
+    // The url to the service worker.
+    serviceWorkerUrl: string;
+
+    // The locale settings for date formatting.
+    locale: string;
+
+    // All needed texts.
+    texts: Texts<string>;
+
+    // A callback that is invoked when a notification is retrieved.
+    onNotification?: (notification: any) => void;
+}
+
+export interface SubscribeOptions {
+    existingWorker?: true;
+}
+
+type OptionTopicStyle = 'star' | 'heart' | 'alarm' | 'bell';
+
+const SUPPORTED_TOPIC_STYLES: OptionTopicStyle[] = ['star', 'heart', 'bell', 'alarm'];
+
+export interface TopicOptions {
+    // The style of the button.
+    style: OptionTopicStyle;
+
+    // The position of the modal.
+    position: OptionsPosition;
+}
+
+type OptionsPosition = 'bottom-left' | 'bottom-right';
+type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';
+
+const SUPPORTED_POSITIONS: OptionsPosition[] = ['bottom-left', 'bottom-right'];
+const SUPPORTED_MAIN_STYLES: OptionMainStyle[] = ['message', 'chat', 'chat_filled', 'notifo'];
+
+export interface NotificationsOptions  {
+    // The position of the modal.
+    position: OptionsPosition;
+
+    // The style of the button.
+    style: OptionMainStyle;
+}
+
+type Texts<T> = {
+    cancel: T,
+    email: T,
+    fullName: T,
+    language: T,
+    notificationsEmpty: T,
+    notifyBeEmail: T
+    notifyBeWebPush: T,
+    save: T,
+    settings: T,
+    subscribe: T,
+    timezone: T,
+    unsubscribe: T,
+};
+
+const TextKeys: ReadonlyArray<keyof Texts<any>> = [
+    'cancel',
+    'email',
+    'fullName',
+    'language',
+    'notificationsEmpty',
+    'notifyBeEmail',
+    'notifyBeWebPush',
+    'save',
+    'settings',
+    'subscribe',
+    'timezone',
+    'unsubscribe',
+];

@@ -6,14 +6,12 @@
 // ==========================================================================
 
 using MongoDB.Bson.Serialization.Attributes;
+using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Subscriptions.MongoDb
 {
-    public sealed class MongoDbSubscription
+    public sealed class MongoDbSubscription : MongoDbEntity
     {
-        [BsonId]
-        public string DocId { get; set; }
-
         [BsonRequired]
         [BsonElement("a")]
         public string AppId { get; set; }
@@ -32,25 +30,26 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         [BsonRequired]
         [BsonElement("s")]
-        public NotificationSettings TopicSettings { get; set; }
+        public NotificationSettings? TopicSettings { get; set; }
 
         public static string CreateId(string appId, string userId, string topicPrefix)
         {
             return $"{appId}_{userId}_{topicPrefix}";
         }
 
-        public static MongoDbSubscription FromSubscription(string appId, SubscriptionUpdate update)
+        public static MongoDbSubscription FromSubscription(Subscription subscription)
         {
-            var docId = CreateId(appId, update.UserId, update.TopicPrefix);
+            var id = CreateId(subscription.AppId, subscription.UserId, subscription.TopicPrefix);
 
             var result = new MongoDbSubscription
             {
-                DocId = docId,
-                AppId = appId,
-                TopicArray = new TopicId(update.TopicPrefix).GetParts(),
-                TopicPrefix = update.TopicPrefix,
-                TopicSettings = update.TopicSettings,
-                UserId = update.UserId
+                DocId = id,
+                AppId = subscription.AppId,
+                TopicArray = subscription.TopicPrefix.GetParts(),
+                TopicPrefix = subscription.TopicPrefix,
+                TopicSettings = subscription.TopicSettings,
+                UserId = subscription.UserId,
+                Etag = GenerateEtag()
             };
 
             return result;

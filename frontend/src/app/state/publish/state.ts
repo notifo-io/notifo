@@ -6,7 +6,7 @@
  */
 
 import { ErrorDto } from '@app/framework';
-import { PublishRequestDto } from '@app/service';
+import { PublishDto } from '@app/service';
 
 export interface PublishStateInStore {
     publish: PublishState;
@@ -23,5 +23,5 @@ export interface PublishState {
     dialogOpen?: boolean;
 
     // The initial values.
-    dialogValues?: Partial<PublishRequestDto>;
+    dialogValues?: Partial<PublishDto>;
 }

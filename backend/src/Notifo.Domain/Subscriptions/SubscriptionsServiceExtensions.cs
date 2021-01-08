@@ -14,11 +14,14 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMySubscriptions(this IServiceCollection services)
         {
-            services.AddSingletonAs<MongoDbSubscriptionRepository>()
-                .As<ISubscriptionRepository>();
-
             services.AddSingletonAs<SubscriptionStore>()
                 .As<ISubscriptionStore>();
+        }
+
+        public static void AddMyMongoSubscriptions(this IServiceCollection services)
+        {
+            services.AddSingletonAs<MongoDbSubscriptionRepository>()
+                .As<ISubscriptionRepository>();
         }
     }
 }

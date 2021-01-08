@@ -9,6 +9,7 @@
 import { h, VNode } from 'preact';
 
 import { useEffect, useRef } from 'preact/hooks';
+import { Icon } from './Icon';
 
 export interface ModalProps {
     // The children.
@@ -44,7 +45,13 @@ export const Modal = (props: ModalProps) => {
 
     return (
         <div class={buildRootClass(position)} ref={modal}>
-            {children}
+            <div class='notifo-modal-inner'>
+                {children}
+
+                <a class='notifo-powered' href='https://notifo.io' target='_blank'>
+                    <span>Powered by</span> <Icon type='logo' size={14} />
+                </a>
+            </div>
         </div>
     );
 };

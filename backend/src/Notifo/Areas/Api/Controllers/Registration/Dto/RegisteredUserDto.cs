@@ -5,14 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.Emails.Dto
+namespace Notifo.Areas.Api.Controllers.Registration.Dto
 {
-    public sealed class PreviewRequestDto
+    public sealed class RegisteredUserDto
     {
-        public string Template { get; set; }
+        public string PublicKey { get; set; }
 
-        public PreviewType TemplateType { get; set; }
+        public string? UserId { get; set; }
 
-        public string AppName { get; set; }
+        public string? UserToken { get; set; }
     }
 }

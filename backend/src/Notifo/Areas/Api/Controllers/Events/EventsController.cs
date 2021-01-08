@@ -63,7 +63,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// </returns>
         [HttpPost("api/apps/{appId}/events/")]
         [AppPermission(Roles.Admin)]
-        public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyRequestDto request)
+        public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
         {
             if (request?.Requests != null)
             {
