@@ -6,24 +6,20 @@
  */
 
 import { AuthService } from '@app/service';
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { routerActions } from 'react-router-redux';
-import { Dispatch, Middleware, Reducer } from 'redux';
-import { LoginState } from './state';
+import { Dispatch, Middleware } from 'redux';
+import { LoginState, User } from './state';
 
-export const LOGIN_LOGIN_STARTED = 'LOGIN_LOGIN_STARTED';
-export const LOGIN_LOGIN_SUCCEEEDED = 'LOGIN_LOGIN_SUCCEEEDED';
-export const LOGIN_LOGIN_SUCCEEEDED_REDIRECT = 'LOGIN_LOGIN_SUCCEEEDED_REDIRECT';
-export const LOGIN_LOGOUT_STARTED = 'LOGIN_LOGOUT_STARTED';
-export const LOGIN_LOGOUT_SUCCEEEDED = 'LOGIN_LOGOUT_SUCCEEEDED';
-export const LOGIN_LOGOUT_SUCCEEEDED_REDIRECT = 'LOGIN_LOGOUT_SUCCEEEDED_REDIRECT';
-
-function getUser(user: Oidc.User) {
-    return { sub: user.profile.sub, name: user.profile.name, token: user.access_token };
-}
+const loginStarted = createAction('login/started');
+const loginDoneSilent = createAction<{ user: User }>('login/done/silent');
+const loginDoneRedirect = createAction<{ user: User }>('login/redirect');
+const logoutStarted = createAction('logout/started');
+const logoutDoneRedirect = createAction<{ user: User }>('logout/redirect');
 
 export const loginStartAsync = () => {
     return async (dispatch: Dispatch) => {
-        dispatch({ type: LOGIN_LOGIN_STARTED });
+        dispatch(loginStarted());
 
         const userManager = AuthService.getUserManager();
 
@@ -34,7 +30,7 @@ export const loginStartAsync = () => {
         } else {
             const user = getUser(currentUser);
 
-            dispatch({ type: LOGIN_LOGIN_SUCCEEEDED, user });
+            dispatch(loginDoneSilent({ user }));
         }
     };
 };
@@ -48,14 +44,14 @@ export const loginDoneAsync = () => {
         if (currentUser) {
             const user = getUser(currentUser);
 
-            dispatch({ type: LOGIN_LOGIN_SUCCEEEDED_REDIRECT, user });
+            dispatch(loginDoneRedirect({ user }));
         }
     };
 };
 
 export const logoutStartAsync = () => {
     return async (dispatch: Dispatch) => {
-        dispatch({ type: LOGIN_LOGOUT_STARTED });
+        dispatch(logoutStarted());
 
         const userManager = AuthService.getUserManager();
 
@@ -69,57 +65,51 @@ export const logoutStartAsync = () => {
 
 export const logoutDoneAsync = () => {
     return async (dispatch: Dispatch) => {
-        dispatch({ type: LOGIN_LOGOUT_STARTED });
-
         const userManager = AuthService.getUserManager();
 
         const response = await userManager.signoutRedirectCallback();
 
         if (!response.error) {
-            dispatch({ type: LOGIN_LOGOUT_SUCCEEEDED_REDIRECT });
+            dispatch(logoutDoneRedirect());
         }
     };
 };
 
-export function loginMiddleware(): Middleware {
-    const middleware: Middleware = state => next => action => {
-        if (action.error?.statusCode === 401) {
-            const userManager = AuthService.getUserManager();
+export const loginMiddleware: Middleware = (state) => next => action => {
+    if (action.payload?.statusCode === 401) {
+        const userManager = AuthService.getUserManager();
 
-            userManager.signoutRedirect();
-        }
+        userManager.signoutRedirect();
+    }
 
-        const result = next(action);
+    const result = next(action);
 
-        switch (action.type) {
-            case LOGIN_LOGIN_SUCCEEEDED_REDIRECT:
-                state.dispatch(routerActions.push('/'));
-                break;
-            case LOGIN_LOGOUT_SUCCEEEDED_REDIRECT:
-                state.dispatch(routerActions.push('/'));
-                break;
-        }
+    if (loginDoneRedirect.match(action) || logoutDoneRedirect.match(action)) {
+        state.dispatch(routerActions.push('/'));
+    }
 
-        return result;
-    };
+    return result;
+};
 
-    return middleware;
-}
+const initialState: LoginState = {
+    isAuthenticating: true,
+};
 
-export function loginReducer(): Reducer<LoginState> {
-    const initialState = { isAuthenticating: true };
+export const loginReducer = createReducer(initialState, builder => builder
+    .addCase(loginStarted, (state) => {
+        state.isAuthenticating = true;
+    })
+    .addCase(loginDoneSilent, (state, action) => {
+        state.isAuthenticating = false;
+        state.user = action.payload.user;
+    })
+    .addCase(loginDoneRedirect, (state, action) => {
+        state.isAuthenticating = false;
+        state.user = action.payload.user;
+    }));
 
-    const reducer: Reducer<LoginState> = (state = initialState, action) => {
-        switch (action.type) {
-            case LOGIN_LOGIN_STARTED:
-                return { ...state, isAuthenticating: true };
-            case LOGIN_LOGIN_SUCCEEEDED:
-            case LOGIN_LOGIN_SUCCEEEDED_REDIRECT:
-                return { ...state, isAuthenticating: false, user: action.user };
-            default:
-                return state;
-        }
-    };
+function getUser(user: Oidc.User): User {
+    const { sub, name } = user.profile;
 
-    return reducer;
+    return { sub, name, token: user.access_token };
 }

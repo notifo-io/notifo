@@ -5,35 +5,27 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { List, Query } from '@app/framework';
+import { listThunk, Query } from '@app/framework';
 import { Clients, EventDto } from '@app/service';
-import { Reducer } from 'redux';
-import { APP_SELECTED } from './../shared';
+import { createReducer } from '@reduxjs/toolkit';
+import { selectApp } from '../shared';
 import { EventsState } from './state';
 
-const list = new List<EventDto>('events', 'events', async (params) => {
-    const { items, total } = await Clients.Events.getEvents(params.appId, params.search, params.pageSize, params.page * params.pageSize);
+const list = listThunk<EventsState, EventDto>('events', 'events', async params => {
+    const { items, total } = await Clients.Events.getEvents(params.appId, params.search, params.take, params.skip);
 
     return { items, total };
 });
 
-export const loadEventsAsync = (appId: string, q?: Partial<Query>, reset = false) => {
-    return list.load(q, { appId }, reset);
+export const loadEventsAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+    return list.action({ appId, query, reset });
 };
 
-export function eventsReducer(): Reducer<EventsState> {
-    const initialState: EventsState = {
-        events: list.createInitial(),
-    };
+const initialState: EventsState = {
+    events: list.createInitial(),
+};
 
-    const reducer: Reducer<EventsState> = (state = initialState, action) => {
-        switch (action.type) {
-            case APP_SELECTED:
-                return initialState;
-            default:
-                return list.handleAction(state, action);
-        }
-    };
-
-    return reducer;
-}
+export const eventsReducer = createReducer(initialState, builder => list.initialize(builder)
+    .addCase(selectApp, () => {
+        return initialState;
+    }));

@@ -61,7 +61,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     }, []);
 
     const doSave = React.useCallback((params: SubscriptionDto) => {
-        dispatch(upsertSubscriptionAsync(appId, userId, params));
+        dispatch(upsertSubscriptionAsync({ appId, userId, params }));
     }, [appId, userId]);
 
     const initialValues = subscription || {};

@@ -5,114 +5,60 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { addOrModify, buildError, List, remove } from '@app/framework';
+import { ErrorDto, listThunk } from '@app/framework';
 import { Clients, TemplateDto } from '@app/service';
-import { Dispatch, Reducer } from 'redux';
-import { APP_SELECTED } from './../shared';
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createApiThunk, selectApp } from './../shared';
 import { TemplatesState } from './state';
 
-export const TEMPLATES_SELECT = 'TEMPLATES_SELECT';
-export const TEMPLATE_UPSERT_STARTED = 'TEMPLATE_UPSERT_STARTED';
-export const TEMPLATE_UPSERT_FAILED = 'TEMPLATE_UPSERT_FAILED';
-export const TEMPLATE_UPSERT_SUCCEEEDED = 'TEMPLATE_UPSERT_SUCCEEEDED';
-export const TEMPLATE_DELETE_STARTED = 'TEMPLATE_DELETE_STARTED';
-export const TEMPLATE_DELETE_FAILED = 'TEMPLATE_DELETE_FAILED';
-export const TEMPLATE_DELETE_SUCCEEEDED = 'TEMPLATE_DELETE_SUCCEEEDED';
-
-const list = new List<TemplateDto>('templates', 'templates', async (params) => {
+const list = listThunk<TemplatesState, TemplateDto>('templates', 'templates', async (params) => {
     const { items, total } = await Clients.Templates.getTemplates(params.appId, null, 1000, 0);
 
     return { items, total };
 });
 
-export const selectTemplate = (templateCode?: string) => {
-    return { type: TEMPLATES_SELECT, templateCode };
-};
+export const selectTemplate = createAction<{ code: string | undefined }>('templates/select');
 
 export const loadTemplatesAsync = (appId: string, reset = false) => {
-    return list.load({}, { appId }, reset);
+    return list.action({ appId, reset });
 };
 
-export const upsertTemplateAsync = (appId: string, params: TemplateDto) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: TEMPLATE_UPSERT_STARTED });
+export const upsertTemplateAsync = createApiThunk('templates/upsert',
+    async (arg: { appId: string, params: TemplateDto }) => {
+        const response = await Clients.Templates.postTemplates(arg.appId, { requests: [arg.params] });
 
-        try {
-            const response = await Clients.Templates.postTemplates(appId, { requests: [params] });
+        return response[0];
+    });
 
-            const template = response[0];
+export const deleteTemplateAsync = createApiThunk('templates/delete',
+    (arg: { appId: string, code: string }) => {
+        return Clients.Templates.deleteTemplate(arg.appId, arg.code);
+    });
 
-            dispatch({ type: TEMPLATE_UPSERT_SUCCEEEDED, template });
-
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: TEMPLATE_UPSERT_FAILED, error });
-        }
-    };
+const initialState: TemplatesState = {
+    templates: list.createInitial(),
 };
 
-export const deleteTemplateAsync = (appId: string, code: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: TEMPLATE_DELETE_FAILED });
-
-        try {
-            await Clients.Templates.deleteTemplate(appId, code);
-
-            dispatch({ type: TEMPLATE_DELETE_SUCCEEEDED, appId, code });
-
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: TEMPLATE_DELETE_SUCCEEEDED, error });
-        }
-    };
-};
-
-export function templatesReducer(): Reducer<TemplatesState> {
-    const initialState: TemplatesState = {
-        templates: list.createInitial(),
-    };
-
-    const reducer: Reducer<TemplatesState> = (state = initialState, action) => {
-        switch (action.type) {
-            case APP_SELECTED:
-                return initialState;
-            case TEMPLATES_SELECT:
-                return {
-                    ...state,
-                    currentTemplateCode: action.templateCode,
-                };
-            case TEMPLATE_UPSERT_STARTED:
-                return {
-                    ...state,
-                    upserting: true,
-                    upsertingError: null,
-                };
-            case TEMPLATE_UPSERT_FAILED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: action.error,
-                };
-            case TEMPLATE_UPSERT_SUCCEEEDED: {
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: null,
-                    templates: list.changeItems(state, items => addOrModify(items, action.template, 'code')),
-                };
-            }
-            case TEMPLATE_DELETE_SUCCEEEDED: {
-                return {
-                    ...state,
-                    templates: list.changeItems(state, items => remove(items, action.code, 'code')),
-                };
-            }
-            default:
-                return list.handleAction(state, action);
-        }
-    };
-
-    return reducer;
-}
+export const templatesReducer = createReducer(initialState, builder => list.initialize(builder)
+    .addCase(selectApp, () => {
+        return initialState;
+    })
+    .addCase(selectTemplate, (state, action) => {
+        state.currentTemplateCode = action.payload.code;
+    })
+    .addCase(upsertTemplateAsync.pending, (state) => {
+        state.upserting = true;
+        state.upsertingError = undefined;
+    })
+    .addCase(upsertTemplateAsync.rejected, (state, action) => {
+        state.upserting = true;
+        state.upsertingError = action.payload as ErrorDto;
+    })
+    .addCase(upsertTemplateAsync.fulfilled, (state, action) => {
+        state.upserting = true;
+        state.upsertingError = undefined;
+        state.templates.items.setOrPush(x => x.code, action.payload);
+    })
+    .addCase(deleteTemplateAsync.fulfilled, (state, action) => {
+        state.templates.items.removeBy(x => x.code, action.meta.arg.code);
+    }));

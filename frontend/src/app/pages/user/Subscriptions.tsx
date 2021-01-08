@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
-import { deleteSubscriptionAsync, loadSubscriptionsAsync, openPublishDialog, useApps, useSubscriptions } from '@app/state';
+import { deleteSubscriptionAsync, loadSubscriptionsAsync, togglePublishDialog, useApps, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -48,11 +48,11 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     }, [appId, userId]);
 
     const doDelete = React.useCallback((subscription: SubscriptionDto) => {
-        dispatch(deleteSubscriptionAsync(appId, userId, subscription.topicPrefix));
+        dispatch(deleteSubscriptionAsync({ appId, userId, prefix: subscription.topicPrefix }));
     }, [appId, userId]);
 
     const doPublish = React.useCallback((subscription: SubscriptionDto) => {
-        dispatch(openPublishDialog({ topic: subscription.topicPrefix }));
+        dispatch(togglePublishDialog({ open: true, values: { topic: subscription.topicPrefix } }));
     }, []);
 
     const doEdit = React.useCallback((subscription: SubscriptionDto) => {

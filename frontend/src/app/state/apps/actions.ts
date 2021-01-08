@@ -5,225 +5,127 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { addOrModify, buildError, List } from '@app/framework';
+import { ErrorDto, listThunk } from '@app/framework';
 import { AddContributorDto, AppDto, Clients, UpsertAppDto } from '@app/service';
-import { Dispatch, Reducer } from 'redux';
-import { APP_SELECTED } from './../shared';
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createApiThunk, selectApp } from './../shared';
 import { AppsState, CreateAppParams } from './state';
 
-export const APP_CREATE_RESET = 'APP_CREATE_RESET';
-export const APP_LOAD_DETAILS_STARTED = 'APP_LOAD_DETAILS_STARTED';
-export const APP_LOAD_DETAILS_FAILED = 'APP_LOAD_DETAILS_FAILED';
-export const APP_LOAD_DETAILS_SUCCEEEDED = 'APP_LOAD_DETAILS_SUCCEEEDED';
-export const APP_CREATE_STARTED = 'APP_CREATE_STARTED';
-export const APP_CREATE_FAILED = 'APP_CREATE_FAILED';
-export const APP_CREATE_SUCCEEEDED = 'APP_CREATE_SUCCEEEDED';
-export const APP_UPSERT_STARTED = 'APP_UPSERT_STARTED';
-export const APP_UPSERT_FAILED = 'APP_UPSERT_FAILED';
-export const APP_UPSERT_SUCCEEEDED = 'APP_UPSERT_SUCCEEEDED';
-export const APP_UPSERT_CONTRIBUTORS_STARTED = 'APP_UPSERT_CONTRIBUTORS_STARTED';
-export const APP_UPSERT_CONTRIBUTORS_FAILED = 'APP_UPSERT_CONTRIBUTORS_FAILED';
-export const APP_UPSERT_CONTRIBUTORS_SUCCEEEDED = 'APP_UPSERT_CONTRIBUTORS_SUCCEEEDED';
-
-const list = new List<AppDto>('apps', 'apps', async () => {
+const list = listThunk<AppsState, AppDto>('apps', 'apps', async () => {
     const items = await Clients.Apps.getApps();
 
     return { items, total: items.length };
 });
 
-export const selectApp = (appId: string) => {
-    return { type: APP_SELECTED, appId };
-};
-
-export const resetCreateApp = () => {
-    return { type: APP_CREATE_RESET };
-};
-
 export const loadAppsAsync = () => {
-    return list.load();
+    return list.action({});
 };
 
-export const loadDetailsAsync = (appId: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: APP_LOAD_DETAILS_STARTED });
+export const loadDetailsAsync = createApiThunk('apps/load',
+    (arg: { appId: string }) => {
+        return Clients.Apps.getApp(arg.appId);
+    });
 
-        try {
-            const app = await Clients.Apps.getApp(appId);
+export const createAppReset = createAction('apps/create/reset');
 
-            dispatch({ type: APP_LOAD_DETAILS_SUCCEEEDED, app });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
+export const createAppAsync = createApiThunk('apps/create',
+    (arg: { params: CreateAppParams }) => {
+        return Clients.Apps.postApp(arg.params);
+    });
 
-            dispatch({ type: APP_LOAD_DETAILS_FAILED, error });
-        }
-    };
+export const upsertAppAsync = createApiThunk('apps/upsert',
+    (arg: { appId: string, params: UpsertAppDto }) => {
+        return Clients.Apps.putApp(arg.appId, arg.params);
+    });
+
+export const addContributorAsync = createApiThunk('apps/contributors/add',
+    (arg: { appId: string, params: AddContributorDto }) => {
+        return Clients.Apps.postContributor(arg.appId, arg.params);
+    });
+
+export const removeContributorAsync = createApiThunk('apps/contributors/remove',
+    (arg: { appId: string, id: string }) => {
+        return Clients.Apps.deleteContributor(arg.appId, arg.id);
+    });
+
+const initialState: AppsState = {
+    apps: list.createInitial(),
 };
 
-export const addContributorAsync = (appId: string, params: AddContributorDto) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: APP_UPSERT_CONTRIBUTORS_STARTED });
-
-        try {
-            const app = await Clients.Apps.postContributor(appId, params);
-
-            dispatch({ type: APP_UPSERT_CONTRIBUTORS_SUCCEEEDED, app });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: APP_UPSERT_CONTRIBUTORS_FAILED, error });
-        }
-    };
-};
-
-export const removeContributorAsync = (appId: string, id: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: APP_UPSERT_CONTRIBUTORS_STARTED });
-
-        try {
-            const app = await Clients.Apps.deleteContributor(appId, id);
-
-            dispatch({ type: APP_UPSERT_CONTRIBUTORS_SUCCEEEDED, app });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: APP_UPSERT_CONTRIBUTORS_FAILED, error });
-        }
-    };
-};
-
-export const createAppAsync = (params: CreateAppParams) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: APP_CREATE_STARTED });
-
-        try {
-            const app = await Clients.Apps.postApp(params);
-
-            dispatch({ type: APP_CREATE_SUCCEEEDED, app });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: APP_CREATE_FAILED, error });
-        }
-    };
-};
-
-export const upsertAppAsync = (appId: string, params: UpsertAppDto) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: APP_UPSERT_STARTED });
-
-        try {
-            const app = await Clients.Apps.putApp(appId, params);
-
-            dispatch({ type: APP_UPSERT_SUCCEEEDED, app });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: APP_UPSERT_FAILED, error });
-        }
-    };
-};
-
-export function appsReducer(): Reducer<AppsState> {
-    const initialState: AppsState = {
-        apps: list.createInitial(),
-    };
-
-    const reducer: Reducer<AppsState> = (state = initialState, action) => {
-        switch (action.type) {
-            case APP_CREATE_RESET:
-                return {
-                    ...state,
-                    creating: false,
-                    creatingError: null,
-                };
-            case APP_LOAD_DETAILS_STARTED:
-                return {
-                    ...state,
-                    contributorsError: null,
-                    contributorsUpdating: false,
-                    loadingDetails: true,
-                    loadingDetailsError: null,
-                };
-            case APP_LOAD_DETAILS_FAILED:
-                return {
-                    ...state,
-                    loadingDetails: false,
-                    loadingDetailsError: action.error,
-                };
-            case APP_LOAD_DETAILS_SUCCEEEDED:
-                return {
-                    ...state,
-                    loadingDetails: false,
-                    loadingDetailsError: null,
-                    appDetails: action.app,
-                };
-            case APP_UPSERT_CONTRIBUTORS_STARTED:
-                return {
-                    ...state,
-                    contributorsUpdating: true,
-                    contributorsError: null,
-                };
-            case APP_UPSERT_CONTRIBUTORS_FAILED:
-                return {
-                    ...state,
-                    contributorsUpdating: false,
-                    contributorsError: action.error,
-                };
-            case APP_UPSERT_CONTRIBUTORS_SUCCEEEDED:
-                return {
-                    ...state,
-                    contributorsUpdating: false,
-                    contributorsError: null,
-                    appDetails: action.app,
-                };
-            case APP_CREATE_STARTED:
-                return {
-                    ...state,
-                    creating: true,
-                    creatingError: null,
-                };
-            case APP_CREATE_FAILED:
-                return {
-                    ...state,
-                    creating: false,
-                    creatingError: action.error,
-                };
-            case APP_CREATE_SUCCEEEDED:
-                return {
-                    ...state,
-                    creating: false,
-                    creatingError: null,
-                    apps: list.changeItems(state, items => addOrModify(items, action.app, 'id')),
-                };
-            case APP_UPSERT_STARTED:
-                return {
-                    ...state,
-                    upserting: true,
-                    upsertingError: null,
-                };
-            case APP_UPSERT_FAILED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: action.error,
-                };
-            case APP_UPSERT_SUCCEEEDED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: null,
-                    apps: list.changeItems(state, items => addOrModify(items, action.app, 'id')),
-                    appDetails: action.app,
-                };
-            case APP_SELECTED:
-                return {
-                    ...state,
-                    appId: action.appId,
-                };
-            default:
-                return list.handleAction(state, action);
-        }
-    };
-
-    return reducer;
-}
+export const appsReducer = createReducer(initialState, builder => list.initialize(builder)
+    .addCase(selectApp, (state, action) => {
+        state.appId = action.payload.appId;
+    })
+    .addCase(createAppReset, (state) => {
+        state.creating = false;
+        state.creatingError = undefined;
+    })
+    .addCase(createAppAsync.pending, (state) => {
+        state.creating = true;
+        state.creatingError = undefined;
+    })
+    .addCase(createAppAsync.rejected, (state, action) => {
+        state.creating = false;
+        state.creatingError = action.payload as ErrorDto;
+    })
+    .addCase(createAppAsync.fulfilled, (state, action) => {
+        state.creating = false;
+        state.creatingError = undefined;
+        state.apps.items.setOrUnshift(x => x.id, action.payload);
+        state.apps.total++;
+    })
+    .addCase(loadDetailsAsync.pending, (state) => {
+        state.loadingDetails = true;
+        state.loadingDetailsError = undefined;
+    })
+    .addCase(loadDetailsAsync.rejected, (state, action) => {
+        state.loadingDetails = false;
+        state.loadingDetailsError = action.payload as ErrorDto;
+    })
+    .addCase(loadDetailsAsync.fulfilled, (state, action) => {
+        state.loadingDetails = false;
+        state.loadingDetailsError = undefined;
+        state.appDetails = action.payload;
+    })
+    .addCase(upsertAppAsync.pending, (state) => {
+        state.upserting = true;
+        state.upsertingError = undefined;
+    })
+    .addCase(upsertAppAsync.rejected, (state, action) => {
+        state.upserting = false;
+        state.upsertingError = action.payload as ErrorDto;
+    })
+    .addCase(upsertAppAsync.fulfilled, (state, action) => {
+        state.upserting = false;
+        state.upsertingError = undefined;
+        state.apps.items.set(x => x.id, action.payload);
+        state.appDetails = action.payload;
+    })
+    .addCase(addContributorAsync.pending, (state) => {
+        state.contributorsUpdating = true;
+        state.contributorsError = undefined;
+    })
+    .addCase(addContributorAsync.rejected, (state, action) => {
+        state.contributorsUpdating = false;
+        state.contributorsError = action.payload as ErrorDto;
+    })
+    .addCase(addContributorAsync.fulfilled, (state, action) => {
+        state.contributorsUpdating = false;
+        state.contributorsError = undefined;
+        state.apps.items.set(x => x.id, action.payload);
+        state.appDetails = action.payload;
+    })
+    .addCase(removeContributorAsync.pending, (state) => {
+        state.contributorsUpdating = true;
+        state.contributorsError = undefined;
+    })
+    .addCase(removeContributorAsync.rejected, (state, action) => {
+        state.contributorsUpdating = false;
+        state.contributorsError = action.payload as ErrorDto;
+    })
+    .addCase(removeContributorAsync.fulfilled, (state, action) => {
+        state.contributorsUpdating = false;
+        state.contributorsError = undefined;
+        state.apps.items.set(x => x.id, action.payload);
+        state.appDetails = action.payload;
+    }));

@@ -32,15 +32,15 @@ export const Contributors = (props: ContributorsProps) => {
     }, []);
 
     const doInvite = React.useCallback(() => {
-        dispatch(addContributorAsync(appDetails.id, { email, role: 'Admin' }));
+        dispatch(addContributorAsync({ appId: appDetails.id, params: { email, role: 'Admin' } }));
     }, [appDetails.id, email]);
 
     const doChange = React.useCallback((id: string, role: string) => {
-        dispatch(addContributorAsync(appDetails.id, { email: id, role }));
+        dispatch(addContributorAsync({ appId: appDetails.id, params: { email: id, role } }));
     }, [appDetails.id]);
 
     const doRemove = React.useCallback((id: string) => {
-        dispatch(removeContributorAsync(appDetails.id, id));
+        dispatch(removeContributorAsync({ appId: appDetails.id, id }));
     }, [appDetails.id]);
 
     const disabled = appDetails.role !== 'Owner' || contributorsUpdating;

@@ -5,122 +5,64 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { buildError, List, Query, remove } from '@app/framework';
+import { listThunk, Query } from '@app/framework';
 import { Clients, MediaDto } from '@app/service';
-import { Dispatch, Middleware, Reducer } from 'redux';
-import { APP_SELECTED } from './../shared';
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { Middleware } from 'redux';
+import { createApiThunk, selectApp } from '../shared';
 import { MediaState } from './state';
 
-export const MEDIAS_SELECT = 'MEDIAS_SELECT';
-export const MEDIA_UPLOAD_STARTED = 'MEDIA_UPLOAD_STARTED';
-export const MEDIA_UPLOAD_FAILED = 'MEDIA_UPLOAD_FAILED';
-export const MEDIA_UPLOAD_SUCCEEEDED = 'MEDIA_UPLOAD_SUCCEEEDED';
-export const MEDIA_DELETE_STARTED = 'MEDIA_DELETE_STARTED';
-export const MEDIA_DELETE_FAILED = 'MEDIA_DELETE_FAILED';
-export const MEDIA_DELETE_SUCCEEEDED = 'MEDIA_DELETE_SUCCEEEDED';
-
-const list = new List<MediaDto>('media', 'media', async (params) => {
-    const { items, total } = await Clients.Media.getMedias(params.appId, params.search, params.pageSize, params.page * params.pageSize);
+const list = listThunk<MediaState, MediaDto>('media', 'media', async params => {
+    const { items, total } = await Clients.Media.getMedias(params.appId, params.search, params.take, params.skip);
 
     return { items, total };
 });
 
-export const selectMedia = (mediaCode?: string) => {
-    return { type: MEDIAS_SELECT, mediaCode };
+export const selectMedia = createAction<{ fileName: string }>('media/select');
+
+export const loadMediaAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+    return list.action({ appId, query, reset });
 };
 
-export const loadMediaAsync = (appId: string, q?: Partial<Query>, reset = false) => {
-    return list.load(q, { appId }, reset);
+export const uploadMediaAsync = createApiThunk('media/upload',
+    async (arg: { appId: string, file: File }) => {
+        await Clients.Media.upload(arg.appId, arg.file);
+    });
+
+export const deleteMediaAsync = createApiThunk('media/delete',
+    async (arg: { appId: string, fileName: string }) => {
+        await Clients.Media.delete(arg.appId, arg.fileName);
+    });
+
+export const mediaMiddleware: Middleware = store => next => action => {
+    const result = next(action);
+
+    if (uploadMediaAsync.fulfilled.match(action) || deleteMediaAsync.fulfilled.match(action)) {
+        const load: any = loadMediaAsync(action.meta.arg.appId);
+
+        store.dispatch(load);
+    }
+
+    return result;
 };
 
-export const uploadMediaAsync = (appId: string, file: File) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: MEDIA_UPLOAD_STARTED, file, appId });
-
-        try {
-            await Clients.Media.upload(appId, file);
-
-            dispatch({ type: MEDIA_DELETE_SUCCEEEDED, file, appId });
-        } catch (error) {
-            dispatch({ type: MEDIA_DELETE_FAILED, error, file, appId });
-        }
-    };
+const initialState: MediaState = {
+    media: list.createInitial(), uploadingFiles: [],
 };
 
-export function mediaMiddleware(): Middleware {
-    const middleware: Middleware = store => next => action => {
-        const result = next(action);
-
-        if (action.type === MEDIA_UPLOAD_SUCCEEEDED || action.type === MEDIA_DELETE_SUCCEEEDED) {
-            const load: any = loadMediaAsync(action.appId);
-
-            store.dispatch(load);
-        }
-
-        return result;
-    };
-
-    return middleware;
-}
-
-export const deleteMediaAsync = (appId: string, fileName: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: MEDIA_DELETE_FAILED });
-
-        try {
-            await Clients.Media.delete(appId, fileName);
-
-            dispatch({ type: MEDIA_DELETE_SUCCEEEDED, appId, fileName });
-
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: MEDIA_DELETE_FAILED, error });
-        }
-    };
-};
-
-export function mediaReducer(): Reducer<MediaState> {
-    const initialState: MediaState = {
-        media: list.createInitial(),
-        uploadingFiles: [],
-    };
-
-    const reducer: Reducer<MediaState> = (state = initialState, action) => {
-        switch (action.type) {
-            case APP_SELECTED:
-                return initialState;
-            case MEDIAS_SELECT:
-                return {
-                    ...state,
-                    currentMediaCode: action.mediaCode,
-                };
-            case MEDIA_UPLOAD_STARTED:
-                return {
-                    ...state,
-                    uploadingFiles: [action.file, ...state.uploadingFiles],
-                };
-            case MEDIA_UPLOAD_FAILED:
-                return {
-                    ...state,
-                    uploadingFiles: state.uploadingFiles.filter(x => x !== action.file),
-                };
-            case MEDIA_UPLOAD_SUCCEEEDED: {
-                return {
-                    ...state,
-                    uploadingFiles: state.uploadingFiles.filter(x => x !== action.file),
-                };
-            }
-            case MEDIA_DELETE_SUCCEEEDED: {
-                return {
-                    ...state,
-                    media: list.changeItems(state, items => remove(items, action.fileName, 'fileName')),
-                };
-            }
-            default:
-                return list.handleAction(state, action);
-        }
-    };
-
-    return reducer;
-}
+export const mediaReducer = createReducer(initialState, builder => list.initialize(builder)
+    .addCase(selectApp, () => {
+        return initialState;
+    })
+    .addCase(uploadMediaAsync.pending, (state, action) => {
+        state.uploadingFiles.unshift(action.meta.arg.file);
+    })
+    .addCase(uploadMediaAsync.fulfilled, (state, action) => {
+        state.uploadingFiles.remove(action.meta.arg.file);
+    })
+    .addCase(uploadMediaAsync.rejected, (state, action) => {
+        state.uploadingFiles.remove(action.meta.arg.file);
+    })
+    .addCase(deleteMediaAsync.fulfilled, (state, action) => {
+        state.uploadingFiles.removeBy(x => x.name, action.meta.arg.fileName);
+    }));
