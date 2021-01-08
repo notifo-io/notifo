@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
-import { deleteTemplateAsync, loadTemplatesAsync, openPublishDialog, selectTemplate, useApps, useTemplates } from '@app/state';
+import { deleteTemplateAsync, loadTemplatesAsync, selectTemplate, togglePublishDialog, useApps, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -38,15 +38,15 @@ export const TemplatesPage = () => {
     }, []);
 
     const doSelect = React.useCallback((template: TemplateDto) => {
-        dispatch(selectTemplate(template.code));
+        dispatch(selectTemplate({ code: template.code }));
     }, []);
 
     const doDelete = React.useCallback((template: TemplateDto) => {
-        dispatch(deleteTemplateAsync(appId, template.code));
+        dispatch(deleteTemplateAsync({ appId, code: template.code }));
     }, [appId]);
 
     const doPublish = React.useCallback((template: TemplateDto) => {
-        dispatch(openPublishDialog({ templateCode: template.code }));
+        dispatch(togglePublishDialog({ open: true, values: { templateCode: template.code } }));
     }, []);
 
     return (

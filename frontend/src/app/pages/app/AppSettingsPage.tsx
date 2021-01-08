@@ -18,7 +18,7 @@ export const AppSettingsPage = () => {
     const appDetails = useApps(x => x.appDetails);
 
     React.useEffect(() => {
-        dispatch(loadDetailsAsync(appId));
+        dispatch(loadDetailsAsync({ appId }));
     }, [appId]);
 
     if (!appDetails) {

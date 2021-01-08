@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { getApp, hidePublishDialog, publishAsync, useApps, usePublish } from '@app/state';
+import { getApp, publishAsync, togglePublishDialog, useApps, usePublish } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -52,11 +52,11 @@ export const PublishDialog = () => {
     const [language, setLanguage] = React.useState<string>();
 
     const doCloseForm = React.useCallback(() => {
-        dispatch(hidePublishDialog());
+        dispatch(togglePublishDialog({ open: true }));
     }, []);
 
     const doPublish = React.useCallback((params: PublishDto) => {
-        dispatch(publishAsync(appId, params));
+        dispatch(publishAsync({ appId, params }));
     }, [appId]);
 
     const initialValues: any = dialogValues || {};

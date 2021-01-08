@@ -26,3 +26,5 @@ export * from './react/Shortcut';
 export * from './react/Title';
 export * from './react/Toggle';
 export * from './utils';
+
+import './utils/array-extensions';

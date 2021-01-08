@@ -8,7 +8,7 @@
 import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
-import { deleteUserAsync, loadUsersAsync, openPublishDialog, useApps, useUsers } from '@app/state';
+import { deleteUserAsync, loadUsersAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -45,11 +45,11 @@ export const UsersPage = () => {
     }, [appId]);
 
     const doDelete = React.useCallback((user: UserDto) => {
-        dispatch(deleteUserAsync(appId, user.id));
+        dispatch(deleteUserAsync({ appId, userId: user.id }));
     }, [appId]);
 
     const doPublish = React.useCallback((user: UserDto) => {
-        dispatch(openPublishDialog({ topic: `users/${user.id}` }));
+        dispatch(togglePublishDialog({ open: true, values: { topic: `users/${user.id}` } }));
     }, []);
 
     const doEdit = React.useCallback((user: UserDto) => {

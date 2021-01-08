@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Dispatch } from 'redux';
+import { ActionReducerMapBuilder, createAction, Dispatch } from '@reduxjs/toolkit';
 import { buildError, ErrorDto, Types } from './../utils';
 
 export interface ListState<T, TExtra = any> extends Query {
@@ -52,149 +52,125 @@ export interface Query {
 
 export interface SearchRequest extends Query {
     [x: string]: any;
+
+    // The number of items to take.
+    take: number;
+
+    // The number of items to skip.
+    skip: number;
 }
 
-export class List<T, TExtra = any> {
-    private readonly LOADING_STARTED = `${this.name.toUpperCase()}_LOADING_STARTED`;
-    private readonly LOADING_FAILED = `${this.name.toUpperCase()}_LOADING_FAILED`;
-    private readonly LOADING_SUCCESS = `${this.name.toUpperCase()}_LOADING_SUCCESS`;
+type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>, total: number, extra?: TExtra }>;
+type ListArg = { query?: Partial<Query>, reset?: boolean } & { [x: string]: any };
 
-    constructor(
-        private readonly prefix: string,
-        private readonly name: string,
-        private readonly loader: (request: SearchRequest) => Promise<{ items: ReadonlyArray<T>, total: number, extra?: TExtra }>,
-    ) {
-    }
+export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
+    const name = `${prefix}/${key}/load`;
 
-    public createInitial(pageSize = 20): ListState<T, TExtra> {
-        return {
-            page: 0,
-            pageSize,
-            total: 0,
-        };
-    }
+    type ActionPendingType = { reset?: boolean, request: SearchRequest };
+    type ActionFulfilledType = { items: readonly TItem[], extra?: TExtra, total: number };
+    type ActionRejectedType = { error: ErrorDto };
 
-    public load(request: Partial<Query> = {}, params?: any, reset = false) {
+    const actionPending = createAction<ActionPendingType>(`${name}/pending`);
+    const actionFulfilled = createAction<ActionFulfilledType>(`${name}/fulfilled`);
+    const actionRejected = createAction<ActionRejectedType>(`${name}/rejected`);
+
+    const action = (arg: ListArg) => {
         return async (dispatch: Dispatch, getState: () => any) => {
-            const state = this.getCurrentState(getState);
+            const state = getState()[prefix][key] as ListState<T>;
 
             if (state.isLoading) {
                 return;
             }
 
-            const newRequest = request || {};
+            const { query, reset, ...params } = arg || {};
 
-            if (newRequest.search !== state.search) {
-                newRequest.page = 0;
-            } else if (!Types.isNumber(newRequest.page)) {
-                newRequest.page = state.page;
+            const request: SearchRequest = { ...query || {}, ...params } as any;
+
+            if (query?.search !== state.search) {
+                request.page = 0;
             }
 
-            if (!Types.isNumber(newRequest.pageSize)) {
-                newRequest.pageSize = state.pageSize;
+            if (!Types.isNumber(request.page)) {
+                request.page = state.page;
             }
 
-            dispatch({ type: this.LOADING_STARTED, ...newRequest, reset });
+            if (!Types.isNumber(request.pageSize)) {
+                request.pageSize = state.pageSize;
+            }
+
+            request.take = request.pageSize;
+            request.skip = request.pageSize * request.page;
+
+            dispatch(actionPending({ reset, request }));
 
             try {
-                const { items, total, extra } = await this.loader({ ...newRequest, ...params });
+                const result = await loader(request);
 
-                dispatch({ type: this.LOADING_SUCCESS, items, total, extra });
+                dispatch(actionFulfilled(result));
             } catch (err) {
                 const error = buildError(err.status, err.message);
 
-                dispatch({ type: this.LOADING_FAILED, error });
+                dispatch(actionRejected({ error }));
             }
         };
-    }
+    };
 
-    public changeItems(state: any, updater: (items: ReadonlyArray<T>, state: ListState<T>) => ReadonlyArray<T> | undefined) {
-        const list = state[this.name];
+    const initialize = function (builder: ActionReducerMapBuilder<T>) {
+        builder.addCase(actionPending, (state, action) => {
+            const list = state[key] as ListState<TItem>;
+            const loaded = Types.isArray(list.items);
 
-        if (!list.items) {
-            return list;
-        }
+            const { request, reset } = action.payload;
 
-        const newItems = updater(list.items, list);
+            list.error = null;
+            list.isLoading = true;
+            list.isLoadingMore = loaded;
+            list.page = request.page;
+            list.pageSize = request.pageSize;
+            list.search = request.search;
+            list.sorting = request.sorting;
 
-        if (newItems === list.items) {
-            return list;
-        } else {
-            const newList = { ...list };
+            if (reset && loaded) {
+                list.items = [];
+            }
+        });
 
-            newList.items = newItems;
-            newList.total += (newItems.length - list.items.length);
+        builder.addCase(actionFulfilled, (state, action) => {
+            const list = state[key] as ListState<TItem>;
 
-            return newList;
-        }
-    }
+            const { extra, items, total } = action.payload;
 
-    public handleAction(state: any, action: { type: string } & any) {
-        switch (action.type) {
-            case this.LOADING_STARTED: {
-                    const newList = { ...state[this.name], ...action };
+            list.error = null;
+            list.extra = extra;
+            list.isLoading = false;
+            list.isLoadingMore = false;
+            list.items = items;
 
-                    newList.error = null;
-                    newList.isLoading = true;
-                    newList.isLoadingMore = !!state.items;
+            if (Types.isNumber(total)) {
+                list.total = total;
+            }
+        });
 
-                    if (action.reset && Types.isArray(newList.items)) {
-                        newList.items = [];
-                    }
+        builder.addCase(actionRejected, (state, action) => {
+            const list = state[key] as ListState<TItem>;
 
-                    const newState = { ...state, [this.name]: newList };
+            const { error } = action.payload;
 
-                    return newState;
-                }
-            case this.LOADING_SUCCESS: {
-                    const newList = { ...state[this.name] };
+            list.error = error;
+            list.isLoading = false;
+            list.isLoadingMore = false;
+        });
 
-                    if (Types.isNumber(action.total)) {
-                        newList.total = action.total;
-                    }
+        return builder;
+    };
 
-                    newList.error = null;
-                    newList.extra = action.extra;
-                    newList.isLoading = false;
-                    newList.isLoadingMore = false;
-                    newList.items = action.items;
+    const createInitial = function (pageSize = 20): ListState<TItem, TExtra> {
+        return {
+            page: 0,
+            pageSize,
+            total: 0,
+        };
+    };
 
-                    const newState = { ...state, [this.name]: newList };
-
-                    return newState;
-                }
-            case this.LOADING_FAILED: {
-                    const newList = { ...state[this.name] };
-
-                    newList.error = action.error;
-                    newList.isLoading = false;
-                    newList.isLoadingMore = false;
-
-                    const newState = { ...state, [this.name]: newList };
-
-                    return newState;
-                }
-            default:
-                return state;
-        }
-
-    }
-
-    private getCurrentState(getState: () => any): ListState<T> {
-        return getState()[this.prefix][this.name];
-    }
-}
-
-export function addOrModify<T>(items: ReadonlyArray<T>, item: T, key: keyof T) {
-    const found = items.find(x => x[key] === item[key]);
-
-    if (found) {
-        return items.map(x => x[key] === item[key] ? item : x);
-    } else {
-        return [item, ...items];
-    }
-}
-
-export function remove<T>(items: ReadonlyArray<T>, id: any, key: keyof T) {
-    return items.filter(x => x[key] !== id);
+    return { action, initialize, createInitial };
 }

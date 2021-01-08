@@ -5,156 +5,84 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { addOrModify, buildError, List, Query, remove } from '@app/framework';
+import { ErrorDto, listThunk, Query } from '@app/framework';
 import { Clients, UpsertUserDto, UserDto } from '@app/service';
-import { Dispatch, Middleware, Reducer } from 'redux';
-import { APP_SELECTED } from './../shared';
+import { createReducer } from '@reduxjs/toolkit';
+import { Middleware } from 'redux';
+import { createApiThunk, selectApp } from './../shared';
 import { UsersState } from './state';
 
-export const USER_UPSERT_STARTED = 'USER_UPSERT_STARTED';
-export const USER_UPSERT_FAILED = 'USER_UPSERT_FAILED';
-export const USER_UPSERT_SUCCEEEDED = 'USER_UPSERT_SUCCEEEDED';
-export const USER_DELETE_STARTED = 'USER_DELETE_STARTED';
-export const USER_DELETE_FAILED = 'USER_DELETE_FAILED';
-export const USER_DELETE_SUCCEEEDED = 'USER_DELETE_SUCCEEEDED';
-export const USER_LOAD_STARTED = 'USER_LOAD_STARTED';
-export const USER_LOAD_FAILED = 'USER_LOAD_FAILED';
-export const USER_LOAD_SUCCEEEDED = 'USER_LOAD_SUCCEEEDED';
-
-const list = new List<UserDto>('users', 'users', async (params) => {
-    const { items, total } = await Clients.Users.getUsers(params.appId, params.search, params.pageSize, params.page * params.pageSize);
+const list = listThunk<UsersState, UserDto>('users', 'users', async (params) => {
+    const { items, total } = await Clients.Users.getUsers(params.appId, params.search, params.take, params.skip);
 
     return { items, total };
 });
 
-export const loadUsersAsync = (appId: string, q?: Partial<Query>, reset = false) => {
-    return list.load(q, { appId }, reset);
+export const loadUsersAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+    return list.action({ appId, query, reset });
 };
 
-export const loadUserAsync = (appId: string, userId: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: USER_LOAD_STARTED });
+export const loadUserAsync = createApiThunk('users/load',
+    (arg: { appId: string, userId: string }) => {
+        return Clients.Users.getUser(arg.appId, arg.userId);
+    });
 
-        try {
-            const user = await Clients.Users.getUser(appId, userId);
+export const upsertUserAsync = createApiThunk('users/upsert',
+    async (arg: { appId: string, params: UpsertUserDto }) => {
+        const response = await Clients.Users.postUsers(arg.appId, { requests: [arg.params] });
 
-            dispatch({ type: USER_LOAD_SUCCEEEDED, user });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
+        return response[0];
+    });
 
-            dispatch({ type: USER_LOAD_FAILED, error });
-        }
-    };
+export const deleteUserAsync = createApiThunk('users/delete',
+    (arg: { appId: string, userId: string }) => {
+        return Clients.Users.deleteUser(arg.appId, arg.userId);
+    });
+
+export const usersMiddleware: Middleware = store => next => action => {
+    const result = next(action);
+
+    if (upsertUserAsync.fulfilled.match(action) || deleteUserAsync.fulfilled.match(action)) {
+        const load: any = loadUsersAsync(action.meta.arg.appId);
+
+        store.dispatch(load);
+    }
+
+    return result;
 };
 
-export const upsertUserAsync = (appId: string, params: UpsertUserDto) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: USER_UPSERT_STARTED });
-
-        try {
-            const response = await Clients.Users.postUsers(appId, { requests: [params] });
-
-            const user = response[0];
-
-            dispatch({ type: USER_UPSERT_SUCCEEEDED, appId, user });
-
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: USER_UPSERT_FAILED, error });
-        }
-    };
+const initialState: UsersState = {
+    users: list.createInitial(),
 };
 
-export const deleteUserAsync = (appId: string, id: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: USER_DELETE_FAILED });
-
-        try {
-            await Clients.Users.deleteUser(appId, id);
-
-            dispatch({ type: USER_DELETE_SUCCEEEDED, appId, id });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: USER_UPSERT_FAILED, error });
-        }
-    };
-};
-
-export function usersMiddleware(): Middleware {
-    const middleware: Middleware = store => next => action => {
-        const result = next(action);
-
-        if (action.type === USER_UPSERT_SUCCEEEDED) {
-            const load: any = loadUsersAsync(action.appId);
-
-            store.dispatch(load);
-        }
-
-        return result;
-    };
-
-    return middleware;
-}
-
-export function usersReducer(): Reducer<UsersState> {
-    const initialState: UsersState = {
-        users: list.createInitial(),
-    };
-
-    const reducer: Reducer<UsersState> = (state = initialState, action) => {
-        switch (action.type) {
-            case APP_SELECTED:
-                return initialState;
-            case USER_LOAD_STARTED:
-                return {
-                    ...state,
-                    loadingUser: true,
-                    loadingUserError: null,
-                };
-            case USER_LOAD_FAILED:
-                return {
-                    ...state,
-                    loadingUser: false,
-                    loadingUserError: action.error,
-                };
-            case USER_LOAD_SUCCEEEDED:
-                return {
-                    ...state,
-                    loadingUser: false,
-                    loadingUserError: null,
-                    user: action.user,
-                };
-            case USER_UPSERT_STARTED:
-                return {
-                    ...state,
-                    upserting: true,
-                    upsertingError: null,
-                };
-            case USER_UPSERT_FAILED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: action.error,
-                };
-            case USER_UPSERT_SUCCEEEDED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: null,
-                    user: state.user?.id === action.user.id ? action.user : state.user,
-                    users: list.changeItems(state, items => addOrModify(items, action.user, 'id')),
-                };
-            case USER_DELETE_SUCCEEEDED:
-                return {
-                    ...state,
-                    users: list.changeItems(state, items => remove(items, action.id, 'id')),
-                };
-            default:
-                return list.handleAction(state, action);
-        }
-    };
-
-    return reducer;
-}
+export const usersReducer = createReducer(initialState, builder => list.initialize(builder)
+    .addCase(selectApp, () => {
+        return initialState;
+    })
+    .addCase(loadUserAsync.pending, (state) => {
+        state.loadingUser = true;
+        state.loadingUsersError = undefined;
+    })
+    .addCase(loadUserAsync.rejected, (state, action) => {
+        state.loadingUser = false;
+        state.loadingUsersError = action.payload as ErrorDto;
+        state.user = undefined;
+    })
+    .addCase(loadUserAsync.fulfilled, (state, action) => {
+        state.loadingUser = false;
+        state.loadingUsersError = undefined;
+        state.user = action.payload as any;
+    })
+    .addCase(upsertUserAsync.pending, (state) => {
+        state.upserting = true;
+        state.upsertingError = undefined;
+    })
+    .addCase(upsertUserAsync.rejected, (state, action) => {
+        state.upserting = false;
+        state.upsertingError = action.payload as ErrorDto;
+    })
+    .addCase(upsertUserAsync.fulfilled, (state, action) => {
+        state.upserting = false;
+        state.upsertingError = undefined;
+        state.user = action.payload;
+    }));

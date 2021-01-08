@@ -5,80 +5,37 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { buildError } from '@app/framework';
+import { ErrorDto } from '@app/framework';
 import { Clients, PublishDto } from '@app/service';
-import { Dispatch, Reducer } from 'redux';
+import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createApiThunk } from '../shared';
 import { PublishState } from './state';
 
-export const PUBLISH_PUBLISH_STARTED = 'PUBLISH_PUBLISH_STARTED';
-export const PUBLISH_PUBLISH_SUCCEEDED = 'PUBLISH_PUBLISH_SUCCEEDED';
-export const PUBLISH_PUBLISH_FAILED = 'PUBLISH_PUBLISH_FAILED';
-export const PUBLISH_DIALOG_SHOW = 'PUBLISH_DIALOG_SHOW';
-export const PUBLISH_DIALOG_HIDE = 'PUBLISH_DIALOG_HIDE';
+export const togglePublishDialog = createAction<{ open: boolean, values?: Partial<PublishDto> }>('publish/dialog');
 
-export const openPublishDialog = (params?: Partial<PublishDto>) => {
-    return { type: PUBLISH_DIALOG_SHOW, params };
-};
+export const publishAsync = createApiThunk('publish/publish',
+    async (arg: { appId: string, params: PublishDto }) => {
+        await Clients.Events.postEvents(arg.appId, { requests: [arg.params] });
+    });
 
-export const hidePublishDialog = () => {
-    return { type: PUBLISH_DIALOG_HIDE };
-};
+const initialState: PublishState = {};
 
-export const publishAsync = (appId: string, params: PublishDto) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: PUBLISH_PUBLISH_STARTED });
-
-        try {
-            await Clients.Events.postEvents(appId, { requests: [params] });
-
-            dispatch({ type: PUBLISH_PUBLISH_SUCCEEDED });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: PUBLISH_PUBLISH_FAILED, error });
-        }
-    };
-};
-
-export function publishReducer(): Reducer<PublishState> {
-    const initialState: PublishState = {};
-
-    const reducer: Reducer<PublishState> = (state = initialState, action) => {
-        switch (action.type) {
-            case PUBLISH_DIALOG_SHOW:
-                return {
-                    ...state,
-                    dialogOpen: true,
-                    dialogValues: action.params,
-                };
-            case PUBLISH_DIALOG_HIDE:
-                return {
-                    ...state,
-                    dialogOpen: false,
-                    dialogValues: undefined,
-                };
-            case PUBLISH_PUBLISH_STARTED:
-                return {
-                    ...state,
-                    publishing: true,
-                    publishingError: null,
-                };
-            case PUBLISH_PUBLISH_FAILED:
-                return {
-                    ...state,
-                    publishing: false,
-                    publishingError: action.error,
-                };
-            case PUBLISH_PUBLISH_SUCCEEDED:
-                return {
-                    ...state,
-                    publishing: false,
-                    publishingError: null,
-                };
-            default:
-                return state;
-        }
-    };
-
-    return reducer;
-}
+export const publishReducer = createReducer(initialState, builder => builder
+    .addCase(togglePublishDialog, (state, action) => {
+        state.dialogOpen = action.payload.open;
+        state.dialogValues = action.payload?.values;
+        state.publishing = false;
+        state.publishingError = undefined;
+    })
+    .addCase(publishAsync.pending, (state) => {
+        state.publishing = true;
+        state.publishingError = undefined;
+    })
+    .addCase(publishAsync.rejected, (state, action) => {
+        state.publishing = false;
+        state.publishingError = action.payload as ErrorDto;
+    })
+    .addCase(publishAsync.fulfilled, (state) => {
+        state.publishing = false;
+        state.publishingError = undefined;
+    }));

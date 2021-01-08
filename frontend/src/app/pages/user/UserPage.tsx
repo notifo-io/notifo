@@ -7,7 +7,7 @@
 
 import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
-import { loadUserAsync, openPublishDialog, useApps, useUsers } from '@app/state';
+import { loadUserAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -26,7 +26,7 @@ export const UserPage = () => {
     const dialogEdit = useDialog();
 
     React.useEffect(() => {
-        dispatch(loadUserAsync(appId, userId));
+        dispatch(loadUserAsync({ appId, userId }));
     }, [appId, userId]);
 
     const doEdit = React.useCallback(() => {
@@ -34,7 +34,7 @@ export const UserPage = () => {
     }, []);
 
     const doPublish = React.useCallback(() => {
-        dispatch(openPublishDialog({ topic: `users/${userId}` }));
+        dispatch(togglePublishDialog({ open: true, values: { topic: `users/${userId}` } }));
     }, [userId]);
 
     return (

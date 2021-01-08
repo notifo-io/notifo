@@ -44,7 +44,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const [language, setLanguage] = React.useState<string>();
 
     const doPublish = React.useCallback((params: TemplateDto) => {
-        dispatch(upsertTemplateAsync(appId, params));
+        dispatch(upsertTemplateAsync({ appId, params }));
     }, []);
 
     const initialValues: any = template || {};

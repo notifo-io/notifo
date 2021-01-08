@@ -5,109 +5,62 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { buildError, List, Query } from '@app/framework';
+import { ErrorDto, listThunk, Query } from '@app/framework';
 import { Clients, SubscriptionDto } from '@app/service';
-import { Dispatch, Middleware, Reducer } from 'redux';
-import { APP_SELECTED } from './../shared';
+import { createReducer } from '@reduxjs/toolkit';
+import { Middleware } from 'redux';
+import { createApiThunk, selectApp } from './../shared';
 import { SubscriptionsState } from './state';
 
-export const SUBSCRIPTION_UPSERT_STARTED = 'SUBSCRIPTION_UPSERT_STARTED';
-export const SUBSCRIPTION_UPSERT_FAILED = 'SUBSCRIPTION_UPSERT_FAILED';
-export const SUBSCRIPTION_UPSERT_SUCCEEEDED = 'SUBSCRIPTION_UPSERT_SUCCEEEDED';
-export const SUBSCRIPTION_DELETE_STARTED = 'SUBSCRIPTION_DELETE_STARTED';
-export const SUBSCRIPTION_DELETE_FAILED = 'SUBSCRIPTION_DELETE_FAILED';
-export const SUBSCRIPTION_DELETE_SUCCEEEDED = 'SUBSCRIPTION_DELETE_SUCCEEEDED';
-
-const list = new List<SubscriptionDto>('subscriptions', 'subscriptions', async (params) => {
-    const { items, total } = await Clients.Users.getSubscriptions(params.appId, params.userId, params.search, params.pageSize, params.page * params.pageSize);
+const list = listThunk<SubscriptionsState, SubscriptionDto>('subscriptions', 'subscriptions', async (params) => {
+    const { items, total } = await Clients.Users.getSubscriptions(params.appId, params.userId, params.search, params.take, params.skip);
 
     return { items, total };
 });
 
-export const loadSubscriptionsAsync = (appId: string, userId: string, q?: Partial<Query>, reset = false) => {
-    return list.load(q, { appId, userId }, reset);
+export const loadSubscriptionsAsync = (appId: string, userId: string, query?: Partial<Query>, reset = false) => {
+    return list.action({ appId, userId, query, reset });
 };
 
-export const upsertSubscriptionAsync = (appId: string, userId: string, params: SubscriptionDto) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: SUBSCRIPTION_UPSERT_STARTED });
+export const upsertSubscriptionAsync = createApiThunk('subscriptions/upsert',
+    (arg: { appId: string, userId: string, params: SubscriptionDto }) => {
+        return Clients.Users.postSubscription(arg.appId, arg.userId, arg.params);
+    });
 
-        try {
-            await Clients.Users.postSubscription(appId, userId, params);
+export const deleteSubscriptionAsync = createApiThunk('subscriptions/delete',
+    (arg: { appId: string, userId: string, prefix: string }) => {
+        return Clients.Users.deleteSubscription(arg.appId, arg.userId, arg.prefix);
+    });
 
-            dispatch({ type: SUBSCRIPTION_UPSERT_SUCCEEEDED, appId, userId });
+export const subscriptionsMiddleware: Middleware = store => next => action => {
+    const result = next(action);
 
-        } catch (err) {
-            const error = buildError(err.status, err.message);
+    if (upsertSubscriptionAsync.fulfilled.match(action) || deleteSubscriptionAsync.fulfilled.match(action)) {
+        const load: any = loadSubscriptionsAsync(action.meta.arg.appId, action.meta.arg.userId);
 
-            dispatch({ type: SUBSCRIPTION_UPSERT_FAILED, error });
-        }
-    };
+        store.dispatch(load);
+    }
+
+    return result;
 };
 
-export const deleteSubscriptionAsync = (appId: string, userId: string, prefix: string) => {
-    return async (dispatch: Dispatch) => {
-        dispatch({ type: SUBSCRIPTION_DELETE_FAILED });
-
-        try {
-            await Clients.Users.deleteSubscription(appId, userId, prefix);
-
-            dispatch({ type: SUBSCRIPTION_DELETE_SUCCEEEDED, appId });
-        } catch (err) {
-            const error = buildError(err.status, err.message);
-
-            dispatch({ type: SUBSCRIPTION_DELETE_FAILED, error });
-        }
-    };
+const initialState: SubscriptionsState = {
+    subscriptions: list.createInitial(),
 };
 
-export function subscriptionsMiddleware(): Middleware {
-    const middleware: Middleware = store => next => action => {
-        const result = next(action);
-
-        if (action.type === SUBSCRIPTION_UPSERT_SUCCEEEDED || action.type === SUBSCRIPTION_DELETE_SUCCEEEDED) {
-            const load: any = loadSubscriptionsAsync(action.appId, action.userId);
-
-            store.dispatch(load);
-        }
-
-        return result;
-    };
-
-    return middleware;
-}
-
-export function subscriptionsReducer(): Reducer<SubscriptionsState> {
-    const initialState: SubscriptionsState = {
-        subscriptions: list.createInitial(),
-    };
-
-    const reducer: Reducer<SubscriptionsState> = (state = initialState, action) => {
-        switch (action.type) {
-            case APP_SELECTED:
-                return initialState;
-            case SUBSCRIPTION_UPSERT_STARTED:
-                return {
-                    ...state,
-                    upserting: true,
-                    upsertingError: null,
-                };
-            case SUBSCRIPTION_UPSERT_FAILED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: action.error,
-                };
-            case SUBSCRIPTION_UPSERT_SUCCEEEDED:
-                return {
-                    ...state,
-                    upserting: false,
-                    upsertingError: null,
-                };
-            default:
-                return list.handleAction(state, action);
-        }
-    };
-
-    return reducer;
-}
+export const subscriptionsReducer = createReducer(initialState, builder => list.initialize(builder)
+    .addCase(selectApp, () => {
+        return initialState;
+    })
+    .addCase(upsertSubscriptionAsync.pending, (state) => {
+        state.upserting = true,
+        state.upsertingError = undefined;
+    })
+    .addCase(upsertSubscriptionAsync.rejected, (state, action) => {
+        state.upserting = false;
+        state.upsertingError = action.payload as ErrorDto;
+    })
+    .addCase(upsertSubscriptionAsync.fulfilled, (state) => {
+        state.upserting = false;
+        state.upsertingError = undefined;
+    }));

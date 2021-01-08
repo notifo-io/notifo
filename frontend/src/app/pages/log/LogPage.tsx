@@ -18,7 +18,7 @@ import { LogEntryRow } from './LogEntryRow';
 export const LogPage = () => {
     const dispatch = useDispatch();
     const appId = useApps(x => x.appId);
-    const logEntries = useLog(x => x.logEntries);
+    const logEntries = useLog(x => x.entries);
 
     React.useEffect(() => {
         ReactTooltip.rebuild();

@@ -14,6 +14,7 @@ export * from './log';
 export * from './login';
 export * from './media';
 export * from './publish';
+export * from './shared';
 export * from './subscriptions';
 export * from './templates';
 export * from './users';
