@@ -32,11 +32,11 @@ namespace Notifo.Pipeline
 
             if (appPermission != null)
             {
-                var appId = context.HttpContext.User.AppId();
+                var appId = context.RouteData.Values["appId"]?.ToString();
 
                 if (string.IsNullOrWhiteSpace(appId))
                 {
-                    appId = context.RouteData.Values["appId"]?.ToString();
+                    appId = context.HttpContext.User.AppId();
                 }
 
                 if (!string.IsNullOrWhiteSpace(appId))
