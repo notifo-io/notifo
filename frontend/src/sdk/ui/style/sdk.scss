@@ -32,6 +32,10 @@ $size-toggle: 20px;
         @include scrollbars(8px, $color-scrollbar, transparent);
     }
 
+    svg {
+        width: auto;
+    }
+
     hr {
         border: 0;
         border-top: 1px solid $color-border;
@@ -40,6 +44,7 @@ $size-toggle: 20px;
     }
 
     .notifo {
+
         &-button {
             color: $color-button;
 
