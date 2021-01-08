@@ -15,8 +15,8 @@ namespace TestGenerator
 {
     public static class Program
     {
-        private const string AppId = "eea1fb7d-ddcf-41f2-b7f1-93ae11710023";
-        private const string ApiKey = "wag7nx5oh10vo5b00xjdehkcxpzvt6gmxqykujxwbgsx";
+        private const string AppId = "d51d6feb-87ff-407e-85fe-3d480d0d8bad";
+        private const string ApiKey = "cyluprnqyya9h57c1xrlnzdbqkbixhj4dnxj8ruaaysx";
         private const string TopicPrefix = "products";
         private const string Topic = "users/123";
 
@@ -64,7 +64,7 @@ namespace TestGenerator
 
                 foreach (var userId in users)
                 {
-                    var request = new SubscribeDto { TopicPrefix = TopicPrefix };
+                    var request = new SubscriptionDto { TopicPrefix = TopicPrefix };
 
                     await client.Users.PostSubscriptionAsync(AppId, userId, request);
                 }
@@ -78,7 +78,7 @@ namespace TestGenerator
 
                 for (var i = 0; i < 1; i++)
                 {
-                    var request = new PublishRequestDto
+                    var request = new PublishDto
                     {
                         Topic = Topic
                     };
@@ -106,9 +106,9 @@ namespace TestGenerator
 
                     request.Timestamp = DateTimeOffset.UtcNow;
 
-                    await client.Events.PostEventsAsync(AppId, new PublishManyRequestDto
+                    await client.Events.PostEventsAsync(AppId, new PublishManyDto
                     {
-                        Requests = new List<PublishRequestDto>
+                        Requests = new List<PublishDto>
                         {
                             request
                         }

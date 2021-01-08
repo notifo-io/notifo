@@ -52,7 +52,7 @@ export const PublishDialog = () => {
     const [language, setLanguage] = React.useState<string>();
 
     const doCloseForm = React.useCallback(() => {
-        dispatch(togglePublishDialog({ open: true }));
+        dispatch(togglePublishDialog({ open: false }));
     }, []);
 
     const doPublish = React.useCallback((params: PublishDto) => {
