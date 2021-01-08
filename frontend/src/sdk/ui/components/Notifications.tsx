@@ -31,7 +31,7 @@ export const NotificationsContainer = (props: NotificationsProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const [isOpen, setIsOpen] = useState(true);
+    const [isOpen, setIsOpen] = useState(false);
     const [connection] = useState(() => new Connection(config));
 
     useEffect(() => {
