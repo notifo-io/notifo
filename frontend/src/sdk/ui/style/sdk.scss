@@ -44,7 +44,6 @@ $size-toggle: 20px;
     }
 
     .notifo {
-
         &-button {
             color: $color-button;
 
@@ -91,6 +90,8 @@ $size-toggle: 20px;
             padding: 1.5rem 1.25rem;
             padding-top: 2rem;
             position: absolute;
+            text-align: left;
+            text-decoration: none;
             width: 450px;
             z-index: 10000;
 
