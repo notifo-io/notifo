@@ -56,17 +56,22 @@ namespace Notifo.Areas.Frontend
             {
                 OnPrepareResponse = context =>
                 {
+                    var request = context.Context.Request;
+                    var requestPath = request.Path.ToString();
+
+                    var hasQuery = !string.IsNullOrWhiteSpace(request.QueryString.ToString());
+
                     var response = context.Context.Response;
                     var responseHeaders = response.GetTypedHeaders();
 
-                    if (!string.Equals(response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
+                    if (hasQuery)
                     {
                         responseHeaders.CacheControl = new CacheControlHeaderValue
                         {
                             MaxAge = TimeSpan.FromDays(60)
                         };
                     }
-                    else
+                    else if (string.Equals(response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
                     {
                         responseHeaders.CacheControl = new CacheControlHeaderValue
                         {
