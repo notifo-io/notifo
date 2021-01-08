@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,11 @@ namespace Notifo.Areas.Api.Controllers.Events
         {
             if (request?.Requests != null)
             {
+                if (request.Requests.Length > 100)
+                {
+                    throw new ValidationException($"Only 100 events can be update in one request, found: {request.Requests.Length}");
+                }
+
                 foreach (var dto in request.Requests)
                 {
                     if (dto != null)

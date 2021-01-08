@@ -14,6 +14,7 @@ using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -176,6 +177,11 @@ namespace Notifo.Areas.Api.Controllers.Users
 
             if (request?.Requests != null)
             {
+                if (request.Requests.Length > 100)
+                {
+                    throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
+                }
+
                 foreach (var dto in request.Requests)
                 {
                     if (dto != null)
