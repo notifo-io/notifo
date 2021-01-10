@@ -31,12 +31,6 @@ export class Store<TState, TAction extends { type: string }> {
             });
 
             this.devTools.init(state);
-
-            this.devTools.subscribe((message: any) => {
-                if (message.type === 'DISPATCH' && message.payload.type === 'JUMP_TO_STATE') {
-                    this.setState(message.state);
-                }
-            });
         }
     }
 
