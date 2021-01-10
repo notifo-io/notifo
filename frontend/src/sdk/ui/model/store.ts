@@ -8,13 +8,12 @@
 import { isFunction } from '@sdk/shared';
 
 export type Dispatch<TAction> = (action: TAction) => void;
+export type StoreRecucer<TState, TAction> = (state: TState, action: TAction) => TState;
+export type StoreListener<TState> = (state: TState) => void;
 
-export type Recucer<TState, TAction> = (state: TState, action: TAction) => TState;
-
-export type Listener<TState> = (state: TState) => void;
-
-export class Store<TState, TAction> {
-    private readonly listeners: Listener<TState>[] = [];
+export class Store<TState, TAction extends { type: string }> {
+    private readonly listeners: StoreListener<TState>[] = [];
+    private devTools: any;
 
     public get current() {
         return this.state;
@@ -22,21 +21,48 @@ export class Store<TState, TAction> {
 
     constructor(
         private state: TState,
-        private readonly reducer: Recucer<TState, TAction>,
+        private readonly reducer: StoreRecucer<TState, TAction>,
     ) {
+        const extension = window['__REDUX_DEVTOOLS_EXTENSION__'];
+
+        if (extension) {
+            this.devTools = extension.connect({
+                name: window['title'] ? `${window['title']} Notifo SDK` : 'Notifo SDK',
+            });
+
+            this.devTools.init(state);
+
+            this.devTools.subscribe((message: any) => {
+                if (message.type === 'DISPATCH' && message.payload.type === 'JUMP_TO_STATE') {
+                    this.setState(message.state);
+                }
+            });
+        }
     }
 
-    public subscribe(callback: Listener<TState>) {
+    public destroy() {
+        this.devTools?.disconnect();
+    }
+
+    public subscribe(callback: StoreListener<TState>) {
         this.listeners.push(callback);
     }
 
-    public unsubscribe(callback: Listener<TState>) {
+    public unsubscribe(callback: StoreListener<TState>) {
         this.listeners.splice(this.listeners.indexOf(callback), 1);
     }
 
     public dispatch = (action: TAction) => {
         const newState = this.reducer(this.state, action);
 
+        if (this.devTools) {
+            this.devTools.send(action, newState);
+        }
+
+        this.setState(newState);
+    }
+
+    private setState(newState: any) {
         if (newState !== this.state) {
             for (const listener of this.listeners) {
                 listener(newState);
