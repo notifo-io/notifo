@@ -39,9 +39,9 @@ namespace Notifo.Domain.Apps
 
         public EmailVerificationStatus EmailVerificationStatus { get; set; }
 
-        public Dictionary<string, EmailTemplate> EmailTemplates { get; set; } = new Dictionary<string, EmailTemplate>();
+        public List<AppApiKey> ApiKeys { get; set; } = new List<AppApiKey>();
 
-        public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, EmailTemplate> EmailTemplates { get; set; } = new Dictionary<string, EmailTemplate>();
 
         public Dictionary<string, string> Contributors { get; set; } = new Dictionary<string, string>();
 

@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels.Email;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
@@ -130,12 +132,21 @@ namespace Notifo.Domain.Apps
                 app.Languages = Languages;
             }
 
-            if (app.ApiKeys.Count == 0)
+            if (app.ApiKeys.Count == 0 || app.ApiKeys.Any(x => x.Key.Length == 44))
             {
-                app.ApiKeys[RandomHash.New()] = Roles.Admin;
-                app.ApiKeys[RandomHash.New()] = Roles.Admin;
-                app.ApiKeys[RandomHash.New()] = Roles.WebManager;
-                app.ApiKeys[RandomHash.New()] = Roles.WebManager;
+                var tokenGenerator = serviceProvider.GetRequiredService<IIApiJwtTokenGenerator>();
+
+                async Task AddTokenAsync(string role)
+                {
+                    var token = await tokenGenerator.GenerateAppTokenAsync(app.Id);
+
+                    app.ApiKeys.Add(new AppApiKey { Key = token, Role = role });
+                }
+
+                await AddTokenAsync(Roles.Admin);
+                await AddTokenAsync(Roles.Admin);
+                await AddTokenAsync(Roles.WebManager);
+                await AddTokenAsync(Roles.WebManager);
             }
 
             if (app.Contributors.Count == 0 && !string.IsNullOrWhiteSpace(UserId))

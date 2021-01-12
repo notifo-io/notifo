@@ -16,8 +16,6 @@ namespace Notifo.Domain.Users
     {
         Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct);
 
-        Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct);
-
         Task<(User? User, string? Etag)> GetAsync(string appId, string id, CancellationToken ct);
 
         Task UpsertAsync(User user, string? oldEtag, CancellationToken ct);

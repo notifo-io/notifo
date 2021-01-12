@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -22,9 +23,35 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         private readonly IUserNotificationStore userNotificationsStore;
         private readonly IUserNotificationService userNotificationService;
 
-        private string AppId => Context.User!.AppId()!;
+        private string AppId
+        {
+            get
+            {
+                var id = Context.User?.AppId();
 
-        private string UserId => Context.User!.UserId()!;
+                if (id == null)
+                {
+                    throw new InvalidOperationException("Not in an authorized context.");
+                }
+
+                return id;
+            }
+        }
+
+        private string UserId
+        {
+            get
+            {
+                var id = Context.User?.UserId();
+
+                if (id == null)
+                {
+                    throw new InvalidOperationException("Not in an authorized context.");
+                }
+
+                return id;
+            }
+        }
 
         public NotificationHub(
             IUserNotificationStore userNotificationsStore,

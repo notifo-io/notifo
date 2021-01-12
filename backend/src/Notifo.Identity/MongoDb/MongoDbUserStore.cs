@@ -184,6 +184,11 @@ namespace Notifo.Identity.MongoDb
 
         public async Task<NotifoUser> FindByIdAsync(string userId, CancellationToken cancellationToken)
         {
+            if (!ObjectId.TryParse(userId, out _))
+            {
+                return null!;
+            }
+
             return await Collection.Find(x => x.Id == userId).FirstOrDefaultAsync(cancellationToken);
         }
 

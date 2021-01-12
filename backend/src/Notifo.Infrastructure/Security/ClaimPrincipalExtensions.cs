@@ -12,9 +12,9 @@ namespace Notifo.Infrastructure.Security
 {
     public static class ClaimPrincipalExtensions
     {
-        public static string? OpenIdSubject(this ClaimsPrincipal principal)
+        public static string? Sub(this ClaimsPrincipal principal)
         {
-            return principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            return principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier || x.Type == "sub")?.Value;
         }
 
         public static string? AppId(this ClaimsPrincipal principal)
@@ -22,14 +22,21 @@ namespace Notifo.Infrastructure.Security
             return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.AppId)?.Value;
         }
 
-        public static string? AppName(this ClaimsPrincipal principal)
-        {
-            return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.AppName)?.Value;
-        }
-
         public static string? UserId(this ClaimsPrincipal principal)
         {
-            return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.UserId)?.Value;
+            var sub = principal.Sub();
+
+            if (!string.IsNullOrWhiteSpace(sub))
+            {
+                var appId = principal.AppId();
+
+                if (string.Equals(sub, appId))
+                {
+                    return null;
+                }
+            }
+
+            return sub;
         }
     }
 }

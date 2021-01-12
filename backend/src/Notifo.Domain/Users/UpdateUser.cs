@@ -9,6 +9,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
@@ -43,7 +45,7 @@ namespace Notifo.Domain.Users
             }
         }
 
-        public Task ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
+        public async Task ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -87,12 +89,12 @@ namespace Notifo.Domain.Users
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(user.ApiKey))
+            if (string.IsNullOrWhiteSpace(user.ApiKey) || user.ApiKey.Length == 44)
             {
-                user.ApiKey = RandomHash.New();
-            }
+                var tokenGenerator = serviceProvider.GetRequiredService<IIApiJwtTokenGenerator>();
 
-            return Task.CompletedTask;
+                user.ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id);
+            }
         }
     }
 }

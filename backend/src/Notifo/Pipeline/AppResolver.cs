@@ -70,7 +70,7 @@ namespace Notifo.Pipeline
         {
             var roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            var subject = user.OpenIdSubject();
+            var subject = user.Sub();
 
             if (subject != null)
             {
@@ -81,15 +81,6 @@ namespace Notifo.Pipeline
                 else if (string.Equals(app.Id, user.AppId(), StringComparison.OrdinalIgnoreCase))
                 {
                     roles.Add(Roles.User);
-                }
-            }
-            else
-            {
-                var role = user.GetApiKeyRole();
-
-                if (!string.IsNullOrWhiteSpace(role))
-                {
-                    roles.Add(role);
                 }
             }
 

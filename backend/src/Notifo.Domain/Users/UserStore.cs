@@ -73,17 +73,6 @@ namespace Notifo.Domain.Users
             return users;
         }
 
-        public async Task<User?> GetByApiKeyAsync(string apiKey, CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(apiKey, nameof(apiKey));
-
-            var (user, _) = await repository.GetByApiKeyAsync(apiKey, ct);
-
-            await DeliverAsync(user);
-
-            return user;
-        }
-
         public async Task<User?> GetAsync(string appId, string id, CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));

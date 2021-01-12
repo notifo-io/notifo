@@ -37,7 +37,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The api keys.
         /// </summary>
-        public Dictionary<string, string> ApiKeys { get; set; }
+        public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// The statistics counters.
@@ -47,6 +47,14 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         public static AppDto FromDomainObject(App app, string userId)
         {
             var result = SimpleMapper.Map(app, new AppDto());
+
+            if (app.ApiKeys != null)
+            {
+                foreach (var key in app.ApiKeys)
+                {
+                    result.ApiKeys[key.Key] = key.Role;
+                }
+            }
 
             if (userId != null && app.Contributors.TryGetValue(userId, out var userRole))
             {

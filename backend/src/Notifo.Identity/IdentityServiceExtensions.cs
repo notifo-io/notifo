@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using IdentityServer4.Configuration;
+using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
+using Notifo.Domain.Utils;
 using Notifo.Identity;
 using Notifo.Identity.MongoDb;
 using Notifo.Infrastructure.Identity;
@@ -23,8 +25,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class IdentityServiceExtensions
     {
-        private const string AlternativeSchema = "smart";
-
         public static void AddMyIdentity(this IServiceCollection services, IConfiguration config)
         {
             IdentityModelEventSource.ShowPII = true;
@@ -41,6 +41,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingletonAs<UserResolver>()
                 .As<IUserResolver>();
+
+            services.AddSingletonAs<ApiKeyGenerator>()
+                .As<IIApiJwtTokenGenerator>();
+
+            services.AddScopedAs<X>()
+                .As<IClaimsService>();
 
             services.AddIdentityServer(options =>
                 {
@@ -73,27 +79,14 @@ namespace Microsoft.Extensions.DependencyInjection
                     .WithRedirectUri("/authentication/login-silent-callback.html"));
             });
 
-            services.AddAuthorization();
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = AlternativeSchema;
-                    options.DefaultChallengeScheme = AlternativeSchema;
-                })
-                .AddPolicyScheme(AlternativeSchema, null, options =>
-                {
-                    options.ForwardDefaultSelector = context =>
-                    {
-                        if (ApiKeyHandler.IsApiKey(context.Request, out _))
-                        {
-                            return ApiKeyDefaults.AuthenticationScheme;
-                        }
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("API", policy => policy.AddAuthenticationSchemes("IdentityServerJwt").RequireAuthenticatedUser());
+            });
 
-                        return "IdentityServerJwt";
-                    };
-                })
+            services.AddAuthentication()
                 .AddGoogle(identityOptions)
                 .AddGithub(identityOptions)
-                .AddApiKey()
                 .AddIdentityServerJwt();
         }
 

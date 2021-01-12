@@ -59,13 +59,6 @@ namespace Notifo.Domain.Apps.MongoDb
                     IndexKeys
                         .Ascending(x => x.ContributorIds)),
                 null, ct);
-
-            await collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<MongoDbApp>(
-                    IndexKeys
-                        .Ascending(x => x.ApiKeys),
-                    new CreateIndexOptions { Unique = true }),
-                null, ct);
         }
 
         public async Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct)
@@ -86,15 +79,6 @@ namespace Notifo.Domain.Apps.MongoDb
                     .ToListAsync(ct);
 
             return documents.Select(x => x.ToApp()).ToList();
-        }
-
-        public async Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct)
-        {
-            var document = await
-                Collection.Find(x => x.ApiKeys.Contains(apiKey))
-                    .FirstOrDefaultAsync(ct);
-
-            return (document?.ToApp(), document?.Etag);
         }
 
         public async Task<(App? App, string? Etag)> GetByEmailAddressAsync(string emailAddress, CancellationToken ct)

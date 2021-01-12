@@ -45,7 +45,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(List<AppDto>))]
         public async Task<IActionResult> GetApps()
         {
-            var subject = User.OpenIdSubject();
+            var subject = User.Sub();
 
             if (string.IsNullOrWhiteSpace(subject))
             {
