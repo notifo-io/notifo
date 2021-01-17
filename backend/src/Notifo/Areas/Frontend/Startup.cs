@@ -40,6 +40,11 @@ namespace Notifo.Areas.Frontend
                     }
                 }
 
+                if (environment.IsProduction() && context.Request.Path.Equals("/demo.html"))
+                {
+                    context.Request.Path = new PathString("/build/demo.html");
+                }
+
                 return next();
             });
 
