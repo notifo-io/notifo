@@ -9,20 +9,20 @@
 import { h, render } from 'preact';
 
 import { NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
-import { NotificationsContainer } from './Notifications';
-import { SubscribePrompt } from './SubscribePrompt';
-import { TopicContainer } from './Topic';
+import { NotificationsUI } from './NotificationsUI';
+import { TopicUI } from './TopicUI';
+import { WebPushUI } from './WebPushUI';
 
-export function renderNotifications(element: Element, options: NotificationsOptions, config: SDKConfig) {
-    render(<NotificationsContainer config={config} options={options} />, element);
+export function renderNotificationsUI(element: Element, options: NotificationsOptions, config: SDKConfig) {
+    render(<NotificationsUI config={config} options={options} />, element);
 }
 
-export function renderTopic(element: Element, topicPrefix: string, options: TopicOptions, config: SDKConfig) {
-    render(<TopicContainer config={config} topicPrefix={topicPrefix} options={options} />, element);
+export function renderTopicUI(element: Element, topicPrefix: string, options: TopicOptions, config: SDKConfig) {
+    render(<TopicUI config={config} topicPrefix={topicPrefix} options={options} />, element);
 }
 
-export function renderSubscribePrompt(element: Element, config: SDKConfig, onAllow: () => void, onDeny: () => void) {
-    render(<SubscribePrompt config={config} onAllow={onAllow} onDeny={onDeny} />, element);
+export function renderWebPushUI(element: Element, config: SDKConfig, onAllow: () => void, onDeny: () => void) {
+    render(<WebPushUI config={config} onAllow={onAllow} onDeny={onDeny} />, element);
 }
 
 export function destroy(element: Element) {

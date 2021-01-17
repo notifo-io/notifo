@@ -147,6 +147,27 @@ export async function apiPostSubscription(config: SDKConfig, subscription: Subsc
     }
 }
 
+export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<NotifoNotification>> {
+    const url = combineUrl(config.apiUrl, `api/me/notifications/archive`);
+
+    const request: RequestInit = {
+        method: 'GET',
+        headers: {
+            ...getAuthHeader(config),
+        },
+    };
+
+    const response = await fetch(url, request);
+
+    if (response.status === 404) {
+        return null;
+    } else if (response.ok) {
+        return (await response.json()).items;
+    } else {
+        throw new Error(`Request failed with ${response.status}`);
+    }
+}
+
 export async function apiGetSubscription(config: SDKConfig, topicPrefix: string): Promise<Subscription | null> {
     const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
 

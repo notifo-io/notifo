@@ -22,14 +22,14 @@ export interface ProfileSettingsProps {
     // The options.
     options: NotificationsOptions;
 
-    // To toggle the profile view.
-    onShowProfile?: (show: boolean) => void;
+    // To close this view.
+    onClose?: () => void;
 }
 
 export const ProfileSettings = (props: ProfileSettingsProps) => {
     const {
         config,
-        onShowProfile,
+        onClose,
     } = props;
 
     const dispatch = useDispatch();
@@ -69,13 +69,13 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
         setChannel(profileToEdit, 'webpush', send);
     }, [profileToEdit]);
 
-    const doHideProfile = useCallback((event: Event) => {
-        onShowProfile && onShowProfile(false);
+    const doClose = useCallback((event: Event) => {
+        onClose && onClose();
 
         event.preventDefault();
         event.stopImmediatePropagation();
         event.stopPropagation();
-    }, [onShowProfile]);
+    }, [onClose]);
 
     const doChange = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement> | h.JSX.TargetedEvent<HTMLSelectElement>) => {
         profileToEdit[event.currentTarget.id] = event.currentTarget.value;
@@ -83,10 +83,12 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
 
     return (
         <Fragment>
-            <div>
-                <button type='button' onClick={doHideProfile}>
+            <div class='notifo-header'>
+                <button type='button' onClick={doClose}>
                     <Icon type='back' size={20} />
                 </button>
+
+                {config.texts.profile}
             </div>
 
             {!profileToEdit ? (
@@ -156,7 +158,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                             {config.texts.save}
                         </button>
 
-                        <button class='notifo-form-button' type='submit' onClick={doHideProfile}>
+                        <button class='notifo-form-button' type='submit' onClick={doClose}>
                             {config.texts.cancel}
                         </button>
 

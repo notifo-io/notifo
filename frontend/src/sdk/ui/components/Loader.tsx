@@ -43,7 +43,7 @@ export const Loader = (props: LoaderProps) => {
     }
 
     return (
-        <span className='notifo-loader'>
+        <span class='notifo-loader'>
             <Icon type='loader' size={size} />
         </span>
     );

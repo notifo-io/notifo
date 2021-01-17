@@ -5,20 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
-using Notifo.Infrastructure;
-
 namespace Notifo.Domain.UserNotifications
 {
-    public sealed class UserNotificationQuery : QueryBase
+    public enum UserNotificationQueryScope
     {
-        public Instant After { get; set; }
-
-        public UserNotificationQueryScope Scope { get; set; }
-
-        public UserNotificationQuery()
-        {
-            NeedsTotal = false;
-        }
+        NonDeleted,
+        Deleted,
+        All
     }
 }

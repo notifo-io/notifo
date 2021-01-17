@@ -11,7 +11,8 @@ import { h } from 'preact';
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { useState } from 'preact/hooks';
 import { Modal } from './Modal';
-import { NotificationsList } from './NotificationsList';
+import { Notifications } from './Notifications';
+import { NotificationsArchive } from './NotificationsArchive';
 import { ProfileSettings } from './ProfileSettings';
 
 export interface NotificationsModalProps {
@@ -34,6 +35,8 @@ export interface NotificationsModalProps {
     onDelete: (notification: NotifoNotification) => Promise<any>;
 }
 
+type View = 'Notifications' | 'Archive' | 'Profile';
+
 export const NotificationsModal = (props: NotificationsModalProps) => {
     const {
         config,
@@ -45,20 +48,25 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
     } = props;
 
     const [ref, setRef] = useState<HTMLDivElement>(null);
-    const [showProfile, setShowProfile] = useState(false);
+    const [view, setView] = useState<View>('Notifications');
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>
             <div ref={setRef}>
-                {showProfile ? (
+                {view === 'Profile' ? (
                     <ProfileSettings config={config} options={options}
-                        onShowProfile={setShowProfile} />
+                        onClose={() => setView('Notifications')} />
+
+                ) : (view === 'Archive') ? (
+                    <NotificationsArchive config={config} options={options}
+                        onClose={() => setView('Notifications')} />
                 ) : (
-                    <NotificationsList config={config} options={options}
+                    <Notifications config={config} options={options}
                         onConfirm={onConfirm}
                         onDelete={onDelete}
                         onSeen={onSeen}
-                        onShowProfile={setShowProfile}
+                        onShowArchive={() => setView('Archive')}
+                        onShowProfile={() => setView('Profile')}
                         parent={ref?.parentNode as any}
                     />
                 )}

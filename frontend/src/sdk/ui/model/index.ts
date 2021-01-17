@@ -7,7 +7,7 @@
 
 // tslint:disable: no-parameter-reassignment
 
-import { apiDeleteSubscription, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, UpdateProfile } from '@sdk/shared';
+import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, UpdateProfile } from '@sdk/shared';
 import { useEffect, useState } from 'preact/hooks';
 import { Dispatch, set, Store } from './store';
 
@@ -24,6 +24,12 @@ export interface SubscriptionState {
 export type SubscriptionsState = { [prefix: string]: SubscriptionState };
 
 export interface NotifoState {
+    // The current notifications.
+    archive: ReadonlyArray<NotifoNotification>;
+
+    // The notifications state.
+    archiveTransition: Transition;
+
     // The current notifications.
     notifications: ReadonlyArray<NotifoNotification>;
 
@@ -55,6 +61,9 @@ type NotifoActionType =
     'LoadSubscriptionFailed' |
     'LoadSubscriptionStarted' |
     'LoadSubscriptionSuccess' |
+    'LoadArchiveFailed' |
+    'LoadArchiveStarted' |
+    'LoadArchiveSuccess' |
     'NotificationRemove' |
     'NotificationsAdd' |
     'SaveProfileFailed' |
@@ -91,6 +100,12 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
         case 'SaveProfileSuccess': {
             return { ...state, profileTransition: 'Success', profile: action.profile };
         }
+        case 'LoadArchiveStarted':
+            return { ...state, archiveTransition: 'InProgress' };
+        case 'LoadArchiveFailed':
+            return { ...state, archiveTransition: 'Failed' };
+        case 'LoadArchiveSuccess':
+            return { ...state, archiveTransition: 'Success', archive: action.notifications };
         case 'LoadSubscriptionStarted': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
@@ -200,6 +215,8 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
 
 const initialState: NotifoState = {
     isConnected: false,
+    archive: [],
+    archiveTransition: 'InProgress',
     notifications: [],
     notificationsTransition: 'InProgress',
     profile: undefined,
@@ -288,6 +305,18 @@ export async function loadProfile(config: SDKConfig, dispatch: NotifoDispatch) {
         dispatch({ type: 'LoadProfileSuccess', profile });
     } catch (ex) {
         dispatch({ type: 'LoadProfileFailed', ex });
+    }
+}
+
+export async function loadArchive(config: SDKConfig, dispatch: NotifoDispatch) {
+    try {
+        dispatch({ type: 'LoadArchiveStarted' });
+
+        const notifications = await apiGetArchive(config);
+
+        dispatch({ type: 'LoadArchiveSuccess', notifications });
+    } catch (ex) {
+        dispatch({ type: 'LoadArchiveFailed', ex });
     }
 }
 

@@ -8,7 +8,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using NodaTime;
 using Notifo.Areas.Api.Controllers.Notifications.Dto;
 using Notifo.Domain;
 using Notifo.Domain.UserNotifications;
@@ -20,6 +19,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
     [OpenApiIgnore]
     public sealed class NotificationsController : BaseController
     {
+        private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
         private readonly IUserNotificationStore userNotificationsStore;
         private readonly IUserNotificationService userNotificationService;
 
@@ -31,36 +31,21 @@ namespace Notifo.Areas.Api.Controllers.Notifications
             this.userNotificationService = userNotificationService;
         }
 
-        [HttpGet("/api/notifications")]
+        [HttpGet("/api/me/notifications/archive")]
         [AppPermission(Roles.User)]
-        public async Task<IActionResult> GetNotifications([FromQuery] long etag = 0)
+        public async Task<IActionResult> GetArchive()
         {
-            var query = new UserNotificationQuery
+            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
+
+            var response = new ListResponseDto<NotificationDto>
             {
-                After = Instant.FromUnixTimeMilliseconds(etag),
-                Take = 100
+                Items = notifications.Select(NotificationDto.FromNotification).ToList()
             };
-
-            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, query, HttpContext.RequestAborted);
-
-            var response = new NotificationsDto
-            {
-                Notifications = notifications.Select(NotificationDto.FromNotification).ToArray()
-            };
-
-            if (notifications.Any())
-            {
-                response.Etag = notifications.Max(x => x.Updated).ToUnixTimeMilliseconds();
-            }
-            else if (query.After != default)
-            {
-                return NoContent();
-            }
 
             return Ok(response);
         }
 
-        [HttpPost("/api/notifications/handled")]
+        [HttpPost("/api/me/notifications/handled")]
         [AppPermission(Roles.User)]
         public async Task Confirm([FromBody] TrackNotificationDto request)
         {

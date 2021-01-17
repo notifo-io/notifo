@@ -23,13 +23,16 @@ export interface NotificationItemProps {
     notification: NotifoNotification;
 
     // The modal element.
-    modal: HTMLElement;
+    modal?: HTMLElement;
 
     // The options.
     options: NotificationsOptions;
 
     // The main config.
     config: SDKConfig;
+
+    // True to disable this notification.
+    disabled?: boolean;
 
     // Clicked when a notification is confirmed.
     onConfirm?: (notification: NotifoNotification) => Promise<any>;
@@ -44,6 +47,7 @@ export interface NotificationItemProps {
 export const NotificationItem = (props: NotificationItemProps) => {
     const {
         config,
+        disabled,
         modal,
         notification,
         onConfirm,
@@ -59,6 +63,10 @@ export const NotificationItem = (props: NotificationItemProps) => {
     const inView = useInView(ref, modal);
 
     const doSee = useCallback(async () => {
+        if (!onSeen) {
+            return;
+        }
+
         try {
             setMarkingSeen('InProgress');
 
@@ -68,9 +76,13 @@ export const NotificationItem = (props: NotificationItemProps) => {
         } catch {
             setMarkingSeen('Failed');
         }
-    }, [notification]);
+    }, [notification, onSeen]);
 
     const doConfirm = useCallback(async () => {
+        if (!onConfirm) {
+            return;
+        }
+
         try {
             setMarkConfirm('InProgress');
 
@@ -83,6 +95,10 @@ export const NotificationItem = (props: NotificationItemProps) => {
     }, [notification, onConfirm]);
 
     const doDelete = useCallback(async () => {
+        if (!onDelete) {
+            return;
+        }
+
         try {
             setIsDeleting(true);
 
@@ -93,7 +109,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
     }, [notification, onDelete]);
 
     useEffect(() => {
-        if (inView && !notification.isSeen) {
+        if (inView && !notification.isSeen && modal) {
             const timer = setTimeout(() => {
                 doSee();
             }, 2000);
@@ -118,14 +134,14 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
     return (
         <div class='notifo-notification' ref={setRef}>
-            {!notification.isSeen && markingSeen !== 'Failed' &&
+            {!disabled && !notification.isSeen && markingSeen !== 'Failed' &&
                 <span class='notifo-notification-new'></span>
             }
 
-            <Image className='notifo-notification-image-large' src={withPreset(notification.imageLarge, 'WebLarge')} />
+            <Image class='notifo-notification-image-large' src={withPreset(notification.imageLarge, 'WebLarge')} />
 
             <div class='notifo-notification-row2'>
-                <Image className='notifo-notification-image-small notifo-notification-left' src={withPreset(notification.imageSmall, 'WebSmall')} />
+                <Image class='notifo-notification-image-small notifo-notification-left' src={withPreset(notification.imageSmall, 'WebSmall')} />
 
                 <div class='notifo-notification-right'>
                     {notification.subject &&
@@ -136,9 +152,11 @@ export const NotificationItem = (props: NotificationItemProps) => {
                                 <span>{notification.subject}</span>
                             )}
 
-                            <a class='notifo-notification-delete' onClick={doDelete} disabled={isDeleting}>
-                                <Icon type='delete' size={20} />
-                            </a>
+                            {!disabled &&
+                                <a class='notifo-notification-delete' onClick={doDelete} disabled={isDeleting}>
+                                    <Icon type='delete' size={20} />
+                                </a>
+                            }
                         </div>
                     }
 
@@ -150,7 +168,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
                     {notification.linkUrl && notification.linkText &&
                         <div class='notifo-notification-link'>
-                            <a href={notification.linkUrl} target='_blank' rel='noopener'>{notification.linkText}</a>
+                            <a class='notifo-link' href={notification.linkUrl} target='_blank' rel='noopener'>{notification.linkText}</a>
                         </div>
                     }
 
@@ -160,7 +178,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
                         </div>
                     }
 
-                    {notification.confirmText && notification.confirmUrl && !notification.isConfirmed &&
+                    {!disabled && notification.confirmText && notification.confirmUrl && !notification.isConfirmed &&
                         <button class='notifo-notification-confirm' onClick={doConfirm}>
                             <Loader size={12} visible={markingConfirm === 'InProgress'} />
 

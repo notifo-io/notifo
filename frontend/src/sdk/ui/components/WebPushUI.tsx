@@ -11,7 +11,7 @@ import {  h } from 'preact';
 import { SDKConfig } from '@sdk/shared';
 import { Modal } from './Modal';
 
-export interface SubscribePromptProps {
+export interface WebPushUIProps {
     // The main config.
     config: SDKConfig;
 
@@ -22,7 +22,7 @@ export interface SubscribePromptProps {
     onDeny?: () => void;
 }
 
-export const SubscribePrompt = (props: SubscribePromptProps) => {
+export const WebPushUI = (props: WebPushUIProps) => {
     const {
         config,
         onAllow,
@@ -30,7 +30,7 @@ export const SubscribePrompt = (props: SubscribePromptProps) => {
     } = props;
 
     return (
-        <div className='notifo'>
+        <div class='notifo'>
             <Modal position='top-global'>
                 <div class='notifo-form-group'>
                     <h4>{config.texts.webPushConfirmTitle}</h4>

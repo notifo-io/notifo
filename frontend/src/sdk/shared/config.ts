@@ -18,6 +18,14 @@ const DefaultTexts: Texts<{ de: string, en: string }> = {
         de: 'Erlauben',
         en: 'Allow',
     },
+    archive: {
+        de: 'Archiv',
+        en: 'Archive',
+    },
+    archiveLink: {
+        de: 'Gelöschte Benachrichtungen',
+        en: 'Deleted notifications',
+    },
     cancel: {
         de: 'Abbrechen',
         en: 'Cancel',
@@ -49,6 +57,10 @@ const DefaultTexts: Texts<{ de: string, en: string }> = {
     notificationsEmpty: {
         de: 'Keine Benachrichtigungen vorhanden',
         en: 'You have no notifications yet.',
+    },
+    profile: {
+        de: 'Profil',
+        en: 'Profile',
     },
     save: {
         de: 'Speichern',
@@ -317,6 +329,8 @@ export interface NotificationsOptions  {
 
 type Texts<T> = {
     allow: T,
+    archive: T,
+    archiveLink: T,
     cancel: T,
     deny: T,
     email: T,
@@ -325,6 +339,7 @@ type Texts<T> = {
     notificationsEmpty: T,
     notifyBeEmail: T
     notifyBeWebPush: T,
+    profile: T,
     save: T,
     settings: T,
     subscribe: T,
@@ -336,6 +351,8 @@ type Texts<T> = {
 
 const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'allow',
+    'archive',
+    'archiveLink',
     'cancel',
     'deny',
     'email',
@@ -344,6 +361,7 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'notificationsEmpty',
     'notifyBeEmail',
     'notifyBeWebPush',
+    'profile',
     'save',
     'settings',
     'subscribe',

@@ -93,6 +93,16 @@ $size-toggle: 20px;
             }
         }
 
+        &-link {
+            color: $color-link;
+
+            &:hover {
+                color: darken($color-link, 5%);
+                text-decoration: underline;
+                text-transform: none;
+            }
+        }
+
         &-modal {
             & {
                 position: absolute;
@@ -133,14 +143,40 @@ $size-toggle: 20px;
             }
 
             &-inner {
-                max-height: none;
-                min-height: 100px;
                 position: relative;
             }
         }
 
+        &-header {
+            margin-bottom: 1rem;
+
+            button {
+                margin-right: .5rem;
+            }
+        }
+
         &-notifications-list {
-            margin-top: 10px;
+            min-height: 8rem;
+            padding-bottom: 2.5rem;
+            padding-top: 1rem;
+        }
+
+        &-notifications-archive {
+            min-height: 8rem;
+        }
+
+        &-notifications-archive-link {
+            @include absolute(null, null, 0, 0);
+            color: $color-link;
+            cursor: pointer;
+            font-size: 80%;
+            font-weight: normal;
+
+            &:hover {
+                color: darken($color-link, 5%);
+                text-decoration: underline;
+                text-transform: none;
+            }
         }
 
         &-notification {
@@ -150,6 +186,17 @@ $size-toggle: 20px;
                 margin-bottom: 1rem;
                 padding-bottom: 1rem;
                 position: relative;
+            }
+
+            &-delete {
+                @include absolute(0, 0, null, null);
+                color: $color-error;
+                cursor: pointer;
+                display: none;
+
+                svg {
+                    fill: $color-error;
+                }
             }
 
             &:hover {
@@ -217,17 +264,6 @@ $size-toggle: 20px;
                 word-wrap: break-word;
             }
 
-            &-delete {
-                @include absolute(0, 0, null, null);
-                color: $color-button;
-                cursor: pointer;
-                display: none;
-
-                svg {
-                    opacity: $color-button;
-                }
-            }
-
             &-body {
                 font-weight: normal;
                 position: relative;
@@ -270,16 +306,6 @@ $size-toggle: 20px;
                     }
                 }
             }
-
-            a {
-                color: $color-link;
-
-                &:hover {
-                    color: darken($color-link, 5%);
-                    text-decoration: underline;
-                    text-transform: none;
-                }
-            }
         }
 
         &-loader {
@@ -291,7 +317,8 @@ $size-toggle: 20px;
         }
 
         &-profile-button {
-            @include absolute(-1.5rem, -1rem);
+            @include absolute(-1rem, -1rem);
+            line-height: 1px;
 
             svg {
                 fill: $color-button;
@@ -426,6 +453,12 @@ $size-toggle: 20px;
 
             * {
                 vertical-align: middle;
+            }
+
+            &:hover {
+                span {
+                    text-decoration: underline;
+                }
             }
 
             span {

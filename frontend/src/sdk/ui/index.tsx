@@ -8,7 +8,7 @@
 import { render } from 'preact';
 
 import { buildNotificationsOptions, buildTopicOptions, isString, loadStyle, logError, NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
-import { renderNotifications, renderSubscribePrompt, renderTopic } from './components';
+import { renderNotificationsUI, renderTopicUI, renderWebPushUI } from './components';
 
 export interface UIOptions {
     style: string;
@@ -28,7 +28,7 @@ export module UI {
             await loadStyle(config.styleUrl);
         }
 
-        renderNotifications(element, options, config);
+        renderNotificationsUI(element, options, config);
     }
 
     export async function setupTopic(elementOrId: string | HTMLElement, topicPrefix: string, opts: TopicOptions, config: SDKConfig) {
@@ -44,7 +44,7 @@ export module UI {
             await loadStyle(config.styleUrl);
         }
 
-        renderTopic(element, topicPrefix, options, config);
+        renderTopicUI(element, topicPrefix, options, config);
     }
 
     export async function askForWebPush(config: SDKConfig): Promise<boolean> {
@@ -61,7 +61,7 @@ export module UI {
                 destroy(element);
             };
 
-            renderSubscribePrompt(element, config, doAllow, doDeny);
+            renderWebPushUI(element, config, doAllow, doDeny);
         });
     }
 

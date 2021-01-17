@@ -58,7 +58,7 @@ namespace Notifo.Domain.Log.MongoDb
             var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
 
-            if (resultTotal >= query.Take || query.Skip > 0)
+            if (query.ShouldQueryTotal(resultItems))
             {
                 resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
             }

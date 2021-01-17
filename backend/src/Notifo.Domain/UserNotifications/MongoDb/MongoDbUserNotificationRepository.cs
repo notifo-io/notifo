@@ -95,16 +95,22 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 filters.Add(Filter.Gte(x => x.Updated, query.After));
             }
 
-            if (query.Scope == UserNotificationQuery.SearchScope.Deleted)
+            switch (query.Scope)
             {
-                filters.Add(Filter.Gt(x => x.IsDeleted, true));
-            }
-            else if (query.Scope == UserNotificationQuery.SearchScope.NonDeleted)
-            {
-                filters.Add(
-                    Filter.Or(
-                        Filter.Exists(x => x.IsDeleted, false),
-                        Filter.Eq(x => x.IsDeleted, false)));
+                case UserNotificationQueryScope.Deleted:
+                    {
+                        filters.Add(Filter.Eq(x => x.IsDeleted, true));
+                        break;
+                    }
+
+                case UserNotificationQueryScope.NonDeleted:
+                    {
+                        filters.Add(
+                            Filter.Or(
+                                Filter.Exists(x => x.IsDeleted, false),
+                                Filter.Eq(x => x.IsDeleted, false)));
+                        break;
+                    }
             }
 
             var filter = Filter.And(filters);
@@ -112,7 +118,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
 
-            if (resultTotal >= query.Take || query.Skip > 0)
+            if (query.ShouldQueryTotal(resultItems))
             {
                 resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
             }

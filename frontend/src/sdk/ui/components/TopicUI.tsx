@@ -14,7 +14,7 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 import { TopicButton } from './TopicButton';
 import { TopicModal } from './TopicModal';
 
-export interface TopicProps {
+export interface TopicUIProps {
     config: SDKConfig;
 
     // The topic options.
@@ -24,7 +24,7 @@ export interface TopicProps {
     topicPrefix: string;
 }
 
-export const TopicContainer = (props: TopicProps) => {
+export const TopicUI = (props: TopicUIProps) => {
     const {
         config,
         options,
@@ -56,7 +56,7 @@ export const TopicContainer = (props: TopicProps) => {
     }
 
     return (
-        <div className='notifo'>
+        <div class='notifo'>
             <TopicButton options={options} subscription={subscription} onClick={doShow} />
 
             {isOpen &&

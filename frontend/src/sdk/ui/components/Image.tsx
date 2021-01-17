@@ -10,18 +10,18 @@ import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 export interface ImageProps {
-    className: string;
+    class: string;
 
     // The size of the icon.
     src: string;
 }
 
-export const Image = ({ src, className }: ImageProps) => {
+export const Image = (props: ImageProps) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         setIsLoaded(false);
-    }, [src]);
+    }, [props.src]);
 
     const setLoaded = useCallback(() => {
         setIsLoaded(true);
@@ -30,8 +30,8 @@ export const Image = ({ src, className }: ImageProps) => {
     const style = isLoaded ? {} : { display: 'none' };
 
     return (
-        <div class={className} style={style}>
-            <img src={src} onLoad={setLoaded} />
+        <div class={props.class} style={style}>
+            <img src={props.src} onLoad={setLoaded} />
         </div>
     );
 };
