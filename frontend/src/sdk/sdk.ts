@@ -67,14 +67,20 @@ const instance = {
                     break;
                 }
                 case 'subscribe': {
-                    queueJobs.enqueue(() => {
+                    queueJobs.enqueue(async () => {
                         if (!queueInit.config) {
                             logError('init has not been called yet or has failed.');
 
                             return Promise.resolve(false);
                         }
 
-                        return PUSH.subscribe(queueInit.config, args[1]);
+                        if (await PUSH.isPending() && !await UI.askForWebPush(queueInit.config)) {
+                            return false;
+                        }
+
+                        await PUSH.subscribe(queueInit.config, args[1]);
+
+                        return true;
                     });
                     break;
                 }

@@ -45,3 +45,8 @@
     @include position($t, $r, $b, $l);
     position: absolute;
 }
+
+@mixin fixed($t: null, $r: null, $b: null, $l: null) {
+    @include position($t, $r, $b, $l);
+    position: fixed;
+}

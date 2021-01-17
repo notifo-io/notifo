@@ -41,6 +41,12 @@ export module PUSH {
             serviceWorker.active.postMessage({ type: 'unsubscribe', config: simpleConfig });
         }
     }
+
+    export async function isPending() {
+        const state = await getNotificationPermissionState();
+
+        return state === 'default' || state === 'prompt';
+    }
 }
 
 function buildConfig(config: SDKConfig) {

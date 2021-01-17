@@ -5,18 +5,26 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace Notifo.Areas.Frontend.Middlewares
 {
     public sealed class WebpackMiddleware
     {
-        private const string WebpackUrlIndex = "https://localhost:3002/index.html";
-        private const string WebpackUrlDemo = "https://localhost:3002/demo.html";
+        private static readonly HashSet<string> MappedEnding = new HashSet<string>
+        {
+            "/index.html",
+            "/notifo-sdk-worker.js",
+            "/notifo-sdk.js",
+            "/demo.html"
+        };
 
         private readonly RequestDelegate next;
 
@@ -27,13 +35,11 @@ namespace Notifo.Areas.Frontend.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.IsIndex() && context.Response.StatusCode != 304)
+            if (MappedEnding.Contains(context.Request.Path) && context.Response.StatusCode != 304)
             {
-                await ServeWebpackAsync(context, WebpackUrlIndex);
-            }
-            else if (context.IsDemo() && context.Response.StatusCode != 304)
-            {
-                await ServeWebpackAsync(context, WebpackUrlDemo);
+                var url = $"https://localhost:3002{context.Request.Path}";
+
+                await ServeWebpackAsync(context, url);
             }
             else if (context.IsHtmlPath() && context.Response.StatusCode != 304)
             {
@@ -74,11 +80,24 @@ namespace Notifo.Areas.Frontend.Middlewares
 
                 if (result.IsSuccessStatusCode)
                 {
-                    var html = await result.Content.ReadAsStringAsync();
+                    var text = await result.Content.ReadAsStringAsync();
 
-                    html = html.AdjustHtml(context);
+                    if (result.Content.Headers.ContentType?.MediaType == "text/html")
+                    {
+                        text = text.AdjustHtml(context);
+                    }
 
-                    await context.Response.WriteAsync(html);
+                    foreach (var (key, value) in result.Headers)
+                    {
+                        context.Response.Headers[key] = new StringValues(value.ToArray());
+                    }
+
+                    foreach (var (key, value) in result.Content.Headers)
+                    {
+                        context.Response.Headers[key] = new StringValues(value.ToArray());
+                    }
+
+                    await context.Response.WriteAsync(text);
                 }
             }
         }

@@ -14,9 +14,17 @@ export const SUPPORTED_LOCALES = {
 };
 
 const DefaultTexts: Texts<{ de: string, en: string }> = {
+    allow: {
+        de: 'Erlauben',
+        en: 'Allow',
+    },
     cancel: {
         de: 'Abbrechen',
         en: 'Cancel',
+    },
+    deny: {
+        de: 'Nein, Danke',
+        en: 'Deny',
     },
     email: {
         de: 'E-Mail Adresse',
@@ -61,6 +69,14 @@ const DefaultTexts: Texts<{ de: string, en: string }> = {
     unsubscribe: {
         de: 'Deabbonieren',
         en: 'Unsubscribe',
+    },
+    webPushConfirmText: {
+        de: 'Notifications können jederzeit in den Browser Einstellungen deaktiviert werden.',
+        en: 'Notifications can be turned off anytime from browser settings.',
+    },
+    webPushConfirmTitle: {
+        de: 'Wir wollen dir Push Benachrichtigungen schenken',
+        en: 'We want to send you push notifications.',
     },
 };
 
@@ -300,7 +316,9 @@ export interface NotificationsOptions  {
 }
 
 type Texts<T> = {
+    allow: T,
     cancel: T,
+    deny: T,
     email: T,
     fullName: T,
     language: T,
@@ -312,10 +330,14 @@ type Texts<T> = {
     subscribe: T,
     timezone: T,
     unsubscribe: T,
+    webPushConfirmText: T,
+    webPushConfirmTitle: T,
 };
 
 const TextKeys: ReadonlyArray<keyof Texts<any>> = [
+    'allow',
     'cancel',
+    'deny',
     'email',
     'fullName',
     'language',
@@ -327,4 +349,6 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'subscribe',
     'timezone',
     'unsubscribe',
+    'webPushConfirmText',
+    'webPushConfirmTitle',
 ];

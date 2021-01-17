@@ -8,7 +8,7 @@
 import { render } from 'preact';
 
 import { buildNotificationsOptions, buildTopicOptions, isString, loadStyle, logError, NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
-import { renderNotifications, renderTopic } from './components';
+import { renderNotifications, renderSubscribePrompt, renderTopic } from './components';
 
 export interface UIOptions {
     style: string;
@@ -45,6 +45,24 @@ export module UI {
         }
 
         renderTopic(element, topicPrefix, options, config);
+    }
+
+    export async function askForWebPush(config: SDKConfig): Promise<boolean> {
+        return new Promise((resolve) => {
+            const element = document.body.appendChild(document.createElement('div'));
+
+            const doAllow = () => {
+                resolve(true);
+                destroy(element);
+            };
+
+            const doDeny = () => {
+                resolve(false);
+                destroy(element);
+            };
+
+            renderSubscribePrompt(element, config, doAllow, doDeny);
+        });
     }
 
     export function destroy(elementOrId: string | HTMLElement) {

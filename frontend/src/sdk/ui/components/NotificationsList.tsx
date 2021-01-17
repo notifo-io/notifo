@@ -62,7 +62,7 @@ export const NotificationsList = (props: NotificationsListProps) => {
     }, [onShowProfile]);
 
     return (
-        <Fragment>
+        <div className='notifo-notifications-list'>
             <button class='notifo-profile-button' type='button' onClick={doShowProfile}>
                 <Icon type='settings' size={20} />
             </button>
@@ -92,6 +92,6 @@ export const NotificationsList = (props: NotificationsListProps) => {
                     ))}
                 </Fragment>
             }
-        </Fragment>
+        </div>
     );
 };
