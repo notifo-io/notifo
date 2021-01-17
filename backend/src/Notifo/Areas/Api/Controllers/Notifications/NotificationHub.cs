@@ -20,6 +20,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
     [AppPermission(Roles.User)]
     public sealed class NotificationHub : Hub
     {
+        private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };
         private readonly IUserNotificationStore userNotificationsStore;
         private readonly IUserNotificationService userNotificationService;
 
@@ -63,11 +64,18 @@ namespace Notifo.Areas.Api.Controllers.Notifications
 
         public override async Task OnConnectedAsync()
         {
-            var notifications = await userNotificationsStore.QueryAsync(AppId, UserId, 100, default, Context.ConnectionAborted);
+            var notifications = await userNotificationsStore.QueryAsync(AppId, UserId, DefaultQuery, Context.ConnectionAborted);
 
             var dtos = notifications.Select(NotificationDto.FromNotification).ToArray();
 
             await Clients.Caller.SendAsync("notifications", dtos, Context.ConnectionAborted);
+        }
+
+        public async Task Delete(Guid id)
+        {
+            await userNotificationsStore.DeleteAsync(id, Context.ConnectionAborted);
+
+            await Clients.User(Context.User?.Sub()!).SendAsync("notificationDeleted", new { id });
         }
 
         public async Task ConfirmMany(TrackNotificationDto request)

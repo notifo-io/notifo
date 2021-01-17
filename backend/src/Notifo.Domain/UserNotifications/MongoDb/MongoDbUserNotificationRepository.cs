@@ -13,7 +13,6 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
-using NodaTime;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
 using Squidex.Hosting;
@@ -83,10 +82,42 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return count == 1;
         }
 
-        public Task<List<UserNotification>> QueryAsync(string appId, string userId, int count, Instant after, CancellationToken ct)
+        public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct)
         {
-            return Collection.Find(x => x.AppId == appId && x.UserId == userId && x.Updated > after).SortByDescending(x => x.Created).Limit(count)
-                .ToListAsync(ct);
+            var filters = new List<FilterDefinition<UserNotification>>
+            {
+                Filter.Eq(x => x.AppId, appId),
+                Filter.Eq(x => x.UserId, userId)
+            };
+
+            if (query.After != default)
+            {
+                filters.Add(Filter.Gte(x => x.Updated, query.After));
+            }
+
+            if (query.Scope == UserNotificationQuery.SearchScope.Deleted)
+            {
+                filters.Add(Filter.Gt(x => x.IsDeleted, true));
+            }
+            else if (query.Scope == UserNotificationQuery.SearchScope.NonDeleted)
+            {
+                filters.Add(
+                    Filter.Or(
+                        Filter.Exists(x => x.IsDeleted, false),
+                        Filter.Eq(x => x.IsDeleted, false)));
+            }
+
+            var filter = Filter.And(filters);
+
+            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
+
+            if (resultTotal >= query.Take || query.Skip > 0)
+            {
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
+
+            return ResultList.Create(resultTotal, resultItems);
         }
 
         public async Task<UserNotification?> FindAsync(Guid id)
@@ -94,6 +125,11 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             var entity = await Collection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
             return entity;
+        }
+
+        public async Task DeleteAsync(Guid id, CancellationToken ct)
+        {
+            await Collection.UpdateOneAsync(x => x.Id == id, Update.Set(x => x.IsDeleted, true), cancellationToken: ct);
         }
 
         public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle)

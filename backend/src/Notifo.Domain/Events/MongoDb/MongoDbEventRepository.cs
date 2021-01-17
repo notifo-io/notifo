@@ -79,14 +79,15 @@ namespace Notifo.Domain.Events.MongoDb
 
             var filter = Filter.And(filters);
 
-            var taskForItems = Collection.Find(filter).SortByDescending(x => x.Doc.Created).ToListAsync(query, ct);
-            var taskForCount = Collection.Find(filter).CountDocumentsAsync(ct);
+            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Doc.Created).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
 
-            await Task.WhenAll(
-                taskForItems,
-                taskForCount);
+            if (resultTotal >= query.Take || query.Skip > 0)
+            {
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
 
-            return ResultList.Create(taskForCount.Result, taskForItems.Result.Select(x => x.ToEvent()));
+            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEvent()));
         }
 
         public async Task InsertAsync(Event @event, CancellationToken ct)

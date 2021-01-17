@@ -72,14 +72,15 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             var filter = Filter.And(filters);
 
-            var taskForItems = Collection.Find(filter).ToListAsync(query, ct);
-            var taskForCount = Collection.Find(filter).CountDocumentsAsync(ct);
+            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
 
-            await Task.WhenAll(
-                taskForItems,
-                taskForCount);
+            if (resultTotal >= query.Take || query.Skip > 0)
+            {
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
 
-            return ResultList.Create(taskForCount.Result, taskForItems.Result.Select(x => x.ToSubscription()));
+            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToSubscription()));
         }
 
         public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, [EnumeratorCancellation] CancellationToken ct = default)

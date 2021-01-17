@@ -5,12 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Security
+namespace Notifo.Identity
 {
-    public static class DefaultClaimTypes
+    public static class Constants
     {
-        public static readonly string AppId = "app_id";
-
-        public static readonly string UserId = "user_id";
+        public const string AuthenticationSchema = "IdentityServerJwt";
     }
 }

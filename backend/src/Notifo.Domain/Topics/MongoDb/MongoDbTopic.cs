@@ -15,5 +15,10 @@ namespace Notifo.Domain.Topics.MongoDb
         {
             return $"{appId}_{path}";
         }
+
+        public Topic ToTopic()
+        {
+            return Doc;
+        }
     }
 }

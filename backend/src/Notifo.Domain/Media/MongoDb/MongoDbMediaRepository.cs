@@ -54,14 +54,15 @@ namespace Notifo.Domain.Media.MongoDb
 
             var filter = Filter.And(filters);
 
-            var taskForItems = Collection.Find(filter).ToListAsync(query, ct);
-            var taskForCount = Collection.Find(filter).CountDocumentsAsync(ct);
+            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
 
-            await Task.WhenAll(
-                taskForItems,
-                taskForCount);
+            if (resultTotal >= query.Take || query.Skip > 0)
+            {
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
 
-            return ResultList.Create(taskForCount.Result, taskForItems.Result.Select(x => x.ToMedia()));
+            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToMedia()));
         }
 
         public async Task<Media?> GetAsync(string appId, string fileName, CancellationToken ct)

@@ -115,6 +115,12 @@ $size-toggle: 20px;
                 position: relative;
             }
 
+            &:hover {
+                .notifo-notification-delete {
+                    display: block;
+                }
+            }
+
             &:last-child {
                 border-bottom: 0;
                 border-top: 0;
@@ -167,9 +173,22 @@ $size-toggle: 20px;
 
             &-subject {
                 font-weight: bold;
+                padding: 0;
+                padding-right: 40px;
                 position: relative;
                 word-spacing: normal;
                 word-wrap: break-word;
+            }
+
+            &-delete {
+                @include absolute(0, 0, null, null);
+                color: $color-button;
+                cursor: pointer;
+                display: none;
+
+                svg {
+                    opacity: $color-button;
+                }
             }
 
             &-body {

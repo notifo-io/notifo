@@ -26,10 +26,13 @@ export interface NotificationsListProps {
     parent?: HTMLElement;
 
     // Clicked when a notification is confirmed.
-    onConfirm?: (notification: NotifoNotification) => Promise<any>;
+    onConfirm: (notification: NotifoNotification) => Promise<any>;
 
     // Clicked when a notification is seen.
-    onSeen?: (notification: NotifoNotification) => Promise<any>;
+    onSeen: (notification: NotifoNotification) => Promise<any>;
+
+    // Clicked when a notification is deleted.
+    onDelete: (notification: NotifoNotification) => Promise<any>;
 
     // To toggle the profile view.
     onShowProfile?: (show: boolean) => void;
@@ -39,6 +42,7 @@ export const NotificationsList = (props: NotificationsListProps) => {
     const {
         config,
         onConfirm,
+        onDelete,
         onSeen,
         onShowProfile,
         options,
@@ -81,6 +85,7 @@ export const NotificationsList = (props: NotificationsListProps) => {
                             notification={x}
                             options={options}
                             onConfirm={onConfirm}
+                            onDelete={onDelete}
                             onSeen={onSeen}
                             modal={parent}
                         />

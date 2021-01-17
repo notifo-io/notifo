@@ -33,6 +33,8 @@ namespace Notifo.Domain.UserNotifications
 
         public bool Silent { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public HandledInfo? IsConfirmed { get; set; }
 
         public HandledInfo? IsSeen { get; set; }

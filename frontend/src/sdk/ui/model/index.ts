@@ -47,25 +47,26 @@ type NotifoDispatch = Dispatch<NotifoAction>;
 type NotifoAction = { type: NotifoActionType, [x: string]: any  };
 
 type NotifoActionType =
-    'AddNotifications' |
     'Connected' |
     'Disconnected' |
+    'LoadProfileFailed' |
+    'LoadProfileStarted' |
+    'LoadProfileSuccess' |
     'LoadSubscriptionFailed' |
     'LoadSubscriptionStarted' |
     'LoadSubscriptionSuccess' |
+    'NotificationRemove' |
+    'NotificationsAdd' |
+    'SaveProfileFailed' |
+    'SaveProfileStarted' |
+    'SaveProfileSuccess' |
+    'SetConnected' |
     'SubscribeFailed' |
     'SubscribeStarted' |
     'SubscribeSuccess' |
     'UnsubscribeFailed' |
     'UnsubscribeStarted' |
-    'UnsubscribeSuccess' |
-    'LoadProfileFailed' |
-    'LoadProfileStarted' |
-    'LoadProfileSuccess' |
-    'SaveProfileFailed' |
-    'SaveProfileStarted' |
-    'SaveProfileSuccess' |
-    'SetConnected';
+    'UnsubscribeSuccess';
 
 function reducer(state: NotifoState, action: NotifoAction): NotifoState {
     switch (action.type) {
@@ -153,7 +154,12 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
 
             return { ...state, subscriptions };
         }
-        case 'AddNotifications': {
+        case 'NotificationRemove': {
+            const notifications = state.notifications.filter(x => x.id !== action.id);
+
+            return { ...state, notifications };
+        }
+        case 'NotificationsAdd': {
             const newNotifications: ReadonlyArray<NotifoNotification> = action.notifications;
 
             if (newNotifications.length === 0) {
@@ -301,6 +307,10 @@ export function setConnected(isConnected: boolean, dispatch: (action: any) => vo
     dispatch({ type: 'SetConnected', isConnected });
 }
 
+export function deleteNotification(id: string, dispatch: (action: any) => void) {
+    dispatch({ type: 'NotificationRemove', id });
+}
+
 export function addNotifications(notifications: ReadonlyArray<NotifoNotification>, dispatch: (action: any) => void) {
-    dispatch({ type: 'AddNotifications', notifications });
+    dispatch({ type: 'NotificationsAdd', notifications });
 }

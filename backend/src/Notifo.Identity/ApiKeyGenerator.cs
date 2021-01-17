@@ -16,7 +16,6 @@ using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using IdentityServer4.Validation;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure.Security;
 
@@ -54,8 +53,9 @@ namespace Notifo.Identity
         {
             var claims = new[]
             {
-                new Claim(JwtClaimTypes.Subject, userId),
+                new Claim(JwtClaimTypes.Subject, $"{appId}_{userId}"),
                 new Claim(DefaultClaimTypes.AppId, appId),
+                new Claim(DefaultClaimTypes.UserId, userId),
             };
 
             return CreateTokenAsync(claims);
@@ -98,21 +98,6 @@ namespace Notifo.Identity
 
                 return await tokenService.CreateSecurityTokenAsync(token);
             }
-        }
-    }
-
-    public class X : DefaultClaimsService
-    {
-        public X(IProfileService profile, ILogger<DefaultClaimsService> logger)
-            : base(profile, logger)
-        {
-        }
-
-        public override async Task<IEnumerable<Claim>> GetAccessTokenClaimsAsync(ClaimsPrincipal subject, ResourceValidationResult resourceResult, ValidatedRequest request)
-        {
-            var s = await base.GetAccessTokenClaimsAsync(subject, resourceResult, request);
-
-            return s;
         }
     }
 }

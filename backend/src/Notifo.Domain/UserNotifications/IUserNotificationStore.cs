@@ -9,8 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using Notifo.Domain.UserEvents;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications
 {
@@ -18,11 +18,13 @@ namespace Notifo.Domain.UserNotifications
     {
         Task<bool> IsConfirmedOrHandled(Guid id, string channel);
 
-        Task<List<UserNotification>> QueryAsync(string appId, string userId, int count, Instant after, CancellationToken ct = default);
+        Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct = default);
 
         Task<UserNotification?> TrackConfirmedAsync(Guid id, string? channel = null);
 
         Task<UserNotification?> FindAsync(Guid id);
+
+        Task DeleteAsync(Guid id, CancellationToken ct = default);
 
         Task TrackSeenAsync(IEnumerable<Guid> ids, string? channel = null);
 

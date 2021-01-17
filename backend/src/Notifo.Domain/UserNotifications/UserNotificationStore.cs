@@ -38,18 +38,23 @@ namespace Notifo.Domain.UserNotifications
             collector.StopAsync();
         }
 
-        public Task<List<UserNotification>> QueryAsync(string appId, string userId, int count, Instant after, CancellationToken ct = default)
+        public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(userId, nameof(userId));
-            Guard.GreaterThan(count, 0, nameof(count));
+            Guard.NotNull(query, nameof(query));
 
-            return repository.QueryAsync(appId, userId, count, after, ct);
+            return repository.QueryAsync(appId, userId, query, ct);
         }
 
         public Task<UserNotification?> FindAsync(Guid id)
         {
             return repository.FindAsync(id);
+        }
+
+        public Task DeleteAsync(Guid id, CancellationToken ct)
+        {
+            return repository.DeleteAsync(id, ct);
         }
 
         public Task<bool> IsConfirmedOrHandled(Guid id, string channel)

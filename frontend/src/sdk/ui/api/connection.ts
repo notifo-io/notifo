@@ -58,6 +58,10 @@ export class Connection {
         this.signalR.on('notifications', handler);
     }
 
+    public onDelete(handler: (request: { id: string }) => void) {
+        this.signalR.on('notificationDeleted', handler);
+    }
+
     public onReconnected(handler: () => void) {
         this.signalR.onreconnected(handler);
     }
@@ -66,7 +70,11 @@ export class Connection {
         this.signalR.onreconnecting(handler);
     }
 
-    public confirmMany(seen: string[], confirmed: string | undefined = null): Promise<any> {
+    public delete(id: string) {
+        return this.signalR.send('delete', id);
+    }
+
+    public confirmMany(seen: string[], confirmed: string | undefined = null) {
         return this.signalR.send('confirmMany', {
             channel: 'Web',
             confirmed,

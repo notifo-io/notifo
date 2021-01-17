@@ -16,6 +16,7 @@ export type IconType =
     'bell' |
     'chat' |
     'chat_filled' |
+    'delete' |
     'heart_off' |
     'heart' |
     'logo' |
@@ -108,6 +109,12 @@ export const Icon = ({ size, type }: IconProps) => {
             return (
                 <svg version='1.1' xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24'>
                     <path d='M12 17.25l-6.188 3.75 1.641-7.031-5.438-4.734 7.172-0.609 2.813-6.609 2.813 6.609 7.172 0.609-5.438 4.734 1.641 7.031z'></path>
+                </svg>
+            );
+        case 'delete':
+            return (
+                <svg version='1.1' xmlns='http://www.w3.org/2000/svg' width={size} height={size} viewBox='0 0 24 24'>
+                    <path d='M15.516 3.984h3.469v2.016h-13.969v-2.016h3.469l1.031-0.984h4.969zM8.016 9v9.984h7.969v-9.984h-7.969zM6 18.984v-12h12v12q0 0.797-0.609 1.406t-1.406 0.609h-7.969q-0.797 0-1.406-0.609t-0.609-1.406z'></path>
                 </svg>
             );
         case 'profile':

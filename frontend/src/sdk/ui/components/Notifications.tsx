@@ -10,7 +10,7 @@ import { h } from 'preact';
 
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { Connection } from '@sdk/ui/api/connection';
-import { addNotifications, setConnected, useDispatch } from '@sdk/ui/model';
+import { addNotifications, deleteNotification, setConnected, useDispatch } from '@sdk/ui/model';
 import { isFunction } from 'lodash';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { NotificationsButton } from './NotificationsButton';
@@ -51,6 +51,10 @@ export const NotificationsContainer = (props: NotificationsProps) => {
             }
         });
 
+        connection.onDelete(({ id }) => {
+            deleteNotification(id, dispatch);
+        });
+
         connection.onReconnected(() => {
             setConnected(true, dispatch);
         });
@@ -76,6 +80,10 @@ export const NotificationsContainer = (props: NotificationsProps) => {
         addNotifications([{ ...notification, isSeen: true }], dispatch);
     }, []);
 
+    const doDelete = useCallback(async (notification: NotifoNotification) => {
+        await connection.delete(notification.id);
+    }, []);
+
     const doShow = useCallback(() => {
         setIsOpen(true);
     }, []);
@@ -93,6 +101,7 @@ export const NotificationsContainer = (props: NotificationsProps) => {
                     config={config}
                     onClickOutside={doHide}
                     onConfirm={doConfirm}
+                    onDelete={doDelete}
                     onSeen={doSee}
                     options={options}
                 />

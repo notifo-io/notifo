@@ -55,14 +55,15 @@ namespace Notifo.Domain.Templates.MongoDb
 
             var filter = Filter.And(filters);
 
-            var taskForItems = Collection.Find(filter).ToListAsync(query, ct);
-            var taskForCount = Collection.Find(filter).CountDocumentsAsync(ct);
+            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
 
-            await Task.WhenAll(
-                taskForItems,
-                taskForCount);
+            if (resultTotal >= query.Take || query.Skip > 0)
+            {
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
 
-            return ResultList.Create(taskForCount.Result, taskForItems.Result.Select(x => x.ToTemplate()));
+            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToTemplate()));
         }
 
         public async Task<(Template? Template, string? Etag)> GetAsync(string appId, string code, CancellationToken ct)

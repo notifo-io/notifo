@@ -5,12 +5,22 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Security
-{
-    public static class DefaultClaimTypes
-    {
-        public static readonly string AppId = "app_id";
+using NodaTime;
+using Notifo.Infrastructure;
 
-        public static readonly string UserId = "user_id";
+namespace Notifo.Domain.UserNotifications
+{
+    public sealed class UserNotificationQuery : QueryBase
+    {
+        public enum SearchScope
+        {
+            NonDeleted,
+            All,
+            Deleted
+        }
+
+        public Instant After { get; set; }
+
+        public SearchScope Scope { get; set; }
     }
 }

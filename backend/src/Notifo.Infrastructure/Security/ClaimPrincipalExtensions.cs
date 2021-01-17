@@ -24,19 +24,7 @@ namespace Notifo.Infrastructure.Security
 
         public static string? UserId(this ClaimsPrincipal principal)
         {
-            var sub = principal.Sub();
-
-            if (!string.IsNullOrWhiteSpace(sub))
-            {
-                var appId = principal.AppId();
-
-                if (string.Equals(sub, appId))
-                {
-                    return null;
-                }
-            }
-
-            return sub;
+            return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.UserId)?.Value;
         }
     }
 }

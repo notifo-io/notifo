@@ -35,9 +35,13 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         [AppPermission(Roles.User)]
         public async Task<IActionResult> GetNotifications([FromQuery] long etag = 0)
         {
-            var timestamp = Instant.FromUnixTimeMilliseconds(etag);
+            var query = new UserNotificationQuery
+            {
+                After = Instant.FromUnixTimeMilliseconds(etag),
+                Take = 100
+            };
 
-            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, 100, timestamp, HttpContext.RequestAborted);
+            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, query, HttpContext.RequestAborted);
 
             var response = new NotificationsDto
             {
@@ -48,7 +52,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
             {
                 response.Etag = notifications.Max(x => x.Updated).ToUnixTimeMilliseconds();
             }
-            else if (timestamp != default)
+            else if (query.After != default)
             {
                 return NoContent();
             }

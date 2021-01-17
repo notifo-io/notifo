@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using IdentityServer4.Configuration;
-using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
@@ -45,9 +44,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<ApiKeyGenerator>()
                 .As<IIApiJwtTokenGenerator>();
 
-            services.AddScopedAs<X>()
-                .As<IClaimsService>();
-
             services.AddIdentityServer(options =>
                 {
                     options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
@@ -79,12 +75,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     .WithRedirectUri("/authentication/login-silent-callback.html"));
             });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("API", policy => policy.AddAuthenticationSchemes("IdentityServerJwt").RequireAuthenticatedUser());
-            });
-
-            services.AddAuthentication()
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = Constants.AuthenticationSchema;
+                    options.DefaultChallengeScheme = Constants.AuthenticationSchema;
+                })
                 .AddGoogle(identityOptions)
                 .AddGithub(identityOptions)
                 .AddIdentityServerJwt();

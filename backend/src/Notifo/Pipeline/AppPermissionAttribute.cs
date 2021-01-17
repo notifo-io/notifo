@@ -14,7 +14,6 @@ namespace Notifo.Pipeline
         public string[] RequiredAppRoles { get; }
 
         public AppPermissionAttribute(params string[] appRoles)
-            : base("API")
         {
             RequiredAppRoles = appRoles;
         }

@@ -25,10 +25,13 @@ export interface NotificationsModalProps {
     onClickOutside?: () => void;
 
     // Clicked when a notification is confirmed.
-    onConfirm?: (notification: NotifoNotification) => Promise<any>;
+    onConfirm: (notification: NotifoNotification) => Promise<any>;
 
     // Clicked when a notification is seen.
-    onSeen?: (notification: NotifoNotification) => Promise<any>;
+    onSeen: (notification: NotifoNotification) => Promise<any>;
+
+    // Clicked when a notification is deleted.
+    onDelete: (notification: NotifoNotification) => Promise<any>;
 }
 
 export const NotificationsModal = (props: NotificationsModalProps) => {
@@ -36,6 +39,7 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
         config,
         onClickOutside,
         onConfirm,
+        onDelete,
         onSeen,
         options,
     } = props;
@@ -52,6 +56,7 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
                 ) : (
                     <NotificationsList config={config} options={options}
                         onConfirm={onConfirm}
+                        onDelete={onDelete}
                         onSeen={onSeen}
                         onShowProfile={setShowProfile}
                         parent={ref?.parentNode as any}

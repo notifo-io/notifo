@@ -11,6 +11,7 @@ import { h } from 'preact';
 import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { Icon } from './Icon';
 import { Image } from './Image';
 import { Loader } from './Loader';
 import { useInView } from './observer';
@@ -35,6 +36,9 @@ export interface NotificationItemProps {
 
     // Clicked when a notification is seen.
     onSeen?: (notification: NotifoNotification) => Promise<any>;
+
+    // Clicked when a notification is deleted.
+    onDelete?: (notification: NotifoNotification) => Promise<any>;
 }
 
 export const NotificationItem = (props: NotificationItemProps) => {
@@ -43,12 +47,14 @@ export const NotificationItem = (props: NotificationItemProps) => {
         modal,
         notification,
         onConfirm,
+        onDelete,
         onSeen,
     } = props;
 
     const [ref, setRef] = useState<HTMLElement>(null);
     const [markingSeen, setMarkingSeen] = useState<UpdateState>('None');
     const [markingConfirm, setMarkConfirm] = useState<UpdateState>('None');
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const inView = useInView(ref, modal);
 
@@ -75,6 +81,16 @@ export const NotificationItem = (props: NotificationItemProps) => {
             setMarkConfirm('Failed');
         }
     }, [notification, onConfirm]);
+
+    const doDelete = useCallback(async () => {
+        try {
+            setIsDeleting(true);
+
+            await onDelete(notification);
+        } catch {
+            setIsDeleting(false);
+        }
+    }, [notification, onDelete]);
 
     useEffect(() => {
         if (inView && !notification.isSeen) {
@@ -117,8 +133,12 @@ export const NotificationItem = (props: NotificationItemProps) => {
                             {notification.linkUrl && !notification.linkText ? (
                                 <a href={notification.linkUrl} target='_blank' rel='noopener'>{notification.subject}</a>
                             ) : (
-                                    <span>{notification.subject}</span>
+                                <span>{notification.subject}</span>
                             )}
+
+                            <a class='notifo-notification-delete' onClick={doDelete} disabled={isDeleting}>
+                                <Icon type='delete' size={20} />
+                            </a>
                         </div>
                     }
 

@@ -12,9 +12,74 @@
 
 <body>
 </body>
-    <span id="button1"></span>
+    <div class="container">
+        <div class="card mt-4">
+            <div class="card-header">
+                Notification DEMO App
+            </div>
 
-    <span id="topic1"></span>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span id="button1"></span>
+                    </div>
+
+                    <div class="col">
+                        The default notification button.
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span id="topic1"></span>
+                    </div>
+
+                    <div class="col">
+                        Subscribing to <code>updates/lego</code> with <code>heart</code> icon.
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span id="topic2"></span>
+                    </div>
+
+                    <div class="col">
+                        Subscribing to <code>updates/tech</code> with <code>alarm</code> icon.
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span id="topic3"></span>
+                    </div>
+
+                    <div class="col">
+                        Subscribing to <code>updates/sport</code> with <code>bell</code> icon.
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <span id="topic4"></span>
+                    </div>
+
+                    <div class="col">
+                        Subscribing to <code>updates/games</code> with <code>star</code> icon.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <span id="topic2"></span>
     <span id="topic3"></span>
     <span id="topic4"></span>
@@ -25,10 +90,10 @@
             apiUrl: 'https://localhost:5002',
 
             onNotification: (notification) => {
-                    console.log(JSON.stringify(notification));
+                console.log(JSON.stringify(notification));
             },
 
-            userToken: 'eyJhbGciOiJSUzI1NiIsImtpZCI6InAxYjdiVXBybGx5WVVUdEJrM2xBNHciLCJ0eXAiOiJhdCtqd3QifQ.eyJuYmYiOjE2MTA0NzczODUsImV4cCI6MTkyNTgzNzM4NSwiaXNzIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMiIsImF1ZCI6Ik5vdGlmb0FQSSIsImNsaWVudF9pZCI6Im5vdGlmbyIsImFwcF9pZCI6IjYyYjZiNjcxLWU5NTgtNGQ5OC1iN2Q3LWY4ZjFhYTg1MGRlZSIsInN1YiI6IjhkMDAzY2MxLWRjOGMtNDE4Yi1hZmE2LWE3OTdiNTA4ZDNhMyIsImF1dGhfdGltZSI6MTYxMDQ3NzM3NywiaWRwIjoibm90aWZvIiwianRpIjoiNzM1MjczQTZDOEM0QjdGRTk0MDMwQUFBMUZCQjgxRDUiLCJpYXQiOjE2MTA0NzczODUsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJOb3RpZm9BUEkiXX0.egsdmamnjTb5MyOYFe-jQgp2l1kc6ke73YC7oCmcM1LDS4-JlHB_yXlu18HxWqE7I2tqlXgWIQ8rK-18-4eiNjv22Lbdw91RI4JeErr5H_zdTwcwDKsjeujX64tKmXEqqm0SWjy18kfsTJwVLwOSex3iLLg4Ko5NIeX080mZePIQiWYYIUinmINy2kHXkdZdRuVk1ZxxDcKSM1MlrKKbDtSE6ElmfA_ELuXIKI6Qc4N-hLN9hdZ14FoEl7WqQmfT2DFdRnV21nBXThg4ZJaM2MojdRSmL1xY8PGYwf6ubNVNU6znaRjQCXYJikf0Q_mYv4zcb9XX7aFAPvMiuA-AQQ'
+            userToken: location.search.substr(1)
         }]);
 
         notifo.push(['show-notifications', 'button1', { style: 'notifo' }]);
