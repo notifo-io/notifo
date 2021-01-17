@@ -6,8 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
-import { isObject } from 'lodash';
-import { isString, isUndefined, logWarn } from './utils';
+import { isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     ['en']: enUS,
@@ -65,7 +64,7 @@ const DefaultTexts: Texts<{ de: string, en: string }> = {
     },
 };
 
-const IS_DEV = global['window'] && window.location.host.indexOf('localhost:3002') >= 0;
+const IS_DEV = global['window'] && (window.location.host.indexOf('localhost:3002') >= 0 || window.location.host.indexOf('localhost:5002') >= 0);
 
 export function buildSDKConfig(opts: SDKConfig) {
     const options: SDKConfig = <any>{ ...opts || {} };
@@ -75,8 +74,12 @@ export function buildSDKConfig(opts: SDKConfig) {
         options.apiUrl = undefined;
     }
 
-    if (!options.apiUrl) {
+    if (!isString(options.apiUrl)) {
         options.apiUrl = 'https://app.notifo.io';
+    }
+
+    while (options.apiUrl && options.apiUrl.endsWith('/')) {
+        options.apiUrl = options.apiUrl.substr(0, options.apiUrl.length - 1);
     }
 
     if (!isStringOption(options.styleUrl)) {

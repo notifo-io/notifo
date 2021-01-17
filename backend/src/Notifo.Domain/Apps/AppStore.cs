@@ -95,6 +95,17 @@ namespace Notifo.Domain.Apps
             return app;
         }
 
+        public async Task<App?> GetByApiKeyAsync(string apiKey, CancellationToken ct = default)
+        {
+            Guard.NotNullOrEmpty(apiKey, nameof(apiKey));
+
+            var (app, _) = await repository.GetByApiKeyAsync(apiKey, ct);
+
+            await DeliverAsync(app);
+
+            return app;
+        }
+
         public Task<App> UpsertAsync(string? id, ICommand<App> command, CancellationToken ct = default)
         {
             Guard.NotNull(command, nameof(command));

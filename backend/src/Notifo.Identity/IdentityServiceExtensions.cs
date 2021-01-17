@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
-using Notifo.Domain.Utils;
 using Notifo.Identity;
 using Notifo.Identity.MongoDb;
 using Notifo.Infrastructure.Identity;
@@ -41,20 +40,17 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<UserResolver>()
                 .As<IUserResolver>();
 
-            services.AddSingletonAs<ApiKeyGenerator>()
-                .As<IIApiJwtTokenGenerator>();
-
             services.AddIdentityServer(options =>
-                {
-                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+            {
+                options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
 
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseInformationEvents = true;
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
+                options.Events.RaiseErrorEvents = true;
+                options.Events.RaiseInformationEvents = true;
+                options.Events.RaiseFailureEvents = true;
+                options.Events.RaiseSuccessEvents = true;
 
-                    options.UserInteraction.ErrorUrl = "/account/error";
-                })
+                options.UserInteraction.ErrorUrl = "/account/error";
+            })
                 .AddAspNetIdentity<NotifoUser>()
                 .AddClients()
                 .AddIdentityResources()
@@ -75,13 +71,27 @@ namespace Microsoft.Extensions.DependencyInjection
                     .WithRedirectUri("/authentication/login-silent-callback.html"));
             });
 
+            services.AddAuthorization();
             services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = Constants.IdentityServerOrApiKeyScheme;
+                options.DefaultChallengeScheme = Constants.IdentityServerOrApiKeyScheme;
+            })
+                .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
                 {
-                    options.DefaultAuthenticateScheme = Constants.AuthenticationSchema;
-                    options.DefaultChallengeScheme = Constants.AuthenticationSchema;
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        if (ApiKeyHandler.IsApiKey(context.Request, out _))
+                        {
+                            return ApiKeyDefaults.AuthenticationScheme;
+                        }
+
+                        return Constants.IdentityServerScheme;
+                    };
                 })
                 .AddGoogle(identityOptions)
                 .AddGithub(identityOptions)
+                .AddApiKey()
                 .AddIdentityServerJwt();
         }
 

@@ -5,12 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.AspNetCore.Authentication;
+
 namespace Notifo.Identity
 {
-    public static class Constants
+    public sealed class ApiKeyOptions : AuthenticationSchemeOptions
     {
-        public const string IdentityServerScheme = "IdentityServerJwt";
-
-        public const string IdentityServerOrApiKeyScheme = "smart";
     }
 }

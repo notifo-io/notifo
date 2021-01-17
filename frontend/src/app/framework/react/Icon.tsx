@@ -12,6 +12,7 @@ export type IconType =
     'alternate_email' |
     'browser' |
     'clear' |
+    'code' |
     'create' |
     'dashboard' |
     'delete' |

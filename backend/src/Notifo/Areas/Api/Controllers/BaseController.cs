@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure.Security;
@@ -18,34 +17,11 @@ namespace Notifo.Areas.Api.Controllers
     [ApiModelValidation(true)]
     public abstract class BaseController : Controller
     {
-        protected string UserId
+        protected string UserId => User.UserId() ?? User.Sub()!;
+
+        public App App
         {
-            get
-            {
-                var id = HttpContext.User.UserId();
-
-                if (id == null)
-                {
-                    throw new InvalidOperationException("Not in an authorized context.");
-                }
-
-                return id;
-            }
-        }
-
-        protected App App
-        {
-            get
-            {
-                var app = HttpContext.Features.Get<IAppFeature>()?.App;
-
-                if (app == null)
-                {
-                    throw new InvalidOperationException("Not in an app context.");
-                }
-
-                return app;
-            }
+            get { return HttpContext.Features.Get<IAppFeature>().App; }
         }
     }
 }

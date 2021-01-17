@@ -89,9 +89,9 @@ namespace Notifo.Domain.Users
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(user.ApiKey) || user.ApiKey.Length == 44)
+            if (string.IsNullOrWhiteSpace(user.ApiKey))
             {
-                var tokenGenerator = serviceProvider.GetRequiredService<IIApiJwtTokenGenerator>();
+                var tokenGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
 
                 user.ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id);
             }

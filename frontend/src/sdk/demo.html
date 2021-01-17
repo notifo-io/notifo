@@ -14,8 +14,8 @@
 </body>
     <div class="container">
         <div class="card mt-4">
-            <div class="card-header">
-                Notification DEMO App
+            <div class="card-body">
+                <h4>Notifo DEMO App</h4>
             </div>
 
             <div class="card-body">
@@ -87,7 +87,7 @@
     <script>
         var notifo = notifo || [];
         notifo.push(['init', {
-            apiUrl: 'https://localhost:5002',
+            apiUrl: '/',
 
             onNotification: (notification) => {
                 console.log(JSON.stringify(notification));

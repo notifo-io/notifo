@@ -32,6 +32,10 @@ $size-toggle: 20px;
         @include scrollbars(8px, $color-scrollbar, transparent);
     }
 
+    label {
+        margin: 0;
+    }
+
     svg {
         width: auto;
     }

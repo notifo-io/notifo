@@ -29,6 +29,7 @@ export const EN = {
         dashboard: 'Dashboard',
         data: 'Data',
         delete: 'Delete',
+        demo: 'Demo',
         design: 'Design',
         edit: 'Edit',
         email: 'Email',

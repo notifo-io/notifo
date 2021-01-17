@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?dm4ojx');
-  src:  url('fonts/icomoon.eot?dm4ojx#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?dm4ojx') format('truetype'),
-    url('fonts/icomoon.woff?dm4ojx') format('woff'),
-    url('fonts/icomoon.svg?dm4ojx#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?ykopz0');
+  src:  url('fonts/icomoon.eot?ykopz0#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?ykopz0') format('truetype'),
+    url('fonts/icomoon.woff?ykopz0') format('woff'),
+    url('fonts/icomoon.svg?ykopz0#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,11 +25,92 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-more:before {
-  content: "\e91c";
+.icon-code:before {
+  content: "\e91d";
 }
 .icon-history:before {
   content: "\e91b";
+}
+.icon-error_outline:before {
+  content: "\e914";
+}
+.icon-loop:before {
+  content: "\e90d";
+}
+.icon-message:before {
+  content: "\e900";
+}
+.icon-sms:before {
+  content: "\e911";
+}
+.icon-mail_outline:before {
+  content: "\e908";
+}
+.icon-alternate_email:before {
+  content: "\e909";
+}
+.icon-unsubscribe:before {
+  content: "\e901";
+}
+.icon-add:before {
+  content: "\e902";
+}
+.icon-clear:before {
+  content: "\e90b";
+}
+.icon-create:before {
+  content: "\e90a";
+}
+.icon-inbox:before {
+  content: "\e918";
+}
+.icon-remove_circle_outline:before {
+  content: "\e903";
+}
+.icon-send:before {
+  content: "\e916";
+}
+.icon-file_copy:before {
+  content: "\e919";
+}
+.icon-mobile:before {
+  content: "\e912";
+}
+.icon-publish:before {
+  content: "\e917";
+}
+.icon-photo_size_select_actual:before {
+  content: "\e91a";
+}
+.icon-refresh:before {
+  content: "\e90e";
+}
+.icon-person:before {
+  content: "\e904";
+}
+.icon-person_add:before {
+  content: "\e905";
+}
+.icon-dashboard:before {
+  content: "\e90f";
+}
+.icon-delete:before {
+  content: "\e906";
+}
+.icon-hourglass_empty:before {
+  content: "\e915";
+}
+.icon-browser:before {
+  content: "\e913";
+}
+.icon-search:before {
+  content: "\e90c";
+}
+.icon-settings:before {
+  content: "\e910";
+}
+.icon-more:before {
+  content: "\e91c";
 }
 .icon-error_outline:before {
   content: "\e914";

@@ -15,7 +15,8 @@ namespace Notifo.Areas.Frontend.Middlewares
 {
     public sealed class WebpackMiddleware
     {
-        private const string WebpackUrl = "https://localhost:3002/index.html";
+        private const string WebpackUrlIndex = "https://localhost:3002/index.html";
+        private const string WebpackUrlDemo = "https://localhost:3002/demo.html";
 
         private readonly RequestDelegate next;
 
@@ -28,21 +29,11 @@ namespace Notifo.Areas.Frontend.Middlewares
         {
             if (context.IsIndex() && context.Response.StatusCode != 304)
             {
-                using (var client = new HttpClient())
-                {
-                    var result = await client.GetAsync(WebpackUrl);
-
-                    context.Response.StatusCode = (int)result.StatusCode;
-
-                    if (result.IsSuccessStatusCode)
-                    {
-                        var html = await result.Content.ReadAsStringAsync();
-
-                        html = html.AdjustHtml(context);
-
-                        await context.Response.WriteAsync(html);
-                    }
-                }
+                await ServeWebpackAsync(context, WebpackUrlIndex);
+            }
+            else if (context.IsDemo() && context.Response.StatusCode != 304)
+            {
+                await ServeWebpackAsync(context, WebpackUrlDemo);
             }
             else if (context.IsHtmlPath() && context.Response.StatusCode != 304)
             {
@@ -70,6 +61,25 @@ namespace Notifo.Areas.Frontend.Middlewares
             else
             {
                 await next(context);
+            }
+        }
+
+        private static async Task ServeWebpackAsync(HttpContext context, string url)
+        {
+            using (var client = new HttpClient())
+            {
+                var result = await client.GetAsync(url);
+
+                context.Response.StatusCode = (int)result.StatusCode;
+
+                if (result.IsSuccessStatusCode)
+                {
+                    var html = await result.Content.ReadAsStringAsync();
+
+                    html = html.AdjustHtml(context);
+
+                    await context.Response.WriteAsync(html);
+                }
             }
         }
     }

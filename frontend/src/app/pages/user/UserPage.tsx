@@ -33,6 +33,10 @@ export const UserPage = () => {
         dialogEdit.open();
     }, []);
 
+    const doDemo = React.useCallback(() => {
+        window.open(`/demo.html?${user.apiKey}`);
+    }, [user]);
+
     const doPublish = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${userId}` } }));
     }, [userId]);
@@ -53,7 +57,7 @@ export const UserPage = () => {
                     <CounterCards counters={user.counters} />
 
                     <Row>
-                        <Col>
+                        <Col className='mb-4'>
                             <Subscriptions userId={userId} />
                         </Col>
                         <Col xs='auto'>
@@ -62,6 +66,10 @@ export const UserPage = () => {
                                     <FormGroup>
                                         <Button color='info' onClick={doPublish}>
                                             <Icon type='send' /> {texts.common.publish}
+                                        </Button>
+
+                                        <Button color='secondary-link' onClick={doDemo}>
+                                            <Icon type='code' /> {texts.common.demo}
                                         </Button>
                                     </FormGroup>
 

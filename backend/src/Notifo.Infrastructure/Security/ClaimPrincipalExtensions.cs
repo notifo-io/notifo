@@ -22,6 +22,11 @@ namespace Notifo.Infrastructure.Security
             return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.AppId)?.Value;
         }
 
+        public static string? AppName(this ClaimsPrincipal principal)
+        {
+            return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.AppName)?.Value;
+        }
+
         public static string? UserId(this ClaimsPrincipal principal)
         {
             return principal.Claims.FirstOrDefault(x => x.Type == DefaultClaimTypes.UserId)?.Value;

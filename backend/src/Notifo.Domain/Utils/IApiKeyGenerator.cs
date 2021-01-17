@@ -5,12 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Identity
-{
-    public static class Constants
-    {
-        public const string IdentityServerScheme = "IdentityServerJwt";
+using System.Threading.Tasks;
 
-        public const string IdentityServerOrApiKeyScheme = "smart";
+namespace Notifo.Domain.Utils
+{
+    public interface IApiKeyGenerator
+    {
+        Task<string> GenerateAppTokenAsync(string appId);
+
+        Task<string> GenerateUserTokenAsync(string appId, string userId);
     }
 }

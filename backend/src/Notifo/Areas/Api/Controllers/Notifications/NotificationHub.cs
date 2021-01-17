@@ -24,35 +24,9 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         private readonly IUserNotificationStore userNotificationsStore;
         private readonly IUserNotificationService userNotificationService;
 
-        private string AppId
-        {
-            get
-            {
-                var id = Context.User?.AppId();
+        private string AppId => Context.User!.AppId()!;
 
-                if (id == null)
-                {
-                    throw new InvalidOperationException("Not in an authorized context.");
-                }
-
-                return id;
-            }
-        }
-
-        private string UserId
-        {
-            get
-            {
-                var id = Context.User?.UserId();
-
-                if (id == null)
-                {
-                    throw new InvalidOperationException("Not in an authorized context.");
-                }
-
-                return id;
-            }
-        }
+        private string UserId => Context.User!.UserId()!;
 
         public NotificationHub(
             IUserNotificationStore userNotificationsStore,

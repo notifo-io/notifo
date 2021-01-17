@@ -15,6 +15,8 @@ namespace Notifo.Domain.Users
     {
         Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct = default);
 
+        Task<User?> GetByApiKeyAsync(string apiKey, CancellationToken ct = default);
+
         Task<User?> GetCachedAsync(string appId, string id, CancellationToken ct = default);
 
         Task<User?> GetAsync(string appId, string id, CancellationToken ct = default);

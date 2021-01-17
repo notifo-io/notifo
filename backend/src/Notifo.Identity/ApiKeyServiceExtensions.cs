@@ -5,14 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
-namespace Notifo.Domain.Utils
+namespace Notifo.Identity
 {
-    public interface IIApiJwtTokenGenerator
+    public static class ApiKeyServiceExtensions
     {
-        Task<string> GenerateAppTokenAsync(string appId);
-
-        Task<string> GenerateUserTokenAsync(string appId, string userId);
+        public static AuthenticationBuilder AddApiKey(this AuthenticationBuilder builder)
+        {
+            return builder.AddScheme<ApiKeyOptions, ApiKeyHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
+        }
     }
 }

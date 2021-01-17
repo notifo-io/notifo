@@ -48,6 +48,13 @@ namespace Notifo.Domain.Users.MongoDb
                         .Ascending(x => x.Doc.EmailAddress),
                     null),
                 null, ct);
+
+            await collection.Indexes.CreateOneAsync(
+                new CreateIndexModel<MongoDbUser>(
+                    IndexKeys
+                        .Ascending(x => x.Doc.ApiKey),
+                    new CreateIndexOptions { Unique = true }),
+                null, ct);
         }
 
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct)
@@ -79,6 +86,13 @@ namespace Notifo.Domain.Users.MongoDb
             }
 
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToUser()));
+        }
+
+        public async Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct)
+        {
+            var document = await Collection.Find(x => x.Doc.ApiKey == apiKey).FirstOrDefaultAsync(ct);
+
+            return (document?.ToUser(), document?.Etag);
         }
 
         public async Task<(User? User, string? Etag)> GetAsync(string appId, string id, CancellationToken ct)

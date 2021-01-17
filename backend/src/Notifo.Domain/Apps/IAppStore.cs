@@ -18,6 +18,8 @@ namespace Notifo.Domain.Apps
 
         Task<List<App>> QueryAsync(string contributorId, CancellationToken ct = default);
 
+        Task<App?> GetByApiKeyAsync(string apiKey, CancellationToken ct = default);
+
         Task<App?> GetAsync(string id, CancellationToken ct = default);
 
         Task<App?> GetCachedAsync(string id, CancellationToken ct = default);

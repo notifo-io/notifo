@@ -62,10 +62,14 @@ export const UserRow = (props: UserRowProps) => {
                 </NavLink>
             </td>
             <td>
-                <span className='truncate'>{user.fullName}</span>
+                <NavLink to={`${match.url}/${user.id}`}>
+                    <span className='truncate'>{user.fullName}</span>
+                </NavLink>
             </td>
             <td>
-                <span className='truncate'>{user.emailAddress}</span>
+                <NavLink to={`${match.url}/${user.id}`}>
+                    <span className='truncate'>{user.emailAddress}</span>
+                </NavLink>
             </td>
             <td className='text-right'>
                 <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>
