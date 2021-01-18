@@ -61,25 +61,33 @@ export const UsersPage = () => {
     return (
         <div className='users'>
             <Row className='align-items-center header'>
-                <Col xs='auto'>
-                    <h2>{texts.users.header}</h2>
+                <Col xs={12} md={5}>
+                    <Row className='align-items-center flex-nowrap'>
+                        <Col>
+                            <h2 className='truncate'>{texts.users.header}</h2>
+                        </Col>
+                        <Col xs='auto'>
+                            {users.isLoading ? (
+                                <Loader visible={users.isLoading} />
+                            ) : (
+                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                    <Icon className='text-lg' type='refresh' />
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col>
-                    {users.isLoading ? (
-                        <Loader visible={users.isLoading} />
-                    ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
-                            <Icon className='text-lg' type='refresh' />
-                        </Button>
-                    )}
-                </Col>
-                <Col>
-                    <ListSearch list={users} onSearch={doLoad} placeholder={texts.users.searchPlaceholder} />
-                </Col>
-                <Col xs='auto'>
-                    <Button color='success' onClick={dialogNew.open}>
-                        <Icon type='add' /> {texts.users.createButton}
-                    </Button>
+                <Col xs={12} md={7}>
+                    <Row noGutters className='flex-nowrap'>
+                        <Col>
+                            <ListSearch list={users} onSearch={doLoad} placeholder={texts.users.searchPlaceholder} />
+                        </Col>
+                        <Col xs='auto pl-2'>
+                            <Button color='success' onClick={dialogNew.open}>
+                                <Icon type='add' /> {texts.users.createButton}
+                            </Button>
+                        </Col>
+                    </Row>
                 </Col>
             </Row>
 

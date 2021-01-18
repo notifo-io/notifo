@@ -31,7 +31,6 @@ export const ListSearch = (props: ListSearchProps) => {
         iconAscending,
         iconDescending,
         onSearch,
-        placeholder,
         ...other
     } = props;
 

@@ -60,8 +60,8 @@ export const UserPage = () => {
                         <Col className='mb-4'>
                             <Subscriptions userId={userId} />
                         </Col>
-                        <Col xs='auto'>
-                            <Card className='user-info'>
+                        <Col xs='auto' className='user-info'>
+                            <Card>
                                 <CardBody>
                                     <FormGroup>
                                         <Button color='info' onClick={doPublish}>

@@ -29,7 +29,7 @@ export const TableFooter = (props: TableFooterProps) => {
     }, [onHideCounters]);
 
     return (
-        <Row>
+        <Row className='align-items-center'>
             {!noCounters &&
                 <Col xs='auto'>
                     <CustomInput type='checkbox' id='hideCounters' checked={hideCounters} onChange={doHideCounters}

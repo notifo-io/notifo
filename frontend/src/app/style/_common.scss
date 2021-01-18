@@ -27,6 +27,10 @@ legend {
     font-size: 1.25rem;
 }
 
+.pagination {
+    margin: 0;
+}
+
 .navbar {
     &-brand {
         @include absolute(0, auto, 0, 0);
@@ -160,6 +164,8 @@ $small-gutters: 4px;
     }
 
     &-label {
+        @include truncate;
+
         span {
             display: inline-block;
             font-family: monospace;
@@ -537,10 +543,11 @@ div {
     }
 
     &-info {
-        line-height: 2.5rem;
+        font-size: 90%;
+        line-height: 2rem;
         text-align: center;
         text-decoration: none;
-        width: 15rem;
+        width: 10rem;
     }
 }
 

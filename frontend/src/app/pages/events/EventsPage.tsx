@@ -40,22 +40,26 @@ export const EventsPage = () => {
     return (
         <div className='events'>
             <Row className='align-items-center header'>
-                <Col xs='auto'>
-                    <h2>{texts.events.header}</h2>
+                <Col xs={12} md={5}>
+                    <Row className='align-items-center flex-nowrap'>
+                        <Col>
+                            <h2>{texts.events.header}</h2>
+                        </Col>
+                        <Col xs='auto'>
+                            {events.isLoading ? (
+                                <Loader visible={events.isLoading} />
+                            ) : (
+                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                    <Icon className='text-lg' type='refresh' />
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col>
-                    {events.isLoading ? (
-                        <Loader visible={events.isLoading} />
-                    ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
-                            <Icon className='text-lg' type='refresh' />
-                        </Button>
-                    )}
-                </Col>
-                <Col xs={4}>
+                <Col xs={12} md={7}>
                     <ListSearch list={events} onSearch={doLoad} placeholder={texts.events.searchPlaceholder} />
                 </Col>
-            </Row>
+             </Row>
 
             <FormError error={events.error} />
 

@@ -63,7 +63,7 @@ export const ListPager = (props: ListPagerProps) => {
     return (
         <Row>
             <Col className='text-right'>
-                <Pagination className='pager'>
+                <Pagination size='sm' className='pager'>
                     <PaginationItem disabled={!canGoPrev}>
                         <PaginationLink onClick={doGoFirst} first />
                     </PaginationItem>

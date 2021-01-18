@@ -64,27 +64,33 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     return (
         <>
             <Row className='align-items-center header'>
-                <Col xs='auto'>
-                    <h4>
-                        {texts.subscriptions.header}
-                    </h4>
+                <Col xs={12} lg={5}>
+                    <Row className='align-items-center flex-nowrap'>
+                        <Col>
+                            <h2 className='truncate'>{texts.subscriptions.header}</h2>
+                        </Col>
+                        <Col xs='auto'>
+                            {subscriptions.isLoading ? (
+                                <Loader visible={subscriptions.isLoading} />
+                            ) : (
+                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                    <Icon className='text-lg' type='refresh' />
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col>
-                    {subscriptions.isLoading ? (
-                        <Loader visible={subscriptions.isLoading} />
-                    ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
-                            <Icon className='text-lg' type='refresh' />
-                        </Button>
-                    )}
-                </Col>
-                <Col xs='auto'>
-                    <ListSearch list={subscriptions} onSearch={doLoad} placeholder={texts.subscriptions.searchPlaceholder} />
-                </Col>
-                <Col xs='auto'>
-                    <Button color='success' onClick={dialogNew.open}>
-                        <Icon type='add' /> {texts.subscriptions.createButton}
-                    </Button>
+                <Col xs={12} lg={7}>
+                    <Row noGutters>
+                        <Col>
+                            <ListSearch list={subscriptions} onSearch={doLoad} placeholder={texts.subscriptions.searchPlaceholder} />
+                        </Col>
+                        <Col xs='auto pl-2'>
+                            <Button color='success' onClick={dialogNew.open}>
+                                <Icon type='add' /> {texts.subscriptions.createButton}
+                            </Button>
+                        </Col>
+                    </Row>
                 </Col>
             </Row>
 

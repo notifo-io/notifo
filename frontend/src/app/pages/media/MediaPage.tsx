@@ -45,22 +45,26 @@ export const MediaPage = () => {
     return (
         <div className='medias'>
             <Row className='align-items-center header'>
-                <Col xs='auto'>
-                    <h2>{texts.media.header}</h2>
+                <Col xs={12} md={5}>
+                    <Row className='align-items-center flex-nowrap'>
+                        <Col>
+                            <h2>{texts.media.header}</h2>
+                        </Col>
+                        <Col xs='auto'>
+                            {media.isLoading ? (
+                                <Loader visible={media.isLoading} />
+                            ) : (
+                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                    <Icon className='text-lg' type='refresh' />
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col>
-                    {media.isLoading ? (
-                        <Loader visible={media.isLoading} />
-                    ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
-                            <Icon className='text-lg' type='refresh' />
-                        </Button>
-                    )}
-                </Col>
-                <Col xs={3}>
+                <Col xs={12} md={7}>
                     <ListSearch list={media} onSearch={doLoad} placeholder={texts.media.searchPlaceholder} />
                 </Col>
-            </Row>
+             </Row>
 
             <FormError error={media.error} />
 
