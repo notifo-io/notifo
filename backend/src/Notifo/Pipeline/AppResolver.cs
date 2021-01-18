@@ -84,6 +84,14 @@ namespace Notifo.Pipeline
                 }
             }
 
+            foreach (var claim in user.Claims)
+            {
+                if (claim.Type == DefaultClaimTypes.AppRole)
+                {
+                    roles.Add(claim.Value);
+                }
+            }
+
             if (roles.Contains(Roles.Owner))
             {
                 roles.Add(Roles.Admin);

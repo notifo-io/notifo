@@ -55,7 +55,7 @@ namespace Notifo.Identity
                     {
                         new Claim(DefaultClaimTypes.AppId, app.Id),
                         new Claim(DefaultClaimTypes.AppName, app.Name),
-                        new Claim(ClaimTypes.Role, role)
+                        new Claim(DefaultClaimTypes.AppRole, role)
                     }, ApiKeyDefaults.AuthenticationScheme);
 
                     return Success(identity);

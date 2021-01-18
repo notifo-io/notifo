@@ -13,9 +13,11 @@ namespace Notifo.Infrastructure.Security
     {
         public static readonly string AppId = "app_id";
 
-        public static readonly string UserId = "user_id";
-
         public static readonly string AppName = "app_name";
+
+        public static readonly string AppRole = "app_role";
+
+        public static readonly string UserId = "user_id";
 
         public static string? GetAppId(this ClaimsPrincipal principal)
         {
