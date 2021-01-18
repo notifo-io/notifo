@@ -36,6 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddOpenApiDocument(settings =>
             {
+                settings.AllowReferencesWithProperties = true;
+
                 settings.ConfigureName();
                 settings.ConfigureSchemaSettings();
             });
