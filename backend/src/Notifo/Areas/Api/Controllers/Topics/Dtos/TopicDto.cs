@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using NodaTime;
-using Notifo.Domain.Counters;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Reflection;
 
@@ -14,6 +14,8 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
 {
     public sealed class TopicDto
     {
+        private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+
         /// <summary>
         /// The topic path.
         /// </summary>
@@ -27,11 +29,13 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         /// <summary>
         /// The statistics counters.
         /// </summary>
-        public CounterMap Counters { get; set; }
+        public Dictionary<string, long> Counters { get; set; }
 
-        public static TopicDto FromTopic(Topic source)
+        public static TopicDto FromTopic(Topic topic)
         {
-            var result = SimpleMapper.Map(source, new TopicDto());
+            var result = SimpleMapper.Map(topic, new TopicDto());
+
+            result.Counters = topic.Counters ?? EmptyCounters;
 
             return result;
         }

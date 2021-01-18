@@ -5329,14 +5329,8 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class NotificationSettingsDto : System.Collections.Generic.Dictionary<string, NotificationSettingDto>
-    {
     
     }
     
@@ -5397,7 +5391,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
     
     }
@@ -5411,7 +5405,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto TopicSettings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> TopicSettings { get; set; }
     
     
     }
@@ -5467,18 +5461,12 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CounterMap Counters { get; set; }
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class CounterMap : System.Collections.Generic.Dictionary<string, long>
-    {
     
     }
     
@@ -5539,7 +5527,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
     
     }
@@ -5581,7 +5569,7 @@ namespace Notifo.SDK
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CounterMap Counters { get; set; }
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
     
     
     }
@@ -5613,7 +5601,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
     
     }
@@ -5700,7 +5688,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
     
     }
@@ -5882,11 +5870,11 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationSettingsDto Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
     
         /// <summary>User defined properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public EventProperties Properties { get; set; }
+        public System.Collections.Generic.IDictionary<string, string> Properties { get; set; }
     
         /// <summary>The scheduling options.</summary>
         [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5894,18 +5882,12 @@ namespace Notifo.SDK
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CounterMap Counters { get; set; }
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
     
         /// <summary>True when silent.</summary>
         [Newtonsoft.Json.JsonProperty("silent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Silent { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class EventProperties : System.Collections.Generic.Dictionary<string, string>
-    {
     
     }
     
@@ -6031,6 +6013,12 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class EventProperties : System.Collections.Generic.Dictionary<string, string>
+    {
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class AppDto 
     {
         /// <summary>The id of the app.</summary>
@@ -6055,7 +6043,7 @@ namespace Notifo.SDK
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CounterMap Counters { get; set; }
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
     
     
     }
@@ -6126,7 +6114,7 @@ namespace Notifo.SDK
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public CounterMap Counters { get; set; }
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
     
     
     }

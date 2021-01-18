@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Counters;
+using System.Collections.Generic;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
@@ -13,6 +13,8 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {
     public sealed class UserDto
     {
+        private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+
         /// <summary>
         /// The id of the user.
         /// </summary>
@@ -56,21 +58,21 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public NotificationSettingsDto Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
         /// <summary>
         /// The statistics counters.
         /// </summary>
-        public CounterMap Counters { get; set; }
+        public Dictionary<string, long> Counters { get; set; }
 
         public static UserDto FromDomainObject(User user)
         {
             var result = SimpleMapper.Map(user, new UserDto());
 
+            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
+
             if (user.Settings != null)
             {
-                result.Settings = new NotificationSettingsDto();
-
                 foreach (var (key, value) in user.Settings)
                 {
                     if (value != null)
@@ -79,15 +81,8 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                     }
                 }
             }
-            else
-            {
-                result.Settings = new NotificationSettingsDto();
-            }
 
-            if (result.Counters == null)
-            {
-                result.Counters = new CounterMap();
-            }
+            result.Counters = user.Counters ?? EmptyCounters;
 
             return result;
         }

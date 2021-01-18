@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.Linq;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -53,7 +54,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public NotificationSettingsDto Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
         public static ProfileDto FromDomainObject(User user, App app)
         {
@@ -62,10 +63,10 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
             result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
             result.SupportedLanguages = app.Languages;
 
+            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
+
             if (user.Settings != null)
             {
-                result.Settings = new NotificationSettingsDto();
-
                 foreach (var (key, value) in user.Settings)
                 {
                     if (value != null)
@@ -73,10 +74,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                         result.Settings[key] = NotificationSettingDto.FromDomainObject(value);
                     }
                 }
-            }
-            else
-            {
-                result.Settings = new NotificationSettingsDto();
             }
 
             return result;

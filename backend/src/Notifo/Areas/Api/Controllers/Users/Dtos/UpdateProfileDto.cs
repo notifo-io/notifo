@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using Notifo.Domain;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
@@ -41,7 +42,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public NotificationSettingsDto? Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
 
         public UpdateUser ToUpdate()
         {

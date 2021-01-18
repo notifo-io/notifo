@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.Linq;
 using NodaTime;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Infrastructure.Reflection;
 
@@ -16,6 +16,9 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
 {
     public sealed class EventDto
     {
+        private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+        private static readonly Dictionary<string, string> EmptyProperties = new Dictionary<string, string>();
+
         /// <summary>
         /// The id of the event.
         /// </summary>
@@ -54,12 +57,12 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public NotificationSettingsDto Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
         /// <summary>
         /// User defined properties.
         /// </summary>
-        public EventProperties Properties { get; set; }
+        public Dictionary<string, string> Properties { get; set; }
 
         /// <summary>
         /// The scheduling options.
@@ -69,31 +72,33 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The statistics counters.
         /// </summary>
-        public CounterMap? Counters { get; set; }
+        public Dictionary<string, long>? Counters { get; set; }
 
         /// <summary>
         /// True when silent.
         /// </summary>
         public bool Silent { get; set; }
 
-        public static EventDto FromDomainObject(Event source, App app)
+        public static EventDto FromDomainObject(Event @event, App app)
         {
-            var result = SimpleMapper.Map(source, new EventDto());
+            var result = SimpleMapper.Map(@event, new EventDto());
 
-            if (source.Formatting.Subject.TryGetValue(app.Language, out var subject))
+            if (@event.Formatting.Subject.TryGetValue(app.Language, out var subject))
             {
                 result.DisplayName = subject;
             }
             else
             {
-                result.DisplayName = source.Formatting.Subject.Values.FirstOrDefault() ?? string.Empty;
+                result.DisplayName = @event.Formatting.Subject.Values.FirstOrDefault() ?? string.Empty;
             }
 
-            result.Settings = new NotificationSettingsDto();
+            result.Properties = @event.Properties ?? EmptyProperties;
 
-            if (source.Settings != null)
+            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
+
+            if (@event.Settings != null)
             {
-                foreach (var (key, value) in source.Settings)
+                foreach (var (key, value) in @event.Settings)
                 {
                     if (value != null)
                     {
@@ -102,20 +107,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
                 }
             }
 
-            if (result.Formatting == null)
-            {
-                result.Formatting = new NotificationFormattingDto();
-            }
-
-            if (result.Properties == null)
-            {
-                result.Properties = new EventProperties();
-            }
-
-            if (result.Counters == null)
-            {
-                result.Counters = new CounterMap();
-            }
+            result.Counters = @event.Counters ?? EmptyCounters;
 
             return result;
         }

@@ -7,13 +7,14 @@
 
 using System.Collections.Generic;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Counters;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
 {
     public sealed class AppDto
     {
+        private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+
         /// <summary>
         /// The id of the app.
         /// </summary>
@@ -42,7 +43,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The statistics counters.
         /// </summary>
-        public CounterMap Counters { get; set; }
+        public Dictionary<string, long> Counters { get; set; }
 
         public static AppDto FromDomainObject(App app, string userId)
         {
@@ -53,7 +54,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
                 result.Role = userRole;
             }
 
-            result.Counters ??= new CounterMap();
+            result.Counters = app.Counters ?? EmptyCounters;
 
             return result;
         }

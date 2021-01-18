@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
 
@@ -25,24 +26,26 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public NotificationSettingsDto Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
-        public static TemplateDto FromDomainObject(Template source)
+        public static TemplateDto FromDomainObject(Template template)
         {
-            var result = SimpleMapper.Map(source, new TemplateDto());
+            var result = SimpleMapper.Map(template, new TemplateDto());
 
-            if (source.Formatting != null)
+            if (template.Formatting != null)
             {
-                result.Formatting = NotificationFormattingDto.FromDomainObject(source.Formatting);
+                result.Formatting = NotificationFormattingDto.FromDomainObject(template.Formatting);
             }
             else
             {
                 result.Formatting = new NotificationFormattingDto();
             }
 
-            if (source.Settings != null)
+            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
+
+            if (template.Settings != null)
             {
-                foreach (var (key, value) in source.Settings)
+                foreach (var (key, value) in template.Settings)
                 {
                     if (value != null)
                     {

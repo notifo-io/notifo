@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email;
-using Notifo.Domain.Counters;
 using Notifo.Infrastructure.Identity;
 using Notifo.Infrastructure.Reflection;
 
@@ -18,6 +17,8 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
 {
     public sealed class AppDetailsDto
     {
+        private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+
         /// <summary>
         /// The id of the app.
         /// </summary>
@@ -96,7 +97,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The statistics counters.
         /// </summary>
-        public CounterMap Counters { get; set; }
+        public Dictionary<string, long> Counters { get; set; }
 
         public static async Task<AppDetailsDto> FromDomainObjectAsync(App app, string userId, IUserResolver userResolver)
         {
@@ -125,7 +126,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
                 }
             }
 
-            result.Counters ??= new CounterMap();
+            result.Counters = app.Counters ?? EmptyCounters;
 
             return result;
         }

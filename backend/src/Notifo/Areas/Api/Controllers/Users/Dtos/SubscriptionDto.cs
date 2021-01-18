@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.Linq;
 using Notifo.Domain;
 using Notifo.Domain.Subscriptions;
@@ -21,7 +22,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public NotificationSettingsDto? TopicSettings { get; set; }
+        public Dictionary<string, NotificationSettingDto>? TopicSettings { get; set; }
 
         public Subscribe ToUpdate()
         {
@@ -50,10 +51,10 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 TopicPrefix = subscription.TopicPrefix
             };
 
+            result.TopicSettings ??= new Dictionary<string, NotificationSettingDto>();
+
             if (subscription.TopicSettings != null)
             {
-                result.TopicSettings = new NotificationSettingsDto();
-
                 foreach (var (key, value) in subscription.TopicSettings)
                 {
                     if (value != null)
@@ -61,10 +62,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                         result.TopicSettings[key] = NotificationSettingDto.FromDomainObject(value);
                     }
                 }
-            }
-            else
-            {
-                result.TopicSettings = new NotificationSettingsDto();
             }
 
             return result;

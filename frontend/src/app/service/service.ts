@@ -2342,12 +2342,7 @@ export interface ProfileDto {
     /** The supported timezones. */
     supportedTimezones?: string[];
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto;
-}
-
-export interface NotificationSettingsDto {
-
-    [key: string]: NotificationSettingDto | any; 
+    settings?: { [key: string]: NotificationSettingDto; };
 }
 
 export interface NotificationSettingDto {
@@ -2376,14 +2371,14 @@ export interface UpdateProfileDto {
     /** The timezone of the user. */
     preferredTimezone?: string | undefined;
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto | undefined;
+    settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
 export interface SubscriptionDto {
     /** The topic to add. */
     topicPrefix?: string;
     /** Notification settings per channel. */
-    topicSettings?: NotificationSettingsDto | undefined;
+    topicSettings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
 export interface ListResponseDtoOfUserDto {
@@ -2411,14 +2406,9 @@ export interface UserDto {
     /** True when only whitelisted topic are allowed. */
     requiresWhitelistedTopics?: boolean;
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto;
+    settings?: { [key: string]: NotificationSettingDto; };
     /** The statistics counters. */
-    counters?: CounterMap;
-}
-
-export interface CounterMap {
-
-    [key: string]: number | any; 
+    counters?: { [key: string]: number; };
 }
 
 export interface ListResponseDtoOfSubscriptionDto {
@@ -2449,7 +2439,7 @@ export interface UpsertUserDto {
     /** True when only whitelisted topic are allowed. */
     requiresWhitelistedTopics?: boolean | undefined;
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto | undefined;
+    settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
 export interface AddAllowedTopicDto {
@@ -2470,7 +2460,7 @@ export interface TopicDto {
     /** THe last update to the topic. */
     lastUpdate?: Date;
     /** The statistics counters. */
-    counters?: CounterMap;
+    counters?: { [key: string]: number; };
 }
 
 export interface ListResponseDtoOfTemplateDto {
@@ -2486,7 +2476,7 @@ export interface TemplateDto {
     /** The formatting. */
     formatting?: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto;
+    settings?: { [key: string]: NotificationSettingDto; };
 }
 
 export interface NotificationFormattingDto {
@@ -2530,7 +2520,7 @@ export interface UpsertTemplateDto {
     /** The formatting. */
     formatting?: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto | undefined;
+    settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
 export interface ListResponseDtoOfMediaDto {
@@ -2618,20 +2608,15 @@ export interface EventDto {
     /** The final formatting infos. */
     formatting?: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings?: NotificationSettingsDto;
+    settings?: { [key: string]: NotificationSettingDto; };
     /** User defined properties. */
-    properties?: EventProperties;
+    properties?: { [key: string]: string; };
     /** The scheduling options. */
     scheduling?: SchedulingDto | undefined;
     /** The statistics counters. */
-    counters?: CounterMap | undefined;
+    counters?: { [key: string]: number; } | undefined;
     /** True when silent. */
     silent?: boolean;
-}
-
-export interface EventProperties {
-
-    [key: string]: string | any; 
 }
 
 export interface SchedulingDto {
@@ -2689,6 +2674,11 @@ export interface PublishDto {
     silent?: boolean;
 }
 
+export interface EventProperties {
+
+    [key: string]: string | any; 
+}
+
 export interface AppDto {
     /** The id of the app. */
     id?: string;
@@ -2701,7 +2691,7 @@ export interface AppDto {
     /** The api keys. */
     apiKeys?: { [key: string]: string; };
     /** The statistics counters. */
-    counters?: CounterMap;
+    counters?: { [key: string]: number; };
 }
 
 export interface AppDetailsDto {
@@ -2736,7 +2726,7 @@ export interface AppDetailsDto {
     /** The contributors. */
     contributors?: AppContributorDto[];
     /** The statistics counters. */
-    counters?: CounterMap;
+    counters?: { [key: string]: number; };
 }
 
 export enum EmailVerificationStatus {
