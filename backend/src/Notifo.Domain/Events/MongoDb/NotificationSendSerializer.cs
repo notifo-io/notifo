@@ -32,6 +32,7 @@ namespace Notifo.Domain.Events.MongoDb
             switch (reader.CurrentBsonType)
             {
                 case BsonType.Null:
+                    reader.ReadNull();
                     return NotificationSend.Inherit;
                 case BsonType.Boolean:
                     {
