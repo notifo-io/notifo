@@ -6,24 +6,24 @@
 // ==========================================================================
 
 using System;
-using Microsoft.Extensions.Options;
+using Squidex.Hosting;
 
 namespace Notifo.Domain.Utils
 {
     public sealed class ImageFormatter : IImageFormatter
     {
-        private readonly Uri baseUrl;
+        private readonly Uri? baseUrl;
 
-        public ImageFormatter(IOptions<ImageFormatterOptions> options)
+        public ImageFormatter(IUrlGenerator urlGenerator)
         {
-            baseUrl = options.Value.BaseUrl;
+            Uri.TryCreate(urlGenerator.BuildUrl(), UriKind.Absolute, out baseUrl);
         }
 
         public string Format(string? url, string preset)
         {
             if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
             {
-                if (uri.Host == baseUrl.Host && uri.Port == baseUrl.Port)
+                if (baseUrl != null && uri.Host == baseUrl.Host && uri.Port == baseUrl.Port)
                 {
                     return $"{url}?preset={preset}";
                 }

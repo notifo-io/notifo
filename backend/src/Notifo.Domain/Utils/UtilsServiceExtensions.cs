@@ -14,8 +14,6 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyUtils(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<ImageFormatterOptions>(config, "url");
-
             services.AddSingletonAs<ImageFormatter>()
                 .As<IImageFormatter>();
         }
