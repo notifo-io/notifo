@@ -74,7 +74,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
         private IActionResult TrackingPixel()
         {
-            var stream = typeof(TrackingController).Assembly.GetManifestResourceStream($"Notifo.Areas.Api.Controllers.TrackingPixel.Tracking.png")!;
+            var stream = typeof(TrackingController).Assembly.GetManifestResourceStream($"Notifo.Areas.Api.Controllers.Tracking.TrackingPixel.png")!;
 
             return File(stream, "image/png");
         }
