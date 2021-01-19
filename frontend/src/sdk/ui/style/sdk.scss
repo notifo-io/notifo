@@ -166,7 +166,7 @@ $size-toggle: 20px;
         }
 
         &-notifications-archive-link {
-            @include absolute(null, null, 0, 0);
+            @include absolute(null, null, -1.25rem, -1rem);
             color: $color-link;
             cursor: pointer;
             font-size: 80%;
@@ -317,7 +317,7 @@ $size-toggle: 20px;
         }
 
         &-profile-button {
-            @include absolute(-1rem, -1rem);
+            @include absolute(-1.25rem, -1rem);
             line-height: 1px;
 
             svg {
