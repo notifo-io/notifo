@@ -157,7 +157,7 @@ $size-toggle: 20px;
 
         &-notifications-list {
             min-height: 8rem;
-            padding-bottom: 2.5rem;
+            padding-bottom: 1rem;
             padding-top: 1rem;
         }
 
@@ -326,10 +326,11 @@ $size-toggle: 20px;
         }
 
         &-empty, &-loading {
-            @include absolute(30%, 0, null, 0);
+            @include absolute(50%, 0, null, 0);
             color: $color-empty;
             font-size: 80%;
             font-weight: normal;
+            margin-top: -.5rem;
             text-align: center;
             text-decoration: none;
         }
