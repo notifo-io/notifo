@@ -9,7 +9,7 @@ type QueueItem = () => Promise<any>;
 
 export class JobQueue {
     private readonly queue: QueueItem[] = [];
-    private running: QueueItem;
+    private running?: QueueItem;
 
     public enqueue(item: QueueItem) {
         if (!this.running) {
@@ -78,7 +78,7 @@ export function logError(message: string) {
 
 export function withPreset(src: string | undefined | null, preset: string) {
     if (!src) {
-        return src;
+        return undefined;
     }
 
     if (src.indexOf('?') >= 0) {

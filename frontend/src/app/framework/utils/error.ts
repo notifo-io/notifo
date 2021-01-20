@@ -16,8 +16,8 @@ export interface ErrorDto {
     readonly wellFormed: boolean;
 }
 
-export function isErrorVisible(error: string | ErrorDto, touched: boolean, submitCount: number): boolean {
-    return error && (touched || submitCount > 0);
+export function isErrorVisible(error: string | ErrorDto | undefined | null, touched: boolean, submitCount: number): boolean {
+    return !!error && (touched || submitCount > 0);
 }
 
 export function isError(error: any): error is ErrorDto {

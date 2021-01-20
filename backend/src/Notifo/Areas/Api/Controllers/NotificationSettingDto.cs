@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.ComponentModel.DataAnnotations;
 using Notifo.Domain;
 using Notifo.Infrastructure.Reflection;
 
@@ -15,6 +16,7 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// True or false to send the notification for the channel.
         /// </summary>
+        [Required]
         public NotificationSend Send { get; set; }
 
         /// <summary>

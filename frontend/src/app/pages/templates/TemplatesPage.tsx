@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
-import { deleteTemplateAsync, loadTemplatesAsync, selectTemplate, togglePublishDialog, useApps, useTemplates } from '@app/state';
+import { deleteTemplateAsync, getApp, loadTemplatesAsync, selectTemplate, togglePublishDialog, useApps, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,8 @@ import { TemplateRow } from './TemplateRow';
 
 export const TemplatesPage = () => {
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const templates = useTemplates(x => x.templates);
     const templateCode = useTemplates(x => x.currentTemplateCode);
 
@@ -34,7 +35,7 @@ export const TemplatesPage = () => {
     }, [appId]);
 
     const doNew = React.useCallback(() => {
-        dispatch(selectTemplate(undefined));
+        dispatch(selectTemplate({ code: undefined }));
     }, []);
 
     const doSelect = React.useCallback((template: TemplateDto) => {

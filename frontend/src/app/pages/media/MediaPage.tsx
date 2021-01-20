@@ -9,7 +9,7 @@ import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/frame
 import { MediaDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { MediaCard } from '@app/shared/components/MediaCard';
-import { deleteMediaAsync, loadMediaAsync, uploadMediaAsync, useApps, useMedia } from '@app/state';
+import { deleteMediaAsync, getApp, loadMediaAsync, uploadMediaAsync, useApps, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,8 @@ import { Button, Col, Row } from 'reactstrap';
 
 export const MediaPage = () => {
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const media = useMedia(x => x.media);
 
     React.useEffect(() => {
@@ -28,7 +29,7 @@ export const MediaPage = () => {
         dispatch(loadMediaAsync(appId));
     }, [appId]);
 
-    const doLoad = React.useCallback((q?: Query) => {
+    const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadMediaAsync(appId, q));
     }, [appId]);
 

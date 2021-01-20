@@ -53,5 +53,5 @@ export interface AppsState {
 }
 
 export function getApp(state: AppsState) {
-    return state.apps.items?.find(x => x.id === state.appId);
+    return state.apps.items?.find(x => x.id === state.appId)!;
 }

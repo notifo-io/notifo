@@ -71,7 +71,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     .addCase(createAppAsync.fulfilled, (state, action) => {
         state.creating = false;
         state.creatingError = undefined;
-        state.apps.items.setOrUnshift(x => x.id, action.payload);
+        state.apps.items?.setOrUnshift(x => x.id, action.payload);
         state.apps.total++;
     })
     .addCase(loadDetailsAsync.pending, (state) => {
@@ -98,7 +98,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     .addCase(upsertAppAsync.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
-        state.apps.items.set(x => x.id, action.payload);
+        state.apps.items?.set(x => x.id, action.payload);
         state.appDetails = action.payload;
     })
     .addCase(addContributorAsync.pending, (state) => {
@@ -112,7 +112,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     .addCase(addContributorAsync.fulfilled, (state, action) => {
         state.contributorsUpdating = false;
         state.contributorsError = undefined;
-        state.apps.items.set(x => x.id, action.payload);
+        state.apps.items?.set(x => x.id, action.payload);
         state.appDetails = action.payload;
     })
     .addCase(removeContributorAsync.pending, (state) => {
@@ -126,6 +126,6 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     .addCase(removeContributorAsync.fulfilled, (state, action) => {
         state.contributorsUpdating = false;
         state.contributorsError = undefined;
-        state.apps.items.set(x => x.id, action.payload);
+        state.apps.items?.set(x => x.id, action.payload);
         state.appDetails = action.payload;
     }));

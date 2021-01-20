@@ -49,7 +49,7 @@ export const PublishDialog = () => {
     const publishingError = usePublish(x => x.publishingError);
     const dialogOpen = usePublish(x => x.dialogOpen);
     const dialogValues = usePublish(x => x.dialogValues || {});
-    const [language, setLanguage] = React.useState<string>();
+    const [language, setLanguage] = React.useState<string>(appLanguages[0]);
 
     const doCloseForm = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: false }));

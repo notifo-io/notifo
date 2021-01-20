@@ -47,7 +47,7 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
         options,
     } = props;
 
-    const [ref, setRef] = useState<HTMLDivElement>(null);
+    const [ref, setRef] = useState<HTMLDivElement | null>(null);
     const [view, setView] = useState<View>('Notifications');
 
     return (

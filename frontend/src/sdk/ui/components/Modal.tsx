@@ -15,7 +15,7 @@ type ModalPosition = 'bottom-left' | 'bottom-right' | 'top-global';
 
 export interface ModalProps {
     // The children.
-    children: VNode<any>[] | VNode;
+    children: VNode<any>[] | VNode | null;
 
     // The modal position.
     position: ModalPosition;
@@ -31,7 +31,7 @@ export const Modal = (props: ModalProps) => {
 
     useEffect(() => {
         const handler = (event: MouseEvent) => {
-            if (modal.current && event.target['parentNode'] && !modal.current.contains(event.target as any)) {
+            if (modal.current && event.target?.['parentNode'] && !modal.current.contains(event.target as any)) {
                 onClickOutside && onClickOutside();
             }
         };

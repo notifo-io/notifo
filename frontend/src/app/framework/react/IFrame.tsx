@@ -14,15 +14,17 @@ export interface IFrameProps {
 export const IFrame = (props: IFrameProps) => {
     const { html } = props;
 
-    const [iframe, setIframe] = React.useState<HTMLIFrameElement>();
+    const [iframe, setIframe] = React.useState<HTMLIFrameElement | null>(null);
 
     React.useEffect(() => {
         if (iframe && html) {
             const document = iframe.contentDocument;
 
-            document.open();
-            document.write(html || '');
-            document.close();
+            if (document) {
+                document.open();
+                document.write(html || '');
+                document.close();
+            }
         }
     }, [iframe, html]);
 

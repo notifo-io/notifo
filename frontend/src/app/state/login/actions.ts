@@ -14,10 +14,10 @@ import { LoginState, User } from './state';
 const loginStarted = createAction('login/started');
 const loginDoneSilent = createAction<{ user: User }>('login/done/silent');
 const loginDoneRedirect = createAction<{ user: User }>('login/done/redirect');
-const loginFailed = createAction<{ user: User }>('login/failed');
+const loginFailed = createAction('login/failed');
 
 const logoutStarted = createAction('logout/started');
-const logoutDoneRedirect = createAction<{ user: User }>('logout/redirect');
+const logoutDoneRedirect = createAction('logout/redirect');
 
 export const loginStartAsync = () => {
     return async (dispatch: Dispatch) => {
@@ -119,13 +119,13 @@ export const loginReducer = createReducer(initialState, builder => builder
         state.isAuthenticating = false;
         state.user = action.payload.user;
     })
-    .addCase(loginFailed, (state, action) => {
+    .addCase(loginFailed, (state) => {
         state.isAuthenticating = false;
-        state.user = null;
+        state.user = undefined;
     }));
 
 function getUser(user: Oidc.User): User {
     const { sub, name } = user.profile;
 
-    return { sub, name, token: user.access_token };
+    return { sub, name: name!, token: user.access_token };
 }

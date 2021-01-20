@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { UpsertUserDto, UserDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { upsertUserAsync, useApps, useCore, useUsers } from '@app/state';
+import { getApp, upsertUserAsync, useApps, useCore, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -27,7 +27,8 @@ export const UserDialog = (props: UserDialogProps) => {
     const { onClose, user } = props;
 
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const coreLanguages = useCore(x => x.languages);
     const coreTimezones = useCore(x => x.timezones);
     const upserting = useUsers(x => x.upserting);

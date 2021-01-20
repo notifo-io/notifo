@@ -58,7 +58,7 @@ export const ListPager = (props: ListPagerProps) => {
     const offset = page * pageSize;
 
     const itemFirst = offset + 1;
-    const itemLast = offset + items.length;
+    const itemLast = offset + items!.length;
 
     return (
         <Row>

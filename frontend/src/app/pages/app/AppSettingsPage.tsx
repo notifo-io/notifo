@@ -14,7 +14,7 @@ import { Contributors } from './Contributors';
 export const AppSettingsPage = () => {
     const dispatch = useDispatch();
     const app = useApps(getApp);
-    const appId = app?.id;
+    const appId = app.id;
     const appDetails = useApps(x => x.appDetails);
 
     React.useEffect(() => {

@@ -41,7 +41,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const appLanguages = app.languages;
     const upserting = useTemplates(x => x.upserting);
     const upsertingError = useTemplates(x => x.upsertingError);
-    const [language, setLanguage] = React.useState<string>();
+    const [language, setLanguage] = React.useState<string>(appLanguages[0]);
 
     const doPublish = React.useCallback((params: TemplateDto) => {
         dispatch(upsertTemplateAsync({ appId, params }));

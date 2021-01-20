@@ -8,7 +8,7 @@
 import * as React from 'react';
 
 export const Gist = ({ id }: { id: string }) => {
-    const [iframe, setIFrame] = React.useState<HTMLIFrameElement>();
+    const [iframe, setIFrame] = React.useState<HTMLIFrameElement | null>(null);
 
     const elementId = `${id}`;
 
@@ -23,9 +23,11 @@ export const Gist = ({ id }: { id: string }) => {
 
             const document = iframe.contentDocument;
 
-            document.open();
-            document.writeln(iframeHtml);
-            document.close();
+            if (document) {
+                document.open();
+                document.writeln(iframeHtml);
+                document.close();
+            }
         }
     }, [iframe, id]);
 

@@ -37,8 +37,8 @@ export const ListSearch = (props: ListSearchProps) => {
     const { isLoading, search } = list;
 
     const [value, setValue] = React.useState('');
-    const currentSearch = React.useRef<string>();
-    const currentValue = React.useRef<string>();
+    const currentSearch = React.useRef<string | null>();
+    const currentValue = React.useRef<string | null>();
 
     React.useEffect(() => {
         const timer = setTimeout(() => {
@@ -56,7 +56,7 @@ export const ListSearch = (props: ListSearchProps) => {
         currentSearch.current = search;
         currentValue.current = search;
 
-        setValue(search);
+        setValue(search || '');
     }, [search]);
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {

@@ -10,7 +10,7 @@ import { combineUrl, isString } from './utils';
 
 export interface NotifoNotification {
     // The optional id.
-    id?: string;
+    id: string;
 
     // The notification subject.
     subject: string;
@@ -160,7 +160,7 @@ export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<No
     const response = await fetch(url, request);
 
     if (response.status === 404) {
-        return null;
+        return [];
     } else if (response.ok) {
         return (await response.json()).items;
     } else {
@@ -320,7 +320,7 @@ export async function apiRegister(config: SDKConfig) {
             body.preferredLanguage = config.userLanguage;
         }
 
-        if (config.topics.length > 0) {
+        if (config.topics && config.topics.length > 0) {
             body.topics = config.topics;
         }
 
@@ -361,14 +361,14 @@ function hasToken(config: SDKConfig) {
     return isString(config.publicKey) && isString(config.userToken);
 }
 
-function getAuthHeader(config: SDKConfig) {
+function getAuthHeader(config: SDKConfig): Record<string, string> {
     if (config.userToken) {
         return {
             ['X-ApiKey']: config.userToken,
         };
     } else {
         return {
-            ['X-ApiKey']: config.apiKey,
+            ['X-ApiKey']: config.apiKey!,
         };
     }
 }

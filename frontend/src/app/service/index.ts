@@ -38,7 +38,7 @@ export function getApiUrl() {
 
 export module AuthService {
     let userManager: UserManager;
-    let userCurrent: User | undefined;
+    let userCurrent: User | undefined | null;
 
     export function getCurrentUser() {
         return userCurrent;
@@ -92,7 +92,9 @@ export module Clients {
                 init.headers = init.headers || {};
                 init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
             } catch (error) {
-                delete init.headers['Authorization'];
+                if (init.headers) {
+                    delete init.headers['Authorization'];
+                }
             }
 
             try {
@@ -105,7 +107,9 @@ export module Clients {
                         init.headers = init.headers || {};
                         init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
                     } catch (error) {
-                        delete init.headers['Authorization'];
+                        if (init.headers) {
+                            delete init.headers['Authorization'];
+                        }
                     }
 
                     result = await fetch(url, init);

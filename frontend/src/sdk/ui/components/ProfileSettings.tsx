@@ -33,9 +33,9 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const profile = useStore(x => x.profile);
+    const profile = useStore(x => x.profile)!;
     const profileTransition = useStore(x => x.profileTransition);
-    const [profileToEdit, setProfileToEdit] = useState<UpdateProfile>(null);
+    const [profileToEdit, setProfileToEdit] = useState<UpdateProfile | null>(null);
 
     useEffect(() => {
         loadProfile(config, dispatch);
@@ -62,11 +62,15 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
     }, [profileToEdit]);
 
     const doSetEmail = useCallback((send: boolean | undefined) => {
-        setChannel(profileToEdit, 'email', send);
+        if (profileToEdit) {
+            setChannel(profileToEdit, 'email', send);
+        }
     }, [profileToEdit]);
 
     const doSetPush = useCallback((send: boolean | undefined) => {
-        setChannel(profileToEdit, 'webpush', send);
+        if (profileToEdit) {
+            setChannel(profileToEdit, 'webpush', send);
+        }
     }, [profileToEdit]);
 
     const doClose = useCallback((event: Event) => {
@@ -78,7 +82,9 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
     }, [onClose]);
 
     const doChange = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement> | h.JSX.TargetedEvent<HTMLSelectElement>) => {
-        profileToEdit[event.currentTarget.id] = event.currentTarget.value;
+        if (profileToEdit) {
+            profileToEdit[event.currentTarget.id] = event.currentTarget.value;
+        }
     }, [profileToEdit]);
 
     return (

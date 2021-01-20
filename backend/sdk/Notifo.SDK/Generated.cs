@@ -5344,6 +5344,7 @@ namespace Notifo.SDK
     {
         /// <summary>True or false to send the notification for the channel.</summary>
         [Newtonsoft.Json.JsonProperty("send", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public NotificationSend Send { get; set; }
     
@@ -5421,7 +5422,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<UserDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<UserDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<UserDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5485,7 +5487,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<SubscriptionDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<SubscriptionDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<SubscriptionDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5559,7 +5562,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<TopicDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<TopicDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<TopicDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5594,7 +5598,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<TemplateDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<TemplateDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<TemplateDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5629,7 +5634,8 @@ namespace Notifo.SDK
     {
         /// <summary>The required subject with one entry per language.</summary>
         [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public LocalizedText Subject { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public LocalizedText Subject { get; set; } = new LocalizedText();
     
         /// <summary>The optional body with one entry per language.</summary>
         [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5657,6 +5663,7 @@ namespace Notifo.SDK
     
         /// <summary>The confirmation mode.</summary>
         [Newtonsoft.Json.JsonProperty("confirmMode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ConfirmMode ConfirmMode { get; set; }
     
@@ -5719,7 +5726,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<MediaDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<MediaDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<MediaDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5823,7 +5831,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<LogEntryDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<LogEntryDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<LogEntryDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5862,7 +5871,8 @@ namespace Notifo.SDK
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<EventDto> Items { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<EventDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<EventDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -6077,19 +6087,23 @@ namespace Notifo.SDK
     
         /// <summary>The current role.</summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
     
         /// <summary>The supported languages.</summary>
         [Newtonsoft.Json.JsonProperty("languages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> Languages { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<string> Languages { get; set; } = new System.Collections.ObjectModel.Collection<string>();
     
         /// <summary>The api keys.</summary>
         [Newtonsoft.Json.JsonProperty("apiKeys", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, string> ApiKeys { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, string> ApiKeys { get; set; } = new System.Collections.Generic.Dictionary<string, string>();
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; } = new System.Collections.Generic.Dictionary<string, long>();
     
     
     }

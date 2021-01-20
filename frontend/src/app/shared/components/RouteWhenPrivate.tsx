@@ -15,7 +15,7 @@ export interface RouteWhenPrivateProps {
     isAuthenticated: boolean;
 
     // The component to render when the user is not authenticated.
-    component: React.ReactNode;
+    component: React.ComponentType<any>;
 }
 
 export const RouteWhenPrivate = (props: RouteWhenPrivateProps & RouteProps) => {

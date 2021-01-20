@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
-import { deleteSubscriptionAsync, loadSubscriptionsAsync, togglePublishDialog, useApps, useSubscriptions } from '@app/state';
+import { deleteSubscriptionAsync, getApp, loadSubscriptionsAsync, togglePublishDialog, useApps, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -25,7 +25,8 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     const { userId } = props;
 
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const dialogEdit = useDialog();
     const dialogNew = useDialog();
     const subscriptions = useSubscriptions(x => x.subscriptions);
@@ -43,7 +44,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
         dispatch(loadSubscriptionsAsync(appId, userId));
     }, [appId, userId]);
 
-    const doLoad = React.useCallback((q?: Query) => {
+    const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadSubscriptionsAsync(appId, userId, q));
     }, [appId, userId]);
 

@@ -27,7 +27,7 @@ export class Connection {
                 ...getAuthHeader(config),
             },
             accessTokenFactory: () => {
-                return config.userToken;
+                return config.userToken!;
             },
             withCredentials: false,
         };
@@ -74,7 +74,7 @@ export class Connection {
         return this.signalR.send('delete', id);
     }
 
-    public confirmMany(seen: string[], confirmed: string | undefined = null) {
+    public confirmMany(seen: string[], confirmed: string | null | undefined = null) {
         return this.signalR.send('confirmMany', {
             channel: 'Web',
             confirmed,
@@ -83,14 +83,14 @@ export class Connection {
     }
 }
 
-function getAuthHeader(config: SDKConfig) {
+function getAuthHeader(config: SDKConfig): Record<string, string> {
     if (config.userToken) {
         return {
             ['X-ApiKey']: config.userToken,
         };
     } else {
         return {
-            ['X-ApiKey']: config.apiKey,
+            ['X-ApiKey']: config.apiKey!,
         };
     }
 }

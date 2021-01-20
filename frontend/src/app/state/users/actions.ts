@@ -12,7 +12,7 @@ import { Middleware } from 'redux';
 import { createApiThunk, selectApp } from './../shared';
 import { UsersState } from './state';
 
-const list = listThunk<UsersState, UserDto>('users', 'users', async (params) => {
+const list = listThunk<UsersState, UserDto>('users', 'users', async params => {
     const { items, total } = await Clients.Users.getUsers(params.appId, params.search, params.take, params.skip);
 
     return { items, total };

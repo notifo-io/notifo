@@ -7,7 +7,7 @@
 
 import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
-import { loadUserAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
+import { getApp, loadUserAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -18,10 +18,11 @@ import { Subscriptions } from './Subscriptions';
 
 export const UserPage = () => {
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const loading = useUsers(x => x.loadingUser);
     const match = useRouteMatch();
-    const user = useUsers(x => x.user);
+    const user = useUsers(x => x.user)!;
     const userId = match.params['userId'];
     const dialogEdit = useDialog();
 

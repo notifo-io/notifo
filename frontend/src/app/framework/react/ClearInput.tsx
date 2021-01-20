@@ -10,7 +10,7 @@ import { Button, Input, InputProps } from 'reactstrap';
 import { Icon } from './Icon';
 
 export const ClearInput = (props: InputProps) => {
-    const input = React.useRef<HTMLInputElement>();
+    const input = React.useRef<HTMLInputElement | null>(null);
 
     const [value, setValue] = React.useState(props.value);
 
@@ -46,14 +46,14 @@ export const ClearInput = (props: InputProps) => {
 };
 
 function setNativeValue(element: HTMLInputElement, value: string) {
-    const valueSetter = Object.getOwnPropertyDescriptor(element, 'value').set;
+    const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')!.set;
 
     const prototype = Object.getPrototypeOf(element);
-    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value').set;
+    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')!.set;
 
     if (valueSetter && valueSetter !== prototypeValueSetter) {
-        prototypeValueSetter.call(element, value);
+        prototypeValueSetter!.call(element, value);
     } else {
-        valueSetter.call(element, value);
+        valueSetter!.call(element, value);
     }
 }

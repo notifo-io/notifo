@@ -81,7 +81,7 @@ export module UI {
 }
 
 function findElement(elementOrId: string | HTMLElement) {
-    let element: HTMLElement;
+    let element: HTMLElement | null;
 
     if (isString(elementOrId)) {
         element = document.getElementById(elementOrId);

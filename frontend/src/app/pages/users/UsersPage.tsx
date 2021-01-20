@@ -8,7 +8,7 @@
 import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
-import { deleteUserAsync, loadUsersAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
+import { deleteUserAsync, getApp, loadUsersAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,7 +21,8 @@ import { UserRow } from './UserRow';
 export const UsersPage = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const dialogEdit = useDialog();
     const dialogNew = useDialog();
     const users = useUsers(x => x.users);
@@ -40,7 +41,7 @@ export const UsersPage = () => {
         dispatch(loadUsersAsync(appId));
     }, [appId]);
 
-    const doLoad = React.useCallback((q?: Query) => {
+    const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadUsersAsync(appId, q));
     }, [appId]);
 

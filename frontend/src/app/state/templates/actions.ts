@@ -11,7 +11,7 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from './../shared';
 import { TemplatesState } from './state';
 
-const list = listThunk<TemplatesState, TemplateDto>('templates', 'templates', async (params) => {
+const list = listThunk<TemplatesState, TemplateDto>('templates', 'templates', async params => {
     const { items, total } = await Clients.Templates.getTemplates(params.appId, null, 1000, 0);
 
     return { items, total };
@@ -57,8 +57,8 @@ export const templatesReducer = createReducer(initialState, builder => list.init
     .addCase(upsertTemplateAsync.fulfilled, (state, action) => {
         state.upserting = true;
         state.upsertingError = undefined;
-        state.templates.items.setOrPush(x => x.code, action.payload);
+        state.templates.items?.setOrPush(x => x.code, action.payload);
     })
     .addCase(deleteTemplateAsync.fulfilled, (state, action) => {
-        state.templates.items.removeBy(x => x.code, action.meta.arg.code);
+        state.templates.items?.removeBy(x => x.code, action.meta.arg.code);
     }));

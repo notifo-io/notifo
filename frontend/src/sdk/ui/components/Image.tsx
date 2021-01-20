@@ -13,7 +13,7 @@ export interface ImageProps {
     class: string;
 
     // The size of the icon.
-    src: string;
+    src?: string;
 }
 
 export const Image = (props: ImageProps) => {
@@ -27,7 +27,7 @@ export const Image = (props: ImageProps) => {
         setIsLoaded(true);
     }, []);
 
-    const style = isLoaded ? {} : { display: 'none' };
+    const style = isLoaded ? { display: 'block' } : { display: 'none' };
 
     return (
         <div class={props.class} style={style}>

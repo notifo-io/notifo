@@ -2347,7 +2347,7 @@ export interface ProfileDto {
 
 export interface NotificationSettingDto {
     /** True or false to send the notification for the channel. */
-    send?: NotificationSend;
+    send: NotificationSend;
     /** The delay in seconds. */
     delayInSeconds?: number | undefined;
 }
@@ -2383,9 +2383,9 @@ export interface SubscriptionDto {
 
 export interface ListResponseDtoOfUserDto {
     /** The items. */
-    items?: UserDto[];
+    items: UserDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface UserDto {
@@ -2413,9 +2413,9 @@ export interface UserDto {
 
 export interface ListResponseDtoOfSubscriptionDto {
     /** The items. */
-    items?: SubscriptionDto[];
+    items: SubscriptionDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface UpsertUsersDto {
@@ -2449,9 +2449,9 @@ export interface AddAllowedTopicDto {
 
 export interface ListResponseDtoOfTopicDto {
     /** The items. */
-    items?: TopicDto[];
+    items: TopicDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface TopicDto {
@@ -2465,9 +2465,9 @@ export interface TopicDto {
 
 export interface ListResponseDtoOfTemplateDto {
     /** The items. */
-    items?: TemplateDto[];
+    items: TemplateDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface TemplateDto {
@@ -2481,7 +2481,7 @@ export interface TemplateDto {
 
 export interface NotificationFormattingDto {
     /** The required subject with one entry per language. */
-    subject?: LocalizedText;
+    subject: LocalizedText;
     /** The optional body with one entry per language. */
     body?: LocalizedText | undefined;
     /** The optional confirm text with one entry per language. */
@@ -2495,7 +2495,7 @@ export interface NotificationFormattingDto {
     /** The optional link name with one entry per language. */
     linkText?: LocalizedText | undefined;
     /** The confirmation mode. */
-    confirmMode?: ConfirmMode;
+    confirmMode: ConfirmMode;
 }
 
 export interface LocalizedText {
@@ -2525,9 +2525,9 @@ export interface UpsertTemplateDto {
 
 export interface ListResponseDtoOfMediaDto {
     /** The items. */
-    items?: MediaDto[];
+    items: MediaDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface MediaDto {
@@ -2571,9 +2571,9 @@ export enum ResizeMode {
 
 export interface ListResponseDtoOfLogEntryDto {
     /** The items. */
-    items?: LogEntryDto[];
+    items: LogEntryDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface LogEntryDto {
@@ -2589,9 +2589,9 @@ export interface LogEntryDto {
 
 export interface ListResponseDtoOfEventDto {
     /** The items. */
-    items?: EventDto[];
+    items: EventDto[];
     /** The total number of items. */
-    total?: number;
+    total: number;
 }
 
 export interface EventDto {
@@ -2687,13 +2687,13 @@ export interface AppDto {
     /** The app name. */
     name: string;
     /** The current role. */
-    role?: string;
+    role: string;
     /** The supported languages. */
-    languages?: string[];
+    languages: string[];
     /** The api keys. */
-    apiKeys?: { [key: string]: string; };
+    apiKeys: { [key: string]: string; };
     /** The statistics counters. */
-    counters?: { [key: string]: number; };
+    counters: { [key: string]: number; };
 }
 
 export interface AppDetailsDto {

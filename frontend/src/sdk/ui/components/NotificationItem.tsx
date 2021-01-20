@@ -55,7 +55,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
         onSeen,
     } = props;
 
-    const [ref, setRef] = useState<HTMLElement>(null);
+    const [ref, setRef] = useState<HTMLElement | null>(null);
     const [markingSeen, setMarkingSeen] = useState<UpdateState>('None');
     const [markingConfirm, setMarkConfirm] = useState<UpdateState>('None');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -119,7 +119,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
             };
         }
 
-        return null;
+        return;
     }, [inView, notification, doSee]);
 
     const time = useMemo(() => {

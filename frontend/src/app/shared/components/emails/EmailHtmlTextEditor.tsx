@@ -46,7 +46,7 @@ export interface EmailHtmlTextEditorProps {
 
 export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProps> {
     private editor: CodeMirror.Editor;
-    private ref: HTMLTextAreaElement;
+    private ref: HTMLTextAreaElement | null;
     private value: string;
 
     public componentDidUpdate(prevProps: EmailHtmlTextEditorProps) {
@@ -63,6 +63,10 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
         const hintOptions: any = {
             schemaInfo: tags,
         };
+
+        if (!this.ref) {
+            return;
+        }
 
         this.editor = CodeMirror.fromTextArea(this.ref, {
             autoCloseTags: true,

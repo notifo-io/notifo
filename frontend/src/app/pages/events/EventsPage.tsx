@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
-import { loadEventsAsync, useApps, useEvents } from '@app/state';
+import { getApp, loadEventsAsync, useApps, useEvents } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,8 @@ import { EventRow } from './EventRow';
 
 export const EventsPage = () => {
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const events = useEvents(x => x.events);
     const [hideCounters, setHideCounters] = useSavedState(false, 'show.counters');
 
@@ -33,7 +34,7 @@ export const EventsPage = () => {
         dispatch(loadEventsAsync(appId));
     }, [appId]);
 
-    const doLoad = React.useCallback((q?: Query) => {
+    const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadEventsAsync(appId, q));
     }, [appId]);
 

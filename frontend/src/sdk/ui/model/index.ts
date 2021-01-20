@@ -18,7 +18,7 @@ export interface SubscriptionState {
     transition: Transition;
 
     // The subscription.
-    subscription?: Subscription;
+    subscription?: Subscription | null;
 }
 
 export type SubscriptionsState = { [prefix: string]: SubscriptionState };
@@ -200,8 +200,8 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
             }
 
             notifications.sort((a, b) => {
-                const x = b.created;
-                const y = a.created;
+                const x = b.created!;
+                const y = a.created!;
 
                 return x > y ? 1 : x < y ? -1 : 0;
             });
@@ -276,9 +276,9 @@ export async function subscribe(config: SDKConfig, topicPrefix: string, subscrip
     try {
         dispatch({ type: 'SubscribeStarted', topicPrefix });
 
-        subscription = await apiPostSubscription(config, { topicPrefix, ...subscription });
+        const newSubscription = await apiPostSubscription(config, { topicPrefix, ...subscription });
 
-        dispatch({ type: 'SubscribeSuccess', topicPrefix, subscription });
+        dispatch({ type: 'SubscribeSuccess', topicPrefix, subscription: newSubscription });
     } catch (ex) {
         dispatch({ type: 'SubscribeFailed', ex, topicPrefix });
     }

@@ -31,21 +31,25 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The current role.
         /// </summary>
+        [Required]
         public string Role { get; set; }
 
         /// <summary>
         /// The supported languages.
         /// </summary>
+        [Required]
         public string[] Languages { get; set; }
 
         /// <summary>
         /// The api keys.
         /// </summary>
+        [Required]
         public Dictionary<string, string> ApiKeys { get; set; }
 
         /// <summary>
         /// The statistics counters.
         /// </summary>
+        [Required]
         public Dictionary<string, long> Counters { get; set; }
 
         public static AppDto FromDomainObject(App app, string userId)

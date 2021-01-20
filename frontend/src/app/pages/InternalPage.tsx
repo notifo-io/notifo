@@ -18,7 +18,7 @@ import { AppsPage } from './apps/AppsPage';
 export const InternalPage = () => {
     const match = useRouteMatch();
     const dispatch = useDispatch();
-    const user = useLogin(x => x.user);
+    const user = useLogin(x => x.user)!;
 
     React.useEffect(() => {
         dispatch(loadAppsAsync());

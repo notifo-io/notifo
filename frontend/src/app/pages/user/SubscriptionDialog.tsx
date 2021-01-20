@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { upsertSubscriptionAsync, useApps, useSubscriptions } from '@app/state';
+import { getApp, upsertSubscriptionAsync, useApps, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -37,7 +37,8 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     const { onClose, subscription, userId } = props;
 
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const upserting = useSubscriptions(x => x.upserting);
     const upsertingError = useSubscriptions(x => x.upsertingError);
     const [wasUpserting, setWasUpserting] = React.useState(false);

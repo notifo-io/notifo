@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';
-import { loadMediaAsync, useApps, useMedia } from '@app/state';
+import { getApp, loadMediaAsync, useApps, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -34,7 +34,8 @@ export const MediaPicker = (props: MediaPickerProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const media = useMedia(x => x.media);
     const [selection, setSelection] = React.useState<string>();
 
@@ -46,7 +47,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
         dispatch(loadMediaAsync(appId));
     }, [appId]);
 
-    const doLoad = React.useCallback((q?: Query) => {
+    const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadMediaAsync(appId, q));
     }, [appId]);
 
@@ -55,8 +56,8 @@ export const MediaPicker = (props: MediaPickerProps) => {
     }, []);
 
     const doSelect = React.useCallback(() => {
-        onSelected && onSelected(selection);
-    }, [selection]);
+        selection && onSelected && onSelected(selection);
+    }, [onSelected, selection]);
 
     const currentUrl = selection || selectedUrl;
 

@@ -13,7 +13,7 @@ export interface LoaderProps {
     className?: string;
 
     // Indicates if the spinenr is visible.
-    visible: boolean;
+    visible?: boolean | null;
 
     // Use small rendering.
     small?: boolean;

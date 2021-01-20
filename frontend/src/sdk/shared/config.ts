@@ -99,7 +99,7 @@ export function buildSDKConfig(opts: SDKConfig) {
 
     if (!isStringOption(options.apiUrl)) {
         logWarn('init.apiURL must be a string if defined, fallback to default.');
-        options.apiUrl = undefined;
+        options.apiUrl = undefined!;
     }
 
     if (!isString(options.apiUrl)) {
@@ -112,7 +112,7 @@ export function buildSDKConfig(opts: SDKConfig) {
 
     if (!isStringOption(options.styleUrl)) {
         logWarn('init.styleUrl must be a string if defined, fallback to default.');
-        options.styleUrl = undefined;
+        options.styleUrl = undefined!;
     }
 
     if (!options.styleUrl && !IS_DEV) {
@@ -121,7 +121,7 @@ export function buildSDKConfig(opts: SDKConfig) {
 
     if (!isStringOption(options.serviceWorkerUrl)) {
         logWarn('init.serviceWorkerUrl must be a string if defined.');
-        options.serviceWorkerUrl = undefined;
+        options.serviceWorkerUrl = undefined!;
     }
 
     if (!options.serviceWorkerUrl) {
@@ -150,7 +150,7 @@ export function buildSDKConfig(opts: SDKConfig) {
 
     if (!isLocaleOption(options.locale)) {
         logWarn(`init.locale must be a valid locale. Allowed: ${Object.keys(SUPPORTED_LOCALES).join(',')}`);
-        options.locale = undefined;
+        options.locale = undefined!;
     }
 
     if (!options.locale) {
@@ -189,7 +189,7 @@ export function buildNotificationsOptions(opts: NotificationsOptions) {
 
     if (!isEnumOption(options.position, SUPPORTED_POSITIONS)) {
         logWarn(`show-notifications.position is not one these values: ${SUPPORTED_POSITIONS.join(', ')}`);
-        options.position = undefined;
+        options.position = undefined!;
     }
 
     if (!options.position) {
@@ -198,7 +198,7 @@ export function buildNotificationsOptions(opts: NotificationsOptions) {
 
     if (!isEnumOption(options.style, SUPPORTED_MAIN_STYLES)) {
         logWarn(`show-notifications.style must be one of these values: ${SUPPORTED_MAIN_STYLES.join(',')}`);
-        options.style = undefined;
+        options.style = undefined!;
     }
 
     if (!options.style) {
@@ -213,7 +213,7 @@ export function buildTopicOptions(opts: TopicOptions) {
 
     if (!isEnumOption(options.position, SUPPORTED_POSITIONS)) {
         logWarn(`show-topic.position is not one these values: ${SUPPORTED_POSITIONS.join(', ')}`);
-        options.position = undefined;
+        options.position = undefined!;
     }
 
     if (!options.position) {
@@ -222,7 +222,7 @@ export function buildTopicOptions(opts: TopicOptions) {
 
     if (!isEnumOption(options.style, SUPPORTED_TOPIC_STYLES)) {
         logWarn(`show-topic.style must be one of these values: ${SUPPORTED_TOPIC_STYLES.join(',')}`);
-        options.style = undefined;
+        options.style = undefined!;
     }
 
     if (!options.style) {

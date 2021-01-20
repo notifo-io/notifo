@@ -16,7 +16,7 @@ export interface ListState<T, TExtra = any> extends Query {
     extra?: TExtra;
 
     // The loading error.
-    error?: ErrorDto;
+    error?: ErrorDto | null;
 
     // True if at least loaded once.
     isLoaded?: boolean;
@@ -47,10 +47,10 @@ export interface Query {
     page: number;
 
     // The search string.
-    search?: string;
+    search?: string | null;
 
     // The current sort order.
-    sorting?: Sorting;
+    sorting?: Sorting | null;
 }
 
 export interface SearchRequest extends Query {
@@ -172,8 +172,6 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
         page: 0,
         pageSize,
         total: 0,
-        search: null,
-        sorting: null,
     });
 
     return { action, initialize, createInitial };

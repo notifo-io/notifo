@@ -44,7 +44,7 @@ export const TopicButton = (props: TopicButtonProps) => {
 
     return (
         <button class='notifo-button notifo-topics-button' onClick={doClick}>
-            <Icon type={type} size={24} />
+            <Icon type={type as any} size={24} />
         </button>
     );
 };

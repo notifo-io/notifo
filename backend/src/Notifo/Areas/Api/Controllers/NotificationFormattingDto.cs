@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.ComponentModel.DataAnnotations;
 using Notifo.Domain;
 using Notifo.Infrastructure.Reflection;
 using Notifo.Infrastructure.Texts;
@@ -16,6 +17,7 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// The required subject with one entry per language.
         /// </summary>
+        [Required]
         public LocalizedText Subject { get; set; }
 
         /// <summary>
@@ -51,6 +53,7 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// The confirmation mode.
         /// </summary>
+        [Required]
         public ConfirmMode ConfirmMode { get; set; }
 
         public static NotificationFormattingDto FromDomainObject(NotificationFormatting<LocalizedText> source)

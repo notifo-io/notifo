@@ -13,7 +13,7 @@ export interface RouteWhenPublicProps {
     isAuthenticated: boolean;
 
     // The component to render when the user is not authenticated.
-    component: React.ReactNode;
+    component: React.Component;
 }
 
 export const RouteWhenPublic = (props: RouteWhenPublicProps & RouteProps) => {

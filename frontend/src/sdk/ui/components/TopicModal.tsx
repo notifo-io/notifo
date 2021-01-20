@@ -46,22 +46,28 @@ export const TopicModal = (props: TopicModalProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription>(null);
+    const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription | null>(null);
 
     useEffect(() => {
         setSubscriptionToEdit(subscription || { topicSettings: {} });
     }, [subscription]);
 
     const doSetEmail = useCallback((send: boolean | undefined) => {
-        setChannel(subscriptionToEdit, 'email', send);
+        if (subscriptionToEdit) {
+            setChannel(subscriptionToEdit, 'email', send);
+        }
     }, [subscriptionToEdit]);
 
     const doSetPush = useCallback((send: boolean | undefined) => {
-        setChannel(subscriptionToEdit, 'webpush', send);
+        if (subscriptionToEdit) {
+            setChannel(subscriptionToEdit, 'webpush', send);
+        }
     }, [subscriptionToEdit]);
 
     const doSubscribe = useCallback(() => {
-        subscribe(config, topicPrefix, subscriptionToEdit, dispatch);
+        if (subscriptionToEdit) {
+            subscribe(config, topicPrefix, subscriptionToEdit, dispatch);
+        }
     }, [subscriptionToEdit, topicPrefix]);
 
     const doUnsubscribe = useCallback(() => {

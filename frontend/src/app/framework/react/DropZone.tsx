@@ -35,7 +35,7 @@ export interface DropZoneProps {
 export const DropZone = (props: DropZoneProps) => {
     const { disabled, files, noPaste, onDrop } = props;
 
-    const inputButton = React.useRef<HTMLInputElement>();
+    const inputButton = React.useRef<HTMLInputElement | null>(null);
     const [dragCounter, setDragCounter] = React.useState(0);
 
     const dragStart = React.useCallback(() => {
@@ -104,7 +104,7 @@ export const DropZone = (props: DropZoneProps) => {
     }, [inputButton]);
 
     const doSelect = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        if (onDrop) {
+        if (onDrop && event.target.files) {
             onDrop(getFiles(event.target.files, files));
         }
     }, [files, onDrop]);

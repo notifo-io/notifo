@@ -105,7 +105,7 @@ async function subscribeToWebPush(sw: ServiceWorkerRegistration, config: SDKConf
     const options = {
         userVisibleOnly: true,
         userId: '',
-        applicationServerKey: urlB64ToUint8Array(config.publicKey),
+        applicationServerKey: urlB64ToUint8Array(config.publicKey!),
     };
 
     const subscription = await sw.pushManager.subscribe(options);

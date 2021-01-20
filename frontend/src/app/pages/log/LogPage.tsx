@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
-import { loadLogAsync, useApps, useLog } from '@app/state';
+import { getApp, loadLogAsync, useApps, useLog } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,8 @@ import { LogEntryRow } from './LogEntryRow';
 
 export const LogPage = () => {
     const dispatch = useDispatch();
-    const appId = useApps(x => x.appId);
+    const app = useApps(getApp);
+    const appId = app.id;
     const logEntries = useLog(x => x.entries);
 
     React.useEffect(() => {
@@ -32,7 +33,7 @@ export const LogPage = () => {
         dispatch(loadLogAsync(appId));
     }, [appId]);
 
-    const doLoad = React.useCallback((q?: Query) => {
+    const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadLogAsync(appId, q));
     }, [appId]);
 

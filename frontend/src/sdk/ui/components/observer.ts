@@ -48,7 +48,7 @@ function observe(element: HTMLElement, parent: HTMLElement, callback: (value: nu
     };
 }
 
-export function useInView(element: HTMLElement, parent: HTMLElement) {
+export function useInView(element: HTMLElement | null | undefined, parent: HTMLElement | null | undefined) {
     const [isInView, setIsInView] = useState(false);
 
     useEffect(() => {
@@ -60,7 +60,7 @@ export function useInView(element: HTMLElement, parent: HTMLElement) {
             });
         }
 
-        return null;
+        return;
     }, [element, parent]);
 
     return isInView;

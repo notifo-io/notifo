@@ -11,7 +11,7 @@ import { Alert } from 'reactstrap';
 
 export interface FormErrorProps {
     // The error.
-    error?: ErrorDto | string;
+    error?: ErrorDto | string | null;
 
     // Optional class name.
     className?: string;
@@ -27,7 +27,7 @@ export const FormError = (props: FormErrorProps) => {
         return null;
     }
 
-    let errorString: string;
+    let errorString: string | undefined;
 
     if (Types.isString(error)) {
         errorString = error;

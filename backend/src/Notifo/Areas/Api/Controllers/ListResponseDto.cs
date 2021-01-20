@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Notifo.Areas.Api.Controllers
 {
@@ -14,11 +15,13 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// The items.
         /// </summary>
+        [Required]
         public List<T> Items { get; set; } = new List<T>();
 
         /// <summary>
         /// The total number of items.
         /// </summary>
+        [Required]
         public long Total { get; set; }
     }
 }

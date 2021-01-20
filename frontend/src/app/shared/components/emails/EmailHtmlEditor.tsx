@@ -39,7 +39,7 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
     }, [value]);
 
     React.useEffect(() => {
-        onChange && onChange(emailPreview.markup);
+        onChange && onChange(emailPreview.markup!);
     }, [emailPreview]);
 
     return (

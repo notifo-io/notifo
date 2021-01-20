@@ -14,7 +14,7 @@ import { usePreview } from './helpers';
 
 export interface EmailTextEditorProps {
     // The value.
-    value: string;
+    value?: string | null;
 
     // The app name.
     appName: string;
@@ -32,11 +32,11 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
     const [emailPreview, markup, setMarkup] = usePreview(appName, 'text');
 
     React.useEffect(() => {
-        setMarkup(value);
+        setMarkup(value || '');
     }, [value]);
 
     React.useEffect(() => {
-        onChange && onChange(emailPreview.markup);
+        onChange && onChange(emailPreview.markup!);
     }, [emailPreview]);
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
