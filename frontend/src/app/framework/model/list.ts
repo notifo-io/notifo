@@ -18,6 +18,9 @@ export interface ListState<T, TExtra = any> extends Query {
     // The loading error.
     error?: ErrorDto;
 
+    // True if at least loaded once.
+    isLoaded?: boolean;
+
     // True if currently loading.
     isLoading?: boolean;
 
@@ -61,7 +64,7 @@ export interface SearchRequest extends Query {
 }
 
 type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>, total: number, extra?: TExtra }>;
-type ListArg = { query?: Partial<Query>, reset?: boolean } & { [x: string]: any };
+type ListArg = { query?: Partial<SearchRequest>, reset?: boolean } & { [x: string]: any };
 
 export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
     const name = `${prefix}/${key}/load`;
@@ -115,7 +118,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
         };
     };
 
-    const initialize = function (builder: ActionReducerMapBuilder<T>) {
+    const initialize = (builder: ActionReducerMapBuilder<T>) => {
         builder.addCase(actionPending, (state, action) => {
             const list = state[key] as ListState<TItem>;
             const loaded = Types.isArray(list.items);
@@ -142,6 +145,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
 
             list.error = null;
             list.extra = extra;
+            list.isLoaded = true;
             list.isLoading = false;
             list.isLoadingMore = false;
             list.items = items;
@@ -164,13 +168,13 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
         return builder;
     };
 
-    const createInitial = function (pageSize = 20): ListState<TItem, TExtra> {
-        return {
-            page: 0,
-            pageSize,
-            total: 0,
-        };
-    };
+    const createInitial = (pageSize = 20): ListState<TItem, TExtra> => ({
+        page: 0,
+        pageSize,
+        total: 0,
+        search: null,
+        sorting: null,
+    });
 
     return { action, initialize, createInitial };
 }

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -19,41 +20,46 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// The full name of the user.
         /// </summary>
+        [Required]
         public string FullName { get; set; }
 
         /// <summary>
         /// The email of the user.
         /// </summary>
+        [Required]
         public string EmailAddress { get; set; }
 
         /// <summary>
         /// The phone number.
         /// </summary>
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         /// <summary>
         /// The preferred language of the user.
         /// </summary>
-        public string PreferredLanguage { get; set; }
+        public string? PreferredLanguage { get; set; }
 
         /// <summary>
         /// The timezone of the user.
         /// </summary>
-        public string PreferredTimezone { get; set; }
+        public string? PreferredTimezone { get; set; }
 
         /// <summary>
         /// The supported languages.
         /// </summary>
+        [Required]
         public string[] SupportedLanguages { get; set; }
 
         /// <summary>
         /// The supported timezones.
         /// </summary>
+        [Required]
         public string[] SupportedTimezones { get; set; }
 
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
+        [Required]
         public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
         public static ProfileDto FromDomainObject(User user, App app)

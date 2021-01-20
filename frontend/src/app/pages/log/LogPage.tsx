@@ -39,19 +39,23 @@ export const LogPage = () => {
     return (
         <div className='log'>
             <Row className='align-items-center header'>
-                <Col xs='auto'>
-                    <h2>{texts.log.header}</h2>
+                <Col xs={12} md={5}>
+                    <Row className='align-items-center flex-nowrap'>
+                        <Col>
+                            <h2>{texts.log.header}</h2>
+                        </Col>
+                        <Col xs='auto'>
+                            {logEntries.isLoading ? (
+                                <Loader visible={logEntries.isLoading} />
+                            ) : (
+                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                    <Icon className='text-lg' type='refresh' />
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col>
-                    {logEntries.isLoading ? (
-                        <Loader visible={logEntries.isLoading} />
-                    ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
-                            <Icon className='text-lg' type='refresh' />
-                        </Button>
-                    )}
-                </Col>
-                <Col xs={4}>
+                <Col xs={12} md={7}>
                     <ListSearch list={logEntries} onSearch={doLoad} placeholder={texts.log.searchPlaceholder} />
                 </Col>
             </Row>

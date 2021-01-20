@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Notifo.Areas.Api.Controllers.Events.Dtos
 {
     public sealed class PublishManyDto
@@ -12,6 +14,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The publish requests.
         /// </summary>
+        [Required]
         public PublishDto[] Requests { get; set; }
     }
 }

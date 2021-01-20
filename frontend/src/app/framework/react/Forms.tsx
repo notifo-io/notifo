@@ -55,7 +55,20 @@ export interface OptionsFormProps<T> extends FormProps {
     options: Option<T>[];
 }
 
+const FormError = (props: { name: string }) => {
+    const { name } = props;
+
+    const { submitCount } = useFormikContext();
+    const [, meta] = useField(name);
+
+    return (
+        <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
+    );
+};
+
 export module Forms {
+    export const Error = FormError;
+
     export const LocalizedText = (props: LocalizedFormProps) => {
         const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
 
@@ -75,12 +88,13 @@ export module Forms {
                     </Col>
                 </Row>
 
-                <Error name={name} />
+                <FormError name={name} />
 
                 <InputText {...other} name={fieldName} />
             </FormGroup>
         );
     };
+
     export const LocalizedTextArea = (props: LocalizedFormProps) => {
         const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
 
@@ -100,7 +114,7 @@ export module Forms {
                     </Col>
                 </Row>
 
-                <Error name={name} />
+                <FormError name={name} />
 
                 <InputTextArea {...other} name={fieldName} />
             </FormGroup>
@@ -329,7 +343,7 @@ const InputNumber = ({ name }: FormProps) => {
 
     return (
         <>
-            <Error name={name} />
+            <FormError name={name} />
 
             <Input type='number' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
@@ -347,7 +361,7 @@ const InputText = (props: FormProps & InputProps) => {
 
     return (
         <>
-            <Error name={name} />
+            <FormError name={name} />
 
             <Input type='text' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
@@ -366,7 +380,7 @@ const InputTextArea = (props: FormProps & InputProps) => {
 
     return (
         <>
-            <Error name={name} />
+            <FormError name={name} />
 
             <Input type='textarea' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
@@ -385,7 +399,7 @@ const InputEmail = (props: FormProps & InputProps) => {
 
     return (
         <>
-            <Error name={name} />
+            <FormError name={name} />
 
             <Input type='email' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
@@ -404,7 +418,7 @@ const InputPassword = (props: FormProps & InputProps) => {
 
     return (
         <>
-            <Error name={name} />
+            <FormError name={name} />
 
             <PasswordInput name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
@@ -423,7 +437,7 @@ const InputSelect = (props: OptionsFormProps<string | number> & Partial<CustomIn
 
     return (
         <>
-            <Error name={name} />
+            <FormError name={name} />
 
             <CustomInput type='select' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
@@ -506,16 +520,5 @@ const InputArray = (props: ArrayFormProps<any>) => {
                 </div>
             }
         </div>
-    );
-};
-
-const Error = (props: { name: string }) => {
-    const { name } = props;
-
-    const { submitCount } = useFormikContext();
-    const [, meta] = useField(name);
-
-    return (
-        <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
     );
 };

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -22,11 +23,13 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The id of the event.
         /// </summary>
+        [Required]
         public string Id { get; set; }
 
         /// <summary>
         /// The topic path.
         /// </summary>
+        [Required]
         public string Topic { get; set; }
 
         /// <summary>
@@ -37,6 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The display name.
         /// </summary>
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -47,21 +51,25 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The time when the event has been created.
         /// </summary>
+        [Required]
         public Instant Created { get; set; }
 
         /// <summary>
         /// The final formatting infos.
         /// </summary>
+        [Required]
         public NotificationFormattingDto Formatting { get; set; }
 
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
+        [Required]
         public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
         /// <summary>
         /// User defined properties.
         /// </summary>
+        [Required]
         public Dictionary<string, string> Properties { get; set; }
 
         /// <summary>
@@ -72,11 +80,13 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The statistics counters.
         /// </summary>
-        public Dictionary<string, long>? Counters { get; set; }
+        [Required]
+        public Dictionary<string, long> Counters { get; set; }
 
         /// <summary>
         /// True when silent.
         /// </summary>
+        [Required]
         public bool Silent { get; set; }
 
         public static EventDto FromDomainObject(Event @event, App app)

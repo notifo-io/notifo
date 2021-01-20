@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
@@ -22,21 +23,25 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The id of the app.
         /// </summary>
+        [Required]
         public string Id { get; set; }
 
         /// <summary>
         /// The app name.
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
         /// The current role.
         /// </summary>
+        [Required]
         public string Role { get; set; }
 
         /// <summary>
         /// The supported languages.
         /// </summary>
+        [Required]
         public string[] Languages { get; set; }
 
         /// <summary>
@@ -72,31 +77,37 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// True, when emails are allowed.
         /// </summary>
+        [Required]
         public bool AllowEmail { get; set; }
 
         /// <summary>
         /// True, when SMS are allowed.
         /// </summary>
+        [Required]
         public bool AllowSms { get; set; }
 
         /// <summary>
         /// The verification status of the email.
         /// </summary>
+        [Required]
         public EmailVerificationStatus EmailVerificationStatus { get; set; }
 
         /// <summary>
         /// The api keys.
         /// </summary>
+        [Required]
         public Dictionary<string, string> ApiKeys { get; set; }
 
         /// <summary>
         /// The contributors.
         /// </summary>
+        [Required]
         public List<AppContributorDto> Contributors { get; set; }
 
         /// <summary>
         /// The statistics counters.
         /// </summary>
+        [Required]
         public Dictionary<string, long> Counters { get; set; }
 
         public static async Task<AppDetailsDto> FromDomainObjectAsync(App app, string userId, IUserResolver userResolver)

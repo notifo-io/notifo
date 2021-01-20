@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Reflection;
@@ -19,16 +20,19 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         /// <summary>
         /// The topic path.
         /// </summary>
+        [Required]
         public string Path { get; set; }
 
         /// <summary>
         /// THe last update to the topic.
         /// </summary>
+        [Required]
         public Instant LastUpdate { get; set; }
 
         /// <summary>
         /// The statistics counters.
         /// </summary>
+        [Required]
         public Dictionary<string, long> Counters { get; set; }
 
         public static TopicDto FromTopic(Topic topic)

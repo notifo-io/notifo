@@ -8,12 +8,12 @@
 import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
+import { MediaCard } from '@app/shared/components/MediaCard';
 import { deleteMediaAsync, loadMediaAsync, uploadMediaAsync, useApps, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Col, Row } from 'reactstrap';
-import { MediaCard } from './MediaCard';
 
 export const MediaPage = () => {
     const dispatch = useDispatch();
@@ -74,7 +74,7 @@ export const MediaPage = () => {
                 {media.items &&
                     <>
                         {media.items.map(media => (
-                            <MediaCard key={media.fileName} media={media} appId={appId}
+                            <MediaCard key={media.fileName} media={media}
                                 onDelete={doDelete}
                             />
                         ))}

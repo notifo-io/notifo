@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Apps;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
@@ -14,6 +15,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The new language.
         /// </summary>
+        [Required]
         public string Language { get; set; }
 
         public CreateAppEmailTemplate ToUpdate()

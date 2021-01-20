@@ -389,13 +389,16 @@ div {
     }
 
     &-btn {
-        @include absolute(-1px, 0, auto, auto);
-        font-size: 1.2rem;
+        @include absolute(0, 0, auto, auto);
         padding-left: 1rem;
         padding-right: 1rem;
         z-index: 1000;
 
         &:focus {
+            box-shadow: none !important;
+        }
+
+        &:hover {
             box-shadow: none !important;
         }
     }
@@ -506,6 +509,14 @@ div {
             max-height: 100%;
             max-width: none;
             overflow-y: hidden;
+        }
+    }
+
+    &-title {
+        flex-grow: 1;
+
+        .row {
+            flex-grow: 1;
         }
     }
 }

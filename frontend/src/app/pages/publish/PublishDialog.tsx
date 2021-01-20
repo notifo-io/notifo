@@ -7,7 +7,7 @@
 
 import { FormError, Forms, Loader } from '@app/framework';
 import { PublishDto } from '@app/service';
-import { NotificationsForm } from '@app/shared/components';
+import { NotificationsForm, TemplateInput } from '@app/shared/components';
 import { getApp, publishAsync, togglePublishDialog, useApps, usePublish } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
@@ -80,7 +80,7 @@ export const PublishDialog = () => {
                                 label={texts.common.templateMode} />
 
                             {values['templated'] ? (
-                                <Forms.Text name='templateCode'
+                                <TemplateInput name='templateCode'
                                     label={texts.common.templateCode} />
                             ) : (
                                 <NotificationsForm.Formatting

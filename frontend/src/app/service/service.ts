@@ -2148,7 +2148,7 @@ export class AppsClient {
      * @param request The request object.
      * @return App email template created.
      */
-    postEmailTemplate(appId: string, request: CreateEmailTemplateDto): Promise<{ [key: string]: EmailTemplateDto; }> {
+    postEmailTemplate(appId: string, request: CreateEmailTemplateDto): Promise<EmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2171,13 +2171,13 @@ export class AppsClient {
         });
     }
 
-    protected processPostEmailTemplate(response: Response): Promise<{ [key: string]: EmailTemplateDto; }> {
+    protected processPostEmailTemplate(response: Response): Promise<EmailTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <{ [key: string]: EmailTemplateDto; }>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <EmailTemplateDto>JSON.parse(_responseText, this.jsonParseReviver);
             return result200;
             });
         } else if (status === 404) {
@@ -2201,7 +2201,7 @@ export class AppsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<{ [key: string]: EmailTemplateDto; }>(<any>null);
+        return Promise.resolve<EmailTemplateDto>(<any>null);
     }
 
     /**
@@ -2328,21 +2328,21 @@ export class AppsClient {
 
 export interface ProfileDto {
     /** The full name of the user. */
-    fullName?: string;
+    fullName: string;
     /** The email of the user. */
-    emailAddress?: string;
+    emailAddress: string;
     /** The phone number. */
-    phoneNumber?: string;
+    phoneNumber?: string | undefined;
     /** The preferred language of the user. */
-    preferredLanguage?: string;
+    preferredLanguage?: string | undefined;
     /** The timezone of the user. */
-    preferredTimezone?: string;
+    preferredTimezone?: string | undefined;
     /** The supported languages. */
-    supportedLanguages?: string[];
+    supportedLanguages: string[];
     /** The supported timezones. */
-    supportedTimezones?: string[];
+    supportedTimezones: string[];
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: NotificationSettingDto; };
 }
 
 export interface NotificationSettingDto {
@@ -2376,7 +2376,7 @@ export interface UpdateProfileDto {
 
 export interface SubscriptionDto {
     /** The topic to add. */
-    topicPrefix?: string;
+    topicPrefix: string;
     /** Notification settings per channel. */
     topicSettings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
@@ -2390,25 +2390,25 @@ export interface ListResponseDtoOfUserDto {
 
 export interface UserDto {
     /** The id of the user. */
-    id?: string;
+    id: string;
     /** The unique api key for the user. */
-    apiKey?: string;
+    apiKey: string;
     /** The full name of the user. */
-    fullName?: string;
+    fullName?: string | undefined;
     /** The email of the user. */
-    emailAddress?: string;
+    emailAddress?: string | undefined;
     /** The phone number. */
-    phoneNumber?: string;
+    phoneNumber?: string | undefined;
     /** The preferred language of the user. */
-    preferredLanguage?: string;
+    preferredLanguage?: string | undefined;
     /** The timezone of the user. */
-    preferredTimezone?: string;
+    preferredTimezone?: string | undefined;
     /** True when only whitelisted topic are allowed. */
-    requiresWhitelistedTopics?: boolean;
+    requiresWhitelistedTopics: boolean;
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: NotificationSettingDto; };
     /** The statistics counters. */
-    counters?: { [key: string]: number; };
+    counters: { [key: string]: number; };
 }
 
 export interface ListResponseDtoOfSubscriptionDto {
@@ -2420,7 +2420,7 @@ export interface ListResponseDtoOfSubscriptionDto {
 
 export interface UpsertUsersDto {
     /** The users to update. */
-    requests?: UpsertUserDto[];
+    requests: UpsertUserDto[];
 }
 
 export interface UpsertUserDto {
@@ -2444,7 +2444,7 @@ export interface UpsertUserDto {
 
 export interface AddAllowedTopicDto {
     /** The topic to add. */
-    prefix?: string;
+    prefix: string;
 }
 
 export interface ListResponseDtoOfTopicDto {
@@ -2456,11 +2456,11 @@ export interface ListResponseDtoOfTopicDto {
 
 export interface TopicDto {
     /** The topic path. */
-    path?: string;
+    path: string;
     /** THe last update to the topic. */
-    lastUpdate?: Date;
+    lastUpdate: Date;
     /** The statistics counters. */
-    counters?: { [key: string]: number; };
+    counters: { [key: string]: number; };
 }
 
 export interface ListResponseDtoOfTemplateDto {
@@ -2472,11 +2472,11 @@ export interface ListResponseDtoOfTemplateDto {
 
 export interface TemplateDto {
     /** The code of the template. */
-    code?: string;
+    code: string;
     /** The formatting. */
-    formatting?: NotificationFormattingDto;
+    formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: NotificationSettingDto; };
 }
 
 export interface NotificationFormattingDto {
@@ -2511,14 +2511,14 @@ export enum ConfirmMode {
 
 export interface UpsertTemplatesDto {
     /** The templates to update. */
-    requests?: UpsertTemplateDto[];
+    requests: UpsertTemplateDto[];
 }
 
 export interface UpsertTemplateDto {
     /** The code of the template. */
-    code?: string;
+    code: string;
     /** The formatting. */
-    formatting?: NotificationFormattingDto;
+    formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
     settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
@@ -2532,17 +2532,19 @@ export interface ListResponseDtoOfMediaDto {
 
 export interface MediaDto {
     /** The mime type. */
-    mimeType?: string;
+    mimeType: string;
     /** The file name. */
-    fileName?: string;
+    fileName: string;
     /** Generated information about the file. */
-    fileInfo?: string;
+    fileInfo: string;
     /** The size of the media file. */
-    fileSize?: number;
+    fileSize: number;
+    /** The url to the media item. */
+    url: string;
     /** The type of the media. */
-    type?: MediaType;
+    type: MediaType;
     /** Metadata about the media. */
-    metadata?: MediaMetadata;
+    metadata: MediaMetadata;
 }
 
 export enum MediaType {
@@ -2576,13 +2578,13 @@ export interface ListResponseDtoOfLogEntryDto {
 
 export interface LogEntryDto {
     /** The log message. */
-    message?: string;
+    message: string;
     /** The first time this message has been seen. */
-    firstSeen?: Date;
+    firstSeen: Date;
     /** The last time this message has been seen. */
-    lastSeen?: Date;
+    lastSeen: Date;
     /** The number of items the message has been seen. */
-    count?: number;
+    count: number;
 }
 
 export interface ListResponseDtoOfEventDto {
@@ -2594,29 +2596,29 @@ export interface ListResponseDtoOfEventDto {
 
 export interface EventDto {
     /** The id of the event. */
-    id?: string;
+    id: string;
     /** The topic path. */
-    topic?: string;
+    topic: string;
     /** A custom id to identity the creator. */
     creatorId?: string | undefined;
     /** The display name. */
-    displayName?: string;
+    displayName: string;
     /** Additional user defined data. */
     data?: string | undefined;
     /** The time when the event has been created. */
-    created?: Date;
+    created: Date;
     /** The final formatting infos. */
-    formatting?: NotificationFormattingDto;
+    formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: NotificationSettingDto; };
     /** User defined properties. */
-    properties?: { [key: string]: string; };
+    properties: { [key: string]: string; };
     /** The scheduling options. */
     scheduling?: SchedulingDto | undefined;
     /** The statistics counters. */
-    counters?: { [key: string]: number; } | undefined;
+    counters: { [key: string]: number; };
     /** True when silent. */
-    silent?: boolean;
+    silent: boolean;
 }
 
 export interface SchedulingDto {
@@ -2648,12 +2650,12 @@ export enum IsoDayOfWeek {
 
 export interface PublishManyDto {
     /** The publish requests. */
-    requests?: PublishDto[];
+    requests: PublishDto[];
 }
 
 export interface PublishDto {
     /** The topic path. */
-    topic?: string;
+    topic: string;
     /** A custom id to identity the creator. */
     creatorId?: string | undefined;
     /** The template code. */
@@ -2681,9 +2683,9 @@ export interface EventProperties {
 
 export interface AppDto {
     /** The id of the app. */
-    id?: string;
+    id: string;
     /** The app name. */
-    name?: string;
+    name: string;
     /** The current role. */
     role?: string;
     /** The supported languages. */
@@ -2696,13 +2698,13 @@ export interface AppDto {
 
 export interface AppDetailsDto {
     /** The id of the app. */
-    id?: string;
+    id: string;
     /** The app name. */
-    name?: string;
+    name: string;
     /** The current role. */
-    role?: string;
+    role: string;
     /** The supported languages. */
-    languages?: string[];
+    languages: string[];
     /** The sender email address. */
     emailAddress?: string | undefined;
     /** The sender email name. */
@@ -2716,17 +2718,17 @@ export interface AppDetailsDto {
     /** The confirm URL. */
     confirmUrl?: string | undefined;
     /** True, when emails are allowed. */
-    allowEmail?: boolean;
+    allowEmail: boolean;
     /** True, when SMS are allowed. */
-    allowSms?: boolean;
+    allowSms: boolean;
     /** The verification status of the email. */
-    emailVerificationStatus?: EmailVerificationStatus;
+    emailVerificationStatus: EmailVerificationStatus;
     /** The api keys. */
-    apiKeys?: { [key: string]: string; };
+    apiKeys: { [key: string]: string; };
     /** The contributors. */
-    contributors?: AppContributorDto[];
+    contributors: AppContributorDto[];
     /** The statistics counters. */
-    counters?: { [key: string]: number; };
+    counters: { [key: string]: number; };
 }
 
 export enum EmailVerificationStatus {
@@ -2738,11 +2740,11 @@ export enum EmailVerificationStatus {
 
 export interface AppContributorDto {
     /** The id of the user. */
-    userId?: string;
+    userId: string;
     /** The name of the user. */
-    userName?: string;
+    userName: string;
     /** The role. */
-    role?: string;
+    role: string;
 }
 
 export interface UpsertAppDto {
@@ -2770,9 +2772,9 @@ export interface UpsertAppDto {
 
 export interface AddContributorDto {
     /** The email of the new contributor. */
-    email?: string;
+    email: string;
     /** The role. */
-    role?: string;
+    role: string;
 }
 
 export interface EmailTemplatesDto {
@@ -2782,16 +2784,16 @@ export interface EmailTemplatesDto {
 
 export interface EmailTemplateDto {
     /** The subject text. */
-    subject?: string;
+    subject: string;
     /** The body html template. */
-    bodyHtml?: string;
+    bodyHtml: string;
     /** The body text template. */
     bodyText?: string | undefined;
 }
 
 export interface CreateEmailTemplateDto {
     /** The new language. */
-    language?: string;
+    language: string;
 }
 
 export interface ErrorDto {

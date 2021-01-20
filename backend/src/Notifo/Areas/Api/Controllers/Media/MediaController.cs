@@ -20,6 +20,7 @@ using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 using Squidex.Assets;
+using Squidex.Hosting;
 using Squidex.Log;
 using MediaItem = Notifo.Domain.Media.Media;
 
@@ -32,17 +33,20 @@ namespace Notifo.Areas.Api.Controllers.Media
         private readonly IAssetThumbnailGenerator assetThumbnailGenerator;
         private readonly IMediaStore mediaStore;
         private readonly IMediaFileStore mediaFileStore;
+        private readonly IUrlGenerator urlGenerator;
 
         public MediaController(
             IAssetStore assetStore,
             IAssetThumbnailGenerator assetThumbnailGenerator,
             IMediaStore mediaStore,
-            IMediaFileStore mediaFileStore)
+            IMediaFileStore mediaFileStore,
+            IUrlGenerator urlGenerator)
         {
             this.assetStore = assetStore;
             this.assetThumbnailGenerator = assetThumbnailGenerator;
             this.mediaStore = mediaStore;
             this.mediaFileStore = mediaFileStore;
+            this.urlGenerator = urlGenerator;
         }
 
         /// <summary>
@@ -62,7 +66,7 @@ namespace Notifo.Areas.Api.Controllers.Media
 
             var response = new ListResponseDto<MediaDto>();
 
-            response.Items.AddRange(medias.Select(MediaDto.FromDomainObject));
+            response.Items.AddRange(medias.Select(x => MediaDto.FromDomainObject(x, appId, urlGenerator)));
             response.Total = medias.Total;
 
             return Ok(response);

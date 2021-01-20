@@ -203,7 +203,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// </returns>
         [HttpPost("api/apps/{appId}/email-templates/")]
         [AppPermission(Roles.Admin)]
-        [Produces(typeof(EmailTemplatesDto))]
+        [Produces(typeof(EmailTemplateDto))]
         public async Task<IActionResult> PostEmailTemplate(string appId, [FromBody] CreateEmailTemplateDto request)
         {
             var update = request.ToUpdate();

@@ -10,7 +10,7 @@ import { Button, Input, InputProps } from 'reactstrap';
 import { Icon } from './Icon';
 
 export const ClearInput = (props: InputProps) => {
-    const container = React.useRef<HTMLDivElement>();
+    const input = React.useRef<HTMLInputElement>();
 
     const [value, setValue] = React.useState(props.value);
 
@@ -19,30 +19,25 @@ export const ClearInput = (props: InputProps) => {
     }, [props.value]);
 
     const doClear = React.useCallback(() => {
-        if (container.current) {
+        if (input.current) {
             setValue(undefined);
+            setNativeValue(input.current, '');
 
-            const input: HTMLInputElement = container.current.children[0] as HTMLInputElement;
-
-            if (input) {
-                setNativeValue(input, '');
-
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-            }
+            input.current.dispatchEvent(new Event('input', { bubbles: true }));
         }
-    }, [container.current]);
+    }, [input.current]);
 
     const { bsSize } = props;
 
     return (
-        <div className='input-container' ref={container}>
-            <Input value={value} {...props}
+        <div className='input-container'>
+            <Input value={value} {...props} innerRef={input}
                 spellCheck={ false }
                 autoCorrect={ 'off' }
                 autoComplete={ 'none' } />
 
             {value &&
-                <Button size={bsSize} color='link' className={`input-btn input-btn-${bsSize}`} onClick={doClear} tabIndex={-1}>
+                <Button size={bsSize} color='link' className='input-btn' onClick={doClear} tabIndex={-1}>
                     <Icon type='clear' />
                 </Button>
             }

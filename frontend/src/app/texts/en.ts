@@ -74,6 +74,7 @@ export const EN = {
         publish: 'Publish',
         refresh: 'Refresh',
         save: 'Save',
+        select: 'Select',
         send: 'Send',
         sendModes: {
             inherit: 'Inherit',

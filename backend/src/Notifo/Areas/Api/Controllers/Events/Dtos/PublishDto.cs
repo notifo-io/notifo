@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NodaTime;
 using Notifo.Domain;
@@ -19,6 +20,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The topic path.
         /// </summary>
+        [Required]
         public string Topic { get; set; }
 
         /// <summary>

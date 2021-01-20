@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
 
@@ -16,16 +17,19 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         /// <summary>
         /// The code of the template.
         /// </summary>
+        [Required]
         public string Code { get; set; }
 
         /// <summary>
         /// The formatting.
         /// </summary>
+        [Required]
         public NotificationFormattingDto Formatting { get; set; }
 
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
+        [Required]
         public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
         public static TemplateDto FromDomainObject(Template template)

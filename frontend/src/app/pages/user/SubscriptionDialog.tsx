@@ -19,7 +19,7 @@ import * as Yup from 'yup';
 const FormSchema = Yup.object().shape({
     // Required topic name.
     topicPrefix: Yup.string()
-        .label(texts.common.name).requiredI18n().topicI18n(),
+        .label(texts.common.topic).requiredI18n().topicI18n(),
 });
 
 export interface SubscriptionDialogProps {
@@ -64,7 +64,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
         dispatch(upsertSubscriptionAsync({ appId, userId, params }));
     }, [appId, userId]);
 
-    const initialValues = subscription || {};
+    const initialValues = subscription || { topicPrefix: '' };
 
     return (
         <Modal isOpen={true} size='lg' toggle={doCloseForm}>

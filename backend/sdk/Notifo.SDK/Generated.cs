@@ -4151,7 +4151,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>App email template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.IDictionary<string, EmailTemplateDto>> PostEmailTemplateAsync(string appId, CreateEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<EmailTemplateDto> PostEmailTemplateAsync(string appId, CreateEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update an app email template.</summary>
@@ -4895,7 +4895,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>App email template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.IDictionary<string, EmailTemplateDto>> PostEmailTemplateAsync(string appId, CreateEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<EmailTemplateDto> PostEmailTemplateAsync(string appId, CreateEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -4940,7 +4940,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.IDictionary<string, EmailTemplateDto>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<EmailTemplateDto>(response_, headers_).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -5301,35 +5301,40 @@ namespace Notifo.SDK
     {
         /// <summary>The full name of the user.</summary>
         [Newtonsoft.Json.JsonProperty("fullName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string FullName { get; set; }
     
         /// <summary>The email of the user.</summary>
         [Newtonsoft.Json.JsonProperty("emailAddress", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string EmailAddress { get; set; }
     
         /// <summary>The phone number.</summary>
-        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PhoneNumber { get; set; }
     
         /// <summary>The preferred language of the user.</summary>
-        [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredLanguage { get; set; }
     
         /// <summary>The timezone of the user.</summary>
-        [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredTimezone { get; set; }
     
         /// <summary>The supported languages.</summary>
         [Newtonsoft.Json.JsonProperty("supportedLanguages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> SupportedLanguages { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<string> SupportedLanguages { get; set; } = new System.Collections.ObjectModel.Collection<string>();
     
         /// <summary>The supported timezones.</summary>
         [Newtonsoft.Json.JsonProperty("supportedTimezones", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> SupportedTimezones { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<string> SupportedTimezones { get; set; } = new System.Collections.ObjectModel.Collection<string>();
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
     
     
     }
@@ -5401,6 +5406,7 @@ namespace Notifo.SDK
     {
         /// <summary>The topic to add.</summary>
         [Newtonsoft.Json.JsonProperty("topicPrefix", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string TopicPrefix { get; set; }
     
         /// <summary>Notification settings per channel.</summary>
@@ -5429,30 +5435,32 @@ namespace Notifo.SDK
     {
         /// <summary>The id of the user.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Id { get; set; }
     
         /// <summary>The unique api key for the user.</summary>
         [Newtonsoft.Json.JsonProperty("apiKey", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string ApiKey { get; set; }
     
         /// <summary>The full name of the user.</summary>
-        [Newtonsoft.Json.JsonProperty("fullName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("fullName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string FullName { get; set; }
     
         /// <summary>The email of the user.</summary>
-        [Newtonsoft.Json.JsonProperty("emailAddress", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("emailAddress", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string EmailAddress { get; set; }
     
         /// <summary>The phone number.</summary>
-        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PhoneNumber { get; set; }
     
         /// <summary>The preferred language of the user.</summary>
-        [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredLanguage { get; set; }
     
         /// <summary>The timezone of the user.</summary>
-        [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredTimezone { get; set; }
     
         /// <summary>True when only whitelisted topic are allowed.</summary>
@@ -5461,11 +5469,13 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; } = new System.Collections.Generic.Dictionary<string, long>();
     
     
     }
@@ -5489,7 +5499,8 @@ namespace Notifo.SDK
     {
         /// <summary>The users to update.</summary>
         [Newtonsoft.Json.JsonProperty("requests", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<UpsertUserDto> Requests { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<UpsertUserDto> Requests { get; set; } = new System.Collections.ObjectModel.Collection<UpsertUserDto>();
     
     
     }
@@ -5537,6 +5548,7 @@ namespace Notifo.SDK
     {
         /// <summary>The topic to add.</summary>
         [Newtonsoft.Json.JsonProperty("prefix", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Prefix { get; set; }
     
     
@@ -5561,15 +5573,18 @@ namespace Notifo.SDK
     {
         /// <summary>The topic path.</summary>
         [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Path { get; set; }
     
         /// <summary>THe last update to the topic.</summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastUpdate { get; set; }
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; } = new System.Collections.Generic.Dictionary<string, long>();
     
     
     }
@@ -5593,15 +5608,18 @@ namespace Notifo.SDK
     {
         /// <summary>The code of the template.</summary>
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Code { get; set; }
     
         /// <summary>The formatting.</summary>
         [Newtonsoft.Json.JsonProperty("formatting", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationFormattingDto Formatting { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public NotificationFormattingDto Formatting { get; set; } = new NotificationFormattingDto();
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
     
     
     }
@@ -5670,7 +5688,8 @@ namespace Notifo.SDK
     {
         /// <summary>The templates to update.</summary>
         [Newtonsoft.Json.JsonProperty("requests", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<UpsertTemplateDto> Requests { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<UpsertTemplateDto> Requests { get; set; } = new System.Collections.ObjectModel.Collection<UpsertTemplateDto>();
     
     
     }
@@ -5680,11 +5699,13 @@ namespace Notifo.SDK
     {
         /// <summary>The code of the template.</summary>
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Code { get; set; }
     
         /// <summary>The formatting.</summary>
         [Newtonsoft.Json.JsonProperty("formatting", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationFormattingDto Formatting { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public NotificationFormattingDto Formatting { get; set; } = new NotificationFormattingDto();
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5712,28 +5733,38 @@ namespace Notifo.SDK
     {
         /// <summary>The mime type.</summary>
         [Newtonsoft.Json.JsonProperty("mimeType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string MimeType { get; set; }
     
         /// <summary>The file name.</summary>
         [Newtonsoft.Json.JsonProperty("fileName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string FileName { get; set; }
     
         /// <summary>Generated information about the file.</summary>
         [Newtonsoft.Json.JsonProperty("fileInfo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string FileInfo { get; set; }
     
         /// <summary>The size of the media file.</summary>
         [Newtonsoft.Json.JsonProperty("fileSize", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public long FileSize { get; set; }
     
+        /// <summary>The url to the media item.</summary>
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Url { get; set; }
+    
         /// <summary>The type of the media.</summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MediaType Type { get; set; }
     
         /// <summary>Metadata about the media.</summary>
         [Newtonsoft.Json.JsonProperty("metadata", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public MediaMetadata Metadata { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public MediaMetadata Metadata { get; set; } = new MediaMetadata();
     
     
     }
@@ -5806,14 +5837,17 @@ namespace Notifo.SDK
     {
         /// <summary>The log message.</summary>
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Message { get; set; }
     
         /// <summary>The first time this message has been seen.</summary>
         [Newtonsoft.Json.JsonProperty("firstSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset FirstSeen { get; set; }
     
         /// <summary>The last time this message has been seen.</summary>
         [Newtonsoft.Json.JsonProperty("lastSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastSeen { get; set; }
     
         /// <summary>The number of items the message has been seen.</summary>
@@ -5842,10 +5876,12 @@ namespace Notifo.SDK
     {
         /// <summary>The id of the event.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Id { get; set; }
     
         /// <summary>The topic path.</summary>
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Topic { get; set; }
     
         /// <summary>A custom id to identity the creator.</summary>
@@ -5854,6 +5890,7 @@ namespace Notifo.SDK
     
         /// <summary>The display name.</summary>
         [Newtonsoft.Json.JsonProperty("displayName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string DisplayName { get; set; }
     
         /// <summary>Additional user defined data.</summary>
@@ -5862,27 +5899,32 @@ namespace Notifo.SDK
     
         /// <summary>The time when the event has been created.</summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset Created { get; set; }
     
         /// <summary>The final formatting infos.</summary>
         [Newtonsoft.Json.JsonProperty("formatting", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public NotificationFormattingDto Formatting { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public NotificationFormattingDto Formatting { get; set; } = new NotificationFormattingDto();
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
     
         /// <summary>User defined properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, string> Properties { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, string> Properties { get; set; } = new System.Collections.Generic.Dictionary<string, string>();
     
         /// <summary>The scheduling options.</summary>
         [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public SchedulingDto Scheduling { get; set; }
     
         /// <summary>The statistics counters.</summary>
-        [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
+        [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; } = new System.Collections.Generic.Dictionary<string, long>();
     
         /// <summary>True when silent.</summary>
         [Newtonsoft.Json.JsonProperty("silent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5961,7 +6003,8 @@ namespace Notifo.SDK
     {
         /// <summary>The publish requests.</summary>
         [Newtonsoft.Json.JsonProperty("requests", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<PublishDto> Requests { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<PublishDto> Requests { get; set; } = new System.Collections.ObjectModel.Collection<PublishDto>();
     
     
     }
@@ -5971,6 +6014,7 @@ namespace Notifo.SDK
     {
         /// <summary>The topic path.</summary>
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Topic { get; set; }
     
         /// <summary>A custom id to identity the creator.</summary>
@@ -6023,10 +6067,12 @@ namespace Notifo.SDK
     {
         /// <summary>The id of the app.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Id { get; set; }
     
         /// <summary>The app name.</summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Name { get; set; }
     
         /// <summary>The current role.</summary>
@@ -6053,19 +6099,23 @@ namespace Notifo.SDK
     {
         /// <summary>The id of the app.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Id { get; set; }
     
         /// <summary>The app name.</summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Name { get; set; }
     
         /// <summary>The current role.</summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
     
         /// <summary>The supported languages.</summary>
         [Newtonsoft.Json.JsonProperty("languages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<string> Languages { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<string> Languages { get; set; } = new System.Collections.ObjectModel.Collection<string>();
     
         /// <summary>The sender email address.</summary>
         [Newtonsoft.Json.JsonProperty("emailAddress", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -6101,20 +6151,24 @@ namespace Notifo.SDK
     
         /// <summary>The verification status of the email.</summary>
         [Newtonsoft.Json.JsonProperty("emailVerificationStatus", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public EmailVerificationStatus EmailVerificationStatus { get; set; }
     
         /// <summary>The api keys.</summary>
         [Newtonsoft.Json.JsonProperty("apiKeys", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, string> ApiKeys { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, string> ApiKeys { get; set; } = new System.Collections.Generic.Dictionary<string, string>();
     
         /// <summary>The contributors.</summary>
         [Newtonsoft.Json.JsonProperty("contributors", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<AppContributorDto> Contributors { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<AppContributorDto> Contributors { get; set; } = new System.Collections.ObjectModel.Collection<AppContributorDto>();
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, long> Counters { get; set; } = new System.Collections.Generic.Dictionary<string, long>();
     
     
     }
@@ -6141,14 +6195,17 @@ namespace Notifo.SDK
     {
         /// <summary>The id of the user.</summary>
         [Newtonsoft.Json.JsonProperty("userId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string UserId { get; set; }
     
         /// <summary>The name of the user.</summary>
         [Newtonsoft.Json.JsonProperty("userName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string UserName { get; set; }
     
         /// <summary>The role.</summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
     
     
@@ -6205,10 +6262,12 @@ namespace Notifo.SDK
     {
         /// <summary>The email of the new contributor.</summary>
         [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Email { get; set; }
     
         /// <summary>The role.</summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
     
     
@@ -6225,10 +6284,12 @@ namespace Notifo.SDK
     {
         /// <summary>The subject text.</summary>
         [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Subject { get; set; }
     
         /// <summary>The body html template.</summary>
         [Newtonsoft.Json.JsonProperty("bodyHtml", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string BodyHtml { get; set; }
     
         /// <summary>The body text template.</summary>
@@ -6243,6 +6304,7 @@ namespace Notifo.SDK
     {
         /// <summary>The new language.</summary>
         [Newtonsoft.Json.JsonProperty("language", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Language { get; set; }
     
     

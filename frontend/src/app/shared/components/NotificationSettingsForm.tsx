@@ -8,6 +8,7 @@
 import { Forms } from '@app/framework';
 import { texts } from '@app/texts';
 import * as React from 'react';
+import { MediaInput } from './MediaInput';
 
 const CHANNELS = [
     'webpush',
@@ -80,13 +81,13 @@ export module NotificationsForm {
                     language={currentLanguage}
                     label={texts.common.messageBody} />
 
-                <Forms.LocalizedText name={`${field}.imageSmall`}
+                <MediaInput name={`${field}.imageSmall`}
                     onLanguageSelect={onLanguageSelect}
                     languages={languages}
                     language={currentLanguage}
                     label={texts.common.imageSmall} />
 
-                <Forms.LocalizedText name={`${field}.imageLarge`}
+                <MediaInput name={`${field}.imageLarge`}
                     onLanguageSelect={onLanguageSelect}
                     languages={languages}
                     language={currentLanguage}

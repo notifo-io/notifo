@@ -108,7 +108,7 @@ export const AppPage = () => {
     }, [appId]);
 
     const doPublish = React.useCallback(() => {
-        dispatch(togglePublishDialog());
+        dispatch(togglePublishDialog({ open: true }));
     }, []);
 
     if (loading || !appSelected) {

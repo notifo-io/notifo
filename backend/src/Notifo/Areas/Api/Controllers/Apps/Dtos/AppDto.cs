@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure.Reflection;
 
@@ -18,11 +19,13 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The id of the app.
         /// </summary>
+        [Required]
         public string Id { get; set; }
 
         /// <summary>
         /// The app name.
         /// </summary>
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
