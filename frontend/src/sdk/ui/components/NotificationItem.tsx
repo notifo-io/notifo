@@ -132,6 +132,20 @@ export const NotificationItem = (props: NotificationItemProps) => {
         return formatDistanceToNow(parseISO(notification.created), { locale });
     }, [config.locale, notification.created]);
 
+    const target = useMemo(() => {
+        if (!notification.linkUrl) {
+            return '_self';
+        }
+
+        const linkUrl = new URL(notification.linkUrl);
+
+        if (linkUrl.host === window.location.host) {
+            return '_self';
+        } else {
+            return '_blank';
+        }
+    }, [notification.linkUrl]);
+
     return (
         <div class='notifo-notification' ref={setRef}>
             {!disabled && !notification.isSeen && markingSeen !== 'Failed' &&
@@ -146,8 +160,8 @@ export const NotificationItem = (props: NotificationItemProps) => {
                 <div class='notifo-notification-right'>
                     {notification.subject &&
                         <div class='notifo-notification-subject'>
-                            {notification.linkUrl && !notification.linkText ? (
-                                <a href={notification.linkUrl} target='_blank' rel='noopener'>{notification.subject}</a>
+                            {notification.linkUrl ? (
+                                <a href={notification.linkUrl} target={target} rel='noopener'>{notification.subject}</a>
                             ) : (
                                 <span>{notification.subject}</span>
                             )}
@@ -168,7 +182,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
                     {notification.linkUrl && notification.linkText &&
                         <div class='notifo-notification-link'>
-                            <a class='notifo-link' href={notification.linkUrl} target='_blank' rel='noopener'>{notification.linkText}</a>
+                            <a class='notifo-link' href={notification.linkUrl} target={target} rel='noopener'>{notification.linkText}</a>
                         </div>
                     }
 
