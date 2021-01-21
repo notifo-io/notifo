@@ -325,6 +325,9 @@ export interface NotificationsOptions  {
 
     // The style of the button.
     style: OptionMainStyle;
+
+    // True to hide the profile menu.
+    hideProfile?: boolean;
 }
 
 type Texts<T> = {

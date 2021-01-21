@@ -75,9 +75,11 @@ export const Notifications = (props: NotificationsProps) => {
 
     return (
         <div class='notifo-notifications-list'>
-            <button class='notifo-profile-button' type='button' onClick={doShowProfile}>
-                <Icon type='settings' size={20} />
-            </button>
+            {options.hideProfile !== true &&
+                <button class='notifo-profile-button' type='button' onClick={doShowProfile}>
+                    <Icon type='settings' size={20} />
+                </button>
+            }
 
             {!isConnected || !isLoaded &&
                 <div class='notifo-loading'>

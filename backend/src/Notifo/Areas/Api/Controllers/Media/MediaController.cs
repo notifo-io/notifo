@@ -82,6 +82,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 200 => Media returned.
         /// 404 => Media does not exist.
         /// </returns>
+        [HttpGet("api/apps/{appId}/media/{fileName}")]
         [HttpGet("api/assets/{appId}/{fileName}")]
         [AllowAnonymous]
         public async Task<IActionResult> Download(string appId, string fileName, [FromQuery] MediaFileQueryDto? query = null)
