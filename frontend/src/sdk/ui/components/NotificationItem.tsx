@@ -148,13 +148,13 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
     return (
         <div class='notifo-notification' ref={setRef}>
-            {!disabled && !notification.isSeen && markingSeen !== 'Failed' &&
-                <span class='notifo-notification-new'></span>
-            }
-
             <Image class='notifo-notification-image-large' src={withPreset(notification.imageLarge, 'WebLarge')} />
 
             <div class='notifo-notification-row2'>
+                {!disabled && !notification.isSeen && markingSeen !== 'Failed' &&
+                    <span class='notifo-notification-new'></span>
+                }
+
                 <Image class='notifo-notification-image-small notifo-notification-left' src={withPreset(notification.imageSmall, 'WebSmall')} />
 
                 <div class='notifo-notification-right'>

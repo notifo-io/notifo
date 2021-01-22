@@ -216,6 +216,7 @@ $size-toggle: 20px;
                 display: flex;
                 flex-direction: row;
                 flex-grow: 0;
+                position: relative;
             }
 
             &-right {
