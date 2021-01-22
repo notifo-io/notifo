@@ -89,7 +89,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
 
             const request: SearchRequest = { ...query || {}, ...params } as any;
 
-            if (query?.search !== state.search) {
+            if (hasChanged(request.search, state.search)) {
                 request.page = 0;
             }
 
@@ -175,4 +175,12 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
     });
 
     return { action, initialize, createInitial };
+}
+
+function hasChanged(lhs: string | undefined | null, rhs: string | undefined | null) {
+    if (!lhs && !rhs) {
+        return false;
+    }
+
+    return lhs !== rhs;
 }

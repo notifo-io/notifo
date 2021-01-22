@@ -9,8 +9,15 @@ import * as React from 'react';
 import { Button, Input, InputProps } from 'reactstrap';
 import { Icon } from './Icon';
 
+export interface ClearInputProps extends InputProps {
+    // True when cleared.
+    onClear?: () => void;
+}
+
 export const ClearInput = (props: InputProps) => {
-    const input = React.useRef<HTMLInputElement | null>(null);
+    const { bsSize, onClear } = props;
+
+    const container = React.useRef<HTMLDivElement | null>(null);
 
     const [value, setValue] = React.useState(props.value);
 
@@ -19,25 +26,32 @@ export const ClearInput = (props: InputProps) => {
     }, [props.value]);
 
     const doClear = React.useCallback(() => {
-        if (input.current) {
+        if (container.current) {
             setValue(undefined);
-            setNativeValue(input.current, '');
 
-            input.current.dispatchEvent(new Event('input', { bubbles: true }));
+            const input: HTMLInputElement = container.current.children[0] as HTMLInputElement;
+
+            if (input) {
+                setNativeValue(input, '');
+
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            if (onClear) {
+                onClear();
+            }
         }
-    }, [input.current]);
-
-    const { bsSize } = props;
+    }, [container.current, onClear]);
 
     return (
-        <div className='input-container'>
-            <Input value={value} {...props} innerRef={input}
+        <div className='input-container' ref={container}>
+            <Input value={value} {...props}
                 spellCheck={ false }
                 autoCorrect={ 'off' }
                 autoComplete={ 'none' } />
 
             {value &&
-                <Button size={bsSize} color='link' className='input-btn' onClick={doClear} tabIndex={-1}>
+                <Button size={bsSize} color='link' className={`input-btn input-btn-${bsSize}`} onClick={doClear} tabIndex={-1}>
                     <Icon type='clear' />
                 </Button>
             }
