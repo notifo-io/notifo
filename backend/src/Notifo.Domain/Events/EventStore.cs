@@ -32,7 +32,7 @@ namespace Notifo.Domain.Events
             collector.StopAsync().Wait();
         }
 
-        public async Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct = default)
+        public async Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct)
         {
             if (key.AppId != null && key.EventId != null)
             {
@@ -40,7 +40,7 @@ namespace Notifo.Domain.Events
             }
         }
 
-        public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query, CancellationToken ct = default)
+        public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));
@@ -52,7 +52,7 @@ namespace Notifo.Domain.Events
             return events;
         }
 
-        public Task InsertAsync(EventMessage request, CancellationToken ct = default)
+        public Task InsertAsync(EventMessage request, CancellationToken ct)
         {
             Guard.NotNull(request, nameof(request));
 

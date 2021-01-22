@@ -138,7 +138,7 @@ namespace Notifo.Identity.MongoDb
             return "Identity_Users";
         }
 
-        protected override Task SetupCollectionAsync(IMongoCollection<MongoDbUser> collection, CancellationToken ct = default)
+        protected override Task SetupCollectionAsync(IMongoCollection<MongoDbUser> collection, CancellationToken ct)
         {
             return collection.Indexes.CreateManyAsync(new[]
             {

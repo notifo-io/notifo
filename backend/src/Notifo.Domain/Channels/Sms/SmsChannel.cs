@@ -48,7 +48,7 @@ namespace Notifo.Domain.Channels.Sms
             this.userNotificationStore = userNotificationStore;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             userNotificationQueue.Subscribe(this);
 
@@ -87,7 +87,7 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct = default)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
         {
             var job = new SmsJob(notification, user);
 

@@ -15,7 +15,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class NoopSmsSender : ISmsSender
     {
-        public Task<SmsResult> SendAsync(string to, string body, string? token = null, CancellationToken ct = default)
+        public Task<SmsResult> SendAsync(string to, string body, string? token, CancellationToken ct)
         {
             throw new DomainException("SMS are not configured.");
         }

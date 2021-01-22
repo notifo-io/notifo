@@ -23,7 +23,7 @@ namespace Notifo.Infrastructure
             this.options = options.Value;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             foreach (var (key, value) in options)
             {

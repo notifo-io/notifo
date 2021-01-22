@@ -18,7 +18,7 @@ namespace Notifo.Infrastructure.MongoDb
         {
         }
 
-        protected async Task<T?> GetDocumentAsync(string id, CancellationToken ct = default)
+        protected async Task<T?> GetDocumentAsync(string id, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
@@ -29,7 +29,7 @@ namespace Notifo.Infrastructure.MongoDb
             return existing;
         }
 
-        protected async Task UpsertDocumentAsync(string id, T value, string? oldEtag = null, CancellationToken ct = default)
+        protected async Task UpsertDocumentAsync(string id, T value, string? oldEtag, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
             Guard.NotNull(value, nameof(value));
@@ -72,7 +72,7 @@ namespace Notifo.Infrastructure.MongoDb
             }
         }
 
-        public Task DeleteAsync(string id, CancellationToken ct = default)
+        public Task DeleteAsync(string id, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 

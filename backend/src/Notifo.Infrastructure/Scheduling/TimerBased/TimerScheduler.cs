@@ -53,14 +53,14 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             this.log = log;
         }
 
-        public async Task InitializeAsync(CancellationToken ct = default)
+        public async Task InitializeAsync(CancellationToken ct)
         {
             await schedulerStore.InitializeAsync(ct);
 
             timers.Add(new CompletionTimer(500, QueryAsync));
         }
 
-        public async Task ReleaseAsync(CancellationToken ct = default)
+        public async Task ReleaseAsync(CancellationToken ct)
         {
             actionBlock.Complete();
 
@@ -78,7 +78,7 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             }
         }
 
-        public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct = default)
+        public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct)
         {
             if (dueTime <= Now && canInline && schedulerOptions.ExecuteInline)
             {
@@ -90,7 +90,7 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             }
         }
 
-        public async Task ScheduleDelayedAsync(string key, T job, int delaySeconds, bool canInline, CancellationToken ct = default)
+        public async Task ScheduleDelayedAsync(string key, T job, int delaySeconds, bool canInline, CancellationToken ct)
         {
             if (delaySeconds <= 0 && canInline)
             {

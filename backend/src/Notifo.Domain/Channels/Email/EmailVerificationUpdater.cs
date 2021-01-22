@@ -31,14 +31,14 @@ namespace Notifo.Domain.Channels.Email
             this.log = log;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             timer = new CompletionTimer(5000, CheckAsync, 5000);
 
             return Task.CompletedTask;
         }
 
-        public async Task ReleaseAsync(CancellationToken ct = default)
+        public async Task ReleaseAsync(CancellationToken ct)
         {
             if (timer != null)
             {

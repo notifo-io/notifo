@@ -28,21 +28,21 @@ namespace Notifo.Domain.Subscriptions
             this.userStore = userStore;
         }
 
-        public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, CancellationToken ct = default)
+        public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
 
             return repository.QueryAsync(appId, topic, userId, ct);
         }
 
-        public Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query, CancellationToken ct = default)
+        public Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
 
             return repository.QueryAsync(appId, query, ct);
         }
 
-        public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
 
@@ -51,7 +51,7 @@ namespace Notifo.Domain.Subscriptions
             return subscription;
         }
 
-        public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command, CancellationToken ct = default)
+        public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command, CancellationToken ct)
         {
             Guard.NotNull(command, nameof(command));
 
@@ -77,7 +77,7 @@ namespace Notifo.Domain.Subscriptions
             });
         }
 
-        public async Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public async Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             var command = new AddUserAllowedTopic
             {
@@ -89,7 +89,7 @@ namespace Notifo.Domain.Subscriptions
             await repository.DeletePrefixAsync(appId, userId, prefix, ct);
         }
 
-        public async Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public async Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             var command = new RemoveUserAllowedTopic
             {
@@ -101,7 +101,7 @@ namespace Notifo.Domain.Subscriptions
             await repository.DeletePrefixAsync(appId, userId, prefix, ct);
         }
 
-        public Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             return repository.DeleteAsync(appId, userId, prefix, ct);
         }

@@ -21,7 +21,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             this.userNotificationService = userNotificationService;
         }
 
-        public Task HandleAsync(UserEventMessage message, CancellationToken ct = default)
+        public Task HandleAsync(UserEventMessage message, CancellationToken ct)
         {
             return userNotificationService.DistributeAsync(message);
         }

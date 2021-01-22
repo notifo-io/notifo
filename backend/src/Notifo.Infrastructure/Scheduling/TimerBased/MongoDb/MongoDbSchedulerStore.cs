@@ -74,7 +74,7 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                     .Inc(x => x.RetryCount, 1));
         }
 
-        public async Task EnqueueWithDelayAsync(string key, T job, Instant delay, int retryCount = 0, CancellationToken ct = default)
+        public async Task EnqueueWithDelayAsync(string key, T job, Instant delay, int retryCount, CancellationToken ct)
         {
             await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing && x.DueTime <= delay,
                 Update
@@ -88,7 +88,7 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                 Upsert, ct);
         }
 
-        public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount = 0, CancellationToken ct = default)
+        public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount, CancellationToken ct)
         {
             await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing,
                 Update

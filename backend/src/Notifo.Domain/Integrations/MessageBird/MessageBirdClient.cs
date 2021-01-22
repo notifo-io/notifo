@@ -36,7 +36,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             this.options = options.Value;
         }
 
-        public async Task<MessageBirdSmsResponse> SendVoiceAsync(MessageBirdVoiceMessage message, CancellationToken ct = default)
+        public async Task<MessageBirdSmsResponse> SendVoiceAsync(MessageBirdVoiceMessage message, CancellationToken ct)
         {
             Guard.NotNull(message, nameof(message));
             Guard.NotNullOrEmpty(message.Body, nameof(message.Body));
@@ -88,7 +88,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             }
         }
 
-        public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message, CancellationToken ct = default)
+        public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message, CancellationToken ct)
         {
             Guard.NotNull(message, nameof(message));
             Guard.NotNullOrEmpty(message.Body, nameof(message.Body));

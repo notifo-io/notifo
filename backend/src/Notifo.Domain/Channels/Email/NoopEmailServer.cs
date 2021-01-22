@@ -14,22 +14,22 @@ namespace Notifo.Domain.Channels.Email
 {
     public sealed class NoopEmailServer : IEmailServer
     {
-        public Task SendAsync(EmailMessage message, CancellationToken ct = default)
+        public Task SendAsync(EmailMessage message, CancellationToken ct)
         {
             throw new DomainException("EMails are not configured.");
         }
 
-        public Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct)
         {
             return Task.CompletedTask;
         }
 
-        public Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct)
         {
             return Task.FromResult(EmailVerificationStatus.Verified);
         }
 
-        public Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct = default)
+        public Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct)
         {
             var result = new Dictionary<string, EmailVerificationStatus>();
 

@@ -58,7 +58,7 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
             }
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             channel = connection.Connection.CreateModel();
 

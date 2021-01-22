@@ -39,7 +39,7 @@ namespace Notifo.Domain.Integrations.MessageBird
         {
             var sms = new MessageBirdSmsMessage("4917683297281", "Hello");
 
-            var response = await sut.SendSmsAsync(sms);
+            var response = await sut.SendSmsAsync(sms, default);
 
             Assert.Equal(1, response.Recipients.TotalSentCount);
         }
@@ -49,7 +49,7 @@ namespace Notifo.Domain.Integrations.MessageBird
         {
             var voice = new MessageBirdVoiceMessage("4917683297281", "Guten Tag, wie geht es ihnen?", "de-de");
 
-            var response = await sut.SendVoiceAsync(voice);
+            var response = await sut.SendVoiceAsync(voice, default);
 
             Assert.Equal(1, response.Recipients.TotalSentCount);
         }

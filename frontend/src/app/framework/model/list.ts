@@ -89,8 +89,14 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
 
             const request: SearchRequest = { ...query || {}, ...params } as any;
 
-            if (hasChanged(request.search, state.search)) {
+            if (!request.hasOwnProperty('search')) {
+                request.search = state.search;
+            } else if (hasChanged(request.search, state.search)) {
                 request.page = 0;
+            }
+
+            if (!request.hasOwnProperty('sorting')) {
+                request.sorting = state.sorting;
             }
 
             if (!Types.isNumber(request.page)) {

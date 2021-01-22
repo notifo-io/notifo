@@ -20,7 +20,7 @@ namespace Notifo.Infrastructure.Messaging.Scheduling
             this.scheduler = scheduler;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             return Task.CompletedTask;
         }

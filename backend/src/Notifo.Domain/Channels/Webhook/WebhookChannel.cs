@@ -50,7 +50,7 @@ namespace Notifo.Domain.Channels.Webhook
             this.userNotificationStore = userNotificationStore;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             userNotificationQueue.Subscribe(this);
 
@@ -62,7 +62,7 @@ namespace Notifo.Domain.Channels.Webhook
             return !string.IsNullOrWhiteSpace(app.WebhookUrl);
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct = default)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
         {
             if (!isUpdate)
             {

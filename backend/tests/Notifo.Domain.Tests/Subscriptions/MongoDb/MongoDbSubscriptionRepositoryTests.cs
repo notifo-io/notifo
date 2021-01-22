@@ -45,7 +45,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             await SubscribeAsync(userId2, subscriptionTopic1);
             await SubscribeAsync(userId2, subscriptionTopic2, true);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
 
             Assert.Equal(2, subscriptions.Count);
             Assert.Equal(subscriptionTopic2, subscriptions[0].TopicPrefix);
@@ -59,7 +59,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             await SubscribeAsync(userId1, subscriptionTopic);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
 
             Assert.Single(subscriptions);
             Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
@@ -72,7 +72,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             await SubscribeAsync(userId1, subscriptionTopic);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
 
             Assert.Single(subscriptions);
             Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
@@ -85,7 +85,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             await SubscribeAsync(userId1, subscriptionTopic);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
 
             Assert.Empty(subscriptions);
         }
@@ -104,7 +104,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 "tenant1/updates/news"
             }, subscriptions_0);
 
-            await _.Repository.DeleteAsync(appId, userId1, "tenant1/updates");
+            await _.Repository.DeleteAsync(appId, userId1, "tenant1/updates", default);
 
             var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
@@ -132,7 +132,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 "tenant2/updates/news"
             }, subscriptions_0);
 
-            await _.Repository.DeletePrefixAsync(appId, userId1, "tenant2");
+            await _.Repository.DeletePrefixAsync(appId, userId1, "tenant2", default);
 
             var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
@@ -145,7 +145,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         private async Task<string[]> QuerySubscriptionTopics(string userId)
         {
-            var subscriptions = await _.Repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId });
+            var subscriptions = await _.Repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
 
             return subscriptions.Select(x => x.TopicPrefix.ToString()).OrderBy(x => x).ToArray();
         }

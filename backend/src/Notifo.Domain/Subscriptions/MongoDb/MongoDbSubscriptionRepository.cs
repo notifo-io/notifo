@@ -51,7 +51,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 null, ct);
         }
 
-        public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query, CancellationToken ct = default)
+        public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query, CancellationToken ct)
         {
             var filters = new List<FilterDefinition<MongoDbSubscription>>
             {
@@ -83,7 +83,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToSubscription()));
         }
 
-        public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, [EnumeratorCancellation] CancellationToken ct = default)
+        public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, [EnumeratorCancellation] CancellationToken ct)
         {
             var filter = CreatePrefixFilter(appId, userId, topic, false);
 
@@ -126,7 +126,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             }
         }
 
-        public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             var topicPrefix = prefix.Id;
 
@@ -144,14 +144,14 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
         }
 
-        public Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             var id = MongoDbSubscription.CreateId(appId, userId, prefix);
 
             return Collection.DeleteOneAsync(x => x.DocId == id, ct);
         }
 
-        public Task DeletePrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct = default)
+        public Task DeletePrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
         {
             var filter = CreatePrefixFilter(appId, userId, prefix, true);
 

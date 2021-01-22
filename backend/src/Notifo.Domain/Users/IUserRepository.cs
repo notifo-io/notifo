@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Counters;
@@ -14,6 +15,8 @@ namespace Notifo.Domain.Users
 {
     public interface IUserRepository : ICounterStore<(string AppId, string UserId)>
     {
+        IAsyncEnumerable<string> QueryIdsAsync(string appId, CancellationToken ct);
+
         Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct);
 
         Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct);

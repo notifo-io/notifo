@@ -38,7 +38,7 @@ namespace Notifo.Domain.UserNotifications
             collector.StopAsync();
         }
 
-        public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct = default)
+        public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(userId, nameof(userId));
@@ -80,7 +80,7 @@ namespace Notifo.Domain.UserNotifications
             return repository.TrackSeenAsync(ids, handle);
         }
 
-        public Task TrackAttemptAsync(UserEventMessage userEvent, CancellationToken ct = default)
+        public Task TrackAttemptAsync(UserEventMessage userEvent, CancellationToken ct)
         {
             Guard.NotNull(userEvent, nameof(userEvent));
 
@@ -90,7 +90,7 @@ namespace Notifo.Domain.UserNotifications
             return StoreCountersAsync(counterKey, counterMap);
         }
 
-        public Task TrackFailedAsync(UserEventMessage userEvent, CancellationToken ct = default)
+        public Task TrackFailedAsync(UserEventMessage userEvent, CancellationToken ct)
         {
             Guard.NotNull(userEvent, nameof(userEvent));
 
@@ -100,7 +100,7 @@ namespace Notifo.Domain.UserNotifications
             return StoreCountersAsync(counterKey, counterMap);
         }
 
-        public Task InsertAsync(UserNotification notification, CancellationToken ct = default)
+        public Task InsertAsync(UserNotification notification, CancellationToken ct)
         {
             Guard.NotNull(notification, nameof(notification));
 

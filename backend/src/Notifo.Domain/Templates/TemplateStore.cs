@@ -20,7 +20,7 @@ namespace Notifo.Domain.Templates
             this.repository = repository;
         }
 
-        public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query, CancellationToken ct = default)
+        public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));
@@ -30,7 +30,7 @@ namespace Notifo.Domain.Templates
             return templates;
         }
 
-        public async Task<Template?> GetAsync(string appId, string code, CancellationToken ct = default)
+        public async Task<Template?> GetAsync(string appId, string code, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(code, nameof(code));
@@ -55,7 +55,7 @@ namespace Notifo.Domain.Templates
             return template;
         }
 
-        public Task<Template> UpsertAsync(string appId, string code, TemplateUpdate update, CancellationToken ct = default)
+        public Task<Template> UpsertAsync(string appId, string code, TemplateUpdate update, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(code, nameof(code));
@@ -78,7 +78,7 @@ namespace Notifo.Domain.Templates
             });
         }
 
-        public Task DeleteAsync(string appId, string code, CancellationToken ct = default)
+        public Task DeleteAsync(string appId, string code, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(code, nameof(code));

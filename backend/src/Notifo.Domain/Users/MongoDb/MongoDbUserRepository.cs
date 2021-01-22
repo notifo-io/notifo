@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -55,6 +56,22 @@ namespace Notifo.Domain.Users.MongoDb
                         .Ascending(x => x.Doc.ApiKey),
                     new CreateIndexOptions { Unique = true }),
                 null, ct);
+        }
+
+        public async IAsyncEnumerable<string> QueryIdsAsync(string appId, [EnumeratorCancellation] CancellationToken ct)
+        {
+            var find = Collection.Find(x => x.Doc.AppId == appId).Only(x => x.Doc.Id);
+
+            using (var cursor = await find.ToCursorAsync(ct))
+            {
+                while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
+                {
+                    foreach (var user in cursor.Current)
+                    {
+                        yield return user["d"]["_id"].AsString;
+                    }
+                }
+            }
         }
 
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct)

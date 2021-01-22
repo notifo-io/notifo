@@ -30,7 +30,7 @@ namespace Notifo.Domain.Channels.Email
             this.options = options.Value;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             amazonSES = new AmazonSimpleEmailServiceClient(
                 options.AwsAccessKeyId,
@@ -40,7 +40,7 @@ namespace Notifo.Domain.Channels.Email
             return Task.CompletedTask;
         }
 
-        public override async Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public override async Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct)
         {
             var request = new DeleteIdentityRequest
             {
@@ -50,7 +50,7 @@ namespace Notifo.Domain.Channels.Email
             await amazonSES.DeleteIdentityAsync(request, ct);
         }
 
-        public override async Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public override async Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct)
         {
             await RemoveEmailAddressAsync(emailAddress, ct);
 
@@ -78,7 +78,7 @@ namespace Notifo.Domain.Channels.Email
             return MapStatus(status.Value.VerificationStatus);
         }
 
-        public override async Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct = default)
+        public override async Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct)
         {
             var result = new Dictionary<string, EmailVerificationStatus>();
 

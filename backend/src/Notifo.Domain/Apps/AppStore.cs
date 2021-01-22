@@ -38,7 +38,7 @@ namespace Notifo.Domain.Apps
             collector.StopAsync().Wait();
         }
 
-        public async Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct = default)
+        public async Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct)
         {
             if (key.AppId != null)
             {
@@ -46,7 +46,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<App?> GetCachedAsync(string id, CancellationToken ct = default)
+        public Task<App?> GetCachedAsync(string id, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
@@ -58,7 +58,7 @@ namespace Notifo.Domain.Apps
             return GetAsync(id, ct);
         }
 
-        public async Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct = default)
+        public async Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct)
         {
             var apps = await repository.QueryNonConfirmedEmailAddressesAsync(ct);
 
@@ -70,7 +70,7 @@ namespace Notifo.Domain.Apps
             return apps;
         }
 
-        public async Task<List<App>> QueryAsync(string contributorId, CancellationToken ct = default)
+        public async Task<List<App>> QueryAsync(string contributorId, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(contributorId, nameof(contributorId));
 
@@ -84,7 +84,7 @@ namespace Notifo.Domain.Apps
             return apps;
         }
 
-        public async Task<App?> GetAsync(string id, CancellationToken ct = default)
+        public async Task<App?> GetAsync(string id, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
@@ -95,7 +95,7 @@ namespace Notifo.Domain.Apps
             return app;
         }
 
-        public async Task<App?> GetByApiKeyAsync(string apiKey, CancellationToken ct = default)
+        public async Task<App?> GetByApiKeyAsync(string apiKey, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(apiKey, nameof(apiKey));
 
@@ -106,7 +106,7 @@ namespace Notifo.Domain.Apps
             return app;
         }
 
-        public Task<App> UpsertAsync(string? id, ICommand<App> command, CancellationToken ct = default)
+        public Task<App> UpsertAsync(string? id, ICommand<App> command, CancellationToken ct)
         {
             Guard.NotNull(command, nameof(command));
 
@@ -139,7 +139,7 @@ namespace Notifo.Domain.Apps
             });
         }
 
-        public async Task DeleteAsync(string id, CancellationToken ct = default)
+        public async Task DeleteAsync(string id, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 

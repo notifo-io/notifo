@@ -72,7 +72,7 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task<SmsResult> SendAsync(string to, string body, string? token, CancellationToken ct = default)
+        public async Task<SmsResult> SendAsync(string to, string body, string? token, CancellationToken ct)
         {
             try
             {

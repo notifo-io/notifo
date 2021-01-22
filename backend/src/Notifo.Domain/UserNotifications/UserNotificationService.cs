@@ -56,7 +56,7 @@ namespace Notifo.Domain.UserNotifications
             this.clock = clock;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             userEventQueue.Subscribe(this);
 

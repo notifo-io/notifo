@@ -67,7 +67,7 @@ namespace Notifo.Domain.Channels.WebPush
             PublicKey = options.Value.VapidPublicKey;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             userNotificationQueue.Subscribe(this);
 
@@ -79,7 +79,7 @@ namespace Notifo.Domain.Channels.WebPush
             return !notification.Silent && user.WebPushSubscriptions.Count > 0;
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct = default)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
         {
             var job = new WebPushJob(notification, user, serializer);
 

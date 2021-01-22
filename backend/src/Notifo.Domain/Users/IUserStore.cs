@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Infrastructure;
@@ -13,6 +14,8 @@ namespace Notifo.Domain.Users
 {
     public interface IUserStore
     {
+        IAsyncEnumerable<string> QueryIdsAsync(string appId, CancellationToken ct = default);
+
         Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct = default);
 
         Task<User?> GetByApiKeyAsync(string apiKey, CancellationToken ct = default);

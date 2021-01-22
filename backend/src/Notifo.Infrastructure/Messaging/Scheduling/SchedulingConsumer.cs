@@ -32,12 +32,12 @@ namespace Notifo.Infrastructure.Messaging.Scheduling
             this.log = log;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             return scheduler.InitializeAsync(ct);
         }
 
-        public Task ReleaseAsync(CancellationToken ct = default)
+        public Task ReleaseAsync(CancellationToken ct)
         {
             return scheduler.ReleaseAsync(ct);
         }

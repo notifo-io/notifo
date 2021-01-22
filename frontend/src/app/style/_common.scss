@@ -392,7 +392,6 @@ div {
         @include absolute(0, 0, auto, auto);
         padding-left: 1rem;
         padding-right: 1rem;
-        z-index: 1000;
 
         &:focus {
             box-shadow: none !important;

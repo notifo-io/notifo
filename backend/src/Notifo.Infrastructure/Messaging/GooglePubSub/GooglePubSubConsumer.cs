@@ -40,7 +40,7 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
             this.log = log;
         }
 
-        public async Task ReleaseAsync(CancellationToken ct = default)
+        public async Task ReleaseAsync(CancellationToken ct)
         {
             if (subscriberClient != null)
             {
@@ -48,7 +48,7 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
             }
         }
 
-        public async Task InitializeAsync(CancellationToken ct = default)
+        public async Task InitializeAsync(CancellationToken ct)
         {
             var subcriptionName = new SubscriptionName(options.ProjectId, $"{options.Prefix}{topicId}");
 

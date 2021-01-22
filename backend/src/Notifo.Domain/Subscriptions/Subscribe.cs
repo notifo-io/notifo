@@ -38,7 +38,7 @@ namespace Notifo.Domain.Subscriptions
             }
         }
 
-        private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription target, CancellationToken ct = default)
+        private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription target, CancellationToken ct)
         {
             var user = await userStore.GetCachedAsync(target.AppId, target.UserId, ct);
 

@@ -16,6 +16,7 @@ using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Templates;
+using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 using Squidex.Log;
@@ -25,7 +26,18 @@ namespace Notifo.Domain.UserEvents.Pipeline
 {
     public sealed class UserEventPublisher : IUserEventPublisher
     {
-        private static readonly string[] UserTopicPrefixex = { "users/", "user/" };
+        private static readonly HashSet<string> UserAllTopics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "users/all",
+            "user/all"
+        };
+
+        private static readonly string[] UserTopicPrefixex =
+        {
+            "users/",
+            "user/"
+        };
+
         private readonly IUserEventProducer userEventProducer;
         private readonly ICounterService counters;
         private readonly ISemanticLog log;
@@ -33,11 +45,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
         private readonly ILogStore logStore;
         private readonly ISubscriptionStore subscriptionStore;
         private readonly ITemplateStore templateStore;
+        private readonly IUserStore userStore;
 
         public UserEventPublisher(ICounterService counters, ISemanticLog log, ILogStore logStore,
             IEventStore eventStore,
             ISubscriptionStore subscriptionStore,
             ITemplateStore templateStore,
+            IUserStore userStore,
             IUserEventProducer userEventProducer)
         {
             this.subscriptionStore = subscriptionStore;
@@ -46,10 +60,11 @@ namespace Notifo.Domain.UserEvents.Pipeline
             this.log = log;
             this.logStore = logStore;
             this.templateStore = templateStore;
+            this.userStore = userStore;
             this.userEventProducer = userEventProducer;
         }
 
-        public async Task PublishAsync(EventMessage message, CancellationToken ct = default)
+        public async Task PublishAsync(EventMessage message, CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(message.AppId))
             {
@@ -137,13 +152,26 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             var topic = @event.Topic;
 
-            if (IsUserTopic(topic, out var userId))
+            if (IsAllUsers(topic))
+            {
+                await foreach (var userId in userStore.QueryIdsAsync(@event.AppId))
+                {
+                    yield return new Subscription
+                    {
+                        AppId = @event.AppId,
+                        TopicPrefix = "users/all",
+                        TopicSettings = null,
+                        UserId = userId
+                    };
+                }
+            }
+            else if (IsUserTopic(topic, out var userId))
             {
                 yield return new Subscription
                 {
                     AppId = @event.AppId,
-                    TopicPrefix = topic,
-                    TopicSettings = new NotificationSettings(),
+                    TopicPrefix = $"users/{userId}",
+                    TopicSettings = null,
                     UserId = userId
                 };
             }
@@ -154,6 +182,11 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     yield return subscription;
                 }
             }
+        }
+
+        private static bool IsAllUsers(string topic)
+        {
+            return UserAllTopics.Contains(topic);
         }
 
         private static bool IsUserTopic(string topic, [MaybeNullWhen(false)] out string userId)

@@ -28,7 +28,7 @@ namespace Notifo.Domain.Channels.Email
             clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
         }
 
-        public async Task SendAsync(EmailMessage message, CancellationToken ct = default)
+        public async Task SendAsync(EmailMessage message, CancellationToken ct)
         {
             var smtpClient = clientPool.Get();
             try
@@ -105,17 +105,17 @@ namespace Notifo.Domain.Channels.Email
             }
         }
 
-        public virtual Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public virtual Task RemoveEmailAddressAsync(string emailAddress, CancellationToken ct)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct = default)
+        public virtual Task<EmailVerificationStatus> AddEmailAddressAsync(string emailAddress, CancellationToken ct)
         {
             return Task.FromResult(EmailVerificationStatus.Verified);
         }
 
-        public virtual Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct = default)
+        public virtual Task<Dictionary<string, EmailVerificationStatus>> GetStatusAsync(HashSet<string> emailAddresses, CancellationToken ct)
         {
             var result = new Dictionary<string, EmailVerificationStatus>();
 

@@ -59,7 +59,7 @@ namespace Notifo.Domain.Channels.Email
             this.userStore = userStore;
         }
 
-        public Task InitializeAsync(CancellationToken ct = default)
+        public Task InitializeAsync(CancellationToken ct)
         {
             userNotificationQueue.Subscribe(this);
 

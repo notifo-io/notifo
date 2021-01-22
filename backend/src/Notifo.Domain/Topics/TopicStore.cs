@@ -31,7 +31,7 @@ namespace Notifo.Domain.Topics
             collector.StopAsync().Wait();
         }
 
-        public async Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct = default)
+        public async Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct)
         {
             if (key.AppId != null && key.Topic != null)
             {
@@ -39,7 +39,7 @@ namespace Notifo.Domain.Topics
             }
         }
 
-        public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query, CancellationToken ct = default)
+        public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query, CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));

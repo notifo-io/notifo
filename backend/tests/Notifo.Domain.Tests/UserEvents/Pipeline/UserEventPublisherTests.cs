@@ -15,6 +15,7 @@ using Notifo.Domain.Events;
 using Notifo.Domain.Log;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Templates;
+using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Texts;
@@ -30,6 +31,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         private readonly ITemplateStore templateStore = A.Fake<ITemplateStore>();
         private readonly ILogStore logStore = A.Fake<ILogStore>();
         private readonly IEventStore eventStore = A.Fake<IEventStore>();
+        private readonly IUserStore userStore = A.Fake<IUserStore>();
         private readonly IAbstractProducer<UserEventMessage> producer = A.Fake<IAbstractProducer<UserEventMessage>>();
         private readonly List<UserEventMessage> publishedUserEvents = new List<UserEventMessage>();
         private readonly UserEventPublisher sut;
@@ -39,7 +41,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._))
                 .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
 
-            sut = new UserEventPublisher(counters, A.Fake<ISemanticLog>(), logStore, eventStore, subscriptionStore, templateStore, producer);
+            sut = new UserEventPublisher(counters, A.Fake<ISemanticLog>(), logStore, eventStore, subscriptionStore, templateStore, userStore, producer);
         }
 
         [Fact]
@@ -49,7 +51,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.AppId = null!;
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
@@ -65,7 +67,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Topic = null!;
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
@@ -81,7 +83,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Formatting = null!;
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
@@ -97,7 +99,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Formatting = null!;
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
@@ -111,7 +113,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             var @event = CreateMinimumEvent();
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             Assert.Empty(publishedUserEvents);
 
@@ -148,7 +150,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -203,7 +205,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             Assert.NotNull(publishedUserEvents[0].Properties);
 
@@ -229,7 +231,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             Assert.NotNull(publishedUserEvents[0].SubscriptionSettings);
 
@@ -246,7 +248,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Topic = topic;
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -257,10 +259,65 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     EventSettings = @event.Settings,
                     Formatting = @event.Formatting!,
                     Properties = new EventProperties(),
-                    SubscriptionPrefix = topic,
+                    SubscriptionPrefix = "users/123",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
                     UserId = "123",
+                }
+            });
+
+            A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, A<CancellationToken>._))
+                .MustNotHaveHappened();
+
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+                .MustNotHaveHappened();
+        }
+
+        [Theory]
+        [InlineData("user/all")]
+        [InlineData("users/all")]
+        public async Task Should_produce_directly_to_all_users_topic(string topic)
+        {
+            var @event = CreateMinimumEvent();
+
+            @event.Topic = topic;
+
+            var userIds = new[]
+            {
+                "123",
+                "456"
+            };
+
+            A.CallTo(() => userStore.QueryIdsAsync(@event.AppId, default))
+                .Returns(CreateAsyncEnumerable(userIds));
+
+            await sut.PublishAsync(@event, default);
+
+            publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
+            {
+                new UserEventMessage
+                {
+                    AppId = @event.AppId,
+                    EventId = @event.Id,
+                    EventSettings = @event.Settings,
+                    Formatting = @event.Formatting!,
+                    Properties = new EventProperties(),
+                    SubscriptionPrefix = "users/all",
+                    SubscriptionSettings = new NotificationSettings(),
+                    Topic = @event.Topic,
+                    UserId = "123",
+                },
+                new UserEventMessage
+                {
+                    AppId = @event.AppId,
+                    EventId = @event.Id,
+                    EventSettings = @event.Settings,
+                    Formatting = @event.Formatting!,
+                    Properties = new EventProperties(),
+                    SubscriptionPrefix = "users/all",
+                    SubscriptionSettings = new NotificationSettings(),
+                    Topic = @event.Topic,
+                    UserId = "456",
                 }
             });
 
@@ -292,7 +349,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => eventStore.InsertAsync(@event, default))
                 .Throws(new UniqueConstraintException());
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             Assert.Empty(publishedUserEvents);
 
@@ -334,7 +391,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -406,7 +463,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             Assert.Empty(publishedUserEvents);
 
@@ -422,7 +479,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             @event.TemplateCode = "TEMPL";
             @event.Formatting = null;
 
-            await sut.PublishAsync(@event);
+            await sut.PublishAsync(@event, default);
 
             Assert.Empty(publishedUserEvents);
 
