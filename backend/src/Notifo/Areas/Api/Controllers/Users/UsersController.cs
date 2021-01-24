@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Validation;
@@ -41,7 +41,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => Users returned.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserDto>))]
         public async Task<IActionResult> GetUsers(string appId, [FromQuery] QueryDto q)
         {
@@ -65,7 +65,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserDto>))]
         public async Task<IActionResult> GetUser(string appId, string id)
         {
@@ -92,7 +92,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}/subscriptions")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<SubscriptionDto>))]
         public async Task<IActionResult> GetSubscriptions(string appId, string id, [FromQuery] QueryDto q)
         {
@@ -117,7 +117,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/subscriptions")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostSubscription(string appId, string id, [FromBody] SubscriptionDto request)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -145,7 +145,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}/subscriptions/{*prefix}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteSubscription(string appId, string id, string prefix)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -169,7 +169,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => Users upserted.
         /// </returns>
         [HttpPost("api/apps/{appId}/users/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(List<UserDto>))]
         public async Task<IActionResult> PostUsers(string appId, [FromBody] UpsertUsersDto request)
         {
@@ -209,7 +209,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/allowed-topics")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(List<UserDto>))]
         public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicDto request)
         {
@@ -238,7 +238,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}/allowed-topics/{*prefix}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(List<UserDto>))]
         public async Task<IActionResult> DeleteAllowedTopic(string appId, string id, string prefix)
         {
@@ -265,7 +265,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => User deleted.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserDto>))]
         public async Task<IActionResult> DeleteUser(string appId, string id)
         {

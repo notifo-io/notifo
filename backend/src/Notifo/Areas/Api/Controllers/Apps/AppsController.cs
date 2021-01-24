@@ -11,9 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Apps.Dtos;
-using Notifo.Domain;
 using Notifo.Domain.Apps;
-using Notifo.Infrastructure.Identity;
+using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -68,7 +67,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> GetApp(string appId)
         {
@@ -115,7 +114,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PutApp(string appId, [FromBody] UpsertAppDto request)
         {
@@ -138,7 +137,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/contributors")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PostContributor(string appId, [FromBody] AddContributorDto request)
         {
@@ -161,7 +160,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/contributors/{contributorId}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> DeleteContributor(string appId, string contributorId)
         {
@@ -183,7 +182,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/email-templates")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(EmailTemplatesDto))]
         public IActionResult GetEmailTemplates(string appId)
         {
@@ -202,7 +201,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/email-templates/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(EmailTemplateDto))]
         public async Task<IActionResult> PostEmailTemplate(string appId, [FromBody] CreateEmailTemplateDto request)
         {
@@ -226,7 +225,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpPut("api/apps/{appId}/email-templates/{language}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(EmailTemplatesDto))]
         public async Task<IActionResult> PutEmailTemplate(string appId, string language, [FromBody] EmailTemplateDto request)
         {
@@ -247,7 +246,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/email-templates/{language}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(EmailTemplatesDto))]
         public async Task<IActionResult> DeleteEmailTemplate(string appId, string language)
         {

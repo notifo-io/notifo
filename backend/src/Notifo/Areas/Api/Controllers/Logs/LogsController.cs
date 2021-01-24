@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Logs.Dtos;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Log;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -36,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Logs
         /// 200 => Log entries returned.
         /// </returns>
         [HttpGet("api/apps/{appId}/logs/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<LogEntryDto>))]
         public async Task<IActionResult> GetLogs(string appId, [FromQuery] QueryDto q)
         {

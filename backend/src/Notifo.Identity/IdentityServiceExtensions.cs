@@ -14,9 +14,10 @@ using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
+using Notifo.Domain.Identity;
 using Notifo.Identity;
+using Notifo.Identity.ApiKey;
 using Notifo.Identity.MongoDb;
-using Notifo.Infrastructure.Identity;
 using Squidex.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -31,52 +32,55 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure<NotifoIdentityOptions>(config, "identity");
 
-            services.AddIdentity<NotifoUser, NotifoRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultTokenProviders();
 
             services.AddSingletonAs<UserCreator>()
                 .AsSelf();
 
-            services.AddSingletonAs<UserResolver>()
+            services.AddSingletonAs<DefaultUserResolver>()
                 .As<IUserResolver>();
 
+            services.AddScopedAs<DefaultUserService>()
+                .As<IUserService>();
+
             services.AddIdentityServer(options =>
-            {
-                options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
+                {
+                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
 
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
+                    options.Events.RaiseErrorEvents = true;
+                    options.Events.RaiseInformationEvents = true;
+                    options.Events.RaiseFailureEvents = true;
+                    options.Events.RaiseSuccessEvents = true;
 
-                options.UserInteraction.ErrorUrl = "/account/error";
-            })
-                .AddAspNetIdentity<NotifoUser>()
+                    options.UserInteraction.ErrorUrl = "/account/error";
+                })
+                .AddAspNetIdentity<IdentityUser>()
                 .AddClients()
                 .AddIdentityResources()
                 .AddApiResources();
 
             services.Configure<IdentityServerOptions>((c, options) =>
-            {
-                var urlBuilder = c.GetRequiredService<IUrlGenerator>();
+                {
+                    var urlBuilder = c.GetRequiredService<IUrlGenerator>();
 
-                options.IssuerUri = urlBuilder.BuildUrl();
-            });
+                    options.IssuerUri = urlBuilder.BuildUrl();
+                });
 
             services.Configure<ApiAuthorizationOptions>(options =>
-            {
-                options.Clients.AddIdentityServerSPA("notifo", client => client
-                    .WithLogoutRedirectUri("/authentication/logout-callback")
-                    .WithRedirectUri("/authentication/login-callback")
-                    .WithRedirectUri("/authentication/login-silent-callback.html"));
-            });
+                {
+                    options.Clients.AddIdentityServerSPA("notifo", client => client
+                        .WithLogoutRedirectUri("/authentication/logout-callback")
+                        .WithRedirectUri("/authentication/login-callback")
+                        .WithRedirectUri("/authentication/login-silent-callback.html"));
+                });
 
             services.AddAuthorization();
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = Constants.IdentityServerOrApiKeyScheme;
-                options.DefaultChallengeScheme = Constants.IdentityServerOrApiKeyScheme;
-            })
+                {
+                    options.DefaultAuthenticateScheme = Constants.IdentityServerOrApiKeyScheme;
+                    options.DefaultChallengeScheme = Constants.IdentityServerOrApiKeyScheme;
+                })
                 .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
                 {
                     options.ForwardDefaultSelector = context =>
@@ -98,10 +102,10 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMyMongoDbIdentity(this IServiceCollection services)
         {
             services.AddSingletonAs<MongoDbUserStore>()
-                .As<IUserStore<NotifoUser>>().As<IUserFactory>();
+                .As<IUserStore<IdentityUser>>().As<IUserFactory>();
 
             services.AddSingletonAs<MongoDbRoleStore>()
-                .As<IRoleStore<NotifoRole>>();
+                .As<IRoleStore<IdentityRole>>();
 
             services.AddSingletonAs<MongoDbPersistedGrantStore>()
                 .As<IPersistedGrantStore>();

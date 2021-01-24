@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Notifications.Dto;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -32,7 +32,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         }
 
         [HttpGet("/api/me/notifications/archive")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> GetArchive()
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
@@ -46,7 +46,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         }
 
         [HttpPost("/api/me/notifications/handled")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         public async Task Confirm([FromBody] TrackNotificationDto request)
         {
             if (request.Confirmed.HasValue)

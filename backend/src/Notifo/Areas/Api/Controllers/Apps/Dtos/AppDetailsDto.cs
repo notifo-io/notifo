@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email;
-using Notifo.Infrastructure.Identity;
+using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
@@ -122,16 +122,16 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
                 result.Role = userRole;
             }
 
-            var users = await userResolver.GetUserNamesAsync(app.Contributors.Keys.ToHashSet());
+            var users = await userResolver.QueryManyAsync(app.Contributors.Keys.Distinct().ToArray());
 
             foreach (var (id, role) in app.Contributors)
             {
-                if (users.TryGetValue(id, out var name))
+                if (users.TryGetValue(id, out var user))
                 {
                     result.Contributors.Add(new AppContributorDto
                     {
                         UserId = id,
-                        UserName = name,
+                        UserName = user.Email,
                         Role = role
                     });
                 }

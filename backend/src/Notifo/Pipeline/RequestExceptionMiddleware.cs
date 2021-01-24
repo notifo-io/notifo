@@ -1,7 +1,7 @@
 ﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
-//  Copyright (c) Squidex UG (haftungsbeschränkt)
+//  Copyright (c) Sebastian Stehle
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
@@ -15,35 +15,28 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Notifo.Areas.Api;
-using Notifo.Infrastructure;
 using Squidex.Log;
 
 namespace Notifo.Pipeline
 {
-    public sealed class RequestExceptionMiddleware : IMiddleware
+    public sealed class RequestExceptionMiddleware
     {
         private static readonly ActionDescriptor EmptyActionDescriptor = new ActionDescriptor();
         private static readonly RouteData EmptyRouteData = new RouteData();
-        private readonly IActionResultExecutor<ObjectResult> resultWriter;
-        private readonly ISemanticLog log;
+        private readonly RequestDelegate next;
 
-        public RequestExceptionMiddleware(IActionResultExecutor<ObjectResult> resultWriter, ISemanticLog log)
+        public RequestExceptionMiddleware(RequestDelegate next)
         {
-            Guard.NotNull(resultWriter, nameof(resultWriter));
-            Guard.NotNull(log, nameof(log));
-
-            this.resultWriter = resultWriter;
-
-            this.log = log;
+            this.next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context, IActionResultExecutor<ObjectResult> writer, ISemanticLog log)
         {
             if (context.Request.Query.TryGetValue("error", out var header) && int.TryParse(header, out var statusCode) && IsErrorStatusCode(statusCode))
             {
                 var (error, _) = ApiExceptionConverter.ToErrorDto(statusCode, context);
 
-                await WriteErrorAsync(context, error);
+                await WriteErrorAsync(context, error, writer);
                 return;
             }
 
@@ -61,7 +54,7 @@ namespace Notifo.Pipeline
 
                     var (error, _) = ex.ToErrorDto(localizer, context);
 
-                    await WriteErrorAsync(context, error);
+                    await WriteErrorAsync(context, error, writer);
                 }
             }
 
@@ -69,16 +62,16 @@ namespace Notifo.Pipeline
             {
                 var (error, _) = ApiExceptionConverter.ToErrorDto(context.Response.StatusCode, context);
 
-                await WriteErrorAsync(context, error);
+                await WriteErrorAsync(context, error, writer);
             }
         }
 
-        private async Task WriteErrorAsync(HttpContext context, ErrorDto error)
+        private static async Task WriteErrorAsync(HttpContext context, ErrorDto error, IActionResultExecutor<ObjectResult> writer)
         {
             var actionRouteData = context.GetRouteData() ?? EmptyRouteData;
             var actionContext = new ActionContext(context, actionRouteData, EmptyActionDescriptor);
 
-            await resultWriter.ExecuteAsync(actionContext, new ObjectResult(error)
+            await writer.ExecuteAsync(actionContext, new ObjectResult(error)
             {
                 StatusCode = error.StatusCode
             });

@@ -17,26 +17,27 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Notifo.Domain.Identity;
 using Notifo.Identity;
 
 namespace Notifo.Areas.Account.Pages
 {
     public abstract class PageModelBase<TDerived> : PageModel
     {
-        private readonly Lazy<SignInManager<NotifoUser>> signInManager;
-        private readonly Lazy<UserManager<NotifoUser>> userManager;
+        private readonly Lazy<SignInManager<IdentityUser>> signInManager;
+        private readonly Lazy<IUserService> userService;
         private readonly Lazy<ILogger<TDerived>> logger;
         private readonly Lazy<IEventService> events;
         private readonly Lazy<IStringLocalizer<AppResources>> localizer;
 
-        public SignInManager<NotifoUser> SignInManager
+        public SignInManager<IdentityUser> SignInManager
         {
             get { return signInManager.Value; }
         }
 
-        public UserManager<NotifoUser> UserManager
+        public IUserService UserService
         {
-            get { return userManager.Value; }
+            get { return userService.Value; }
         }
 
         public ILogger<TDerived> Logger
@@ -66,7 +67,7 @@ namespace Notifo.Areas.Account.Pages
             SetupService(ref logger!);
             SetupService(ref localizer!);
             SetupService(ref signInManager!);
-            SetupService(ref userManager!);
+            SetupService(ref userService!);
         }
 
         private void SetupService<TService>(ref Lazy<TService>? value) where TService : notnull
@@ -108,13 +109,13 @@ namespace Notifo.Areas.Account.Pages
             }
         }
 
-        protected async Task<NotifoUser> GetUserAsync()
+        protected async Task<IUser> GetUserAsync()
         {
-            var user = await UserManager.GetUserAsync(User);
+            var user = await UserService.GetAsync(User);
 
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{UserManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{UserService.GetUserId(User)}'.");
             }
 
             return user;

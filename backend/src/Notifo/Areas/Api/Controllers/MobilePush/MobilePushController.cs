@@ -8,7 +8,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.MobilePush.Dto;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -26,7 +26,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         }
 
         [HttpPost("api/mobilepush")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> PostToken([FromBody] RegisterMobileTokenDto request)
         {
             var command = new AddUserMobileToken
@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         }
 
         [HttpDelete("api/mobilepush")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> DeleteToken([FromBody] RegisterMobileTokenDto request)
         {
             var command = new RemoveUserMobileToken

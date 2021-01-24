@@ -57,12 +57,12 @@ namespace Notifo.Areas.Account.Pages
 
                 if (result.Succeeded)
                 {
-                    var user = await UserManager.FindByNameAsync(Input.Email);
+                    var user = await UserService.FindByEmailAsync(Input.Email);
 
                     await Events.RaiseAsync(new UserLoginSuccessEvent(
-                        user.UserName,
+                        user!.Email,
                         user.Id,
-                        user.UserName,
+                        user!.Email,
                         true,
                         clientId: context?.Client.ClientId));
 

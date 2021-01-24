@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Topics.Dtos;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Topics;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -35,7 +35,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
         /// 200 => Topics returned.
         /// </returns>
         [HttpGet("api/apps/{appId}/topics/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<TopicDto>))]
         public async Task<IActionResult> GetTopics(string appId, [FromQuery] QueryDto q)
         {

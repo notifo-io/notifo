@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels.Email;
+using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
@@ -132,15 +133,15 @@ namespace Notifo.Domain.Apps
 
             if (app.ApiKeys.Count == 0)
             {
-                app.ApiKeys[RandomHash.New()] = Roles.Admin;
-                app.ApiKeys[RandomHash.New()] = Roles.Admin;
-                app.ApiKeys[RandomHash.New()] = Roles.WebManager;
-                app.ApiKeys[RandomHash.New()] = Roles.WebManager;
+                app.ApiKeys[RandomHash.New()] = NotifoRoles.AppAdmin;
+                app.ApiKeys[RandomHash.New()] = NotifoRoles.AppAdmin;
+                app.ApiKeys[RandomHash.New()] = NotifoRoles.AppWebManager;
+                app.ApiKeys[RandomHash.New()] = NotifoRoles.AppWebManager;
             }
 
             if (app.Contributors.Count == 0 && !string.IsNullOrWhiteSpace(UserId))
             {
-                app.Contributors[UserId] = Roles.Owner;
+                app.Contributors[UserId] = NotifoRoles.AppOwner;
             }
         }
     }

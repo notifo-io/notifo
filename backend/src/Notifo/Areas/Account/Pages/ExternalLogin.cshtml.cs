@@ -9,8 +9,10 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Identity;
+using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 #pragma warning disable SA1649 // File name should match first type name
 
@@ -18,8 +20,6 @@ namespace Notifo.Areas.Account.Pages
 {
     public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
     {
-        private readonly IUserFactory userFactory;
-
         public string LoginProvider { get; set; }
 
         public string TermsOfServiceUrl { get; set; }
@@ -35,11 +35,6 @@ namespace Notifo.Areas.Account.Pages
 
         [BindProperty(SupportsGet = true)]
         public string? ReturnUrl { get; set; }
-
-        public ExternalLoginModel(IUserFactory userFactory)
-        {
-            this.userFactory = userFactory;
-        }
 
         public IActionResult OnGetAsync()
         {
@@ -127,30 +122,23 @@ namespace Notifo.Areas.Account.Pages
                     throw new InvalidOperationException(T["GithubEmailPrivateError"]);
                 }
 
-                var user = await UserManager.FindByEmailAsync(email);
-
-                if (user == null)
+                var user = await UserService.FindByEmailAsync(email);
+                try
                 {
-                    user = userFactory.CreateUser(email);
-
-                    var createResult = await UserManager.CreateAsync(user);
-
-                    if (!createResult.Succeeded)
+                    if (user == null)
                     {
-                        ModelState.AddModelErrors(createResult);
-                        return Page();
+                        user = await UserService.CreateAsync(email);
                     }
+
+                    await UserService.AddLoginAsync(user.Id, loginInfo);
                 }
-
-                var addResult = await UserManager.AddLoginAsync(user, loginInfo);
-
-                if (!addResult.Succeeded)
+                catch (NotifoValidationException ex)
                 {
-                    ModelState.AddModelErrors(addResult);
+                    ModelState.AddModelError(string.Empty, ex.Errors[0].Message);
                     return Page();
                 }
 
-                await SignInManager.SignInAsync(user, false);
+                await SignInManager.SignInAsync((IdentityUser)user.Identity, false);
 
                 return RedirectTo(ReturnUrl);
             }

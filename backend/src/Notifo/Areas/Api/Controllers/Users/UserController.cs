@@ -8,7 +8,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
@@ -36,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 404 => User not found.
         /// </returns>
         [HttpGet("api/me")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ProfileDto))]
         public async Task<IActionResult> GetUser()
         {
@@ -55,7 +55,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => Users upserted.
         /// </returns>
         [HttpPost("api/me")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ProfileDto))]
         public async Task<IActionResult> PostUser([FromBody] UpdateProfileDto request)
         {
@@ -80,7 +80,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         [HttpGet("api/me/subscriptions/{*topic}")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(SubscriptionDto))]
         public async Task<IActionResult> GetSubscription(string topic)
         {
@@ -107,7 +107,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         [HttpPost("api/me/subscriptions")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(SubscriptionDto))]
         public async Task<IActionResult> PostSubscription([FromBody] SubscriptionDto request)
         {
@@ -131,7 +131,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         [HttpDelete("api/me/subscriptions/{*topic}")]
-        [AppPermission(Roles.User)]
+        [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> DeleteSubscription(string topic)
         {
             await subscriptionStore.DeleteAsync(App.Id, UserId!, topic, HttpContext.RequestAborted);

@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Infrastructure.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Identity", "src\Notifo.Identity\Notifo.Identity.csproj", "{CB41164D-A385-4D06-B964-D3AD5E10CA3C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Identity.Tests", "tests\Notifo.Identity.Tests\Notifo.Identity.Tests.csproj", "{E7C401D3-02CC-4AB6-A916-C1BAC35693AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{CB41164D-A385-4D06-B964-D3AD5E10CA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CB41164D-A385-4D06-B964-D3AD5E10CA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CB41164D-A385-4D06-B964-D3AD5E10CA3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7C401D3-02CC-4AB6-A916-C1BAC35693AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7C401D3-02CC-4AB6-A916-C1BAC35693AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7C401D3-02CC-4AB6-A916-C1BAC35693AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7C401D3-02CC-4AB6-A916-C1BAC35693AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		{877EEDEE-BEE8-4E42-AFC3-F524BD4FB5DB} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
 		{D4B397A5-8D4D-49EE-AD45-165822F7E069} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
 		{CB41164D-A385-4D06-B964-D3AD5E10CA3C} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
+		{E7C401D3-02CC-4AB6-A916-C1BAC35693AA} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50EA5E74-22D7-410A-BB1F-05D94D7F9F9B}

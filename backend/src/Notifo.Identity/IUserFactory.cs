@@ -5,10 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.AspNetCore.Identity;
+
 namespace Notifo.Identity
 {
     public interface IUserFactory
     {
-        NotifoUser CreateUser(string email);
+        IdentityUser Create(string email);
+
+        bool IsId(string id);
     }
 }

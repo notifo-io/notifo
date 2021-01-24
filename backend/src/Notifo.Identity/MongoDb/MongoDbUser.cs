@@ -13,7 +13,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Identity.MongoDb
 {
-    public sealed class MongoDbUser : NotifoUser
+    public sealed class MongoDbUser : IdentityUser
     {
         [BsonRequired]
         [BsonElement]

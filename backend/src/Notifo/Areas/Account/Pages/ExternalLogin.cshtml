@@ -17,28 +17,26 @@
     @if (Model.MustAcceptsTermsOfService)
     {
         <div class="form-group">
-            <div class="form-check">
-                <input asp-for="Input.AcceptTermsOfService" class="form-check-input" />
-                <label asp-for="Input.AcceptTermsOfService" class="form-check-label">
-                    @T["AgreeToTermsOfService", Model.TermsOfServiceUrl]
-                </label>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="Input.AcceptTermsOfService">
 
-                <span asp-validation-for="Input.AcceptTermsOfService" class="invalid-feedback"></span>
+                <label class="custom-control-label" asp-for="Input.AcceptTermsOfService">@T["AgreeToTermsOfService", Model.TermsOfServiceUrl]</label>
             </div>
+
+            <span asp-validation-for="Input.AcceptTermsOfService" class="invalid-feedback"></span>
         </div>
     }
 
     @if (Model.MustAcceptsPrivacyPolicy)
     {
         <div class="form-group">
-            <div class="form-check">
-                <input asp-for="Input.AcceptPrivacyPolicy" class="form-check-input" />
-                <label asp-for="Input.AcceptPrivacyPolicy" class="form-check-label">
-                    @T["AgreeToPrivacyPolicy", Model.PrivacyPolicyUrl]
-                </label>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="Input.AcceptPrivacyPolicy">
 
-                <span asp-validation-for="Input.AcceptPrivacyPolicy" class="invalid-feedback"></span>
+                <label class="custom-control-label" asp-for="Input.AcceptPrivacyPolicy">@T["AgreeToPrivacyPolicy", Model.PrivacyPolicyUrl]</label>
             </div>
+
+            <span asp-validation-for="Input.AcceptPrivacyPolicy" class="invalid-feedback"></span>
         </div>
     }
 

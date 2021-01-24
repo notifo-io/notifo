@@ -10,9 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Identity;
 using Notifo.Infrastructure.Validation;
 using ValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
@@ -39,23 +39,23 @@ namespace Notifo.Domain.Apps
         {
             Validate<Validator>.It(this);
 
-            var userManager = serviceProvider.GetRequiredService<IUserResolver>();
+            var userResolver = serviceProvider.GetRequiredService<IUserResolver>();
 
-            var id = await userManager.GetOrAddUserAsync(Email);
+            var (user, _) = await userResolver.CreateUserIfNotExistsAsync(Email);
 
-            if (id == null)
+            if (user == null)
             {
                 var error = new ValidationError(Texts.Apps_UserNotFound, nameof(Email));
 
                 throw new ValidationException(error);
             }
 
-            if (string.Equals(id, UserId, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(user.Id, UserId, StringComparison.OrdinalIgnoreCase))
             {
                 throw new DomainException(Texts.App_CannotUpdateYourself);
             }
 
-            app.Contributors[id] = Role;
+            app.Contributors[user.Id] = Role;
         }
     }
 }

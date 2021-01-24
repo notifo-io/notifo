@@ -7,6 +7,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Notifo.Areas.Api.Controllers.Notifications;
+using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api
 {
@@ -29,6 +30,11 @@ namespace Notifo.Areas.Api
                 settings.Path = "/api/docs";
 
                 settings.DocumentPath = "/api/openapi.json";
+            });
+
+            app.UseWhen(x => x.Request.Path.StartsWithSegments("/api"), builder =>
+            {
+                builder.UseMiddleware<RequestExceptionMiddleware>();
             });
 
             app.UseRouting();

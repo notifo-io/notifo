@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Templates.Dtos;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Templates;
 using Notifo.Pipeline;
 
@@ -35,7 +35,7 @@ namespace Notifo.Areas.Api.Controllers.Templates
         /// 200 => Templates returned.
         /// </returns>
         [HttpGet("api/apps/{appId}/templates/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<TemplateDto>))]
         public async Task<IActionResult> GetTemplates(string appId, [FromQuery] QueryDto q)
         {
@@ -58,7 +58,7 @@ namespace Notifo.Areas.Api.Controllers.Templates
         /// 200 => Templates upserted.
         /// </returns>
         [HttpPost("api/apps/{appId}/templates/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(List<TemplateDto>))]
         public async Task<IActionResult> PostTemplates(string appId, [FromBody] UpsertTemplatesDto request)
         {
@@ -91,7 +91,7 @@ namespace Notifo.Areas.Api.Controllers.Templates
         /// 200 => Template deleted.
         /// </returns>
         [HttpDelete("api/apps/{appId}/templates/{code}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<TemplateDto>))]
         public async Task<IActionResult> DeleteTemplate(string appId, string code)
         {

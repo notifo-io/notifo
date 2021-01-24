@@ -13,8 +13,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Security;
 
 namespace Notifo.Pipeline
@@ -80,7 +80,7 @@ namespace Notifo.Pipeline
                 }
                 else if (string.Equals(app.Id, user.AppId(), StringComparison.OrdinalIgnoreCase))
                 {
-                    roles.Add(Roles.User);
+                    roles.Add(NotifoRoles.AppUser);
                 }
             }
 
@@ -92,15 +92,15 @@ namespace Notifo.Pipeline
                 }
             }
 
-            if (roles.Contains(Roles.Owner))
+            if (roles.Contains(NotifoRoles.AppOwner))
             {
-                roles.Add(Roles.Admin);
+                roles.Add(NotifoRoles.AppAdmin);
             }
 
-            if (roles.Contains(Roles.Admin))
+            if (roles.Contains(NotifoRoles.AppAdmin))
             {
-                roles.Add(Roles.User);
-                roles.Add(Roles.WebManager);
+                roles.Add(NotifoRoles.AppUser);
+                roles.Add(NotifoRoles.AppWebManager);
             }
 
             return roles;

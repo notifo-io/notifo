@@ -10,14 +10,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Notifo.Areas.Api.Controllers.Notifications.Dto;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.Notifications
 {
-    [AppPermission(Roles.User)]
+    [AppPermission(NotifoRoles.AppUser)]
     public sealed class NotificationHub : Hub
     {
         private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };

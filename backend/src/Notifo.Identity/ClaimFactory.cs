@@ -13,14 +13,14 @@ using Microsoft.Extensions.Options;
 
 namespace Notifo.Identity
 {
-    internal sealed class ClaimFactory : UserClaimsPrincipalFactory<NotifoUser>
+    internal sealed class ClaimFactory : UserClaimsPrincipalFactory<IdentityUser>
     {
-        public ClaimFactory(UserManager<NotifoUser> userManager, IOptions<IdentityOptions> optionsAccessor)
+        public ClaimFactory(UserManager<IdentityUser> userManager, IOptions<IdentityOptions> optionsAccessor)
             : base(userManager, optionsAccessor)
         {
         }
 
-        public override async Task<ClaimsPrincipal> CreateAsync(NotifoUser user)
+        public override async Task<ClaimsPrincipal> CreateAsync(IdentityUser user)
         {
             var principal = await base.CreateAsync(user);
 

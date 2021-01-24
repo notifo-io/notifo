@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
-using Notifo.Domain;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Media;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
@@ -58,7 +58,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 200 => Media returned.
         /// </returns>
         [HttpGet("api/apps/{appId}/media/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<MediaDto>))]
         public async Task<IActionResult> GetMedias(string appId, [FromQuery] QueryDto q)
         {
@@ -101,7 +101,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 201 => Media downloaded.
         /// </returns>
         [HttpPost("api/apps/{appId}/media/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> Upload(string appId, IFormFile file)
         {
             var assetFile = CreateFile(file);
@@ -120,7 +120,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 204 => Media deleted.
         /// </returns>
         [HttpDelete("api/apps/{appId}/media/{fileName}")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> Delete(string appId, string fileName)
         {
             await mediaStore.DeleteAsync(appId, fileName, HttpContext.RequestAborted);

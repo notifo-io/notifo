@@ -13,6 +13,7 @@ using Notifo.Areas.Api.Controllers.Registration.Dto;
 using Notifo.Domain;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.WebPush;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
@@ -35,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Registration
         }
 
         [HttpPost("api/web/register")]
-        [AppPermission(Roles.WebManager, Roles.User)]
+        [AppPermission(NotifoRoles.AppWebManager, NotifoRoles.AppUser)]
         public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
         {
             string? userId = null;

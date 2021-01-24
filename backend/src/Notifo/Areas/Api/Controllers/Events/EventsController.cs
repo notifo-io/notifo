@@ -9,8 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Events.Dtos;
-using Notifo.Domain;
 using Notifo.Domain.Events;
+using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// 200 => Events returned.
         /// </returns>
         [HttpGet("api/apps/{appId}/events/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<EventDto>))]
         public async Task<IActionResult> GetEvents(string appId, [FromQuery] QueryDto q)
         {
@@ -63,7 +63,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// 204 => Events created.
         /// </returns>
         [HttpPost("api/apps/{appId}/events/")]
-        [AppPermission(Roles.Admin)]
+        [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
         {
             if (request?.Requests != null)

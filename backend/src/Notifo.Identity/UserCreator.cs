@@ -6,10 +6,8 @@
 // ==========================================================================
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Squidex.Hosting;
@@ -40,20 +38,7 @@ namespace Notifo.Identity
             {
                 using (var scope = serviceProvider.CreateScope())
                 {
-                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<NotifoUser>>()!;
-                    var userFactory = scope.ServiceProvider.GetRequiredService<IUserFactory>()!;
-
-                    async Task DoAsync(Func<UserManager<NotifoUser>, Task<IdentityResult>> handler)
-                    {
-                        var result = await handler(userManager!);
-
-                        if (!result.Succeeded)
-                        {
-                            var error = string.Join(" ", result.Errors.Select(x => $"[{x.Code}]: {x.Description}."));
-
-                            throw new InvalidOperationException(error);
-                        }
-                    }
+                    var userService = scope.ServiceProvider.GetRequiredService<IUserService>()!;
 
                     foreach (var user in users)
                     {
@@ -61,28 +46,22 @@ namespace Notifo.Identity
                         {
                             try
                             {
-                                var existing = await userManager.FindByEmailAsync(user.Email);
+                                var existing = await userService.FindByEmailAsync(user.Email);
+
+                                var passwordValues = new UserValues { Password = user.Password };
 
                                 if (existing == null)
                                 {
-                                    existing = userFactory.CreateUser(user.Email);
-
-                                    await DoAsync(m => m.CreateAsync(existing));
-                                    await DoAsync(m => m.AddPasswordAsync(existing, user.Password));
+                                    existing = await userService.CreateAsync(user.Email, passwordValues);
                                 }
                                 else if (user.PasswordReset)
                                 {
-                                    if (await userManager.HasPasswordAsync(existing))
-                                    {
-                                        await DoAsync(m => m.RemovePasswordAsync(existing));
-                                    }
-
-                                    await DoAsync(m => m.AddPasswordAsync(existing, user.Password));
+                                    await userService.UpdateAsync(existing.Id, passwordValues);
                                 }
 
-                                if (!string.IsNullOrWhiteSpace(user.Role) && !await userManager.IsInRoleAsync(existing, user.Role))
+                                if (!string.IsNullOrWhiteSpace(user.Role))
                                 {
-                                    await DoAsync(m => m.AddToRoleAsync(existing, user.Role));
+                                    await userService.UpdateAsync(existing.Id, new UserValues { Role = user.Role });
                                 }
                             }
                             catch (Exception ex)

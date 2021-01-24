@@ -16,7 +16,7 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Identity.MongoDb
 {
-    public sealed class MongoDbRoleStore : MongoDbRepository<NotifoRole>, IRoleStore<NotifoRole>
+    public sealed class MongoDbRoleStore : MongoDbRepository<IdentityRole>, IRoleStore<IdentityRole>
     {
         static MongoDbRoleStore()
         {
@@ -41,10 +41,10 @@ namespace Notifo.Identity.MongoDb
             return "Identity_Roles";
         }
 
-        protected override Task SetupCollectionAsync(IMongoCollection<NotifoRole> collection, CancellationToken ct)
+        protected override Task SetupCollectionAsync(IMongoCollection<IdentityRole> collection, CancellationToken ct)
         {
             return collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<NotifoRole>(
+                new CreateIndexModel<IdentityRole>(
                     IndexKeys
                         .Ascending(x => x.NormalizedName),
                     new CreateIndexOptions
@@ -63,60 +63,60 @@ namespace Notifo.Identity.MongoDb
         {
         }
 
-        public async Task<NotifoRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
+        public async Task<IdentityRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
             return await Collection.Find(x => x.Id == roleId).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<NotifoRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        public async Task<IdentityRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
             return await Collection.Find(x => x.NormalizedName == normalizedRoleName).FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task<IdentityResult> CreateAsync(NotifoRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> CreateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             await Collection.InsertOneAsync(role, null, cancellationToken);
 
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> UpdateAsync(NotifoRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> UpdateAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             await Collection.ReplaceOneAsync(x => x.Id == role.Id, role, cancellationToken: cancellationToken);
 
             return IdentityResult.Success;
         }
 
-        public async Task<IdentityResult> DeleteAsync(NotifoRole role, CancellationToken cancellationToken)
+        public async Task<IdentityResult> DeleteAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             await Collection.DeleteOneAsync(x => x.Id == role.Id, null, cancellationToken);
 
             return IdentityResult.Success;
         }
 
-        public Task<string> GetRoleIdAsync(NotifoRole role, CancellationToken cancellationToken)
+        public Task<string> GetRoleIdAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             return Task.FromResult(role.Id);
         }
 
-        public Task<string> GetRoleNameAsync(NotifoRole role, CancellationToken cancellationToken)
+        public Task<string> GetRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             return Task.FromResult(role.Name);
         }
 
-        public Task<string> GetNormalizedRoleNameAsync(NotifoRole role, CancellationToken cancellationToken)
+        public Task<string> GetNormalizedRoleNameAsync(IdentityRole role, CancellationToken cancellationToken)
         {
             return Task.FromResult(role.NormalizedName);
         }
 
-        public Task SetRoleNameAsync(NotifoRole role, string roleName, CancellationToken cancellationToken)
+        public Task SetRoleNameAsync(IdentityRole role, string roleName, CancellationToken cancellationToken)
         {
             role.Name = roleName;
 
             return Task.CompletedTask;
         }
 
-        public Task SetNormalizedRoleNameAsync(NotifoRole role, string normalizedName, CancellationToken cancellationToken)
+        public Task SetNormalizedRoleNameAsync(IdentityRole role, string normalizedName, CancellationToken cancellationToken)
         {
             role.NormalizedName = normalizedName;
 
