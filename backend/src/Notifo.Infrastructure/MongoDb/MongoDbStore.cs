@@ -57,9 +57,9 @@ namespace Notifo.Infrastructure.MongoDb
 
                         if (existingVersion != null)
                         {
-                            var field = Field.Of<T>(x => nameof(x.Etag));
+                            var field = Field.Of<MongoDbEntity>(x => nameof(x.Etag));
 
-                            throw new InconsistentStateException(existingVersion[field].AsString, oldEtag, ex);
+                            throw new InconsistentStateException(existingVersion["e"].AsString, oldEtag, ex);
                         }
                     }
 

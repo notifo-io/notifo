@@ -16,7 +16,21 @@ namespace Notifo.Infrastructure.MongoDb
         {
             var name = mapper(default!);
 
-            return BsonClassMap.LookupClassMap(typeof(T)).GetMemberMap(name).ElementName;
+            var classMap = BsonClassMap.LookupClassMap(typeof(T));
+
+            while (classMap != null)
+            {
+                var field = classMap.GetMemberMap(name)?.ElementName;
+
+                if (!string.IsNullOrWhiteSpace(field))
+                {
+                    return field;
+                }
+
+                classMap = classMap.BaseClassMap;
+            }
+
+            return throw new InvalidOperationException("Cannot find member name.");
         }
     }
 }
