@@ -54,15 +54,6 @@ export const mediaReducer = createReducer(initialState, builder => list.initiali
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(uploadMediaAsync.pending, (state, action) => {
-        state.uploadingFiles.unshift(action.meta.arg.file);
-    })
-    .addCase(uploadMediaAsync.fulfilled, (state, action) => {
-        state.uploadingFiles.remove(action.meta.arg.file);
-    })
-    .addCase(uploadMediaAsync.rejected, (state, action) => {
-        state.uploadingFiles.remove(action.meta.arg.file);
-    })
     .addCase(deleteMediaAsync.fulfilled, (state, action) => {
         state.uploadingFiles.removeBy(x => x.name, action.meta.arg.fileName);
     }));

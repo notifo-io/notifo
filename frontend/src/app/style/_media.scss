@@ -33,6 +33,13 @@
     }
 }
 
+.media-picker {
+    .modal-body {
+        background: $color-background;
+        min-height: 15rem;
+    }
+}
+
 .file-drop {
     & {
         border: 2px dashed darken($color-border, 5%);

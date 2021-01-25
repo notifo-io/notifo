@@ -15,6 +15,7 @@ export const EN = {
         back: 'Back',
         cancel: 'Cancel',
         code: 'Code',
+        confirm: 'Confirm',
         confirmMode: 'Confirm Mode',
         confirmModes: {
             explicit: 'Explicit',
@@ -73,6 +74,7 @@ export const EN = {
         profile: 'Profile',
         publish: 'Publish',
         refresh: 'Refresh',
+        sampleSubject: '-- No Subject yet --',
         save: 'Save',
         select: 'Select',
         send: 'Send',

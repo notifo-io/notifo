@@ -43,7 +43,7 @@ export const MediaInput = (props: LocalizedFormProps) => {
         <FormGroup className={className}>
             <Row>
                 <Col>
-                    <Label for={name}>{label}</Label>
+                    <Label for={field.name}>{label}</Label>
                 </Col>
                 <Col xs='auto'>
                     <LanguageSelector
@@ -53,11 +53,10 @@ export const MediaInput = (props: LocalizedFormProps) => {
                 </Col>
             </Row>
 
-            <Forms.Error name={name} />
+            <Forms.Error name={field.name} />
 
             <div className='input-container'>
-
-                <Input type='text' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
+                <Input type='text' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                     onChange={field.onChange}
                     onBlur={field.onBlur}
                     {...other}

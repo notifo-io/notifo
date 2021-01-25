@@ -49,7 +49,7 @@ export const TemplateRow = (props: TemplateRowProps) => {
     }, [template]);
 
     return (
-        <tr>
+        <tr className='list-item-summary'>
             <td>
                 <span className='truncate mono'>{template.code}</span>
             </td>

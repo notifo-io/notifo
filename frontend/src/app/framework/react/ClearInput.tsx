@@ -15,7 +15,7 @@ export interface ClearInputProps extends InputProps {
 }
 
 export const ClearInput = (props: InputProps) => {
-    const { bsSize, onClear } = props;
+    const { bsSize, onClear, ...other } = props;
 
     const container = React.useRef<HTMLDivElement | null>(null);
 
@@ -45,7 +45,7 @@ export const ClearInput = (props: InputProps) => {
 
     return (
         <div className='input-container' ref={container}>
-            <Input value={value} {...props}
+            <Input value={value} {...other} bsSize={bsSize}
                 spellCheck={ false }
                 autoCorrect={ 'off' }
                 autoComplete={ 'none' } />

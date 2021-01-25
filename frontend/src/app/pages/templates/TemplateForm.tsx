@@ -12,9 +12,11 @@ import { getApp, upsertTemplateAsync, useApps, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
+import { PushPreviewTarget } from 'react-push-preview';
 import { useDispatch } from 'react-redux';
-import { Button, Form } from 'reactstrap';
+import { Button, ButtonGroup, Form } from 'reactstrap';
 import * as Yup from 'yup';
+import { NotificationPreview } from './NotificationPreview';
 
 const FormSchema = Yup.object({
     // Required template code
@@ -27,13 +29,43 @@ const FormSchema = Yup.object({
     }),
 });
 
+const ALL_TARGETS: { target: PushPreviewTarget, label: string }[] = [{
+    target: 'Notifo',
+    label: 'Notifo',
+}, {
+    target: 'DeskopFirefox',
+    label: 'Firefox',
+}, {
+    target: 'DesktopChrome',
+    label: 'Chrome',
+}, {
+    target: 'DesktopMacOS',
+    label: 'MacOS',
+}, {
+    target: 'MobileAndroid',
+    label: 'Android',
+}, {
+    target: 'MobileIOS',
+    label: 'iOS',
+}];
+
 export interface TemplateFormProps {
     // The template to edit.
     template?: TemplateDto;
+
+    // The current language.
+    language: string;
+
+    // Triggered when the language is selected.
+    onLanguageSelect: (language: string) => void;
 }
 
 export const TemplateForm = (props: TemplateFormProps) => {
-    const { template } = props;
+    const {
+        language,
+        onLanguageSelect,
+        template,
+    } = props;
 
     const dispatch = useDispatch();
     const app = useApps(getApp);
@@ -41,7 +73,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const appLanguages = app.languages;
     const upserting = useTemplates(x => x.upserting);
     const upsertingError = useTemplates(x => x.upsertingError);
-    const [language, setLanguage] = React.useState<string>(appLanguages[0]);
+    const [target, setTarget] = React.useState<PushPreviewTarget>('Notifo');
 
     const doPublish = React.useCallback((params: TemplateDto) => {
         dispatch(upsertTemplateAsync({ appId, params }));
@@ -51,28 +83,58 @@ export const TemplateForm = (props: TemplateFormProps) => {
 
     return (
         <Formik<TemplateDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>
-            {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                    <fieldset disabled={upserting}>
-                        <Forms.Text name='code'
-                            label={texts.common.code} />
-                    </fieldset>
+            {({ handleSubmit, values }) => (
+                <>
+                    <div className='templates-column templates-form'>
+                        <div className='templates-header'>
+                            {template ? (
+                                <h2 className='truncate'>{texts.templates.templateEdit} {template.code}</h2>
+                            ) : (
+                                <h2 className='truncate'>{texts.templates.templateNew}</h2>
+                            )}
+                        </div>
 
-                    <NotificationsForm.Formatting
-                        onLanguageSelect={setLanguage}
-                        language={language}
-                        languages={appLanguages}
-                        field='formatting' disabled={upserting} />
+                        <div className='templates-body'>
+                            <Form onSubmit={handleSubmit}>
+                                <fieldset disabled={upserting}>
+                                    <Forms.Text name='code'
+                                        label={texts.common.code} />
+                                </fieldset>
 
-                    <NotificationsForm.Settings
-                        field='settings' disabled={upserting} />
+                                <NotificationsForm.Formatting
+                                    onLanguageSelect={onLanguageSelect}
+                                    language={language}
+                                    languages={appLanguages}
+                                    field='formatting' disabled={upserting} />
 
-                    <FormError error={upsertingError} />
+                                <NotificationsForm.Settings
+                                    field='settings' disabled={upserting} />
 
-                    <Button type='submit' color='success' disabled={upserting}>
-                        <Loader light small visible={upserting} /> {texts.common.save}
-                    </Button>
-                </Form>
+                                <FormError error={upsertingError} />
+
+                                <Button type='submit' color='success' disabled={upserting}>
+                                    <Loader light small visible={upserting} /> {texts.common.save}
+                                </Button>
+                            </Form>
+                        </div>
+                    </div>
+
+                    <div className='templates-column templates-preview'>
+                        <div className='templates-header'>
+                            <ButtonGroup size='sm'>
+                                {ALL_TARGETS.map(x =>
+                                    <Button key={x.target} type='button' color='primary' outline active={x.target === target}
+                                        onClick={() => setTarget(x.target)}>
+                                        {x.label}
+                                    </Button>,
+                                )}
+                            </ButtonGroup>
+                        </div>
+                        <div className='templates-body'>
+                            <NotificationPreview formatting={values?.formatting} language={language} target={target}></NotificationPreview>
+                        </div>
+                    </div>
+                </>
             )}
         </Formik>
     );

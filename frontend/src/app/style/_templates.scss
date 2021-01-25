@@ -1,8 +1,17 @@
 @import '_vars';
 @import '_mixins';
 
+$border: darken($color-border, 5%);
+
+$left-width: 500px;
+
 .templates {
-    max-width: 1200px;
+    & {
+        @include absolute(0, 0, 0, 5rem);
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
 
     .card-header {
         & {
@@ -23,25 +32,78 @@
         }
     }
 
-    $left-width: 500px;
+    &-column {
+        border-right: 1px solid $border;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        flex-shrink: 1;
+        overflow: hidden;
 
-    .overview {
-        & {
-            max-width: $left-width;
-            min-width: $left-width;
+        &:last-child {
+            border: 0;
+        }
+    }
+
+    &-header {
+        border-bottom: 1px solid $border;
+        flex-shrink: 0;
+        min-height: 5.25rem;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        padding: 1rem 1.5rem;
+
+        h2 {
+            margin: 0;
+        }
+    }
+
+    &-body {
+        flex-grow: 1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 1rem 1.5rem;
+    }
+
+    &-overview {
+        @include force-width($left-width);
+    }
+
+    &-form {
+        @include force-width(33%);
+
+        .templates-body {
+            background-color: $color-white;
+        }
+    }
+
+    &-preview {
+        flex-shrink: 1;
+
+        .preview-container {
+            background: none;
+            display: inline-block;
+            margin-left: 2rem;
+            margin-right: 2rem;
+            padding: 0;
         }
 
-        &-inner {
-            @include fixed(100px, null, 10px);
-            width: $left-width - 30px;
+        .templates-header {
+            overflow-x: auto;
+            overflow-y: hidden;
+            text-align: center;
+
+            .btn-group {
+                margin-top: 1rem;
+            }
         }
 
-        .card {
-            @include absolute(57px, null, 0);
-        }
-
-        .card-body {
-            overflow-y: auto;
+        .templates-body {
+            overflow-x: auto;
+            padding-left: 0;
+            padding-right: 0;
+            padding-top: 4rem;
+            text-align: center;
         }
     }
 }

@@ -69,7 +69,7 @@ export const MediaPage = () => {
 
             <FormError error={media.error} />
 
-            <div>
+            <div className='mb-4'>
                 <DropZone files={{ onlyImages: true }} onDrop={doUpload} />
 
                 {media.items &&

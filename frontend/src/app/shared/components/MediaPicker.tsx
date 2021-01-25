@@ -62,7 +62,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
     const currentUrl = selection || selectedUrl;
 
     return (
-        <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
+        <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose} className='media-picker'>
             <ModalHeader toggle={onClose}>
                 <Row className='align-items-center'>
                     <Col xs={12} md={5}>
@@ -90,7 +90,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
             <ModalBody>
                 <FormError error={media.error} />
 
-                <div>
+                <div className='mb-4'>
                     {media.items &&
                         <>
                             {media.items.map(media => (
