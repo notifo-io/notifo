@@ -9,14 +9,14 @@ namespace Notifo.Domain.Identity
 {
     public static class NotifoRoles
     {
-        public const string Admin = "Admin";
+        public const string HostAdmin = "HostAdmin";
 
-        public const string AppUser = "AppUser";
+        public const string AppUser = "User";
 
-        public const string AppAdmin = "AppAdmin";
+        public const string AppAdmin = "Admin";
 
-        public const string AppOwner = "AppOwner";
+        public const string AppOwner = "Owner";
 
-        public const string AppWebManager = "AppWebManager";
+        public const string AppWebManager = "WebManager";
     }
 }
