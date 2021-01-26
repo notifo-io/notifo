@@ -83,9 +83,10 @@ $left-width: 500px;
         .preview-container {
             background: none;
             display: inline-block;
-            margin-left: auto;
-            margin-right: auto;
-            padding: 2rem;
+            margin-left: 2rem;
+            margin-right: 2rem;
+            padding: 0;
+            text-align: left;
         }
 
         .templates-header {
@@ -103,6 +104,7 @@ $left-width: 500px;
             padding-left: 0;
             padding-right: 0;
             padding-top: 4rem;
+            text-align: center;
         }
     }
 }
