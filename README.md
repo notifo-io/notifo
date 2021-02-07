@@ -36,7 +36,7 @@ This allows a wide range of scenarios:
 
 * Notifications can have a confirmation preference (None, Explicit, Seen). Only unconfirmed notifications are sent through a channel and you can configure a delay when sending notifications. This means that a user does not receive a confirmation when he or she has already explicitly confirmed it (**Explicit** Mode) or has seen it (**Seen** mode). This avoids to spam your users which notifications he does not need anymore and you can also track who has seen or confirmed urgent and important notifications.
 
-Have a look to the [presentation](media/notifo.pdf) to understand how it works.
+Have a look to the [presentation](media/notifo!.pdf) to understand how it works.
 
 ## How to run it
 
