@@ -137,12 +137,17 @@ export const NotificationItem = (props: NotificationItemProps) => {
             return '_self';
         }
 
-        const linkUrl = new URL(notification.linkUrl);
+        try {
+            const linkUrl = new URL(notification.linkUrl);
 
-        if (linkUrl.host === window.location.host) {
+            if (linkUrl.host === window.location.host) {
+                return '_self';
+            } else {
+                return '_blank';
+            }
+        } catch {
+            // URL is very likely relative.
             return '_self';
-        } else {
-            return '_blank';
         }
     }, [notification.linkUrl]);
 
