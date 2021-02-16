@@ -48,16 +48,22 @@ export module UI {
     }
 
     export async function askForWebPush(config: SDKConfig): Promise<boolean> {
-        return new Promise((resolve) => {
+        if (config.styleUrl) {
+            await loadStyle(config.styleUrl);
+        }
+
+        return await new Promise((resolve) => {
             const element = document.body.appendChild(document.createElement('div'));
 
             const doAllow = () => {
                 resolve(true);
+
                 destroy(element);
             };
 
             const doDeny = () => {
                 resolve(false);
+
                 destroy(element);
             };
 
