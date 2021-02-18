@@ -72,32 +72,37 @@ namespace Notifo.Areas.Frontend.Middlewares
 
         private static async Task ServeWebpackAsync(HttpContext context, string url)
         {
-            using (var client = new HttpClient())
+            using (var handler = new HttpClientHandler())
             {
-                var result = await client.GetAsync(url);
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
-                context.Response.StatusCode = (int)result.StatusCode;
-
-                if (result.IsSuccessStatusCode)
+                using (var client = new HttpClient(handler))
                 {
-                    var text = await result.Content.ReadAsStringAsync();
+                    var result = await client.GetAsync(url);
 
-                    if (result.Content.Headers.ContentType?.MediaType == "text/html")
+                    context.Response.StatusCode = (int)result.StatusCode;
+
+                    if (result.IsSuccessStatusCode)
                     {
-                        text = text.AdjustHtml(context);
-                    }
+                        var text = await result.Content.ReadAsStringAsync();
 
-                    foreach (var (key, value) in result.Headers)
-                    {
-                        context.Response.Headers[key] = new StringValues(value.ToArray());
-                    }
+                        if (result.Content.Headers.ContentType?.MediaType == "text/html")
+                        {
+                            text = text.AdjustHtml(context);
+                        }
 
-                    foreach (var (key, value) in result.Content.Headers)
-                    {
-                        context.Response.Headers[key] = new StringValues(value.ToArray());
-                    }
+                        foreach (var (key, value) in result.Headers)
+                        {
+                            context.Response.Headers[key] = new StringValues(value.ToArray());
+                        }
 
-                    await context.Response.WriteAsync(text);
+                        foreach (var (key, value) in result.Content.Headers)
+                        {
+                            context.Response.Headers[key] = new StringValues(value.ToArray());
+                        }
+
+                        await context.Response.WriteAsync(text);
+                    }
                 }
             }
         }
