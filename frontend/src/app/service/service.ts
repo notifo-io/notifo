@@ -1278,7 +1278,7 @@ export class MediaClient {
      * @return Media returned.
      */
     download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined): Promise<FileResponse> {
-        let url_ = this.baseUrl + "/api/assets/{appId}/{fileName}?";
+        let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
@@ -1409,6 +1409,102 @@ export class MediaClient {
             });
         }
         return Promise.resolve<void>(<any>null);
+    }
+
+    /**
+     * Download a media object.
+     * @param appId The app id where the media belongs to.
+     * @param fileName The name of the media to download.
+     * @param cache (optional) The cache duration.
+     * @param download (optional) Set it to 1 to create a download response.
+     * @param width (optional) The target width when an image.
+     * @param height (optional) The target height when an image.
+     * @param quality (optional) The target quality when an image.
+     * @param preset (optional) A preset dimension.
+     * @param mode (optional) The resize mode.
+     * @param focusX (optional) The x position of the focues point.
+     * @param focusY (optional) The y position of the focues point.
+     * @param force (optional) True to resize it and clear the cache.
+     * @return Media returned.
+     */
+    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/assets/{appId}/{fileName}?";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (fileName === undefined || fileName === null)
+            throw new Error("The parameter 'fileName' must be defined.");
+        url_ = url_.replace("{fileName}", encodeURIComponent("" + fileName));
+        if (cache === null)
+            throw new Error("The parameter 'cache' cannot be null.");
+        else if (cache !== undefined)
+            url_ += "cache=" + encodeURIComponent("" + cache) + "&";
+        if (download === null)
+            throw new Error("The parameter 'download' cannot be null.");
+        else if (download !== undefined)
+            url_ += "download=" + encodeURIComponent("" + download) + "&";
+        if (width !== undefined && width !== null)
+            url_ += "width=" + encodeURIComponent("" + width) + "&";
+        if (height !== undefined && height !== null)
+            url_ += "height=" + encodeURIComponent("" + height) + "&";
+        if (quality !== undefined && quality !== null)
+            url_ += "quality=" + encodeURIComponent("" + quality) + "&";
+        if (preset !== undefined && preset !== null)
+            url_ += "preset=" + encodeURIComponent("" + preset) + "&";
+        if (mode !== undefined && mode !== null)
+            url_ += "mode=" + encodeURIComponent("" + mode) + "&";
+        if (focusX !== undefined && focusX !== null)
+            url_ += "focusX=" + encodeURIComponent("" + focusX) + "&";
+        if (focusY !== undefined && focusY !== null)
+            url_ += "focusY=" + encodeURIComponent("" + focusY) + "&";
+        if (force === null)
+            throw new Error("The parameter 'force' cannot be null.");
+        else if (force !== undefined)
+            url_ += "force=" + encodeURIComponent("" + force) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDownload2(_response);
+        });
+    }
+
+    protected processDownload2(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Media does not exist.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(<any>null);
     }
 }
 
@@ -2403,6 +2499,10 @@ export interface UserDto {
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
     preferredTimezone?: string | undefined;
+    /** The number of web hook tokens. */
+    numberOfWebPushTokens: number;
+    /** The number of web hook tokens. */
+    numberOfMobilePushTokens: number;
     /** True when only whitelisted topic are allowed. */
     requiresWhitelistedTopics: boolean;
     /** Notification settings per channel. */

@@ -64,15 +64,44 @@ export const UserPage = () => {
                         <Col xs='auto' className='user-info'>
                             <Card>
                                 <CardBody>
-                                    <FormGroup>
-                                        <Button color='info' onClick={doPublish}>
-                                            <Icon type='send' /> {texts.common.publish}
-                                        </Button>
+                                    <Row>
+                                        <Col>
+                                            <Button color='info' onClick={doPublish}>
+                                                <Icon type='send' /> {texts.common.publish}
+                                            </Button>
+                                        </Col>
 
-                                        <Button color='secondary-link' onClick={doDemo}>
-                                            <Icon type='code' /> {texts.common.demo}
-                                        </Button>
-                                    </FormGroup>
+                                        <Col xs='auto'>
+                                            <Button color='secondary-link' onClick={doDemo}>
+                                                <Icon type='code' /> {texts.common.demo}
+                                            </Button>
+                                        </Col>
+                                    </Row>
+
+                                    <hr />
+
+                                    <Row>
+                                        <Col xs={3}>
+                                            <span className={user.numberOfWebPushTokens > 0 ? 'text-primary' : 'text-muted'}>
+                                                <Icon type='browser' />&nbsp;{user.numberOfWebPushTokens}
+                                            </span>
+                                        </Col>
+                                        <Col xs={3}>
+                                            <span className={user.numberOfWebPushTokens > 0 ? 'text-primary' : 'text-muted'}>
+                                                <Icon type='mobile' />&nbsp;{user.numberOfMobilePushTokens}
+                                            </span>
+                                        </Col>
+                                        <Col xs={3}>
+                                            <span className={user.emailAddress ? 'text-primary' : 'text-muted'}>
+                                                <Icon type='mail_outline' />
+                                            </span>
+                                        </Col>
+                                        <Col xs={3}>
+                                            <span className={user.phoneNumber ? 'text-primary' : 'text-muted'}>
+                                                <Icon type='sms' />
+                                            </span>
+                                        </Col>
+                                    </Row>
 
                                     <hr />
 

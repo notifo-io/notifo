@@ -33,11 +33,11 @@ const ALL_TARGETS: { target: PushPreviewTarget, label: string }[] = [{
     target: 'Notifo',
     label: 'Notifo',
 }, {
-    target: 'DeskopFirefox',
-    label: 'Firefox',
-}, {
     target: 'DesktopChrome',
     label: 'Chrome',
+}, {
+    target: 'DesktopMacOS2',
+    label: 'Big Sur',
 }, {
     target: 'DesktopMacOS',
     label: 'MacOS',

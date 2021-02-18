@@ -29,7 +29,7 @@ export const NotificationPreview = (props: TemplatePreviewProps) => {
     } = formatting || {};
 
     const pushProps: PushPreviewProps = {
-        title: subject?.[language] || texts.common.sampleSubject,
+        title: subject?.[language] || texts.common.sampleSubject, website: 'Notifo',
     };
 
     pushProps.message = body?.[language];

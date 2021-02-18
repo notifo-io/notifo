@@ -18,7 +18,7 @@
 @import '_templates';
 @import '_users';
 
-@import '~react-push-preview/src/styles.scss';
+@import '~react-push-preview/dist/react-push-preview.cjs.production.min.css';
 
 // Import React Toastify
 @import '~react-toastify/dist/ReactToastify.css';
