@@ -2567,6 +2567,24 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAsync(string appId, string fileName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Download a media object.</summary>
+        /// <param name="appId">The app id where the media belongs to.</param>
+        /// <param name="fileName">The name of the media to download.</param>
+        /// <param name="cache">The cache duration.</param>
+        /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="width">The target width when an image.</param>
+        /// <param name="height">The target height when an image.</param>
+        /// <param name="quality">The target quality when an image.</param>
+        /// <param name="preset">A preset dimension.</param>
+        /// <param name="mode">The resize mode.</param>
+        /// <param name="focusX">The x position of the focues point.</param>
+        /// <param name="focusY">The y position of the focues point.</param>
+        /// <param name="force">True to resize it and clear the cache.</param>
+        /// <returns>Media returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.9.4.0 (NJsonSchema v10.3.1.0 (Newtonsoft.Json v9.0.0.0))")]
@@ -2831,7 +2849,7 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("fileName");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/{appId}/{fileName}?");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/media/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{fileName}", System.Uri.EscapeDataString(ConvertToString(fileName, System.Globalization.CultureInfo.InvariantCulture)));
             if (cache != null) 
@@ -3006,6 +3024,157 @@ namespace Notifo.SDK
                         if (status_ == 204)
                         {
                             return;
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Download a media object.</summary>
+        /// <param name="appId">The app id where the media belongs to.</param>
+        /// <param name="fileName">The name of the media to download.</param>
+        /// <param name="cache">The cache duration.</param>
+        /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="width">The target width when an image.</param>
+        /// <param name="height">The target height when an image.</param>
+        /// <param name="quality">The target quality when an image.</param>
+        /// <param name="preset">A preset dimension.</param>
+        /// <param name="mode">The resize mode.</param>
+        /// <param name="focusX">The x position of the focues point.</param>
+        /// <param name="focusY">The y position of the focues point.</param>
+        /// <param name="force">True to resize it and clear the cache.</param>
+        /// <returns>Media returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+    
+            if (fileName == null)
+                throw new System.ArgumentNullException("fileName");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/{appId}/{fileName}?");
+            urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{fileName}", System.Uri.EscapeDataString(ConvertToString(fileName, System.Globalization.CultureInfo.InvariantCulture)));
+            if (cache != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("cache") + "=").Append(System.Uri.EscapeDataString(ConvertToString(cache, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (download != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("download") + "=").Append(System.Uri.EscapeDataString(ConvertToString(download, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (width != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("width") + "=").Append(System.Uri.EscapeDataString(ConvertToString(width, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (height != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("height") + "=").Append(System.Uri.EscapeDataString(ConvertToString(height, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (quality != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("quality") + "=").Append(System.Uri.EscapeDataString(ConvertToString(quality, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (preset != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("preset") + "=").Append(System.Uri.EscapeDataString(ConvertToString(preset, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (mode != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("mode") + "=").Append(System.Uri.EscapeDataString(ConvertToString(mode, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (focusX != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("focusX") + "=").Append(System.Uri.EscapeDataString(ConvertToString(focusX, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (focusY != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("focusY") + "=").Append(System.Uri.EscapeDataString(ConvertToString(focusY, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (force != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("force") + "=").Append(System.Uri.EscapeDataString(ConvertToString(force, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200 || status_ == 206)
+                        {
+                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
+                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            return fileResponse_;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Media does not exist.", status_, responseText_, headers_, null);
                         }
                         else
                         if (status_ == 500)
@@ -5464,6 +5633,14 @@ namespace Notifo.SDK
         /// <summary>The timezone of the user.</summary>
         [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredTimezone { get; set; }
+    
+        /// <summary>The number of web hook tokens.</summary>
+        [Newtonsoft.Json.JsonProperty("numberOfWebPushTokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int NumberOfWebPushTokens { get; set; }
+    
+        /// <summary>The number of web hook tokens.</summary>
+        [Newtonsoft.Json.JsonProperty("numberOfMobilePushTokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int NumberOfMobilePushTokens { get; set; }
     
         /// <summary>True when only whitelisted topic are allowed.</summary>
         [Newtonsoft.Json.JsonProperty("requiresWhitelistedTopics", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

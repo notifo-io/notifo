@@ -54,6 +54,18 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public string? PreferredTimezone { get; set; }
 
         /// <summary>
+        /// The number of web hook tokens.
+        /// </summary>
+        [Required]
+        public int NumberOfWebPushTokens { get; set; }
+
+        /// <summary>
+        /// The number of web hook tokens.
+        /// </summary>
+        [Required]
+        public int NumberOfMobilePushTokens { get; set; }
+
+        /// <summary>
         /// True when only whitelisted topic are allowed.
         /// </summary>
         [Required]
@@ -87,6 +99,9 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                     }
                 }
             }
+
+            result.NumberOfMobilePushTokens = user.MobilePushTokens?.Count ?? 0;
+            result.NumberOfWebPushTokens = user.WebPushSubscriptions?.Count ?? 0;
 
             result.Counters = user.Counters ?? EmptyCounters;
 
