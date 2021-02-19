@@ -14,7 +14,7 @@ export interface LogEntryRowProps {
     entry: LogEntryDto;
 }
 
-export const LogEntryRow = (props: LogEntryRowProps) => {
+export const LogEntryRow = React.memo((props: LogEntryRowProps) => {
     const { entry } = props;
 
     return (
@@ -37,4 +37,4 @@ export const LogEntryRow = (props: LogEntryRowProps) => {
             </td>
         </tr>
     );
-};
+});

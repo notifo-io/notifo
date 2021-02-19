@@ -29,7 +29,7 @@ export interface TemplateRowProps {
     onDelete?: (user: TemplateDto) => void;
 }
 
-export const TemplateRow = (props: TemplateRowProps) => {
+export const TemplateRow = React.memo((props: TemplateRowProps) => {
     const { onDelete, onEdit, onPublish, template } = props;
 
     React.useEffect(() => {
@@ -72,4 +72,4 @@ export const TemplateRow = (props: TemplateRowProps) => {
             </td>
         </tr>
     );
-};
+});

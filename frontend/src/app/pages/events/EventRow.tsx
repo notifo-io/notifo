@@ -18,7 +18,7 @@ export interface EventRowProps {
     hideCounters?: boolean;
 }
 
-export const EventRow = (props: EventRowProps) => {
+export const EventRow = React.memo((props: EventRowProps) => {
     const { event, hideCounters } = props;
 
     return (
@@ -36,4 +36,4 @@ export const EventRow = (props: EventRowProps) => {
             </td>
         </CounterRow>
     );
-};
+});

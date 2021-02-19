@@ -35,7 +35,7 @@ export interface UserRowProps {
     onDelete?: (user: UserDto) => void;
 }
 
-export const UserRow = (props: UserRowProps) => {
+export const UserRow = React.memo((props: UserRowProps) => {
     const { hideCounters, match, onDelete, onEdit, onPublish, user } = props;
 
     React.useEffect(() => {
@@ -90,4 +90,4 @@ export const UserRow = (props: UserRowProps) => {
             </td>
         </CounterRow>
     );
-};
+});
