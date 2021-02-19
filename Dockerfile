@@ -21,7 +21,7 @@ RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Rel
 #
 # Stage 2, Build Frontend
 #
-FROM buildkite/puppeteer:latest as frontend
+FROM buildkite/puppeteer:5.2.1 as frontend
 
 WORKDIR /src
 
