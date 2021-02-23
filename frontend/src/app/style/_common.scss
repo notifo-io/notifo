@@ -31,6 +31,10 @@ legend {
     margin: 0;
 }
 
+.no-padding {
+    padding: 0 !important;
+}
+
 .navbar {
     &-brand {
         @include absolute(0, auto, 0, 0);

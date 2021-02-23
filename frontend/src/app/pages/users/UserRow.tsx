@@ -55,39 +55,41 @@ export const UserRow = React.memo((props: UserRowProps) => {
     }, [user]);
 
     return (
-        <CounterRow counters={user.counters} hideCounters={hideCounters}>
-            <td>
-                <NavLink to={`${match.url}/${user.id}`}>
-                    <span className='truncate mono'>{user.id}</span>
-                </NavLink>
-            </td>
-            <td>
-                <NavLink to={`${match.url}/${user.id}`}>
-                    <span className='truncate'>{user.fullName}</span>
-                </NavLink>
-            </td>
-            <td>
-                <NavLink to={`${match.url}/${user.id}`}>
-                    <span className='truncate'>{user.emailAddress}</span>
-                </NavLink>
-            </td>
-            <td className='text-right'>
-                <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>
-                    <Icon type='send' />
-                </Button>
+        <CounterRow counters={user.counters} columnCount={4} hideCounters={hideCounters}>
+            <tr className='list-item-summary'>
+                <td>
+                    <NavLink to={`${match.url}/${user.id}`}>
+                        <span className='truncate mono'>{user.id}</span>
+                    </NavLink>
+                </td>
+                <td>
+                    <NavLink to={`${match.url}/${user.id}`}>
+                        <span className='truncate'>{user.fullName}</span>
+                    </NavLink>
+                </td>
+                <td>
+                    <NavLink to={`${match.url}/${user.id}`}>
+                        <span className='truncate'>{user.emailAddress}</span>
+                    </NavLink>
+                </td>
+                <td className='text-right'>
+                    <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>
+                        <Icon type='send' />
+                    </Button>
 
-                <Button className='ml-1' size='sm' color='primary' onClick={doEdit}  data-tip={texts.common.edit}>
-                    <Icon type='create' />
-                </Button>
+                    <Button className='ml-1' size='sm' color='primary' onClick={doEdit}  data-tip={texts.common.edit}>
+                        <Icon type='create' />
+                    </Button>
 
-                <Confirm onConfirm={doDelete} text={texts.users.confirmDelete}>
-                    {({ onClick }) => (
-                        <Button className='ml-1' size='sm' color='danger' onClick={onClick}  data-tip={texts.common.delete}>
-                            <Icon type='delete' />
-                        </Button>
-                    )}
-                </Confirm>
-            </td>
+                    <Confirm onConfirm={doDelete} text={texts.users.confirmDelete}>
+                        {({ onClick }) => (
+                            <Button className='ml-1' size='sm' color='danger' onClick={onClick}  data-tip={texts.common.delete}>
+                                <Icon type='delete' />
+                            </Button>
+                        )}
+                    </Confirm>
+                </td>
+            </tr>
         </CounterRow>
     );
 });

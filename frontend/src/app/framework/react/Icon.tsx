@@ -17,6 +17,8 @@ export type IconType =
     'dashboard' |
     'delete' |
     'error_outline' |
+    'expand_less' |
+    'expand_more' |
     'file_copy' |
     'history' |
     'hourglass_empty' |

@@ -5,10 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FromNow } from '@app/framework';
+import { FromNow, Icon } from '@app/framework';
 import { EventDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 import * as React from 'react';
+import { Button } from 'reactstrap';
+import { EventDetails } from './EventDetails';
 
 export interface EventRowProps {
     // The event.
@@ -21,19 +23,40 @@ export interface EventRowProps {
 export const EventRow = React.memo((props: EventRowProps) => {
     const { event, hideCounters } = props;
 
+    const [isOpen, setIsOpen] = React.useState(false);
+
     return (
-        <CounterRow counters={event.counters} hideCounters={hideCounters}>
-            <td>
-                <span className='truncate'>{event.displayName}</span>
-            </td>
-            <td>
-                <span className='truncate mono'>{event.topic}</span>
-            </td>
-            <td>
-                <span className='truncate'>
-                    <FromNow date={event.created} />
-                </span>
-            </td>
-        </CounterRow>
+        <>
+            <CounterRow counters={event.counters} columnCount={4} hideCounters={hideCounters}>
+                <>
+                    <tr className='list-item-summary'>
+                        <td>
+                            <Button size='sm' color='link' onClick={() => setIsOpen(!isOpen)}>
+                                <Icon type={isOpen ? 'expand_less' : 'expand_more'} />
+                            </Button>
+                        </td>
+                        <td>
+                            <span className='truncate'>{event.displayName}</span>
+                        </td>
+                        <td>
+                            <span className='truncate mono'>{event.topic}</span>
+                        </td>
+                        <td>
+                            <span className='truncate'>
+                                <FromNow date={event.created} />
+                            </span>
+                        </td>
+                    </tr>
+
+                    {isOpen &&
+                        <tr className='list-item-details'>
+                            <td className='no-padding' colSpan={4}>
+                                <EventDetails event={event} />
+                            </td>
+                        </tr>
+                    }
+                </>
+            </CounterRow>
+        </>
     );
 });

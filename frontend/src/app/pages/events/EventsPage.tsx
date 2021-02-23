@@ -66,6 +66,7 @@ export const EventsPage = () => {
 
             <Table className='table-fixed table-simple table-middle'>
                 <colgroup>
+                    <col style={{ width: 50 }} />
                     <col />
                     <col />
                     <col style={{ width: 250 }} />
@@ -73,6 +74,7 @@ export const EventsPage = () => {
 
                 <thead>
                     <tr>
+                        <th>&nbsp;</th>
                         <th>
                             <span className='truncate'>{texts.common.subject}</span>
                         </th>

@@ -18,22 +18,23 @@ export interface CounterRowProps {
     // True to hide all counters.
     hideCounters?: boolean;
 
+    // The number of columns.
+    columnCount: number;
+
     // The children.
-    children: React.ReactElement[];
+    children: React.ReactElement;
 }
 
 export const CounterRow = React.memo((props: CounterRowProps) => {
-    const { children, counters, hideCounters } = props;
+    const { children, columnCount, counters, hideCounters } = props;
 
     return (
         <>
-            <tr className='list-item-summary'>
-                {children}
-            </tr>
+            {children}
 
             {!hideCounters &&
                 <tr className='list-item-details'>
-                    <td colSpan={children.length}>
+                    <td colSpan={columnCount}>
                         <Row>
                             <Col xs={4}>
                                 <StatisticsLabel icon='message'

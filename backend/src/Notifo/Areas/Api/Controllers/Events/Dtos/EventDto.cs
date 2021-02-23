@@ -19,6 +19,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
     {
         private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
         private static readonly Dictionary<string, string> EmptyProperties = new Dictionary<string, string>();
+        private static readonly Dictionary<string, NotificationSettingDto> EmptySettings = new Dictionary<string, NotificationSettingDto>();
 
         /// <summary>
         /// The id of the event.
@@ -91,7 +92,12 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
 
         public static EventDto FromDomainObject(Event @event, App app)
         {
-            var result = SimpleMapper.Map(@event, new EventDto());
+            var result = SimpleMapper.Map(@event, new EventDto
+            {
+                Settings = new Dictionary<string, NotificationSettingDto>()
+            });
+
+            result.Properties = @event.Properties ?? EmptyProperties;
 
             if (@event.Formatting.Subject.TryGetValue(app.Language, out var subject))
             {
@@ -102,12 +108,15 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
                 result.DisplayName = @event.Formatting.Subject.Values.FirstOrDefault() ?? string.Empty;
             }
 
-            result.Properties = @event.Properties ?? EmptyProperties;
-
-            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
-
-            if (@event.Settings != null)
+            if (@event.Formatting != null)
             {
+                result.Formatting = NotificationFormattingDto.FromDomainObject(@event.Formatting);
+            }
+
+            if (@event.Settings?.Count > 0)
+            {
+                result.Settings = new Dictionary<string, NotificationSettingDto>();
+
                 foreach (var (key, value) in @event.Settings)
                 {
                     if (value != null)
@@ -115,6 +124,10 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
                         result.Settings[key] = NotificationSettingDto.FromDomainObject(value);
                     }
                 }
+            }
+            else
+            {
+                result.Settings = EmptySettings;
             }
 
             result.Counters = @event.Counters ?? EmptyCounters;
