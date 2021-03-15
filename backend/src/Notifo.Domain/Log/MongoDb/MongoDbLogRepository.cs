@@ -35,7 +35,8 @@ namespace Notifo.Domain.Log.MongoDb
                 new CreateIndexModel<MongoDbLogEntry>(
                     IndexKeys
                         .Ascending(x => x.Entry.AppId)
-                        .Ascending(x => x.Entry.Message)),
+                        .Ascending(x => x.Entry.Message)
+                        .Descending(x => x.Entry.LastSeen)),
                 null, ct);
         }
 
@@ -55,7 +56,7 @@ namespace Notifo.Domain.Log.MongoDb
 
             var filter = Filter.And(filters);
 
-            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Entry.LastSeen).ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
 
             if (query.ShouldQueryTotal(resultItems))
