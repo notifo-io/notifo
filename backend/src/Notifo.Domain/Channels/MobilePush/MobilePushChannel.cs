@@ -202,6 +202,10 @@ namespace Notifo.Domain.Channels.MobilePush
 
                 await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
             }
+            catch (FirebaseMessagingException ex)
+            {
+                await logStore.LogAsync(notification.AppId, ex.Message, ct);
+            }
         }
 
         private static bool IsFirebaseConfigured(App app)
