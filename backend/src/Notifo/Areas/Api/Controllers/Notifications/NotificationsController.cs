@@ -20,6 +20,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
     public sealed class NotificationsController : BaseController
     {
         private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
+        private static readonly UserNotificationQuery NormalQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.NonDeleted };
         private readonly IUserNotificationStore userNotificationsStore;
         private readonly IUserNotificationService userNotificationService;
 
@@ -29,6 +30,20 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             this.userNotificationsStore = userNotificationsStore;
             this.userNotificationService = userNotificationService;
+        }
+
+        [HttpGet("/api/me/notifications")]
+        [AppPermission(NotifoRoles.AppUser)]
+        public async Task<IActionResult> GetNotifications([FromQuery] QueryDto q)
+        {
+            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery<UserNotificationQuery>(), HttpContext.RequestAborted);
+
+            var response = new ListResponseDto<NotificationDto>
+            {
+                Items = notifications.Select(NotificationDto.FromNotification).ToList()
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("/api/me/notifications/archive")]
