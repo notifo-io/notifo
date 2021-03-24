@@ -19,6 +19,10 @@ namespace Notifo.SDK
 
         IMediaClient Media { get; }
 
+        IMobilePushClient MobilePush { get; }
+
+        INotificationsClient Notifications { get; }
+
         ITemplatesClient Templates { get; }
 
         ITopicsClient Topics { get; }

@@ -14,7 +14,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
     
-    <Version>1.0.0-beta3</Version>
+    <Version>1.0.0-beta4</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -23,7 +23,8 @@ namespace Notifo.Domain.Users
         {
             public Validator()
             {
-                RuleFor(x => x.Subscription).NotNull().NotEmpty();
+                RuleFor(x => x.Subscription).NotNull();
+                RuleFor(x => x.Subscription.Endpoint).NotNull().NotEmpty();
             }
         }
 

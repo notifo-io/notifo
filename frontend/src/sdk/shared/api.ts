@@ -247,7 +247,7 @@ export async function apiDeleteSubscription(config: SDKConfig, topicPrefix: stri
 }
 
 export async function apiPostWebPush(config: SDKConfig, subscription: PushSubscription) {
-    const url = combineUrl(config.apiUrl, 'api/webpush');
+    const url = combineUrl(config.apiUrl, 'api/me/webpush');
 
     const response = await fetch(url, {
         method: 'POST',
@@ -264,7 +264,7 @@ export async function apiPostWebPush(config: SDKConfig, subscription: PushSubscr
 }
 
 export async function apiDeleteWebPush(config: SDKConfig, subscription: PushSubscription) {
-    const url = combineUrl(config.apiUrl, 'api/webpush');
+    const url = combineUrl(config.apiUrl, 'api/me/webpush');
 
     const response = await fetch(url, {
         method: 'DELETE',

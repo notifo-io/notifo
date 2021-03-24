@@ -5,16 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
+#pragma warning disable SA1300 // Element should begin with upper-case letter
 
-namespace Notifo.Areas.Api.Controllers.Notifications.Dto
+namespace Notifo.Domain.Channels.MobilePush
 {
-    public sealed class NotificationsDto
+    public enum MobileDeviceType
     {
-        [Required]
-        public long Etag { get; set; }
-
-        [Required]
-        public NotificationDto[] Notifications { get; set; }
+        Unknown,
+        Android,
+        iOS
     }
 }

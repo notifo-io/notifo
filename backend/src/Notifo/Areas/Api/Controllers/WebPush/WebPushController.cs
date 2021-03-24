@@ -24,6 +24,7 @@ namespace Notifo.Areas.Api.Controllers.WebPush
             this.userStore = userStore;
         }
 
+        [HttpPost("api/me/webpush")]
         [HttpPost("api/webpush")]
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> PostSubscription([FromBody] RegisterWebTokenDto request)
@@ -38,6 +39,7 @@ namespace Notifo.Areas.Api.Controllers.WebPush
             return NoContent();
         }
 
+        [HttpDelete("api/me/webpush")]
         [HttpDelete("api/webpush")]
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> DeleteSubscription([FromBody] RegisterWebTokenDto request)

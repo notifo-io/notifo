@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
@@ -34,7 +35,7 @@ namespace Notifo.Domain.Users
 
         public HashSet<string> AllowedTopics { get; set; } = new HashSet<string>();
 
-        public HashSet<string> MobilePushTokens { get; set; } = new HashSet<string>();
+        public HashSet<MobilePushToken> MobilePushTokens { get; set; } = new HashSet<MobilePushToken>();
 
         public HashSet<WebPushSubscription> WebPushSubscriptions { get; set; } = new HashSet<WebPushSubscription>();
 

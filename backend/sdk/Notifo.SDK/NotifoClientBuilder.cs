@@ -15,6 +15,7 @@ namespace Notifo.SDK
         private string apiKey;
         private string apiUrl = "https://app.notifo.io";
         private TimeSpan timeout = TimeSpan.FromSeconds(10);
+        private HttpClient httpClient;
 
         private NotifoClientBuilder()
         {
@@ -46,6 +47,13 @@ namespace Notifo.SDK
             return this;
         }
 
+        public NotifoClientBuilder SetClient(HttpClient httpClient)
+        {
+            this.httpClient = httpClient;
+
+            return this;
+        }
+
         public INotifoClient Build()
         {
             if (string.IsNullOrWhiteSpace(apiKey))
@@ -63,11 +71,8 @@ namespace Notifo.SDK
                 throw new InvalidOperationException("API URL is not a well defined absolute URL.");
             }
 
-            var httpClient = new HttpClient
-            {
-                Timeout = timeout
-            };
-
+            httpClient ??= new HttpClient();
+            httpClient.Timeout = timeout;
             httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
 
             var client = new NotifoClient(httpClient, apiUrl);

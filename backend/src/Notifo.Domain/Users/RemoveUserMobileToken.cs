@@ -30,7 +30,7 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            user.MobilePushTokens.Remove(Token);
+            user.MobilePushTokens.RemoveWhere(x => x.Token == Token);
 
             return Task.CompletedTask;
         }

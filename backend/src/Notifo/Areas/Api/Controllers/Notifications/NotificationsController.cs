@@ -16,11 +16,10 @@ using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Notifications
 {
-    [OpenApiIgnore]
+    [OpenApiTag("Notifications")]
     public sealed class NotificationsController : BaseController
     {
         private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
-        private static readonly UserNotificationQuery NormalQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.NonDeleted };
         private readonly IUserNotificationStore userNotificationsStore;
         private readonly IUserNotificationService userNotificationService;
 
@@ -32,8 +31,16 @@ namespace Notifo.Areas.Api.Controllers.Notifications
             this.userNotificationService = userNotificationService;
         }
 
+        /// <summary>
+        /// Query user notifications of the current user.
+        /// </summary>
+        /// <param name="q">The query object.</param>
+        /// <returns>
+        /// 200 => Notifications returned.
+        /// </returns>
         [HttpGet("/api/me/notifications")]
         [AppPermission(NotifoRoles.AppUser)]
+        [Produces(typeof(ListResponseDto<NotificationDto>))]
         public async Task<IActionResult> GetNotifications([FromQuery] QueryDto q)
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery<UserNotificationQuery>(), HttpContext.RequestAborted);
@@ -46,8 +53,15 @@ namespace Notifo.Areas.Api.Controllers.Notifications
             return Ok(response);
         }
 
+        /// <summary>
+        /// Query archhived user notifications of the current user.
+        /// </summary>
+        /// <returns>
+        /// 200 => Notifications returned.
+        /// </returns>
         [HttpGet("/api/me/notifications/archive")]
         [AppPermission(NotifoRoles.AppUser)]
+        [Produces(typeof(ListResponseDto<NotificationDto>))]
         public async Task<IActionResult> GetArchive()
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
@@ -60,6 +74,13 @@ namespace Notifo.Areas.Api.Controllers.Notifications
             return Ok(response);
         }
 
+        /// <summary>
+        /// Confirms the user notifications for the current user.
+        /// </summary>
+        /// <param name="request">The request object.</param>
+        /// <returns>
+        /// 204 => Notifications updated.
+        /// </returns>
         [HttpPost("/api/me/notifications/handled")]
         [AppPermission(NotifoRoles.AppUser)]
         public async Task Confirm([FromBody] TrackNotificationDto request)

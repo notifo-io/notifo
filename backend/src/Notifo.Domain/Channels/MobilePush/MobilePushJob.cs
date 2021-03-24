@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.Linq;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 
@@ -30,7 +31,7 @@ namespace Notifo.Domain.Channels.MobilePush
         {
             Notification = notification;
 
-            Tokens = user.MobilePushTokens;
+            Tokens = user.MobilePushTokens.Select(x => x.Token).ToHashSet();
         }
     }
 }

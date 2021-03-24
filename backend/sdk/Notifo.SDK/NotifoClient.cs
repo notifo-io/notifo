@@ -17,6 +17,8 @@ namespace Notifo.SDK
         private readonly Lazy<IEventsClient> events;
         private readonly Lazy<ILogsClient> logs;
         private readonly Lazy<IMediaClient> media;
+        private readonly Lazy<IMobilePushClient> mobilePush;
+        private readonly Lazy<INotificationsClient> notifications;
         private readonly Lazy<ITemplatesClient> templates;
         private readonly Lazy<ITopicsClient> topics;
         private readonly Lazy<IUsersClient> users;
@@ -30,6 +32,10 @@ namespace Notifo.SDK
         public ILogsClient Logs => logs.Value;
 
         public IMediaClient Media => media.Value;
+
+        public IMobilePushClient MobilePush => mobilePush.Value;
+
+        public INotificationsClient Notifications => notifications.Value;
 
         public ITemplatesClient Templates => templates.Value;
 
@@ -74,6 +80,22 @@ namespace Notifo.SDK
             media = new Lazy<IMediaClient>(() =>
             {
                 return new MediaClient(httpClient)
+                {
+                    BaseUrl = baseUrl
+                };
+            });
+
+            mobilePush = new Lazy<IMobilePushClient>(() =>
+            {
+                return new MobilePushClient(httpClient)
+                {
+                    BaseUrl = baseUrl
+                };
+            });
+
+            notifications = new Lazy<INotificationsClient>(() =>
+            {
+                return new NotificationsClient(httpClient)
                 {
                     BaseUrl = baseUrl
                 };
