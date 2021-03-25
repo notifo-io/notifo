@@ -175,20 +175,7 @@ namespace Notifo.Domain.Channels.MobilePush
         {
             try
             {
-                var message = new Message
-                {
-                    Token = token,
-                    Notification = new Notification
-                    {
-                        Title = notification.Formatting.Subject
-                    }
-                };
-
-                if (!string.IsNullOrWhiteSpace(notification.Formatting.Body))
-                {
-                    message.Notification.Body = notification.Formatting.Body;
-                }
-
+                var message = notification.ToFirebaseMessage(token);
                 await messaging.SendAsync(message, ct);
             }
             catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
