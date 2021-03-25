@@ -176,6 +176,7 @@ namespace Notifo.Domain.Channels.MobilePush
             try
             {
                 var message = notification.ToFirebaseMessage(token);
+
                 await messaging.SendAsync(message, ct);
             }
             catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)

@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using FirebaseAdmin.Messaging;
 using Notifo.Domain.UserNotifications;
+using Squidex.Text;
 
 namespace Notifo.Domain.Channels.MobilePush
 {
@@ -69,8 +70,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 return;
             }
 
-            var key = $"{char.ToLowerInvariant(propertyName[0])}{propertyName[1..]}";
-            dictionary[key] = propertyValue;
+            dictionary[propertyName.ToCamelCase()] = propertyValue;
         }
     }
 }
