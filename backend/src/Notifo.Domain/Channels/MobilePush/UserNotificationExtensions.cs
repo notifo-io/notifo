@@ -69,7 +69,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 return;
             }
 
-            string key = $"{char.ToLowerInvariant(propertyName[0])}{propertyName[1..]}";
+            var key = $"{char.ToLowerInvariant(propertyName[0])}{propertyName[1..]}";
             dictionary[key] = propertyValue;
         }
     }
