@@ -5,10 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
 using FirebaseAdmin.Messaging;
 using Notifo.Domain.UserNotifications;
 
@@ -23,18 +20,20 @@ namespace Notifo.Domain.Channels.MobilePush
                 Token = token
             };
 
+            var formatting = notification.Formatting;
+
             var commonData = new Dictionary<string, string>();
-            commonData.AddIfPresent(() => notification.TrackingUrl);
-            commonData.AddIfPresent(() => notification.ConfirmUrl);
-            commonData.AddIfPresent(() => notification.Formatting.ConfirmText);
-            commonData.AddIfPresent(() => notification.Formatting.ImageSmall);
-            commonData.AddIfPresent(() => notification.Formatting.ImageLarge);
+            commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.TrackingUrl);
+            commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ConfirmUrl);
+            commonData.AddIfPresent(nameof(formatting.ConfirmText), formatting.ConfirmText);
+            commonData.AddIfPresent(nameof(formatting.ImageSmall), formatting.ImageSmall);
+            commonData.AddIfPresent(nameof(formatting.ImageLarge), formatting.ImageLarge);
 
             message.Data = commonData;
 
             var androidData = new Dictionary<string, string>();
-            androidData.AddIfPresent(() => notification.Formatting.Subject);
-            androidData.AddIfPresent(() => notification.Formatting.Body);
+            androidData.AddIfPresent(nameof(formatting.Subject), formatting.Subject);
+            androidData.AddIfPresent(nameof(formatting.Body), formatting.Body);
 
             message.Android = new AndroidConfig
             {
@@ -43,9 +42,13 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var apsAlert = new ApsAlert
             {
-                Title = notification.Formatting.Subject,
-                Body = notification.Formatting.Body ?? string.Empty
+                Title = formatting.Subject
             };
+
+            if (!string.IsNullOrWhiteSpace(formatting.Body))
+            {
+                apsAlert.Body = formatting.Body;
+            }
 
             message.Apns = new ApnsConfig
             {
@@ -59,28 +62,15 @@ namespace Notifo.Domain.Channels.MobilePush
             return message;
         }
 
-        private static void AddIfPresent(this IDictionary<string, string> dictionary, Expression<Func<string?>> expression)
+        private static void AddIfPresent(this IDictionary<string, string> dictionary, string propertyName, string? propertyValue)
         {
-            var value = expression.Compile().Invoke();
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(propertyValue))
             {
                 return;
             }
 
-            var propertyInfo = ((MemberExpression)expression.Body).Member as PropertyInfo;
-            if (propertyInfo == null)
-            {
-                return;
-            }
-
-            string name = propertyInfo.Name;
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return;
-            }
-
-            string key = $"{char.ToLowerInvariant(name[0])}{name[1..]}";
-            dictionary[key] = value;
+            string key = $"{char.ToLowerInvariant(propertyName[0])}{propertyName[1..]}";
+            dictionary[key] = propertyValue;
         }
     }
 }
