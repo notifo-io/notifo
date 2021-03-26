@@ -24,6 +24,7 @@ namespace Notifo.Domain.Channels.MobilePush
             var formatting = notification.Formatting;
 
             var commonData = new Dictionary<string, string>();
+            commonData.AddIfPresent(nameof(notification.Id), notification.Id.ToString());
             commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.TrackingUrl);
             commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ConfirmUrl);
             commonData.AddIfPresent(nameof(formatting.ConfirmText), formatting.ConfirmText);

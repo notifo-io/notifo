@@ -5,8 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
-using FluentAssertions;
+using System;
 using Notifo.Domain.UserNotifications;
 using Xunit;
 
@@ -17,6 +16,7 @@ namespace Notifo.Domain.Channels.MobilePush
         [Fact]
         public void Should_generate_firebase_message()
         {
+            var id = Guid.NewGuid();
             var token = "token1";
             var body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr";
             var subject = "subject1";
@@ -28,6 +28,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var notification = new UserNotification
             {
+                Id = id,
                 Formatting = new NotificationFormatting<string>
                 {
                     Body = body,
@@ -44,6 +45,7 @@ namespace Notifo.Domain.Channels.MobilePush
             var message = notification.ToFirebaseMessage(token);
 
             Assert.Equal(message.Token, token);
+            Assert.Equal(message.Data[nameof(id)], id.ToString());
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
             Assert.Equal(message.Data[nameof(imageSmall)], imageSmall);
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
