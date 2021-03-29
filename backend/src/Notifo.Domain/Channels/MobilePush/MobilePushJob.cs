@@ -7,9 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 
 namespace Notifo.Domain.Channels.MobilePush
 {
@@ -28,11 +26,11 @@ namespace Notifo.Domain.Channels.MobilePush
         {
         }
 
-        public MobilePushJob(UserNotification notification, User user)
+        public MobilePushJob(UserNotification notification, HashSet<string> tokens)
         {
             Notification = notification;
 
-            Tokens = user.MobilePushTokens.Select(x => x.Token).ToHashSet();
+            Tokens = tokens;
         }
 
         public static string ComputeScheduleKey(Guid id)

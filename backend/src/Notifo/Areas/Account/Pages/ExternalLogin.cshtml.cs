@@ -11,7 +11,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Notifo.Identity;
 using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 #pragma warning disable SA1649 // File name should match first type name

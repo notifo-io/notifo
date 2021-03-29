@@ -70,12 +70,13 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public async Task HandleSeenAsync(Guid id, SeenOptions options)
         {
+            // Confirm the notification.
+            userNotificationQueue.Complete(MobilePushJob.ComputeScheduleKey(id));
+
             if (!options.IsOffline || options.Channel != Name)
             {
                 return;
             }
-
-            userNotificationQueue.Complete(MobilePushJob.ComputeScheduleKey(id));
 
             var notification = await userNotificationStore.FindAsync(id);
 
@@ -91,6 +92,14 @@ namespace Notifo.Domain.Channels.MobilePush
                 return;
             }
 
+            // Send the notification to iOS devices only, because Android has a full queue.
+            var tokens = user.MobilePushTokens.Where(x => x.DeviceType == MobileDeviceType.iOS).Select(x => x.Token).ToHashSet();
+
+            if (tokens.Count == 0)
+            {
+                return;
+            }
+
             // Send an silent notification to the user.
             var job = new MobilePushJob(new UserNotification
             {
@@ -98,7 +107,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 AppId = notification.AppId,
                 UserId = notification.UserId,
                 UserLanguage = notification.UserLanguage
-            }, user);
+            }, tokens);
 
             await userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
@@ -109,7 +118,14 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
-            var job = new MobilePushJob(notification, user);
+            var tokens = user.MobilePushTokens.Select(x => x.Token).ToHashSet();
+
+            if (tokens.Count == 0)
+            {
+                return Task.CompletedTask;
+            }
+
+            var job = new MobilePushJob(notification, tokens);
 
             // Do not use scheduling when the notification is an update.
             if (options.IsUpdate)
