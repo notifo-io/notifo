@@ -209,7 +209,7 @@ namespace Notifo.Domain.UserNotifications
 
             var notification = sut.Create(app, user, userEvent)!;
 
-            Assert.Empty(notification.Formatting.ConfirmText);
+            Assert.Null(notification.Formatting.ConfirmText);
         }
 
         [Fact]

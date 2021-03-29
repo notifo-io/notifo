@@ -7,6 +7,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using Notifo.Infrastructure.Scheduling;
 
 namespace Notifo.Infrastructure.Messaging.Scheduling
@@ -27,7 +28,7 @@ namespace Notifo.Infrastructure.Messaging.Scheduling
 
         public Task ProduceAsync(string key, T message)
         {
-            return scheduler.ScheduleAsync(key, message, default, false);
+            return scheduler.ScheduleAsync(key, message, default(Instant), false);
         }
     }
 }

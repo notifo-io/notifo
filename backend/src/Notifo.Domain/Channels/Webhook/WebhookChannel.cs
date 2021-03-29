@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
@@ -62,27 +63,25 @@ namespace Notifo.Domain.Channels.Webhook
             return !string.IsNullOrWhiteSpace(app.WebhookUrl);
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
-            if (!isUpdate)
-            {
-                return Task.CompletedTask;
-            }
-
             var job = new WebhookJob(notification, app);
 
-            return userNotificationQueue.ScheduleDelayedAsync(
+            return userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
                 job,
-                0, false, ct);
+                Duration.Zero,
+                false, ct);
         }
 
-        public async Task HandleAsync(List<WebhookJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<WebhookJob> jobs, bool isLastAttempt, CancellationToken ct)
         {
-            foreach (var job in jobs)
-            {
-                await SendAsync(job, isLastAttempt, ct);
-            }
+            // We are not using grouped scheduling here.
+            var job = jobs[0];
+
+            await SendAsync(job, isLastAttempt, ct);
+
+            return true;
         }
 
         public Task SendAsync(WebhookJob job, bool isLastAttempt, CancellationToken ct)

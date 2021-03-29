@@ -67,12 +67,11 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 null, ct);
         }
 
-        public async Task<bool> IsConfirmedOrHandled(Guid id, string channel)
+        public async Task<bool> IsConfirmed(Guid id, string channel)
         {
             var filter =
                Filter.And(
                    Filter.Eq(x => x.Id, id),
-                   Filter.Ne($"Sending.{channel}.Status", ProcessStatus.Attempt),
                    Filter.Exists(x => x.IsConfirmed, false));
 
             var count =

@@ -37,7 +37,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 Body = OrNull(notification.Formatting.Body),
                 LinkText = OrNull(notification.Formatting.LinkText),
                 LinkUrl = OrNull(notification.Formatting.LinkUrl),
-                TrackingUrl = notification.TrackingUrl,
+                TrackingUrl = notification.ComputeTrackingUrl(Providers.Email),
                 Subject = notification.Formatting.Subject,
             };
 
@@ -54,7 +54,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             if (notification.Formatting.ConfirmMode == ConfirmMode.Explicit)
             {
                 result.ConfirmText = OrNull(notification.Formatting.ConfirmText);
-                result.ConfirmUrl = notification.ConfirmUrl;
+                result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.Email);
             }
 
             return result;

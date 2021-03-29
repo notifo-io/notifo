@@ -15,7 +15,7 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationRepository
     {
-        Task<bool> IsConfirmedOrHandled(Guid id, string channel);
+        Task<bool> IsConfirmed(Guid id, string channel);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct);
 

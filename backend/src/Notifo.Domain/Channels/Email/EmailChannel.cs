@@ -86,29 +86,30 @@ namespace Notifo.Domain.Channels.Email
             return true;
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
-            if (isUpdate)
+            if (options.IsUpdate)
             {
                 return Task.CompletedTask;
             }
 
             var job = new EmailJob(notification);
 
-            return userNotificationQueue.ScheduleDelayedAsync(
+            return userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
                 job,
-                setting.DelayInSecondsOrZero,
+                setting.DelayDuration,
                 false, ct);
         }
 
-        public async Task HandleAsync(List<EmailJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt, CancellationToken ct)
         {
+            // We are using grouped scheduling here.
             var notifications = new List<UserNotification>();
 
             foreach (var job in jobs)
             {
-                if (await userNotificationStore.IsConfirmedOrHandled(job.Notification.Id, Name))
+                if (await userNotificationStore.IsConfirmed(job.Notification.Id, Name))
                 {
                     await UpdateAsync(notifications, ProcessStatus.Skipped);
                 }
@@ -122,6 +123,8 @@ namespace Notifo.Domain.Channels.Email
             {
                 await SendAsync(notifications, isLastAttempt, ct);
             }
+
+            return true;
         }
 
         public Task SendAsync(List<UserNotification> notifications, bool isLastAttempt, CancellationToken ct)

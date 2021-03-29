@@ -63,12 +63,14 @@ namespace Notifo.Domain.UserNotifications
             return Task.CompletedTask;
         }
 
-        public async Task HandleAsync(List<UserEventMessage> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<UserEventMessage> jobs, bool isLastAttempt, CancellationToken ct)
         {
-            foreach (var userEvent in jobs)
-            {
-                await DistributeScheduledAsync(userEvent, isLastAttempt);
-            }
+            // We are not using grouped scheduling here.
+            var job = jobs[0];
+
+            await DistributeScheduledAsync(job, isLastAttempt);
+
+            return true;
         }
 
         public async Task DistributeAsync(UserEventMessage userEvent)
@@ -129,7 +131,7 @@ namespace Notifo.Domain.UserNotifications
                 {
                     if (notification.Settings.TryGetValue(channel.Name, out var preference))
                     {
-                        await channel.SendAsync(notification, preference, user, app, false);
+                        await channel.SendAsync(notification, preference, user, app, default);
                     }
                 }
             }
@@ -222,11 +224,13 @@ namespace Notifo.Domain.UserNotifications
                         return (null, null);
                     }
 
+                    var options = new SendOptions { IsUpdate = true };
+
                     foreach (var channel in channels)
                     {
                         if (notification.Settings.TryGetValue(channel.Name, out var preference))
                         {
-                            await channel.SendAsync(notification, preference, user, app, true);
+                            await channel.SendAsync(notification, preference, user, app, options);
                         }
                     }
                 }
@@ -237,9 +241,22 @@ namespace Notifo.Domain.UserNotifications
             return (null, null);
         }
 
-        public Task TrackSeenAsync(IEnumerable<Guid> ids, string? channel = null)
+        public async Task TrackSeenAsync(IEnumerable<Guid> ids, string? sourceChannel = null, bool offline = false)
         {
-            return userNotificationsStore.TrackSeenAsync(ids, channel);
+            await userNotificationsStore.TrackSeenAsync(ids, sourceChannel);
+
+            var options = new SeenOptions { IsOffline = offline, Channel = sourceChannel };
+
+            foreach (var channel in channels)
+            {
+                if (channel.Name == sourceChannel)
+                {
+                    foreach (var id in ids)
+                    {
+                        await channel.HandleSeenAsync(id, options);
+                    }
+                }
+            }
         }
 
         private static string ScheduleKey(UserEventMessage userEvent)

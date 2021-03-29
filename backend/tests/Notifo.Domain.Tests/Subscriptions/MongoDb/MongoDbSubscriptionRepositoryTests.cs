@@ -154,6 +154,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         {
             var subscription = new Subscription
             {
+                AppId = appId,
                 UserId = userId,
                 TopicPrefix = topicPrefix,
                 TopicSettings = new NotificationSettings()

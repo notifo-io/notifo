@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using NodaTime;
+using Notifo.Infrastructure.Tasks;
 using Notifo.Infrastructure.Timers;
 using Squidex.Hosting;
 using Squidex.Log;
@@ -78,6 +79,11 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             }
         }
 
+        public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default)
+        {
+            return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
+        }
+
         public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct)
         {
             if (dueTime <= Now && canInline && schedulerOptions.ExecuteInline)
@@ -90,17 +96,20 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             }
         }
 
-        public async Task ScheduleDelayedAsync(string key, T job, int delaySeconds, bool canInline, CancellationToken ct)
+        public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default)
         {
-            if (delaySeconds <= 0 && canInline)
+            return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
+        }
+
+        public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct = default)
+        {
+            if (dueTime <= Now && canInline && schedulerOptions.ExecuteInline)
             {
                 await ExecuteInlineAsync(key, job);
             }
             else
             {
-                var delayTime = clock.GetCurrentInstant().Plus(Duration.FromSeconds(delaySeconds));
-
-                await schedulerStore.EnqueueWithDelayAsync(key, job, delayTime, 0, ct);
+                await schedulerStore.EnqueueGroupedAsync(key, job, dueTime, 0, ct);
             }
         }
 
@@ -127,19 +136,30 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
 
         private async Task HandleAsync(SchedulerBatch<T> document)
         {
+            if (document.RetryCount > schedulerOptions.ExecutionRetries.Length)
+            {
+                await schedulerStore.CompleteAsync(document.Id);
+                return;
+            }
+
             var canRetry = document.RetryCount < schedulerOptions.ExecutionRetries.Length;
 
             try
             {
+                var isConfirmed = true;
+
                 if (currentHandler != null)
                 {
                     using (var timeout = new CancellationTokenSource(schedulerOptions.Timeout))
                     {
-                        await currentHandler.HandleAsync(document.Jobs, !canRetry, timeout.Token);
+                        isConfirmed = await currentHandler.HandleAsync(document.Jobs, !canRetry, timeout.Token);
                     }
                 }
 
-                await schedulerStore.CompleteAsync(document.Id);
+                if (isConfirmed)
+                {
+                    await schedulerStore.CompleteAsync(document.Id);
+                }
             }
             catch (Exception ex)
             {
@@ -203,6 +223,11 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
                         .WriteProperty("status", "Failed"));
                 }
             }
+        }
+
+        public void Complete(string key)
+        {
+            schedulerStore.CompleteByKeyAsync(key).Forget();
         }
     }
 }

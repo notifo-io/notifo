@@ -14,19 +14,36 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public static class UserNotificationExtensions
     {
-        public static Message ToFirebaseMessage(this UserNotification notification, string token)
+        public static Message ToFirebaseMessage(this UserNotification notification, string token, bool sendWakeup)
         {
             var message = new Message
             {
                 Token = token
             };
 
+            if (sendWakeup)
+            {
+                message.Apns = new ApnsConfig
+                {
+                    Aps = new Aps
+                    {
+                        ContentAvailable = true
+                    },
+                    Headers = new Dictionary<string, string>
+                    {
+                        ["apns-priority"] = "5"
+                    }
+                };
+
+                return message;
+            }
+
             var formatting = notification.Formatting;
 
             var commonData = new Dictionary<string, string>();
             commonData.AddIfPresent(nameof(notification.Id), notification.Id.ToString());
-            commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.TrackingUrl);
-            commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ConfirmUrl);
+            commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.ComputeTrackingUrl(Providers.MobilePush));
+            commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ComputeConfirmUrl(Providers.MobilePush));
             commonData.AddIfPresent(nameof(formatting.ConfirmText), formatting.ConfirmText);
             commonData.AddIfPresent(nameof(formatting.ImageSmall), formatting.ImageSmall);
             commonData.AddIfPresent(nameof(formatting.ImageLarge), formatting.ImageLarge);

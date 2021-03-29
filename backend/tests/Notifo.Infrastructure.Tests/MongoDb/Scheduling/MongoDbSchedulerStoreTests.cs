@@ -52,8 +52,8 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
             var delay1 = Duration.FromSeconds(60 * 1000);
             var delay2 = Duration.FromSeconds(120 * 1000);
 
-            await _.Store.EnqueueWithDelayAsync("2", 3, now.Plus(delay1), 0, default);
-            await _.Store.EnqueueWithDelayAsync("2", 4, now.Plus(delay2), 0, default);
+            await _.Store.EnqueueGroupedAsync("2", 3, now.Plus(delay1), 0, default);
+            await _.Store.EnqueueGroupedAsync("2", 4, now.Plus(delay2), 0, default);
 
             var notDequeued = await _.Store.DequeueAsync(now);
 

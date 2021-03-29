@@ -25,17 +25,17 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         }
 
         [HttpGet("/api/tracking/notifications/{id}/seen")]
-        public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null)
+        public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null, [FromQuery] bool offline = false)
         {
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), channel);
+            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), channel, offline);
 
             return TrackingPixel();
         }
 
         [HttpPost("/api/tracking/notifications/{id}/seen")]
-        public async Task<IActionResult> SeenPost(Guid id, [FromQuery] string? channel = null)
+        public async Task<IActionResult> SeenPost(Guid id, [FromQuery] string? channel = null, [FromQuery] bool offline = false)
         {
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), channel);
+            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), channel, offline);
 
             return NoContent();
         }

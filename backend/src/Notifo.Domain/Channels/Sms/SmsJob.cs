@@ -50,5 +50,10 @@ namespace Notifo.Domain.Channels.Sms
                 Text = Text.Substring(0, 137) + "...";
             }
         }
+
+        public static string ComputeScheduleKey(Guid id)
+        {
+            return id.ToString();
+        }
     }
 }
