@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using FakeItEasy;
 using FluentAssertions;
@@ -247,16 +248,25 @@ namespace Notifo.Domain.UserNotifications
 
             var notification = sut.Create(app, user, userEvent)!;
 
-            notification.Settings.Should().BeEquivalentTo(
-                new NotificationSettings
+            notification.Channels.Should().BeEquivalentTo(
+                new Dictionary<string, UserNotificationChannel>
                 {
-                    [Providers.Email] = new NotificationSetting
+                    [Providers.Email] = new UserNotificationChannel
                     {
-                        Send = NotificationSend.NotSending
+                        Setting = new NotificationSetting
+                        {
+                            Send = NotificationSend.NotSending
+                        },
+                        Status = new Dictionary<string, ChannelSendInfo>()
                     },
-                    [Providers.MobilePush] = new NotificationSetting
+
+                    [Providers.MobilePush] = new UserNotificationChannel
                     {
-                        DelayInSeconds = 100
+                        Setting = new NotificationSetting
+                        {
+                            DelayInSeconds = 100
+                        },
+                        Status = new Dictionary<string, ChannelSendInfo>()
                     }
                 });
         }

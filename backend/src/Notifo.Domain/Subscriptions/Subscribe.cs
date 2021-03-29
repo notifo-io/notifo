@@ -21,7 +21,7 @@ namespace Notifo.Domain.Subscriptions
 
         public bool CanCreate => true;
 
-        public async Task ExecuteAsync(Subscription target, IServiceProvider serviceProvider, CancellationToken ct)
+        public async Task<bool> ExecuteAsync(Subscription target, IServiceProvider serviceProvider, CancellationToken ct)
         {
             var userStore = serviceProvider.GetRequiredService<IUserStore>();
 
@@ -36,6 +36,8 @@ namespace Notifo.Domain.Subscriptions
                     target.TopicSettings[key] = value;
                 }
             }
+
+            return true;
         }
 
         private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription target, CancellationToken ct)

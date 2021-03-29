@@ -69,9 +69,10 @@ namespace Notifo.Domain.Subscriptions
                     subscription = Subscription.Create(appId, userId, prefix);
                 }
 
-                await command.ExecuteAsync(subscription, serviceProvider, ct);
-
-                await repository.UpsertAsync(subscription, etag, ct);
+                if (await command.ExecuteAsync(subscription, serviceProvider, ct))
+                {
+                    await repository.UpsertAsync(subscription, etag, ct);
+                }
 
                 return subscription;
             });

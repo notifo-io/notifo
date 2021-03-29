@@ -6,22 +6,27 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Domain.Channels.Email;
+using NodaTime;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Apps
+namespace Notifo.Domain.Users
 {
-    public sealed class UpdateAppEmailVerificationStatus : ICommand<App>
+    public sealed class UpdateMobileWakeupTime : ICommand<User>
     {
-        public EmailVerificationStatus Status { get; set; }
+        public string Token { get; set; }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public Instant Timestamp { get; set; }
+
+        public Task<bool> ExecuteAsync(User target, IServiceProvider serviceProvider, CancellationToken ct)
         {
-            if (app.EmailVerificationStatus != Status)
+            var token = target.MobilePushTokens.FirstOrDefault(x => x.Token == Token);
+
+            if (token != null && token.LastWakeup < Timestamp)
             {
-                app.EmailVerificationStatus = Status;
+                token.LastWakeup = Timestamp;
 
                 return Task.FromResult(true);
             }

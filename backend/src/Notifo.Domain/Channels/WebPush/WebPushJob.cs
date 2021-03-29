@@ -6,9 +6,7 @@
 // ==========================================================================
 
 using System;
-using System.Collections.Generic;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Reflection;
 
@@ -28,20 +26,22 @@ namespace Notifo.Domain.Channels.WebPush
 
         public string Payload { get; set; }
 
-        public HashSet<WebPushSubscription> Subscriptions { get; set; }
+        public WebPushSubscription Subscription { get; set; }
+
+        public bool IsImmediate { get; set; }
 
         public string ScheduleKey
         {
-            get { return Id.ToString(); }
+            get => $"{Id}_{Subscription.Endpoint}";
         }
 
         public WebPushJob()
         {
         }
 
-        public WebPushJob(UserNotification notification, User user, IJsonSerializer serializer)
+        public WebPushJob(UserNotification notification, WebPushSubscription subscription, IJsonSerializer serializer)
         {
-            Subscriptions = user.WebPushSubscriptions;
+            Subscription = subscription;
 
             SimpleMapper.Map(notification, this);
 

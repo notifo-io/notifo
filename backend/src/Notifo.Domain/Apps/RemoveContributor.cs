@@ -30,7 +30,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -39,9 +39,9 @@ namespace Notifo.Domain.Apps
                 throw new DomainException(Texts.App_CannotRemoveYourself);
             }
 
-            app.Contributors.Remove(ContributorId);
+            var removed = app.Contributors.Remove(ContributorId);
 
-            return Task.CompletedTask;
+            return Task.FromResult(removed);
         }
     }
 }

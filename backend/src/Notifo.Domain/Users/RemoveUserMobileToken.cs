@@ -26,13 +26,13 @@ namespace Notifo.Domain.Users
             }
         }
 
-        public Task ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            user.MobilePushTokens.RemoveWhere(x => x.Token == Token);
+            var removed = user.MobilePushTokens.RemoveWhere(x => x.Token == Token);
 
-            return Task.CompletedTask;
+            return Task.FromResult(removed > 0);
         }
     }
 }

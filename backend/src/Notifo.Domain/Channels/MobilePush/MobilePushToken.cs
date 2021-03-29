@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using NodaTime;
 
 namespace Notifo.Domain.Channels.MobilePush
 {
@@ -14,6 +15,8 @@ namespace Notifo.Domain.Channels.MobilePush
         public string Token { get; set; }
 
         public MobileDeviceType DeviceType { get; set; }
+
+        public Instant LastWakeup { get; set; }
 
         public override bool Equals(object? obj)
         {

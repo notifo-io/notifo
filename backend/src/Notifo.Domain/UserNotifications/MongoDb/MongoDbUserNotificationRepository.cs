@@ -27,6 +27,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             {
                 cm.AutoMap();
 
+                cm.SetIgnoreExtraElements(true);
+
                 cm.MapIdProperty(x => x.Id)
                     .SetSerializer(new GuidSerializer(BsonType.String));
 
@@ -67,12 +69,13 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 null, ct);
         }
 
-        public async Task<bool> IsConfirmed(Guid id, string channel)
+        public async Task<bool> IsConfirmedOrHandled(Guid id, string channel, string configuration)
         {
             var filter =
                Filter.And(
                    Filter.Eq(x => x.Id, id),
-                   Filter.Exists(x => x.IsConfirmed, false));
+                   Filter.Exists(x => x.IsConfirmed, false),
+                   Filter.Ne($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -191,18 +194,18 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return entity;
         }
 
-        public async Task UpdateAsync(IEnumerable<(Guid Id, string Channel, ChannelSendInfo Info)> updates, CancellationToken ct)
+        public async Task UpdateAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates, CancellationToken ct)
         {
             var writes = new List<WriteModel<UserNotification>>();
 
-            foreach (var (id, channel, info) in updates)
+            foreach (var (id, channel, configuration, info) in updates)
             {
                 writes.Add(new UpdateOneModel<UserNotification>(
                     Filter.Eq(x => x.Id, id),
                     Update
-                        .Set($"Sending.{channel}.Detail", info.Detail)
-                        .Set($"Sending.{channel}.Status", info.Status)
-                        .Set($"Sending.{channel}.LastUpdate", info.LastUpdate)));
+                        .Set($"Channels.{channel}.Status.{configuration}.Detail", info.Detail)
+                        .Set($"Channels.{channel}.Status.{configuration}.Status", info.Status)
+                        .Set($"Channels.{channel}.Status.{configuration}LastUpdate", info.LastUpdate)));
             }
 
             if (writes.Count == 0)

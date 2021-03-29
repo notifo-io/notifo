@@ -27,7 +27,7 @@ namespace Notifo.Infrastructure.MongoDb
 
         public bool IsDiscriminatorCompatibleWithObjectSerializer
         {
-            get { return true; }
+            get => true;
         }
 
         public override LocalTime Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)

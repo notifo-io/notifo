@@ -42,7 +42,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -55,7 +55,7 @@ namespace Notifo.Domain.Apps
 
             app.EmailTemplates[Language] = EmailTemplate;
 
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
     }
 }

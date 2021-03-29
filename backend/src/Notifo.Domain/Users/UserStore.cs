@@ -126,11 +126,12 @@ namespace Notifo.Domain.Users
                     user = User.Create(appId, id);
                 }
 
-                await command.ExecuteAsync(user, serviceProvider, ct);
+                if (!await command.ExecuteAsync(user, serviceProvider, ct))
+                {
+                    await repository.UpsertAsync(user, etag, ct);
 
-                await repository.UpsertAsync(user, etag, ct);
-
-                await DeliverAsync(user);
+                    await DeliverAsync(user);
+                }
 
                 return user;
             });

@@ -116,7 +116,9 @@ namespace Notifo.Domain.UserNotifications
                     throw new DomainException(Texts.Notification_NoUser);
                 }
 
-                var (notification, targets) = await CreateUserNotificationAsync(userEvent, user, app);
+                var options = new SendOptions { App = app, User = user };
+
+                var notification = await CreateUserNotificationAsync(userEvent, options);
 
                 try
                 {
@@ -127,11 +129,14 @@ namespace Notifo.Domain.UserNotifications
                     throw new DomainException(Texts.Notification_AlreadyProcessed);
                 }
 
-                foreach (var channel in targets)
+                foreach (var channel in channels)
                 {
-                    if (notification.Settings.TryGetValue(channel.Name, out var preference))
+                    if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                     {
-                        await channel.SendAsync(notification, preference, user, app, default);
+                        foreach (var configuration in notificationChannel.Status.Keys)
+                        {
+                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
+                        }
                     }
                 }
             }
@@ -153,16 +158,14 @@ namespace Notifo.Domain.UserNotifications
             }
         }
 
-        private async Task<(UserNotification, HashSet<ICommunicationChannel>)> CreateUserNotificationAsync(UserEventMessage userEvent, User user, App app)
+        private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendOptions options)
         {
-            var notification = userNotificationFactory.Create(app, user, userEvent);
+            var notification = userNotificationFactory.Create(options.App, options.User, userEvent);
 
             if (notification == null)
             {
                 throw new DomainException(Texts.Notification_NoSubject);
             }
-
-            var targets = new HashSet<ICommunicationChannel>();
 
             foreach (var channel in channels)
             {
@@ -173,33 +176,26 @@ namespace Notifo.Domain.UserNotifications
                         Send = NotificationSend.Send
                     };
 
-                    if (channel.CanSend(notification, setting, user, app))
+                    notification.Channels[channel.Name] = UserNotificationChannel.Create(new NotificationSetting
                     {
-                        notification.Settings[channel.Name] = setting;
-
-                        targets.Add(channel);
-                    }
+                        Send = NotificationSend.Send
+                    });
                 }
-                else
+
+                if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel) && notificationChannel.Setting.ShouldSend)
                 {
-                    if (notification.Settings.TryGetValue(channel.Name, out var preference) && preference.ShouldSend)
+                    var configurations = channel.GetConfigurations(notification, notificationChannel.Setting, options);
+
+                    foreach (var configuration in configurations)
                     {
-                        if (channel.CanSend(notification, preference, user, app))
-                        {
-                            notification.Sending[channel.Name] = new ChannelSendInfo
-                            {
-                                LastUpdate = clock.GetCurrentInstant()
-                            };
+                        notificationChannel.Status[configuration] = new ChannelSendInfo();
 
-                            targets.Add(channel);
-
-                            await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
-                        }
+                        await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
                     }
                 }
             }
 
-            return (notification, targets);
+            return notification;
         }
 
         public async Task<(UserNotification?, App?)> TrackConfirmedAsync(Guid id, string? sourceChannel = null)
@@ -215,7 +211,7 @@ namespace Notifo.Domain.UserNotifications
                     return (null, null);
                 }
 
-                if (notification.Settings.Values.Any(x => x.ShouldSend))
+                if (notification.Channels.Any())
                 {
                     var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
 
@@ -224,13 +220,16 @@ namespace Notifo.Domain.UserNotifications
                         return (null, null);
                     }
 
-                    var options = new SendOptions { IsUpdate = true };
+                    var options = new SendOptions { App = app, User = user, IsUpdate = true };
 
                     foreach (var channel in channels)
                     {
-                        if (notification.Settings.TryGetValue(channel.Name, out var preference))
+                        if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                         {
-                            await channel.SendAsync(notification, preference, user, app, options);
+                            foreach (var configuration in notificationChannel.Status.Keys)
+                            {
+                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
+                            }
                         }
                     }
                 }
@@ -244,19 +243,6 @@ namespace Notifo.Domain.UserNotifications
         public async Task TrackSeenAsync(IEnumerable<Guid> ids, string? sourceChannel = null, bool offline = false)
         {
             await userNotificationsStore.TrackSeenAsync(ids, sourceChannel);
-
-            var options = new SeenOptions { IsOffline = offline, Channel = sourceChannel };
-
-            foreach (var channel in channels)
-            {
-                if (channel.Name == sourceChannel)
-                {
-                    foreach (var id in ids)
-                    {
-                        await channel.HandleSeenAsync(id, options);
-                    }
-                }
-            }
         }
 
         private static string ScheduleKey(UserEventMessage userEvent)

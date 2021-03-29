@@ -35,7 +35,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public async Task ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -56,6 +56,8 @@ namespace Notifo.Domain.Apps
             }
 
             app.Contributors[user.Id] = Role;
+
+            return true;
         }
     }
 }

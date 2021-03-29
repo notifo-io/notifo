@@ -26,13 +26,13 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            app.EmailTemplates.Remove(Language);
+            var removed = app.EmailTemplates.Remove(Language);
 
-            return Task.CompletedTask;
+            return Task.FromResult(removed);
         }
     }
 }

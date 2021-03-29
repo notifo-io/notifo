@@ -6,11 +6,10 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Squidex.Log;
 
 namespace Notifo.Domain.Channels.Web
@@ -31,7 +30,12 @@ namespace Notifo.Domain.Channels.Web
             this.log = log;
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        {
+            yield return options.User.Id;
+        }
+
+        public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options, CancellationToken ct = default)
         {
             try
             {

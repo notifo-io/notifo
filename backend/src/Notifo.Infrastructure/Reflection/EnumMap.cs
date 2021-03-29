@@ -25,12 +25,12 @@ namespace Notifo.Infrastructure.Reflection
 
         public T1 this[T2 v2]
         {
-            get { return dictionary2[v2]; }
+            get => dictionary2[v2];
         }
 
         public T2 this[T1 v1]
         {
-            get { return dictionary1[v1]; }
+            get => dictionary1[v1];
         }
 
         public void CheckMappings()

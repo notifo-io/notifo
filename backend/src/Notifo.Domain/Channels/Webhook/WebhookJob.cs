@@ -5,31 +5,30 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Webhook
 {
     public sealed class WebhookJob
     {
-        public string Url { get; set; }
-
         public UserNotification Notification { get; set; }
+
+        public string Url { get; set; }
 
         public string ScheduleKey
         {
-            get { return Notification.Id.ToString(); }
+            get => $"{Notification.Id}_{Url}";
         }
 
         public WebhookJob()
         {
         }
 
-        public WebhookJob(UserNotification notification, App app)
+        public WebhookJob(UserNotification notification, string url)
         {
-            Url = app.WebhookUrl!;
-
             Notification = notification;
+
+            Url = url;
         }
     }
 }

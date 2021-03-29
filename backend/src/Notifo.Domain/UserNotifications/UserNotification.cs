@@ -45,9 +45,7 @@ namespace Notifo.Domain.UserNotifications
 
         public NotificationFormatting<string> Formatting { get; set; }
 
-        public NotificationSettings Settings { get; set; }
-
-        public Dictionary<string, ChannelSendInfo> Sending { get; set; }
+        public Dictionary<string, UserNotificationChannel> Channels { get; set; }
 
         public string? ComputeTrackingUrl(string channel)
         {

@@ -45,7 +45,7 @@ namespace Notifo.Domain.Users
             }
         }
 
-        public async Task ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
+        public async Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -95,6 +95,8 @@ namespace Notifo.Domain.Users
 
                 user.ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id);
             }
+
+            return true;
         }
     }
 }

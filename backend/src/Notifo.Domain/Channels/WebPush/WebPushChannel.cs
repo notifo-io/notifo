@@ -13,7 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
@@ -75,18 +74,35 @@ namespace Notifo.Domain.Channels.WebPush
             return Task.CompletedTask;
         }
 
-        public bool CanSend(UserNotification notification, NotificationSetting setting, User user, App app)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            return !notification.Silent && user.WebPushSubscriptions.Count > 0;
+            if (notification.Silent)
+            {
+                yield break;
+            }
+
+            foreach (var subscription in options.User.WebPushSubscriptions)
+            {
+                yield return subscription.Endpoint;
+            }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
         {
-            var job = new WebPushJob(notification, user, serializer);
+            var subscription = options.User.WebPushSubscriptions.SingleOrDefault(x => x.Endpoint == configuration);
+
+            if (subscription == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            var job = new WebPushJob(notification, subscription, serializer);
 
             // Do not use scheduling when the notification is an update.
-            if (options.IsUpdate)
+            if (options.IsUpdate || setting.DelayDuration == Duration.Zero)
             {
+                job.IsImmediate = true;
+
                 return userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
@@ -103,109 +119,79 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
-        public async Task<bool> HandleAsync(List<WebPushJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt, CancellationToken ct)
         {
-            // We are not using grouped scheduling here.
-            var job = jobs[0];
-
-            if (await userNotificationStore.IsConfirmed(job.Id, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Id, job.Subscription.Endpoint, Name))
             {
-                await UpdateAsync(job, ProcessStatus.Skipped);
+                await UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Skipped);
             }
             else
             {
-                await SendAsync(job, isLastAttempt, ct);
+                await SendAsync(job, ct);
             }
 
             return true;
         }
 
-        public Task SendAsync(WebPushJob job, bool isLastAttempt, CancellationToken ct)
+        private Task SendAsync(WebPushJob job, CancellationToken ct)
         {
             return log.ProfileAsync("SendWebPush", async () =>
             {
+                var endpoint = job.Subscription.Endpoint;
                 try
                 {
-                    await UpdateAsync(job, ProcessStatus.Attempt);
+                    await UpdateAsync(job, endpoint, ProcessStatus.Attempt);
 
-                    await SendAnyAsync(job, ct);
+                    await SendCoreAsync(job, ct);
 
-                    await UpdateAsync(job, ProcessStatus.Handled);
+                    await UpdateAsync(job, endpoint, ProcessStatus.Handled);
                 }
-                catch (Exception ex)
+                catch (DomainException ex)
                 {
-                    if (isLastAttempt)
-                    {
-                        await UpdateAsync(job, ProcessStatus.Failed);
-                    }
-
-                    if (ex is DomainException domainException)
-                    {
-                        await logStore.LogAsync(job.AppId, domainException.Message);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    await logStore.LogAsync(job.AppId, ex.Message);
+                    throw;
                 }
             });
         }
 
-        private async Task SendAnyAsync(WebPushJob task, CancellationToken ct)
-        {
-            var tasks = task.Subscriptions.Select(s => SendAsync(task, s, ct));
-            try
-            {
-                await Task.WhenAll(tasks);
-            }
-            catch (Exception ex)
-            {
-                if (tasks.Any(x => x.Status == TaskStatus.RanToCompletion))
-                {
-                    log.LogWarning(ex, w =>
-                    {
-                        w.WriteProperty("action", "SendWebPush");
-                        w.WriteProperty("status", "PartialFailure");
-
-                        Profiler.Session?.Write(w);
-                    });
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
-        private async Task SendAsync(WebPushJob task, WebPushSubscription subscription, CancellationToken ct)
+        private async Task SendCoreAsync(WebPushJob job, CancellationToken ct)
         {
             try
             {
                 var pushSubscription = new PushSubscription(
-                    subscription.Endpoint,
-                    subscription.Keys["p256dh"],
-                    subscription.Keys["auth"]);
+                    job.Subscription.Endpoint,
+                    job.Subscription.Keys["p256dh"],
+                    job.Subscription.Keys["auth"]);
 
-                var json = task.Payload;
+                var json = job.Payload;
 
                 await webPushClient.SendNotificationAsync(pushSubscription, json);
             }
             catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
             {
-                await logStore.LogAsync(task.AppId, Texts.WebPush_TokenRemoved, ct);
+                await logStore.LogAsync(job.AppId, Texts.WebPush_TokenRemoved, ct);
 
                 var command = new RemoveUserWebPushSubscription
                 {
-                    Subscription = subscription
+                    Subscription = job.Subscription
                 };
 
-                await userStore.UpsertAsync(task.AppId, task.UserId, command, ct);
+                await userStore.UpsertAsync(job.AppId, job.UserId, command, ct);
+            }
+            catch (WebPushException ex)
+            {
+                throw new DomainException(ex.Message);
             }
         }
 
-        private Task UpdateAsync(WebPushJob job, ProcessStatus status, string? reason = null)
+        public Task HandleExceptionAsync(WebPushJob job, Exception ex)
         {
-            return userNotificationStore.CollectAndUpdateAsync(job, Name, status, reason);
+            return UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Failed);
+        }
+
+        private Task UpdateAsync(WebPushJob job, string endpoint, ProcessStatus status, string? reason = null)
+        {
+            return userNotificationStore.CollectAndUpdateAsync(job, Name, endpoint, status, reason);
         }
     }
 }

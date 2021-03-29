@@ -17,12 +17,12 @@ namespace Notifo.Domain
 
         public bool ShouldSend
         {
-            get { return Send == NotificationSend.Send; }
+            get => Send == NotificationSend.Send;
         }
 
         public Duration DelayDuration
         {
-            get { return Duration.FromSeconds(DelayInSeconds ?? 0); }
+            get => Duration.FromSeconds(DelayInSeconds ?? 0);
         }
     }
 }

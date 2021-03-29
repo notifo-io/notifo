@@ -31,7 +31,7 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
 
         private Instant Now
         {
-            get { return clock.GetCurrentInstant(); }
+            get => clock.GetCurrentInstant();
         }
 
         public string Name => $"TimerScheduler({schedulerOptions.QueueName})";

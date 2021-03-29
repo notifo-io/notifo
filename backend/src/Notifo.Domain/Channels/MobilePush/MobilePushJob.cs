@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.MobilePush
@@ -15,27 +13,24 @@ namespace Notifo.Domain.Channels.MobilePush
     {
         public UserNotification Notification { get; set; }
 
-        public HashSet<string> Tokens { get; set; }
+        public string Token { get; set; }
+
+        public bool IsImmediate { get; set; }
 
         public string ScheduleKey
         {
-            get { return Notification.Id.ToString(); }
+            get => $"{Notification.Id}_{Token}";
         }
 
         public MobilePushJob()
         {
         }
 
-        public MobilePushJob(UserNotification notification, HashSet<string> tokens)
+        public MobilePushJob(UserNotification notification, string token)
         {
             Notification = notification;
 
-            Tokens = tokens;
-        }
-
-        public static string ComputeScheduleKey(Guid id)
-        {
-            return id.ToString();
+            Token = token;
         }
     }
 }

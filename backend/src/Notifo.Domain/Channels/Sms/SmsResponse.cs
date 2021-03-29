@@ -5,12 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels
+namespace Notifo.Domain.Channels.Sms
 {
-    public struct SeenOptions
+    public struct SmsResponse
     {
-        public bool IsOffline { get; init; }
+        public string Recipient { get; init; }
 
-        public string? Channel { get; init; }
+        public string Reference { get; init; }
+
+        public SmsResult Status { get; init; }
     }
 }

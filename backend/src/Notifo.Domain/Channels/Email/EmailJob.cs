@@ -13,18 +13,22 @@ namespace Notifo.Domain.Channels.Email
     {
         public UserNotification Notification { get; set; }
 
+        public string EmailAddress { get; set; }
+
         public string ScheduleKey
         {
-            get { return $"{Notification.AppId}_{Notification.UserId}_{Notification.UserLanguage}"; }
+            get => $"{Notification.AppId}_{Notification.UserId}_{Notification.UserLanguage}_{EmailAddress}";
         }
 
         public EmailJob()
         {
         }
 
-        public EmailJob(UserNotification notification)
+        public EmailJob(UserNotification notification, string emailAddress)
         {
             Notification = notification;
+
+            EmailAddress = emailAddress;
         }
     }
 }

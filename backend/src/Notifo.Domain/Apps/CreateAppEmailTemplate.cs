@@ -32,7 +32,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public async Task ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -46,6 +46,8 @@ namespace Notifo.Domain.Apps
             var emailFormatter = serviceProvider.GetRequiredService<IEmailFormatter>()!;
 
             app.EmailTemplates[Language] = await emailFormatter.GetDefaultTemplateAsync();
+
+            return true;
         }
     }
 }

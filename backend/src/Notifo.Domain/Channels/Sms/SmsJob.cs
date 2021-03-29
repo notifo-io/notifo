@@ -7,7 +7,6 @@
 
 using System;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Channels.Sms
@@ -28,18 +27,20 @@ namespace Notifo.Domain.Channels.Sms
 
         public string Text { get; set; }
 
+        public bool IsImmediate { get; set; }
+
         public string ScheduleKey
         {
-            get { return Id.ToString(); }
+            get => $"{Id}_{PhoneNumber}";
         }
 
         public SmsJob()
         {
         }
 
-        public SmsJob(UserNotification notification, User user)
+        public SmsJob(UserNotification notification, string phoneNumber)
         {
-            PhoneNumber = user.PhoneNumber;
+            PhoneNumber = phoneNumber;
 
             SimpleMapper.Map(notification, this);
 

@@ -57,9 +57,9 @@ namespace Notifo.Domain.UserNotifications
             return repository.DeleteAsync(id, ct);
         }
 
-        public Task<bool> IsConfirmed(Guid id, string channel)
+        public Task<bool> IsConfirmedOrHandled(Guid id, string channel, string configuration)
         {
-            return repository.IsConfirmed(id, channel);
+            return repository.IsConfirmedOrHandled(id, channel, configuration);
         }
 
         public Task<UserNotification?> TrackConfirmedAsync(Guid id, string? channel = null)
@@ -112,7 +112,7 @@ namespace Notifo.Domain.UserNotifications
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, ProcessStatus status, string? detail)
+        public Task CollectAndUpdateAsync(IUserNotification notification, string configuration, string channel, ProcessStatus status, string? detail)
         {
             Guard.NotNull(notification, nameof(notification));
             Guard.NotNullOrEmpty(channel, nameof(channel));
@@ -122,7 +122,7 @@ namespace Notifo.Domain.UserNotifications
 
             return Task.WhenAll(
                 StoreCountersAsync(counterKey, counterMap),
-                StoreInternalAsync(notification.Id, channel, status, detail));
+                StoreInternalAsync(notification.Id, channel, configuration, status, detail));
         }
 
         public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status)
@@ -136,11 +136,11 @@ namespace Notifo.Domain.UserNotifications
             return StoreCountersAsync(counterKey, counterMap);
         }
 
-        private async Task StoreInternalAsync(Guid id, string channel, ProcessStatus status, string? detail)
+        private async Task StoreInternalAsync(Guid id, string channel, string configuration, ProcessStatus status, string? detail)
         {
             var info = CreateInfo(status, detail);
 
-            await collector.AddAsync(id, channel, info);
+            await collector.AddAsync(id, channel, configuration, info);
         }
 
         private Task StoreCountersAsync(CounterKey key, CounterMap counterValues)

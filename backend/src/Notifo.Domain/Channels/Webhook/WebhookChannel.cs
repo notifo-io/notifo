@@ -12,10 +12,8 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
@@ -58,14 +56,17 @@ namespace Notifo.Domain.Channels.Webhook
             return Task.CompletedTask;
         }
 
-        public bool CanSend(UserNotification notification, NotificationSetting setting, User user, App app)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting setting, SendOptions options)
         {
-            return !string.IsNullOrWhiteSpace(app.WebhookUrl);
+            if (!string.IsNullOrWhiteSpace(options.App.WebhookUrl))
+            {
+                yield return options.App.WebhookUrl;
+            }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string coniguration, SendOptions options, CancellationToken ct)
         {
-            var job = new WebhookJob(notification, app);
+            var job = new WebhookJob(notification, options.App.WebhookUrl!);
 
             return userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
@@ -74,50 +75,45 @@ namespace Notifo.Domain.Channels.Webhook
                 false, ct);
         }
 
-        public async Task<bool> HandleAsync(List<WebhookJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt, CancellationToken ct)
         {
-            // We are not using grouped scheduling here.
-            var job = jobs[0];
+            await log.ProfileAsync("SendWebhook", async () =>
+            {
+                var url = job.Url;
+                try
+                {
+                    await UpdateAsync(job.Notification, url, ProcessStatus.Attempt);
 
-            await SendAsync(job, isLastAttempt, ct);
+                    await SendCoreAsync(job, url, ct);
+
+                    await UpdateAsync(job.Notification, url, ProcessStatus.Handled);
+                }
+                catch (Exception ex)
+                {
+                    await logStore.LogAsync(job.Notification.AppId, $"Webhook: {ex.Message}");
+                    throw;
+                }
+            });
 
             return true;
         }
 
-        public Task SendAsync(WebhookJob job, bool isLastAttempt, CancellationToken ct)
+        private async Task SendCoreAsync(WebhookJob job, string url, CancellationToken ct)
         {
-            return log.ProfileAsync("SendWebhook", async () =>
+            using (var client = httpClientFactory.CreateClient())
             {
-                var notification = job.Notification;
-
-                try
-                {
-                    await UpdateAsync(notification, ProcessStatus.Attempt);
-
-                    using (var client = httpClientFactory.CreateClient())
-                    {
-                        await client.PostAsJsonAsync(job.Url, job.Notification, ct);
-                    }
-
-                    await UpdateAsync(notification, ProcessStatus.Handled);
-                }
-                catch (Exception ex)
-                {
-                    if (isLastAttempt)
-                    {
-                        await UpdateAsync(notification, ProcessStatus.Failed);
-                    }
-
-                    await logStore.LogAsync(notification.AppId, $"Webhook: {ex.Message}");
-
-                    throw;
-                }
-            });
+                await client.PostAsJsonAsync(url, job.Notification, ct);
+            }
         }
 
-        private Task UpdateAsync(UserNotification notification, ProcessStatus status, string? reason = null)
+        public Task HandleExceptionAsync(WebhookJob job, Exception ex)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, status, reason);
+            return UpdateAsync(job.Notification, job.Url, ProcessStatus.Failed);
+        }
+
+        private Task UpdateAsync(UserNotification notification, string url, ProcessStatus status, string? reason = null)
+        {
+            return userNotificationStore.CollectAndUpdateAsync(notification, Name, url, status, reason);
         }
     }
 }

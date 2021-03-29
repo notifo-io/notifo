@@ -9,10 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Domain.Apps;
+using NodaTime;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
@@ -57,53 +56,62 @@ namespace Notifo.Domain.Channels.Sms
             return Task.CompletedTask;
         }
 
-        public bool CanSend(UserNotification notification, NotificationSetting setting, User user, App app)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            if (!app.AllowSms)
+            if (!options.App.AllowSms || notification.Silent)
             {
-                return false;
+                yield break;
             }
 
-            return !notification.Silent && !string.IsNullOrWhiteSpace(user.PhoneNumber);
+            if (!string.IsNullOrWhiteSpace(options.User.PhoneNumber))
+            {
+                yield return options.User.PhoneNumber;
+            }
         }
 
-        public async Task HandleResponseAsync(string reference, SmsResult result)
+        public async Task HandleResponseAsync(SmsResponse response)
         {
-            if (Guid.TryParse(reference, out var id))
+            if (Guid.TryParse(response.Reference, out var id))
             {
                 var notification = await userNotificationStore.FindAsync(id);
 
-                if (notification != null)
+                var phoneNumber = response.Recipient;
+
+                if (notification != null &&
+                    notification.Channels.TryGetValue(Name, out var channel) &&
+                    channel.Status.TryGetValue(response.Recipient, out var channelStatus) &&
+                    channelStatus.Status == ProcessStatus.Attempt)
                 {
-                    if (notification.Sending.TryGetValue(Name, out var sending) && sending.Status == ProcessStatus.Attempt)
+                    switch (response.Status)
                     {
-                        if (result == SmsResult.Delivered)
-                        {
-                            await UpdateAsync(notification, ProcessStatus.Handled);
-                        }
-                        else if (result == SmsResult.Failed)
-                        {
-                            await UpdateAsync(notification, ProcessStatus.Handled);
-                        }
+                        case SmsResult.Delivered:
+                            await UpdateAsync(notification, phoneNumber, ProcessStatus.Handled);
+                            break;
+                        case SmsResult.Failed:
+                            await UpdateAsync(notification, phoneNumber, ProcessStatus.Handled);
+                            break;
                     }
                 }
 
                 // Confirm the job in the scheduler when delivered.
-                if (result == SmsResult.Delivered)
+                if (response.Status == SmsResult.Delivered)
                 {
                     userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
                 }
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct = default)
         {
             if (options.IsUpdate)
             {
                 return Task.CompletedTask;
             }
 
-            var job = new SmsJob(notification, user);
+            var job = new SmsJob(notification, configuration)
+            {
+                IsImmediate = setting.DelayDuration == Duration.Zero
+            };
 
             return userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
@@ -112,61 +120,51 @@ namespace Notifo.Domain.Channels.Sms
                 false, ct);
         }
 
-        public async Task<bool> HandleAsync(List<SmsJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt, CancellationToken ct)
         {
-            // We are not using grouped scheduling here.
-            var job = jobs[0];
-
-            if (await userNotificationStore.IsConfirmed(job.Id, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Id, job.PhoneNumber, Name))
             {
-                await UpdateAsync(job, ProcessStatus.Skipped);
+                await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
             }
             else
             {
-                await SendAsync(job, isLastAttempt, ct);
+                await SendAsync(job, ct);
             }
 
-            // Do not autoconfirm the notification and wait for the delivery acknowledgment.
             return false;
         }
 
-        public Task SendAsync(SmsJob job, bool isLastAttempt, CancellationToken ct)
+        public Task SendAsync(SmsJob job, CancellationToken ct)
         {
             return log.ProfileAsync("SendSms", async () =>
             {
                 try
                 {
-                    await UpdateAsync(job, ProcessStatus.Attempt);
+                    await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Attempt);
 
                     var result = await smsSender.SendAsync(job.PhoneNumber, job.Text, job.Id.ToString(), ct);
 
                     if (result == SmsResult.Delivered)
                     {
-                        await UpdateAsync(job, ProcessStatus.Handled);
+                        await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
                     }
                 }
-                catch (Exception ex)
+                catch (DomainException ex)
                 {
-                    if (isLastAttempt)
-                    {
-                        await UpdateAsync(job, ProcessStatus.Failed);
-                    }
-
-                    if (ex is DomainException domainException)
-                    {
-                        await logStore.LogAsync(job.AppId, domainException.Message);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    await logStore.LogAsync(job.AppId, ex.Message);
+                    throw;
                 }
             });
         }
 
-        private Task UpdateAsync(IUserNotification token, ProcessStatus status, string? reason = null)
+        public Task HandleExceptionAsync(SmsJob job, Exception ex)
         {
-            return userNotificationStore.CollectAndUpdateAsync(token, Name, status, reason);
+            return UpdateAsync(job, job.PhoneNumber, ProcessStatus.Failed);
+        }
+
+        private Task UpdateAsync(IUserNotification token, string phoneNumber, ProcessStatus status, string? reason = null)
+        {
+            return userNotificationStore.CollectAndUpdateAsync(token, Name, phoneNumber, status, reason);
         }
     }
 }

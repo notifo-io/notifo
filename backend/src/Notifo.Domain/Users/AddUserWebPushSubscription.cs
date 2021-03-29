@@ -28,13 +28,18 @@ namespace Notifo.Domain.Users
             }
         }
 
-        public Task ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            user.WebPushSubscriptions.Add(Subscription);
+            if (!user.WebPushSubscriptions.Contains(Subscription))
+            {
+                user.WebPushSubscriptions.Add(Subscription);
 
-            return Task.CompletedTask;
+                return Task.FromResult(true);
+            }
+
+            return Task.FromResult(false);
         }
     }
 }

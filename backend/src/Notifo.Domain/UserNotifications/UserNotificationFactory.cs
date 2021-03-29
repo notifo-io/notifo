@@ -102,12 +102,37 @@ namespace Notifo.Domain.UserNotifications
 
         private static void ConfigureSettings(UserNotification notification, User user, UserEventMessage userEvent)
         {
-            notification.Settings = new NotificationSettings();
-            notification.Settings.OverrideBy(user.Settings);
-            notification.Settings.OverrideBy(userEvent.SubscriptionSettings);
-            notification.Settings.OverrideBy(userEvent.EventSettings);
+            notification.Channels = new Dictionary<string, UserNotificationChannel>();
 
-            notification.Sending = new Dictionary<string, ChannelSendInfo>();
+            OverrideBy(notification, user.Settings);
+            OverrideBy(notification, userEvent.SubscriptionSettings);
+            OverrideBy(notification, userEvent.EventSettings);
+        }
+
+        private static void OverrideBy(UserNotification notification, NotificationSettings? source)
+        {
+            if (source != null)
+            {
+                foreach (var (key, value) in source)
+                {
+                    if (notification.Channels.TryGetValue(key, out var channel))
+                    {
+                        if (value.Send != NotificationSend.Inherit && channel.Setting.Send != NotificationSend.NotAllowed)
+                        {
+                            channel.Setting.Send = value.Send;
+                        }
+
+                        if (value.DelayInSeconds.HasValue)
+                        {
+                            channel.Setting.DelayInSeconds = value.DelayInSeconds;
+                        }
+                    }
+                    else
+                    {
+                        notification.Channels[key] = UserNotificationChannel.Create(value);
+                    }
+                }
+            }
         }
     }
 }

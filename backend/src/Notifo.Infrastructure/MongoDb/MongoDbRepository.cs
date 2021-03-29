@@ -47,7 +47,7 @@ namespace Notifo.Infrastructure.MongoDb
 
         protected IMongoDatabase Database
         {
-            get { return mongoDatabase; }
+            get => mongoDatabase;
         }
 
         protected MongoDbRepository(IMongoDatabase database)

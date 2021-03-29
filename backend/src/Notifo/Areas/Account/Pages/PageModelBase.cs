@@ -32,27 +32,27 @@ namespace Notifo.Areas.Account.Pages
 
         public SignInManager<IdentityUser> SignInManager
         {
-            get { return signInManager.Value; }
+            get => signInManager.Value;
         }
 
         public IUserService UserService
         {
-            get { return userService.Value; }
+            get => userService.Value;
         }
 
         public ILogger<TDerived> Logger
         {
-            get { return logger.Value; }
+            get => logger.Value;
         }
 
         public IStringLocalizer<AppResources> T
         {
-            get { return localizer.Value; }
+            get => localizer.Value;
         }
 
         public IEventService Events
         {
-            get { return events.Value; }
+            get => events.Value;
         }
 
         [TempData]

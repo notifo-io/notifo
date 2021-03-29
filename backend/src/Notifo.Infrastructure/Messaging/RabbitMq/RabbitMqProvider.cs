@@ -19,7 +19,7 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
 
         public IConnection Connection
         {
-            get { return connection; }
+            get => connection;
         }
 
         public RabbitMqProvider(IOptions<RabbitMqOptions> options)

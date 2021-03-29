@@ -16,11 +16,11 @@ namespace Notifo.Domain.Users
     {
         public TopicId Prefix { get; set; }
 
-        public Task ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
         {
-            user.AllowedTopics.Remove(Prefix);
+            var removed = user.AllowedTopics.Remove(Prefix);
 
-            return Task.CompletedTask;
+            return Task.FromResult(removed);
         }
     }
 }

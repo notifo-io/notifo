@@ -66,34 +66,34 @@ namespace Notifo.Domain.Channels.Email
             return Task.CompletedTask;
         }
 
-        public bool CanSend(UserNotification notification, NotificationSetting preference, User user, App app)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            if (!app.AllowEmail)
+            if (!options.App.AllowEmail)
             {
-                return false;
+                yield break;
             }
 
-            if (notification.Silent || string.IsNullOrEmpty(user.EmailAddress) || app.EmailVerificationStatus != EmailVerificationStatus.Verified)
+            if (notification.Silent || string.IsNullOrEmpty(options.User.EmailAddress) || options.App.EmailVerificationStatus != EmailVerificationStatus.Verified)
             {
-                return false;
+                yield break;
             }
 
-            if (!app.EmailTemplates.ContainsKey(notification.UserLanguage))
+            if (!options.App.EmailTemplates.ContainsKey(notification.UserLanguage))
             {
-                return false;
+                yield break;
             }
 
-            return true;
+            yield return options.User.EmailAddress;
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
         {
             if (options.IsUpdate)
             {
                 return Task.CompletedTask;
             }
 
-            var job = new EmailJob(notification);
+            var job = new EmailJob(notification, configuration);
 
             return userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
@@ -104,38 +104,41 @@ namespace Notifo.Domain.Channels.Email
 
         public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt, CancellationToken ct)
         {
-            // We are using grouped scheduling here.
-            var notifications = new List<UserNotification>();
+            var nonConfirmed = new List<EmailJob>();
 
             foreach (var job in jobs)
             {
-                if (await userNotificationStore.IsConfirmed(job.Notification.Id, Name))
+                if (await userNotificationStore.IsConfirmedOrHandled(job.Notification.Id, job.EmailAddress, Name))
                 {
-                    await UpdateAsync(notifications, ProcessStatus.Skipped);
+                    await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
                 }
                 else
                 {
-                    notifications.Add(job.Notification);
+                    nonConfirmed.Add(job);
                 }
             }
 
-            if (notifications.Any())
+            if (nonConfirmed.Any())
             {
-                await SendAsync(notifications, isLastAttempt, ct);
+                await SendAsync(nonConfirmed, ct);
             }
 
             return true;
         }
 
-        public Task SendAsync(List<UserNotification> notifications, bool isLastAttempt, CancellationToken ct)
+        public Task SendAsync(List<EmailJob> jobs, CancellationToken ct)
         {
             return log.ProfileAsync("SendEmail", async () =>
             {
-                await UpdateAsync(notifications, ProcessStatus.Attempt);
+                var first = jobs[0];
 
-                var first = notifications[0];
+                var commonEmail = first.EmailAddress;
+                var commonApp = first.Notification.AppId;
+                var commonUser = first.Notification.UserId;
 
-                var app = await appStore.GetCachedAsync(first.AppId, ct);
+                await UpdateAsync(first.Notification, commonEmail, ProcessStatus.Attempt);
+
+                var app = await appStore.GetCachedAsync(first.Notification.AppId, ct);
 
                 if (app == null)
                 {
@@ -149,7 +152,7 @@ namespace Notifo.Domain.Channels.Email
 
                 try
                 {
-                    var user = await userStore.GetCachedAsync(first.AppId, first.UserId, ct);
+                    var user = await userStore.GetCachedAsync(commonApp, commonUser, ct);
 
                     if (user == null)
                     {
@@ -161,47 +164,41 @@ namespace Notifo.Domain.Channels.Email
                         throw new DomainException(Texts.Email_UserNoEmail);
                     }
 
-                    await SendAsync(notifications, app, user, ct);
+                    await SendCoreAsync(jobs.Select(x => x.Notification), app, user, ct);
 
-                    await UpdateAsync(notifications, ProcessStatus.Handled);
+                    await UpdateAsync(jobs, commonEmail, ProcessStatus.Handled);
                 }
-                catch (Exception ex)
+                catch (DomainException ex)
                 {
-                    if (isLastAttempt)
-                    {
-                        await UpdateAsync(notifications, ProcessStatus.Failed);
-                    }
-
-                    if (ex is DomainException domainException)
-                    {
-                        await logStore.LogAsync(app.Id, domainException.Message);
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    await logStore.LogAsync(app.Id, ex.Message);
+                    throw;
                 }
             });
         }
 
-        private async Task SendAsync(List<UserNotification> notifications, App app, User user, CancellationToken ct)
+        private async Task SendCoreAsync(IEnumerable<UserNotification> notifications, App app, User user, CancellationToken ct)
         {
             var message = await emailFormatter.FormatAsync(notifications, app, user);
 
             await emailServer.SendAsync(message, ct);
         }
 
-        private async Task UpdateAsync(List<UserNotification> notifications, ProcessStatus status, string? reason = null)
+        public Task HandleExceptionAsync(List<EmailJob> jobs, Exception ex)
         {
-            foreach (var notification in notifications)
-            {
-                await UpdateAsync(notification, status, reason);
-            }
+            return UpdateAsync(jobs, jobs[0].EmailAddress, ProcessStatus.Failed);
         }
 
-        private async Task UpdateAsync(UserNotification notification, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(UserNotification notification, string email, ProcessStatus status, string? reason = null)
         {
-            await userNotificationStore.CollectAndUpdateAsync(notification, Name, status, reason);
+            return userNotificationStore.CollectAndUpdateAsync(notification, Name, email, status, reason);
+        }
+
+        private async Task UpdateAsync(List<EmailJob> jobs, string email, ProcessStatus status, string? reason = null)
+        {
+            foreach (var job in jobs)
+            {
+                await UpdateAsync(job.Notification, email, status, reason);
+            }
         }
     }
 }

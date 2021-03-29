@@ -16,7 +16,7 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationStore
     {
-        Task<bool> IsConfirmed(Guid id, string channel);
+        Task<bool> IsConfirmedOrHandled(Guid id, string channel, string configuration);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct = default);
 
@@ -34,7 +34,7 @@ namespace Notifo.Domain.UserNotifications
 
         Task InsertAsync(UserNotification notification, CancellationToken ct = default);
 
-        Task CollectAndUpdateAsync(IUserNotification notification, string channel, ProcessStatus status, string? detail = null);
+        Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail = null);
 
         Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status);
     }

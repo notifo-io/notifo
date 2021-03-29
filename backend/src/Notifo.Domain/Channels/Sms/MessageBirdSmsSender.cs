@@ -17,7 +17,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class MessageBirdSmsSender : ISmsSender
     {
-        private readonly List<Func<string, SmsResult, Task>> handlers = new List<Func<string, SmsResult, Task>>();
+        private readonly List<SmsHandler> handlers = new List<SmsHandler>();
         private readonly MessageBirdClient smsClient;
         private readonly ISmsUrl smsUrl;
 
@@ -27,7 +27,7 @@ namespace Notifo.Domain.Channels.Sms
             this.smsUrl = smsUrl;
         }
 
-        public Task RegisterAsync(Func<string, SmsResult, Task> handler)
+        public Task RegisterAsync(SmsHandler handler)
         {
             Guard.NotNull(handler, nameof(handler));
 
@@ -64,9 +64,16 @@ namespace Notifo.Domain.Channels.Sms
 
                 if (smsResult != SmsResult.Unknown)
                 {
+                    var response = new SmsResponse
+                    {
+                        Status = smsResult,
+                        Reference = status.Reference,
+                        Recipient = status.Recipient
+                    };
+
                     foreach (var handler in handlers)
                     {
-                        await handler(status.Reference, smsResult);
+                        await handler(response);
                     }
                 }
             }

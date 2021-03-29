@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -25,7 +24,7 @@ namespace Notifo.Domain.Channels.Sms
             return Task.CompletedTask;
         }
 
-        public Task RegisterAsync(Func<string, SmsResult, Task> handler)
+        public Task RegisterAsync(SmsHandler handler)
         {
             return Task.CompletedTask;
         }

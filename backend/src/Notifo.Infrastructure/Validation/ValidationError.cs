@@ -18,12 +18,12 @@ namespace Notifo.Infrastructure.Validation
 
         public string Message
         {
-            get { return message; }
+            get => message;
         }
 
         public IEnumerable<string> PropertyNames
         {
-            get { return propertyNames; }
+            get => propertyNames;
         }
 
         public ValidationError(string message, params string[] propertyNames)
