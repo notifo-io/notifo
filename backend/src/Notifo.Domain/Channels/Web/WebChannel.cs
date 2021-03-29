@@ -31,7 +31,7 @@ namespace Notifo.Domain.Channels.Web
             this.log = log;
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
             try
             {

@@ -14,7 +14,7 @@ namespace Notifo.Infrastructure.Scheduling
 {
     public interface IScheduleHandler<T>
     {
-        Task HandleAsync(List<T> jobs, bool isLastAttempt, CancellationToken ct);
+        Task<bool> HandleAsync(List<T> jobs, bool isLastAttempt, CancellationToken ct);
 
         Task HandleExceptionAsync(List<T> jobs, Exception ex)
         {

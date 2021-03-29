@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
+
 namespace Notifo.Domain
 {
     public sealed class NotificationSetting
@@ -18,9 +20,9 @@ namespace Notifo.Domain
             get { return Send == NotificationSend.Send; }
         }
 
-        public int DelayInSecondsOrZero
+        public Duration DelayDuration
         {
-            get { return DelayInSeconds ?? 0; }
+            get { return Duration.FromSeconds(DelayInSeconds ?? 0); }
         }
     }
 }

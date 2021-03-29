@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FirebaseAdmin.Messaging;
+using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
@@ -64,33 +65,87 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public bool CanSend(UserNotification notification, NotificationSetting setting, User user, App app)
         {
-            return !notification.Silent && user.MobilePushTokens?.Count > 0 && IsFirebaseConfigured(app);
+            return user.MobilePushTokens?.Count > 0 && IsFirebaseConfigured(app);
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
+        public async Task HandleSeenAsync(Guid id, SeenOptions options)
+        {
+            if (!options.IsOffline || options.Channel != Name)
+            {
+                return;
+            }
+
+            userNotificationQueue.Complete(MobilePushJob.ComputeScheduleKey(id));
+
+            var notification = await userNotificationStore.FindAsync(id);
+
+            if (notification == null)
+            {
+                return;
+            }
+
+            var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            // Send an silent notification to the user.
+            var job = new MobilePushJob(new UserNotification
+            {
+                Id = notification.Id,
+                AppId = notification.AppId,
+                UserId = notification.UserId,
+                UserLanguage = notification.UserLanguage
+            }, user);
+
+            await userNotificationQueue.ScheduleAsync(
+                job.ScheduleKey,
+                job,
+                default(Instant),
+                false);
+        }
+
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
             var job = new MobilePushJob(notification, user);
 
-            return userNotificationQueue.ScheduleDelayedAsync(
-                job.ScheduleKey,
-                job,
-                setting.DelayInSecondsOrZero,
-                false, ct);
+            // Do not use scheduling when the notification is an update.
+            if (options.IsUpdate)
+            {
+                return userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    default(Instant),
+                    false, ct);
+            }
+            else
+            {
+                return userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    setting.DelayDuration,
+                    false, ct);
+            }
         }
 
-        public async Task HandleAsync(List<MobilePushJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<MobilePushJob> jobs, bool isLastAttempt, CancellationToken ct)
         {
-            foreach (var job in jobs)
+            // We are not using grouped scheduling here.
+            var job = jobs[0];
+
+            if (await userNotificationStore.IsConfirmed(job.Notification.Id, Name))
             {
-                if (await userNotificationStore.IsConfirmedOrHandled(job.Notification.Id, Name))
-                {
-                    await UpdateAsync(job.Notification, ProcessStatus.Skipped);
-                }
-                else
-                {
-                    await SendAsync(job, isLastAttempt, ct);
-                }
+                await UpdateAsync(job.Notification, ProcessStatus.Skipped);
             }
+            else
+            {
+                await SendAsync(job, isLastAttempt, ct);
+            }
+
+            // Remove the job from the queue when it is a normal notification.
+            return job.Notification != null;
         }
 
         public Task SendAsync(MobilePushJob job, bool isLastAttempt, CancellationToken ct)
@@ -175,20 +230,23 @@ namespace Notifo.Domain.Channels.MobilePush
         {
             try
             {
-                var message = notification.ToFirebaseMessage(token);
+                var message = notification.ToFirebaseMessage(token, notification.Formatting == null);
 
                 await messaging.SendAsync(message, ct);
             }
             catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
             {
-                await logStore.LogAsync(notification.AppId, Texts.MobilePush_TokenRemoved, ct);
-
-                var command = new RemoveUserMobileToken
+                if (notification != null)
                 {
-                    Token = token
-                };
+                    await logStore.LogAsync(notification.AppId, Texts.MobilePush_TokenRemoved, ct);
 
-                await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
+                    var command = new RemoveUserMobileToken
+                    {
+                        Token = token
+                    };
+
+                    await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
+                }
             }
             catch (FirebaseMessagingException ex)
             {

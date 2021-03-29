@@ -12,6 +12,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
@@ -79,30 +80,44 @@ namespace Notifo.Domain.Channels.WebPush
             return !notification.Silent && user.WebPushSubscriptions.Count > 0;
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
             var job = new WebPushJob(notification, user, serializer);
 
-            return userNotificationQueue.ScheduleDelayedAsync(
-                job.ScheduleKey,
-                job,
-                setting.DelayInSecondsOrZero,
-                false, ct);
+            // Do not use scheduling when the notification is an update.
+            if (options.IsUpdate)
+            {
+                return userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    default(Instant),
+                    false, ct);
+            }
+            else
+            {
+                return userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    setting.DelayDuration,
+                    false, ct);
+            }
         }
 
-        public async Task HandleAsync(List<WebPushJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<WebPushJob> jobs, bool isLastAttempt, CancellationToken ct)
         {
-            foreach (var job in jobs)
+            // We are not using grouped scheduling here.
+            var job = jobs[0];
+
+            if (await userNotificationStore.IsConfirmed(job.Id, Name))
             {
-                if (await userNotificationStore.IsConfirmedOrHandled(job.Id, Name))
-                {
-                    await UpdateAsync(job, ProcessStatus.Skipped);
-                }
-                else
-                {
-                    await SendAsync(job, isLastAttempt, ct);
-                }
+                await UpdateAsync(job, ProcessStatus.Skipped);
             }
+            else
+            {
+                await SendAsync(job, isLastAttempt, ct);
+            }
+
+            return true;
         }
 
         public Task SendAsync(WebPushJob job, bool isLastAttempt, CancellationToken ct)

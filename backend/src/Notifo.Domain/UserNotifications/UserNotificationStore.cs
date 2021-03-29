@@ -57,9 +57,9 @@ namespace Notifo.Domain.UserNotifications
             return repository.DeleteAsync(id, ct);
         }
 
-        public Task<bool> IsConfirmedOrHandled(Guid id, string channel)
+        public Task<bool> IsConfirmed(Guid id, string channel)
         {
-            return repository.IsConfirmedOrHandled(id, channel);
+            return repository.IsConfirmed(id, channel);
         }
 
         public Task<UserNotification?> TrackConfirmedAsync(Guid id, string? channel = null)

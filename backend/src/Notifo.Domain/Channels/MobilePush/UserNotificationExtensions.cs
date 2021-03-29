@@ -14,12 +14,29 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public static class UserNotificationExtensions
     {
-        public static Message ToFirebaseMessage(this UserNotification notification, string token)
+        public static Message ToFirebaseMessage(this UserNotification notification, string token, bool sendWakeup)
         {
             var message = new Message
             {
                 Token = token
             };
+
+            if (sendWakeup)
+            {
+                message.Apns = new ApnsConfig
+                {
+                    Aps = new Aps
+                    {
+                        ContentAvailable = true
+                    },
+                    Headers = new Dictionary<string, string>
+                    {
+                        ["apns-priority"] = "5"
+                    }
+                };
+
+                return message;
+            }
 
             var formatting = notification.Formatting;
 

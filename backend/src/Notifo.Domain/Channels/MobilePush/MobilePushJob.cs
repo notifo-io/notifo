@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Notifo.Domain.UserNotifications;
@@ -32,6 +33,11 @@ namespace Notifo.Domain.Channels.MobilePush
             Notification = notification;
 
             Tokens = user.MobilePushTokens.Select(x => x.Token).ToHashSet();
+        }
+
+        public static string ComputeScheduleKey(Guid id)
+        {
+            return id.ToString();
         }
     }
 }

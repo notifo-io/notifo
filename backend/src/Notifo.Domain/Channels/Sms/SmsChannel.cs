@@ -73,44 +73,61 @@ namespace Notifo.Domain.Channels.Sms
             {
                 var notification = await userNotificationStore.FindAsync(id);
 
-                if (notification != null && notification.Sending.TryGetValue(Name, out var sending) && sending.Status == ProcessStatus.Attempt)
+                if (notification != null)
                 {
-                    if (result == SmsResult.Delivered)
+                    if (notification.Sending.TryGetValue(Name, out var sending) && sending.Status == ProcessStatus.Attempt)
                     {
-                        await UpdateAsync(notification, ProcessStatus.Handled);
+                        if (result == SmsResult.Delivered)
+                        {
+                            await UpdateAsync(notification, ProcessStatus.Handled);
+                        }
+                        else if (result == SmsResult.Failed)
+                        {
+                            await UpdateAsync(notification, ProcessStatus.Handled);
+                        }
                     }
-                    else if (result == SmsResult.Failed)
-                    {
-                        await UpdateAsync(notification, ProcessStatus.Handled);
-                    }
+                }
+
+                // Confirm the job in the scheduler when delivered.
+                if (result == SmsResult.Delivered)
+                {
+                    userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
                 }
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, bool isUpdate, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, User user, App app, SendOptions options, CancellationToken ct)
         {
+            if (options.IsUpdate)
+            {
+                return Task.CompletedTask;
+            }
+
             var job = new SmsJob(notification, user);
 
-            return userNotificationQueue.ScheduleDelayedAsync(
+            return userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
                 job,
-                setting.DelayInSecondsOrZero,
+                setting.DelayDuration,
                 false, ct);
         }
 
-        public async Task HandleAsync(List<SmsJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<SmsJob> jobs, bool isLastAttempt, CancellationToken ct)
         {
-            foreach (var job in jobs)
+            // We are not using grouped scheduling here.
+            var job = jobs[0];
+
+            if (await userNotificationStore.IsConfirmed(job.Id, Name))
             {
-                if (await userNotificationStore.IsConfirmedOrHandled(job.Id, Name))
-                {
-                    await UpdateAsync(job, ProcessStatus.Skipped);
-                }
-                else
-                {
-                    await SendAsync(job, isLastAttempt, ct);
-                }
+                await UpdateAsync(job, ProcessStatus.Skipped);
             }
+            else
+            {
+                await SendAsync(job, isLastAttempt, ct);
+            }
+
+            // Do not autoconfirm the notification and wait for the delivery acknowledgment.
+            return false;
         }
 
         public Task SendAsync(SmsJob job, bool isLastAttempt, CancellationToken ct)

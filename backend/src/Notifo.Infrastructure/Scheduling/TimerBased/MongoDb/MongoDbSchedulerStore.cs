@@ -74,9 +74,9 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                     .Inc(x => x.RetryCount, 1));
         }
 
-        public async Task EnqueueWithDelayAsync(string key, T job, Instant delay, int retryCount, CancellationToken ct)
+        public Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount, CancellationToken ct)
         {
-            await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing && x.DueTime <= delay,
+            return Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing && x.DueTime <= delay,
                 Update
                     .Min(x => x.DueTime, delay)
                     .SetOnInsert(x => x.Id, Guid.NewGuid().ToString())
@@ -88,9 +88,9 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                 Upsert, ct);
         }
 
-        public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount, CancellationToken ct)
+        public Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount, CancellationToken ct)
         {
-            await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing,
+            return Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing,
                 Update
                     .SetOnInsert(x => x.DueTime, dueTime)
                     .SetOnInsert(x => x.Id, Guid.NewGuid().ToString())
@@ -105,6 +105,11 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
         public Task CompleteAsync(string id)
         {
             return Collection.DeleteOneAsync(x => x.Id == id);
+        }
+
+        public Task CompleteByKeyAsync(string key)
+        {
+            return Collection.DeleteOneAsync(x => x.Key == key);
         }
     }
 }
