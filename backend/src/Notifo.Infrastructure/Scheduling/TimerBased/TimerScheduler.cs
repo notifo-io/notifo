@@ -136,6 +136,12 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
 
         private async Task HandleAsync(SchedulerBatch<T> document)
         {
+            if (document.RetryCount > schedulerOptions.ExecutionRetries.Length)
+            {
+                await schedulerStore.CompleteAsync(document.Id);
+                return;
+            }
+
             var canRetry = document.RetryCount < schedulerOptions.ExecutionRetries.Length;
 
             try

@@ -61,7 +61,8 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                 Update
                     .Set(x => x.DueTime, next)
                     .Set(x => x.Progressing, false)
-                    .Set(x => x.ProgressingStarted, null));
+                    .Set(x => x.ProgressingStarted, null)
+                    .Inc(x => x.RetryCount, 1));
         }
 
         public Task RetryAsync(string id, Instant next)
