@@ -48,5 +48,30 @@ namespace Notifo.Domain.UserNotifications
         public NotificationSettings Settings { get; set; }
 
         public Dictionary<string, ChannelSendInfo> Sending { get; set; }
+
+        public string? ComputeTrackingUrl(string channel)
+        {
+            return ComputeUrl(TrackingUrl, channel);
+        }
+
+        public string? ComputeConfirmUrl(string channel)
+        {
+            return ComputeUrl(ConfirmUrl, channel);
+        }
+
+        private static string? ComputeUrl(string? url, string channel)
+        {
+            if (!string.IsNullOrWhiteSpace(url))
+            {
+                if (url.Contains("?", StringComparison.OrdinalIgnoreCase))
+                {
+                    return $"{url}&channel={channel}";
+                }
+
+                return $"{url}?channel={channel}";
+            }
+
+            return null;
+        }
     }
 }

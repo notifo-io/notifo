@@ -55,6 +55,9 @@ namespace Notifo.Domain.Channels.WebPush
             SimpleMapper.Map(notification.Formatting, result);
 
             result.IsConfirmed = notification.IsConfirmed != null;
+            result.ConfirmText = notification.Formatting.ConfirmText;
+            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush);
+            result.TrackingUrl = notification.ComputeTrackingUrl(Providers.WebPush);
 
             return result;
         }

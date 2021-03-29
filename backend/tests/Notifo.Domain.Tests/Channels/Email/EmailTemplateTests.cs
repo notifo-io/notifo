@@ -33,6 +33,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 new UserNotification
                 {
+                    UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
@@ -68,6 +69,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 new UserNotification
                 {
+                    UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
@@ -108,6 +110,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 new UserNotification
                 {
+                    UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
@@ -143,6 +146,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 new UserNotification
                 {
+                    UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
@@ -180,6 +184,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 new UserNotification
                 {
+                    UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
@@ -219,6 +224,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 new UserNotification
                 {
+                    UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
@@ -263,7 +269,8 @@ namespace Notifo.Domain.Channels.Email
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                         Subject = "subject1"
-                    }
+                    },
+                    UserLanguage = "en"
                 },
                 new UserNotification
                 {
@@ -271,7 +278,8 @@ namespace Notifo.Domain.Channels.Email
                     {
                         Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                         Subject = "subject2"
-                    }
+                    },
+                    UserLanguage = "en"
                 }
             };
 

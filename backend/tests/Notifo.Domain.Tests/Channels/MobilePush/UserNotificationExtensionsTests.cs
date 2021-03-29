@@ -47,10 +47,10 @@ namespace Notifo.Domain.Channels.MobilePush
             Assert.Equal(message.Token, token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush");
             Assert.Equal(message.Data[nameof(imageSmall)], imageSmall);
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
-            Assert.Equal(message.Data[nameof(trackingUrl)], trackingUrl);
-            Assert.Equal(message.Data[nameof(confirmUrl)], confirmUrl);
+            Assert.Equal(message.Data[nameof(trackingUrl)], $"{$"{trackingUrl}?channel=mobilepush"}");
 
             Assert.Equal(message.Android.Data[nameof(subject)], subject);
             Assert.Equal(message.Android.Data[nameof(body)], body);
@@ -94,7 +94,7 @@ namespace Notifo.Domain.Channels.MobilePush
             var message = notification.ToFirebaseMessage(token, false);
 
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
-            Assert.Equal(message.Data[nameof(confirmUrl)], confirmUrl);
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{$"{confirmUrl}?channel=mobilepush"}");
             Assert.False(message.Data.ContainsKey(nameof(imageLarge)));
             Assert.False(message.Data.ContainsKey(nameof(imageSmall)));
             Assert.False(message.Data.ContainsKey(nameof(trackingUrl)));

@@ -42,8 +42,8 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var commonData = new Dictionary<string, string>();
             commonData.AddIfPresent(nameof(notification.Id), notification.Id.ToString());
-            commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.TrackingUrl);
-            commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ConfirmUrl);
+            commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.ComputeTrackingUrl(Providers.MobilePush));
+            commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ComputeConfirmUrl(Providers.MobilePush));
             commonData.AddIfPresent(nameof(formatting.ConfirmText), formatting.ConfirmText);
             commonData.AddIfPresent(nameof(formatting.ImageSmall), formatting.ImageSmall);
             commonData.AddIfPresent(nameof(formatting.ImageLarge), formatting.ImageLarge);
