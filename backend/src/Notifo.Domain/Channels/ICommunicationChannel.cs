@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,5 +22,10 @@ namespace Notifo.Domain.Channels
         Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options, CancellationToken ct = default);
 
         IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options);
+
+        Task HandleSeenAsync(Guid id, SeenOptions options)
+        {
+            return Task.CompletedTask;
+        }
     }
 }

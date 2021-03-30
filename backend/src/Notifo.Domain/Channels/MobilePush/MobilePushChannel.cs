@@ -75,6 +75,37 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
+        public async Task HandleSeenAsync(Guid id, SeenOptions options)
+        {
+            var identifier = options.DeviceIdentifier;
+
+            if (options.Channel != Name || string.IsNullOrWhiteSpace(identifier))
+            {
+                return;
+            }
+
+            var notification = await userNotificationStore.FindAsync(id);
+
+            if (notification == null)
+            {
+                return;
+            }
+
+            var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
+
+            if (user == null)
+            {
+                return;
+            }
+
+            var token = user.MobilePushTokens.FirstOrDefault(x => x.Token == identifier && x.DeviceType == MobileDeviceType.iOS);
+
+            if (token != null)
+            {
+                await TryWakeupAsync(notification, token, default);
+            }
+        }
+
         public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
         {
             var mobileToken = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
@@ -86,44 +117,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
             if (mobileToken.DeviceType == MobileDeviceType.iOS)
             {
-                var now = clock.GetCurrentInstant();
-
-                if (now - mobileToken.LastWakeup > TimeBetweenWakeup)
-                {
-                    var wakeupJob = new MobilePushJob(new UserNotification
-                    {
-                        AppId = notification.AppId,
-                        UserId = notification.UserId,
-                        UserLanguage = notification.UserLanguage,
-                        Id = Guid.Empty
-                    }, configuration)
-                    {
-                        IsImmediate = true
-                    };
-
-                    await userNotificationQueue.ScheduleAsync(
-                        wakeupJob.ScheduleKey,
-                        wakeupJob,
-                        default(Instant),
-                        false, ct);
-                }
-
-                try
-                {
-                    var command = new UpdateMobileWakeupTime
-                    {
-                        Token = configuration,
-                        Timestamp = now
-                    };
-
-                    await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
-                }
-                catch (Exception ex)
-                {
-                    log.LogWarning(ex, w => w
-                        .WriteProperty("action", "UpdateMobileWakeupTime")
-                        .WriteProperty("status", "Failed"));
-                }
+                await TryWakeupAsync(notification, mobileToken, ct);
             }
 
             var job = new MobilePushJob(notification, configuration)
@@ -131,7 +125,6 @@ namespace Notifo.Domain.Channels.MobilePush
                 IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero
             };
 
-            // Do not use scheduling when the notification is an update.
             if (options.IsUpdate)
             {
                 await userNotificationQueue.ScheduleAsync(
@@ -147,6 +140,50 @@ namespace Notifo.Domain.Channels.MobilePush
                     job,
                     setting.DelayDuration,
                     false, ct);
+            }
+        }
+
+        private async Task TryWakeupAsync(UserNotification notification, MobilePushToken token, CancellationToken ct)
+        {
+            var now = clock.GetCurrentInstant();
+
+            var timeSinceLastWakeUp = now - token.LastWakeup;
+
+            if (timeSinceLastWakeUp > TimeBetweenWakeup)
+            {
+                var wakeupJob = new MobilePushJob(new UserNotification
+                {
+                    AppId = notification.AppId,
+                    UserId = notification.UserId,
+                    UserLanguage = notification.UserLanguage,
+                    Id = Guid.Empty
+                }, token.Token)
+                {
+                    IsImmediate = true
+                };
+
+                await userNotificationQueue.ScheduleAsync(
+                    wakeupJob.ScheduleKey,
+                    wakeupJob,
+                    default(Instant),
+                    false, ct);
+            }
+
+            try
+            {
+                var command = new UpdateMobileWakeupTime
+                {
+                    Token = token.Token,
+                    Timestamp = now
+                };
+
+                await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
+            }
+            catch (Exception ex)
+            {
+                log.LogWarning(ex, w => w
+                    .WriteProperty("action", "UpdateMobileWakeupTime")
+                    .WriteProperty("status", "Failed"));
             }
         }
 
@@ -187,7 +224,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 {
                     await UpdateAsync(notification, job.Token, ProcessStatus.Attempt);
 
-                    await SencCoreAsync(job, app, ct);
+                    await SendCoreAsync(job, app, ct);
 
                     await UpdateAsync(notification, job.Token, ProcessStatus.Handled);
                 }
@@ -199,7 +236,7 @@ namespace Notifo.Domain.Channels.MobilePush
             });
         }
 
-        private Task SencCoreAsync(MobilePushJob job, App app, CancellationToken ct)
+        private Task SendCoreAsync(MobilePushJob job, App app, CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(app.FirebaseProject) || string.IsNullOrWhiteSpace(app.FirebaseCredential))
             {

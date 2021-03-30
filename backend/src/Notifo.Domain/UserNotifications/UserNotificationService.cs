@@ -63,11 +63,8 @@ namespace Notifo.Domain.UserNotifications
             return Task.CompletedTask;
         }
 
-        public async Task<bool> HandleAsync(List<UserEventMessage> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt, CancellationToken ct)
         {
-            // We are not using grouped scheduling here.
-            var job = jobs[0];
-
             await DistributeScheduledAsync(job, isLastAttempt);
 
             return true;
@@ -240,9 +237,22 @@ namespace Notifo.Domain.UserNotifications
             return (null, null);
         }
 
-        public async Task TrackSeenAsync(IEnumerable<Guid> ids, string? sourceChannel = null, bool offline = false)
+        public async Task TrackSeenAsync(IEnumerable<Guid> ids, string? sourceChannel = null, string? deviceIdentifier = null)
         {
             await userNotificationsStore.TrackSeenAsync(ids, sourceChannel);
+
+            var options = new SeenOptions { Channel = sourceChannel, DeviceIdentifier = deviceIdentifier };
+
+            foreach (var channel in channels)
+            {
+                if (channel.Name == sourceChannel)
+                {
+                    foreach (var id in ids)
+                    {
+                        await channel.HandleSeenAsync(id, options);
+                    }
+                }
+            }
         }
 
         private static string ScheduleKey(UserEventMessage userEvent)

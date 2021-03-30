@@ -9,8 +9,8 @@ namespace Notifo.Domain.Channels
 {
     public struct SeenOptions
     {
-        public bool IsOffline { get; init; }
-
         public string? Channel { get; init; }
+
+        public string? DeviceIdentifier { get; init; }
     }
 }
