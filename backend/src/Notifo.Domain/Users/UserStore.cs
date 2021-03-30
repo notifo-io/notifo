@@ -126,7 +126,7 @@ namespace Notifo.Domain.Users
                     user = User.Create(appId, id);
                 }
 
-                if (!await command.ExecuteAsync(user, serviceProvider, ct))
+                if (await command.ExecuteAsync(user, serviceProvider, ct))
                 {
                     await repository.UpsertAsync(user, etag, ct);
 
