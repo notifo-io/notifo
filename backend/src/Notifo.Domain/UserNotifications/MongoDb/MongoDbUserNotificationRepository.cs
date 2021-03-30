@@ -205,7 +205,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                     Update
                         .Set($"Channels.{channel}.Status.{configuration}.Detail", info.Detail)
                         .Set($"Channels.{channel}.Status.{configuration}.Status", info.Status)
-                        .Set($"Channels.{channel}.Status.{configuration}LastUpdate", info.LastUpdate)));
+                        .Set($"Channels.{channel}.Status.{configuration}.LastUpdate", info.LastUpdate)));
             }
 
             if (writes.Count == 0)
