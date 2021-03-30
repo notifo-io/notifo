@@ -86,7 +86,7 @@ namespace Notifo.Areas.Account.Pages
             {
                 RequestId = HttpContext.TraceIdentifier,
                 Error = error,
-                ErrorDescription = errorDescription,
+                ErrorDescription = errorDescription
             };
 
             var store = HttpContext.RequestServices.GetRequiredService<IMessageStore<ErrorMessage>>();

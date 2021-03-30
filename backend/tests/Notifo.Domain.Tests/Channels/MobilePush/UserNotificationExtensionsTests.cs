@@ -33,13 +33,13 @@ namespace Notifo.Domain.Channels.MobilePush
                 Formatting = new NotificationFormatting<string>
                 {
                     Body = body,
-                    Subject = subject,
-                    ImageSmall = imageSmall,
-                    ImageLarge = imageLarge,
+                    ConfirmMode = ConfirmMode.Explicit,
                     ConfirmText = confirmText,
-                    ConfirmMode = ConfirmMode.Explicit
+                    ImageLarge = imageLarge,
+                    ImageSmall = imageSmall,
+                    Subject = subject
                 },
-                TrackingUrl = trackingUrl,
+                TrackingUrl = trackingUrl
             };
 
             var message = notification.ToFirebaseMessage(token, false);
@@ -47,10 +47,10 @@ namespace Notifo.Domain.Channels.MobilePush
             Assert.Equal(message.Token, token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
-            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush");
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
             Assert.Equal(message.Data[nameof(imageSmall)], imageSmall);
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
-            Assert.Equal(message.Data[nameof(trackingUrl)], $"{$"{trackingUrl}?channel=mobilepush"}");
+            Assert.Equal(message.Data[nameof(trackingUrl)], $"{$"{trackingUrl}?channel=mobilepush&deviceIdentifier=token1"}");
 
             Assert.Equal(message.Android.Data[nameof(subject)], subject);
             Assert.Equal(message.Android.Data[nameof(body)], body);
@@ -82,11 +82,11 @@ namespace Notifo.Domain.Channels.MobilePush
                 Formatting = new NotificationFormatting<string>
                 {
                     Body = body,
-                    Subject = subject,
-                    ImageSmall = imageSmall,
-                    ImageLarge = imageLarge,
+                    ConfirmMode = ConfirmMode.None,
                     ConfirmText = confirmText,
-                    ConfirmMode = ConfirmMode.None
+                    ImageLarge = imageLarge,
+                    ImageSmall = imageSmall,
+                    Subject = subject
                 },
                 TrackingUrl = trackingUrl
             };
@@ -94,7 +94,7 @@ namespace Notifo.Domain.Channels.MobilePush
             var message = notification.ToFirebaseMessage(token, false);
 
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
-            Assert.Equal(message.Data[nameof(confirmUrl)], $"{$"{confirmUrl}?channel=mobilepush"}");
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{$"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1"}");
             Assert.False(message.Data.ContainsKey(nameof(imageLarge)));
             Assert.False(message.Data.ContainsKey(nameof(imageSmall)));
             Assert.False(message.Data.ContainsKey(nameof(trackingUrl)));

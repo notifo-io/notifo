@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using NodaTime;
 
 namespace Notifo.Domain.UserNotifications
@@ -47,26 +48,51 @@ namespace Notifo.Domain.UserNotifications
 
         public Dictionary<string, UserNotificationChannel> Channels { get; set; }
 
-        public string? ComputeTrackingUrl(string channel)
+        public string? ComputeTrackingUrl(string channel, string? deviceIdentifier)
         {
-            return ComputeUrl(TrackingUrl, channel);
+            return ComputeUrl(TrackingUrl, channel, deviceIdentifier);
         }
 
-        public string? ComputeConfirmUrl(string channel)
+        public string? ComputeConfirmUrl(string channel, string? deviceIdentifier)
         {
-            return ComputeUrl(ConfirmUrl, channel);
+            return ComputeUrl(ConfirmUrl, channel, deviceIdentifier);
         }
 
-        private static string? ComputeUrl(string? url, string channel)
+        private static string? ComputeUrl(string? url, string channel, string? deviceIdentifier)
         {
             if (!string.IsNullOrWhiteSpace(url))
             {
-                if (url.Contains("?", StringComparison.OrdinalIgnoreCase))
+                var builder = new StringBuilder(url);
+
+                var hasQuery = url.Contains("?", StringComparison.OrdinalIgnoreCase);
+
+                void Append(string key, string? value)
                 {
-                    return $"{url}&channel={channel}";
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        return;
+                    }
+
+                    if (hasQuery)
+                    {
+                        builder.Append('&');
+                    }
+                    else
+                    {
+                        builder.Append('?');
+                    }
+
+                    builder.Append(key);
+                    builder.Append('=');
+                    builder.Append(Uri.EscapeUriString(value));
+
+                    hasQuery = true;
                 }
 
-                return $"{url}?channel={channel}";
+                Append(nameof(channel), channel);
+                Append(nameof(deviceIdentifier), deviceIdentifier);
+
+                return builder.ToString();
             }
 
             return null;

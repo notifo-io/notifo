@@ -30,7 +30,7 @@ namespace Notifo.Domain.Channels.Email
                 ToName = Address,
                 BodyHtml = null,
                 BodyText = "Notifo Test TEXT Body",
-                Subject = "Notifo Test Subject",
+                Subject = "Notifo Test Subject"
             });
         }
 
@@ -47,7 +47,7 @@ namespace Notifo.Domain.Channels.Email
                 ToName = Address,
                 BodyHtml = "<div style=\"color: red\">Notifo Test HTML Body</div>",
                 BodyText = null,
-                Subject = "Notifo Test Subject",
+                Subject = "Notifo Test Subject"
             });
         }
 
@@ -64,7 +64,7 @@ namespace Notifo.Domain.Channels.Email
                 ToName = Address,
                 BodyHtml = "<div style=\"color: red\">Notifo Test HTML Body</div>",
                 BodyText = "Notifo Test TEXT Body",
-                Subject = "Notifo Test Subject",
+                Subject = "Notifo Test Subject"
             });
         }
     }

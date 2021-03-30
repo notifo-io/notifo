@@ -24,7 +24,7 @@ namespace Notifo.Domain.Media.MongoDb
             {
                 DocId = id,
                 Doc = media,
-                Etag = GenerateEtag(),
+                Etag = GenerateEtag()
             };
 
             return result;

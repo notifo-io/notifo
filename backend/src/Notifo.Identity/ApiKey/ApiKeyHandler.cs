@@ -72,7 +72,7 @@ namespace Notifo.Identity.ApiKey
                         new Claim(ClaimTypes.NameIdentifier, user.ToFullId()),
                         new Claim(DefaultClaimTypes.AppId, user.AppId),
                         new Claim(DefaultClaimTypes.AppName, user.AppId),
-                        new Claim(DefaultClaimTypes.UserId, user.Id),
+                        new Claim(DefaultClaimTypes.UserId, user.Id)
                     }, ApiKeyDefaults.AuthenticationScheme);
 
                     return Success(identity);

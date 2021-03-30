@@ -200,7 +200,7 @@ namespace Notifo.Identity
 
             var values = new UserValues
             {
-                Consent = true,
+                Consent = true
             };
 
             SetupCreation(identity, 1);
@@ -218,7 +218,7 @@ namespace Notifo.Identity
 
             var values = new UserValues
             {
-                Consent = true,
+                Consent = true
             };
 
             SetupCreation(identity, 0);
@@ -236,7 +236,7 @@ namespace Notifo.Identity
 
             var values = new UserValues
             {
-                Consent = true,
+                Consent = true
             };
 
             SetupCreation(identity, 0);
@@ -254,7 +254,7 @@ namespace Notifo.Identity
 
             var values = new UserValues
             {
-                Consent = true,
+                Consent = true
             };
 
             SetupCreation(identity, 1);

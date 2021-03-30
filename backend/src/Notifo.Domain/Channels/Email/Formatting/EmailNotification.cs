@@ -30,15 +30,17 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string? ConfirmUrl { get; set; }
 
-        public static EmailNotification Create(UserNotification notification, IImageFormatter imageFormatter)
+        public static EmailNotification Create(UserNotification notification, string? emailAddress, IImageFormatter imageFormatter)
         {
             var result = new EmailNotification
             {
                 Body = OrNull(notification.Formatting.Body),
+                ConfirmText = OrNull(notification.Formatting.ConfirmText),
+                ConfirmUrl = notification.ComputeConfirmUrl(Providers.Email, emailAddress),
                 LinkText = OrNull(notification.Formatting.LinkText),
                 LinkUrl = OrNull(notification.Formatting.LinkUrl),
-                TrackingUrl = notification.ComputeTrackingUrl(Providers.Email),
-                Subject = notification.Formatting.Subject,
+                TrackingUrl = notification.ComputeTrackingUrl(Providers.Email, emailAddress),
+                Subject = notification.Formatting.Subject
             };
 
             if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageLarge))
@@ -49,12 +51,6 @@ namespace Notifo.Domain.Channels.Email.Formatting
             if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageSmall))
             {
                 result.ImageSmall = imageFormatter.Format(notification.Formatting.ImageSmall, "EmailLarge");
-            }
-
-            if (notification.Formatting.ConfirmMode == ConfirmMode.Explicit)
-            {
-                result.ConfirmText = OrNull(notification.Formatting.ConfirmText);
-                result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.Email);
             }
 
             return result;

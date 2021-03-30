@@ -47,7 +47,7 @@ namespace Notifo.Domain.Channels.WebPush
         [JsonPropertyName("nb")]
         public string? Body { get; set; }
 
-        public static WebPushPayload Create(UserNotification notification)
+        public static WebPushPayload Create(UserNotification notification, string endpoint)
         {
             var result = new WebPushPayload();
 
@@ -55,9 +55,11 @@ namespace Notifo.Domain.Channels.WebPush
             SimpleMapper.Map(notification.Formatting, result);
 
             result.IsConfirmed = notification.IsConfirmed != null;
+
             result.ConfirmText = notification.Formatting.ConfirmText;
-            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush);
-            result.TrackingUrl = notification.ComputeTrackingUrl(Providers.WebPush);
+            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint);
+
+            result.TrackingUrl = notification.ComputeTrackingUrl(Providers.WebPush, endpoint);
 
             return result;
         }

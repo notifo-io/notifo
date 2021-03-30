@@ -82,7 +82,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 FromName = app.EmailName.OrDefault(app.Name),
                 Subject = FormatSubject(template, context, noCache),
                 ToEmail = user.EmailAddress,
-                ToName = user.FullName,
+                ToName = user.FullName
             };
 
             return mailMessage;
@@ -191,7 +191,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             var context = new TemplateContext();
 
-            var emailNotifications = notifications.Select(x => EmailNotification.Create(x, imageFormatter)).ToList();
+            var emailNotifications = notifications.Select(x => EmailNotification.Create(x, user.EmailAddress, imageFormatter)).ToList();
 
             context.SetValue("app", app);
             context.SetValue("user", user);

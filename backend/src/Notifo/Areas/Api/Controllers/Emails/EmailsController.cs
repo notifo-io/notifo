@@ -75,7 +75,7 @@ namespace Notifo.Areas.Api.Controllers.Emails
                     LinkText = "Follow Link",
                     LinkUrl = "/url/to/link"
                 }
-            },
+            }
         };
 
         private readonly IEmailFormatter emailFormatter;

@@ -41,7 +41,7 @@ namespace Notifo.Domain.Channels.Email
                         ImageSmall = string.Empty,
                         ImageLarge = string.Empty,
                         ConfirmText = "Got It!",
-                        ConfirmMode = ConfirmMode.Explicit,
+                        ConfirmMode = ConfirmMode.Explicit
                     },
                     ConfirmUrl = "https://confirm.notifo.com"
                 }

@@ -24,7 +24,7 @@ namespace Notifo.Domain.Templates.MongoDb
             {
                 DocId = docId,
                 Doc = template,
-                Etag = GenerateEtag(),
+                Etag = GenerateEtag()
             };
 
             return result;

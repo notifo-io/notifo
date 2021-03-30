@@ -45,7 +45,7 @@ namespace Notifo.Domain.Channels.WebPush
 
             SimpleMapper.Map(notification, this);
 
-            var payload = WebPushPayload.Create(notification);
+            var payload = WebPushPayload.Create(notification, subscription.Endpoint);
 
             Payload = serializer.SerializeToString(payload);
         }

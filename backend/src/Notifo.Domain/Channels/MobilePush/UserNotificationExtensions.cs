@@ -40,19 +40,19 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var formatting = notification.Formatting;
 
-            var commonData = new Dictionary<string, string>();
-            commonData.AddIfPresent(nameof(notification.Id), notification.Id.ToString());
-            commonData.AddIfPresent(nameof(notification.TrackingUrl), notification.ComputeTrackingUrl(Providers.MobilePush));
-            commonData.AddIfPresent(nameof(notification.ConfirmUrl), notification.ComputeConfirmUrl(Providers.MobilePush));
-            commonData.AddIfPresent(nameof(formatting.ConfirmText), formatting.ConfirmText);
-            commonData.AddIfPresent(nameof(formatting.ImageSmall), formatting.ImageSmall);
-            commonData.AddIfPresent(nameof(formatting.ImageLarge), formatting.ImageLarge);
+            message.Data =
+                new Dictionary<string, string>()
+                    .WithNonEmpty("id", notification.Id.ToString())
+                    .WithNonEmpty("confirmText", formatting.ConfirmText)
+                    .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("imageLarge", formatting.ImageLarge)
+                    .WithNonEmpty("imageSmall", formatting.ImageSmall)
+                    .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token));
 
-            message.Data = commonData;
-
-            var androidData = new Dictionary<string, string>();
-            androidData.AddIfPresent(nameof(formatting.Subject), formatting.Subject);
-            androidData.AddIfPresent(nameof(formatting.Body), formatting.Body);
+            var androidData =
+                new Dictionary<string, string>()
+                    .WithNonEmpty("subject", formatting.Subject)
+                    .WithNonEmpty("body", formatting.Body);
 
             message.Android = new AndroidConfig
             {
@@ -81,14 +81,14 @@ namespace Notifo.Domain.Channels.MobilePush
             return message;
         }
 
-        private static void AddIfPresent(this IDictionary<string, string> dictionary, string propertyName, string? propertyValue)
+        private static Dictionary<string, string> WithNonEmpty(this Dictionary<string, string> dictionary, string propertyName, string? propertyValue)
         {
-            if (string.IsNullOrWhiteSpace(propertyValue))
+            if (!string.IsNullOrWhiteSpace(propertyValue))
             {
-                return;
+                dictionary[propertyName.ToCamelCase()] = propertyValue;
             }
 
-            dictionary[propertyName.ToCamelCase()] = propertyValue;
+            return dictionary;
         }
     }
 }

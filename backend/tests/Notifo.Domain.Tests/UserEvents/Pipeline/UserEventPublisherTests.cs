@@ -262,7 +262,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     SubscriptionPrefix = "users/123",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
-                    UserId = "123",
+                    UserId = "123"
                 }
             });
 
@@ -305,7 +305,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     SubscriptionPrefix = "users/all",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
-                    UserId = "123",
+                    UserId = "123"
                 },
                 new UserEventMessage
                 {
@@ -317,7 +317,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     SubscriptionPrefix = "users/all",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
-                    UserId = "456",
+                    UserId = "456"
                 }
             });
 
