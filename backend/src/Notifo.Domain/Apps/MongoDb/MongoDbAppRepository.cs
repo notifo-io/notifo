@@ -120,7 +120,7 @@ namespace Notifo.Domain.Apps.MongoDb
             return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
         }
 
-        public Task StoreAsync(List<(string Key, CounterMap Counters)> counters, CancellationToken ct)
+        public Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters, CancellationToken ct)
         {
             var writes = new List<WriteModel<MongoDbApp>>();
 

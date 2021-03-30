@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -194,18 +195,28 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return entity;
         }
 
-        public async Task UpdateAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates, CancellationToken ct)
+        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates, CancellationToken ct)
         {
             var writes = new List<WriteModel<UserNotification>>();
 
-            foreach (var (id, channel, configuration, info) in updates)
+            var documentUpdates = new List<UpdateDefinition<UserNotification>>();
+
+            foreach (var group in updates.GroupBy(x => x.Id))
             {
-                writes.Add(new UpdateOneModel<UserNotification>(
-                    Filter.Eq(x => x.Id, id),
-                    Update
-                        .Set($"Channels.{channel}.Status.{configuration}.Detail", info.Detail)
-                        .Set($"Channels.{channel}.Status.{configuration}.Status", info.Status)
-                        .Set($"Channels.{channel}.Status.{configuration}.LastUpdate", info.LastUpdate)));
+                documentUpdates.Clear();
+
+                foreach (var (_, channel, configuration, info) in group)
+                {
+                    var path = $"Channels.{channel}.Status.{configuration}";
+
+                    documentUpdates.Add(Update.Set($"{path}.Detail", info.Detail));
+                    documentUpdates.Add(Update.Set($"{path}.Status", info.Status));
+                    documentUpdates.Add(Update.Set($"{path}.LastUpdate", info.LastUpdate));
+                }
+
+                var update = Update.Combine(documentUpdates);
+
+                writes.Add(new UpdateOneModel<UserNotification>(Filter.Eq(x => x.Id, group.Key), update));
             }
 
             if (writes.Count == 0)

@@ -135,7 +135,7 @@ namespace Notifo.Domain.Users.MongoDb
             return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
         }
 
-        public Task StoreAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters, CancellationToken ct)
+        public Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters, CancellationToken ct)
         {
             var writes = new List<WriteModel<MongoDbUser>>();
 

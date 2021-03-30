@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +21,25 @@ namespace Notifo.Domain.Log.Internal
         private readonly CompletionTimer timer;
         private readonly ILogRepository repository;
         private readonly IClock clock;
-        private readonly int maxSize;
+        private readonly int updatesCapacity;
         private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-        private ConcurrentDictionary<(string AppId, string Message), int> updates = new ConcurrentDictionary<(string AppId, string Message), int>();
+        private readonly ConcurrentDictionary<(string AppId, string Message), int> updates;
 
-        public LogCollector(ILogRepository repository, IClock clock, int updateInterval, int maxSize = int.MaxValue)
+        public LogCollector(ILogRepository repository, IClock clock, int updateInterval, int capacity = 2000)
         {
             this.repository = repository;
+
             this.clock = clock;
-            this.maxSize = maxSize;
+
+            updatesCapacity = capacity;
+            updates = CreateUpdates();
 
             timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
+        }
+
+        private ConcurrentDictionary<(string AppId, string Message), int> CreateUpdates()
+        {
+            return new ConcurrentDictionary<(string AppId, string Message), int>(Environment.ProcessorCount, updatesCapacity);
         }
 
         public async Task AddAsync(string appId, string message)
@@ -45,7 +54,7 @@ namespace Notifo.Domain.Log.Internal
                 readerWriterLock.ExitReadLock();
             }
 
-            if (updates.Count >= maxSize)
+            if (updates.Count >= updatesCapacity)
             {
                 await StoreAsync(default);
             }
@@ -63,22 +72,22 @@ namespace Notifo.Domain.Log.Internal
                 return;
             }
 
-            var current = Interlocked.Exchange(ref updates, new ConcurrentDictionary<(string AppId, string Message), int>());
-
-            if (current.IsEmpty)
-            {
-                return;
-            }
-
             List<(string AppId, string Message, int Count)> commands;
 
             readerWriterLock.EnterWriteLock();
             try
             {
-                commands = current.Select(x => (x.Key.AppId, x.Key.Message, x.Value)).ToList();
+                if (updates.IsEmpty)
+                {
+                    return;
+                }
+
+                commands = updates.Select(x => (x.Key.AppId, x.Key.Message, x.Value)).ToList();
             }
             finally
             {
+                updates.Clear();
+
                 readerWriterLock.ExitWriteLock();
             }
 
@@ -86,7 +95,7 @@ namespace Notifo.Domain.Log.Internal
             {
                 var now = clock.GetCurrentInstant();
 
-                await repository.UpdateAsync(commands, now, ct);
+                await repository.MatchWriteAsync(commands, now, ct);
             }
         }
     }

@@ -71,7 +71,7 @@ namespace Notifo.Domain.Topics.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToTopic()));
         }
 
-        public Task StoreAsync(List<((string AppId, string Path) Key, CounterMap Counters)> counters, CancellationToken ct)
+        public Task BatchWriteAsync(List<((string AppId, string Path) Key, CounterMap Counters)> counters, CancellationToken ct)
         {
             var writes = new List<WriteModel<MongoDbTopic>>();
 

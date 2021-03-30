@@ -104,7 +104,7 @@ namespace Notifo.Domain.Events.MongoDb
             }
         }
 
-        public Task StoreAsync(List<((string AppId, string EventId) Key, CounterMap Counters)> counters, CancellationToken ct)
+        public Task BatchWriteAsync(List<((string AppId, string EventId) Key, CounterMap Counters)> counters, CancellationToken ct)
         {
             var writes = new List<WriteModel<MongoDbEvent>>();
 

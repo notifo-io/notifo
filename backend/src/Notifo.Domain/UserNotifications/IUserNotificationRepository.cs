@@ -29,6 +29,6 @@ namespace Notifo.Domain.UserNotifications
 
         Task InsertAsync(UserNotification notification, CancellationToken ct);
 
-        Task UpdateAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates, CancellationToken ct);
+        Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates, CancellationToken ct);
     }
 }

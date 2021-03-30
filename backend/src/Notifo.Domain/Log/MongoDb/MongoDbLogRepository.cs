@@ -67,7 +67,7 @@ namespace Notifo.Domain.Log.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEntry()));
         }
 
-        public Task UpdateAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now, CancellationToken ct)
+        public Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now, CancellationToken ct)
         {
             var writes = new List<WriteModel<MongoDbLogEntry>>();
 

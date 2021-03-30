@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,15 +19,16 @@ namespace Notifo.Domain.Counters
     {
         private readonly CompletionTimer timer;
         private readonly ICounterStore<T> store;
-        private readonly int maxSize;
+        private readonly int countersCapacity;
         private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-        private ConcurrentDictionary<T, CounterMap> counters = new ConcurrentDictionary<T, CounterMap>();
+        private readonly ConcurrentDictionary<T, CounterMap> counters;
 
-        public CounterCollector(ICounterStore<T> store, int updateInterval, int maxSize = 20000)
+        public CounterCollector(ICounterStore<T> store, int updateInterval, int capacity = 20000)
         {
             this.store = store;
 
-            this.maxSize = maxSize;
+            countersCapacity = capacity;
+            counters = new ConcurrentDictionary<T, CounterMap>(Environment.ProcessorCount, capacity);
 
             timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
         }
@@ -43,7 +45,7 @@ namespace Notifo.Domain.Counters
                 readerWriterLock.ExitReadLock();
             }
 
-            if (counters.Count >= maxSize)
+            if (counters.Count >= countersCapacity)
             {
                 timer.SkipCurrentDelay();
             }
@@ -63,28 +65,28 @@ namespace Notifo.Domain.Counters
                 return;
             }
 
-            var current = Interlocked.Exchange(ref counters, new ConcurrentDictionary<T, CounterMap>());
-
-            if (current.IsEmpty)
-            {
-                return;
-            }
-
             List<(T, CounterMap)> commands;
 
             readerWriterLock.EnterWriteLock();
             try
             {
-                commands = current.Select(x => (x.Key, x.Value)).Where(x => x.Value.Any()).ToList();
+                if (counters.IsEmpty)
+                {
+                    return;
+                }
+
+                commands = counters.Select(x => (x.Key, x.Value)).Where(x => x.Value.Any()).ToList();
             }
             finally
             {
+                counters.Clear();
+
                 readerWriterLock.ExitWriteLock();
             }
 
             if (commands.Count > 0)
             {
-                await store.StoreAsync(commands, ct);
+                await store.BatchWriteAsync(commands, ct);
             }
         }
     }

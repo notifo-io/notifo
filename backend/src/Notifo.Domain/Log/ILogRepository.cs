@@ -17,6 +17,6 @@ namespace Notifo.Domain.Log
     {
         Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query, CancellationToken ct);
 
-        Task UpdateAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now, CancellationToken ct);
+        Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now, CancellationToken ct);
     }
 }
