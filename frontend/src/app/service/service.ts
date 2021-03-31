@@ -2955,6 +2955,8 @@ export interface TrackNotificationDto {
     seen?: string[] | undefined;
     /** The channel name. */
     channel?: string | undefined;
+    /** The device identifier. */
+    deviceIdentifier?: string | undefined;
 }
 
 export interface RegisterMobileTokenDto {

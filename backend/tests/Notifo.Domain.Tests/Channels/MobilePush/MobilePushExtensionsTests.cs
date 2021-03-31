@@ -74,7 +74,7 @@ namespace Notifo.Domain.Channels.MobilePush
         }
 
         [Fact]
-        public void Should_now_wakeup_if_already_scheduled()
+        public void Should_not_wakeup_if_already_scheduled()
         {
             var now = SystemClock.Instance.GetCurrentInstant();
 
