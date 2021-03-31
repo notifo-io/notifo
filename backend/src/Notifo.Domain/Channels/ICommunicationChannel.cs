@@ -23,7 +23,7 @@ namespace Notifo.Domain.Channels
 
         IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options);
 
-        Task HandleSeenAsync(Guid id, SeenOptions options)
+        Task HandleSeenAsync(Guid id, TrackingDetails details)
         {
             return Task.CompletedTask;
         }

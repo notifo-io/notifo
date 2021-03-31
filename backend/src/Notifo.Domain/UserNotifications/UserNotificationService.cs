@@ -195,9 +195,9 @@ namespace Notifo.Domain.UserNotifications
             return notification;
         }
 
-        public async Task<(UserNotification?, App?)> TrackConfirmedAsync(Guid id, string? sourceChannel = null)
+        public async Task<(UserNotification?, App?)> TrackConfirmedAsync(Guid id, TrackingDetails details)
         {
-            var notification = await userNotificationsStore.TrackConfirmedAsync(id, sourceChannel);
+            var notification = await userNotificationsStore.TrackConfirmedAsync(id, details);
 
             if (notification != null)
             {
@@ -237,19 +237,17 @@ namespace Notifo.Domain.UserNotifications
             return (null, null);
         }
 
-        public async Task TrackSeenAsync(IEnumerable<Guid> ids, string? sourceChannel = null, string? deviceIdentifier = null)
+        public async Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details)
         {
-            await userNotificationsStore.TrackSeenAsync(ids, sourceChannel);
-
-            var options = new SeenOptions { Channel = sourceChannel, DeviceIdentifier = deviceIdentifier };
+            await userNotificationsStore.TrackSeenAsync(ids, details);
 
             foreach (var channel in channels)
             {
-                if (channel.Name == sourceChannel)
+                if (channel.Name == details.Channel)
                 {
                     foreach (var id in ids)
                     {
-                        await channel.HandleSeenAsync(id, options);
+                        await channel.HandleSeenAsync(id, details);
                     }
                 }
             }

@@ -62,20 +62,20 @@ namespace Notifo.Domain.UserNotifications
             return repository.IsConfirmedOrHandled(id, channel, configuration);
         }
 
-        public Task<UserNotification?> TrackConfirmedAsync(Guid id, string? channel = null)
+        public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details)
         {
             Guard.NotDefault(id, nameof(id));
 
-            var handle = CreateHandle(channel);
+            var handle = CreateHandle(details);
 
             return repository.TrackConfirmedAsync(id, handle);
         }
 
-        public Task TrackSeenAsync(IEnumerable<Guid> ids, string? channel = null)
+        public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details)
         {
             Guard.NotNull(ids, nameof(ids));
 
-            var handle = CreateHandle(channel);
+            var handle = CreateHandle(details);
 
             return repository.TrackSeenAsync(ids, handle);
         }
@@ -160,11 +160,11 @@ namespace Notifo.Domain.UserNotifications
             return new ChannelSendInfo { LastUpdate = now, Detail = detail, Status = status };
         }
 
-        private HandledInfo CreateHandle(string? channel)
+        private HandledInfo CreateHandle(TrackingDetails details)
         {
             var now = clock.GetCurrentInstant();
 
-            return new HandledInfo { Timestamp = now, Channel = channel };
+            return new HandledInfo { Timestamp = now, Channel = details.Channel };
         }
     }
 }

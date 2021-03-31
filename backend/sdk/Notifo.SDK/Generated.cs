@@ -6762,6 +6762,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Channel { get; set; }
     
+        /// <summary>The device identifier.</summary>
+        [Newtonsoft.Json.JsonProperty("deviceIdentifier", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string DeviceIdentifier { get; set; }
+    
     
     }
     

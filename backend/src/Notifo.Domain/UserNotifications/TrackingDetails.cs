@@ -5,12 +5,19 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels
+namespace Notifo.Domain.UserNotifications
 {
-    public struct SeenOptions
+    public struct TrackingDetails
     {
-        public string? Channel { get; init; }
+        public string? Channel { get; set; }
 
-        public string? DeviceIdentifier { get; init; }
+        public string? DeviceIdentifier { get; set; }
+
+        public TrackingDetails(string? channel, string? deviceIdentifier)
+        {
+            Channel = channel;
+
+            DeviceIdentifier = deviceIdentifier;
+        }
     }
 }

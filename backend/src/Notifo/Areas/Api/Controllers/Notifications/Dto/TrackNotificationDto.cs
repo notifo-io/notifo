@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dto
 {
@@ -25,5 +26,15 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dto
         /// The channel name.
         /// </summary>
         public string? Channel { get; set; }
+
+        /// <summary>
+        /// The device identifier.
+        /// </summary>
+        public string? DeviceIdentifier { get; set; }
+
+        public TrackingDetails ToDetails()
+        {
+            return new TrackingDetails { Channel = Channel, DeviceIdentifier = DeviceIdentifier };
+        }
     }
 }

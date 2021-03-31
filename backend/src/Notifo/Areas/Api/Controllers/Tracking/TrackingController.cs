@@ -27,7 +27,9 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpGet("/api/tracking/notifications/{id}/seen")]
         public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), channel, deviceIdentifier);
+            var details = new TrackingDetails(channel, deviceIdentifier);
+
+            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), details);
 
             return TrackingPixel();
         }
@@ -35,15 +37,19 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpPost("/api/tracking/notifications/{id}/seen")]
         public async Task<IActionResult> SeenPost(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), channel, deviceIdentifier);
+            var details = new TrackingDetails(channel, deviceIdentifier);
+
+            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), details);
 
             return NoContent();
         }
 
         [HttpGet("/api/tracking/notifications/{id}/confirm")]
-        public async Task<IActionResult> Confirm(Guid id, [FromQuery] string? channel = null)
+        public async Task<IActionResult> Confirm(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            var (_, app) = await userNotificationService.TrackConfirmedAsync(id, channel);
+            var details = new TrackingDetails(channel, deviceIdentifier);
+
+            var (_, app) = await userNotificationService.TrackConfirmedAsync(id, details);
 
             if (app?.ConfirmUrl != null && Uri.IsWellFormedUriString(app.ConfirmUrl, UriKind.Absolute))
             {
@@ -65,9 +71,11 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         }
 
         [HttpPost("/api/tracking/notifications/{id}/confirm")]
-        public async Task<IActionResult> ConfirmPost(Guid id, [FromQuery] string? channel = null)
+        public async Task<IActionResult> ConfirmPost(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            await userNotificationService.TrackConfirmedAsync(id, channel);
+            var details = new TrackingDetails(channel, deviceIdentifier);
+
+            await userNotificationService.TrackConfirmedAsync(id, details);
 
             return NoContent();
         }

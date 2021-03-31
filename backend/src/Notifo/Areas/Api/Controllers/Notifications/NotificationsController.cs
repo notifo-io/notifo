@@ -83,17 +83,21 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// </returns>
         [HttpPost("/api/me/notifications/handled")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task Confirm([FromBody] TrackNotificationDto request)
+        public async Task<IActionResult> Confirm([FromBody] TrackNotificationDto request)
         {
+            var details = request.ToDetails();
+
             if (request.Confirmed.HasValue)
             {
-                await userNotificationService.TrackConfirmedAsync(request.Confirmed.Value, request.Channel);
+                await userNotificationService.TrackConfirmedAsync(request.Confirmed.Value, details);
             }
 
             if (request.Seen?.Length > 0)
             {
-                await userNotificationService.TrackSeenAsync(request.Seen, request.Channel);
+                await userNotificationService.TrackSeenAsync(request.Seen, details);
             }
+
+            return NoContent();
         }
     }
 }

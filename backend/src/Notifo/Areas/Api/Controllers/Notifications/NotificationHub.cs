@@ -54,14 +54,16 @@ namespace Notifo.Areas.Api.Controllers.Notifications
 
         public async Task ConfirmMany(TrackNotificationDto request)
         {
+            var details = request.ToDetails();
+
             if (request.Confirmed.HasValue)
             {
-                await userNotificationService.TrackConfirmedAsync(request.Confirmed.Value, request.Channel);
+                await userNotificationService.TrackConfirmedAsync(request.Confirmed.Value, details);
             }
 
             if (request.Seen?.Length > 0)
             {
-                await userNotificationService.TrackSeenAsync(request.Seen, request.Channel);
+                await userNotificationService.TrackSeenAsync(request.Seen, details);
             }
         }
     }

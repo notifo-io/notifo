@@ -28,7 +28,6 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>, IInitializable
     {
-        private static readonly Duration TimeBetweenWakeup = Duration.FromMinutes(30);
         private readonly FirebaseClientPool pool = new FirebaseClientPool();
         private readonly IAppStore appStore;
         private readonly ILogStore logStore;
@@ -75,11 +74,11 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task HandleSeenAsync(Guid id, SeenOptions options)
+        public async Task HandleSeenAsync(Guid id, TrackingDetails details)
         {
-            var identifier = options.DeviceIdentifier;
+            var token = details.DeviceIdentifier;
 
-            if (options.Channel != Name || string.IsNullOrWhiteSpace(identifier))
+            if (string.IsNullOrWhiteSpace(token))
             {
                 return;
             }
@@ -98,11 +97,11 @@ namespace Notifo.Domain.Channels.MobilePush
                 return;
             }
 
-            var token = user.MobilePushTokens.FirstOrDefault(x => x.Token == identifier && x.DeviceType == MobileDeviceType.iOS);
+            var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == token && x.DeviceType == MobileDeviceType.iOS);
 
-            if (token != null)
+            if (userToken != null)
             {
-                await TryWakeupAsync(notification, token, default);
+                await TryWakeupAsync(notification, userToken, default);
             }
         }
 

@@ -20,13 +20,13 @@ namespace Notifo.Domain.UserNotifications
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct = default);
 
-        Task<UserNotification?> TrackConfirmedAsync(Guid id, string? channel = null);
+        Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details = default);
 
         Task<UserNotification?> FindAsync(Guid id);
 
         Task DeleteAsync(Guid id, CancellationToken ct = default);
 
-        Task TrackSeenAsync(IEnumerable<Guid> ids, string? channel = null);
+        Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details = default);
 
         Task TrackAttemptAsync(UserEventMessage userEvent, CancellationToken ct = default);
 
