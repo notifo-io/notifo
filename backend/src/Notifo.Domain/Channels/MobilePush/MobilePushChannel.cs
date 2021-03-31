@@ -145,36 +145,35 @@ namespace Notifo.Domain.Channels.MobilePush
 
         private async Task TryWakeupAsync(UserNotification notification, MobilePushToken token, CancellationToken ct)
         {
-            var now = clock.GetCurrentInstant();
+            var nextWakeup = token.GetNextWakeupTime(clock);
 
-            var timeSinceLastWakeUp = now - token.LastWakeup;
-
-            if (timeSinceLastWakeUp > TimeBetweenWakeup)
+            if (nextWakeup == null)
             {
-                var wakeupJob = new MobilePushJob(new UserNotification
-                {
-                    AppId = notification.AppId,
-                    UserId = notification.UserId,
-                    UserLanguage = notification.UserLanguage,
-                    Id = Guid.Empty
-                }, token.Token)
-                {
-                    IsImmediate = true
-                };
-
-                await userNotificationQueue.ScheduleAsync(
-                    wakeupJob.ScheduleKey,
-                    wakeupJob,
-                    default(Instant),
-                    false, ct);
+                return;
             }
+
+            var wakeupJob = new MobilePushJob(new UserNotification
+            {
+                AppId = notification.AppId,
+                UserId = notification.UserId,
+                UserLanguage = notification.UserLanguage,
+            }, token.Token)
+            {
+                IsImmediate = true
+            };
+
+            await userNotificationQueue.ScheduleAsync(
+                wakeupJob.ScheduleKey,
+                wakeupJob,
+                nextWakeup.Value,
+                false, ct);
 
             try
             {
                 var command = new UpdateMobileWakeupTime
                 {
                     Token = token.Token,
-                    Timestamp = now
+                    Timestamp = nextWakeup.Value
                 };
 
                 await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
