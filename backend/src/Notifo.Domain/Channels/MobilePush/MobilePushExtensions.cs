@@ -11,11 +11,12 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public static class MobilePushExtensions
     {
+        public static readonly Duration WakeupDelay = Duration.FromSeconds(30);
         private static readonly Duration TimeBetweenWakeup = Duration.FromMinutes(30);
 
         public static Instant? GetNextWakeupTime(this MobilePushToken token, IClock clock)
         {
-            var now = clock.GetCurrentInstant();
+            var now = clock.GetCurrentInstant().Plus(WakeupDelay);
 
             if (token.LastWakeup > now)
             {
