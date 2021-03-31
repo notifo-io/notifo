@@ -30,7 +30,8 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var result = token.GetNextWakeupTime(simulatedClock);
 
-            Assert.Equal(now, result);
+            var expected = now.Plus(MobilePushExtensions.WakeupDelay);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -50,7 +51,8 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var result = token.GetNextWakeupTime(simulatedClock);
 
-            Assert.Equal(now, result);
+            var expected = now.Plus(MobilePushExtensions.WakeupDelay);
+            Assert.Equal(expected, result);
         }
 
         [Fact]
