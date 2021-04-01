@@ -47,6 +47,8 @@ namespace Notifo.Domain.Channels.MobilePush
                     .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, token))
                     .WithNonEmpty("imageLarge", formatting.ImageLarge)
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
+                    .WithNonEmpty("linkText", formatting.LinkText)
+                    .WithNonEmpty("linkUrl", formatting.LinkUrl)
                     .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token));
 
             var androidData =
