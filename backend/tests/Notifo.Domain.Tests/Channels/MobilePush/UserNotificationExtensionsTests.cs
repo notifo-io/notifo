@@ -22,6 +22,8 @@ namespace Notifo.Domain.Channels.MobilePush
             var confirmUrl = "https://confirm.notifo.com";
             var imageLarge = "https://via.placeholder.com/600";
             var imageSmall = "https://via.placeholder.com/100";
+            var linkUrl = "https://app.notifo.io";
+            var linkText = "Go to link";
             var subject = "subject1";
             var token = "token1";
             var trackingUrl = "https://track.notifo.com";
@@ -37,6 +39,8 @@ namespace Notifo.Domain.Channels.MobilePush
                     ConfirmText = confirmText,
                     ImageLarge = imageLarge,
                     ImageSmall = imageSmall,
+                    LinkText = linkText,
+                    LinkUrl = linkUrl,
                     Subject = subject
                 },
                 TrackingUrl = trackingUrl
@@ -50,6 +54,8 @@ namespace Notifo.Domain.Channels.MobilePush
             Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
             Assert.Equal(message.Data[nameof(imageSmall)], imageSmall);
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
+            Assert.Equal(message.Data[nameof(linkText)], linkText);
+            Assert.Equal(message.Data[nameof(linkUrl)], linkUrl);
             Assert.Equal(message.Data[nameof(trackingUrl)], $"{$"{trackingUrl}?channel=mobilepush&deviceIdentifier=token1"}");
 
             Assert.Equal(message.Android.Data[nameof(subject)], subject);
