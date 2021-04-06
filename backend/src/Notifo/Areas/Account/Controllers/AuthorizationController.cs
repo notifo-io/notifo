@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Infrastructure;
@@ -27,6 +29,61 @@ namespace Notifo.Areas.Account.Controllers
         public AuthorizationController(IOpenIddictScopeManager scopeManager)
         {
             this.scopeManager = scopeManager;
+        }
+
+        [HttpPost("connect/token")]
+        [Produces("application/json")]
+        public async Task<IActionResult> Exchange()
+        {
+            var request = HttpContext.GetOpenIddictServerRequest();
+
+            if (request == null)
+            {
+                throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+            }
+
+            if (request.IsAuthorizationCodeGrantType() || request.IsRefreshTokenGrantType())
+            {
+                var principal = (await HttpContext.AuthenticateAsync(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
+
+                if (principal == null)
+                {
+                    throw new InvalidOperationException("The user details cannot be retrieved.");
+                }
+
+                var user = await UserService.GetAsync(principal);
+
+                if (user == null)
+                {
+                    return Forbid(
+                        new AuthenticationProperties(new Dictionary<string, string?>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The token is no longer valid."
+                        }),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                }
+
+                if (!await SignInManager.CanSignInAsync((IdentityUser)user.Identity))
+                {
+                    return Forbid(
+                        new AuthenticationProperties(new Dictionary<string, string?>
+                        {
+                            [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidGrant,
+                            [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] = "The user is no longer allowed to sign in."
+                        }),
+                        OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                }
+
+                foreach (var claim in principal.Claims)
+                {
+                    claim.SetDestinations(GetDestinations(claim, principal));
+                }
+
+                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
+            throw new InvalidOperationException("The specified grant type is not supported.");
         }
 
         [HttpGet("connect/authorize")]
@@ -52,7 +109,18 @@ namespace Notifo.Areas.Account.Controllers
                     return Forbid(properties, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 }
 
-                return Challenge();
+                var query = QueryString.Create(
+                    Request.HasFormContentType ?
+                    Request.Form.ToList() :
+                    Request.Query.ToList());
+
+                var redirectUri = Request.PathBase + Request.Path + query;
+
+                return Challenge(
+                   new AuthenticationProperties
+                   {
+                       RedirectUri = redirectUri
+                   });
             }
 
             var user = await UserService.GetAsync(User);

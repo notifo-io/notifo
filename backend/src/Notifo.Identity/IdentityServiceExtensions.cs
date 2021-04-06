@@ -80,16 +80,19 @@ namespace Microsoft.Extensions.DependencyInjection
                         .SetAuthorizationEndpointUris("/connect/authorize")
                         .SetIntrospectionEndpointUris("/connect/introspect")
                         .SetLogoutEndpointUris("/connect/logout")
+                        .SetTokenEndpointUris("/connect/token")
                         .SetUserinfoEndpointUris("/connect/userinfo");
 
                     options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
 
                     options.AllowImplicitFlow();
+                    options.AllowAuthorizationCodeFlow();
 
                     options.UseAspNetCore()
                         .EnableAuthorizationEndpointPassthrough()
                         .EnableLogoutEndpointPassthrough()
                         .EnableStatusCodePagesIntegration()
+                        .EnableTokenEndpointPassthrough()
                         .EnableUserinfoEndpointPassthrough();
                 })
                 .AddValidation(options =>
