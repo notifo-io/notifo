@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using IdentityServer4.Events;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -21,8 +19,6 @@ namespace Notifo.Areas.Account.Pages
 {
     public sealed class LoginModel : PageModelBase<LoginModel>
     {
-        private readonly IIdentityServerInteractionService interaction;
-
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
         [BindProperty]
@@ -30,11 +26,6 @@ namespace Notifo.Areas.Account.Pages
 
         [BindProperty(SupportsGet = true)]
         public string? ReturnUrl { get; set; }
-
-        public LoginModel(IIdentityServerInteractionService interaction)
-        {
-            this.interaction = interaction;
-        }
 
         public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
@@ -49,23 +40,12 @@ namespace Notifo.Areas.Account.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var context = await interaction.GetAuthorizationContextAsync(ReturnUrl);
-
             if (ModelState.IsValid)
             {
                 var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, true);
 
                 if (result.Succeeded)
                 {
-                    var user = await UserService.FindByEmailAsync(Input.Email);
-
-                    await Events.RaiseAsync(new UserLoginSuccessEvent(
-                        user!.Email,
-                        user.Id,
-                        user!.Email,
-                        true,
-                        clientId: context?.Client.ClientId));
-
                     return RedirectTo(ReturnUrl);
                 }
 
@@ -73,10 +53,6 @@ namespace Notifo.Areas.Account.Pages
                 {
                     return RedirectToPage("./Lockout");
                 }
-
-                await Events.RaiseAsync(new UserLoginFailureEvent(Input.Email, "invalid credentials",
-                    true,
-                    clientId: context?.Client.ClientId));
 
                 ModelState.AddModelError(string.Empty, T["InvalidLoginAttempt"]!);
             }

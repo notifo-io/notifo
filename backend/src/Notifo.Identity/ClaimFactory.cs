@@ -7,9 +7,9 @@
 
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Notifo.Identity
 {
@@ -26,7 +26,7 @@ namespace Notifo.Identity
 
             if (principal.Identity is ClaimsIdentity claimsIdentity)
             {
-                claimsIdentity.AddClaim(new Claim(JwtClaimTypes.Subject, user.Id));
+                claimsIdentity.AddClaim(new Claim(Claims.Subject, user.Id));
             }
 
             return principal;

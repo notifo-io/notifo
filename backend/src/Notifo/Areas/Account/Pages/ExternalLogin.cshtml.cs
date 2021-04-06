@@ -81,7 +81,7 @@ namespace Notifo.Areas.Account.Pages
 
             if (string.IsNullOrWhiteSpace(email))
             {
-                return await RedirectToErrorPage("NoEmaiL", T["GithubEmailPrivateError"]!);
+                return await RedirectToErrorPage("NoEmail", T["GithubEmailPrivateError"]!);
             }
 
             Input = new ExternalLoginInputModel();
@@ -111,7 +111,7 @@ namespace Notifo.Areas.Account.Pages
 
                 if (loginInfo == null)
                 {
-                    return await RedirectToErrorPage("NoEmaiL", T["GithubEmailPrivateError"]!);
+                    return await RedirectToErrorPage("NoEmail", T["GithubEmailPrivateError"]!);
                 }
 
                 var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;

@@ -14,20 +14,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.5.0.60" />
-    <PackageReference Include="Confluent.Kafka" Version="1.5.3" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.7" />
+    <PackageReference Include="Confluent.Kafka" Version="1.6.3" />
     <PackageReference Include="FirebaseAdmin" Version="2.0.0" />
-    <PackageReference Include="FluentValidation" Version="9.4.0" />
+    <PackageReference Include="FluentValidation" Version="9.5.4" />
     <PackageReference Include="Fluid.Core" Version="1.0.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.29" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.12.16" />
-    <PackageReference Include="MailKit" Version="2.10.1" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.32" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.12.19" />
+    <PackageReference Include="MailKit" Version="2.11.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Mjml.AspNetCore" Version="1.2.27" />
-    <PackageReference Include="MongoDB.Driver" Version="2.11.5" />
-    <PackageReference Include="NodaTime" Version="3.0.3" />
+    <PackageReference Include="MongoDB.Driver" Version="2.12.1" />
+    <PackageReference Include="NodaTime" Version="3.0.5" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />

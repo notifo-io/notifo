@@ -9,8 +9,12 @@ namespace Notifo.Identity
 {
     public static class Constants
     {
-        public const string IdentityServerScheme = "IdentityServerJwt";
-
         public const string IdentityServerOrApiKeyScheme = "smart";
+
+        public const string ApiScope = "scp:NotifoAPI";
+
+        public const string ApiId = "NotifoAPI";
+
+        public const string FrontendClient = "notifo";
     }
 }
