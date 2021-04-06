@@ -14,7 +14,7 @@
     "formik": "2.2.4",
     "google-protobuf": "3.13.0",
     "mousetrap": "1.6.5",
-    "oidc-client": "^1.10.1",
+    "oidc-client": "1.11.5",
     "preact": "10.5.5",
     "react": "17.0.1",
     "react-ace": "^9.3.0",

@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using System.Threading.Tasks;
-using IdentityServer4.Services;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -16,26 +16,16 @@ namespace Notifo.Areas.Account.Pages
 {
     public sealed class ErrorModel : PageModel
     {
-        private readonly IIdentityServerInteractionService interaction;
-
-        public ErrorModel(IIdentityServerInteractionService interaction)
-        {
-            this.interaction = interaction;
-        }
-
         public string? ErrorMessage { get; set; }
 
         public string? ErrorCode { get; set; } = "400";
 
-        public async Task OnGet(string? errorId = null)
+        public void OnGet()
         {
-            if (!string.IsNullOrWhiteSpace(errorId))
-            {
-                var context = await interaction.GetErrorContextAsync(errorId);
+            var response = HttpContext.GetOpenIddictServerResponse();
 
-                ErrorMessage = context?.ErrorDescription;
-                ErrorCode = context?.Error ?? "400";
-            }
+            ErrorMessage = response?.ErrorDescription;
+            ErrorCode = response?.Error;
 
             if (string.IsNullOrWhiteSpace(ErrorMessage))
             {

@@ -147,13 +147,13 @@ namespace Notifo.Domain.Users
             await cache.RemoveAsync($"{appId}_{id}");
         }
 
-        private async Task DeliverAsync(User? user, bool invalidate = false)
+        private async Task DeliverAsync(User? user)
         {
             CounterMap.Cleanup(user?.Counters);
 
             if (user != null)
             {
-                await cache.AddAsync(user.ToFullId(), user, CacheDuration, invalidate);
+                await cache.AddAsync(user.ToFullId(), user, CacheDuration);
             }
         }
     }

@@ -9,17 +9,14 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Notifo.Domain.Identity;
 using Notifo.Identity;
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Controllers
 {
-    public abstract class PageModelBase<TDerived> : PageModel
+    public class ControllerBase<TDerived> : Controller
     {
         private readonly Lazy<SignInManager<IdentityUser>> signInManager;
         private readonly Lazy<IUserService> userService;
@@ -46,13 +43,7 @@ namespace Notifo.Areas.Account.Pages
             get => localizer.Value;
         }
 
-        [TempData]
-        public string? StatusMessage { get; set; }
-
-        [TempData]
-        public string? ErrorMessage { get; set; }
-
-        protected PageModelBase()
+        protected ControllerBase()
         {
             SetupService(ref logger!);
             SetupService(ref localizer!);
@@ -65,11 +56,6 @@ namespace Notifo.Areas.Account.Pages
             value = new Lazy<TService>(() => HttpContext.RequestServices.GetRequiredService<TService>());
         }
 
-        public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        {
-            base.OnPageHandlerExecuting(context);
-        }
-
         protected Task<IActionResult> RedirectToErrorPage(string error, string errorDescription)
         {
             if (!string.IsNullOrWhiteSpace(error))
@@ -78,30 +64,6 @@ namespace Notifo.Areas.Account.Pages
             }
 
             throw new InvalidOperationException(errorDescription);
-        }
-
-        protected IActionResult RedirectTo(string? returnUrl)
-        {
-            if (Uri.IsWellFormedUriString(returnUrl, UriKind.RelativeOrAbsolute))
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                return Redirect("~/");
-            }
-        }
-
-        protected async Task<IUser> GetUserAsync()
-        {
-            var user = await UserService.GetAsync(User);
-
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{UserService.GetUserId(User)}'.");
-            }
-
-            return user;
         }
     }
 }

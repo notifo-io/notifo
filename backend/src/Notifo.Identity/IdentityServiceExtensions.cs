@@ -5,20 +5,19 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using IdentityServer4.Configuration;
-using IdentityServer4.Stores;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Notifo.Identity.ApiKey;
 using Notifo.Identity.MongoDb;
-using Squidex.Hosting;
+using OpenIddict.Validation.AspNetCore;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -44,43 +43,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScopedAs<DefaultUserService>()
                 .As<IUserService>();
 
-            services.AddIdentityServer(options =>
-                {
-                    options.Authentication.CookieAuthenticationScheme = IdentityConstants.ApplicationScheme;
-
-                    options.Events.RaiseErrorEvents = true;
-                    options.Events.RaiseInformationEvents = true;
-                    options.Events.RaiseFailureEvents = true;
-                    options.Events.RaiseSuccessEvents = true;
-
-                    options.UserInteraction.ErrorUrl = "/account/error";
-                })
-                .AddAspNetIdentity<IdentityUser>()
-                .AddClients()
-                .AddIdentityResources()
-                .AddApiResources();
-
-            services.Configure<IdentityServerOptions>((c, options) =>
-                {
-                    var urlBuilder = c.GetRequiredService<IUrlGenerator>();
-
-                    options.IssuerUri = urlBuilder.BuildUrl();
-                });
-
-            services.Configure<ApiAuthorizationOptions>(options =>
-                {
-                    options.Clients.AddIdentityServerSPA("notifo", client => client
-                        .WithLogoutRedirectUri("/authentication/logout-callback")
-                        .WithRedirectUri("/authentication/login-callback")
-                        .WithRedirectUri("/authentication/login-silent-callback.html"));
-                });
+            services.AddMyOpenIdDict();
 
             services.AddAuthorization();
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = Constants.IdentityServerOrApiKeyScheme;
-                    options.DefaultChallengeScheme = Constants.IdentityServerOrApiKeyScheme;
-                })
+            services.AddAuthentication()
                 .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
                 {
                     options.ForwardDefaultSelector = context =>
@@ -90,31 +56,70 @@ namespace Microsoft.Extensions.DependencyInjection
                             return ApiKeyDefaults.AuthenticationScheme;
                         }
 
-                        return Constants.IdentityServerScheme;
+                        return OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
                     };
                 })
                 .AddGoogle(identityOptions)
                 .AddGithub(identityOptions)
-                .AddApiKey()
-                .AddIdentityServerJwt();
+                .AddApiKey();
+        }
+
+        private static void AddMyOpenIdDict(this IServiceCollection services)
+        {
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
+                options.ClaimsIdentity.UserNameClaimType = Claims.Name;
+                options.ClaimsIdentity.RoleClaimType = Claims.Role;
+            });
+
+            services.AddOpenIddict()
+                .AddServer(options =>
+                {
+                    options
+                        .SetAuthorizationEndpointUris("/connect/authorize")
+                        .SetIntrospectionEndpointUris("/connect/introspect")
+                        .SetLogoutEndpointUris("/connect/logout")
+                        .SetUserinfoEndpointUris("/connect/userinfo");
+
+                    options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
+
+                    options.AllowImplicitFlow();
+
+                    options.UseAspNetCore()
+                        .EnableAuthorizationEndpointPassthrough()
+                        .EnableLogoutEndpointPassthrough()
+                        .EnableStatusCodePagesIntegration()
+                        .EnableUserinfoEndpointPassthrough();
+                })
+                .AddValidation(options =>
+                {
+                    options.UseLocalServer();
+                    options.UseAspNetCore();
+                });
+
+            services.AddSingletonAs<OpenIdDictWorker>()
+                .As<IHostedService>();
         }
 
         public static void AddMyMongoDbIdentity(this IServiceCollection services)
         {
+            services.AddOpenIddict()
+                .AddCore(options =>
+                {
+                    options.UseMongoDb();
+                });
+
             services.AddSingletonAs<MongoDbUserStore>()
                 .As<IUserStore<IdentityUser>>().As<IUserFactory>();
 
             services.AddSingletonAs<MongoDbRoleStore>()
                 .As<IRoleStore<IdentityRole>>();
 
-            services.AddSingletonAs<MongoDbPersistedGrantStore>()
-                .As<IPersistedGrantStore>();
-
-            services.AddSingletonAs<MongoDbKeyStore>()
-                .As<ISigningCredentialStore>().As<IValidationKeysStore>();
-
             services.AddSingletonAs<MongoDbXmlRepository>()
                 .As<IXmlRepository>();
+
+            services.ConfigureOptions<MongoDbKeyOptions>();
 
             services.Configure<KeyManagementOptions>((c, options) =>
             {

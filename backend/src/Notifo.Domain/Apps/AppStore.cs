@@ -133,7 +133,7 @@ namespace Notifo.Domain.Apps
                 {
                     await repository.UpsertAsync(app, etag, ct);
 
-                    await DeliverAsync(app, true);
+                    await DeliverAsync(app);
                 }
 
                 return app;
@@ -149,13 +149,13 @@ namespace Notifo.Domain.Apps
             await cache.RemoveAsync(id);
         }
 
-        private async Task DeliverAsync(App? app, bool invalidate = false)
+        private async Task DeliverAsync(App? app)
         {
             CounterMap.Cleanup(app?.Counters);
 
             if (app != null)
             {
-                await cache.AddAsync(app.Id, app, CacheDuration, invalidate);
+                await cache.AddAsync(app.Id, app, CacheDuration);
             }
         }
     }

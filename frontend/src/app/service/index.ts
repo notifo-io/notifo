@@ -57,7 +57,7 @@ export module AuthService {
                 client_secret: undefined,
                 post_logout_redirect_uri: `${authority}/authentication/logout-callback`,
                 redirect_uri: `${authority}/authentication/login-callback`,
-                response_type: 'code',
+                response_type: 'id_token token',
                 scope: 'openid profile NotifoAPI',
                 silentRequestTimeout: 10000,
                 silent_redirect_uri: `${authority}/authentication/login-silent-callback.html`,
