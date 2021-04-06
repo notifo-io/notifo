@@ -9,10 +9,13 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
 namespace Notifo.SDK
 {
     public partial class ErrorDto
     {
+        /// <inheritdoc />
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -66,6 +69,7 @@ namespace Notifo.SDK
     public partial class NotifoException<TResult>
 #pragma warning restore RECS0096 // Type parameter is never used
     {
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{Result}\n{base.ToString()}";

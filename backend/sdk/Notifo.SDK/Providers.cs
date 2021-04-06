@@ -7,12 +7,24 @@
 
 namespace Notifo.SDK
 {
+    /// <summary>
+    /// Defines all the providers.
+    /// </summary>
     public static class Providers
     {
+        /// <summary>
+        /// The name of the Email provider.
+        /// </summary>
         public static readonly string Email = "email";
 
+        /// <summary>
+        /// The name of the MobilePush provider.
+        /// </summary>
         public static readonly string MobilePush = "mobilepush";
 
+        /// <summary>
+        /// The name of the WebPush provider.
+        /// </summary>
         public static readonly string WebPush = "webpush";
     }
 }

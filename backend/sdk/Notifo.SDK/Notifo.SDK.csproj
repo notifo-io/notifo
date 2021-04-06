@@ -13,8 +13,9 @@
     <PackageIcon>logo-squared.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     
-    <Version>1.0.0-beta5</Version>
+    <Version>1.0.0-beta6</Version>
   </PropertyGroup>
 
   <ItemGroup>

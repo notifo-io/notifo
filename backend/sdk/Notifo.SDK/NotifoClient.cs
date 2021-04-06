@@ -10,6 +10,9 @@ using System.Net.Http;
 
 namespace Notifo.SDK
 {
+    /// <summary>
+    /// Default implementation of the <see cref="INotifoClient"/> interface.
+    /// </summary>
     public sealed class NotifoClient : INotifoClient
     {
         private readonly Lazy<IAppsClient> apps;
@@ -23,26 +26,41 @@ namespace Notifo.SDK
         private readonly Lazy<ITopicsClient> topics;
         private readonly Lazy<IUsersClient> users;
 
+        /// <inheritdoc />
         public IAppsClient Apps => apps.Value;
 
+        /// <inheritdoc />
         public IConfigsClient Configs => configs.Value;
 
+        /// <inheritdoc />
         public IEventsClient Events => events.Value;
 
+        /// <inheritdoc />
         public ILogsClient Logs => logs.Value;
 
+        /// <inheritdoc />
         public IMediaClient Media => media.Value;
 
+        /// <inheritdoc />
         public IMobilePushClient MobilePush => mobilePush.Value;
 
+        /// <inheritdoc />
         public INotificationsClient Notifications => notifications.Value;
 
+        /// <inheritdoc />
         public ITemplatesClient Templates => templates.Value;
 
+        /// <inheritdoc />
         public ITopicsClient Topics => topics.Value;
 
+        /// <inheritdoc />
         public IUsersClient Users => users.Value;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotifoClient"/> class with the HTTP client and the base URL.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client. Cannot be null.</param>
+        /// <param name="baseUrl">The base URL. Cannot be null.</param>
         public NotifoClient(HttpClient httpClient, string baseUrl)
         {
             apps = new Lazy<IAppsClient>(() =>
