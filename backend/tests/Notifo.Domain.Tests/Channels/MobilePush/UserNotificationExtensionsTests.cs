@@ -20,6 +20,7 @@ namespace Notifo.Domain.Channels.MobilePush
             var body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr";
             var confirmText = "Got It!";
             var confirmUrl = "https://confirm.notifo.com";
+            var isConfirmed = true.ToString();
             var imageLarge = "https://via.placeholder.com/600";
             var imageSmall = "https://via.placeholder.com/100";
             var linkUrl = "https://app.notifo.io";
@@ -32,6 +33,7 @@ namespace Notifo.Domain.Channels.MobilePush
             {
                 Id = id,
                 ConfirmUrl = confirmUrl,
+                IsConfirmed = new HandledInfo (),
                 Formatting = new NotificationFormatting<string>
                 {
                     Body = body,
@@ -52,6 +54,7 @@ namespace Notifo.Domain.Channels.MobilePush
             Assert.Equal(message.Data[nameof(id)], id.ToString());
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
             Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
+            Assert.Equal(message.Data[nameof(isConfirmed)], isConfirmed);
             Assert.Equal(message.Data[nameof(imageSmall)], imageSmall);
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
             Assert.Equal(message.Data[nameof(linkText)], linkText);
