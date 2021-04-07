@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Notifo.Identity.ApiKey;
+using Notifo.Identity.InMemory;
 using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
@@ -83,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         .SetTokenEndpointUris("/connect/token")
                         .SetUserinfoEndpointUris("/connect/userinfo");
 
-                    options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles);
+                    options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles, Constants.ApiScope);
 
                     options.AllowImplicitFlow();
                     options.AllowAuthorizationCodeFlow();
@@ -109,11 +109,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     options.UseMongoDb();
 
-                    options.SetDefaultApplicationEntity<OpenIddictApplicationDescriptor>();
-                    options.SetDefaultScopeEntity<OpenIddictScopeDescriptor>();
+                    options.SetDefaultScopeEntity<ImmutableScope>();
 
-                    options.Services.AddSingleton(InMemoryConfiguration.Scopes);
-                    options.Services.AddSingleton<IOpenIddictApplicationStore<OpenIddictApplicationDescriptor>, InMemoryConfiguration.Clients>();
+                    options.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
+                        .As<IOpenIddictScopeStore<ImmutableScope>>();
+
+                    options.SetDefaultApplicationEntity<ImmutableApplication>();
+
+                    options.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
+                        .As<IOpenIddictApplicationStore<ImmutableApplication>>();
                 });
 
             services.AddSingletonAs<MongoDbUserStore>()

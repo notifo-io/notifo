@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Notifo.Identity.InMemory;
 using OpenIddict.Abstractions;
 using Squidex.Hosting;
@@ -16,26 +17,62 @@ namespace Notifo.Identity
 {
     public static class InMemoryConfiguration
     {
-        public static readonly IOpenIddictScopeStore<OpenIddictScopeDescriptor> Scopes = new InMemoryScopeStore(
-            new OpenIddictScopeDescriptor
-            {
-                Name = Constants.ApiId,
-                Resources =
-                {
-                    Constants.ApiId
-                }
-            });
-
-        public sealed class Clients : InMemoryApplicationStore
+        private static string BuildId(string value)
         {
-            public Clients(IUrlGenerator urlGenerator)
+            const int MongoDbLength = 24;
+
+            var sb = new StringBuilder();
+
+            var bytes = Encoding.Unicode.GetBytes(value);
+
+            foreach (var c in bytes)
+            {
+                sb.Append(c.ToString("X2"));
+
+                if (sb.Length == MongoDbLength)
+                {
+                    break;
+                }
+            }
+
+            while (sb.Length < MongoDbLength)
+            {
+                sb.Append('0');
+            }
+
+            return sb.ToString();
+        }
+
+        public sealed class Scopes : InMemoryScopeStore
+        {
+            public Scopes()
+                : base(BuildScopes())
+            {
+            }
+
+            private static IEnumerable<(string, OpenIddictScopeDescriptor)> BuildScopes()
+            {
+                yield return (BuildId(Constants.ApiId), new OpenIddictScopeDescriptor
+                {
+                    Name = Constants.ApiId,
+                    Resources =
+                    {
+                        Constants.ApiId
+                    }
+                });
+            }
+        }
+
+        public sealed class Applications : InMemoryApplicationStore
+        {
+            public Applications(IUrlGenerator urlGenerator)
                 : base(BuildClients(urlGenerator))
             {
             }
 
-            private static List<OpenIddictApplicationDescriptor> BuildClients(IUrlGenerator urlGenerator)
+            private static IEnumerable<(string, OpenIddictApplicationDescriptor)> BuildClients(IUrlGenerator urlGenerator)
             {
-                var client = new OpenIddictApplicationDescriptor
+                yield return (BuildId(Constants.FrontendClient), new OpenIddictApplicationDescriptor
                 {
                     DisplayName = "React Frontend Application",
                     ClientId = Constants.FrontendClient,
@@ -62,9 +99,7 @@ namespace Notifo.Identity
                         Permissions.Scopes.Roles,
                         Constants.ApiScope
                     }
-                };
-
-                return new List<OpenIddictApplicationDescriptor> { client };
+                });
             }
         }
     }
