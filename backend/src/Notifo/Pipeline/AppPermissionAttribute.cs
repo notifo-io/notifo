@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Authorization;
+using Notifo.Identity;
 
 namespace Notifo.Pipeline
 {
@@ -15,6 +16,8 @@ namespace Notifo.Pipeline
 
         public AppPermissionAttribute(params string[] appRoles)
         {
+            AuthenticationSchemes = Constants.IdentityServerOrApiKeyScheme;
+
             RequiredAppRoles = appRoles;
         }
     }

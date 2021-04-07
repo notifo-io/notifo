@@ -44,10 +44,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IUserService>();
 
             services.AddMyOpenIdDict();
-
             services.AddAuthorization();
             services.AddAuthentication()
-                .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
+               .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
                 {
                     options.ForwardDefaultSelector = context =>
                     {

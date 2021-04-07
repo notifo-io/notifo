@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => Apps returned.
         /// </returns>
         [HttpGet("api/apps")]
-        [Authorize]
+        [AppPermission]
         [Produces(typeof(List<AppDto>))]
         public async Task<IActionResult> GetApps()
         {
@@ -84,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => App created.
         /// </returns>
         [HttpPost("api/apps/")]
-        [Authorize]
+        [AppPermission]
         [Produces(typeof(AppDto))]
         public async Task<IActionResult> PostApp([FromBody] UpsertAppDto request)
         {

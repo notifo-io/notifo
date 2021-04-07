@@ -30,7 +30,7 @@ namespace Notifo.Pipeline
         {
             var appPermission = context.ActionDescriptor.EndpointMetadata.OfType<AppPermissionAttribute>().FirstOrDefault();
 
-            if (appPermission != null)
+            if (appPermission != null && appPermission.RequiredAppRoles.Length > 0)
             {
                 var appId = context.RouteData.Values["appId"]?.ToString();
 
