@@ -16,6 +16,7 @@ using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Notifo.Identity.ApiKey;
 using Notifo.Identity.MongoDb;
+using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -99,9 +100,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.UseLocalServer();
                     options.UseAspNetCore();
                 });
-
-            services.AddSingletonAs<OpenIdDictWorker>()
-                .As<IHostedService>();
         }
 
         public static void AddMyMongoDbIdentity(this IServiceCollection services)
@@ -110,6 +108,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddCore(options =>
                 {
                     options.UseMongoDb();
+
+                    options.SetDefaultApplicationEntity<OpenIddictApplicationDescriptor>();
+                    options.SetDefaultScopeEntity<OpenIddictScopeDescriptor>();
+
+                    options.Services.AddSingleton(InMemoryConfiguration.Scopes);
+                    options.Services.AddSingleton<IOpenIddictApplicationStore<OpenIddictApplicationDescriptor>, InMemoryConfiguration.Clients>();
                 });
 
             services.AddSingletonAs<MongoDbUserStore>()
