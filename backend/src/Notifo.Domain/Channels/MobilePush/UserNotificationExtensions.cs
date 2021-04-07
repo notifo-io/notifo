@@ -74,6 +74,10 @@ namespace Notifo.Domain.Channels.MobilePush
 
             message.Apns = new ApnsConfig
             {
+                Headers = new Dictionary<string, string>
+                {
+                    ["apns-collapse-id"] = notification.Id.ToString()
+                },
                 Aps = new Aps
                 {
                     Alert = apsAlert,
