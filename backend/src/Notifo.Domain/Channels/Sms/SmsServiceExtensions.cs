@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Infrastructure.Scheduling;

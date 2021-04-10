@@ -82,6 +82,7 @@ namespace Notifo
             services.AddMyClustering(config);
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
+            services.AddMyIntegrations();
             services.AddMyJson();
             services.AddMyLog();
             services.AddMyMedia();

@@ -15,7 +15,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Events.Dtos
 {
-    public class PublishDto
+    public sealed class PublishDto
     {
         /// <summary>
         /// The topic path.

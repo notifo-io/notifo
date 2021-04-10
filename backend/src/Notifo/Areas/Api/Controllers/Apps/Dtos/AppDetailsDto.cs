@@ -10,7 +10,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Reflection;
 
