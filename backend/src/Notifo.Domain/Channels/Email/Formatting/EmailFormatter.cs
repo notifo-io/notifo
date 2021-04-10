@@ -23,7 +23,6 @@ namespace Notifo.Domain.Channels.Email.Formatting
 {
     public sealed class EmailFormatter : IEmailFormatter
     {
-        private const string DefaultSenderEmail = "noreply@notifo.io";
         private static readonly string DefaultBodyHtml;
         private static readonly string DefaultBodyText;
         private static readonly string DefaultSubject;
@@ -76,13 +75,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
             var mailMessage = new EmailMessage
             {
+                Subject = FormatSubject(template, context, noCache),
                 BodyHtml = await FormatHtml(template, context, notifications, noCache),
                 BodyText = FormatText(template, context, notifications, noCache),
-                FromEmail = app.EmailAddress.OrDefault(DefaultSenderEmail),
-                FromName = app.EmailName.OrDefault(app.Name),
-                Subject = FormatSubject(template, context, noCache),
-                ToEmail = user.EmailAddress,
-                ToName = user.FullName
+                RecipientEmail = user.EmailAddress,
+                RecipientName = user.FullName
             };
 
             return mailMessage;

@@ -131,6 +131,8 @@ namespace Notifo.Domain.Users
                     await repository.UpsertAsync(user, etag, ct);
 
                     await DeliverAsync(user);
+
+                    await command.ExecutedAsync(user, serviceProvider);
                 }
 
                 return user;

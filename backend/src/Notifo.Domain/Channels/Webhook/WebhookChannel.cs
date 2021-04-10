@@ -12,6 +12,8 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
+using Notifo.Domain.Channels.Webhook.Integrations;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
@@ -29,6 +31,7 @@ namespace Notifo.Domain.Channels.Webhook
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly ISemanticLog log;
         private readonly ILogStore logStore;
+        private readonly IIntegrationManager integrationManager;
 
         public int Order => 1000;
 
@@ -39,12 +42,14 @@ namespace Notifo.Domain.Channels.Webhook
         public bool IsSystem => true;
 
         public WebhookChannel(IHttpClientFactory httpClientFactory, ISemanticLog log, ILogStore logStore,
+            IIntegrationManager integrationManager,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore)
         {
             this.httpClientFactory = httpClientFactory;
             this.log = log;
             this.logStore = logStore;
+            this.integrationManager = integrationManager;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
         }
@@ -58,15 +63,22 @@ namespace Notifo.Domain.Channels.Webhook
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting setting, SendOptions options)
         {
-            if (!string.IsNullOrWhiteSpace(options.App.WebhookUrl))
+            var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App);
+
+            foreach (var webhook in webhooks)
             {
-                yield return options.App.WebhookUrl;
+                yield return webhook.Url;
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string coniguration, SendOptions options, CancellationToken ct)
+        public Task HandleExceptionAsync(WebhookJob job, Exception ex)
         {
-            var job = new WebhookJob(notification, options.App.WebhookUrl!);
+            return UpdateAsync(job.Notification, job.Url, ProcessStatus.Failed);
+        }
+
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
+        {
+            var job = new WebhookJob(notification, configuration);
 
             return userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
@@ -104,11 +116,6 @@ namespace Notifo.Domain.Channels.Webhook
             {
                 await client.PostAsJsonAsync(url, job.Notification, ct);
             }
-        }
-
-        public Task HandleExceptionAsync(WebhookJob job, Exception ex)
-        {
-            return UpdateAsync(job.Notification, job.Url, ProcessStatus.Failed);
         }
 
         private Task UpdateAsync(UserNotification notification, string url, ProcessStatus status, string? reason = null)

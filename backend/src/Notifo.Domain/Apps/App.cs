@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Counters;
+using Notifo.Domain.Integrations;
 
 namespace Notifo.Domain.Apps
 {
@@ -21,29 +22,15 @@ namespace Notifo.Domain.Apps
 
         public string[] Languages { get; set; } = new[] { DefaultAppLanguage };
 
-        public string? EmailAddress { get; set; } = string.Empty;
-
-        public string? EmailName { get; set; } = string.Empty;
-
-        public string? FirebaseProject { get; set; } = string.Empty;
-
-        public string? FirebaseCredential { get; set; } = string.Empty;
-
-        public string? WebhookUrl { get; set; } = string.Empty;
-
         public string? ConfirmUrl { get; set; } = string.Empty;
-
-        public bool AllowEmail { get; set; }
-
-        public bool AllowSms { get; set; }
-
-        public EmailVerificationStatus EmailVerificationStatus { get; set; }
 
         public Dictionary<string, EmailTemplate> EmailTemplates { get; set; } = new Dictionary<string, EmailTemplate>();
 
         public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
 
         public Dictionary<string, string> Contributors { get; set; } = new Dictionary<string, string>();
+
+        public Dictionary<string, ConfiguredIntegration> Integrations { get; set; } = new Dictionary<string, ConfiguredIntegration>();
 
         public CounterMap? Counters { get; set; } = new CounterMap();
 

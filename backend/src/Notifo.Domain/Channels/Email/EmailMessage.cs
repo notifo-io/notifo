@@ -13,9 +13,9 @@ namespace Notifo.Domain.Channels.Email
 
         public string? FromName { get; set; }
 
-        public string ToEmail { get; set; }
+        public string RecipientEmail { get; set; }
 
-        public string? ToName { get; set; }
+        public string? RecipientName { get; set; }
 
         public string Subject { get; set; }
 

@@ -80,7 +80,6 @@ namespace Notifo
             services.AddMyCaching();
             services.AddMyCounters();
             services.AddMyClustering(config);
-            services.AddMyEmailChannel(config);
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
             services.AddMyJson();
@@ -90,7 +89,6 @@ namespace Notifo
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
             services.AddMyOpenApi();
-            services.AddMySmsChannel(config);
             services.AddMyStorage(config);
             services.AddMySubscriptions();
             services.AddMyTemplates();
@@ -103,6 +101,10 @@ namespace Notifo
             services.AddMyWebhookChannel();
             services.AddMyWebPipeline();
             services.AddMyWebPushChannel(config);
+
+            services.AddIntegrationAmazonSES(config);
+            services.AddIntegrationMessageBird(config);
+            services.AddIntegrationSmtp();
 
             services.AddInitializer();
         }

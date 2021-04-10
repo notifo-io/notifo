@@ -14,13 +14,11 @@ namespace Notifo.Domain.Apps
 {
     public interface IAppRepository : ICounterStore<string>
     {
-        Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct);
+        Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct);
 
         Task<List<App>> QueryAsync(string contributorId, CancellationToken ct);
 
         Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct);
-
-        Task<(App? App, string? Etag)> GetByEmailAddressAsync(string id, CancellationToken ct);
 
         Task<(App? App, string? Etag)> GetAsync(string id, CancellationToken ct);
 

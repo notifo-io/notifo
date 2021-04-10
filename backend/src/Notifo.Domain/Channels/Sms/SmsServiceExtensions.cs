@@ -15,24 +15,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class SmsServiceExtensions
     {
-        public static void AddMySmsChannel(this IServiceCollection services, IConfiguration config)
+        public static void AddMySmsChannel(this IServiceCollection services)
         {
-            config.ConfigureByOption("sms:type", new Alternatives
-            {
-                ["MessageBird"] = () =>
-                {
-                    services.AddMyMessageBird(config);
-
-                    services.AddSingletonAs<MessageBirdSmsSender>()
-                        .As<ISmsSender>();
-                },
-                ["None"] = () =>
-                {
-                    services.AddSingletonAs<NoopSmsSender>()
-                        .As<ISmsSender>();
-                }
-            });
-
             services.AddSingletonAs<SmsChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<SmsJob>>();
 

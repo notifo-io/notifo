@@ -43,15 +43,5 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             Assert.Equal(1, response.Recipients.TotalSentCount);
         }
-
-        [Fact]
-        public async Task Should_send_voice()
-        {
-            var voice = new MessageBirdVoiceMessage("4917683297281", "Guten Tag, wie geht es ihnen?", "de-de");
-
-            var response = await sut.SendVoiceAsync(voice, default);
-
-            Assert.Equal(1, response.Recipients.TotalSentCount);
-        }
     }
 }
