@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Integrations.Resources;
@@ -15,13 +16,14 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public sealed class FirebaseIntegration : IIntegration
     {
-        private readonly FirebaseMobilePushSenderPool senderPool = new FirebaseMobilePushSenderPool();
+        private readonly FirebaseMobilePushSenderPool senderPool;
 
         private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.Firebase_ProjectIdLabel,
             EditorDescription = null,
-            IsRequired = true, Summary = true
+            IsRequired = true,
+            Summary = true
         };
 
         private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", IntegrationPropertyType.MultilineText)
@@ -48,6 +50,11 @@ namespace Notifo.Domain.Integrations.Firebase
             {
                 Description = Texts.Firebase_Description
             };
+
+        public FirebaseIntegration(IMemoryCache memoryCache)
+        {
+            senderPool = new FirebaseMobilePushSenderPool(memoryCache);
+        }
 
         public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {

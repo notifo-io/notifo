@@ -32,7 +32,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
         {
             EditorLabel = Texts.AmazonSES_FromEmailLabel,
             EditorDescription = null,
-            IsRequired = true, Summary = true
+            IsRequired = true,
+            Summary = true
         };
 
         private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
@@ -46,7 +47,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
             = new IntegrationDefinition(
                 "AmazonSES",
                 Texts.AmazonSES_Name,
-                "./integrations/amazonSES.svg",
+                "./integrations/amazon-ses.svg",
                 new List<IntegrationProperty>
                 {
                     FromEmailProperty,
@@ -67,14 +68,14 @@ namespace Notifo.Domain.Integrations.AmazonSES
             smtpEmailServer = new SmtpEmailServer(options.Value);
         }
 
-        public Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(CancellationToken ct)
         {
             amazonSES = new AmazonSimpleEmailServiceClient(
                 options.AwsAccessKeyId,
                 options.AwsSecretAccessKey,
                 RegionEndpoint.GetBySystemName(options.Region));
 
-            return Task.CompletedTask;
+            await amazonSES.GetSendQuotaAsync(ct);
         }
 
         public bool CanCreate(Type serviceType, ConfiguredIntegration configured)

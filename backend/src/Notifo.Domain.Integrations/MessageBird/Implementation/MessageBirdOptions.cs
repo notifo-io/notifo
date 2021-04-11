@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public sealed class MessageBirdOptions : IValidatableOptions
     {

@@ -19,7 +19,8 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
         {
             EditorLabel = Texts.Webhook_URLLabel,
             EditorDescription = Texts.Webhook_URLHints,
-            IsRequired = true, Summary = true
+            IsRequired = true,
+            Summary = true
         };
 
         public IntegrationDefinition Definition { get; } =

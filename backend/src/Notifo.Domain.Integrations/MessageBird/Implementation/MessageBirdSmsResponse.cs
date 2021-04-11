@@ -7,7 +7,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public sealed class MessageBirdSmsResponse
     {

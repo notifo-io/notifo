@@ -15,13 +15,13 @@ namespace Notifo.Domain.Integrations.MessageBird
 {
     public sealed class IntegratedMessageBirdIntegration : IIntegration
     {
-        private readonly MessageBirdSmsSender smsSender;
+        private readonly IntegratedMessageBirdSmsSender smsSender;
 
         public IntegrationDefinition Definition { get; }
             = new IntegrationDefinition(
-                "MessageBird",
-                "MessageBird (Integrated)",
-                "./integreations/messagebird.svg",
+                "MessageBirdIntegrated",
+                Texts.MessageBirdIntegrated_Name,
+                "./integrations/messagebird.svg",
                 new List<IntegrationProperty>(),
                 new HashSet<string>
                 {
@@ -31,7 +31,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 Description = Texts.MessageBirdIntegrated_Description
             };
 
-        public IntegratedMessageBirdIntegration(MessageBirdSmsSender smsSender)
+        public IntegratedMessageBirdIntegration(IntegratedMessageBirdSmsSender smsSender)
         {
             this.smsSender = smsSender;
         }

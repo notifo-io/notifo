@@ -2665,7 +2665,7 @@ export class AppsClient {
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
-            method: "POST",
+            method: "DELETE",
             headers: {
             }
         };
@@ -2891,23 +2891,21 @@ export class AppsClient {
     /**
      * Delete an app integration.
      * @param appId The id of the app where the email templates belong to.
-     * @param id (optional) The id of the integration.
+     * @param id The id of the integration.
      * @return App integration deleted.
      */
-    deleteIntegration(appId: string, language: string, id?: string | null | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{language}?";
+    deleteIntegration(appId: string, id: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (language === undefined || language === null)
-            throw new Error("The parameter 'language' must be defined.");
-        url_ = url_.replace("{language}", encodeURIComponent("" + language));
-        if (id !== undefined && id !== null)
-            url_ += "id=" + encodeURIComponent("" + id) + "&";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
-            method: "POST",
+            method: "DELETE",
             headers: {
             }
         };
@@ -3703,7 +3701,7 @@ export interface IntegrationPropertyDto {
     defaultValue?: any | undefined;
 }
 
-export type IntegrationPropertyType = "Text" | "Number" | "MultilineText";
+export type IntegrationPropertyType = "Text" | "Number" | "MultilineText" | "Password";
 
 export interface IntegrationCreatedDto {
     /** The id of the integration. */

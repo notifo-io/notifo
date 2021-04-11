@@ -22,7 +22,7 @@ namespace Notifo.Domain.Apps
         {
             public Validator()
             {
-                RuleFor(x => x.Id).NotNull().Language();
+                RuleFor(x => x.Id).NotNull();
             }
         }
 

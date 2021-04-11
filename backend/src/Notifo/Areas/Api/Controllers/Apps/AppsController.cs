@@ -246,7 +246,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 204 => App email template deleted.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/email-templates/{language}")]
+        [HttpDelete("api/apps/{appId}/email-templates/{language}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteEmailTemplate(string appId, string language)
         {
@@ -328,7 +328,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 204 => App integration deleted.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/integrations/{language}")]
+        [HttpDelete("api/apps/{appId}/integrations/{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteIntegration(string appId, string id)
         {

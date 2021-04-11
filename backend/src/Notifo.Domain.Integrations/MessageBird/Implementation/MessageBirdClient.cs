@@ -21,7 +21,7 @@ using PhoneNumbers;
 #pragma warning disable CA1822 // Mark members as static
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public sealed class MessageBirdClient
     {

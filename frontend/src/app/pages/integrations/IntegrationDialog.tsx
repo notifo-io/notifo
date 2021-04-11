@@ -5,15 +5,16 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader } from '@app/framework';
-import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationPropertyDto } from '@app/service';
-import { createIntegrationAsync, updateIntegrationAsync, useIntegrations } from '@app/state';
+import { Confirm, FormError, Forms, Icon, Loader } from '@app/framework';
+import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationPropertyDto, UpdateIntegrationDto } from '@app/service';
+import { createIntegrationAsync, deleteIntegrationAsync, updateIntegrationAsync, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Badge, Button, Col, Form, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
+import { Badge, Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import * as Yup from 'yup';
+import { StatusLabel } from './StatusLabel';
 
 export interface IntegrationDialogProps {
     // The app id.
@@ -58,6 +59,26 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         }
     }, [upserting, upsertingError, onClose]);
 
+    const doDelete = React.useCallback(() => {
+        if (id) {
+            dispatch(deleteIntegrationAsync({ appId, id }));
+
+            onClose();
+        }
+    }, [appId, id, onClose]);
+
+    const doUpsert = React.useCallback((params: UpdateIntegrationDto) => {
+        for (const key of Object.keys(params.properties)) {
+            params.properties[key] = params.properties[key]?.toString();
+        }
+
+        if (id) {
+            dispatch(updateIntegrationAsync({ appId, id, params }));
+        } else {
+            dispatch(createIntegrationAsync({ appId, params: { type, ...params } }));
+        }
+    }, [appId, id, type]);
+
     const schema = React.useMemo(() => {
         const properties: { [name: string]: Yup.Schema<any, {}> } = {};
 
@@ -89,14 +110,6 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         });
     }, [definition]);
 
-    const doUpsert = React.useCallback((params: any) => {
-        if (id) {
-            dispatch(updateIntegrationAsync({ appId, id, params }));
-        } else {
-            dispatch(createIntegrationAsync({ appId, params: { type, ...params } }));
-        }
-    }, [appId, type]);
-
     const initialValues = defined || {
         enabled: true,
         priority: 0,
@@ -105,7 +118,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
     return (
         <Modal isOpen={true} size='lg' className='integration-dialog' backdrop={false} toggle={onClose}>
-            <Formik<any> initialValues={initialValues} onSubmit={doUpsert} enableReinitialize validationSchema={schema}>
+            <Formik<UpdateIntegrationDto> initialValues={initialValues} onSubmit={doUpsert} enableReinitialize validationSchema={schema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={onClose}>
@@ -119,7 +132,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
                                     <div>
                                         {definition.capabilities.map(capability => (
-                                            <Badge key={capability} color='secondary' pill>{capability}</Badge>
+                                            <Badge key={capability} className='mr-1' color='secondary' pill>{capability}</Badge>
                                         ))}
                                     </div>
                                 </Col>
@@ -128,6 +141,18 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
                         <ModalBody>
                             <fieldset disabled={upserting}>
+                                {defined &&
+                                    <Row className='mb-4'>
+                                        <Col sm={4}>
+                                            {texts.common.status}
+                                        </Col>
+
+                                        <Col sm={8}>
+                                            <StatusLabel status={defined.status} />
+                                        </Col>
+                                    </Row>
+                                }
+
                                 <Forms.GridBoolean name='enabled'
                                     label={texts.common.enabled} hints={texts.integrations.enabledHints} />
 
@@ -141,6 +166,28 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                                 {definition.properties.map(property => (
                                     <FormField key={property.name} property={property} />
                                 ))}
+
+                                {id &&
+                                    <div>
+                                        <hr />
+
+                                        <Row>
+                                            <Label sm={4} className='text-danger'>
+                                                {texts.common.dangerZone}
+                                            </Label>
+
+                                            <Col sm={8}>
+                                                <Confirm onConfirm={doDelete} text={texts.templates.confirmDelete}>
+                                                    {({ onClick }) => (
+                                                        <Button color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                                                            <Icon type='delete' /> {texts.common.delete}
+                                                        </Button>
+                                                    )}
+                                                </Confirm>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                }
                             </fieldset>
 
                             <FormError error={upsertingError} />
@@ -149,6 +196,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                             <Button type='button' color='' onClick={onClose}>
                                 {texts.common.cancel}
                             </Button>
+
                             <Button type='submit' color='success' disabled={upserting}>
                                 <Loader light small visible={upserting} /> {texts.common.save}
                             </Button>
@@ -179,6 +227,11 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
         case 'Number':
             return (
                 <Forms.GridNumber name={name}
+                    label={label} hints={property.editorDescription} />
+            );
+        case 'Password':
+            return (
+                <Forms.GridPassword name={name}
                     label={label} hints={property.editorDescription} />
             );
         default:

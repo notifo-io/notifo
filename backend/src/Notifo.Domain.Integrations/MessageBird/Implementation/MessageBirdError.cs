@@ -7,11 +7,14 @@
 
 using System.Text.Json.Serialization;
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class MessageBirdErrors
+    public sealed class MessageBirdError
     {
-        [JsonPropertyName("errors")]
-        public MessageBirdError[] Errors { get; set; }
+        [JsonPropertyName("code")]
+        public int Code { get; set; }
+
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
     }
 }

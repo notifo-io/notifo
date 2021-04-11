@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.MessageBird;
+using Notifo.Domain.Integrations.MessageBird.Implementation;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -26,12 +27,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingletonAs<MessageBirdClient>()
                     .AsSelf();
 
-                services.AddSingletonAs<MessageBirdSmsSender>()
+                services.AddSingletonAs<IntegratedMessageBirdSmsSender>()
                     .AsSelf();
 
                 services.AddSingletonAs<IntegratedMessageBirdIntegration>()
                     .As<IIntegration>();
             }
+
+            services.AddSingletonAs<MessageBirdIntegration>()
+                .As<IIntegration>();
         }
     }
 }

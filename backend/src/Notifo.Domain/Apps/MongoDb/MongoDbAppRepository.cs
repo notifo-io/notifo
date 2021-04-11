@@ -45,7 +45,7 @@ namespace Notifo.Domain.Apps.MongoDb
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbApp>(
                     IndexKeys
-                        .Ascending("d.integrations.status")),
+                        .Ascending(x => x.IsPending)),
                 null, ct);
 
             await collection.Indexes.CreateOneAsync(
@@ -64,10 +64,8 @@ namespace Notifo.Domain.Apps.MongoDb
 
         public async Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct)
         {
-            var filter = Filter.Eq("d.integrations.status", IntegrationStatus.Pending);
-
             var documents =
-                await Collection.Find(filter)
+                await Collection.Find(x => x.IsPending)
                     .ToListAsync(ct);
 
             return documents.Select(x => x.ToApp()).ToList();

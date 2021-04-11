@@ -142,6 +142,42 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access Key.
+        /// </summary>
+        internal static string MessageBird_AccessKeyLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_AccessKeyLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Messagebird integration using custom Access Key..
+        /// </summary>
+        internal static string MessageBird_Description {
+            get {
+                return ResourceManager.GetString("MessageBird_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Messagebird.
+        /// </summary>
+        internal static string MessageBird_Name {
+            get {
+                return ResourceManager.GetString("MessageBird_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone Number.
+        /// </summary>
+        internal static string MessageBird_PhoneNumberLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_PhoneNumberLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Integrated Messagebird integration for SMS messages..
         /// </summary>
         internal static string MessageBirdIntegrated_Description {
@@ -187,11 +223,65 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Host.
+        /// </summary>
+        internal static string SMTP_HostLabel {
+            get {
+                return ResourceManager.GetString("SMTP_HostLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Custom SMTP Server.
         /// </summary>
         internal static string SMTP_Name {
             get {
                 return ResourceManager.GetString("SMTP_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password for your SMTP server..
+        /// </summary>
+        internal static string SMTP_PasswordHints {
+            get {
+                return ResourceManager.GetString("SMTP_PasswordHints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Password.
+        /// </summary>
+        internal static string SMTP_PasswordLabel {
+            get {
+                return ResourceManager.GetString("SMTP_PasswordLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Port.
+        /// </summary>
+        internal static string SMTP_PortLabel {
+            get {
+                return ResourceManager.GetString("SMTP_PortLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username for your SMTP server..
+        /// </summary>
+        internal static string SMTP_UsernameHints {
+            get {
+                return ResourceManager.GetString("SMTP_UsernameHints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Username.
+        /// </summary>
+        internal static string SMTP_UsernameLabel {
+            get {
+                return ResourceManager.GetString("SMTP_UsernameLabel", resourceCulture);
             }
         }
     }

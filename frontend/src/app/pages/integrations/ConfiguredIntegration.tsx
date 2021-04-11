@@ -8,6 +8,7 @@
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
+import { StatusLabel } from './StatusLabel';
 
 export interface ConfiguredIntegrationProps {
     // The id of the integration.
@@ -54,8 +55,12 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
 
                         <div>
                             {definition.capabilities.map(capability => (
-                                <Badge key={capability} color='secondary' pill>{capability}</Badge>
+                                <Badge key={capability} className='mr-1' color='secondary' pill>{capability}</Badge>
                             ))}
+
+                            {defined.status !== 'Verified' &&
+                                <StatusLabel status={defined.status} />
+                            }
                         </div>
 
                         <div>

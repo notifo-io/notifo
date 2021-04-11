@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
@@ -15,7 +16,36 @@ namespace Notifo.Domain.Integrations.Smtp
 {
     public sealed class SmtpIntegration : IIntegration
     {
-        private readonly SmtpEmailServerPool smtpEmailServerPool = new SmtpEmailServerPool();
+        private readonly SmtpEmailServerPool serverPool;
+
+        private static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", IntegrationPropertyType.Text)
+        {
+            EditorLabel = Texts.SMTP_HostLabel,
+            EditorDescription = null,
+            IsRequired = true,
+            Summary = true
+        };
+
+        private static readonly IntegrationProperty HostPortProperty = new IntegrationProperty("port", IntegrationPropertyType.Number)
+        {
+            EditorLabel = Texts.SMTP_PortLabel,
+            EditorDescription = null,
+            DefaultValue = "587"
+        };
+
+        private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", IntegrationPropertyType.Text)
+        {
+            EditorLabel = Texts.SMTP_UsernameLabel,
+            EditorDescription = Texts.SMTP_UsernameHints,
+            IsRequired = true
+        };
+
+        private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", IntegrationPropertyType.Password)
+        {
+            EditorLabel = Texts.SMTP_PasswordLabel,
+            EditorDescription = Texts.SMTP_PasswordHints,
+            IsRequired = true
+        };
 
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
         {
@@ -31,26 +61,6 @@ namespace Notifo.Domain.Integrations.Smtp
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", IntegrationPropertyType.Text)
-        {
-            IsRequired = true, Summary = true
-        };
-
-        private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", IntegrationPropertyType.Text)
-        {
-            IsRequired = true
-        };
-
-        private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", IntegrationPropertyType.Text)
-        {
-            IsRequired = true
-        };
-
-        private static readonly IntegrationProperty HostPortProperty = new IntegrationProperty("port", IntegrationPropertyType.Number)
-        {
-            DefaultValue = "587"
-        };
-
         public IntegrationDefinition Definition { get; }
             = new IntegrationDefinition(
                 "SMTP",
@@ -58,12 +68,12 @@ namespace Notifo.Domain.Integrations.Smtp
                 "./integrations/email.svg",
                 new List<IntegrationProperty>
                 {
-                    UsernameProperty,
-                    FromEmailProperty,
-                    FromNameProperty,
                     HostProperty,
                     HostPortProperty,
+                    UsernameProperty,
                     PasswordProperty,
+                    FromEmailProperty,
+                    FromNameProperty,
                 },
                 new HashSet<string>
                 {
@@ -72,6 +82,11 @@ namespace Notifo.Domain.Integrations.Smtp
             {
                 Description = Texts.SMTP_Description
             };
+
+        public SmtpIntegration(IMemoryCache memoryCache)
+        {
+            serverPool = new SmtpEmailServerPool(memoryCache);
+        }
 
         public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {
@@ -132,7 +147,7 @@ namespace Notifo.Domain.Integrations.Smtp
                     Password = password
                 };
 
-                var server = smtpEmailServerPool.GetServer(options);
+                var server = serverPool.GetServer(options);
 
                 return new SmtpEmailSender(server, fromEmail, fromName);
             }

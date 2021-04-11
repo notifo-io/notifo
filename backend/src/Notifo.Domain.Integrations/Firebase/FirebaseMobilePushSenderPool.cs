@@ -7,7 +7,6 @@
 
 using System;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace Notifo.Domain.Integrations.Firebase
 {
@@ -15,14 +14,14 @@ namespace Notifo.Domain.Integrations.Firebase
     {
         private readonly IMemoryCache memoryCache;
 
-        public FirebaseMobilePushSenderPool()
+        public FirebaseMobilePushSenderPool(IMemoryCache memoryCache)
         {
-            memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+            this.memoryCache = memoryCache;
         }
 
         public FirebaseMobilePushSender GetSender(string projectId, string credentials)
         {
-            var cacheKey = $"{projectId}_{credentials}";
+            var cacheKey = $"FirebaseSender_{projectId}_{credentials}";
 
             var found = memoryCache.GetOrCreate(cacheKey, entry =>
             {

@@ -7,7 +7,6 @@
 
 using System;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 
 namespace Notifo.Domain.Integrations.Smtp
 {
@@ -15,14 +14,14 @@ namespace Notifo.Domain.Integrations.Smtp
     {
         private readonly IMemoryCache memoryCache;
 
-        public SmtpEmailServerPool()
+        public SmtpEmailServerPool(IMemoryCache memoryCache)
         {
-            memoryCache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+            this.memoryCache = memoryCache;
         }
 
         public SmtpEmailServer GetServer(SmtpOptions options)
         {
-            var cacheKey = $"{options.Host}_{options.Username}_{options.Password}_{options.Host}";
+            var cacheKey = $"SMTPServer_{options.Host}_{options.Username}_{options.Password}_{options.Host}";
 
             var found = memoryCache.GetOrCreate(cacheKey, entry =>
             {

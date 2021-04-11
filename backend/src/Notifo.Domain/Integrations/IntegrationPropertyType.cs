@@ -11,6 +11,7 @@ namespace Notifo.Domain.Integrations
     {
         Text,
         Number,
-        MultilineText
+        MultilineText,
+        Password
     }
 }

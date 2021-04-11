@@ -28,6 +28,7 @@ export const EN = {
         create: 'Create',
         created: 'Created',
         count: 'Count',
+        dangerZone: 'Danger Zone',
         dashboard: 'Dashboard',
         data: 'Data',
         delete: 'Delete',
@@ -92,6 +93,7 @@ export const EN = {
         sms: 'SMS',
         statisticsInfo: 'Updated every 5 seconds (needs refresh)',
         statisticsLabelFn: (name: string) => `${name} (Handled / Attempts / Failed)`,
+        status: 'Status',
         subject: 'Subject',
         templateCode: 'Template Code',
         templateMode: 'Use template?',
@@ -149,6 +151,7 @@ export const EN = {
         searchPlaceholder: 'Search',
     },
     integrations: {
+        confirmDelete: 'Do you really want to delete the Integration?',
         configured: 'Configured',
         enabledHints: 'Disable the ingration without deleting it.',
         header: 'Integrations',

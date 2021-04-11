@@ -83,17 +83,19 @@ export const IntegrationsPage = () => {
 
             <FormError error={loadingError} />
 
-            <div className='mb-4'>
-                <h6>{texts.integrations.configured}</h6>
+            {integrations.length >= 0 &&
+                <div className='mb-4'>
+                    <h6>{texts.integrations.configured}</h6>
 
-                {integrations.map(integration => (
-                    <ConfiguredIntegration key={integration.id}
-                        id={integration.id}
-                        definition={integration.definition}
-                        defined={integration.defined}
-                        onEdit={doEdit} />
-                ))}
-            </div>
+                    {integrations.map(integration => (
+                        <ConfiguredIntegration key={integration.id}
+                            id={integration.id}
+                            definition={integration.definition}
+                            defined={integration.defined}
+                            onEdit={doEdit} />
+                    ))}
+                </div>
+            }
 
             <div className='mb-4'>
                 <h6>{texts.integrations.supported}</h6>

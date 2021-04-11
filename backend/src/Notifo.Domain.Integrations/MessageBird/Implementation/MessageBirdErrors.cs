@@ -5,18 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Integrations.MessageBird
+using System.Text.Json.Serialization;
+
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public enum MessageBirdStatus
+    public sealed class MessageBirdErrors
     {
-        Answered,
-        Buffered,
-        Calling,
-        Delivered,
-        Delivery_Failed,
-        Expired,
-        Failed,
-        Scheduled,
-        Sent
+        [JsonPropertyName("errors")]
+        public MessageBirdError[] Errors { get; set; }
     }
 }

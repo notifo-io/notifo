@@ -43,7 +43,7 @@ namespace Notifo.Domain.Integrations.Smtp
                 yield return new ConfigurationError("Value is required.", nameof(Password));
             }
 
-            if (HostPort != 0)
+            if (HostPort == 0)
             {
                 yield return new ConfigurationError("Value is required.", nameof(HostPort));
             }

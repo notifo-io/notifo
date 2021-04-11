@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson.Serialization.Attributes;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb
@@ -20,6 +21,9 @@ namespace Notifo.Domain.Apps.MongoDb
 
         [BsonIgnoreIfNull]
         public List<string> ApiKeys { get; set; }
+
+        [BsonIgnoreIfDefault]
+        public bool IsPending { get; set; }
 
         public static MongoDbApp FromApp(App app)
         {
@@ -41,6 +45,8 @@ namespace Notifo.Domain.Apps.MongoDb
             {
                 result.ApiKeys = app.ApiKeys.Keys.ToList();
             }
+
+            result.IsPending = app.Integrations.Values.Any(x => x.Status == IntegrationStatus.Pending);
 
             return result;
         }

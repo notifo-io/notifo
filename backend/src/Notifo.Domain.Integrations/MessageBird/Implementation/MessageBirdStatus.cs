@@ -5,18 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class MessageBirdSmsStatus
+    public enum MessageBirdStatus
     {
-        public string Id { get; set; }
-
-        public string Reference { get; set; }
-
-        public string Recipient { get; set; }
-
-        public int StatusErrorCode { get; set; }
-
-        public MessageBirdStatus Status { get; set; }
+        Answered,
+        Buffered,
+        Calling,
+        Delivered,
+        Delivery_Failed,
+        Expired,
+        Failed,
+        Scheduled,
+        Sent
     }
 }

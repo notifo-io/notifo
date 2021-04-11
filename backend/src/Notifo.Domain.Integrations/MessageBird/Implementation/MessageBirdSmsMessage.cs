@@ -7,7 +7,7 @@
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public sealed record MessageBirdSmsMessage(
         string To,
