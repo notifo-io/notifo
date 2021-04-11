@@ -12,16 +12,13 @@ using Xunit;
 namespace Notifo.Domain.Integrations.Smtp
 {
     [Trait("Category", "Dependencies")]
-    public class SmtpEmailServerTests : EmailServerTestBase
+    public class SmtpEmailServerTests : EmailSenderTestBase
     {
-        protected override IEmailSender CreateServer()
+        protected override IEmailSender CreateSender()
         {
-            return new SmtpEmailServer(new SmtpOptions
-            {
-                Host = TestHelpers.Configuration.GetValue<string>("email:smtp:host"),
-                Password = TestHelpers.Configuration.GetValue<string>("email:smtp:password"),
-                Username = TestHelpers.Configuration.GetValue<string>("email:smtp:username")
-            });
+            var options = TestHelpers.Configuration.GetSection("email:smtp").Get<SmtpOptions>();
+
+            return new SmtpEmailSender(new SmtpEmailServer(options), Address, Address);
         }
     }
 }

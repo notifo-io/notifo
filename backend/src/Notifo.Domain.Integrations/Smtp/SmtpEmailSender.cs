@@ -28,10 +28,7 @@ namespace Notifo.Domain.Integrations.Smtp
 
         public Task SendAsync(EmailMessage message, CancellationToken ct = default)
         {
-            message.FromEmail = fromEmail;
-            message.FromName = fromName;
-
-            return server.SendAsync(message, ct);
+            return server.SendAsync(message, fromName, fromEmail, ct);
         }
     }
 }

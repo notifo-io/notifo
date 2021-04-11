@@ -16,7 +16,7 @@ using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Domain.Integrations.Smtp
 {
-    public class SmtpEmailServer : IEmailSender, IDisposable
+    public class SmtpEmailServer : IDisposable
     {
         private readonly ObjectPool<SmtpClient> clientPool;
         private readonly SmtpOptions options;
@@ -38,7 +38,7 @@ namespace Notifo.Domain.Integrations.Smtp
             GC.SuppressFinalize(this);
         }
 
-        public async Task SendAsync(EmailMessage message, CancellationToken ct)
+        public async Task SendAsync(EmailMessage message, string fromName, string fromEmail, CancellationToken ct)
         {
             var smtpClient = clientPool.Get();
             try
@@ -48,8 +48,8 @@ namespace Notifo.Domain.Integrations.Smtp
                 var smtpMessage = new MimeMessage();
 
                 smtpMessage.From.Add(new MailboxAddress(
-                    message.FromName,
-                    message.FromEmail));
+                    fromName,
+                    fromEmail));
 
                 smtpMessage.To.Add(new MailboxAddress(
                     message.RecipientName,

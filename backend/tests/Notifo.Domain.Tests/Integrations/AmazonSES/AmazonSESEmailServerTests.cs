@@ -14,16 +14,13 @@ using Xunit;
 namespace Notifo.Domain.Channels.Email
 {
     [Trait("Category", "Dependencies")]
-    public class AmazonSESEmailServerTests : EmailServerTestBase
+    public class AmazonSESEmailServerTests : EmailSenderTestBase
     {
-        protected override IEmailSender CreateServer()
+        protected override IEmailSender CreateSender()
         {
-            return new SmtpEmailServer(new AmazonSESOptions
-            {
-                Host = TestHelpers.Configuration.GetValue<string>("email:amazonSES:host"),
-                Password = TestHelpers.Configuration.GetValue<string>("email:amazonSES:password"),
-                Username = TestHelpers.Configuration.GetValue<string>("email:amazonSES:username")
-            });
+            var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>();
+
+            return new SmtpEmailSender(new SmtpEmailServer(options), Address, Address);
         }
     }
 }
