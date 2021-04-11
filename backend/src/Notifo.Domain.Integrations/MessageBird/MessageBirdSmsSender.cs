@@ -15,13 +15,13 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
-    public sealed class IntegratedMessageBirdSmsSender : ISmsSender
+    public sealed class MessageBirdSmsSender : ISmsSender
     {
         private readonly ConcurrentBag<SmsHandler> handlers = new ConcurrentBag<SmsHandler>();
         private readonly MessageBirdClient smsClient;
         private readonly ISmsUrl smsUrl;
 
-        public IntegratedMessageBirdSmsSender(MessageBirdClient smsClient, ISmsUrl smsUrl)
+        public MessageBirdSmsSender(MessageBirdClient smsClient, ISmsUrl smsUrl)
         {
             this.smsClient = smsClient;
             this.smsUrl = smsUrl;

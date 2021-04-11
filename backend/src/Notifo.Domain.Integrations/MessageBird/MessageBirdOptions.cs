@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.Linq;
 using Squidex.Hosting.Configuration;
 
 namespace Notifo.Domain.Integrations.MessageBird
@@ -17,6 +18,11 @@ namespace Notifo.Domain.Integrations.MessageBird
         public string PhoneNumber { get; set; }
 
         public Dictionary<string, string>? PhoneNumbers { get; set; }
+
+        public bool IsValid()
+        {
+            return !Validate().Any();
+        }
 
         public IEnumerable<ConfigurationError> Validate()
         {

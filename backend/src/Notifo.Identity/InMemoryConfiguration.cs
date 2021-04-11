@@ -90,7 +90,9 @@ namespace Notifo.Identity
                     {
                         Permissions.Endpoints.Authorization,
                         Permissions.Endpoints.Logout,
+                        Permissions.GrantTypes.AuthorizationCode,
                         Permissions.GrantTypes.Implicit,
+                        Permissions.ResponseTypes.Code,
                         Permissions.ResponseTypes.IdToken,
                         Permissions.ResponseTypes.IdTokenToken,
                         Permissions.ResponseTypes.Token,

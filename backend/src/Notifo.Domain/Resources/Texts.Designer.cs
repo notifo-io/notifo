@@ -331,6 +331,33 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Make a HTTP request to your server when a notification is confirmed by a User..
+        /// </summary>
+        internal static string Webhook_Description {
+            get {
+                return ResourceManager.GetString("Webhook_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URL to your server endpoint..
+        /// </summary>
+        internal static string Webhook_URLHints {
+            get {
+                return ResourceManager.GetString("Webhook_URLHints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL.
+        /// </summary>
+        internal static string Webhook_URLLabel {
+            get {
+                return ResourceManager.GetString("Webhook_URLLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to WebPush: Token does not exist anymore..
         /// </summary>
         internal static string WebPush_TokenRemoved {

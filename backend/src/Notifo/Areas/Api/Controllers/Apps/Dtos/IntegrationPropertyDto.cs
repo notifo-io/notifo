@@ -22,12 +22,22 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// The editor type.
         /// </summary>
         [Required]
-        public TntegrationPropertyType Type { get; set; }
+        public IntegrationPropertyType Type { get; set; }
 
         /// <summary>
         /// The optional description.
         /// </summary>
-        public string? Description { get; set; }
+        public string? EditorDescription { get; set; }
+
+        /// <summary>
+        /// The optional label.
+        /// </summary>
+        public string? EditorLabel { get; set; }
+
+        /// <summary>
+        /// True to show this property in the summary.
+        /// </summary>
+        public bool Summary { get; set; }
 
         /// <summary>
         /// True when required.

@@ -15,24 +15,17 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddIntegrationAmazonSES(this IServiceCollection services, IConfiguration config)
         {
-            config.ConfigureByOption("email:type", new Alternatives
+            const string key = "email:amazonSES";
+
+            var options = config.GetSection(key).Get<AmazonSESOptions>();
+
+            if (options.IsValid())
             {
-                ["AmazonSES"] = () =>
-                {
-                    services.AddAmazonSES(config);
-                },
-                ["None"] = () =>
-                {
-                }
-            });
-        }
+                services.ConfigureAndValidate<AmazonSESOptions>(config, key);
 
-        private static void AddAmazonSES(this IServiceCollection services, IConfiguration config)
-        {
-            services.ConfigureAndValidate<AmazonSESOptions>(config, "email:amazonSES");
-
-            services.AddSingletonAs<AmazonSESIntegration>()
-                .As<IIntegration>();
+                services.AddSingletonAs<IntegratedAmazonSESIntegration>()
+                    .As<IIntegration>();
+            }
         }
     }
 }

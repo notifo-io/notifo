@@ -7,11 +7,17 @@
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
+using System.Globalization;
+
 namespace Notifo.Domain.Integrations
 {
-    public sealed record IntegrationProperty(string Name, TntegrationPropertyType Type)
+    public sealed record IntegrationProperty(string Name, IntegrationPropertyType Type)
     {
-        public string? Description { get; init; }
+        public string? EditorDescription { get; init; }
+
+        public string? EditorLabel { get; init; }
+
+        public bool Summary { get; set; }
 
         public bool IsRequired { get; init; }
 
@@ -23,37 +29,18 @@ namespace Notifo.Domain.Integrations
 
         public int MaxLength { get; init; } = int.MaxValue;
 
-        public object? DefaultValue { get; init; }
+        public string? DefaultValue { get; init; }
 
         public string? GetString(ConfiguredIntegration configured)
         {
-            static bool TryGetString(object? value, out string result)
-            {
-                result = null!;
-
-                if (value is string typed)
-                {
-                    result = typed;
-                    return true;
-                }
-
-                return false;
-            }
-
-            if (Type == TntegrationPropertyType.Text || Type == TntegrationPropertyType.Number)
+            if (Type == IntegrationPropertyType.Text || Type == IntegrationPropertyType.MultilineText)
             {
                 if (configured.Properties.TryGetValue(Name, out var value))
                 {
-                    if (TryGetString(value, out var typed))
-                    {
-                        return typed;
-                    }
+                    return value;
                 }
 
-                if (TryGetString(value, out var defaultTyped))
-                {
-                    return defaultTyped;
-                }
+                return DefaultValue;
             }
 
             return null;
@@ -61,38 +48,19 @@ namespace Notifo.Domain.Integrations
 
         public int GetInt(ConfiguredIntegration configured)
         {
-            static bool TryGetInt(object? value, out int result)
-            {
-                result = 0;
-
-                if (value is int typedInt)
-                {
-                    result = typedInt;
-                    return true;
-                }
-
-                if (value is long typedLong)
-                {
-                    result = (int)typedLong;
-                    return true;
-                }
-
-                return false;
-            }
-
-            if (Type == TntegrationPropertyType.Text || Type == TntegrationPropertyType.Number)
+            if (Type == IntegrationPropertyType.Number)
             {
                 if (configured.Properties.TryGetValue(Name, out var value))
                 {
-                    if (TryGetInt(value, out var typed))
+                    if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed))
                     {
-                        return typed;
+                        return parsed;
                     }
                 }
 
-                if (TryGetInt(DefaultValue, out var defaultTyped))
+                if (int.TryParse(DefaultValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed2))
                 {
-                    return defaultTyped;
+                    return parsed2;
                 }
             }
 

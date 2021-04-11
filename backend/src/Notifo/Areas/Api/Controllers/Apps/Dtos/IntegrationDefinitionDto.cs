@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Reflection;
 
@@ -16,11 +17,13 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The title of the integration.
         /// </summary>
+        [Required]
         public string Title { get; set; }
 
         /// <summary>
         /// The logo URL for the integration.
         /// </summary>
+        [Required]
         public string LogoUrl { get; set; }
 
         /// <summary>
@@ -31,11 +34,13 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The properties to configure.
         /// </summary>
+        [Required]
         public List<IntegrationPropertyDto> Properties { get; set; }
 
         /// <summary>
         /// The features of the integration.
         /// </summary>
+        [Required]
         public IReadOnlySet<string> Capabilities { get; set; }
 
         public static IntegrationDefinitionDto FromDomainObject(IntegrationDefinition source)

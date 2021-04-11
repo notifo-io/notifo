@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.MobilePush;
+using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Firebase
 {
@@ -16,20 +17,24 @@ namespace Notifo.Domain.Integrations.Firebase
     {
         private readonly FirebaseMobilePushSenderPool senderPool = new FirebaseMobilePushSenderPool();
 
-        private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", IntegrationPropertyType.Text)
         {
-            IsRequired = true
+            EditorLabel = Texts.Firebase_ProjectIdLabel,
+            EditorDescription = null,
+            IsRequired = true, Summary = true
         };
 
-        private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", IntegrationPropertyType.MultilineText)
         {
+            EditorLabel = Texts.Firebase_CredentialsLabel,
+            EditorDescription = Texts.Firebase_CredentialsHints,
             IsRequired = true
         };
 
         public IntegrationDefinition Definition { get; }
             = new IntegrationDefinition(
                 "Firebase",
-                "Firebase",
+                Texts.Firebase_Name,
                 "./integrations/firebase.svg",
                 new List<IntegrationProperty>
                 {
@@ -39,16 +44,19 @@ namespace Notifo.Domain.Integrations.Firebase
                 new HashSet<string>
                 {
                     Providers.MobilePush
-                });
+                })
+            {
+                Description = Texts.Firebase_Description
+            };
 
-        public bool CanCreate<T>(ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {
-            return typeof(T) == typeof(IMobilePushSender);
+            return serviceType == typeof(IMobilePushSender);
         }
 
-        public object? Create(Type implementationType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, ConfiguredIntegration configured)
         {
-            if (implementationType == typeof(IMobilePushSender))
+            if (CanCreate(serviceType, configured))
             {
                 var projectId = ProjectIdProperty.GetString(configured);
 

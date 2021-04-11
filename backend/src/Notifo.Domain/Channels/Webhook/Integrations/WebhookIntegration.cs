@@ -8,15 +8,18 @@
 using System;
 using System.Collections.Generic;
 using Notifo.Domain.Integrations;
+using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Webhook.Integrations
 {
     public sealed class WebhookIntegration : IIntegration
     {
-        private static readonly IntegrationProperty UrlProperty = new IntegrationProperty("Url", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty UrlProperty = new IntegrationProperty("Url", IntegrationPropertyType.Text)
         {
-            IsRequired = true
+            EditorLabel = Texts.Webhook_URLLabel,
+            EditorDescription = Texts.Webhook_URLHints,
+            IsRequired = true, Summary = true
         };
 
         public IntegrationDefinition Definition { get; } =
@@ -31,16 +34,19 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
                 new HashSet<string>
                 {
                     Providers.Webhook
-                });
+                })
+            {
+                Description = Texts.Webhook_Description
+            };
 
-        public bool CanCreate<T>(ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {
-            return typeof(T) == typeof(WebhookDefinition);
+            return serviceType == typeof(WebhookDefinition);
         }
 
-        public object? Create(Type implementationType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, ConfiguredIntegration configured)
         {
-            if (implementationType == typeof(WebhookDefinition))
+            if (CanCreate(serviceType, configured))
             {
                 var url = UrlProperty.GetString(configured);
 

@@ -267,7 +267,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// </returns>
         [HttpGet("api/apps/{appId}/integrations")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(EmailTemplatesDto))]
+        [Produces(typeof(ConfiguredIntegrationsDto))]
         public IActionResult GetIntegrations(string appId)
         {
             var response = ConfiguredIntegrationsDto.FromDomainObject(App, integrationManager);
@@ -286,14 +286,14 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// </returns>
         [HttpPost("api/apps/{appId}/integration/")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ConfiguredIntegrationDto))]
+        [Produces(typeof(IntegrationCreatedDto))]
         public async Task<IActionResult> PostIntegration(string appId, [FromBody] CreateIntegrationDto request)
         {
             var update = request.ToUpdate();
 
             var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
 
-            var response = ConfiguredIntegrationDto.FromDomainObject(app.Integrations[update.Id]);
+            var response = IntegrationCreatedDto.FromDomainObject(app, update.Id);
 
             return Ok(response);
         }

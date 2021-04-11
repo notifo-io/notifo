@@ -59,9 +59,11 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         state.creatingError = action.payload as ErrorDto;
     })
     .addCase(createEmailTemplateAsync.fulfilled, (state, action) => {
+        const { language } = action.meta.arg;
+
         state.creating = false;
         state.creatingError = undefined;
-        state.emailTemplates[action.meta.arg.language] = action.payload;
+        state.emailTemplates[language] = action.payload;
     })
     .addCase(deleteEmailTemplateAsync.pending, (state) => {
         state.deleting = true,
@@ -72,7 +74,9 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         state.deletingError = action.payload as ErrorDto;
     })
     .addCase(deleteEmailTemplateAsync.fulfilled, (state, action) => {
+        const { language } = action.meta.arg;
+
         state.deleting = false;
         state.deletingError = undefined;
-        delete state.emailTemplates[action.meta.arg.language];
+        delete state.emailTemplates[language];
     }));

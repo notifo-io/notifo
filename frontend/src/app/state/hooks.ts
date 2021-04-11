@@ -10,6 +10,7 @@ import { AppsState, AppsStateInStore } from './apps';
 import { CoreState, CoreStateInStore } from './core';
 import { EmailTemplatesState, EmailTemplatesStateInStore } from './email-templates';
 import { EventsState, EventsStateInStore } from './events';
+import { IntegrationsState, IntegrationsStateInStore } from './integrations';
 import { LogState, LogStateInStore } from './log';
 import { LoginState, LoginStateInStore } from './login';
 import { MediaState, MediaStateInStore } from './media';
@@ -23,6 +24,7 @@ type State =
     CoreStateInStore &
     EmailTemplatesStateInStore &
     EventsStateInStore &
+    IntegrationsStateInStore &
     LogStateInStore &
     LoginStateInStore &
     MediaStateInStore &
@@ -49,6 +51,10 @@ export function useEmailTemplates<T>(mapping: (state: EmailTemplatesState) => T)
 
 export function useEvents<T>(mapping: (state: EventsState) => T) {
     return useStore<T>(x => mapping(x.events));
+}
+
+export function useIntegrations<T>(mapping: (state: IntegrationsState) => T) {
+    return useStore<T>(x => mapping(x.integrations));
 }
 
 export function useLog<T>(mapping: (state: LogState) => T) {

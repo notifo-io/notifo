@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class FirebaseServiceExtensions
     {
-        public static void AddIntegrationAmazonSES(this IServiceCollection services)
+        public static void AddIntegrationFirebase(this IServiceCollection services)
         {
             services.AddSingletonAs<FirebaseIntegration>()
                 .As<IIntegration>();

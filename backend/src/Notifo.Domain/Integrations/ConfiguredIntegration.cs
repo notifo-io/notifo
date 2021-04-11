@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace Notifo.Domain.Integrations
 {
-    public sealed record ConfiguredIntegration(string Type, IReadOnlyDictionary<string, object> Properties)
+    public sealed record ConfiguredIntegration(string Type, IntegrationProperties Properties)
     {
         public bool Enabled { get; set; }
 

@@ -22,6 +22,9 @@ export interface FormProps {
     // The input label
     label?: string;
 
+    // The input hint
+    hints?: string;
+
     // The name of the control.
     name: string;
 
@@ -78,7 +81,7 @@ export module Forms {
             <FormGroup className={className}>
                 <Row>
                     <Col>
-                        <Label for={name}>{label}</Label>
+                        <Label htmlFor={name}>{label}</Label>
                     </Col>
                     <Col xs='auto'>
                         <LanguageSelector
@@ -104,7 +107,7 @@ export module Forms {
             <FormGroup className={className}>
                 <Row>
                     <Col>
-                        <Label for={name}>{label}</Label>
+                        <Label htmlFor={name}>{label}</Label>
                     </Col>
                     <Col xs='auto'>
                         <LanguageSelector
@@ -127,6 +130,8 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 <InputToggle {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -136,11 +141,13 @@ export module Forms {
 
         return (
             <FormGroup className={className} row>
-                <Col sm={4} for={props.name}></Col>
+                <Col sm={4} htmlFor={props.name}></Col>
 
                 <Col sm={8}>
                     <FormGroup>
                         <InputToggle {...props} />
+
+                    <FormHint hints={props.hints} />
                     </FormGroup>
                 </Col>
             </FormGroup>
@@ -153,10 +160,32 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={props.name}>{label}</Label>
+                    <Label htmlFor={props.name}>{label}</Label>
                 }
 
                 <InputTextArea {...props} />
+
+                <FormHint hints={props.hints} />
+            </FormGroup>
+        );
+    };
+
+    export const GridTextArea = (props: FormProps & InputProps) => {
+        const { className, label, name } = props;
+
+        return (
+            <FormGroup className={className} row>
+                {label ? (
+                    <Label sm={4} htmlFor={name}>{label}</Label>
+                ) : (
+                    <Col sm={4} />
+                )}
+
+                <Col sm={8}>
+                    <InputTextArea {...props} />
+
+                    <FormHint hints={props.hints} />
+                </Col>
             </FormGroup>
         );
     };
@@ -167,10 +196,12 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
                 <InputArray {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -181,10 +212,12 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
                 <InputText {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -195,13 +228,15 @@ export module Forms {
         return (
             <FormGroup className={className} row>
                 {label ? (
-                    <Label sm={4} for={name}>{label}</Label>
+                    <Label sm={4} htmlFor={name}>{label}</Label>
                 ) : (
                     <Col sm={4} />
                 )}
 
                 <Col sm={8}>
                     <InputText {...props} />
+
+                    <FormHint hints={props.hints} />
                 </Col>
             </FormGroup>
         );
@@ -213,10 +248,12 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
                 <InputNumber {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -227,18 +264,20 @@ export module Forms {
         return (
             <FormGroup className={className} row>
                 {label ? (
-                    <Label sm={4} for={name}>{label}</Label>
+                    <Label sm={4} htmlFor={name}>{label}</Label>
                 ) : (
                     <Col sm={4} />
                 )}
 
-                <Col sm={4}>
+                <Col sm={8}>
                     <Row>
                         <Col xs={6}>
                             <InputNumber {...props} />
                         </Col>
-                        <Label xs={6} for={name}>{units}</Label>
+                        <Label xs={6} htmlFor={name}>{units}</Label>
                     </Row>
+
+                    <FormHint hints={props.hints} />
                 </Col>
             </FormGroup>
         );
@@ -250,10 +289,12 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
                 <InputEmail {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -264,13 +305,15 @@ export module Forms {
         return (
             <FormGroup className={className} row>
                 {label ? (
-                    <Label sm={4} for={name}>{label}</Label>
+                    <Label sm={4} htmlFor={name}>{label}</Label>
                 ) : (
                     <Col sm={4} />
                 )}
 
                 <Col sm={8}>
                     <InputEmail {...props} />
+
+                    <FormHint hints={props.hints} />
                 </Col>
             </FormGroup>
         );
@@ -282,10 +325,12 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
                 <InputPassword {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -296,13 +341,15 @@ export module Forms {
         return (
             <FormGroup className={className} row>
                 {label ? (
-                    <Label sm={4} for={name}>{label}</Label>
+                    <Label sm={4} htmlFor={name}>{label}</Label>
                 ) : (
                     <Col sm={4} />
                 )}
 
                 <Col sm={8}>
                     <InputPassword {...props} />
+
+                    <FormHint hints={props.hints} />
                 </Col>
             </FormGroup>
         );
@@ -314,10 +361,12 @@ export module Forms {
         return (
             <FormGroup className={className}>
                 {label &&
-                    <Label for={name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
                 <InputSelect {...props} />
+
+                <FormHint hints={props.hints} />
             </FormGroup>
         );
     };
@@ -327,10 +376,12 @@ export module Forms {
 
         return (
             <FormGroup className={className} row>
-                <Label sm={4} for={name}>{label}</Label>
+                <Label sm={4} htmlFor={name}>{label}</Label>
 
                 <Col sm={8}>
                     <InputSelect {...props} />
+
+                    <FormHint hints={props.hints} />
                 </Col>
             </FormGroup>
         );
@@ -519,6 +570,20 @@ const InputArray = (props: ArrayFormProps<any>) => {
                     </Button>
                 </div>
             }
+        </div>
+    );
+};
+
+const FormHint = ({ hints }: { hints?: string }) => {
+    if (!hints) {
+        return null;
+    }
+
+    return (
+        <div>
+            <small className='text-muted'>
+                {hints}
+            </small>
         </div>
     );
 };

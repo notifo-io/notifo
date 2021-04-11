@@ -5,12 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
+
 namespace Notifo.Domain.Integrations
 {
-    public enum TntegrationPropertyType
+    public sealed class IntegrationProperties : Dictionary<string, string>
     {
-        Text,
-        Number,
-        MultilineText
+        public IntegrationProperties()
+            : base(StringComparer.OrdinalIgnoreCase)
+        {
+        }
     }
 }

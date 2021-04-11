@@ -55,7 +55,9 @@ namespace Notifo
                     options.SuppressModelStateInvalidFilter = true;
                 });
 
+            services.AddHttpClient();
             services.AddHttpContextAccessor();
+
             services.AddMvc(options =>
                 {
                     options.Filters.Add<AppResolver>();
@@ -104,6 +106,7 @@ namespace Notifo
             services.AddMyWebPushChannel(config);
 
             services.AddIntegrationAmazonSES(config);
+            services.AddIntegrationFirebase();
             services.AddIntegrationMessageBird(config);
             services.AddIntegrationSmtp();
 

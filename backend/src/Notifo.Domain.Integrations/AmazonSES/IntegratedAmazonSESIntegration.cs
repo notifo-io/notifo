@@ -16,31 +16,36 @@ using Amazon.SimpleEmail.Model;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
+using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Integrations.Smtp;
 using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.AmazonSES
 {
-    public sealed class AmazonSESIntegration : IIntegration, IInitializable
+    public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable
     {
         private readonly AmazonSESOptions options;
         private readonly SmtpEmailServer smtpEmailServer;
         private AmazonSimpleEmailServiceClient amazonSES;
 
-        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
         {
-            IsRequired = true
+            EditorLabel = Texts.AmazonSES_FromEmailLabel,
+            EditorDescription = null,
+            IsRequired = true, Summary = true
         };
 
-        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
         {
+            EditorLabel = Texts.AmazonSES_FromNameLabel,
+            EditorDescription = null,
             IsRequired = true
         };
 
         public IntegrationDefinition Definition { get; }
             = new IntegrationDefinition(
                 "AmazonSES",
-                "AmazonSES",
+                Texts.AmazonSES_Name,
                 "./integrations/amazonSES.svg",
                 new List<IntegrationProperty>
                 {
@@ -50,9 +55,12 @@ namespace Notifo.Domain.Integrations.AmazonSES
                 new HashSet<string>
                 {
                     Providers.Email
-                });
+                })
+            {
+                Description = Texts.AmazonSES_Description
+            };
 
-        public AmazonSESIntegration(IOptions<AmazonSESOptions> options)
+        public IntegratedAmazonSESIntegration(IOptions<AmazonSESOptions> options)
         {
             this.options = options.Value;
 
@@ -69,14 +77,14 @@ namespace Notifo.Domain.Integrations.AmazonSES
             return Task.CompletedTask;
         }
 
-        public bool CanCreate<T>(ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {
-            return typeof(T) == typeof(IEmailSender);
+            return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type implementationType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, ConfiguredIntegration configured)
         {
-            if (implementationType == typeof(IEmailSender))
+            if (CanCreate(serviceType, configured))
             {
                 var fromEmail = FromEmailProperty.GetString(configured);
 

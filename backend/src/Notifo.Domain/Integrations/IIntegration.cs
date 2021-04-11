@@ -14,9 +14,9 @@ namespace Notifo.Domain.Integrations
     {
         IntegrationDefinition Definition { get; }
 
-        object? Create(Type implementationType, ConfiguredIntegration configured);
+        object? Create(Type serviceType, ConfiguredIntegration configured);
 
-        bool CanCreate<T>(ConfiguredIntegration configured);
+        bool CanCreate(Type serviceType, ConfiguredIntegration configured);
 
         Task OnConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous)
         {

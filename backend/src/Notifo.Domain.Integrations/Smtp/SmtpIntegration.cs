@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
+using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Smtp
 {
@@ -16,41 +17,45 @@ namespace Notifo.Domain.Integrations.Smtp
     {
         private readonly SmtpEmailServerPool smtpEmailServerPool = new SmtpEmailServerPool();
 
-        private static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
+        {
+            EditorLabel = Texts.SMTP_FromEmailLabel,
+            EditorDescription = null,
+            IsRequired = true
+        };
+
+        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
+        {
+            EditorLabel = Texts.SMTP_FromNameLabel,
+            EditorDescription = null,
+            IsRequired = true
+        };
+
+        private static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", IntegrationPropertyType.Text)
+        {
+            IsRequired = true, Summary = true
+        };
+
+        private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", IntegrationPropertyType.Text)
         {
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", IntegrationPropertyType.Text)
         {
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", TntegrationPropertyType.Text)
+        private static readonly IntegrationProperty HostPortProperty = new IntegrationProperty("port", IntegrationPropertyType.Number)
         {
-            IsRequired = true
-        };
-
-        private static readonly IntegrationProperty HostPortProperty = new IntegrationProperty("port", TntegrationPropertyType.Number)
-        {
-            DefaultValue = 587
-        };
-
-        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", TntegrationPropertyType.Text)
-        {
-            IsRequired = true
-        };
-
-        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", TntegrationPropertyType.Text)
-        {
-            IsRequired = true
+            DefaultValue = "587"
         };
 
         public IntegrationDefinition Definition { get; }
             = new IntegrationDefinition(
                 "SMTP",
-                "SMTP Server",
-                "./integrations/smtp.svg",
+                Texts.SMTP_Name,
+                "./integrations/email.svg",
                 new List<IntegrationProperty>
                 {
                     UsernameProperty,
@@ -63,16 +68,19 @@ namespace Notifo.Domain.Integrations.Smtp
                 new HashSet<string>
                 {
                     Providers.Email
-                });
+                })
+            {
+                Description = Texts.SMTP_Description
+            };
 
-        public bool CanCreate<T>(ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {
-            return typeof(T) == typeof(IEmailSender);
+            return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type implementationType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, ConfiguredIntegration configured)
         {
-            if (implementationType == typeof(IEmailSender))
+            if (CanCreate(serviceType, configured))
             {
                 var host = HostProperty.GetString(configured);
 

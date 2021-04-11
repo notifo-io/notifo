@@ -67,7 +67,7 @@ namespace Notifo.SDK
 
 #pragma warning disable RECS0096 // Type parameter is never used
     public partial class NotifoException<TResult>
-#pragma warning restore RECS0096 // Type parameter is never used
+#pragma warning restore RECS0096 // Tyepe parameter is never used
     {
         /// <inheritdoc />
         public override string ToString()

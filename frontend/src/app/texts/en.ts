@@ -9,6 +9,7 @@ export const EN = {
     code: 'en',
     common: {
         actions: 'Actions',
+        add: 'Add',
         appId: 'Application ID',
         apps: 'Apps',
         attempt: 'Attempts',
@@ -33,6 +34,7 @@ export const EN = {
         demo: 'Demo',
         design: 'Design',
         edit: 'Edit',
+        enabled: 'Enabled',
         email: 'Email',
         emails: 'Emails',
         emailAddress: 'Email Address',
@@ -145,6 +147,14 @@ export const EN = {
         header: 'Events',
         eventsNotFound: 'No matching event found',
         searchPlaceholder: 'Search',
+    },
+    integrations: {
+        configured: 'Configured',
+        enabledHints: 'Disable the ingration without deleting it.',
+        header: 'Integrations',
+        priority: 'Priority',
+        priorityHints: 'Define a priority when you have configured multiple integrations for the same channel such as MobilePush.',
+        supported: 'Supported',
     },
     log: {
         header: 'Log',

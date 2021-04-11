@@ -9,37 +9,41 @@ using System;
 using System.Collections.Generic;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
+using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
     public sealed class IntegratedMessageBirdIntegration : IIntegration
     {
-        private readonly ISmsSender smsSender;
+        private readonly MessageBirdSmsSender smsSender;
 
         public IntegrationDefinition Definition { get; }
             = new IntegrationDefinition(
                 "MessageBird",
-                "MessageBird",
+                "MessageBird (Integrated)",
                 "./integreations/messagebird.svg",
                 new List<IntegrationProperty>(),
                 new HashSet<string>
                 {
                     Providers.Sms
-                });
+                })
+            {
+                Description = Texts.MessageBirdIntegrated_Description
+            };
 
-        public IntegratedMessageBirdIntegration(ISmsSender smsSender)
+        public IntegratedMessageBirdIntegration(MessageBirdSmsSender smsSender)
         {
             this.smsSender = smsSender;
         }
 
-        public bool CanCreate<T>(ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
         {
-            return typeof(T) == typeof(ISmsSender);
+            return serviceType == typeof(ISmsSender);
         }
 
-        public object? Create(Type implementationType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, ConfiguredIntegration configured)
         {
-            if (implementationType == typeof(ISmsSender))
+            if (CanCreate(serviceType, configured))
             {
                 return smsSender;
             }

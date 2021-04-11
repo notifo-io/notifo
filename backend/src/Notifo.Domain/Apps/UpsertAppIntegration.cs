@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -23,11 +22,11 @@ namespace Notifo.Domain.Apps
 
         public string Type { get; set; }
 
-        public Dictionary<string, object> Properties { get; set; }
-
         public bool Enabled { get; set; }
 
         public int Priority { get; set; }
+
+        public IntegrationProperties Properties { get; set; }
 
         private sealed class CreateValidator : AbstractValidator<UpsertAppIntegration>
         {
@@ -67,6 +66,8 @@ namespace Notifo.Domain.Apps
 
             configuration.Enabled = Enabled;
             configuration.Priority = Priority;
+
+            app.Integrations[Id] = configuration;
 
             var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 

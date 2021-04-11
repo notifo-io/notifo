@@ -15,13 +15,23 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddIntegrationMessageBird(this IServiceCollection services, IConfiguration config)
         {
-            services.ConfigureAndValidate<MessageBirdOptions>(config, "messageBird");
+            const string key = "sms:messageBird";
 
-            services.AddSingletonAs<MessageBirdClient>()
-                .AsSelf();
+            var options = config.GetSection(key).Get<MessageBirdOptions>();
 
-            services.AddSingletonAs<IntegratedMessageBirdIntegration>()
-                .As<IIntegration>();
+            if (options.IsValid())
+            {
+                services.ConfigureAndValidate<MessageBirdOptions>(config, key);
+
+                services.AddSingletonAs<MessageBirdClient>()
+                    .AsSelf();
+
+                services.AddSingletonAs<MessageBirdSmsSender>()
+                    .AsSelf();
+
+                services.AddSingletonAs<IntegratedMessageBirdIntegration>()
+                    .As<IIntegration>();
+            }
         }
     }
 }

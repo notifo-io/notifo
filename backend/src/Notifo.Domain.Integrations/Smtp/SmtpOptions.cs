@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.Linq;
 using Squidex.Hosting.Configuration;
 
 namespace Notifo.Domain.Integrations.Smtp
@@ -19,6 +20,11 @@ namespace Notifo.Domain.Integrations.Smtp
         public string Password { get; set; }
 
         public int HostPort { get; set; } = 587;
+
+        public bool IsValid()
+        {
+            return !Validate().Any();
+        }
 
         public virtual IEnumerable<ConfigurationError> Validate()
         {

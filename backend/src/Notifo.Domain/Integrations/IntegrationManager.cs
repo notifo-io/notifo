@@ -65,7 +65,7 @@ namespace Notifo.Domain.Integrations
         {
             foreach (var (configured, integration) in GetIntegrations(app))
             {
-                if (integration.CanCreate<T>(configured) == true)
+                if (integration.CanCreate(typeof(T), configured))
                 {
                     return true;
                 }
