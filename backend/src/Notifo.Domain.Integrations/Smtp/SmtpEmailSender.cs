@@ -22,13 +22,24 @@ namespace Notifo.Domain.Integrations.Smtp
             string fromName)
         {
             this.server = server;
+
             this.fromEmail = fromEmail;
             this.fromName = fromName;
         }
 
         public Task SendAsync(EmailMessage message, CancellationToken ct = default)
         {
-            return server.SendAsync(message, fromName, fromEmail, ct);
+            if (string.IsNullOrWhiteSpace(message.FromEmail))
+            {
+                message.FromEmail = fromEmail;
+            }
+
+            if (string.IsNullOrWhiteSpace(message.FromName))
+            {
+                message.FromName = fromName;
+            }
+
+            return server.SendAsync(message, ct);
         }
     }
 }

@@ -78,8 +78,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 Subject = FormatSubject(template, context, noCache),
                 BodyHtml = await FormatHtml(template, context, notifications, noCache),
                 BodyText = FormatText(template, context, notifications, noCache),
-                RecipientEmail = user.EmailAddress,
-                RecipientName = user.FullName
+                ToEmail = user.EmailAddress,
+                ToName = user.FullName
             };
 
             return mailMessage;
