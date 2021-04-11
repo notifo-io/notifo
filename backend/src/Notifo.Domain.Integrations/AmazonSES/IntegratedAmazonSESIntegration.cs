@@ -120,7 +120,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
 
             if (previous != null)
             {
-                previousEmail = FromEmailProperty.GetString(configured);
+                previousEmail = FromEmailProperty.GetString(previous);
             }
 
             if (string.Equals(previousEmail, fromEmail, StringComparison.OrdinalIgnoreCase))

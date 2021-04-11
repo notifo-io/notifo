@@ -33,7 +33,9 @@ namespace Notifo.Domain.Integrations
         public IntegrationManager(IEnumerable<IIntegration> integrations, IAppStore appStore, ISemanticLog log)
         {
             this.integrations = integrations;
+
             this.appStore = appStore;
+
             this.log = log;
         }
 
