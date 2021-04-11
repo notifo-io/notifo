@@ -14,7 +14,7 @@ namespace Notifo.Domain.Apps
 {
     public interface IAppStore
     {
-        Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct = default);
+        Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct = default);
 
         Task<List<App>> QueryAsync(string contributorId, CancellationToken ct = default);
 

@@ -129,6 +129,9 @@
   <data name="App_CannotUpdateYourself" xml:space="preserve">
     <value>You cannot update yourself.</value>
   </data>
+  <data name="Email_ConfigReset" xml:space="preserve">
+    <value>Email: Integration has been removed.</value>
+  </data>
   <data name="Email_TemplateInvalid" xml:space="preserve">
     <value>Email template is invalid and does not render template.</value>
   </data>
@@ -157,7 +160,7 @@
     <value>Event has no topic.</value>
   </data>
   <data name="MobilePush_ConfigReset" xml:space="preserve">
-    <value>MobilePush: Firebase config has been reset.</value>
+    <value>MobilePush: Integration has been removed.</value>
   </data>
   <data name="MobilePush_TokenRemoved" xml:space="preserve">
     <value>MobilePush: Token has been removed.</value>
@@ -173,6 +176,9 @@
   </data>
   <data name="Notification_NoUser" xml:space="preserve">
     <value>Notification has no existing user. It has probably been deleted.</value>
+  </data>
+  <data name="Sms_ConfigReset" xml:space="preserve">
+    <value>SMS: Integration has been removed.</value>
   </data>
   <data name="Template_NoSubject" xml:space="preserve">
     <value>Template '{0}' has no subject.</value>
@@ -200,6 +206,15 @@
   </data>
   <data name="ValidationUrl" xml:space="preserve">
     <value>{PropertyName} must be a valid URL.</value>
+  </data>
+  <data name="Webhook_Description" xml:space="preserve">
+    <value>Make a HTTP request to your server when a notification is confirmed by a User.</value>
+  </data>
+  <data name="Webhook_URLHints" xml:space="preserve">
+    <value>The URL to your server endpoint.</value>
+  </data>
+  <data name="Webhook_URLLabel" xml:space="preserve">
+    <value>URL</value>
   </data>
   <data name="WebPush_TokenRemoved" xml:space="preserve">
     <value>WebPush: Token does not exist anymore.</value>

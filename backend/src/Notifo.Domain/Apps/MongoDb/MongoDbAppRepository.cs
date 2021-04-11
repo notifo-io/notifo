@@ -11,8 +11,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Counters;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb
@@ -45,13 +45,7 @@ namespace Notifo.Domain.Apps.MongoDb
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbApp>(
                     IndexKeys
-                        .Ascending(x => x.Doc.EmailVerificationStatus)),
-                null, ct);
-
-            await collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<MongoDbApp>(
-                    IndexKeys
-                        .Ascending(x => x.Doc.EmailAddress)),
+                        .Ascending(x => x.IsPending)),
                 null, ct);
 
             await collection.Indexes.CreateOneAsync(
@@ -68,12 +62,10 @@ namespace Notifo.Domain.Apps.MongoDb
                 null, ct);
         }
 
-        public async Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct)
+        public async Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct)
         {
             var documents =
-                await Collection.Find(x =>
-                        x.Doc.EmailVerificationStatus == EmailVerificationStatus.Failed ||
-                        x.Doc.EmailVerificationStatus == EmailVerificationStatus.Pending)
+                await Collection.Find(x => x.IsPending)
                     .ToListAsync(ct);
 
             return documents.Select(x => x.ToApp()).ToList();
@@ -92,15 +84,6 @@ namespace Notifo.Domain.Apps.MongoDb
         {
             var document = await
                 Collection.Find(x => x.ApiKeys.Contains(apiKey))
-                    .FirstOrDefaultAsync(ct);
-
-            return (document?.ToApp(), document?.Etag);
-        }
-
-        public async Task<(App? App, string? Etag)> GetByEmailAddressAsync(string emailAddress, CancellationToken ct)
-        {
-            var document = await
-                Collection.Find(x => x.Doc.EmailAddress == emailAddress)
                     .FirstOrDefaultAsync(ct);
 
             return (document?.ToApp(), document?.Etag);

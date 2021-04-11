@@ -7,7 +7,7 @@
 
 import { listThunk, Query } from '@app/framework';
 import { Clients, MediaDto } from '@app/service';
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { createApiThunk, selectApp } from '../shared';
 import { MediaState } from './state';
@@ -17,8 +17,6 @@ const list = listThunk<MediaState, MediaDto>('media', 'media', async params => {
 
     return { items, total };
 });
-
-export const selectMedia = createAction<{ fileName: string }>('media/select');
 
 export const loadMediaAsync = (appId: string, query?: Partial<Query>, reset = false) => {
     return list.action({ appId, query, reset });

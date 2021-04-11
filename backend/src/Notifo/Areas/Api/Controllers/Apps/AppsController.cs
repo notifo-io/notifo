@@ -8,11 +8,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Apps.Dtos;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -26,11 +26,13 @@ namespace Notifo.Areas.Api.Controllers.Apps
     {
         private readonly IAppStore appStore;
         private readonly IUserResolver userResolver;
+        private readonly IIntegrationManager integrationManager;
 
-        public AppsController(IAppStore appStore, IUserResolver userResolver)
+        public AppsController(IAppStore appStore, IUserResolver userResolver, IIntegrationManager integrationManager)
         {
             this.appStore = appStore;
             this.userResolver = userResolver;
+            this.integrationManager = integrationManager;
         }
 
         /// <summary>
@@ -226,7 +228,6 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// </returns>
         [HttpPut("api/apps/{appId}/email-templates/{language}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(EmailTemplatesDto))]
         public async Task<IActionResult> PutEmailTemplate(string appId, string language, [FromBody] EmailTemplateDto request)
         {
             var update = request.ToUpdate(language);
@@ -245,12 +246,93 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 204 => App email template deleted.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/email-templates/{language}")]
+        [HttpDelete("api/apps/{appId}/email-templates/{language}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(EmailTemplatesDto))]
         public async Task<IActionResult> DeleteEmailTemplate(string appId, string language)
         {
             var update = new DeleteAppEmailTemplate { Language = language };
+
+            await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Get the app integrations.
+        /// </summary>
+        /// <param name="appId">The id of the app where the integrations belong to.</param>
+        /// <returns>
+        /// 200 => App email templates returned.
+        /// 404 => App not found.
+        /// </returns>
+        [HttpGet("api/apps/{appId}/integrations")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        [Produces(typeof(ConfiguredIntegrationsDto))]
+        public IActionResult GetIntegrations(string appId)
+        {
+            var response = ConfiguredIntegrationsDto.FromDomainObject(App, integrationManager);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Create an app integrations.
+        /// </summary>
+        /// <param name="appId">The id of the app where the integration belong to.</param>
+        /// <param name="request">The request object.</param>
+        /// <returns>
+        /// 200 => App integration created.
+        /// 404 => App not found.
+        /// </returns>
+        [HttpPost("api/apps/{appId}/integration/")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        [Produces(typeof(IntegrationCreatedDto))]
+        public async Task<IActionResult> PostIntegration(string appId, [FromBody] CreateIntegrationDto request)
+        {
+            var update = request.ToUpdate();
+
+            var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+
+            var response = IntegrationCreatedDto.FromDomainObject(app, update.Id);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Update an app integration.
+        /// </summary>
+        /// <param name="appId">The id of the app where the integration belong to.</param>
+        /// <param name="id">The id of the integration.</param>
+        /// <param name="request">The request object.</param>
+        /// <returns>
+        /// 204 => App integration updated.
+        /// 404 => App not found.
+        /// </returns>
+        [HttpPut("api/apps/{appId}/integrations/{id}")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> PutIntegration(string appId, string id, [FromBody] UpdateIntegrationDto request)
+        {
+            var update = request.ToUpdate(id);
+
+            await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete an app integration.
+        /// </summary>
+        /// <param name="appId">The id of the app where the email templates belong to.</param>
+        /// <param name="id">The id of the integration.</param>
+        /// <returns>
+        /// 204 => App integration deleted.
+        /// 404 => App not found.
+        /// </returns>
+        [HttpDelete("api/apps/{appId}/integrations/{id}")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> DeleteIntegration(string appId, string id)
+        {
+            var update = new DeleteAppIntegration { Id = id };
 
             await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
 

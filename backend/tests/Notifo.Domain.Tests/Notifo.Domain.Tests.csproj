@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Notifo.Domain.Integrations\Notifo.Domain.Integrations.csproj" />
     <ProjectReference Include="..\..\src\Notifo.Domain\Notifo.Domain.csproj" />
   </ItemGroup>
 

@@ -13,7 +13,7 @@ using Squidex.Assets;
 
 namespace Notifo.Areas.Api.Controllers.Media.Dtos
 {
-    public class MediaFileQueryDto
+    public sealed class MediaFileQueryDto
     {
         private static readonly Dictionary<string, ResizeOptions> Presets = new Dictionary<string, ResizeOptions>(StringComparer.OrdinalIgnoreCase)
         {

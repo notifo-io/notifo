@@ -53,7 +53,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
             if (app?.ConfirmUrl != null && Uri.IsWellFormedUriString(app.ConfirmUrl, UriKind.Absolute))
             {
-                var url = app.WebhookUrl!;
+                var url = app.ConfirmUrl!;
 
                 if (url.Contains("?", StringComparison.OrdinalIgnoreCase))
                 {

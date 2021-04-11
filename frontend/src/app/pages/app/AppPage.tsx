@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
 import { match, NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
+import { IntegrationsPage } from '../integrations/IntegrationsPage';
 import { EmailsPage } from './../emails/EmailsPage';
 import { EventsPage } from './../events/EventsPage';
 import { LogPage } from './../log/LogPage';
@@ -81,7 +82,10 @@ const MoreItem = ({ match, path }: { match: match<{}>, path: string }) => {
                 <Icon type='settings' /> <span>{texts.common.more}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/settings`}onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/integrations`} onClick={doClose}>
+                    <Icon type='extension' /> <span>{texts.integrations.header}</span>
+                </NavLink>
+                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/settings`} onClick={doClose}>
                     <Icon type='settings' /> <span>{texts.common.settings}</span>
                 </NavLink>
                 <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/log`} onClick={doClose}>
@@ -178,6 +182,10 @@ export const AppPage = () => {
 
                 <Route path={`${match.url}/log`} exact>
                     <LogPage />
+                </Route>
+
+                <Route path={`${match.url}/integrations`} exact>
+                    <IntegrationsPage />
                 </Route>
 
                 <Route path={`${match.url}/settings`} exact>

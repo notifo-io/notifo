@@ -10,7 +10,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Reflection;
 
@@ -45,52 +44,9 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         public string[] Languages { get; set; }
 
         /// <summary>
-        /// The sender email address.
-        /// </summary>
-        public string? EmailAddress { get; set; }
-
-        /// <summary>
-        /// The sender email name.
-        /// </summary>
-        public string? EmailName { get; set; }
-
-        /// <summary>
-        /// The firebase project ID.
-        /// </summary>
-        public string? FirebaseProject { get; set; }
-
-        /// <summary>
-        /// The firebase credentials.
-        /// </summary>
-        public string? FirebaseCredential { get; set; }
-
-        /// <summary>
-        /// The webhook URL.
-        /// </summary>
-        public string? WebhookUrl { get; set; }
-
-        /// <summary>
         /// The confirm URL.
         /// </summary>
         public string? ConfirmUrl { get; set; }
-
-        /// <summary>
-        /// True, when emails are allowed.
-        /// </summary>
-        [Required]
-        public bool AllowEmail { get; set; }
-
-        /// <summary>
-        /// True, when SMS are allowed.
-        /// </summary>
-        [Required]
-        public bool AllowSms { get; set; }
-
-        /// <summary>
-        /// The verification status of the email.
-        /// </summary>
-        [Required]
-        public EmailVerificationStatus EmailVerificationStatus { get; set; }
 
         /// <summary>
         /// The api keys.

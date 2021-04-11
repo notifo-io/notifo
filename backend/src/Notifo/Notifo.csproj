@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Notifo.Domain.Integrations\Notifo.Domain.Integrations.csproj" />
     <ProjectReference Include="..\Notifo.Domain\Notifo.Domain.csproj" />
     <ProjectReference Include="..\Notifo.Identity\Notifo.Identity.csproj" />
     <ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />

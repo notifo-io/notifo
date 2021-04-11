@@ -77,6 +77,7 @@ namespace Notifo.Identity
                     DisplayName = "React Frontend Application",
                     ClientId = Constants.FrontendClient,
                     ClientSecret = null,
+                    Type = ClientTypes.Public,
                     PostLogoutRedirectUris =
                     {
                         new Uri(urlGenerator.BuildUrl("authentication/logout-callback", false))
@@ -90,7 +91,11 @@ namespace Notifo.Identity
                     {
                         Permissions.Endpoints.Authorization,
                         Permissions.Endpoints.Logout,
+                        Permissions.Endpoints.Token,
+                        Permissions.GrantTypes.AuthorizationCode,
                         Permissions.GrantTypes.Implicit,
+                        Permissions.GrantTypes.RefreshToken,
+                        Permissions.ResponseTypes.Code,
                         Permissions.ResponseTypes.IdToken,
                         Permissions.ResponseTypes.IdTokenToken,
                         Permissions.ResponseTypes.Token,

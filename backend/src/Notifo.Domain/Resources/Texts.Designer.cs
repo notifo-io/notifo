@@ -97,6 +97,15 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email: Integration has been removed..
+        /// </summary>
+        internal static string Email_ConfigReset {
+            get {
+                return ResourceManager.GetString("Email_ConfigReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email template is invalid and does not render template..
         /// </summary>
         internal static string Email_TemplateInvalid {
@@ -178,7 +187,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MobilePush: Firebase config has been reset..
+        ///   Looks up a localized string similar to MobilePush: Integration has been removed..
         /// </summary>
         internal static string MobilePush_ConfigReset {
             get {
@@ -228,6 +237,15 @@ namespace Notifo.Domain.Resources {
         internal static string Notification_NoUser {
             get {
                 return ResourceManager.GetString("Notification_NoUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SMS: Integration has been removed..
+        /// </summary>
+        internal static string Sms_ConfigReset {
+            get {
+                return ResourceManager.GetString("Sms_ConfigReset", resourceCulture);
             }
         }
         
@@ -309,6 +327,33 @@ namespace Notifo.Domain.Resources {
         internal static string ValidationUrl {
             get {
                 return ResourceManager.GetString("ValidationUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make a HTTP request to your server when a notification is confirmed by a User..
+        /// </summary>
+        internal static string Webhook_Description {
+            get {
+                return ResourceManager.GetString("Webhook_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The URL to your server endpoint..
+        /// </summary>
+        internal static string Webhook_URLHints {
+            get {
+                return ResourceManager.GetString("Webhook_URLHints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to URL.
+        /// </summary>
+        internal static string Webhook_URLLabel {
+            get {
+                return ResourceManager.GetString("Webhook_URLLabel", resourceCulture);
             }
         }
         

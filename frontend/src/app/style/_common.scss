@@ -490,6 +490,10 @@ div {
     @include truncate;
 }
 
+.no-overflow {
+    overflow: hidden;
+}
+
 .modal {
     & {
         overflow: hidden;

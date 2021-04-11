@@ -57,6 +57,7 @@ namespace CodeGenerator
             };
 
             generatorSettings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;
+            generatorSettings.TypeScriptGeneratorSettings.EnumStyle = TypeScriptEnumStyle.StringLiteral;
 
             var codeGenerator = new TypeScriptClientGenerator(document, generatorSettings);
 

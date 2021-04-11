@@ -19,9 +19,11 @@ export type IconType =
     'error_outline' |
     'expand_less' |
     'expand_more' |
+    'extension' |
     'file_copy' |
     'history' |
     'hourglass_empty' |
+    'integration' |
     'mail_outline' |
     'message' |
     'mobile' |

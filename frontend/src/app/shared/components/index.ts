@@ -9,7 +9,6 @@ export * from './CounterCards';
 export * from './CounterRow';
 export * from './emails/EmailHtmlEditor';
 export * from './emails/EmailTextEditor';
-export * from './EmailVerificationStatusLabel';
 export * from './MediaCard';
 export * from './MediaInput';
 export * from './MediaPicker';

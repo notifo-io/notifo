@@ -55,7 +55,9 @@ namespace Notifo
                     options.SuppressModelStateInvalidFilter = true;
                 });
 
+            services.AddHttpClient();
             services.AddHttpContextAccessor();
+
             services.AddMvc(options =>
                 {
                     options.Filters.Add<AppResolver>();
@@ -80,9 +82,9 @@ namespace Notifo
             services.AddMyCaching();
             services.AddMyCounters();
             services.AddMyClustering(config);
-            services.AddMyEmailChannel(config);
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
+            services.AddMyIntegrations();
             services.AddMyJson();
             services.AddMyLog();
             services.AddMyMedia();
@@ -90,7 +92,6 @@ namespace Notifo
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
             services.AddMyOpenApi();
-            services.AddMySmsChannel(config);
             services.AddMyStorage(config);
             services.AddMySubscriptions();
             services.AddMyTemplates();
@@ -103,6 +104,11 @@ namespace Notifo
             services.AddMyWebhookChannel();
             services.AddMyWebPipeline();
             services.AddMyWebPushChannel(config);
+
+            services.AddIntegrationAmazonSES(config);
+            services.AddIntegrationFirebase();
+            services.AddIntegrationMessageBird(config);
+            services.AddIntegrationSmtp();
 
             services.AddInitializer();
         }

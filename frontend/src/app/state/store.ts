@@ -15,6 +15,7 @@ const reducer = {
           core: Reducers.coreReducer,
 emailTemplates: Reducers.emailTemplatesReducer,
         events: Reducers.eventsReducer,
+  integrations: Reducers.integrationsReducer,
            log: Reducers.logReducer,
          login: Reducers.loginReducer,
          media: Reducers.mediaReducer,

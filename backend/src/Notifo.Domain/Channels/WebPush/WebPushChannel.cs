@@ -119,6 +119,11 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
+        public Task HandleExceptionAsync(WebPushJob job, Exception ex)
+        {
+            return UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Failed);
+        }
+
         public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt, CancellationToken ct)
         {
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Id, job.Subscription.Endpoint, Name))
@@ -182,11 +187,6 @@ namespace Notifo.Domain.Channels.WebPush
             {
                 throw new DomainException(ex.Message);
             }
-        }
-
-        public Task HandleExceptionAsync(WebPushJob job, Exception ex)
-        {
-            return UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Failed);
         }
 
         private Task UpdateAsync(WebPushJob job, string endpoint, ProcessStatus status, string? reason = null)

@@ -1,0 +1,53 @@
+@import '_vars';
+@import '_mixins';
+
+.integration-card {
+    cursor: pointer;
+    display: inline-block;
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    min-height: 13.5rem;
+    vertical-align: top;
+    width: 20rem;
+
+    h4 {
+        margin-bottom: 0;
+    }
+
+    small {
+        display: block;
+        margin-bottom: 0;
+        margin-top: .5rem;
+    }
+
+    .col-image {
+        @include force-width(5rem);
+        padding-right: 1.5rem;
+        padding-top: .5rem;
+
+        img {
+            max-height: 4rem;
+            min-height: none;
+            width: 100%;
+        }
+    }
+}
+
+.integration-dialog {
+    h4 {
+        margin-bottom: 0;
+    }
+
+    h5 {
+        font-size: 1rem;
+    }
+
+    .col-image {
+        padding-right: 1.5rem !important;
+        padding-top: .5rem;
+
+        img {
+            height: 2.5rem;
+        }
+    }
+}

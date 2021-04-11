@@ -10,7 +10,7 @@ using Notifo.Domain.Apps;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
 {
-    public class EmailTemplatesDto : Dictionary<string, EmailTemplateDto>
+    public sealed class EmailTemplatesDto : Dictionary<string, EmailTemplateDto>
     {
         public static EmailTemplatesDto FromDomainObject(App app)
         {

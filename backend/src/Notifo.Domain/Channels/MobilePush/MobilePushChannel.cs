@@ -10,9 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using FirebaseAdmin.Messaging;
 using NodaTime;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
@@ -28,8 +28,8 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>, IInitializable
     {
-        private readonly FirebaseClientPool pool = new FirebaseClientPool();
         private readonly IAppStore appStore;
+        private readonly IIntegrationManager integrationManager;
         private readonly ILogStore logStore;
         private readonly ISemanticLog log;
         private readonly IUserNotificationQueue userNotificationQueue;
@@ -45,6 +45,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public MobilePushChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,
+            IIntegrationManager integrationManager,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore,
             IUserStore userStore,
@@ -53,6 +54,7 @@ namespace Notifo.Domain.Channels.MobilePush
             this.appStore = appStore;
             this.log = log;
             this.logStore = logStore;
+            this.integrationManager = integrationManager;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
             this.userStore = userStore;
@@ -68,6 +70,11 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
+            if (!integrationManager.IsConfigured<IMobilePushSender>(options.App))
+            {
+                yield break;
+            }
+
             foreach (var token in options.User.MobilePushTokens)
             {
                 yield return token.Token;
@@ -199,6 +206,11 @@ namespace Notifo.Domain.Channels.MobilePush
             return true;
         }
 
+        public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
+        {
+            return UpdateAsync(job.Notification, job.Token, ProcessStatus.Failed);
+        }
+
         public Task SendAsync(MobilePushJob job, CancellationToken ct)
         {
             return log.ProfileAsync("SendMobilePush", async () =>
@@ -222,7 +234,15 @@ namespace Notifo.Domain.Channels.MobilePush
                 {
                     await UpdateAsync(notification, job.Token, ProcessStatus.Attempt);
 
-                    await SendCoreAsync(job, app, ct);
+                    var senders = integrationManager.Resolve<IMobilePushSender>(app).ToList();
+
+                    if (senders.Count == 0)
+                    {
+                        await SkipAsync(notification, job.Token, Texts.Sms_ConfigReset, ct);
+                        return;
+                    }
+
+                    await SendCoreAsync(job, notification, app, senders, ct);
 
                     await UpdateAsync(notification, job.Token, ProcessStatus.Handled);
                 }
@@ -234,54 +254,57 @@ namespace Notifo.Domain.Channels.MobilePush
             });
         }
 
-        private Task SendCoreAsync(MobilePushJob job, App app, CancellationToken ct)
+        private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders, CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(app.FirebaseProject) || string.IsNullOrWhiteSpace(app.FirebaseCredential))
+            var lastSender = senders.Last();
+
+            foreach (var sender in senders)
             {
-                throw new DomainException(Texts.MobilePush_ConfigReset);
-            }
-
-            var messaging = pool.GetMessaging(app);
-
-            return SendCoreAsync(job.Notification, messaging, job.Token, ct);
-        }
-
-        private async Task SendCoreAsync(UserNotification notification, FirebaseMessaging messaging, string token, CancellationToken ct)
-        {
-            try
-            {
-                var message = notification.ToFirebaseMessage(token, notification.Formatting == null);
-
-                await messaging.SendAsync(message, ct);
-            }
-            catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
-            {
-                if (notification != null)
+                try
                 {
-                    await logStore.LogAsync(notification.AppId, Texts.MobilePush_TokenRemoved, ct);
+                    await sender.SendAsync(notification, job.Token, notification.Formatting == null, ct);
+                }
+                catch (MobilePushTokenExpiredException)
+                {
+                    await logStore.LogAsync(app.Id, Texts.MobilePush_TokenRemoved, ct);
 
                     var command = new RemoveUserMobileToken
                     {
-                        Token = token
+                        Token = job.Token
                     };
 
-                    await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
+                    await userStore.UpsertAsync(app.Id, notification.UserId, command, ct);
+                    break;
+                }
+                catch (DomainException ex)
+                {
+                    await logStore.LogAsync(app.Id, ex.Message, ct);
+
+                    if (sender == lastSender)
+                    {
+                        throw;
+                    }
+                }
+                catch (Exception)
+                {
+                    if (sender == lastSender)
+                    {
+                        throw;
+                    }
                 }
             }
-            catch (FirebaseMessagingException ex)
-            {
-                throw new DomainException(ex.Message);
-            }
-        }
-
-        public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
-        {
-            return UpdateAsync(job.Notification, job.Token, ProcessStatus.Failed);
         }
 
         private Task UpdateAsync(UserNotification notification, string token, ProcessStatus status, string? reason = null)
         {
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, token, status, reason);
+        }
+
+        private async Task SkipAsync(UserNotification notification, string token, string reason, CancellationToken ct)
+        {
+            await logStore.LogAsync(notification.AppId, reason, ct);
+
+            await UpdateAsync(notification, token, ProcessStatus.Skipped);
         }
     }
 }

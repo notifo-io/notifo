@@ -2665,7 +2665,7 @@ export class AppsClient {
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
-            method: "POST",
+            method: "DELETE",
             headers: {
             }
         };
@@ -2687,6 +2687,458 @@ export class AppsClient {
             return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    /**
+     * Get the app integrations.
+     * @param appId The id of the app where the integrations belong to.
+     * @return App email templates returned.
+     */
+    getIntegrations(appId: string): Promise<ConfiguredIntegrationsDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/integrations";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetIntegrations(_response);
+        });
+    }
+
+    protected processGetIntegrations(response: Response): Promise<ConfiguredIntegrationsDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <ConfiguredIntegrationsDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ConfiguredIntegrationsDto>(<any>null);
+    }
+
+    /**
+     * Create an app integrations.
+     * @param appId The id of the app where the integration belong to.
+     * @param request The request object.
+     * @return App integration created.
+     */
+    postIntegration(appId: string, request: CreateIntegrationDto): Promise<IntegrationCreatedDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/integration";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPostIntegration(_response);
+        });
+    }
+
+    protected processPostIntegration(response: Response): Promise<IntegrationCreatedDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <IntegrationCreatedDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<IntegrationCreatedDto>(<any>null);
+    }
+
+    /**
+     * Update an app integration.
+     * @param appId The id of the app where the integration belong to.
+     * @param id The id of the integration.
+     * @param request The request object.
+     * @return App integration updated.
+     */
+    putIntegration(appId: string, id: string, request: UpdateIntegrationDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPutIntegration(_response);
+        });
+    }
+
+    protected processPutIntegration(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    /**
+     * Delete an app integration.
+     * @param appId The id of the app where the email templates belong to.
+     * @param id The id of the integration.
+     * @return App integration deleted.
+     */
+    deleteIntegration(appId: string, id: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteIntegration(_response);
+        });
+    }
+
+    protected processDeleteIntegration(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+}
+
+export class AuthorizationClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : <any>window;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:5002";
+    }
+
+    exchange(): Promise<void> {
+        let url_ = this.baseUrl + "/connect/token";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processExchange(_response);
+        });
+    }
+
+    protected processExchange(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    authorize(): Promise<void> {
+        let url_ = this.baseUrl + "/connect/authorize";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAuthorize(_response);
+        });
+    }
+
+    protected processAuthorize(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    logout(): Promise<void> {
+        let url_ = this.baseUrl + "/connect/logout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processLogout(_response);
+        });
+    }
+
+    protected processLogout(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+}
+
+export class UserInfoClient {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : <any>window;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:5002";
+    }
+
+    userinfo(): Promise<void> {
+        let url_ = this.baseUrl + "/connect/userinfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUserinfo(_response);
+        });
+    }
+
+    protected processUserinfo(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    userinfo2(): Promise<void> {
+        let url_ = this.baseUrl + "/connect/userinfo";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "POST",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUserinfo2(_response);
+        });
+    }
+
+    protected processUserinfo2(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
@@ -2733,12 +3185,7 @@ export interface NotificationSettingDto {
     delayInSeconds?: number | undefined;
 }
 
-export enum NotificationSend {
-    Inherit = "Inherit",
-    Send = "Send",
-    NotSending = "NotSending",
-    NotAllowed = "NotAllowed",
-}
+export type NotificationSend = "Inherit" | "Send" | "NotSending" | "NotAllowed";
 
 export interface UpdateProfileDto {
     /** The full name of the user. */
@@ -2888,11 +3335,7 @@ export interface LocalizedText {
     [key: string]: string | any; 
 }
 
-export enum ConfirmMode {
-    Seen = "Seen",
-    Explicit = "Explicit",
-    None = "None",
-}
+export type ConfirmMode = "Seen" | "Explicit" | "None";
 
 export interface UpsertTemplatesDto {
     /** The templates to update. */
@@ -2966,11 +3409,7 @@ export interface RegisterMobileTokenDto {
     deviceType?: MobileDeviceType;
 }
 
-export enum MobileDeviceType {
-    Unknown = "Unknown",
-    Android = "Android",
-    IOS = "iOS",
-}
+export type MobileDeviceType = "Unknown" | "Android" | "iOS";
 
 export interface ListResponseDtoOfMediaDto {
     /** The items. */
@@ -2996,27 +3435,14 @@ export interface MediaDto {
     metadata: MediaMetadata;
 }
 
-export enum MediaType {
-    Unknown = "Unknown",
-    Image = "Image",
-    Audio = "Audio",
-    Video = "Video",
-}
+export type MediaType = "Unknown" | "Image" | "Audio" | "Video";
 
 export interface MediaMetadata {
 
     [key: string]: string | any; 
 }
 
-export enum ResizeMode {
-    Crop = "Crop",
-    CropUpsize = "CropUpsize",
-    Pad = "Pad",
-    BoxPad = "BoxPad",
-    Max = "Max",
-    Min = "Min",
-    Stretch = "Stretch",
-}
+export type ResizeMode = "Crop" | "CropUpsize" | "Pad" | "BoxPad" | "Max" | "Min" | "Stretch";
 
 export interface ListResponseDtoOfLogEntryDto {
     /** The items. */
@@ -3081,21 +3507,9 @@ export interface SchedulingDto {
     time?: string;
 }
 
-export enum SchedulingType {
-    UTC = "UTC",
-    UserTime = "UserTime",
-}
+export type SchedulingType = "UTC" | "UserTime";
 
-export enum IsoDayOfWeek {
-    None = "None",
-    Monday = "Monday",
-    Tuesday = "Tuesday",
-    Wednesday = "Wednesday",
-    Thursday = "Thursday",
-    Friday = "Friday",
-    Saturday = "Saturday",
-    Sunday = "Sunday",
-}
+export type IsoDayOfWeek = "None" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 
 export interface PublishManyDto {
     /** The publish requests. */
@@ -3154,37 +3568,14 @@ export interface AppDetailsDto {
     role: string;
     /** The supported languages. */
     languages: string[];
-    /** The sender email address. */
-    emailAddress?: string | undefined;
-    /** The sender email name. */
-    emailName?: string | undefined;
-    /** The firebase project ID. */
-    firebaseProject?: string | undefined;
-    /** The firebase credentials. */
-    firebaseCredential?: string | undefined;
-    /** The webhook URL. */
-    webhookUrl?: string | undefined;
     /** The confirm URL. */
     confirmUrl?: string | undefined;
-    /** True, when emails are allowed. */
-    allowEmail: boolean;
-    /** True, when SMS are allowed. */
-    allowSms: boolean;
-    /** The verification status of the email. */
-    emailVerificationStatus: EmailVerificationStatus;
     /** The api keys. */
     apiKeys: { [key: string]: string; };
     /** The contributors. */
     contributors: AppContributorDto[];
     /** The statistics counters. */
     counters: { [key: string]: number; };
-}
-
-export enum EmailVerificationStatus {
-    NotStarted = "NotStarted",
-    Pending = "Pending",
-    Verified = "Verified",
-    Failed = "Failed",
 }
 
 export interface AppContributorDto {
@@ -3243,6 +3634,100 @@ export interface EmailTemplateDto {
 export interface CreateEmailTemplateDto {
     /** The new language. */
     language: string;
+}
+
+export interface ConfiguredIntegrationsDto {
+    /** The configured integrations. */
+    configured: { [key: string]: ConfiguredIntegrationDto; };
+    /** The supported integrations. */
+    supported: { [key: string]: IntegrationDefinitionDto; };
+}
+
+export interface ConfiguredIntegrationDto {
+    /** The integration type. */
+    type: string;
+    /** The configured properties. */
+    properties: IntegrationProperties;
+    /** True when enabled. */
+    enabled?: boolean;
+    /** The priority in which order the integrations must run. */
+    priority?: number;
+    /** The status of the integration. */
+    status: IntegrationStatus;
+}
+
+export interface IntegrationProperties {
+
+    [key: string]: string | any; 
+}
+
+export type IntegrationStatus = "Verified" | "VerificationFailed" | "Pending";
+
+export interface IntegrationDefinitionDto {
+    /** The title of the integration. */
+    title: string;
+    /** The logo URL for the integration. */
+    logoUrl: string;
+    /** The optional description of the integration. */
+    description?: string | undefined;
+    /** The properties to configure. */
+    properties: IntegrationPropertyDto[];
+    /** The features of the integration. */
+    capabilities: string[];
+}
+
+export interface IntegrationPropertyDto {
+    /** The field name for the property. */
+    name: string;
+    /** The editor type. */
+    type: IntegrationPropertyType;
+    /** The optional description. */
+    editorDescription?: string | undefined;
+    /** The optional label. */
+    editorLabel?: string | undefined;
+    /** True to show this property in the summary. */
+    summary?: boolean;
+    /** True when required. */
+    isRequired?: boolean;
+    /** The min value (for numbers). */
+    minValue?: number;
+    /** The max value (for numbers). */
+    maxValue?: number;
+    /** The min length (for strings). */
+    minLength?: number;
+    /** The min length (for strings). */
+    maxLength?: number;
+    /** The default value. */
+    defaultValue?: any | undefined;
+}
+
+export type IntegrationPropertyType = "Text" | "Number" | "MultilineText" | "Password";
+
+export interface IntegrationCreatedDto {
+    /** The id of the integration. */
+    id: string;
+    /** The integration. */
+    integration: ConfiguredIntegrationDto;
+}
+
+export interface CreateIntegrationDto {
+    /** The integration type. */
+    type: string;
+    /** The configured properties. */
+    properties: IntegrationProperties;
+    /** True when enabled. */
+    enabled?: boolean;
+    /** The priority in which order the integrations must run. */
+    priority?: number;
+}
+
+export interface UpdateIntegrationDto {
+    /** The configured properties. */
+    properties: IntegrationProperties;
+    /** True when enabled. */
+    enabled?: boolean;
+    /** The priority in which order the integrations must run. */
+    priority?: number;
 }
 
 export interface ErrorDto {

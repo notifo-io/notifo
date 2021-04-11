@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ObjectSchema, StringSchema } from 'yup';
+import { NumberSchema, ObjectSchema, StringSchema } from 'yup';
 
 declare module 'yup' {
     interface StringSchema {
@@ -16,6 +16,10 @@ declare module 'yup' {
         requiredI18n(): StringSchema;
 
         topicI18n(): StringSchema;
+    }
+
+    interface NumberSchema {
+        requiredI18n(): NumberSchema;
     }
 
     interface ObjectSchema {

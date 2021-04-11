@@ -58,9 +58,9 @@ namespace Notifo.Domain.Apps
             return GetAsync(id, ct);
         }
 
-        public async Task<List<App>> QueryNonConfirmedEmailAddressesAsync(CancellationToken ct)
+        public async Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct)
         {
-            var apps = await repository.QueryNonConfirmedEmailAddressesAsync(ct);
+            var apps = await repository.QueryWithPendingIntegrationsAsync(ct);
 
             foreach (var app in apps)
             {
@@ -134,6 +134,8 @@ namespace Notifo.Domain.Apps
                     await repository.UpsertAsync(app, etag, ct);
 
                     await DeliverAsync(app);
+
+                    await command.ExecutedAsync(app, serviceProvider);
                 }
 
                 return app;

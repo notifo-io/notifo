@@ -17,6 +17,10 @@ function urlI18n(this: Yup.StringSchema) {
     return this.url(texts.validation.urlFn);
 }
 
+function requiredI18nNumber(this: Yup.NumberSchema) {
+    return this.required(texts.validation.requiredFn);
+}
+
 function requiredI18n(this: Yup.StringSchema) {
     return this.required(texts.validation.requiredFn);
 }
@@ -53,4 +57,6 @@ export function extendYup() {
     Yup.addMethod(Yup.string, 'requiredI18n', requiredI18n);
 
     Yup.addMethod(Yup.string, 'topicI18n', topicI18n);
+
+    Yup.addMethod(Yup.number, 'requiredI18n', requiredI18nNumber);
 }
