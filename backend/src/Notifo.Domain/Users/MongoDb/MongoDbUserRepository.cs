@@ -46,8 +46,7 @@ namespace Notifo.Domain.Users.MongoDb
                     IndexKeys
                         .Ascending(x => x.Doc.AppId)
                         .Ascending(x => x.Doc.FullName)
-                        .Ascending(x => x.Doc.EmailAddress),
-                    null),
+                        .Ascending(x => x.Doc.EmailAddress)),
                 null, ct);
 
             await collection.Indexes.CreateOneAsync(

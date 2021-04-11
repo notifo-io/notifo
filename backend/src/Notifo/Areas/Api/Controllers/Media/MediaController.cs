@@ -195,9 +195,9 @@ namespace Notifo.Areas.Api.Controllers.Media
         {
             using (Profiler.Trace("Resize"))
             {
-                using (var sourceStream = GetTempStream())
+                await using (var sourceStream = GetTempStream())
                 {
-                    using (var destinationStream = GetTempStream())
+                    await using (var destinationStream = GetTempStream())
                     {
                         using (Profiler.Trace("ResizeDownload"))
                         {

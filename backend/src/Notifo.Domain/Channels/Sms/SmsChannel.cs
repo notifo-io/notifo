@@ -186,7 +186,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, ex.Message);
+                    await logStore.LogAsync(job.AppId, ex.Message, ct);
                     throw;
                 }
             });

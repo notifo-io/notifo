@@ -84,7 +84,7 @@ namespace Notifo.Infrastructure.Tasks
         {
             var tcs = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
 
-            using (cancellationToken.Register(state =>
+            await using (cancellationToken.Register(state =>
             {
                 ((TaskCompletionSource<object>)state!).TrySetResult(null!);
             },

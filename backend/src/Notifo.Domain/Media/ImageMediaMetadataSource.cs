@@ -27,7 +27,7 @@ namespace Notifo.Domain.Media
         {
             if (media.Type == MediaType.Unknown)
             {
-                using (var uploadStream = file.OpenRead())
+                await using (var uploadStream = file.OpenRead())
                 {
                     var imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(uploadStream);
 

@@ -162,7 +162,7 @@ namespace Notifo.Domain.Channels.MobilePush
             {
                 AppId = notification.AppId,
                 UserId = notification.UserId,
-                UserLanguage = notification.UserLanguage,
+                UserLanguage = notification.UserLanguage
             }, token.Token)
             {
                 IsImmediate = true
@@ -248,7 +248,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, ex.Message);
+                    await logStore.LogAsync(app.Id, ex.Message, ct);
                     throw;
                 }
             });

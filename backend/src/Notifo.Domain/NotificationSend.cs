@@ -24,7 +24,7 @@ namespace Notifo.Domain
 
     public sealed class NotificationSendConverter : JsonConverter<NotificationSend>
     {
-        private JsonConverter<NotificationSend> enumConverter;
+        private JsonConverter<NotificationSend>? enumConverter;
 
         public override NotificationSend Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

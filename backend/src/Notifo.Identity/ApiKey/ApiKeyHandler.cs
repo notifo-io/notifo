@@ -65,8 +65,6 @@ namespace Notifo.Identity.ApiKey
 
                 if (user != null)
                 {
-                    var claimsPrincipal = new ClaimsPrincipal();
-
                     var identity = new ClaimsIdentity(new[]
                     {
                         new Claim(ClaimTypes.NameIdentifier, user.ToFullId()),

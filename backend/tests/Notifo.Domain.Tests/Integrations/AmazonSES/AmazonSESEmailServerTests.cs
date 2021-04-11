@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.AmazonSES;
 using Notifo.Domain.Integrations.Smtp;
 using Xunit;

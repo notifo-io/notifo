@@ -34,8 +34,7 @@ namespace Notifo.Domain.Templates.MongoDb
                 new CreateIndexModel<MongoDbTemplate>(
                     IndexKeys
                         .Ascending(x => x.Doc.AppId)
-                        .Ascending(x => x.Doc.Code),
-                    null),
+                        .Ascending(x => x.Doc.Code)),
                 null, ct);
         }
 

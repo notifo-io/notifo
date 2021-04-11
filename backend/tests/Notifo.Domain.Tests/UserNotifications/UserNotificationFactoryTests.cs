@@ -26,7 +26,7 @@ namespace Notifo.Domain.UserNotifications
     {
         private readonly IClock clock = A.Fake<IClock>();
         private readonly ILogStore logStore = A.Fake<ILogStore>();
-        private readonly App app = App.Create(Guid.NewGuid().ToString());
+        private readonly App app;
         private readonly User user = new User();
         private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
         private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();
@@ -36,7 +36,7 @@ namespace Notifo.Domain.UserNotifications
         {
             app = new App
             {
-                Languages = new string[]
+                Languages = new[]
                 {
                     "en",
                     "de"

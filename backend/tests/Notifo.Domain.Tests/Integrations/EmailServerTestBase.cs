@@ -7,9 +7,10 @@
 
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Notifo.Domain.Channels.Email;
 using Xunit;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Integrations
 {
     public abstract class EmailServerTestBase
     {

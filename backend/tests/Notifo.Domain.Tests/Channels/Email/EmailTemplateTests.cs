@@ -58,8 +58,8 @@ namespace Notifo.Domain.Channels.Email
                 Assert.Contains(notification.Formatting.Subject, text);
             }
 
-            File.WriteAllText("_out\\template-single.html", html);
-            File.WriteAllText("_out\\template-single.txt", text);
+            await File.WriteAllTextAsync("_out\\template-single.html", html);
+            await File.WriteAllTextAsync("_out\\template-single.txt", text);
         }
 
         [Fact]
@@ -99,8 +99,8 @@ namespace Notifo.Domain.Channels.Email
 
             DoesNotContainPlaceholders(text);
 
-            File.WriteAllText("_out\\template-link.html", html);
-            File.WriteAllText("_out\\template-link.txt", text);
+            await File.WriteAllTextAsync("_out\\template-link.html", html);
+            await File.WriteAllTextAsync("_out\\template-link.txt", text);
         }
 
         [Fact]
@@ -135,8 +135,8 @@ namespace Notifo.Domain.Channels.Email
 
             DoesNotContainPlaceholders(text);
 
-            File.WriteAllText("_out\\template-image.html", html);
-            File.WriteAllText("_out\\template-image.txt", text);
+            await File.WriteAllTextAsync("_out\\template-image.html", html);
+            await File.WriteAllTextAsync("_out\\template-image.txt", text);
         }
 
         [Fact]
@@ -173,8 +173,8 @@ namespace Notifo.Domain.Channels.Email
 
             DoesNotContainPlaceholders(text);
 
-            File.WriteAllText("_out\\template-tracking.html", html);
-            File.WriteAllText("_out\\template-tracking.txt", text);
+            await File.WriteAllTextAsync("_out\\template-tracking.html", html);
+            await File.WriteAllTextAsync("_out\\template-tracking.txt", text);
         }
 
         [Fact]
@@ -213,8 +213,8 @@ namespace Notifo.Domain.Channels.Email
 
             DoesNotContainPlaceholders(text);
 
-            File.WriteAllText("_out\\template-button.html", html);
-            File.WriteAllText("_out\\template-button.txt", text);
+            await File.WriteAllTextAsync("_out\\template-button.html", html);
+            await File.WriteAllTextAsync("_out\\template-button.txt", text);
         }
 
         [Fact]
@@ -254,8 +254,8 @@ namespace Notifo.Domain.Channels.Email
 
             DoesNotContainPlaceholders(text);
 
-            File.WriteAllText("_out\\template-button-image.html", html);
-            File.WriteAllText("_out\\template-button-image.txt", text);
+            await File.WriteAllTextAsync("_out\\template-button-image.html", html);
+            await File.WriteAllTextAsync("_out\\template-button-image.txt", text);
         }
 
         [Fact]
@@ -299,8 +299,8 @@ namespace Notifo.Domain.Channels.Email
 
             DoesNotContainPlaceholders(text);
 
-            File.WriteAllText("_out\\template-multi.html", html);
-            File.WriteAllText("_out\\template-multi.txt", text);
+            await File.WriteAllTextAsync("_out\\template-multi.html", html);
+            await File.WriteAllTextAsync("_out\\template-multi.txt", text);
         }
 
         private static void DoesNotContainPlaceholders(string? text)

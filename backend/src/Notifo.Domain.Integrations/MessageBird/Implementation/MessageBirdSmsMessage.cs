@@ -13,7 +13,5 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         string To,
         string Body,
         string? Reference = null,
-        string? ReportUrl = null)
-    {
-    }
+        string? ReportUrl = null);
 }

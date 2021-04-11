@@ -59,7 +59,7 @@ namespace Notifo.Domain.Integrations.Firebase
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
             Assert.Equal(message.Data[nameof(linkText)], linkText);
             Assert.Equal(message.Data[nameof(linkUrl)], linkUrl);
-            Assert.Equal(message.Data[nameof(trackingUrl)], $"{$"{trackingUrl}?channel=mobilepush&deviceIdentifier=token1"}");
+            Assert.Equal(message.Data[nameof(trackingUrl)], $"{trackingUrl}?channel=mobilepush&deviceIdentifier=token1");
 
             Assert.Equal(message.Android.Data[nameof(subject)], subject);
             Assert.Equal(message.Android.Data[nameof(body)], body);
@@ -103,7 +103,7 @@ namespace Notifo.Domain.Integrations.Firebase
             var message = notification.ToFirebaseMessage(token, false);
 
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
-            Assert.Equal(message.Data[nameof(confirmUrl)], $"{$"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1"}");
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
             Assert.False(message.Data.ContainsKey(nameof(imageLarge)));
             Assert.False(message.Data.ContainsKey(nameof(imageSmall)));
             Assert.False(message.Data.ContainsKey(nameof(trackingUrl)));

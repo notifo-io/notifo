@@ -33,10 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     await connectionLock.WaitAsync();
                     try
                     {
-                        if (connection == null)
-                        {
-                            connection = await ConnectionMultiplexer.ConnectAsync(connectionString, writer);
-                        }
+                        connection ??= await ConnectionMultiplexer.ConnectAsync(connectionString, writer);
                     }
                     finally
                     {

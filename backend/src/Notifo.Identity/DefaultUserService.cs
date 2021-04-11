@@ -234,16 +234,16 @@ namespace Notifo.Identity
 
             var resolved = await ResolveAsync(user);
 
-            foreach (var @events in userEvents)
+            foreach (var events in userEvents)
             {
-                @events.OnUserRegistered(resolved);
+                events.OnUserRegistered(resolved);
             }
 
             if (HasConsentGiven(values, null!))
             {
-                foreach (var @events in userEvents)
+                foreach (var events in userEvents)
                 {
-                    @events.OnConsentGiven(resolved);
+                    events.OnConsentGiven(resolved);
                 }
             }
 
@@ -301,16 +301,16 @@ namespace Notifo.Identity
 
             var resolved = await ResolveAsync(user);
 
-            foreach (var @events in userEvents)
+            foreach (var events in userEvents)
             {
-                @events.OnUserUpdated(resolved);
+                events.OnUserUpdated(resolved);
             }
 
             if (HasConsentGiven(values, oldUser))
             {
-                foreach (var @events in userEvents)
+                foreach (var events in userEvents)
                 {
-                    @events.OnConsentGiven(resolved);
+                    events.OnConsentGiven(resolved);
                 }
             }
 
@@ -355,9 +355,9 @@ namespace Notifo.Identity
 
             await userManager.DeleteAsync(user).Throw(log);
 
-            foreach (var @events in userEvents)
+            foreach (var events in userEvents)
             {
-                @events.OnUserDeleted(resolved);
+                events.OnUserDeleted(resolved);
             }
         }
 

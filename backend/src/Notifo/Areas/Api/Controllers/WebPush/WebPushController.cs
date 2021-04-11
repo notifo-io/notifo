@@ -7,6 +7,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Areas.Api.Controllers.WebPush.Dto;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;

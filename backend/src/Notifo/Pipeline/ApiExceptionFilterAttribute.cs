@@ -21,7 +21,7 @@ namespace Notifo.Pipeline
         {
             var resultContext = await next();
 
-            if (resultContext.Result is ObjectResult objectResult && objectResult.Value is ProblemDetails problem)
+            if (resultContext.Result is ObjectResult { Value: ProblemDetails problem })
             {
                 var (error, _) = problem.ToErrorDto(context.HttpContext);
 

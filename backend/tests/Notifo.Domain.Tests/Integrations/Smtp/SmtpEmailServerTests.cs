@@ -6,10 +6,10 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Integrations.Smtp;
+using Notifo.Domain.Channels.Email;
 using Xunit;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Integrations.Smtp
 {
     [Trait("Category", "Dependencies")]
     public class SmtpEmailServerTests : EmailServerTestBase

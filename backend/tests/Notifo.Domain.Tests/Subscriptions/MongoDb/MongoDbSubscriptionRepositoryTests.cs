@@ -98,7 +98,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             var subscriptions_0 = await QuerySubscriptionTopics(userId1);
 
-            Assert.Equal(new string[]
+            Assert.Equal(new[]
             {
                 "tenant1/updates",
                 "tenant1/updates/news"
@@ -108,7 +108,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
-            Assert.Equal(new string[]
+            Assert.Equal(new[]
             {
                 "tenant1/updates/news"
             }, subscriptions_1);
@@ -124,7 +124,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             var subscriptions_0 = await QuerySubscriptionTopics(userId1);
 
-            Assert.Equal(new string[]
+            Assert.Equal(new[]
             {
                 "tenant1/updates",
                 "tenant1/updates/news",
@@ -136,7 +136,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
-            Assert.Equal(new string[]
+            Assert.Equal(new[]
             {
                 "tenant1/updates",
                 "tenant1/updates/news"

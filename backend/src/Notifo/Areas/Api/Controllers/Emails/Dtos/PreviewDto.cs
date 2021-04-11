@@ -7,7 +7,7 @@
 
 using Notifo.Domain.Channels.Email;
 
-namespace Notifo.Areas.Api.Controllers.Emails.Dto
+namespace Notifo.Areas.Api.Controllers.Emails.Dtos
 {
     public sealed class PreviewDto
     {

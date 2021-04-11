@@ -15,21 +15,15 @@ namespace Notifo.Domain.Counters
 {
     public struct CounterKey
     {
-        private Guid notificationId;
-        private string? eventId;
-        private string? appId;
-        private string? userId;
-        private string? topic;
+        public Guid NotificationId { get; private set; }
 
-        public Guid NotificationId => notificationId;
+        public string? EventId { get; private set; }
 
-        public string? EventId => eventId;
+        public string? AppId { get; private set; }
 
-        public string? AppId => appId;
+        public string? UserId { get; private set; }
 
-        public string? UserId => userId;
-
-        public string? Topic => topic;
+        public string? Topic { get; private set; }
 
         public static CounterKey ForEvent(EventMessage @event)
         {
@@ -37,9 +31,9 @@ namespace Notifo.Domain.Counters
 
             var result = default(CounterKey);
 
-            result.eventId = @event.Id;
-            result.appId = @event.AppId;
-            result.topic = @event.Topic;
+            result.EventId = @event.Id;
+            result.AppId = @event.AppId;
+            result.Topic = @event.Topic;
 
             return result;
         }
@@ -50,10 +44,10 @@ namespace Notifo.Domain.Counters
 
             var result = default(CounterKey);
 
-            result.eventId = @event.EventId;
-            result.appId = @event.AppId;
-            result.topic = @event.Topic;
-            result.userId = @event.UserId;
+            result.EventId = @event.EventId;
+            result.AppId = @event.AppId;
+            result.Topic = @event.Topic;
+            result.UserId = @event.UserId;
 
             return result;
         }
@@ -64,11 +58,11 @@ namespace Notifo.Domain.Counters
 
             var result = default(CounterKey);
 
-            result.notificationId = notification.Id;
-            result.eventId = notification.EventId;
-            result.appId = notification.AppId;
-            result.topic = notification.Topic;
-            result.userId = notification.UserId;
+            result.NotificationId = notification.Id;
+            result.EventId = notification.EventId;
+            result.AppId = notification.AppId;
+            result.Topic = notification.Topic;
+            result.UserId = notification.UserId;
 
             return result;
         }

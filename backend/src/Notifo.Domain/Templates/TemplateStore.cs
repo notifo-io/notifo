@@ -65,11 +65,7 @@ namespace Notifo.Domain.Templates
             {
                 var (template, etag) = await repository.GetAsync(appId, code, ct);
 
-                if (template == null)
-                {
-                    template = Template.Create(appId, code);
-                }
-
+                template ??= Template.Create(appId, code);
                 template.Update(update);
 
                 await repository.UpsertAsync(template, etag, ct);

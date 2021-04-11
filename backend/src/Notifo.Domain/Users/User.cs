@@ -15,7 +15,7 @@ namespace Notifo.Domain.Users
 {
     public sealed class User
     {
-        public string Id { get; private set; }
+        public string Id { get; private init; }
 
         public string AppId { get; set; }
 

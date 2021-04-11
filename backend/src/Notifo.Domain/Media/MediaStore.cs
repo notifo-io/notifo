@@ -65,7 +65,7 @@ namespace Notifo.Domain.Media
 
             media.FileInfo = string.Join(", ", infos);
 
-            using (var stream = file.OpenRead())
+            await using (var stream = file.OpenRead())
             {
                 await mediaFileStore.UploadAsync(appId, media, stream, ct);
             }

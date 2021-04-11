@@ -132,7 +132,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             }
             else
             {
-                var message = $"MessageBird request failed with unknown error.";
+                var message = "MessageBird request failed with unknown error.";
 
                 return new HttpIntegrationException<MessageBirdError>(message, (int)response.StatusCode);
             }

@@ -9,7 +9,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -63,11 +62,6 @@ namespace Notifo.Areas.Account.Pages
         private void SetupService<TService>(ref Lazy<TService>? value) where TService : notnull
         {
             value = new Lazy<TService>(() => HttpContext.RequestServices.GetRequiredService<TService>());
-        }
-
-        public override void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        {
-            base.OnPageHandlerExecuting(context);
         }
 
         protected Task<IActionResult> RedirectToErrorPage(string error, string errorDescription)

@@ -117,7 +117,7 @@ namespace Notifo.Identity
 
                 var result = await userService.QueryAsync(ids);
 
-                return result.OfType<IUser>().ToDictionary(x => x.Id);
+                return result.ToDictionary(x => x.Id);
             }
         }
     }

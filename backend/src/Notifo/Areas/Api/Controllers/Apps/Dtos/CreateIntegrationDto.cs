@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Integrations;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 
-namespace Squidex.Areas.Frontend.Middlewares
+namespace Notifo.Pipeline
 {
     public class NotifoMiddleware
     {
@@ -27,7 +27,7 @@ namespace Squidex.Areas.Frontend.Middlewares
             {
                 context.Response.Headers[HeaderNames.ContentType] = "text/javascript";
 
-                var script = $"importScripts('https://app.notifo.io/build/notifo-sdk-worker.js')";
+                var script = "importScripts('https://app.notifo.io/build/notifo-sdk-worker.js')";
 
                 await context.Response.WriteAsync(script);
             }

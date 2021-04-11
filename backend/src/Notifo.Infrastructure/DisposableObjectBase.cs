@@ -12,15 +12,8 @@ namespace Notifo.Infrastructure
     public abstract class DisposableObjectBase : IDisposable
     {
         private readonly object disposeLock = new object();
-        private bool isDisposed;
 
-        public bool IsDisposed
-        {
-            get
-            {
-                return isDisposed;
-            }
-        }
+        public bool IsDisposed { get; private set; }
 
         public void Dispose()
         {
@@ -31,27 +24,27 @@ namespace Notifo.Infrastructure
 
         protected void Dispose(bool disposing)
         {
-            if (isDisposed)
+            if (IsDisposed)
             {
                 return;
             }
 
             lock (disposeLock)
             {
-                if (!isDisposed)
+                if (!IsDisposed)
                 {
                     DisposeObject(disposing);
                 }
             }
 
-            isDisposed = true;
+            IsDisposed = true;
         }
 
         protected abstract void DisposeObject(bool disposing);
 
         protected void ThrowIfDisposed()
         {
-            if (isDisposed)
+            if (IsDisposed)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }

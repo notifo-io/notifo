@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.WebPush
+namespace Notifo.Areas.Api.Controllers.WebPush.Dto
 {
     public sealed class RegisterWebTokenDto
     {

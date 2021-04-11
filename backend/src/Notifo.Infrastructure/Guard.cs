@@ -123,7 +123,7 @@ namespace Notifo.Infrastructure
         {
             NotNull(target, parameterName);
 
-            if (target != null && target.Count == 0)
+            if (target?.Count == 0)
             {
                 throw new ArgumentException("Collection does not contain an item.", parameterName);
             }

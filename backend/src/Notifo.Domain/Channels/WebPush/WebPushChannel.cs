@@ -153,7 +153,7 @@ namespace Notifo.Domain.Channels.WebPush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, ex.Message);
+                    await logStore.LogAsync(job.AppId, ex.Message, ct);
                     throw;
                 }
             });

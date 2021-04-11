@@ -73,10 +73,7 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
 
         public void Subscribe(IScheduleHandler<T> handler)
         {
-            if (currentHandler == null)
-            {
-                currentHandler = handler;
-            }
+            currentHandler ??= handler;
         }
 
         public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default)

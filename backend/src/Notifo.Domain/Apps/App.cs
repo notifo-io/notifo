@@ -16,11 +16,11 @@ namespace Notifo.Domain.Apps
     {
         private const string DefaultAppLanguage = "en";
 
-        public string Id { get; private set; }
+        public string Id { get; private init; }
 
         public string Name { get; set; }
 
-        public string[] Languages { get; set; } = new[] { DefaultAppLanguage };
+        public string[] Languages { get; set; } = { DefaultAppLanguage };
 
         public string? ConfirmUrl { get; set; } = string.Empty;
 

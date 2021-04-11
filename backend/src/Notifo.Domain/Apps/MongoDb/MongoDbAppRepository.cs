@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Notifo.Domain.Counters;
-using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb

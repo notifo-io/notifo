@@ -19,7 +19,7 @@ namespace Notifo.Areas.Api.OpenApi
         {
             foreach (var parameter in context.Parameters.Values)
             {
-                if (parameter.IsRequired && parameter.Schema != null && parameter.Schema.Type == JsonObjectType.String)
+                if (parameter.IsRequired && parameter.Schema is { Type: JsonObjectType.String })
                 {
                     parameter.Schema = StringSchema;
                 }

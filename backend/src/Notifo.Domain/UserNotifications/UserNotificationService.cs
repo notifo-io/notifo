@@ -106,7 +106,7 @@ namespace Notifo.Domain.UserNotifications
                     throw new DomainException(Texts.Notification_NoApp);
                 }
 
-                var app = await appStore.GetCachedAsync(userEvent.AppId, default);
+                var app = await appStore.GetCachedAsync(userEvent.AppId);
 
                 if (app == null)
                 {
@@ -132,7 +132,7 @@ namespace Notifo.Domain.UserNotifications
                     {
                         foreach (var configuration in notificationChannel.Status.Keys)
                         {
-                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
+                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options);
                         }
                     }
                 }
@@ -168,11 +168,6 @@ namespace Notifo.Domain.UserNotifications
             {
                 if (channel.IsSystem)
                 {
-                    var setting = new NotificationSetting
-                    {
-                        Send = NotificationSend.Send
-                    };
-
                     notification.Channels[channel.Name] = UserNotificationChannel.Create(new NotificationSetting
                     {
                         Send = NotificationSend.Send
@@ -201,7 +196,7 @@ namespace Notifo.Domain.UserNotifications
 
             if (notification != null)
             {
-                var app = await appStore.GetCachedAsync(notification.AppId, default);
+                var app = await appStore.GetCachedAsync(notification.AppId);
 
                 if (app == null)
                 {
@@ -225,7 +220,7 @@ namespace Notifo.Domain.UserNotifications
                         {
                             foreach (var configuration in notificationChannel.Status.Keys)
                             {
-                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
+                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options);
                             }
                         }
                     }

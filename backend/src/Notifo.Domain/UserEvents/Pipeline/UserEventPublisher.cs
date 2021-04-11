@@ -93,11 +93,11 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     {
                         var template = await templateStore.GetAsync(message.AppId, message.TemplateCode, ct);
 
-                        if (template != null && !template.IsAutoCreated)
+                        if (template?.IsAutoCreated == false)
                         {
                             message.Formatting = template.Formatting;
 
-                            if (template.Settings != null && template.Settings.Count > 0)
+                            if (template.Settings?.Count > 0)
                             {
                                 var settings = new NotificationSettings();
 

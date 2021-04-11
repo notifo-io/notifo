@@ -12,6 +12,6 @@ namespace Notifo.Domain.Channels.Sms
         Unknown,
         Sent,
         Delivered,
-        Failed,
+        Failed
     }
 }

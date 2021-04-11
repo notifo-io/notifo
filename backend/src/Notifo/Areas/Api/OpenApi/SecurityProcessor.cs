@@ -9,7 +9,7 @@ using System.Linq;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
-namespace Squidex.Areas.Api.Config.OpenApi
+namespace Notifo.Areas.Api.OpenApi
 {
     public sealed class SecurityProcessor : SecurityDefinitionAppender
     {

@@ -124,10 +124,7 @@ namespace Notifo.Areas.Account.Pages
                 var user = await UserService.FindByEmailAsync(email);
                 try
                 {
-                    if (user == null)
-                    {
-                        user = await UserService.CreateAsync(email);
-                    }
+                    user ??= await UserService.CreateAsync(email);
 
                     await UserService.AddLoginAsync(user.Id, loginInfo);
                 }

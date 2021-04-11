@@ -8,7 +8,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Notifo.Areas.Api.Controllers.Emails.Dto;
+using Notifo.Areas.Api.Controllers.Emails.Dtos;
 using Notifo.Domain;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email;

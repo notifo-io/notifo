@@ -14,7 +14,7 @@ namespace Notifo.Domain.Events.MongoDb
 {
     public sealed class MongoDbEvent : MongoDbEntity<Event>
     {
-        private static readonly ObjectPool<StringBuilder> StringBuilderPool = ObjectPool.Create<StringBuilder>(new StringBuilderPooledObjectPolicy());
+        private static readonly ObjectPool<StringBuilder> StringBuilderPool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
 
         public string SearchText { get; set; }
 

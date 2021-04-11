@@ -34,7 +34,7 @@ namespace Notifo.Identity
 
         public async Task InitializeAsync(CancellationToken cancellationToken)
         {
-            if (users != null && users.Length > 0)
+            if (users?.Length > 0)
             {
                 using (var scope = serviceProvider.CreateScope())
                 {

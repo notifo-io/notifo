@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Frontend.Middlewares;
-using Squidex.Areas.Frontend.Middlewares;
+using Notifo.Pipeline;
 
 namespace Notifo.Areas.Frontend
 {
@@ -62,7 +62,6 @@ namespace Notifo.Areas.Frontend
                 OnPrepareResponse = context =>
                 {
                     var request = context.Context.Request;
-                    var requestPath = request.Path.ToString();
 
                     var hasQuery = !string.IsNullOrWhiteSpace(request.QueryString.ToString());
 

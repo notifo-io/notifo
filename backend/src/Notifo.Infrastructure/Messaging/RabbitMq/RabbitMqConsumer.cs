@@ -77,7 +77,7 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
                 {
                     var message = serializer.Deserialize<T>(@event.Body.Span);
 
-                    await consumer.HandleAsync(message, default);
+                    await consumer.HandleAsync(message);
 
                     channel.BasicAck(@event.DeliveryTag, true);
                 }

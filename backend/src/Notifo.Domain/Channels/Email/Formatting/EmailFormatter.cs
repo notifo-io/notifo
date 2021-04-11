@@ -206,14 +206,14 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 var result = await mjmlServices.Render(mjml);
 
-                if (result.Errors != null && result.Errors.Length > 0)
+                if (result?.Errors.Length > 0)
                 {
                     var errors = result.Errors.Select(x => new EmailFormattingError(x.Message, x.Line)).ToList();
 
                     throw new EmailFormattingException(mjml, errors);
                 }
 
-                return result.Html;
+                return result!.Html;
             }
         }
     }

@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using System.Linq;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

@@ -11,6 +11,6 @@ namespace Notifo.Domain.Integrations
     {
         Verified,
         VerificationFailed,
-        Pending,
+        Pending
     }
 }

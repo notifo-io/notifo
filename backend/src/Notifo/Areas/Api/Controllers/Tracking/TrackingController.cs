@@ -19,9 +19,9 @@ namespace Notifo.Areas.Api.Controllers.Tracking
     {
         private readonly IUserNotificationService userNotificationService;
 
-        public TrackingController(IUserNotificationService userNotificationsStore)
+        public TrackingController(IUserNotificationService userNotificationService)
         {
-            this.userNotificationService = userNotificationsStore;
+            this.userNotificationService = userNotificationService;
         }
 
         [HttpGet("/api/tracking/notifications/{id}/seen")]
@@ -82,7 +82,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
         private IActionResult TrackingPixel()
         {
-            var stream = typeof(TrackingController).Assembly.GetManifestResourceStream($"Notifo.Areas.Api.Controllers.Tracking.TrackingPixel.png")!;
+            var stream = typeof(TrackingController).Assembly.GetManifestResourceStream("Notifo.Areas.Api.Controllers.Tracking.TrackingPixel.png")!;
 
             return File(stream, "image/png");
         }

@@ -73,7 +73,7 @@ namespace Notifo.Domain.Integrations.Smtp
                     UsernameProperty,
                     PasswordProperty,
                     FromEmailProperty,
-                    FromNameProperty,
+                    FromNameProperty
                 },
                 new HashSet<string>
                 {

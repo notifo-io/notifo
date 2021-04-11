@@ -48,7 +48,7 @@
                 <p>
                     @foreach (var provider in Model.ExternalLogins)
                     {
-                        var lowerName = @provider.DisplayName!.ToLowerInvariant();
+                        var lowerName = provider.DisplayName!.ToLowerInvariant();
 
                         <button type="submit" class="btn btn-block btn-social btn-dark btn-@lowerName" name="provider" value="@provider.Name">
                             <i class="fab fa-@lowerName"></i> @T[$"LoginWith{provider.DisplayName}"]

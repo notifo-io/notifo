@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Notifo.Infrastructure
 {
-    public interface ICommand<T>
+    public interface ICommand<in T>
     {
         bool CanCreate => false;
 

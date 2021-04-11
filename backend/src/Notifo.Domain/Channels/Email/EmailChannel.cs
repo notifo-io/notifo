@@ -188,7 +188,7 @@ namespace Notifo.Domain.Channels.Email
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, ex.Message);
+                    await logStore.LogAsync(app.Id, ex.Message, ct);
                     throw;
                 }
             });
