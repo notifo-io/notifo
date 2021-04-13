@@ -30,7 +30,7 @@ namespace Notifo.Domain.Integrations.Firebase
 
             appOptions.ProjectId = projectId;
 
-            app = FirebaseApp.Create(appOptions);
+            app = FirebaseApp.Create(appOptions, Guid.NewGuid().ToString());
 
             messaging = FirebaseMessaging.GetMessaging(app);
         }
