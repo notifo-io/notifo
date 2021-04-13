@@ -28,6 +28,7 @@ namespace Notifo.Domain.Integrations.Firebase
             var subject = "subject1";
             var token = "token1";
             var trackingUrl = "https://track.notifo.com";
+            var data = "data1";
 
             var notification = new UserNotification
             {
@@ -45,7 +46,8 @@ namespace Notifo.Domain.Integrations.Firebase
                     LinkUrl = linkUrl,
                     Subject = subject
                 },
-                TrackingUrl = trackingUrl
+                TrackingUrl = trackingUrl,
+                Data = data
             };
 
             var message = notification.ToFirebaseMessage(token, false);
@@ -60,6 +62,7 @@ namespace Notifo.Domain.Integrations.Firebase
             Assert.Equal(message.Data[nameof(linkText)], linkText);
             Assert.Equal(message.Data[nameof(linkUrl)], linkUrl);
             Assert.Equal(message.Data[nameof(trackingUrl)], $"{trackingUrl}?channel=mobilepush&deviceIdentifier=token1");
+            Assert.Equal(message.Data[nameof(data)], data);
 
             Assert.Equal(message.Android.Data[nameof(subject)], subject);
             Assert.Equal(message.Android.Data[nameof(body)], body);

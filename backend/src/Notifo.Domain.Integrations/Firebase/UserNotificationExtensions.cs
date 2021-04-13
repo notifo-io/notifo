@@ -51,7 +51,8 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
                     .WithNonEmpty("linkText", formatting.LinkText)
                     .WithNonEmpty("linkUrl", formatting.LinkUrl)
-                    .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token));
+                    .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("data", notification.Data);
 
             var androidData =
                 new Dictionary<string, string>()
