@@ -24,17 +24,9 @@ namespace Notifo.Domain.Integrations.Firebase
 
             if (wakeup)
             {
-                message.Apns = new ApnsConfig
-                {
-                    Aps = new Aps
-                    {
-                        ContentAvailable = true
-                    },
-                    Headers = new Dictionary<string, string>
-                    {
-                        ["apns-priority"] = "5"
-                    }
-                };
+                message.Data =
+                    new Dictionary<string, string>()
+                        .WithNonEmpty("id", notification.Id.ToString());
 
                 return message;
             }

@@ -127,7 +127,8 @@ namespace Notifo.Domain.Integrations.Firebase
             var message = notification.ToFirebaseMessage(token, true);
 
             Assert.Equal(token, message.Token);
-            Assert.True(message.Apns.Aps.ContentAvailable);
-        }
+            Assert.Equal(message.Data[nameof(id)], id.ToString());
+            Assert.Null(message.Notification);
+          }
     }
 }
