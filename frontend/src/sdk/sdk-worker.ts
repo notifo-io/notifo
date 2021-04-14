@@ -102,10 +102,14 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
  })(<any>self);
 
 async function subscribeToWebPush(sw: ServiceWorkerRegistration, config: SDKConfig) {
+    if (!config.publicKey) {
+        return;
+    }
+
     const options = {
         userVisibleOnly: true,
         userId: '',
-        applicationServerKey: urlB64ToUint8Array(config.publicKey!),
+        applicationServerKey: urlB64ToUint8Array(config.publicKey),
     };
 
     const subscription = await sw.pushManager.subscribe(options);
