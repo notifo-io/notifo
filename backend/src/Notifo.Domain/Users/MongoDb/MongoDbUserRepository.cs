@@ -23,9 +23,9 @@ namespace Notifo.Domain.Users.MongoDb
     {
         static MongoDbUserRepository()
         {
-            BsonClassMap.RegisterClassMap<User>(map =>
+            BsonClassMap.RegisterClassMap<User>(cm =>
             {
-                map.AutoMap();
+                cm.AutoMap();
 
                 cm.SetIgnoreExtraElements(true);
             });
