@@ -83,7 +83,7 @@ export const IntegrationsPage = () => {
 
             <FormError error={loadingError} />
 
-            {integrations.length >= 0 &&
+            {integrations.length > 0 &&
                 <div className='mb-4'>
                     <h6>{texts.integrations.configured}</h6>
 
