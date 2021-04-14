@@ -348,9 +348,7 @@ export async function apiRegister(config: SDKConfig) {
         }
     }
 
-    if (config.apiKey) {
-        Object.assign(config, result);
-    }
+    Object.assign(config, result);
 
     if (window.localStorage) {
         window.localStorage.setItem(CACHE_KEY, JSON.stringify(result));
