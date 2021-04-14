@@ -26,6 +26,8 @@ namespace Notifo.Domain.Users.MongoDb
             BsonClassMap.RegisterClassMap<User>(map =>
             {
                 map.AutoMap();
+
+                cm.SetIgnoreExtraElements(true);
             });
         }
 

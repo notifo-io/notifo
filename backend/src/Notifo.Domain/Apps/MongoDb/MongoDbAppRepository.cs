@@ -20,11 +20,13 @@ namespace Notifo.Domain.Apps.MongoDb
     {
         static MongoDbAppRepository()
         {
-            BsonClassMap.RegisterClassMap<App>(map =>
+            BsonClassMap.RegisterClassMap<App>(cm =>
             {
-                map.AutoMap();
+                cm.AutoMap();
 
-                map.MapProperty(x => x.Counters)
+                cm.SetIgnoreExtraElements(true);
+
+                cm.MapProperty(x => x.Counters)
                     .SetIgnoreIfNull(true);
             });
         }
