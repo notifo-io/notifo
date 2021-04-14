@@ -42,7 +42,17 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             this.schedulerStore = schedulerStore;
             this.schedulerOptions = schedulerOptions;
 
-            actionBlock = new ActionBlock<SchedulerBatch<T>>(HandleAsync, new ExecutionDataflowBlockOptions
+            actionBlock = new ActionBlock<SchedulerBatch<T>>(async batch =>
+            {
+                try
+                {
+                    await HandleAsync(batch);
+                }
+                catch (OperationCanceledException ex)
+                {
+                    throw new AggregateException(ex);
+                }
+            }, new ExecutionDataflowBlockOptions
             {
                 BoundedCapacity = schedulerOptions.MaxParallelism * 4,
                 MaxDegreeOfParallelism = schedulerOptions.MaxParallelism,
