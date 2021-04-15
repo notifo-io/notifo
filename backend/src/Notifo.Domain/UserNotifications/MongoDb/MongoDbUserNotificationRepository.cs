@@ -39,6 +39,17 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 cm.MapProperty(x => x.IsConfirmed)
                     .SetIgnoreIfNull(true);
             });
+
+            BsonClassMap.RegisterClassMap<UserNotificationChannel>(cm =>
+            {
+                cm.AutoMap();
+
+                cm.SetIgnoreExtraElements(true);
+
+                cm.MapProperty(x => x.Status)
+                    .SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<string, ChannelSendInfo>, string, ChannelSendInfo>()
+                        .WithKeySerializer(new Base64Serializer()));
+            });
         }
 
         public MongoDbUserNotificationRepository(IMongoDatabase database)
@@ -207,7 +218,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
                 foreach (var (_, channel, configuration, info) in group)
                 {
-                    var path = $"Channels.{channel}.Status.{configuration}";
+                    var path = $"Channels.{channel}.Status.{configuration.ToBase64()}";
 
                     documentUpdates.Add(Update.Set($"{path}.Detail", info.Detail));
                     documentUpdates.Add(Update.Set($"{path}.Status", info.Status));
