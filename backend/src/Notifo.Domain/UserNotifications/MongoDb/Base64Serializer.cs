@@ -16,7 +16,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         {
             var read = context.Reader.ReadString();
 
-            return read.FromBase64();
+            return read.FromOptionalBase64();
         }
 
         public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, string value)

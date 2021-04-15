@@ -17,9 +17,16 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return Convert.ToBase64String(Encoding.Default.GetBytes(value));
         }
 
-        public static string FromBase64(this string value)
+        public static string FromOptionalBase64(this string value)
         {
-            return Encoding.Default.GetString(Convert.FromBase64String(value));
+            try
+            {
+                return Encoding.Default.GetString(Convert.FromBase64String(value));
+            }
+            catch (FormatException)
+            {
+                return value;
+            }
         }
     }
 }
