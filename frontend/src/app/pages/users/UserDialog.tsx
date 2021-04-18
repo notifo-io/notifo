@@ -82,12 +82,17 @@ export const UserDialog = (props: UserDialogProps) => {
                                 <Forms.Text name='phoneNumber'
                                     label={texts.common.phoneNumber} />
 
+                                <Forms.Text name='threemaId'
+                                    label={texts.common.threemaId} />
+
                                 <Forms.Select name='preferredLanguage' options={coreLanguages}
                                     label={texts.common.language} />
 
                                 <Forms.Select name='preferredTimezone' options={coreTimezones}
                                     label={texts.common.timezone} />
                             </fieldset>
+
+                            <hr />
 
                             <NotificationsForm.Settings field='settings' disabled={upserting} />
 

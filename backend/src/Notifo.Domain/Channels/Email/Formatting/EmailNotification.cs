@@ -30,7 +30,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string? ConfirmUrl { get; set; }
 
-        public static EmailNotification Create(UserNotification notification, string? emailAddress, IImageFormatter imageFormatter)
+        public static EmailNotification Create(BaseUserNotification notification, string? emailAddress, IImageFormatter imageFormatter)
         {
             var result = new EmailNotification
             {

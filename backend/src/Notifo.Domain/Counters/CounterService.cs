@@ -23,6 +23,11 @@ namespace Notifo.Domain.Counters
 
         public Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct)
         {
+            if (counters.Count == 0)
+            {
+                return Task.CompletedTask;
+            }
+
             return Task.WhenAll(targets.Select(x => x.CollectAsync(key, counters, ct)));
         }
     }

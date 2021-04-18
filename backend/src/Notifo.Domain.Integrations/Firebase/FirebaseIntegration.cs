@@ -33,8 +33,8 @@ namespace Notifo.Domain.Integrations.Firebase
             IsRequired = true
         };
 
-        public IntegrationDefinition Definition { get; }
-            = new IntegrationDefinition(
+        public IntegrationDefinition Definition { get; } =
+            new IntegrationDefinition(
                 "Firebase",
                 Texts.Firebase_Name,
                 "./integrations/firebase.svg",

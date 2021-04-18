@@ -17,8 +17,8 @@ namespace Notifo.Domain.Channels.Email
     {
         Task<EmailTemplate> GetDefaultTemplateAsync();
 
-        Task<EmailMessage> FormatAsync(IEnumerable<UserNotification> notifications, EmailTemplate template, App app, User user, bool noCache);
+        Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user, bool noCache);
 
-        Task<EmailMessage> FormatAsync(IEnumerable<UserNotification> notifications, App app, User user);
+        Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user);
     }
 }

@@ -8,41 +8,8 @@
 import { Forms } from '@app/framework';
 import { texts } from '@app/texts';
 import * as React from 'react';
+import { CHANNELS, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { MediaInput } from './MediaInput';
-
-const CHANNELS = [
-    'webpush',
-    'mobilepush',
-    'email',
-    'sms',
-];
-
-const CONFIRM_MODES = [{
-        value: 'Seen',
-        label: texts.common.confirmModes.seen,
-    }, {
-        value: 'Explicit',
-        label: texts.common.confirmModes.explicit,
-    }, {
-        value: 'None',
-        label: texts.common.confirmModes.none,
-    },
-];
-
-const SEND_MODES = [{
-        value: 'Inherit',
-        label: texts.common.sendModes.inherit,
-    }, {
-        value: 'Send',
-        label: texts.common.sendModes.send,
-    }, {
-        value: 'DoNotSend',
-        label: texts.common.sendModes.doNotSend,
-    }, {
-        value: 'DoNotAllow',
-        label: texts.common.sendModes.doNotAllow,
-    },
-];
 
 export module NotificationsForm {
     export interface FormattingProps {

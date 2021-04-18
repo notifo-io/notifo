@@ -263,6 +263,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 try
                 {
                     await sender.SendAsync(notification, job.Token, notification.Formatting == null, ct);
+                    return;
                 }
                 catch (MobilePushTokenExpiredException)
                 {

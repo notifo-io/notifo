@@ -43,8 +43,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
             IsRequired = true
         };
 
-        public IntegrationDefinition Definition { get; }
-            = new IntegrationDefinition(
+        public IntegrationDefinition Definition { get; } =
+            new IntegrationDefinition(
                 "AmazonSES",
                 Texts.AmazonSES_Name,
                 "./integrations/amazon-ses.svg",

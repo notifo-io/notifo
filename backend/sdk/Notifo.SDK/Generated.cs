@@ -7516,6 +7516,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PhoneNumber { get; set; }
     
+        /// <summary>The threema id.</summary>
+        [Newtonsoft.Json.JsonProperty("threemaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ThreemaId { get; set; }
+    
         /// <summary>The preferred language of the user.</summary>
         [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredLanguage { get; set; }
@@ -7593,6 +7597,10 @@ namespace Notifo.SDK
         /// <summary>The phone number.</summary>
         [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PhoneNumber { get; set; }
+    
+        /// <summary>The threema id.</summary>
+        [Newtonsoft.Json.JsonProperty("threemaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ThreemaId { get; set; }
     
         /// <summary>The preferred language of the user.</summary>
         [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

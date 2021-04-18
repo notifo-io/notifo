@@ -8,15 +8,17 @@
 import { Counters } from '@app/shared/utils';
 import { texts } from '@app/texts';
 import * as React from 'react';
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Table } from 'reactstrap';
+import { CHANNELS } from './../utils/model';
+import { ChannelCounterRow } from './ChannelCounterRow';
 import { StatisticsLabel } from './StatisticsLabel';
 
 export interface CounterRowProps {
     // The counters.
     counters: { [key: string]: number };
 
-    // True to hide all counters.
-    hideCounters?: boolean;
+    // True to show all counters.
+    showCounters?: boolean;
 
     // The number of columns.
     columnCount: number;
@@ -26,54 +28,30 @@ export interface CounterRowProps {
 }
 
 export const CounterRow = React.memo((props: CounterRowProps) => {
-    const { children, columnCount, counters, hideCounters } = props;
+    const { children, columnCount, counters, showCounters } = props;
 
     return (
         <>
             {children}
 
-            {!hideCounters &&
+            {showCounters &&
                 <tr className='list-item-details'>
                     <td colSpan={columnCount}>
                         <Row>
-                            <Col xs={4}>
+                            <Col xs={6}>
                                 <StatisticsLabel icon='message'
                                     name={texts.common.notifications}
                                     total={counters[Counters.NotificationsHandled]}
                                     totalFailed={counters[Counters.NotificationsFailed]}
                                     totalAttempt={counters[Counters.NotificationsAttempt]} />
                             </Col>
-                            <Col xs={2}>
-                                <StatisticsLabel icon='browser'
-                                    name={texts.common.webPush}
-                                    total={counters[Counters.WebPushHandled]}
-                                    totalFailed={counters[Counters.WebPushFailed]}
-                                    totalAttempt={counters[Counters.WebPushAttempt]}
-                                />
-                            </Col>
-                            <Col xs={2}>
-                                <StatisticsLabel icon='mobile'
-                                    name={texts.common.mobilePush}
-                                    total={counters[Counters.MobilePushHandled]}
-                                    totalFailed={counters[Counters.MobilePushFailed]}
-                                    totalAttempt={counters[Counters.MobilePushAttempt]}
-                                />
-                            </Col>
-                            <Col xs={2}>
-                                <StatisticsLabel icon='mail_outline'
-                                    name={texts.common.email}
-                                    total={counters[Counters.EmailHandled]}
-                                    totalFailed={counters[Counters.EmailFailed]}
-                                    totalAttempt={counters[Counters.EmailAttempt]}
-                                />
-                            </Col>
-                            <Col xs={2}>
-                                <StatisticsLabel icon='sms'
-                                    name={texts.common.sms}
-                                    total={counters[Counters.SmsHandled]}
-                                    totalFailed={counters[Counters.SmsFailed]}
-                                    totalAttempt={counters[Counters.SmsAttempt]}
-                                />
+                            <Col x={6}>
+
+                                <Table borderless size='sm' className='table-sm-text'>
+                                    {CHANNELS.map(channel =>
+                                        <ChannelCounterRow key={channel} channel={channel} counters={counters} />,
+                                    )}
+                                </Table>
                             </Col>
                         </Row>
                     </td>

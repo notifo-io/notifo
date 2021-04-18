@@ -89,7 +89,7 @@ export const MediaPage = () => {
                 }
             </div>
 
-            <TableFooter list={media} noCounters
+            <TableFooter list={media} noDetailButton
                 onChange={doLoad} />
         </div>
     );

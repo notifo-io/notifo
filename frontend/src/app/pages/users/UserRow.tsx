@@ -22,8 +22,8 @@ export interface UserRowProps {
     // The match.
     match: match;
 
-    // True to hide all counters.
-    hideCounters?: boolean;
+    // True to show all counters.
+    showCounters?: boolean;
 
     // The publish event.
     onPublish?: (user: UserDto) => void;
@@ -36,7 +36,7 @@ export interface UserRowProps {
 }
 
 export const UserRow = React.memo((props: UserRowProps) => {
-    const { hideCounters, match, onDelete, onEdit, onPublish, user } = props;
+    const { showCounters, match, onDelete, onEdit, onPublish, user } = props;
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
@@ -55,7 +55,7 @@ export const UserRow = React.memo((props: UserRowProps) => {
     }, [user]);
 
     return (
-        <CounterRow counters={user.counters} columnCount={4} hideCounters={hideCounters}>
+        <CounterRow counters={user.counters} columnCount={4} showCounters={showCounters}>
             <tr className='list-item-summary'>
                 <td>
                     <NavLink to={`${match.url}/${user.id}`}>

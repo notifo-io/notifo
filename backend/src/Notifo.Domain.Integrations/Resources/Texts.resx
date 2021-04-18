@@ -192,4 +192,16 @@
   <data name="SMTP_UsernameLabel" xml:space="preserve">
     <value>Username</value>
   </data>
+  <data name="ThreemaSimple_ApiIdentityLabel" xml:space="preserve">
+    <value>API Identity</value>
+  </data>
+  <data name="ThreemaSimple_ApiSecretLabel" xml:space="preserve">
+    <value>API authentication secret</value>
+  </data>
+  <data name="ThreemaSimple_Description" xml:space="preserve">
+    <value>Send server-side encrypted messages using Threema.</value>
+  </data>
+  <data name="ThreemaSimple_Name" xml:space="preserve">
+    <value>Threema</value>
+  </data>
 </root>

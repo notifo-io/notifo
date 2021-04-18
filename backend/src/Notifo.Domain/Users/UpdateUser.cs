@@ -24,6 +24,8 @@ namespace Notifo.Domain.Users
 
         public string? PhoneNumber { get; set; }
 
+        public string? ThreemaId { get; set; }
+
         public string? PreferredLanguage { get; set; }
 
         public string? PreferredTimezone { get; set; }
@@ -62,6 +64,11 @@ namespace Notifo.Domain.Users
             if (PhoneNumber != null)
             {
                 user.PhoneNumber = PhoneNumber;
+            }
+
+            if (ThreemaId != null)
+            {
+                user.ThreemaId = ThreemaId;
             }
 
             if (PreferredLanguage != null)

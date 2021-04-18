@@ -44,6 +44,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public string? PhoneNumber { get; set; }
 
         /// <summary>
+        /// The threema id.
+        /// </summary>
+        public string? ThreemaId { get; set; }
+
+        /// <summary>
         /// The preferred language of the user.
         /// </summary>
         public string? PreferredLanguage { get; set; }

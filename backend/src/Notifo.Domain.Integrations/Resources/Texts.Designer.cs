@@ -284,5 +284,41 @@ namespace Notifo.Domain.Integrations.Resources {
                 return ResourceManager.GetString("SMTP_UsernameLabel", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API Identity.
+        /// </summary>
+        internal static string ThreemaSimple_ApiIdentityLabel {
+            get {
+                return ResourceManager.GetString("ThreemaSimple_ApiIdentityLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API authentication secret.
+        /// </summary>
+        internal static string ThreemaSimple_ApiSecretLabel {
+            get {
+                return ResourceManager.GetString("ThreemaSimple_ApiSecretLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send server-side encrypted messages using Threema..
+        /// </summary>
+        internal static string ThreemaSimple_Description {
+            get {
+                return ResourceManager.GetString("ThreemaSimple_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Threema.
+        /// </summary>
+        internal static string ThreemaSimple_Name {
+            get {
+                return ResourceManager.GetString("ThreemaSimple_Name", resourceCulture);
+            }
+        }
     }
 }

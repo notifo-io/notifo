@@ -107,7 +107,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
                     }
                 </div>
 
-                <TableFooter list={media} noCounters
+                <TableFooter list={media} noDetailButton
                     onChange={doLoad} />
             </ModalBody>
 

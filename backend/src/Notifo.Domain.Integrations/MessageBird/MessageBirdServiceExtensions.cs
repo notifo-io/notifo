@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class MessageBirdServiceExtensions
     {
-        public static void AddIntegrationMessageBird(this IServiceCollection services, IConfiguration config)
+        public static void IntegrateMessageBird(this IServiceCollection services, IConfiguration config)
         {
             const string key = "sms:messageBird";
 

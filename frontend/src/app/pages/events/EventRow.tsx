@@ -16,18 +16,18 @@ export interface EventRowProps {
     // The event.
     event: EventDto;
 
-    // True to hide all counters.
-    hideCounters?: boolean;
+    // True to show all counters.
+    showCounters?: boolean;
 }
 
 export const EventRow = React.memo((props: EventRowProps) => {
-    const { event, hideCounters } = props;
+    const { event, showCounters } = props;
 
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
         <>
-            <CounterRow counters={event.counters} columnCount={4} hideCounters={hideCounters}>
+            <CounterRow counters={event.counters} columnCount={4} showCounters={showCounters}>
                 <>
                     <tr className='list-item-summary'>
                         <td>
