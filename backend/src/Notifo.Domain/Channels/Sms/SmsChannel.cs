@@ -63,7 +63,7 @@ namespace Notifo.Domain.Channels.Sms
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            if (!integrationManager.IsConfigured<ISmsSender>(options.App))
+            if (!integrationManager.IsConfigured<ISmsSender>(options.App, notification.Test))
             {
                 yield break;
             }
@@ -174,7 +174,7 @@ namespace Notifo.Domain.Channels.Sms
                 {
                     await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<ISmsSender>(app).ToList();
+                    var senders = integrationManager.Resolve<ISmsSender>(app, job.Test).ToList();
 
                     if (senders.Count == 0)
                     {

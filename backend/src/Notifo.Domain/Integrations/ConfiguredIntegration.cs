@@ -13,6 +13,8 @@ namespace Notifo.Domain.Integrations
     {
         public bool Enabled { get; set; }
 
+        public bool? Test { get; set; }
+
         public int Priority { get; set; }
 
         public IntegrationStatus Status { get; set; }

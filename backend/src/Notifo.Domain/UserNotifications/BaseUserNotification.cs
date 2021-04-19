@@ -32,6 +32,8 @@ namespace Notifo.Domain.UserNotifications
 
         public bool Silent { get; set; }
 
+        public bool Test { get; set; }
+
         public NotificationFormatting<string> Formatting { get; set; }
 
         public string? ComputeTrackingUrl(string channel, string? deviceIdentifier)

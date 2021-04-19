@@ -17,7 +17,7 @@ namespace Notifo.Domain.Channels.Email
 
         public string ScheduleKey
         {
-            get => $"{Notification.AppId}_{Notification.UserId}_{Notification.UserLanguage}_{EmailAddress}";
+            get => $"{Notification.AppId}_{Notification.UserId}_{Notification.UserLanguage}_{Notification.Test}_{EmailAddress}";
         }
 
         public EmailJob()

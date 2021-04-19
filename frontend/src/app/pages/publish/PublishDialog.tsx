@@ -92,6 +92,11 @@ export const PublishDialog = () => {
 
                             <hr />
 
+                            <Forms.Boolean name='test'
+                                label={texts.integrations.test} />
+
+                            <hr />
+
                             <Forms.Boolean name='silent'
                                 label={texts.common.silent} />
 

@@ -31,6 +31,11 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         public bool Enabled { get; set; }
 
         /// <summary>
+        /// True or false when only used for test or production mode.
+        /// </summary>
+        public bool? Test { get; set; }
+
+        /// <summary>
         /// The priority in which order the integrations must run.
         /// </summary>
         public int Priority { get; set; }

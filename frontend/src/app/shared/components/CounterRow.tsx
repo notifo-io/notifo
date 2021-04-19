@@ -48,9 +48,11 @@ export const CounterRow = React.memo((props: CounterRowProps) => {
                             <Col x={6}>
 
                                 <Table borderless size='sm' className='table-sm-text'>
-                                    {CHANNELS.map(channel =>
-                                        <ChannelCounterRow key={channel} channel={channel} counters={counters} />,
-                                    )}
+                                    <tbody>
+                                        {CHANNELS.map(channel =>
+                                            <ChannelCounterRow key={channel} channel={channel} counters={counters} />,
+                                        )}
+                                    </tbody>
                                 </Table>
                             </Col>
                         </Row>

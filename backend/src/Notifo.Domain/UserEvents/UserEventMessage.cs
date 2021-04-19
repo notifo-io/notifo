@@ -27,6 +27,8 @@ namespace Notifo.Domain.UserEvents
 
         public bool Silent { get; set; }
 
+        public bool Test { get; set; }
+
         public Instant Created { get; set; }
 
         public NotificationSettings? EventSettings { get; set; }

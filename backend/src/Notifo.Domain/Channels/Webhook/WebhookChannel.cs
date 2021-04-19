@@ -63,7 +63,7 @@ namespace Notifo.Domain.Channels.Webhook
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting setting, SendOptions options)
         {
-            var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App);
+            var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification.Test);
 
             foreach (var webhook in webhooks)
             {

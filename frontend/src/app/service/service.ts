@@ -3541,6 +3541,8 @@ export interface PublishDto {
     scheduling?: SchedulingDto | undefined;
     /** True when silent. */
     silent?: boolean;
+    /** True when using test integrations. */
+    test?: boolean;
 }
 
 export interface EventProperties {
@@ -3654,6 +3656,8 @@ export interface ConfiguredIntegrationDto {
     properties: IntegrationProperties;
     /** True when enabled. */
     enabled?: boolean;
+    /** True or false when only used for test or production mode. */
+    test?: boolean | undefined;
     /** The priority in which order the integrations must run. */
     priority?: number;
     /** The status of the integration. */
@@ -3721,6 +3725,8 @@ export interface CreateIntegrationDto {
     properties: IntegrationProperties;
     /** True when enabled. */
     enabled?: boolean;
+    /** True when used for test events. */
+    test?: boolean | undefined;
     /** The priority in which order the integrations must run. */
     priority?: number;
 }
@@ -3730,6 +3736,8 @@ export interface UpdateIntegrationDto {
     properties: IntegrationProperties;
     /** True when enabled. */
     enabled?: boolean;
+    /** True when used for test events. */
+    test?: boolean | undefined;
     /** The priority in which order the integrations must run. */
     priority?: number;
 }

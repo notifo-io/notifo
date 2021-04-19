@@ -41,9 +41,11 @@ export const CounterCards = React.memo((props: CounterCardsProps) => {
                         </CardHeader>
                         <CardBody>
                             <Table borderless size='sm' className='table-sm-text'>
-                                {CHANNELS.map(channel =>
-                                    <ChannelCounterRow key={channel} channel={channel} counters={counters} />,
-                                )}
+                                <tbody>
+                                    {CHANNELS.map(channel =>
+                                        <ChannelCounterRow key={channel} channel={channel} counters={counters} />,
+                                    )}
+                                </tbody>
                             </Table>
                         </CardBody>
                     </Card>

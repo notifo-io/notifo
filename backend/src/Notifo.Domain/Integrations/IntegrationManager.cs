@@ -63,9 +63,9 @@ namespace Notifo.Domain.Integrations
             return integration.OnConfiguredAsync(configured, previous);
         }
 
-        public bool IsConfigured<T>(App app)
+        public bool IsConfigured<T>(App app, bool test)
         {
-            foreach (var (configured, integration) in GetIntegrations(app))
+            foreach (var (configured, integration) in GetIntegrations(app, test))
             {
                 if (integration.CanCreate(typeof(T), configured))
                 {
@@ -76,9 +76,9 @@ namespace Notifo.Domain.Integrations
             return false;
         }
 
-        public IEnumerable<T> Resolve<T>(App app) where T : class
+        public IEnumerable<T> Resolve<T>(App app, bool test) where T : class
         {
-            foreach (var (configured, integration) in GetIntegrations(app))
+            foreach (var (configured, integration) in GetIntegrations(app, test))
             {
                 if (integration.Create(typeof(T), configured) is T created)
                 {
@@ -87,13 +87,13 @@ namespace Notifo.Domain.Integrations
             }
         }
 
-        private IEnumerable<(ConfiguredIntegration Configured, IIntegration)> GetIntegrations(App app)
+        private IEnumerable<(ConfiguredIntegration Configured, IIntegration)> GetIntegrations(App app, bool test)
         {
             var configureds = app.Integrations;
 
             foreach (var (_, configured) in configureds)
             {
-                if (!configured.Enabled || configured.Status != IntegrationStatus.Verified)
+                if (!IsReady(configured) || !IsMatchingTest(configured, test))
                 {
                     continue;
                 }
@@ -105,6 +105,16 @@ namespace Notifo.Domain.Integrations
                     yield return (configured, integration);
                 }
             }
+        }
+
+        private static bool IsReady(ConfiguredIntegration configured)
+        {
+            return configured.Enabled && configured.Status == IntegrationStatus.Verified;
+        }
+
+        private static bool IsMatchingTest(ConfiguredIntegration configured, bool test)
+        {
+            return configured.Test == null || configured.Test.Value == test;
         }
 
         public async Task CheckAsync(CancellationToken ct)

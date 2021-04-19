@@ -6,41 +6,43 @@
  */
 
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
+import { getSummaryProperties } from '@app/state';
+import { texts } from '@app/texts';
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
 import { StatusLabel } from './StatusLabel';
 
 export interface ConfiguredIntegrationProps {
-    // The id of the integration.
-    id: string;
-
     // The definition.
     definition: IntegrationDefinitionDto;
 
+    // The id of the integration.
+    configuredId: string;
+
     // The defined integration.
-    defined: ConfiguredIntegrationDto;
+    configured: ConfiguredIntegrationDto;
 
     // Invoked when adding.
-    onEdit: (definition: IntegrationDefinitionDto, defined: ConfiguredIntegrationDto, id: string) => void;
+    onEdit: (definition: IntegrationDefinitionDto, configured: ConfiguredIntegrationDto, id: string) => void;
 }
 
 export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationProps) => {
     const {
+        configured,
+        configuredId,
         definition,
-        defined,
-        id,
         onEdit,
     } = props;
 
     const doEdit = React.useCallback(() => {
-        onEdit(definition, defined, id);
-    }, [definition, defined, id]);
+        onEdit(definition, configured, configuredId);
+    }, [definition, configured, configuredId]);
 
-    const properties =
-        definition.properties.filter(p => !!p.summary)
-            .map(p => ({ label: p.editorLabel || p.name, value: defined.properties[p.name] }));
+    const properties = React.useMemo(() => {
+        return getSummaryProperties(definition, configured);
+    }, [definition, configured]);
 
-    const clazz = !defined.enabled ? 'text-muted' : '';
+    const clazz = !configured.enabled ? 'text-muted' : '';
 
     return (
         <Card className='integration-card' onClick={doEdit}>
@@ -58,8 +60,16 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                                 <Badge key={capability} className='mr-1' color='secondary' pill>{capability}</Badge>
                             ))}
 
-                            {defined.status !== 'Verified' &&
-                                <StatusLabel status={defined.status} />
+                            {configured.status !== 'Verified' &&
+                                <StatusLabel status={configured.status} />
+                            }
+
+                            {configured.test === true &&
+                                <Badge pill>{texts.integrations.modeTest}</Badge>
+                            }
+
+                            {configured.test === false &&
+                                <Badge pill>{texts.integrations.modeProduction}</Badge>
                             }
                         </div>
 
