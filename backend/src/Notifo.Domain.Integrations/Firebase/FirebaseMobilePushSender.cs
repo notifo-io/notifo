@@ -40,11 +40,18 @@ namespace Notifo.Domain.Integrations.Firebase
             app.Delete();
         }
 
-        public Task SendAsync(UserNotification userNotification, string token, bool wakeup, CancellationToken ct)
+        public async Task SendAsync(UserNotification userNotification, string token, bool wakeup, CancellationToken ct)
         {
-            var message = userNotification.ToFirebaseMessage(token, wakeup);
+            try
+            {
+                var message = userNotification.ToFirebaseMessage(token, wakeup);
 
-            return messaging.SendAsync(message, ct);
+                await messaging.SendAsync(message, ct);
+            }
+            catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.NotFound)
+            {
+                throw new MobilePushTokenExpiredException();
+            }
         }
     }
 }
