@@ -38,6 +38,8 @@ namespace Notifo.Domain.Events
 
         public bool Silent { get; set; }
 
+        public bool Test { get; set; }
+
         private sealed class Validator : AbstractValidator<EventMessage>
         {
             public Validator()

@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
-import { getApp, loadIntegrationAsync, useApps, useIntegrations } from '@app/state';
+import { getApp, getSortedIntegrations, loadIntegrationAsync, useApps, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -19,8 +19,8 @@ import { SupportedIntegration } from './SupportedIntegration';
 type SelectedIntegration = {
     type: string;
     definition: IntegrationDefinitionDto;
-    defined?: ConfiguredIntegrationDto;
-    id?: string;
+    configured?: ConfiguredIntegrationDto;
+    configuredId?: string;
 };
 
 export const IntegrationsPage = () => {
@@ -28,9 +28,9 @@ export const IntegrationsPage = () => {
     const app = useApps(getApp);
     const appId = app.id;
     const configured = useIntegrations(x => x.configured);
+    const definitions = useIntegrations(x => x.supported);
     const loading = useIntegrations(x => x.loading);
     const loadingError = useIntegrations(x => x.loadingError);
-    const supported = useIntegrations(x => x.supported);
     const [selected, setSelected] = React.useState<SelectedIntegration>();
 
     React.useEffect(() => {
@@ -46,23 +46,16 @@ export const IntegrationsPage = () => {
     }, []);
 
     const doEdit = React.useCallback((definition: IntegrationDefinitionDto, defined: ConfiguredIntegrationDto, id: string) => {
-        setSelected(({ definition, defined, id, type: defined.type }));
+        setSelected(({ definition, configured: defined, configuredId: id, type: defined.type }));
     }, []);
 
     const doClose = React.useCallback(() => {
         setSelected(null!);
     }, []);
 
-    const integrations =
-        Object.keys(configured).map(id => {
-            const defined = configured[id];
-
-            return {
-                id,
-                defined,
-                definition: supported[defined.type],
-            };
-        }).filter(x => !!x.definition);
+    const integrations = React.useMemo(() => {
+        return getSortedIntegrations(definitions, configured);
+    }, [definitions, configured]);
 
     return (
         <div className='integrations'>
@@ -88,11 +81,12 @@ export const IntegrationsPage = () => {
                     <h6>{texts.integrations.configured}</h6>
 
                     {integrations.map(integration => (
-                        <ConfiguredIntegration key={integration.id}
-                            id={integration.id}
+                        <ConfiguredIntegration key={integration.configuredId}
+                            configured={integration.configured}
+                            configuredId={integration.configuredId}
                             definition={integration.definition}
-                            defined={integration.defined}
-                            onEdit={doEdit} />
+                            onEdit={doEdit}
+                        />
                     ))}
                 </div>
             }
@@ -100,8 +94,8 @@ export const IntegrationsPage = () => {
             <div className='mb-4'>
                 <h6>{texts.integrations.supported}</h6>
 
-                {Object.keys(supported).map(id => (
-                    <SupportedIntegration key={id} type={id} definition={supported[id]}
+                {Object.keys(definitions).map(id => (
+                    <SupportedIntegration key={id} type={id} definition={definitions[id]}
                         onAdd={doAdd} />
                 ))}
             </div>
@@ -109,9 +103,9 @@ export const IntegrationsPage = () => {
             {selected &&
                 <IntegrationDialog
                     appId={appId}
-                    id={selected.id}
+                    configured={selected.configured}
+                    configuredId={selected.configuredId}
                     definition={selected?.definition}
-                    defined={selected.defined}
                     onClose={doClose}
                     type={selected.type}
                 />

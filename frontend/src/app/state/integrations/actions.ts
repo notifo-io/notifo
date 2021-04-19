@@ -77,7 +77,7 @@ export const integrationsReducer = createReducer(initialState, builder => builde
 
         state.upserting = false;
         state.upsertingError = undefined;
-        state.configured[id] = { ...state.configured[id], ...params };
+        state.configured[id] = { id, ...params } as any;
     })
     .addCase(deleteIntegrationAsync.fulfilled, (state, action) => {
         const { id } = action.meta.arg;

@@ -20,17 +20,17 @@ export interface IntegrationDialogProps {
     // The app id.
     appId: string;
 
-    // The id of the integration.
-    id?: string;
-
     // The type code of the integration.
     type: string;
 
     // The definition.
     definition: IntegrationDefinitionDto;
 
-    // The defined integration.
-    defined?: ConfiguredIntegrationDto;
+    // The id of the integration.
+    configuredId?: string;
+
+    // The configured integration.
+    configured?: ConfiguredIntegrationDto;
 
     // Invoked when closed.
     onClose: () => void;
@@ -39,8 +39,8 @@ export interface IntegrationDialogProps {
 export const IntegrationDialog = (props: IntegrationDialogProps) => {
     const {
         appId,
-        id,
-        defined,
+        configured,
+        configuredId,
         definition,
         onClose,
         type,
@@ -60,24 +60,24 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
     }, [upserting, upsertingError, onClose]);
 
     const doDelete = React.useCallback(() => {
-        if (id) {
-            dispatch(deleteIntegrationAsync({ appId, id }));
+        if (configuredId) {
+            dispatch(deleteIntegrationAsync({ appId, id: configuredId }));
 
             onClose();
         }
-    }, [appId, id, onClose]);
+    }, [appId, configuredId, onClose]);
 
     const doUpsert = React.useCallback((params: UpdateIntegrationDto) => {
         for (const key of Object.keys(params.properties)) {
             params.properties[key] = params.properties[key]?.toString();
         }
 
-        if (id) {
-            dispatch(updateIntegrationAsync({ appId, id, params }));
+        if (configuredId) {
+            dispatch(updateIntegrationAsync({ appId, id: configuredId, params }));
         } else {
             dispatch(createIntegrationAsync({ appId, params: { type, ...params } }));
         }
-    }, [appId, id, type]);
+    }, [appId, configuredId, type]);
 
     const schema = React.useMemo(() => {
         const properties: { [name: string]: Yup.Schema<any, {}> } = {};
@@ -110,7 +110,12 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         });
     }, [definition]);
 
-    const initialValues = defined || {
+    const initialValues = configured ? {
+        ...configured,
+        properties: {
+            ...configured.properties,
+        },
+    } : {
         enabled: true,
         priority: 0,
         properties: {},
@@ -141,17 +146,20 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
                         <ModalBody>
                             <fieldset disabled={upserting}>
-                                {defined &&
+                                {configured &&
                                     <Row className='mb-4'>
                                         <Col sm={4}>
                                             {texts.common.status}
                                         </Col>
 
                                         <Col sm={8}>
-                                            <StatusLabel status={defined.status} />
+                                            <StatusLabel status={configured.status} />
                                         </Col>
                                     </Row>
                                 }
+
+                                <Forms.GridBoolean name='test'
+                                    label={texts.integrations.test} hints={texts.integrations.testHints} indeterminate />
 
                                 <Forms.GridBoolean name='enabled'
                                     label={texts.common.enabled} hints={texts.integrations.enabledHints} />
@@ -167,7 +175,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                                     <FormField key={property.name} property={property} />
                                 ))}
 
-                                {id &&
+                                {configuredId &&
                                     <div>
                                         <hr />
 

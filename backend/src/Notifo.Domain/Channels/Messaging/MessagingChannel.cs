@@ -64,7 +64,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            var senders = integrationManager.Resolve<IMessagingSender>(options.App);
+            var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
             if (senders.Any(x => x.HasTarget(options.User)))
@@ -85,7 +85,7 @@ namespace Notifo.Domain.Channels.Messaging
                 IsImmediate = setting.DelayDuration == Duration.Zero
             };
 
-            var senders = integrationManager.Resolve<IMessagingSender>(options.App);
+            var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
 
             foreach (var sender in senders)
             {
@@ -145,7 +145,7 @@ namespace Notifo.Domain.Channels.Messaging
                 {
                     await UpdateAsync(job.Notification, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<IMessagingSender>(app).ToList();
+                    var senders = integrationManager.Resolve<IMessagingSender>(app, job.Notification.Test).ToList();
 
                     if (senders.Count == 0)
                     {

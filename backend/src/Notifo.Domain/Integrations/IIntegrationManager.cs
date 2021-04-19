@@ -15,10 +15,10 @@ namespace Notifo.Domain.Integrations
     {
         IEnumerable<IntegrationDefinition> Definitions { get; }
 
-        bool IsConfigured<T>(App app);
+        bool IsConfigured<T>(App app, bool test);
 
         Task HandleConfigured(ConfiguredIntegration configured, ConfiguredIntegration? previous);
 
-        IEnumerable<T> Resolve<T>(App app) where T : class;
+        IEnumerable<T> Resolve<T>(App app, bool test) where T : class;
     }
 }

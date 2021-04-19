@@ -68,6 +68,11 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// </summary>
         public bool Silent { get; set; }
 
+        /// <summary>
+        /// True when using test integrations.
+        /// </summary>
+        public bool Test { get; set; }
+
         public EventMessage ToEvent(string appId)
         {
             var result = SimpleMapper.Map(this, new EventMessage());

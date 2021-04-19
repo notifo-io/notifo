@@ -69,7 +69,7 @@ namespace Notifo.Domain.Channels.Email
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            if (!integrationManager.IsConfigured<IEmailSender>(options.App))
+            if (!integrationManager.IsConfigured<IEmailSender>(options.App, notification.Test))
             {
                 yield break;
             }
@@ -172,7 +172,7 @@ namespace Notifo.Domain.Channels.Email
                         return;
                     }
 
-                    var senders = integrationManager.Resolve<IEmailSender>(app).ToList();
+                    var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification.Test).ToList();
 
                     if (senders.Count == 0)
                     {

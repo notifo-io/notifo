@@ -24,6 +24,8 @@ namespace Notifo.Domain.Apps
 
         public bool Enabled { get; set; }
 
+        public bool? Test { get; set; }
+
         public int Priority { get; set; }
 
         public IntegrationProperties Properties { get; set; }
@@ -64,6 +66,7 @@ namespace Notifo.Domain.Apps
                 configuration = new ConfiguredIntegration(Type, Properties);
             }
 
+            configuration.Test = Test;
             configuration.Enabled = Enabled;
             configuration.Priority = Priority;
 

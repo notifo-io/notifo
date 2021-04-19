@@ -29,6 +29,8 @@ namespace Notifo.Domain.Channels.Sms
 
         public bool IsImmediate { get; set; }
 
+        public bool Test { get; set; }
+
         public string ScheduleKey
         {
             get => $"{Id}_{PhoneNumber}";
