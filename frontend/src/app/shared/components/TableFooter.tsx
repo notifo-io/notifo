@@ -11,29 +11,29 @@ import * as React from 'react';
 import { Col, CustomInput, Row } from 'reactstrap';
 
 export interface TableFooterProps extends ListPagerProps  {
-    // True to hide all counters.
-    hideCounters?: boolean;
+    // True to show all details.
+    showDetails?: boolean;
 
-    // True to hide counters.
-    noCounters?: boolean;
+    // True to hide the details button.
+    noDetailButton?: boolean;
 
-    // Triggered when to hide the counters.
-    onHideCounters?: (hidden: boolean) => void;
+    // Triggered when to show the details.
+    onShowDetails?: (show: boolean) => void;
 }
 
 export const TableFooter = (props: TableFooterProps) => {
-    const { hideCounters, noCounters, onHideCounters, ...other } = props;
+    const { showDetails, noDetailButton, onShowDetails, ...other } = props;
 
-    const doHideCounters = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        onHideCounters && onHideCounters(event.target.checked);
-    }, [onHideCounters]);
+    const doshowCounters = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        onShowDetails && onShowDetails(event.target.checked);
+    }, [onShowDetails]);
 
     return (
         <Row className='align-items-center'>
-            {!noCounters &&
+            {!noDetailButton &&
                 <Col xs='auto'>
-                    <CustomInput type='checkbox' id='hideCounters' checked={hideCounters} onChange={doHideCounters}
-                        label={texts.common.hideDetails} />
+                    <CustomInput type='checkbox' id='showCounters' checked={showDetails} onChange={doshowCounters}
+                        label={texts.common.showDetails} />
                 </Col>
             }
             <Col>

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -157,9 +158,16 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
 
                 if (currentHandler != null)
                 {
-                    using (var timeout = new CancellationTokenSource(schedulerOptions.Timeout))
+                    if (Debugger.IsAttached)
                     {
-                        isConfirmed = await currentHandler.HandleAsync(document.Jobs, !canRetry, timeout.Token);
+                        isConfirmed = await currentHandler.HandleAsync(document.Jobs, !canRetry, default);
+                    }
+                    else
+                    {
+                        using (var timeout = new CancellationTokenSource(schedulerOptions.Timeout))
+                        {
+                            isConfirmed = await currentHandler.HandleAsync(document.Jobs, !canRetry, timeout.Token);
+                        }
                     }
                 }
 

@@ -30,14 +30,21 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
                 cm.SetIgnoreExtraElements(true);
 
-                cm.MapIdProperty(x => x.Id)
-                    .SetSerializer(new GuidSerializer(BsonType.String));
-
                 cm.MapProperty(x => x.IsSeen)
                     .SetIgnoreIfNull(true);
 
                 cm.MapProperty(x => x.IsConfirmed)
                     .SetIgnoreIfNull(true);
+            });
+
+            BsonClassMap.RegisterClassMap<BaseUserNotification>(cm =>
+            {
+                cm.AutoMap();
+
+                cm.SetIgnoreExtraElements(true);
+
+                cm.MapIdProperty(x => x.Id)
+                    .SetSerializer(new GuidSerializer(BsonType.String));
             });
 
             BsonClassMap.RegisterClassMap<UserNotificationChannel>(cm =>

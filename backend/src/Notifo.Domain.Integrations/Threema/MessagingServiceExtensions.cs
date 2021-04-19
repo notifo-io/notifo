@@ -6,15 +6,15 @@
 // ==========================================================================
 
 using Notifo.Domain.Integrations;
-using Notifo.Domain.Integrations.Firebase;
+using Notifo.Domain.Integrations.Threema;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class FirebaseServiceExtensions
+    public static class MessagingServiceExtensions
     {
-        public static void IntegrateFirebase(this IServiceCollection services)
+        public static void IntegrateThreema(this IServiceCollection services)
         {
-            services.AddSingletonAs<FirebaseIntegration>()
+            services.AddSingletonAs<ThreemaSimpleIntegration>()
                 .As<IIntegration>();
         }
     }

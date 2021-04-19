@@ -5,17 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Integrations;
-using Notifo.Domain.Integrations.Smtp;
+using System.Threading;
+using System.Threading.Tasks;
+using Notifo.Domain.Users;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Notifo.Domain.Channels.Messaging
 {
-    public static class SmtpServiceExtensions
+    public interface IMessagingSender
     {
-        public static void IntegrateSmtp(this IServiceCollection services)
-        {
-            services.AddSingletonAs<SmtpIntegration>()
-                .As<IIntegration>();
-        }
+        bool HasTarget(User user);
+
+        Task AddTargetsAsync(MessagingJob job, User user);
+
+        Task<bool> SendAsync(MessagingJob job, CancellationToken ct);
     }
 }

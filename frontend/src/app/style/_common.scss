@@ -17,7 +17,8 @@ main {
 }
 
 legend {
-    font-size: 1.1rem;
+    font-size: .9rem;
+    font-weight: normal;
     padding-bottom: .25rem;
     padding-top: .75rem;
 }
@@ -118,7 +119,7 @@ $small-gutters: 4px;
 
 .statistics {
     &-card {
-        min-height: 9.5rem;
+        height: 100%;
 
         .card-body {
             padding-bottom: .75rem;
@@ -165,10 +166,18 @@ $small-gutters: 4px;
             font-size: 1rem;
             font-weight: lighter;
         }
+
+        table {
+            margin: 0;
+        }
     }
 
     &-label {
         @include truncate;
+
+        & {
+            display: inline-block;
+        }
 
         span {
             display: inline-block;
@@ -233,6 +242,16 @@ $small-gutters: 4px;
                 &:last-child {
                     border-right: 1px solid $color-border;
                 }
+            }
+
+            .table-borderless {
+                td {
+                    border: 0;
+                }
+            }
+
+            .table {
+                margin: 0;
             }
         }
 
@@ -479,6 +498,10 @@ div {
         font-size: 80%;
         padding-bottom: .5rem;
         padding-top: .5rem;
+    }
+
+    &-sm-text {
+        font-size: 90%;
     }
 }
 

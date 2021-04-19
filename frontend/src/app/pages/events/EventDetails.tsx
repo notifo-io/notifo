@@ -26,8 +26,8 @@ export interface EventDetailsProps {
     // The event.
     event: EventDto;
 
-    // True to hide all counters.
-    hideCounters?: boolean;
+    // True to show all counters.
+    showCounters?: boolean;
 }
 
 export const EventDetails = React.memo((props: EventDetailsProps) => {

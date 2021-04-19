@@ -21,11 +21,11 @@ namespace Notifo.Domain.Integrations
 
         public bool IsRequired { get; init; }
 
-        public int MinValue { get; init; } = 0;
+        public int MinValue { get; init; }
 
         public int MaxValue { get; init; } = int.MaxValue;
 
-        public int MinLength { get; init; } = 0;
+        public int MinLength { get; init; }
 
         public int MaxLength { get; init; } = int.MaxValue;
 
@@ -33,7 +33,7 @@ namespace Notifo.Domain.Integrations
 
         public string? GetString(ConfiguredIntegration configured)
         {
-            if (Type == IntegrationPropertyType.Text || Type == IntegrationPropertyType.MultilineText)
+            if (Type == IntegrationPropertyType.Text || Type == IntegrationPropertyType.MultilineText || Type == IntegrationPropertyType.Password)
             {
                 if (configured.Properties.TryGetValue(Name, out var value))
                 {

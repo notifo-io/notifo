@@ -39,7 +39,11 @@ namespace Notifo.Domain.Integrations.MessageBird
                 "MessageBird",
                 Texts.MessageBird_Name,
                 "./integrations/messagebird.svg",
-                new List<IntegrationProperty>(),
+                new List<IntegrationProperty>
+                {
+                    AccessKeyProperty,
+                    PhoneNumberProperty
+                },
                 new HashSet<string>
                 {
                     Providers.Sms

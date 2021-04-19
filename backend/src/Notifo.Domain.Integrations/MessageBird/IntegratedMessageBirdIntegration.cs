@@ -17,8 +17,8 @@ namespace Notifo.Domain.Integrations.MessageBird
     {
         private readonly IntegratedMessageBirdSmsSender smsSender;
 
-        public IntegrationDefinition Definition { get; }
-            = new IntegrationDefinition(
+        public IntegrationDefinition Definition { get; } =
+            new IntegrationDefinition(
                 "MessageBirdIntegrated",
                 Texts.MessageBirdIntegrated_Name,
                 "./integrations/messagebird.svg",

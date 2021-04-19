@@ -3227,6 +3227,8 @@ export interface UserDto {
     emailAddress?: string | undefined;
     /** The phone number. */
     phoneNumber?: string | undefined;
+    /** The threema id. */
+    threemaId?: string | undefined;
     /** The preferred language of the user. */
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
@@ -3264,6 +3266,8 @@ export interface UpsertUserDto {
     emailAddress?: string | undefined;
     /** The phone number. */
     phoneNumber?: string | undefined;
+    /** The threema id. */
+    threemaId?: string | undefined;
     /** The preferred language of the user. */
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */

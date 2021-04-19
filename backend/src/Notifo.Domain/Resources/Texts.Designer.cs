@@ -187,6 +187,15 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Messaging: Integration has been removed..
+        /// </summary>
+        internal static string Messaging_ConfigReset {
+            get {
+                return ResourceManager.GetString("Messaging_ConfigReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to MobilePush: Integration has been removed..
         /// </summary>
         internal static string MobilePush_ConfigReset {

@@ -88,6 +88,7 @@ namespace Notifo
             services.AddMyLog();
             services.AddMyMedia();
             services.AddMyMessaging(config);
+            services.AddMyMessagingChannel();
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
             services.AddMyOpenApi();
@@ -104,10 +105,11 @@ namespace Notifo
             services.AddMyWebPipeline();
             services.AddMyWebPushChannel(config);
 
-            services.AddIntegrationAmazonSES(config);
-            services.AddIntegrationFirebase();
-            services.AddIntegrationMessageBird(config);
-            services.AddIntegrationSmtp();
+            services.IntegrateAmazonSES(config);
+            services.IntegrateFirebase();
+            services.IntegrateMessageBird(config);
+            services.IntegrateSmtp();
+            services.IntegrateThreema();
 
             services.AddInitializer();
         }

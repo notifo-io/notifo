@@ -203,6 +203,7 @@ namespace Notifo.Domain.Channels.Email
                 try
                 {
                     await sender.SendAsync(message, ct);
+                    return;
                 }
                 catch (DomainException ex)
                 {
@@ -223,7 +224,7 @@ namespace Notifo.Domain.Channels.Email
             }
         }
 
-        private Task UpdateAsync(UserNotification notification, string email, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(IUserNotification notification, string email, ProcessStatus status, string? reason = null)
         {
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, email, status, reason);
         }

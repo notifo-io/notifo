@@ -27,6 +27,8 @@ namespace Notifo.Domain.Users
 
         public string PhoneNumber { get; set; } = string.Empty;
 
+        public string ThreemaId { get; set; } = string.Empty;
+
         public string PreferredLanguage { get; set; } = "en";
 
         public string PreferredTimezone { get; set; } = "UTC";

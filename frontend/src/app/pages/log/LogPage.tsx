@@ -109,7 +109,7 @@ export const LogPage = () => {
                 </CardBody>
             </Card>
 
-            <TableFooter list={logEntries} noCounters
+            <TableFooter list={logEntries} noDetailButton
                 onChange={doLoad} />
         </div>
     );

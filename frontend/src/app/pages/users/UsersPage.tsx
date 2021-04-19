@@ -27,7 +27,7 @@ export const UsersPage = () => {
     const dialogNew = useDialog();
     const users = useUsers(x => x.users);
     const [currentUser, setCurrentUser] = React.useState<UserDto>();
-    const [hideCounters, setHideCounters] = useSavedState(false, 'show.counters');
+    const [showCounters, setShowCounters] = useSavedState(false, 'show.counters');
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
@@ -123,7 +123,7 @@ export const UsersPage = () => {
                     {users.items &&
                         <>
                             {users.items.map(user => (
-                                <UserRow key={user.id} user={user} match={match} hideCounters={hideCounters}
+                                <UserRow key={user.id} user={user} match={match} showCounters={showCounters}
                                     onPublish={doPublish}
                                     onDelete={doDelete}
                                     onEdit={doEdit}
@@ -140,8 +140,8 @@ export const UsersPage = () => {
                 </tbody>
             </Table>
 
-            <TableFooter hideCounters={hideCounters} list={users}
-                onHideCounters={setHideCounters}
+            <TableFooter showDetails={showCounters} list={users}
+                onShowDetails={setShowCounters}
                 onChange={doLoad} />
 
             {dialogNew.isOpen &&

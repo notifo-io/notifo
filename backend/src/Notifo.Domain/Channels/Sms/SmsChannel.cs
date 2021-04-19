@@ -210,6 +210,11 @@ namespace Notifo.Domain.Channels.Sms
                     if (result == SmsResult.Delivered)
                     {
                         await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
+                        return;
+                    }
+                    else if (result == SmsResult.Sent)
+                    {
+                        return;
                     }
                 }
                 catch (DomainException ex)

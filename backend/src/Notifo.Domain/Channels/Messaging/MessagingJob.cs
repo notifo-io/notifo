@@ -5,30 +5,31 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Channels.Messaging
 {
-    public sealed class EmailJob
+    public sealed class MessagingJob
     {
         public BaseUserNotification Notification { get; set; }
 
-        public string EmailAddress { get; set; }
+        public Dictionary<string, string> Targets { get; set; } = new Dictionary<string, string>();
+
+        public bool IsImmediate { get; set; }
 
         public string ScheduleKey
         {
-            get => $"{Notification.AppId}_{Notification.UserId}_{Notification.UserLanguage}_{EmailAddress}";
+            get => Notification.Id.ToString();
         }
 
-        public EmailJob()
+        public MessagingJob()
         {
         }
 
-        public EmailJob(BaseUserNotification notification, string emailAddress)
+        public MessagingJob(BaseUserNotification notification)
         {
             Notification = notification;
-
-            EmailAddress = emailAddress;
         }
     }
 }

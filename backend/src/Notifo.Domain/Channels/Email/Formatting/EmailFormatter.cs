@@ -69,7 +69,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return Task.FromResult(template);
         }
 
-        public async Task<EmailMessage> FormatAsync(IEnumerable<UserNotification> notifications, EmailTemplate template, App app, User user, bool noCache)
+        public async Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user, bool noCache)
         {
             var context = CreateContext(notifications, app, user);
 
@@ -85,7 +85,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return mailMessage;
         }
 
-        public Task<EmailMessage> FormatAsync(IEnumerable<UserNotification> notifications, App app, User user)
+        public Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user)
         {
             var first = notifications.First();
 
@@ -99,7 +99,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static string? FormatText(EmailTemplate template, TemplateContext context, IEnumerable<UserNotification> notifications, bool noCache)
+        private static string? FormatText(EmailTemplate template, TemplateContext context, IEnumerable<BaseUserNotification> notifications, bool noCache)
         {
             var markup = template.BodyText;
 
@@ -129,7 +129,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return result;
         }
 
-        private async Task<string?> FormatHtml(EmailTemplate template, TemplateContext context, IEnumerable<UserNotification> notifications, bool noCache)
+        private async Task<string?> FormatHtml(EmailTemplate template, TemplateContext context, IEnumerable<BaseUserNotification> notifications, bool noCache)
         {
             var markup = template.BodyHtml;
 
@@ -152,7 +152,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return html;
         }
 
-        private static void ValidateResult(string markup, string result, IEnumerable<UserNotification> notifications)
+        private static void ValidateResult(string markup, string result, IEnumerable<BaseUserNotification> notifications)
         {
             if (notifications.Any(x => !result.Contains(x.Formatting.Subject)))
             {
@@ -184,7 +184,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private TemplateContext CreateContext(IEnumerable<UserNotification> notifications, App app, User user)
+        private TemplateContext CreateContext(IEnumerable<BaseUserNotification> notifications, App app, User user)
         {
             var context = new TemplateContext();
 

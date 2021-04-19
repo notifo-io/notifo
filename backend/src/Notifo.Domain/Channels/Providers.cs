@@ -11,6 +11,8 @@ namespace Notifo.Domain.Channels
     {
         public static readonly string Email = "email";
 
+        public static readonly string Messaging = "messaging";
+
         public static readonly string MobilePush = "mobilepush";
 
         public static readonly string Sms = "sms";

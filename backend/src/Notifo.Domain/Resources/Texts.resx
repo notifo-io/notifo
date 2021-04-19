@@ -159,6 +159,9 @@
   <data name="Events_NoTopic" xml:space="preserve">
     <value>Event has no topic.</value>
   </data>
+  <data name="Messaging_ConfigReset" xml:space="preserve">
+    <value>Messaging: Integration has been removed.</value>
+  </data>
   <data name="MobilePush_ConfigReset" xml:space="preserve">
     <value>MobilePush: Integration has been removed.</value>
   </data>

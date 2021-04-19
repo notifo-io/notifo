@@ -20,7 +20,7 @@ export const EventsPage = () => {
     const app = useApps(getApp);
     const appId = app.id;
     const events = useEvents(x => x.events);
-    const [hideCounters, setHideCounters] = useSavedState(false, 'show.counters');
+    const [showCounters, setshowCounters] = useSavedState(false, 'show.counters');
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
@@ -91,7 +91,7 @@ export const EventsPage = () => {
                     {events.items &&
                         <>
                             {events.items.map(event => (
-                                <EventRow key={event.id} event={event} hideCounters={hideCounters} />
+                                <EventRow key={event.id} event={event} showCounters={showCounters} />
                             ))}
                         </>
                     }
@@ -104,8 +104,8 @@ export const EventsPage = () => {
                 </tbody>
             </Table>
 
-            <TableFooter hideCounters={hideCounters} list={events}
-                onHideCounters={setHideCounters}
+            <TableFooter showDetails={showCounters} list={events}
+                onShowDetails={setshowCounters}
                 onChange={doLoad} />
         </div>
     );

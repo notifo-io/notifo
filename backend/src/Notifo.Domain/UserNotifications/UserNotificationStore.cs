@@ -112,7 +112,7 @@ namespace Notifo.Domain.UserNotifications
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task CollectAndUpdateAsync(IUserNotification notification, string configuration, string channel, ProcessStatus status, string? detail)
+        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail)
         {
             Guard.NotNull(notification, nameof(notification));
             Guard.NotNullOrEmpty(channel, nameof(channel));
