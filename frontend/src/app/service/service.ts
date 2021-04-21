@@ -1313,6 +1313,55 @@ export class MobilePushClient {
     }
 
     /**
+     * Returns the mobile push tokens.
+     * @return Mobile push tokens returned.
+     */
+    getTokens(): Promise<ListResponseDtoOfMobilePushTokenDto> {
+        let url_ = this.baseUrl + "/api/me/mobilepush";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTokens(_response);
+        });
+    }
+
+    protected processGetTokens(response: Response): Promise<ListResponseDtoOfMobilePushTokenDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <ListResponseDtoOfMobilePushTokenDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfMobilePushTokenDto>(<any>null);
+    }
+
+    /**
      * Register a mobile push token for the current user.
      * @param request The request object.
      * @return Mobile push token registered.
@@ -1975,6 +2024,57 @@ export class EventsClient {
     }
 
     protected processPostEvents(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
+    }
+
+    /**
+     * Publish an event for the current user.
+     * @param request The publish request.
+     * @return Event created.
+     */
+    postEvents2(request: PublishDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/me/events";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPostEvents2(_response);
+        });
+    }
+
+    protected processPostEvents2(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -3406,7 +3506,14 @@ export interface TrackNotificationDto {
     deviceIdentifier?: string | undefined;
 }
 
-export interface RegisterMobileTokenDto {
+export interface ListResponseDtoOfMobilePushTokenDto {
+    /** The items. */
+    items: MobilePushTokenDto[];
+    /** The total number of items. */
+    total: number;
+}
+
+export interface MobilePushTokenDto {
     /** The device token. */
     token: string;
     /** The device type. */
@@ -3414,6 +3521,13 @@ export interface RegisterMobileTokenDto {
 }
 
 export type MobileDeviceType = "Unknown" | "Android" | "iOS";
+
+export interface RegisterMobileTokenDto {
+    /** The device token. */
+    token: string;
+    /** The device type. */
+    deviceType?: MobileDeviceType;
+}
 
 export interface ListResponseDtoOfMediaDto {
     /** The items. */

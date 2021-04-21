@@ -86,5 +86,25 @@ namespace Notifo.Areas.Api.Controllers.Events
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Publish an event for the current user.
+        /// </summary>
+        /// <param name="request">The publish request.</param>
+        /// <returns>
+        /// 204 => Event created.
+        /// </returns>
+        [HttpPost("api/me/events/")]
+        [AppPermission(NotifoRoles.AppUser)]
+        public async Task<IActionResult> PostEvents([FromBody] PublishDto request)
+        {
+            var @event = request.ToEvent(App.Id);
+
+            @event.Topic = $"users/{UserId}";
+
+            await eventPublisher.PublishAsync(@event);
+
+            return NoContent();
+        }
     }
 }
