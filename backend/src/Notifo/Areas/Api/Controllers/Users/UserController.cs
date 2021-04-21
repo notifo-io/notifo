@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [Produces(typeof(ProfileDto))]
         public async Task<IActionResult> GetUser()
         {
-            var user = await userStore.GetAsync(App.Id, UserId, HttpContext.RequestAborted);
+            var user = await userStore.GetAsync(App.Id, UserIdOrSub, HttpContext.RequestAborted);
 
             var response = ProfileDto.FromDomainObject(user!, App);
 
@@ -61,7 +61,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         {
             var update = request.ToUpdate();
 
-            var user = await userStore.UpsertAsync(App.Id, UserId, update, HttpContext.RequestAborted);
+            var user = await userStore.UpsertAsync(App.Id, UserIdOrSub, update, HttpContext.RequestAborted);
 
             var response = ProfileDto.FromDomainObject(user!, App);
 
@@ -84,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [Produces(typeof(SubscriptionDto))]
         public async Task<IActionResult> GetSubscription(string topic)
         {
-            var subscription = await subscriptionStore.GetAsync(App.Id, UserId!, topic, HttpContext.RequestAborted);
+            var subscription = await subscriptionStore.GetAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
 
             if (subscription == null)
             {
@@ -134,7 +134,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> DeleteSubscription(string topic)
         {
-            await subscriptionStore.DeleteAsync(App.Id, UserId!, topic, HttpContext.RequestAborted);
+            await subscriptionStore.DeleteAsync(App.Id, UserIdOrSub, topic, HttpContext.RequestAborted);
 
             return NoContent();
         }

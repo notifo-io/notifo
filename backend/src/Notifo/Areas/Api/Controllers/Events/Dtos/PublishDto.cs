@@ -73,7 +73,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// </summary>
         public bool Test { get; set; }
 
-        public EventMessage ToEvent(string appId)
+        public EventMessage ToEvent(string appId, string? topic = null)
         {
             var result = SimpleMapper.Map(this, new EventMessage());
 
@@ -107,6 +107,11 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
             if (result.Properties == null)
             {
                 result.Properties = new EventProperties();
+            }
+
+            if (topic != null)
+            {
+                result.Topic = topic;
             }
 
             result.AppId = appId;

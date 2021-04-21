@@ -73,7 +73,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> GetApp(string appId)
         {
-            var response = await AppDetailsDto.FromDomainObjectAsync(App, UserId, userResolver);
+            var response = await AppDetailsDto.FromDomainObjectAsync(App, UserIdOrSub, userResolver);
 
             return Ok(response);
         }
@@ -90,7 +90,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(AppDto))]
         public async Task<IActionResult> PostApp([FromBody] UpsertAppDto request)
         {
-            var subject = UserId;
+            var subject = User.Sub();
 
             if (string.IsNullOrWhiteSpace(subject))
             {
@@ -101,7 +101,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
 
             var app = await appStore.UpsertAsync(null, update, HttpContext.RequestAborted);
 
-            var response = AppDto.FromDomainObject(app, UserId);
+            var response = AppDto.FromDomainObject(app, subject);
 
             return Ok(response);
         }
@@ -120,11 +120,11 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PutApp(string appId, [FromBody] UpsertAppDto request)
         {
-            var update = request.ToUpdate(UserId);
+            var update = request.ToUpdate(UserIdOrSub);
 
             var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
 
-            var response = await AppDetailsDto.FromDomainObjectAsync(app, UserId, userResolver);
+            var response = await AppDetailsDto.FromDomainObjectAsync(app, UserIdOrSub, userResolver);
 
             return Ok(response);
         }
@@ -143,11 +143,11 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PostContributor(string appId, [FromBody] AddContributorDto request)
         {
-            var update = request.ToUpdate(UserId);
+            var update = request.ToUpdate(UserIdOrSub);
 
             var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
 
-            var response = await AppDetailsDto.FromDomainObjectAsync(app, UserId, userResolver);
+            var response = await AppDetailsDto.FromDomainObjectAsync(app, UserIdOrSub, userResolver);
 
             return Ok(response);
         }
@@ -166,11 +166,11 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> DeleteContributor(string appId, string contributorId)
         {
-            var update = new RemoveContributor { ContributorId = contributorId, UserId = UserId };
+            var update = new RemoveContributor { ContributorId = contributorId, UserId = UserIdOrSub };
 
             var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
 
-            var response = await AppDetailsDto.FromDomainObjectAsync(app, UserId, userResolver);
+            var response = await AppDetailsDto.FromDomainObjectAsync(app, UserIdOrSub, userResolver);
 
             return Ok(response);
         }

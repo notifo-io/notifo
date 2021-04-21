@@ -98,9 +98,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> PostEvents([FromBody] PublishDto request)
         {
-            var @event = request.ToEvent(App.Id);
-
-            @event.Topic = $"users/{UserId}";
+            var @event = request.ToEvent(App.Id, $"users/{UserId}");
 
             await eventPublisher.PublishAsync(@event);
 

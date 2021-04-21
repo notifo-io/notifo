@@ -128,7 +128,7 @@ namespace Notifo.Areas.Api.Controllers.Users
 
             var update = request.ToUpdate();
 
-            await subscriptionStore.UpsertAsync(appId, UserId, request.TopicPrefix, update, HttpContext.RequestAborted);
+            await subscriptionStore.UpsertAsync(appId, id, request.TopicPrefix, update, HttpContext.RequestAborted);
 
             return NoContent();
         }
