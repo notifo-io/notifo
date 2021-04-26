@@ -28,10 +28,6 @@
   <ItemGroup>
     <None Include="logo-squared.png" Pack="true" PackagePath="\" />
   </ItemGroup>
-	
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>..\..\Notifo.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
 
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
