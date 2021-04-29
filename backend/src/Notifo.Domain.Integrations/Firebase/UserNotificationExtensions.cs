@@ -53,7 +53,8 @@ namespace Notifo.Domain.Integrations.Firebase
 
             message.Android = new AndroidConfig
             {
-                Data = androidData
+                Data = androidData,
+                Priority = Priority.High
             };
 
             var apsAlert = new ApsAlert
