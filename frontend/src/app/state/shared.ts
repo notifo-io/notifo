@@ -17,7 +17,7 @@ export function createApiThunk<Returned, ThunkArg = void>(typePrefix: string, pa
 
             return result;
         } catch (err) {
-            const error = buildError(err.status, err.message);
+            const error = buildError(err.status, err.message, err.details);
 
             return thunkApi.rejectWithValue(error);
         }

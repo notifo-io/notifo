@@ -13,7 +13,12 @@ import { Types } from './types';
 export interface ErrorDto {
     readonly statusCode: number;
     readonly response: any;
+    readonly details?: ErrorDetails[];
     readonly wellFormed: boolean;
+}
+
+export interface ErrorDetails {
+    readonly message: string;
 }
 
 export function isErrorVisible(error: string | ErrorDto | undefined | null, touched: boolean, submitCount: number): boolean {
@@ -36,14 +41,20 @@ export function buildErrorWithFallback(error: any, message: string): ErrorDto {
     }
 }
 
-export function buildError(statusCode: number, response: any, wellFormed = false) {
+export function buildError(statusCode: number, response: any, details?: any, wellFormed = false) {
     if (statusCode === 16) {
         statusCode = 401;
     } else if (!statusCode) {
         statusCode = 500;
     }
 
-    return { statusCode, response, wellFormed };
+    if (Types.isArrayOfString(details)) {
+        details = details.map(message => ({ message }));
+    } else {
+        details = undefined;
+    }
+
+    return { statusCode, response, details, wellFormed };
 }
 
 export function formatError(error: ErrorDto) {

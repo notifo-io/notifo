@@ -123,6 +123,13 @@ $small-gutters: 4px;
     }
 }
 
+.alert {
+    ul {
+        margin-top: .5rem;
+        margin-bottom: 0;
+    }
+}
+
 .statistics {
     &-card {
         height: 100%;

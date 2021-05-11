@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, formatError, isError, Types } from '@app/framework/utils';
+import { ErrorDetails, ErrorDto, formatError, isError, Types } from '@app/framework/utils';
 import * as React from 'react';
 import { Alert } from 'reactstrap';
 
@@ -27,12 +27,14 @@ export const FormError = (props: FormErrorProps) => {
         return null;
     }
 
+    let errorDetails: ReadonlyArray<ErrorDetails> | undefined;
     let errorString: string | undefined;
 
     if (Types.isString(error)) {
         errorString = error;
     } else if (isError(error)) {
         errorString = formatError(error);
+        errorDetails = error.details;
     }
 
     if (!errorString) {
@@ -51,5 +53,19 @@ export const FormError = (props: FormErrorProps) => {
         clazz += className;
     }
 
-    return <Alert className={clazz} color='danger'>{errorString}</Alert>;
+    return (
+        <Alert className={clazz} color='danger'>
+            <>
+                {errorString}
+
+                {errorDetails && errorDetails.length > 0 &&
+                    <ul>
+                        {errorDetails.map((x, i) => (
+                            <li key={i}>{x.message}</li>
+                        ))}
+                    </ul>
+                }
+            </>
+        </Alert>
+    );
 };
