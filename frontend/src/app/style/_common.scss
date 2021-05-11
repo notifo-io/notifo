@@ -28,6 +28,12 @@ legend {
     font-size: 1.25rem;
 }
 
+.form-control {
+    &.mono {
+        font-size: 1rem;
+    }
+}
+
 .pagination {
     margin: 0;
 }
