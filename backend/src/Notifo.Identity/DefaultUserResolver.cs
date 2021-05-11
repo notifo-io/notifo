@@ -26,17 +26,32 @@ namespace Notifo.Identity
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task<(IUser? User, bool Created)> CreateUserIfNotExistsAsync(string email, bool invited)
+        public async Task<(IUser? User, bool Created)> CreateUserIfNotExistsAsync(string emailOrId, bool invited)
         {
-            Guard.NotNullOrEmpty(email, nameof(email));
+            Guard.NotNullOrEmpty(emailOrId, nameof(emailOrId));
 
             using (var scope = serviceProvider.CreateScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
+                var found = await FindByIdOrEmailAsync(emailOrId);
+
+                if (found != null)
+                {
+                    return (found, false);
+                }
+
+                if (!emailOrId.Contains("@"))
+                {
+                    return (null, false);
+                }
+
                 try
                 {
-                    var user = await userService.CreateAsync(email, new UserValues { Invited = true });
+                    var user = await userService.CreateAsync(emailOrId, new UserValues
+                    {
+                        Invited = true
+                    });
 
                     return (user, true);
                 }
@@ -44,7 +59,7 @@ namespace Notifo.Identity
                 {
                 }
 
-                var found = await FindByIdOrEmailAsync(email);
+                found = await FindByIdOrEmailAsync(emailOrId);
 
                 return (found, false);
             }

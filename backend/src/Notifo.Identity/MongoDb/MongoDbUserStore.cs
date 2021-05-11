@@ -16,6 +16,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Identity.MongoDb
@@ -184,6 +185,8 @@ namespace Notifo.Identity.MongoDb
 
         public IdentityUser Create(string email)
         {
+            Guard.NotNullOrEmpty(email, nameof(email));
+
             return new MongoDbUser { Email = email, UserName = email, Id = null };
         }
 
