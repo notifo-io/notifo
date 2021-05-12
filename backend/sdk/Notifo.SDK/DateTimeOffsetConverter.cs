@@ -36,7 +36,7 @@ namespace Notifo.SDK
 
             if (reader.TokenType == JsonToken.Date)
             {
-                return ((DateTime)reader.Value);
+                return (DateTime)reader.Value;
             }
 
             throw new JsonException($"Not a valid date time, expected String or Date, but got {reader.TokenType}.");
