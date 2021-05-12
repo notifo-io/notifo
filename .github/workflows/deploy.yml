@@ -8,6 +8,7 @@ jobs:
         
     steps:
     - name: calculate version
+      uses: actions/github-script@v3
       with:
         ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       env:
