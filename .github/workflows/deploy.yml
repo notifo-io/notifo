@@ -8,6 +8,8 @@ jobs:
         
     steps:
     - name: calculate version
+      with:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
       run: |
