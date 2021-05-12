@@ -11,7 +11,7 @@ jobs:
       env:
         BUILD_NUMBER: ${{ github.run_number }}
       run: |
-        echo "BUILD_NUMBER=$(BUILD_NUMBER + 210)" >> $GITHUB_ENV
+        echo "BUILD_NUMBER=$(($BUILD_NUMBER + 210))" >> $GITHUB_ENV
   
     - name: setup qemu
       uses: docker/setup-qemu-action@v1
