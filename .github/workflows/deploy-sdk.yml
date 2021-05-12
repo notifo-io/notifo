@@ -1,0 +1,23 @@
+name: Build and Push to Nuget
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+        
+    steps:
+    - uses: actions/checkout@v1
+ 
+    - name: setup dotnet
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
+
+    - name: pack
+      run: |
+        cd backend\sdk && dotnet pack -c Release
+
+    - name: publish
+      run: |
+        cd backend\sdk && dotnet nuget push **/*.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k ${{ secrets.nuget }} --no-symbols 1 
