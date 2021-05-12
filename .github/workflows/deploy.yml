@@ -8,13 +8,10 @@ jobs:
         
     steps:
     - name: calculate version
-      uses: actions/github-script@v3
-      with:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: true
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
       run: |
-        echo ::set-env name=BUILD_NUMBER::$(($BUILD_NUMBER + 1))
+        echo "BUILD_NUMBER=$(($BUILD_NUMBER + 1))" >> $GITHUB_ENV
   
     - name: setup qemu
       uses: docker/setup-qemu-action@v1
