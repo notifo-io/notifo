@@ -80,7 +80,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
     }, [appId, configuredId, type]);
 
     const schema = React.useMemo(() => {
-        const properties: { [name: string]: Yup.Schema<any, {}> } = {};
+        const properties: { [name: string]: any } = {};
 
         for (const property of definition.properties) {
             const label = property.editorLabel || property.name;

@@ -23,6 +23,6 @@ declare module 'yup' {
     }
 
     interface ObjectSchema {
-        atLeastOnStringI18n(): ObjectSchema;
+        atLeastOneStringI18n(): ObjectSchema;
     }
 }

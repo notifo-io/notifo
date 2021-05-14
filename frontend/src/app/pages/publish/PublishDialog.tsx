@@ -34,8 +34,8 @@ const FormSchema = Yup.object({
 
     // Subject is required when not templated.
     preformatted: Yup.object()
-        .when('templated', (other: boolean, schema: Yup.ObjectSchema) =>
-            other ? schema : schema.shape({ subject: Yup.object().label(texts.common.subject).atLeastOnStringI18n() }),
+        .when('templated', (other: boolean, schema: Yup.ObjectSchema<any>) =>
+            other ? schema : schema.shape({ subject: Yup.object().label(texts.common.subject).atLeastOneStringI18n() }),
         )
         .label(texts.common.formatting),
 });
