@@ -29,7 +29,7 @@ const FormSchema = Yup.object({
     }),
 });
 
-const ALL_TARGETS: { target: PushPreviewTarget, label: string }[] = [{
+const ALL_TARGETS: { target: PushPreviewTarget; label: string }[] = [{
     target: 'Notifo',
     label: 'Notifo',
 }, {

@@ -35,10 +35,12 @@ function atLeastOneStringI18n(this: Yup.ObjectSchema<any>) {
         value => {
             if (value) {
                 for (const key in value) {
-                    const item = value[key];
+                    if (value.hasOwnProperty(key)) {
+                        const item = value[key];
 
-                    if (Types.isString(item) && item.trim().length > 0) {
-                        return true;
+                        if (Types.isString(item) && item.trim().length > 0) {
+                            return true;
+                        }
                     }
                 }
             }

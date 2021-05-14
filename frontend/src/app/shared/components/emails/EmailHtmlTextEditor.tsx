@@ -75,18 +75,16 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
                 Tab: (cm) => {
                     if (cm.getMode().name === 'null') {
                         cm.execCommand('insertTab');
+                    } else if (cm.somethingSelected()) {
+                        cm.execCommand('indentMore');
                     } else {
-                        if (cm.somethingSelected()) {
-                            cm.execCommand('indentMore');
-                        } else {
-                            cm.execCommand('insertSoftTab');
-                        }
+                        cm.execCommand('insertSoftTab');
                     }
                 },
-                "'<'": completeAfter,
-                "'/'": completeIfAfterLt,
-                "' '": completeIfInTag,
-                "'='": completeIfInTag,
+                '\'<\'': completeAfter,
+                '\'/\'': completeIfAfterLt,
+                '\' \'': completeIfInTag,
+                '\'=\'': completeIfInTag,
                 'Ctrl-Space': 'autocomplete',
             },
             gutters: [
@@ -154,6 +152,7 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
 
     public render() {
         return (
+            // eslint-disable-next-line no-return-assign
             <textarea ref={self => this.ref = self} />
         );
     }

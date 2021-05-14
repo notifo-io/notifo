@@ -24,14 +24,14 @@ export const loadTemplatesAsync = (appId: string, reset = false) => {
 };
 
 export const upsertTemplateAsync = createApiThunk('templates/upsert',
-    async (arg: { appId: string, params: TemplateDto }) => {
+    async (arg: { appId: string; params: TemplateDto }) => {
         const response = await Clients.Templates.postTemplates(arg.appId, { requests: [arg.params] });
 
         return response[0];
     });
 
 export const deleteTemplateAsync = createApiThunk('templates/delete',
-    (arg: { appId: string, code: string }) => {
+    (arg: { appId: string; code: string }) => {
         return Clients.Templates.deleteTemplate(arg.appId, arg.code);
     });
 

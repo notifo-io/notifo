@@ -25,14 +25,14 @@ import { UsersPage } from './../users/UsersPage';
 import { AppDashboardPage } from './AppDashboardPage';
 import { AppSettingsPage } from './AppSettingsPage';
 
-const DesignItem = ({ match, path }: { match: match<{}>, path: string }) => {
+const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const doToggle = React.useCallback(() =>  {
+    const doToggle = React.useCallback(() => {
         setIsOpen(prev => !prev);
     }, []);
 
-    const doClose = React.useCallback(() =>  {
+    const doClose = React.useCallback(() => {
         setIsOpen(false);
     }, []);
 
@@ -61,14 +61,14 @@ const DesignItem = ({ match, path }: { match: match<{}>, path: string }) => {
     );
 };
 
-const MoreItem = ({ match, path }: { match: match<{}>, path: string }) => {
+const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const doToggle = React.useCallback(() =>  {
+    const doToggle = React.useCallback(() => {
         setIsOpen(prev => !prev);
     }, []);
 
-    const doClose = React.useCallback(() =>  {
+    const doClose = React.useCallback(() => {
         setIsOpen(false);
     }, []);
 
@@ -192,7 +192,7 @@ export const AppPage = () => {
                     <AppSettingsPage />
                 </Route>
 
-                <Route render={_ =>
+                <Route render={() =>
                     <AppDashboardPage />
                 } />
             </Switch>

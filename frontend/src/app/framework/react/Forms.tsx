@@ -16,7 +16,7 @@ import { LanguageSelector } from './LanguageSelector';
 import { PasswordInput } from './PasswordInput';
 import { Toggle } from './Toggle';
 
-type Option<T> = { value: T | string, label: string };
+type Option<T> = { value: T | string; label: string };
 
 export interface FormProps {
     // The input label
@@ -147,7 +147,7 @@ export module Forms {
                     <FormGroup>
                         <InputToggle {...props} />
 
-                    <FormHint hints={props.hints} />
+                        <FormHint hints={props.hints} />
                     </FormGroup>
                 </Col>
             </FormGroup>

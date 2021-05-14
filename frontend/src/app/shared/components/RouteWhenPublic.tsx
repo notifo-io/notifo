@@ -22,11 +22,11 @@ export const RouteWhenPublic = (props: RouteWhenPublicProps & RouteProps) => {
     return (
         <Route {...routeProps}
             render={p =>
-                !isAuthenticated ? (
+                (!isAuthenticated ? (
                     <Component {...p} />
                 ) : (
                     <Redirect to='/app' from={p.location.pathname} />
-                )
+                ))
             } />
     );
 };

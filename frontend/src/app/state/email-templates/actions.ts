@@ -17,17 +17,17 @@ export const loadEmailTemplatesAsync = createApiThunk('emailTemplates/load',
     });
 
 export const createEmailTemplateAsync = createApiThunk('emailTemplates/create',
-    (arg: { appId: string, language: string }) => {
+    (arg: { appId: string; language: string }) => {
         return Clients.Apps.postEmailTemplate(arg.appId, { language: arg.language });
     });
 
 export const updateEmailTemplateAsync = createApiThunk('emailTemplates/upsert',
-    (arg: { appId: string, language: string, template: EmailTemplateDto }) => {
+    (arg: { appId: string; language: string; template: EmailTemplateDto }) => {
         return Clients.Apps.putEmailTemplate(arg.appId, arg.language, arg.template);
     });
 
 export const deleteEmailTemplateAsync = createApiThunk('emailTemplates/delete',
-    (arg: { appId: string, language: string }) => {
+    (arg: { appId: string; language: string }) => {
         return Clients.Apps.deleteEmailTemplate(arg.appId, arg.language);
     });
 
@@ -38,7 +38,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         return initialState;
     })
     .addCase(loadEmailTemplatesAsync.pending, (state) => {
-        state.loading = true,
+        state.loading = true;
         state.loadingError = undefined;
     })
     .addCase(loadEmailTemplatesAsync.rejected, (state, action) => {
@@ -51,7 +51,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         state.emailTemplates = action.payload;
     })
     .addCase(createEmailTemplateAsync.pending, (state) => {
-        state.creating = true,
+        state.creating = true;
         state.creatingError = undefined;
     })
     .addCase(createEmailTemplateAsync.rejected, (state, action) => {
@@ -66,7 +66,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => buil
         state.emailTemplates[language] = action.payload;
     })
     .addCase(deleteEmailTemplateAsync.pending, (state) => {
-        state.deleting = true,
+        state.deleting = true;
         state.deletingError = undefined;
     })
     .addCase(deleteEmailTemplateAsync.rejected, (state, action) => {

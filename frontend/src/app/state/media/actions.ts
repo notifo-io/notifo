@@ -23,12 +23,12 @@ export const loadMediaAsync = (appId: string, query?: Partial<Query>, reset = fa
 };
 
 export const uploadMediaAsync = createApiThunk('media/upload',
-    async (arg: { appId: string, file: File }) => {
+    async (arg: { appId: string; file: File }) => {
         await Clients.Media.upload(arg.appId, arg.file);
     });
 
 export const deleteMediaAsync = createApiThunk('media/delete',
-    async (arg: { appId: string, fileName: string }) => {
+    async (arg: { appId: string; fileName: string }) => {
         await Clients.Media.delete(arg.appId, arg.fileName);
     });
 

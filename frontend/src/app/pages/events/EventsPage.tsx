@@ -50,7 +50,7 @@ export const EventsPage = () => {
                             {events.isLoading ? (
                                 <Loader visible={events.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}
@@ -60,7 +60,7 @@ export const EventsPage = () => {
                 <Col xs={12} md={7}>
                     <ListSearch list={events} onSearch={doLoad} placeholder={texts.events.searchPlaceholder} />
                 </Col>
-             </Row>
+            </Row>
 
             <FormError error={events.error} />
 

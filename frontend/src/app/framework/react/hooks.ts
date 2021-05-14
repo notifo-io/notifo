@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+/* eslint-disable no-console */
+
 import * as React from 'react';
 
 export function useDialog() {
@@ -65,7 +67,7 @@ export function usePrevious <T>(value: T) {
     const ref = React.useRef<T>();
 
     React.useEffect(() => {
-      ref.current = value;
+        ref.current = value;
     });
 
     return ref.current;

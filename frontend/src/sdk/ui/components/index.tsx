@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h, render } from 'preact';
 
 import { NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';

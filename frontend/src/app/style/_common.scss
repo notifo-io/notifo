@@ -1,6 +1,8 @@
 @import '_vars';
 @import '_mixins';
 
+/* stylelint-disable no-descending-specificity */
+
 body {
     background: $color-background;
 }
@@ -225,7 +227,8 @@ $small-gutters: 4px;
             font-size: 90%;
         }
 
-        &-summary, &-empty {
+        &-summary,
+        &-empty {
             background: $color-white;
 
             td {

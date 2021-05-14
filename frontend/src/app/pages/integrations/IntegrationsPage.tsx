@@ -67,12 +67,12 @@ export const IntegrationsPage = () => {
                     {loading ? (
                         <Loader visible={loading} />
                     ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
                             <Icon className='text-lg' type='refresh' />
                         </Button>
                     )}
                 </Col>
-             </Row>
+            </Row>
 
             <FormError error={loadingError} />
 

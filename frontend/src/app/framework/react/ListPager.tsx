@@ -21,7 +21,7 @@ export const ListPager = (props: ListPagerProps) => {
     const {
         list,
         onChange,
-     } = props;
+    } = props;
 
     const {
         total,

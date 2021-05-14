@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h, VNode } from 'preact';
 
 import { useEffect, useRef } from 'preact/hooks';

@@ -1,7 +1,7 @@
 @import '_vars';
 @import '_mixins';
 
-// sass-lint:disable class-name-format
+/* stylelint-disable selector-class-pattern */
 
 $color: #263238;
 $color-border2: darken($color-border, 5%);
@@ -9,6 +9,51 @@ $color-active: #ff5370;
 $color-background: #efefef;
 
 $size-email-header: 5rem;
+
+.CodeMirror {
+    pre {
+        font-size: 1rem !important;
+    }
+
+    &-linenumber {
+        font-size: 1rem !important;
+    }
+
+    &-hints {
+        background: darken($color, 2%);
+        border: 0;
+    }
+
+    &-hint {
+        color: darken($color-white, 40%);
+        font-size: 1rem;
+        font-weight: normal;
+        padding: 4px;
+    }
+
+    &-hint-active {
+        background: none !important;
+        border: 0;
+        color: $color-active;
+    }
+
+    &-lint-tooltip {
+        background: darken($color, 2%);
+        border: 0;
+        color: $color-white;
+        font-size: 1rem;
+        font-weight: normal;
+        padding: 10px;
+    }
+
+    &-lint-message-error {
+        background-image: none;
+        border: 0;
+        font-size: 1rem;
+        font-weight: normal;
+        padding-left: 0;
+    }
+}
 
 .email {
     &-container {
@@ -106,6 +151,15 @@ $size-email-header: 5rem;
     }
 }
 
+.gutter {
+    &.gutter-horizontal {
+        background: $color;
+        background-image: none;
+        border: 0;
+        cursor: ew-resize;
+    }
+}
+
 .email-editor {
     & {
         display: flex;
@@ -153,59 +207,5 @@ $size-email-header: 5rem;
             min-height: 100%;
             min-width: 100%;
         }
-    }
-}
-
-.CodeMirror {
-    pre {
-        font-size: 1rem !important;
-    }
-
-    &-linenumber {
-        font-size: 1rem !important;
-    }
-
-    &-hints {
-        background: darken($color, 2%);
-        border: 0;
-    }
-
-    &-hint {
-        color: darken($color-white, 40%);
-        font-size: 1rem;
-        font-weight: normal;
-        padding: 4px;
-    }
-
-    &-hint-active {
-        background: none !important;
-        border: 0;
-        color: $color-active;
-    }
-
-    &-lint-tooltip {
-        background: darken($color, 2%);
-        border: 0;
-        color: $color-white;
-        font-size: 1rem;
-        font-weight: normal;
-        padding: 10px;
-    }
-
-    &-lint-message-error {
-        background-image: none;
-        border: 0;
-        font-size: 1rem;
-        font-weight: normal;
-        padding-left: 0;
-    }
-}
-
-.gutter {
-    &.gutter-horizontal {
-        background: $color;
-        background-image: none;
-        border: 0;
-        cursor: ew-resize;
     }
 }

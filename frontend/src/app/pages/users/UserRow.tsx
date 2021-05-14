@@ -77,13 +77,13 @@ export const UserRow = React.memo((props: UserRowProps) => {
                         <Icon type='send' />
                     </Button>
 
-                    <Button className='ml-1' size='sm' color='primary' onClick={doEdit}  data-tip={texts.common.edit}>
+                    <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tip={texts.common.edit}>
                         <Icon type='create' />
                     </Button>
 
                     <Confirm onConfirm={doDelete} text={texts.users.confirmDelete}>
                         {({ onClick }) => (
-                            <Button className='ml-1' size='sm' color='danger' onClick={onClick}  data-tip={texts.common.delete}>
+                            <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>
                                 <Icon type='delete' />
                             </Button>
                         )}
