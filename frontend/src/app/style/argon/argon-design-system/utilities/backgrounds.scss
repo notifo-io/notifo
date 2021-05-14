@@ -2,14 +2,6 @@
 	@include bg-variant(".bg-#{$color}", $value);
 }
 
-@each $color, $value in $theme-colors {
-	@include bg-gradient-variant(".bg-gradient-#{$color}", $value);
-}
-
-@each $color, $value in $colors { 
-	@include bg-gradient-variant(".bg-gradient-#{$color}", $value);
-}
-
 // Background colors with transparency
 @each $color, $value in $theme-colors {
     @include bg-translucent-variant(".bg-translucent-#{$color}", $value);
@@ -21,11 +13,6 @@
 @each $color, $value in $section-colors {
     @include bg-variant(".section-#{$color}", $value);
 }
-
-@each $color, $value in $theme-colors {
-    @include bg-gradient-variant(".bg-gradient-#{$color}", $value);
-}
-
 
 // Shape (svg) fill colors
 

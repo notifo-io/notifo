@@ -1,12 +1,12 @@
 @import '_overrides';
 
 // Load bootstrap first to overload vars.
-@import 'argon/scss/argon-design-system';
+@import 'argon/argon-design-system';
 
-@import '~codemirror/lib/codemirror';
-@import '~codemirror/addon/hint/show-hint.css';
-@import '~codemirror/addon/lint/lint.css';
-@import '~codemirror/theme/material';
+@import 'codemirror/lib/codemirror';
+@import 'codemirror/addon/hint/show-hint.css';
+@import 'codemirror/addon/lint/lint.css';
+@import 'codemirror/theme/material';
 
 @import '_common';
 @import '_apps';
@@ -19,10 +19,11 @@
 @import '_templates';
 @import '_users';
 
-@import '~react-push-preview/dist/react-push-preview.cjs.production.min.css';
+// Import Push Preview
+@import 'react-push-preview/dist/react-push-preview.cjs.production.min.css';
 
 // Import React Toastify
-@import '~react-toastify/dist/ReactToastify.css';
+@import 'react-toastify/dist/ReactToastify.css';
 
 // Icomoon styles
 @import 'icons/style.css';
