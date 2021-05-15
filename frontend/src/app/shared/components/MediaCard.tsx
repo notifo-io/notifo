@@ -46,7 +46,7 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
         onClick && onClick(media);
     }, [media]);
 
-    const image =  `${media.url}?width=200&height=150&mode=Pad`;
+    const image = `${media.url}?width=200&height=150&mode=Pad`;
 
     return (
         <Card className='media-card' onClick={doClick} color={selected ? 'primary' : undefined}>

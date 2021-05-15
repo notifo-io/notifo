@@ -10,7 +10,7 @@ import { texts } from '@app/texts';
 import * as React from 'react';
 import { Col, CustomInput, Row } from 'reactstrap';
 
-export interface TableFooterProps extends ListPagerProps  {
+export interface TableFooterProps extends ListPagerProps {
     // True to show all details.
     showDetails?: boolean;
 

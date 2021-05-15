@@ -47,10 +47,6 @@ export const DropZone = (props: DropZoneProps) => {
     }, [dragCounter]);
 
     const doPaste = React.useCallback((event: React.ClipboardEvent) => {
-        if (noPaste || disabled) {
-
-        }
-
         const result = getAllowedFiles(event.clipboardData, files);
 
         if (result) {
@@ -60,7 +56,6 @@ export const DropZone = (props: DropZoneProps) => {
 
     const doDrop = React.useCallback((event: React.DragEvent) => {
         if (hasFiles(event.dataTransfer)) {
-
             const result = getAllowedFiles(event.dataTransfer, files);
 
             if (result) {

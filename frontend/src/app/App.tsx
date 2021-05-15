@@ -27,7 +27,7 @@ export const App = () => {
                     <AuthenticationPage />
                 </Route>
 
-                <Route render={_ =>
+                <Route render={() =>
                     <Redirect to='/app' />
                 } />
             </Switch>

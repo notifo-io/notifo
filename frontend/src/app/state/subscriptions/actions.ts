@@ -23,12 +23,12 @@ export const loadSubscriptionsAsync = (appId: string, userId: string, query?: Pa
 };
 
 export const upsertSubscriptionAsync = createApiThunk('subscriptions/upsert',
-    (arg: { appId: string, userId: string, params: SubscriptionDto }) => {
+    (arg: { appId: string; userId: string; params: SubscriptionDto }) => {
         return Clients.Users.postSubscription(arg.appId, arg.userId, arg.params);
     });
 
 export const deleteSubscriptionAsync = createApiThunk('subscriptions/delete',
-    (arg: { appId: string, userId: string, prefix: string }) => {
+    (arg: { appId: string; userId: string; prefix: string }) => {
         return Clients.Users.deleteSubscription(arg.appId, arg.userId, arg.prefix);
     });
 
@@ -53,7 +53,7 @@ export const subscriptionsReducer = createReducer(initialState, builder => list.
         return initialState;
     })
     .addCase(upsertSubscriptionAsync.pending, (state) => {
-        state.upserting = true,
+        state.upserting = true;
         state.upsertingError = undefined;
     })
     .addCase(upsertSubscriptionAsync.rejected, (state, action) => {

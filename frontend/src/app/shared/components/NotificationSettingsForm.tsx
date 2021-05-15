@@ -104,7 +104,7 @@ export module NotificationsForm {
         );
     };
 
-    const Channel = ({ channel, disabled, field }: { disabled?: boolean, field: string, channel: string }) => {
+    const Channel = ({ channel, disabled, field }: { disabled?: boolean; field: string; channel: string }) => {
         return (
             <fieldset key={channel}>
                 <legend>{texts.notificationSettings[channel].title}</legend>

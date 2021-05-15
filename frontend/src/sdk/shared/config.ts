@@ -9,11 +9,11 @@ import { de, enUS } from 'date-fns/locale';
 import { isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
-    ['en']: enUS,
-    ['de']: de,
+    en: enUS,
+    de,
 };
 
-const DefaultTexts: Texts<{ de: string, en: string }> = {
+const DefaultTexts: Texts<{ de: string; en: string }> = {
     allow: {
         de: 'Erlauben',
         en: 'Allow',
@@ -319,7 +319,7 @@ type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';
 const SUPPORTED_POSITIONS: OptionsPosition[] = ['bottom-left', 'bottom-right'];
 const SUPPORTED_MAIN_STYLES: OptionMainStyle[] = ['message', 'chat', 'chat_filled', 'notifo'];
 
-export interface NotificationsOptions  {
+export interface NotificationsOptions {
     // The position of the modal.
     position: OptionsPosition;
 
@@ -331,25 +331,25 @@ export interface NotificationsOptions  {
 }
 
 type Texts<T> = {
-    allow: T,
-    archive: T,
-    archiveLink: T,
-    cancel: T,
-    deny: T,
-    email: T,
-    fullName: T,
-    language: T,
-    notificationsEmpty: T,
-    notifyBeEmail: T
-    notifyBeWebPush: T,
-    profile: T,
-    save: T,
-    settings: T,
-    subscribe: T,
-    timezone: T,
-    unsubscribe: T,
-    webPushConfirmText: T,
-    webPushConfirmTitle: T,
+    allow: T;
+    archive: T;
+    archiveLink: T;
+    cancel: T;
+    deny: T;
+    email: T;
+    fullName: T;
+    language: T;
+    notificationsEmpty: T;
+    notifyBeEmail: T;
+    notifyBeWebPush: T;
+    profile: T;
+    save: T;
+    settings: T;
+    subscribe: T;
+    timezone: T;
+    unsubscribe: T;
+    webPushConfirmText: T;
+    webPushConfirmTitle: T;
 };
 
 const TextKeys: ReadonlyArray<keyof Texts<any>> = [

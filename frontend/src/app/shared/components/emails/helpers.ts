@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-// tslint:disable: object-literal-key-quotes
+/* eslint-disable quote-props */
 
 import { getApiUrl } from '@app/service';
 import * as CodeMirror from 'codemirror';
 import * as React from 'react';
 
-export type TemplateError = { message: string, line: number };
-export type TemplateResult = { result: string, errors?: TemplateError[] };
+export type TemplateError = { message: string; line: number };
+export type TemplateResult = { result: string; errors?: TemplateError[] };
 export type TemplatePreview = TemplateResult & { markup?: string };
 
 export type TemplateType = 'html' | 'text';

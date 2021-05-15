@@ -23,19 +23,19 @@ export const loadUsersAsync = (appId: string, query?: Partial<Query>, reset = fa
 };
 
 export const loadUserAsync = createApiThunk('users/load',
-    (arg: { appId: string, userId: string }) => {
+    (arg: { appId: string; userId: string }) => {
         return Clients.Users.getUser(arg.appId, arg.userId);
     });
 
 export const upsertUserAsync = createApiThunk('users/upsert',
-    async (arg: { appId: string, params: UpsertUserDto }) => {
+    async (arg: { appId: string; params: UpsertUserDto }) => {
         const response = await Clients.Users.postUsers(arg.appId, { requests: [arg.params] });
 
         return response[0];
     });
 
 export const deleteUserAsync = createApiThunk('users/delete',
-    (arg: { appId: string, userId: string }) => {
+    (arg: { appId: string; userId: string }) => {
         return Clients.Users.deleteUser(arg.appId, arg.userId);
     });
 

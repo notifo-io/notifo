@@ -5,8 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-// tslint:disable: readonly-array
-// tslint:disable: prefer-array-literal
+/* eslint-disable */
 
 interface Array<T> {
     remove(value: T): boolean;

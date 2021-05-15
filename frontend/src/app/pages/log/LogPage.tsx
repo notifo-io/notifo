@@ -49,7 +49,7 @@ export const LogPage = () => {
                             {logEntries.isLoading ? (
                                 <Loader visible={logEntries.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

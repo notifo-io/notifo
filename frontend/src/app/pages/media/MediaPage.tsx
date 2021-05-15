@@ -55,7 +55,7 @@ export const MediaPage = () => {
                             {media.isLoading ? (
                                 <Loader visible={media.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}
@@ -65,7 +65,7 @@ export const MediaPage = () => {
                 <Col xs={12} md={7}>
                     <ListSearch list={media} onSearch={doLoad} placeholder={texts.media.searchPlaceholder} />
                 </Col>
-             </Row>
+            </Row>
 
             <FormError error={media.error} />
 

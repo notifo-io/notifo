@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Fragment, h } from 'preact';
 
 import { NotificationsOptions, SDKConfig } from '@sdk/shared';

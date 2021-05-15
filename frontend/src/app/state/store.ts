@@ -5,6 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable implicit-arrow-linebreak */
+
 import { configureStore } from '@reduxjs/toolkit';
 import { History } from 'history';
 import { routerMiddleware } from 'react-router-redux';

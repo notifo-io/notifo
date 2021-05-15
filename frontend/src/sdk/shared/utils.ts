@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+/* eslint-disable no-console */
+
 type QueueItem = () => Promise<any>;
 
 export class JobQueue {
@@ -61,7 +63,7 @@ export function isFunction(value: any): value is Function {
 }
 
 export function isNumber(value: any): value is number {
-    return typeof value === 'number' && isFinite(value);
+    return typeof value === 'number' && Number.isFinite(value);
 }
 
 export function isObject(value: any): value is Object {

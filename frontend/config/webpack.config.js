@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const webpack = require('webpack'),
          path = require('path'),
            fs = require('fs');
@@ -23,10 +25,10 @@ const plugins = {
     TerserPlugin: require('terser-webpack-plugin'),
     // https://github.com/NMFR/optimize-css-assets-webpack-plugin
     OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin"),
-    // https://github.com/jrparish/tslint-webpack-plugin
-    TsLintPlugin: require('tslint-webpack-plugin'),
-    // https://www.npmjs.com/package/sass-lint-webpack
-    SassLintPlugin: require('sass-lint-webpack'),
+    // https://webpack.js.org/plugins/eslint-webpack-plugin/
+    ESLintPlugin: require('eslint-webpack-plugin'),
+    // https://github.com/webpack-contrib/stylelint-webpack-plugin
+    StylelintPlugin : require('stylelint-webpack-plugin'),
     // https://www.npmjs.com/package/webpack-bundle-analyzer
     BundleAnalyzerPlugin: require('webpack-bundle-analyzer').BundleAnalyzerPlugin,
     // https://github.com/jantimon/favicons-webpack-plugin
@@ -181,8 +183,8 @@ module.exports = function (env) {
                 }
             }),
 
-            new plugins.SassLintPlugin({
-                files: 'src/**/*.scss'
+            new plugins.StylelintPlugin({
+                files: '**/*.scss'
             }),
 
             /**
@@ -279,23 +281,18 @@ module.exports = function (env) {
             })
         );
 
-        config.plugins.push(
-            new plugins.TsLintPlugin({
-                files: [
-                    './sdk/**/*.ts',
-                    './src/**/*.ts',
-                    './src/**/*.tsx'
-                ],
-                /**
-                 * Path to a configuration file.
-                 */
-                config: root('tslint.json'),
-                /**
-                 * Wait for linting and fail the build when linting error occur.
-                 */
-                waitForLinting: isProduction
-            })
-        );
+        if (isProduction) {
+            config.plugins.push(
+                new plugins.ESLintPlugin({
+                    files: [
+                        './sdk/**/*.ts',
+                        './sdk/**/*.tsx',
+                        './src/**/*.ts',
+                        './src/**/*.tsx'
+                    ]
+                })
+            );
+        }
     }
 
     if (isProduction) {

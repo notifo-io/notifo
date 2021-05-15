@@ -9,6 +9,7 @@ import * as React from 'react';
 import { Button, Input, InputProps } from 'reactstrap';
 
 export const PasswordInput = (props: InputProps) => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { type: _, ...otherProps } = props;
 
     const [isClear, setIsClear] = React.useState(false);

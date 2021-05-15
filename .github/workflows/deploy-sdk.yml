@@ -9,15 +9,15 @@ jobs:
     steps:
     - uses: actions/checkout@v1
  
-    - name: setup dotnet
+    - name: Set up dotnet
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.100
 
-    - name: pack
+    - name: Pack
       run: |
         cd backend/sdk/Notifo.SDK && dotnet pack -c Release
 
-    - name: publish
+    - name: Publish
       run: |
         cd backend/sdk/Notifo.SDK && dotnet nuget push **/*.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k ${{ secrets.NUGET }} --no-symbols 1 

@@ -53,10 +53,12 @@ function buildConfig(config: SDKConfig) {
     const clonedConfig = {};
 
     for (const key in config) {
-        const value = config[key];
+        if (config.hasOwnProperty(key)) {
+            const value = config[key];
 
-        if (!isFunction(value)) {
-            clonedConfig[key] = value;
+            if (!isFunction(value)) {
+                clonedConfig[key] = value;
+            }
         }
     }
 

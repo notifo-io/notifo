@@ -63,21 +63,21 @@ export interface SearchRequest extends Query {
     skip: number;
 }
 
-type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>, total: number, extra?: TExtra }>;
-type ListArg = { query?: Partial<SearchRequest>, reset?: boolean } & { [x: string]: any };
+type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>; total: number; extra?: TExtra }>;
+type ListArg = { query?: Partial<SearchRequest>; reset?: boolean } & { [x: string]: any };
 
 export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
     const name = `${prefix}/${key}/load`;
 
-    type ActionPendingType = { reset?: boolean, request: SearchRequest };
-    type ActionFulfilledType = { items: readonly TItem[], extra?: TExtra, total: number };
+    type ActionPendingType = { reset?: boolean; request: SearchRequest };
+    type ActionFulfilledType = { items: readonly TItem[]; extra?: TExtra; total: number };
     type ActionRejectedType = { error: ErrorDto };
 
     const actionPending = createAction<ActionPendingType>(`${name}/pending`);
     const actionFulfilled = createAction<ActionFulfilledType>(`${name}/fulfilled`);
     const actionRejected = createAction<ActionRejectedType>(`${name}/rejected`);
 
-    const action = (arg: ListArg) => {
+    const loadAction = (arg: ListArg) => {
         return async (dispatch: Dispatch, getState: () => any) => {
             const state = getState()[prefix][key] as ListState<T>;
 
@@ -180,7 +180,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
         total: 0,
     });
 
-    return { action, initialize, createInitial };
+    return { action: loadAction, initialize, createInitial };
 }
 
 function hasChanged(lhs: string | undefined | null, rhs: string | undefined | null) {

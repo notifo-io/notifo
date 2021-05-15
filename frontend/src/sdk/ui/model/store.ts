@@ -54,7 +54,7 @@ export class Store<TState, TAction extends { type: string }> {
         }
 
         this.setState(newState);
-    }
+    };
 
     private setState(newState: any) {
         if (newState !== this.state) {

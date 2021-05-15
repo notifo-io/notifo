@@ -179,6 +179,14 @@ $size-toggle: 20px;
             }
         }
 
+        &-loader {
+            @include middle;
+
+            img {
+                display: inline-block;
+            }
+        }
+
         &-notification {
             & {
                 border-bottom: 1px solid $color-border;
@@ -309,14 +317,6 @@ $size-toggle: 20px;
             }
         }
 
-        &-loader {
-            @include middle;
-
-            img {
-                display: inline-block;
-            }
-        }
-
         &-profile-button {
             @include absolute(-1.25rem, -1rem);
             line-height: 1px;
@@ -326,7 +326,8 @@ $size-toggle: 20px;
             }
         }
 
-        &-empty, &-loading {
+        &-empty,
+        &-loading {
             @include absolute(50%, 0, null, 0);
             color: $color-empty;
             font-size: 80%;
@@ -347,7 +348,8 @@ $size-toggle: 20px;
                 opacity: 75%;
             }
 
-            &-control, &-button {
+            &-control,
+            &-button {
                 background: $color-background;
                 border: 1px solid $color-input;
                 border-radius: 3px;
@@ -457,14 +459,14 @@ $size-toggle: 20px;
                 vertical-align: middle;
             }
 
+            span {
+                font-size: 80%;
+            }
+
             &:hover {
                 span {
                     text-decoration: underline;
                 }
-            }
-
-            span {
-                font-size: 80%;
             }
 
             svg {

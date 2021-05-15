@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-export * from './service';
-
 import { Log, User, UserManager, WebStorageStateStore } from 'oidc-client';
 import { AppsClient, ConfigsClient, EventsClient, LogsClient, MediaClient, TemplatesClient, UsersClient } from './service';
+
+export * from './service';
 
 export function getApiUrl() {
     const baseElements = document.getElementsByTagName('base');
@@ -26,7 +26,7 @@ export function getApiUrl() {
     if (baseHref && baseHref.indexOf(window.location.protocol) === 0) {
         apiUrl = baseHref;
     } else {
-        apiUrl = window.location.protocol + '//' + window.location.host + baseHref;
+        apiUrl = `${window.location.protocol}//${window.location.host}${baseHref}`;
     }
 
     while (apiUrl.endsWith('/')) {
@@ -43,13 +43,13 @@ export module AuthService {
     export function getCurrentUser() {
         return userCurrent;
     }
-    
+
     export function getUserManager(): UserManager {
         if (!userManager) {
             const authority = getApiUrl();
-    
+
             Log.logger = console;
-    
+
             userManager = new UserManager({
                 authority,
                 automaticSilentRenew: true,
@@ -63,20 +63,20 @@ export module AuthService {
                 silent_redirect_uri: `${authority}/authentication/login-silent-callback.html`,
                 userStore: new WebStorageStateStore({ store: window.localStorage || window.sessionStorage }),
             });
-    
+
             userManager.getUser().then(user => {
                 userCurrent = user;
             });
-    
+
             userManager.events.addUserLoaded(user => {
                 userCurrent = user;
             });
-    
+
             userManager.events.addUserUnloaded(() => {
                 userCurrent = undefined;
             });
         }
-    
+
         return userManager;
     }
 }
@@ -87,7 +87,7 @@ export module Clients {
             const userManager = AuthService.getUserManager();
 
             try {
-                let user = await userManager.getUser();
+                const user = await userManager.getUser();
 
                 init.headers = init.headers || {};
                 init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
@@ -97,30 +97,26 @@ export module Clients {
                 }
             }
 
-            try {
-                let result = await fetch(url, init);
+            let result = await fetch(url, init);
 
-                if (result.status === 401) {
-                    try {
-                        const user = await AuthService.getUserManager().signinSilent();
+            if (result.status === 401) {
+                try {
+                    const user = await AuthService.getUserManager().signinSilent();
 
-                        init.headers = init.headers || {};
-                        init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
-                    } catch (error) {
-                        if (init.headers) {
-                            delete init.headers['Authorization'];
-                        }
+                    init.headers = init.headers || {};
+                    init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
+                } catch (error) {
+                    if (init.headers) {
+                        delete init.headers['Authorization'];
                     }
-
-                    result = await fetch(url, init);
                 }
 
-                return result;
-            } catch (error) {
-                throw error;
+                result = await fetch(url, init);
             }
-        }
-    }
+
+            return result;
+        },
+    };
 
     export const Apps = new AppsClient(getApiUrl(), http);
 

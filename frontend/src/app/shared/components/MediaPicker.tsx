@@ -36,7 +36,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
     const dispatch = useDispatch();
     const app = useApps(getApp);
     const appId = app.id;
-    const media = useMedia(x => x.media);
+    const medias = useMedia(x => x.media);
     const [selection, setSelection] = React.useState<string>();
 
     React.useEffect(() => {
@@ -71,10 +71,10 @@ export const MediaPicker = (props: MediaPickerProps) => {
                                 {texts.media.header}
                             </Col>
                             <Col xs='auto'>
-                                {media.isLoading ? (
-                                    <Loader visible={media.isLoading} />
+                                {medias.isLoading ? (
+                                    <Loader visible={medias.isLoading} />
                                 ) : (
-                                    <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                                    <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
                                         <Icon className='text-lg' type='refresh' />
                                     </Button>
                                 )}
@@ -82,32 +82,32 @@ export const MediaPicker = (props: MediaPickerProps) => {
                         </Row>
                     </Col>
                     <Col xs={12} md={7}>
-                        <ListSearch list={media} onSearch={doLoad} placeholder={texts.media.searchPlaceholder} />
+                        <ListSearch list={medias} onSearch={doLoad} placeholder={texts.media.searchPlaceholder} />
                     </Col>
                 </Row>
             </ModalHeader>
 
             <ModalBody>
-                <FormError error={media.error} />
+                <FormError error={medias.error} />
 
                 <div className='mb-4'>
-                    {media.items &&
+                    {medias.items &&
                         <>
-                            {media.items.map(media => (
+                            {medias.items.map(media => (
                                 <MediaCard key={media.fileName} selected={media.url === currentUrl} media={media}
                                     onClick={doSelectMedia} />
                             ))}
                         </>
                     }
 
-                    {!media.isLoading && media.items && media.items.length === 0 &&
+                    {!medias.isLoading && medias.items && medias.items.length === 0 &&
                         <div className='list-item-empty'>
                             {texts.media.mediaNotFound}
                         </div>
                     }
                 </div>
 
-                <TableFooter list={media} noDetailButton
+                <TableFooter list={medias} noDetailButton
                     onChange={doLoad} />
             </ModalBody>
 

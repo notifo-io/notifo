@@ -29,16 +29,18 @@ function topicI18n(this: Yup.StringSchema) {
     return this.matches(/^[a-z0-9\\-_]+(\/[a-z0-9\-_]+)*$/, { message: texts.validation.topicFn, excludeEmptyString: true });
 }
 
-function atLeastOnStringI18n(this: Yup.ObjectSchema) {
+function atLeastOneStringI18n(this: Yup.ObjectSchema<any>) {
     return this.test('at-least-one_string',
         texts.validation.atLeastOnString,
         value => {
             if (value) {
                 for (const key in value) {
-                    const item = value[key];
+                    if (value.hasOwnProperty(key)) {
+                        const item = value[key];
 
-                    if (Types.isString(item) && item.trim().length > 0) {
-                        return true;
+                        if (Types.isString(item) && item.trim().length > 0) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -48,7 +50,7 @@ function atLeastOnStringI18n(this: Yup.ObjectSchema) {
 }
 
 export function extendYup() {
-    Yup.addMethod(Yup.object, 'atLeastOnStringI18n', atLeastOnStringI18n);
+    Yup.addMethod(Yup.object, 'atLeastOneStringI18n', atLeastOneStringI18n);
 
     Yup.addMethod(Yup.string, 'emailI18n', emailI18n);
 

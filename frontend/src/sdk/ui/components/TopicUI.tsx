@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h } from 'preact';
 
 import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
