@@ -3,10 +3,10 @@ name: Build and Push to Dockerhub
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
     branches:
-    - master
+    - main
 
 jobs:
   build:
