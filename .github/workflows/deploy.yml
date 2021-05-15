@@ -1,6 +1,12 @@
 name: Build and Push to Dockerhub
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 jobs:
   build:
@@ -34,11 +40,10 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: build and push
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       id: docker_build
       uses: docker/build-push-action@v2
       with:
-        push: true
+        push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
         tags: squidex/notifo:dev-${{ env.BUILD_NUMBER }}
