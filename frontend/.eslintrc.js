@@ -26,7 +26,7 @@ module.exports = {
         "@typescript-eslint/member-delimiter-style": [
             "error",
             {
-                "multiline": {
+                "multiline": { 
                     "delimiter": "semi",
                     "requireLast": true
                 },
