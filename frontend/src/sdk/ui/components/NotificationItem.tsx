@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h } from 'preact';
 
 import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
@@ -119,7 +120,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
             };
         }
 
-        return;
+        return undefined;
     }, [inView, notification, doSee]);
 
     const time = useMemo(() => {

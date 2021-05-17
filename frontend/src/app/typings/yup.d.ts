@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NumberSchema, ObjectSchema, StringSchema } from 'yup';
 
 declare module 'yup' {
@@ -22,7 +23,7 @@ declare module 'yup' {
         requiredI18n(): NumberSchema;
     }
 
-    interface ObjectSchema {
-        atLeastOnStringI18n(): ObjectSchema;
+    interface ObjectSchema<TShape, TContext, TIn> {
+        atLeastOneStringI18n(): ObjectSchema<TShape, TContext, TIn>;
     }
 }

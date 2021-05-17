@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-type Option<T> = { value: T | string, label: string };
+type Option<T> = { value: T | string; label: string };
 
 export interface CoreStateInStore {
     core: CoreState;

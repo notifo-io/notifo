@@ -5,6 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+/* eslint-disable @typescript-eslint/return-await */
+
 import { SDKConfig } from './config';
 import { combineUrl, isString } from './utils';
 
@@ -125,7 +127,7 @@ export interface UpdateProfile {
 }
 
 export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topicPrefix: string }): Promise<Subscription | null> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/`);
+    const url = combineUrl(config.apiUrl, 'api/me/subscriptions/');
 
     const request: RequestInit = {
         method: 'POST',
@@ -148,7 +150,7 @@ export async function apiPostSubscription(config: SDKConfig, subscription: Subsc
 }
 
 export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<NotifoNotification>> {
-    const url = combineUrl(config.apiUrl, `api/me/notifications/archive`);
+    const url = combineUrl(config.apiUrl, 'api/me/notifications/archive');
 
     const request: RequestInit = {
         method: 'GET',
@@ -190,7 +192,7 @@ export async function apiGetSubscription(config: SDKConfig, topicPrefix: string)
 }
 
 export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> {
-    const url = combineUrl(config.apiUrl, `api/me/`);
+    const url = combineUrl(config.apiUrl, 'api/me/');
 
     const request: RequestInit = {
         method: 'GET',
@@ -211,7 +213,7 @@ export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> 
 }
 
 export async function apiPostProfile(config: SDKConfig, update: UpdateProfile): Promise<Profile> {
-    const url = combineUrl(config.apiUrl, `api/me/`);
+    const url = combineUrl(config.apiUrl, 'api/me/');
 
     const request: RequestInit = {
         method: 'POST',
@@ -285,7 +287,7 @@ export async function apiRegister(config: SDKConfig) {
         return;
     }
 
-    const CACHE_KEY = `notifo.token-v2`;
+    const CACHE_KEY = 'notifo.token-v2';
 
     if (window.localStorage) {
         const stored = window.localStorage.getItem(CACHE_KEY);
@@ -337,7 +339,7 @@ export async function apiRegister(config: SDKConfig) {
     });
 
     if (!response.ok) {
-        throw new Error(`Request failed with {response.statusCode}`);
+        throw new Error('Request failed with {response.statusCode}');
     }
 
     const result: object = await response.json();
@@ -362,11 +364,11 @@ function hasToken(config: SDKConfig) {
 function getAuthHeader(config: SDKConfig): Record<string, string> {
     if (config.userToken) {
         return {
-            ['X-ApiKey']: config.userToken,
+            'X-ApiKey': config.userToken,
         };
     } else {
         return {
-            ['X-ApiKey']: config.apiKey!,
+            'X-ApiKey': config.apiKey!,
         };
     }
 }

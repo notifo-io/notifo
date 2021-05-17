@@ -86,11 +86,11 @@ export class Connection {
 function getAuthHeader(config: SDKConfig): Record<string, string> {
     if (config.userToken) {
         return {
-            ['X-ApiKey']: config.userToken,
+            'X-ApiKey': config.userToken,
         };
     } else {
         return {
-            ['X-ApiKey']: config.apiKey!,
+            'X-ApiKey': config.apiKey!,
         };
     }
 }

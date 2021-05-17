@@ -54,7 +54,7 @@ export const TemplatesList = () => {
                     {templates.isLoading ? (
                         <Loader visible={templates.isLoading} />
                     ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh}  data-tip={texts.common.refresh}>
+                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
                             <Icon className='text-lg' type='refresh' />
                         </Button>
                     )}

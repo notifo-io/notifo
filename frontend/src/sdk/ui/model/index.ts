@@ -50,7 +50,7 @@ export interface NotifoState {
 }
 
 type NotifoDispatch = Dispatch<NotifoAction>;
-type NotifoAction = { type: NotifoActionType, [x: string]: any  };
+type NotifoAction = { type: NotifoActionType; [x: string]: any };
 
 type NotifoActionType =
     'Connected' |

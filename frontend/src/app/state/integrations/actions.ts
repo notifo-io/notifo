@@ -17,17 +17,17 @@ export const loadIntegrationAsync = createApiThunk('integrations/load',
     });
 
 export const createIntegrationAsync = createApiThunk('integrations/create',
-    async (arg: { appId: string, params: CreateIntegrationDto }) => {
+    async (arg: { appId: string; params: CreateIntegrationDto }) => {
         return await Clients.Apps.postIntegration(arg.appId, arg.params);
     });
 
 export const updateIntegrationAsync = createApiThunk('integrations/update',
-    async (arg: { appId: string, id: string, params: UpdateIntegrationDto }) => {
+    async (arg: { appId: string; id: string; params: UpdateIntegrationDto }) => {
         return await Clients.Apps.putIntegration(arg.appId, arg.id, arg.params);
     });
 
 export const deleteIntegrationAsync = createApiThunk('integrations/delete',
-    async (arg: { appId: string, id: string }) => {
+    async (arg: { appId: string; id: string }) => {
         await Clients.Apps.deleteIntegration(arg.appId, arg.id);
     });
 
@@ -64,7 +64,7 @@ export const integrationsReducer = createReducer(initialState, builder => builde
         state.upsertingError = undefined;
         state.configured[action.payload.id] = action.payload.integration;
     })
-    .addCase(updateIntegrationAsync.pending, (state, action) => {
+    .addCase(updateIntegrationAsync.pending, (state) => {
         state.upserting = true;
         state.upsertingError = undefined;
     })

@@ -5,9 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+/* eslint-disable no-restricted-globals */
+
 import { SWMessage } from '@sdk/push/shared';
 import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseShortNotification, SDKConfig, withPreset } from '@sdk/shared';
 
+// eslint-disable-next-line func-names
 (function (self: ServiceWorkerGlobalScope) {
     self.addEventListener('install', () => {
         self.skipWaiting();
@@ -26,7 +29,6 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
                 break;
             }
         }
-
     });
 
     self.addEventListener('notificationclose', (event: NotificationEvent) => {
@@ -48,13 +50,11 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
 
                 event.waitUntil(promise);
             }
-        } else {
-            if (notification.linkUrl && self.clients.openWindow) {
-                const promise = self.clients.openWindow(notification.linkUrl);
+        } else if (notification.linkUrl && self.clients.openWindow) {
+            const promise = self.clients.openWindow(notification.linkUrl);
 
-                event.notification.close();
-                event.waitUntil(promise);
-            }
+            event.notification.close();
+            event.waitUntil(promise);
         }
     });
 
@@ -64,8 +64,8 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
 
             const promise = self.registration.getNotifications({ tag: notification.id })
                 .then(notifications => {
-                    for (const notification of notifications) {
-                        notification.close();
+                    for (const openNotification of notifications) {
+                        openNotification.close();
 
                         return Promise.resolve();
                     }
@@ -99,7 +99,8 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
             event.waitUntil(promise);
         }
     });
- })(<any>self);
+// eslint-disable-next-line no-restricted-globals
+}(<any>self));
 
 async function subscribeToWebPush(sw: ServiceWorkerRegistration, config: SDKConfig) {
     if (!config.publicKey) {
@@ -137,6 +138,7 @@ function urlB64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
 
     const base64 = (base64String + padding)
+        // eslint-disable-next-line no-useless-escape
         .replace(/\-/g, '+')
         .replace(/_/g, '/');
 

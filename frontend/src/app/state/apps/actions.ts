@@ -34,17 +34,17 @@ export const createAppAsync = createApiThunk('apps/create',
     });
 
 export const upsertAppAsync = createApiThunk('apps/upsert',
-    (arg: { appId: string, params: UpsertAppDto }) => {
+    (arg: { appId: string; params: UpsertAppDto }) => {
         return Clients.Apps.putApp(arg.appId, arg.params);
     });
 
 export const addContributorAsync = createApiThunk('apps/contributors/add',
-    (arg: { appId: string, params: AddContributorDto }) => {
+    (arg: { appId: string; params: AddContributorDto }) => {
         return Clients.Apps.postContributor(arg.appId, arg.params);
     });
 
 export const removeContributorAsync = createApiThunk('apps/contributors/remove',
-    (arg: { appId: string, id: string }) => {
+    (arg: { appId: string; id: string }) => {
         return Clients.Apps.deleteContributor(arg.appId, arg.id);
     });
 

@@ -1,9 +1,11 @@
-﻿/*
+/*
  * Notifo.io
  *
  * @license
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
+
+import './utils/array-extensions';
 
 export * from './model';
 export * from './react/ApiValue';
@@ -26,5 +28,3 @@ export * from './react/Shortcut';
 export * from './react/Title';
 export * from './react/Toggle';
 export * from './utils';
-
-import './utils/array-extensions';

@@ -11,7 +11,7 @@ import { useEffect, useState } from 'preact/hooks';
 const IS_SUPPORTED = !!window['IntersectionObserver'];
 
 let observer: IntersectionObserver;
-let callbacks: { element: HTMLElement, callback: (value: number) => void }[] = [];
+let callbacks: { element: HTMLElement; callback: (value: number) => void }[] = [];
 
 function init(parent: HTMLElement) {
     if (!observer || observer.root !== parent) {
@@ -60,7 +60,7 @@ export function useInView(element: HTMLElement | null | undefined, parent: HTMLE
             });
         }
 
-        return;
+        return undefined;
     }, [element, parent]);
 
     return isInView;

@@ -65,7 +65,7 @@ export const Contributors = (props: ContributorsProps) => {
                                 </Input>
                             </Col>
                             <Col xs='auto' className='pl-2'>
-                                <Button color='danger' disabled={disabled || x.userId === userId} type='button'  onClick={() => doRemove(x.userId)}>
+                                <Button color='danger' disabled={disabled || x.userId === userId} type='button' onClick={() => doRemove(x.userId)}>
                                     <Icon type='delete' />
                                 </Button>
                             </Col>

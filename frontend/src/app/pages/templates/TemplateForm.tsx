@@ -25,11 +25,11 @@ const FormSchema = Yup.object({
 
     // Subject is required
     formatting: Yup.object({
-        subject: Yup.object().label(texts.common.subject).atLeastOnStringI18n(),
+        subject: Yup.object().label(texts.common.subject).atLeastOneStringI18n(),
     }),
 });
 
-const ALL_TARGETS: { target: PushPreviewTarget, label: string }[] = [{
+const ALL_TARGETS: { target: PushPreviewTarget; label: string }[] = [{
     target: 'Notifo',
     label: 'Notifo',
 }, {

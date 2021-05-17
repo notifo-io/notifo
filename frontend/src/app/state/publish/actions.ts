@@ -11,10 +11,10 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { createApiThunk } from '../shared';
 import { PublishState } from './state';
 
-export const togglePublishDialog = createAction<{ open: boolean, values?: Partial<PublishDto> }>('publish/dialog');
+export const togglePublishDialog = createAction<{ open: boolean; values?: Partial<PublishDto> }>('publish/dialog');
 
 export const publishAsync = createApiThunk('publish/publish',
-    async (arg: { appId: string, params: PublishDto }) => {
+    async (arg: { appId: string; params: PublishDto }) => {
         await Clients.Events.postEvents(arg.appId, { requests: [arg.params] });
     });
 

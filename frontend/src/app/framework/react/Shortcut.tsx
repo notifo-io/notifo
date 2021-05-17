@@ -24,7 +24,7 @@ export const Shortcut = (props: ShortcutProps) => {
 
     React.useEffect(() => {
         if (!disabled) {
-            Mousetrap.bind(keys, (event) =>  {
+            Mousetrap.bind(keys, (event) => {
                 onPressed();
 
                 event.preventDefault();

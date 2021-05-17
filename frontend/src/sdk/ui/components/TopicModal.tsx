@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Fragment, h } from 'preact';
 
 import { booleanToSend, SDKConfig, sendToBoolean, Subscription, TopicOptions } from '@sdk/shared';

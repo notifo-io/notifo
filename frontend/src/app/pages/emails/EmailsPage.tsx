@@ -56,7 +56,7 @@ export const EmailsPage = () => {
                         <Nav pills>
                             {appLanguages.map(x => (
                                 <NavItem key={x}>
-                                    <NavLink  onClick={() => doSetLanguage(x)} active={x === language}>
+                                    <NavLink onClick={() => doSetLanguage(x)} active={x === language}>
                                         {x}
                                     </NavLink>
                                 </NavItem>

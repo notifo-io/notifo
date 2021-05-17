@@ -6,6 +6,7 @@
  */
 
 /** @jsx h */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { h } from 'preact';
 
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
@@ -46,6 +47,7 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
                 try {
                     config.onNotification(notification);
                 } catch {
+                    // eslint-disable-next-line no-console
                     console.error('Failed to invoke notification callback');
                 }
             }

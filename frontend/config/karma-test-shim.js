@@ -1,4 +1,6 @@
-﻿Error.stackTraceLimit = Infinity;
+﻿/* eslint-disable */
+
+Error.stackTraceLimit = Infinity;
 
 var testContext = require.context('../src', true, /\.spec\.ts/);
 

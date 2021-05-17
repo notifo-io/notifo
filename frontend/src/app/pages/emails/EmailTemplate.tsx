@@ -148,7 +148,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     );
 };
 
-export const BodyText = ({ appName, visible }: { appName: string, visible: boolean }) => {
+export const BodyText = ({ appName, visible }: { appName: string; visible: boolean }) => {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
     const [, meta, helpers] = useField('bodyText');
 
@@ -171,7 +171,7 @@ export const BodyText = ({ appName, visible }: { appName: string, visible: boole
     );
 };
 
-export const BodyHtml = ({ appName, visible }: { appName: string, visible: boolean }) => {
+export const BodyHtml = ({ appName, visible }: { appName: string; visible: boolean }) => {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
     const [, meta, helpers] = useField('bodyHtml');
 

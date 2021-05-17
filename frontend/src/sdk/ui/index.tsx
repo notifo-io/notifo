@@ -99,7 +99,7 @@ function findElement(elementOrId: string | HTMLElement) {
         if (isString(elementOrId)) {
             logError(`Cannot find element ${elementOrId}`);
         } else {
-            logError(`NOTIFO SDK: Cannot find element`);
+            logError('NOTIFO SDK: Cannot find element');
         }
 
         return null;

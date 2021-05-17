@@ -80,28 +80,27 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
     }, [appId, configuredId, type]);
 
     const schema = React.useMemo(() => {
-        const properties: { [name: string]: Yup.Schema<any, {}> } = {};
+        const properties: { [name: string]: any } = {};
 
         for (const property of definition.properties) {
             const label = property.editorLabel || property.name;
 
             if (property.type === 'Number') {
-                let type = Yup.number().label(label);
+                let propertyType = Yup.number().label(label);
 
                 if (property.isRequired) {
-                    type = type.requiredI18n();
+                    propertyType = propertyType.requiredI18n();
                 }
 
-                properties[property.name] = type;
+                properties[property.name] = propertyType;
             } else {
-                let type = Yup.string().label(label);
+                let propertyType = Yup.string().label(label);
 
                 if (property.isRequired) {
-                    type = type.requiredI18n();
+                    propertyType = propertyType.requiredI18n();
                 }
 
-                properties[property.name] = type;
-
+                properties[property.name] = propertyType;
             }
         }
 

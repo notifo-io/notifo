@@ -184,7 +184,7 @@ describe('Types', () => {
     });
 
     FalsyValues.forEach(x => {
-        it(`should compare empty string with {x}`, () => {
+        it(`should compare empty string with <${x}>`, () => {
             expect(Types.equals('', x, true)).toBeFalsy();
             expect(Types.equals('', x, false)).toBeFalsy();
 

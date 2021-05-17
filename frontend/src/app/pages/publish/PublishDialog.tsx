@@ -28,14 +28,14 @@ const FormSchema = Yup.object({
     // Template code is required when templated.
     templateCode: Yup.string()
         .when('templated', (other: boolean, schema: Yup.StringSchema) =>
-            other ? schema.requiredI18n() : schema,
+            (other ? schema.requiredI18n() : schema),
         )
         .label(texts.common.templateCode),
 
     // Subject is required when not templated.
     preformatted: Yup.object()
-        .when('templated', (other: boolean, schema: Yup.ObjectSchema) =>
-            other ? schema : schema.shape({ subject: Yup.object().label(texts.common.subject).atLeastOnStringI18n() }),
+        .when('templated', (other: boolean, schema: Yup.ObjectSchema<any>) =>
+            (other ? schema : schema.shape({ subject: Yup.object().label(texts.common.subject).atLeastOneStringI18n() })),
         )
         .label(texts.common.formatting),
 });

@@ -13,7 +13,7 @@ export module Types {
     }
 
     export function isNumber(value: any): value is number {
-        return typeof value === 'number' && isFinite(value);
+        return typeof value === 'number' && Number.isFinite(value);
     }
 
     export function isArray(value: any): value is any[] {
@@ -127,6 +127,7 @@ export module Types {
     }
 
     export function equals(lhs: any, rhs: any, lazyString = false) {
+        // eslint-disable-next-line no-self-compare
         if (lhs === rhs || (lhs !== lhs && rhs !== rhs)) {
             return true;
         }

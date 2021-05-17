@@ -44,21 +44,21 @@ export function getSortedIntegrations(definitions: { [key: string]: IntegrationD
         }).filter(x => !!x.definition);
 
     result.sort((lhs, rhs) => {
-        let result = lhs.definition.title.localeCompare(rhs.definition.title);
+        let sortOrder = lhs.definition.title.localeCompare(rhs.definition.title);
 
-        if (result === 0) {
-            result = priorityKey(rhs.configured) - priorityKey(lhs.configured);
+        if (sortOrder === 0) {
+            sortOrder = priorityKey(rhs.configured) - priorityKey(lhs.configured);
         }
 
-        if (result === 0) {
-            result = testKey(rhs.configured) - testKey(lhs.configured);
+        if (sortOrder === 0) {
+            sortOrder = testKey(rhs.configured) - testKey(lhs.configured);
         }
 
-        if (result === 0) {
-            result = lhs.configuredId.localeCompare(rhs.configuredId);
+        if (sortOrder === 0) {
+            sortOrder = lhs.configuredId.localeCompare(rhs.configuredId);
         }
 
-        return result;
+        return sortOrder;
     });
 
     return result;
