@@ -48,7 +48,7 @@ namespace Notifo.Domain.Integrations.Threema
                     Providers.Messaging
                 })
             {
-                Description = Texts.SMTP_Description
+                Description = Texts.ThreemaSimple_Description
             };
 
         public ThreemaSimpleIntegration(IHttpClientFactory httpClientFactory)
