@@ -20,7 +20,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             InstantSerializer.Register();
 
             var mongoClient = new MongoClient("mongodb://localhost");
-            var mongoDatabase = mongoClient.GetDatabase("Testing");
+            var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
 
             Repository = new MongoDbUserNotificationRepository(mongoDatabase);
             Repository.InitializeAsync(default).Wait();

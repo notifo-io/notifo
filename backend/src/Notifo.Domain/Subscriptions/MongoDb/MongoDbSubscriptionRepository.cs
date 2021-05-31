@@ -36,9 +36,14 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbSubscription>(
                     IndexKeys
-                        .Ascending(x => x.AppId)
                         .Ascending(x => x.UserId)
-                        .Ascending(x => x.TopicArray)),
+                        .Ascending(x => x.AppId)
+                        .Ascending("ta.0")
+                        .Ascending("ta.1")
+                        .Ascending("ta.2")
+                        .Ascending("ta.3")
+                        .Ascending("ta.4")
+                        .Ascending("ta.5")),
                 null, ct);
 
             await collection.Indexes.CreateOneAsync(
@@ -160,10 +165,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         private static FilterDefinition<MongoDbSubscription> CreatePrefixFilter(string appId, string? userId, TopicId topic, bool withUser)
         {
-            var filters = new List<FilterDefinition<MongoDbSubscription>>
-            {
-                Filter.Eq(x => x.AppId, appId)
-            };
+            var filters = new List<FilterDefinition<MongoDbSubscription>>();
 
             if (withUser)
             {
@@ -173,6 +175,8 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             {
                 filters.Add(Filter.Ne(x => x.UserId, userId));
             }
+
+            filters.Add(Filter.Eq(x => x.AppId, appId));
 
             var index = 0;
 

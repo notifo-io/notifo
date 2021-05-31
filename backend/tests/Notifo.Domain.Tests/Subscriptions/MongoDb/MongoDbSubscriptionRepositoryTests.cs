@@ -7,8 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 using Notifo.Domain.Channels;
 using Xunit;
 
@@ -29,6 +31,52 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         public MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFixture fixture)
         {
             _ = fixture;
+        }
+
+        [Fact]
+        public async Task Should_be_fast()
+        {
+            var empty = Guid.Empty.ToString();
+
+            var count = await _.Repository.Collection.CountDocumentsAsync(new BsonDocument());
+
+            var random = new Random();
+
+            const int Count = 1_000_000;
+
+            if (count < Count)
+            {
+                var inserts = new List<MongoDbSubscription>();
+
+                for (var i = 0; i < Count; i++)
+                {
+                    TopicId topic = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}a";
+
+                    inserts.Add(new MongoDbSubscription
+                    {
+                        DocId = Guid.NewGuid().ToString(),
+                        AppId = empty,
+                        TopicArray = topic.GetParts(),
+                        TopicPrefix = topic,
+                        UserId = empty
+                    });
+                }
+
+                await _.Repository.Collection.InsertManyAsync(inserts);
+            }
+
+            var topicToSearch = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}a";
+
+            await ToList(_.Repository.QueryAsync(empty, topicToSearch, null, default));
+            await ToList(_.Repository.QueryAsync(empty, topicToSearch, null, default));
+
+            var watch = Stopwatch.StartNew();
+
+            await ToList(_.Repository.QueryAsync(empty, topicToSearch, null, default));
+
+            watch.Stop();
+
+            Assert.InRange(watch.ElapsedMilliseconds, 0, 20);
         }
 
         [Fact]

@@ -17,7 +17,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         public MongoDbSubscriptionRepositoryFixture()
         {
             var mongoClient = new MongoClient("mongodb://localhost");
-            var mongoDatabase = mongoClient.GetDatabase("Testing");
+            var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
 
             Repository = new MongoDbSubscriptionRepository(mongoDatabase);
             Repository.InitializeAsync(default).Wait();

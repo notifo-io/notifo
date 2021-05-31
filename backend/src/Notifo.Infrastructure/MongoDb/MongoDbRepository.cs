@@ -32,7 +32,7 @@ namespace Notifo.Infrastructure.MongoDb
         private readonly IMongoDatabase mongoDatabase;
         private IMongoCollection<TEntity> mongoCollection;
 
-        protected IMongoCollection<TEntity> Collection
+        public IMongoCollection<TEntity> Collection
         {
             get
             {
