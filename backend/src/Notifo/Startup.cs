@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -81,6 +81,7 @@ namespace Notifo
             services.AddMyCaching();
             services.AddMyCounters();
             services.AddMyClustering(config);
+            services.AddMyEmailChannel();
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
             services.AddMyIntegrations();

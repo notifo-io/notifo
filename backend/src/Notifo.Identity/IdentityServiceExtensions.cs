@@ -18,6 +18,7 @@ using Notifo.Identity.InMemory;
 using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
+using System;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -74,49 +75,52 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             services.AddOpenIddict()
-                .AddServer(options =>
+                .AddServer(builder =>
                 {
-                    options
+                    builder
                         .SetAuthorizationEndpointUris("/connect/authorize")
                         .SetIntrospectionEndpointUris("/connect/introspect")
                         .SetLogoutEndpointUris("/connect/logout")
                         .SetTokenEndpointUris("/connect/token")
                         .SetUserinfoEndpointUris("/connect/userinfo");
 
-                    options.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles, Constants.ApiScope);
+                    builder.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles, Constants.ApiScope);
 
-                    options.AllowImplicitFlow();
-                    options.AllowAuthorizationCodeFlow();
+                    builder.AllowImplicitFlow();
+                    builder.AllowAuthorizationCodeFlow();
 
-                    options.UseAspNetCore()
+                    builder.SetAccessTokenLifetime(TimeSpan.FromDays(30));
+
+                    builder.UseAspNetCore()
+                        .DisableTransportSecurityRequirement()
                         .EnableAuthorizationEndpointPassthrough()
                         .EnableLogoutEndpointPassthrough()
                         .EnableStatusCodePagesIntegration()
                         .EnableTokenEndpointPassthrough()
                         .EnableUserinfoEndpointPassthrough();
                 })
-                .AddValidation(options =>
+                .AddValidation(builder =>
                 {
-                    options.UseLocalServer();
-                    options.UseAspNetCore();
+                    builder.UseLocalServer();
+                    builder.UseAspNetCore();
                 });
         }
 
         public static void AddMyMongoDbIdentity(this IServiceCollection services)
         {
             services.AddOpenIddict()
-                .AddCore(options =>
+                .AddCore(builder =>
                 {
-                    options.UseMongoDb();
+                    builder.UseMongoDb<string>();
 
-                    options.SetDefaultScopeEntity<ImmutableScope>();
+                    builder.SetDefaultScopeEntity<ImmutableScope>();
 
-                    options.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
+                    builder.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
                         .As<IOpenIddictScopeStore<ImmutableScope>>();
 
-                    options.SetDefaultApplicationEntity<ImmutableApplication>();
+                    builder.SetDefaultApplicationEntity<ImmutableApplication>();
 
-                    options.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
+                    builder.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
                         .As<IOpenIddictApplicationStore<ImmutableApplication>>();
                 });
 
