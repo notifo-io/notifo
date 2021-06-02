@@ -6,12 +6,13 @@
  */
 
 import { Loader } from '@app/framework';
+import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { getApp, loadEmailTemplatesAsync, useApps, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { Col, Nav, NavItem, NavLink, Row } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import { EmailTemplate } from './EmailTemplate';
 
 export const EmailsPage = () => {
@@ -53,15 +54,11 @@ export const EmailsPage = () => {
                         <Loader visible={loading} />
                     </Col>
                     <Col xs='auto'>
-                        <Nav pills>
-                            {appLanguages.map(x => (
-                                <NavItem key={x}>
-                                    <NavLink onClick={() => doSetLanguage(x)} active={x === language}>
-                                        {x}
-                                    </NavLink>
-                                </NavItem>
-                            ))}
-                        </Nav>
+                        <LanguageSelector
+                            size='md'
+                            language={language}
+                            languages={appLanguages}
+                            onSelect={doSetLanguage} />
                     </Col>
                 </Row>
             </div>

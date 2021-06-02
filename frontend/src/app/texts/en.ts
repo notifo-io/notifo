@@ -30,7 +30,7 @@ export const EN = {
         created: 'Created',
         count: 'Count',
         dangerZone: 'Danger Zone',
-        dashboard: 'Dashboard',
+        dashboard: 'Home',
         data: 'Data',
         delete: 'Delete',
         demo: 'Demo',

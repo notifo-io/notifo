@@ -6,9 +6,15 @@
  */
 
 import * as React from 'react';
-import { Button, ButtonGroup } from 'reactstrap';
+import { Button, ButtonGroup, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from 'reactstrap';
 
 export interface LanguageSelectorProps {
+    // The color.
+    color?: string;
+
+    // The size.
+    size?: string;
+
     // The available languages.
     languages: ReadonlyArray<string>;
 
@@ -20,12 +26,32 @@ export interface LanguageSelectorProps {
 }
 
 export const LanguageSelector = (props: LanguageSelectorProps) => {
-    const { language, languages, onSelect } = props;
+    const {
+        language,
+        languages,
+        onSelect,
+        size,
+    } = props;
 
-    return (
-        <ButtonGroup>
+    const color = props.color || 'secondary';
+
+    return languages.length > 4 ? (
+        <UncontrolledButtonDropdown>
+            <DropdownToggle color={color} size={size || 'sm'} outline caret>
+                {language}
+            </DropdownToggle>
+            <DropdownMenu right>
+                {languages.map(l => (
+                    <DropdownItem key={l} onClick={() => onSelect && onSelect(l)}>
+                        {l}
+                    </DropdownItem>
+                ))}
+            </DropdownMenu>
+        </UncontrolledButtonDropdown>
+    ) : (
+        <ButtonGroup color={color} size={size || 'sm'}>
             {languages.map(l => (
-                <Button key={l} size='sm' color='secondary' outline={language !== l} className='btn-flat' onClick={() => onSelect && onSelect(l)} tabIndex={-1}>
+                <Button key={l} color={color} outline={language !== l} className='btn-flat' onClick={() => onSelect && onSelect(l)} tabIndex={-1}>
                     {l}
                 </Button>
             ))}
