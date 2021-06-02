@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.Repositories;
@@ -18,7 +19,6 @@ using Notifo.Identity.InMemory;
 using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
-using System;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Microsoft.Extensions.DependencyInjection

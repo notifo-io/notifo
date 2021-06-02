@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fluid;
 using NodaTime;
 using Notifo.Domain;
 using Notifo.Domain.Apps;
