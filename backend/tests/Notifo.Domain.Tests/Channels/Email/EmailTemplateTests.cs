@@ -76,7 +76,7 @@ namespace Notifo.Domain.Channels.Email
                         Subject = "subject1",
                         ImageSmall = string.Empty,
                         ImageLarge = string.Empty,
-                        LinkUrl = "https://app.notifo.io",
+                        LinkUrl = "https://app.notifo.io/custom/link",
                         LinkText = "Go to link"
                     }
                 }
@@ -92,6 +92,7 @@ namespace Notifo.Domain.Channels.Email
                 Assert.Contains(notification.Formatting.Body, html);
                 Assert.Contains(notification.Formatting.Subject, html);
                 Assert.Contains(notification.Formatting.LinkUrl, html);
+                Assert.Contains(notification.Formatting.LinkText, html);
 
                 Assert.Contains(notification.Formatting.Body, text);
                 Assert.Contains(notification.Formatting.Subject, text);

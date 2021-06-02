@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Fluid;
 using Mjml.AspNetCore;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
@@ -57,7 +56,29 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        public Task<EmailTemplate> GetDefaultTemplateAsync()
+        public async ValueTask<EmailTemplate> ParseAsync(EmailTemplate template)
+        {
+            if (!string.IsNullOrWhiteSpace(template.BodyHtml))
+            {
+                var html = await MjmlToHtmlAsync(template.BodyHtml);
+
+                template.ParsedBodyHtml = ParsedTemplate.Create(html);
+            }
+
+            if (!string.IsNullOrWhiteSpace(template.BodyText))
+            {
+                template.ParsedBodyText = ParsedTemplate.Create(template.BodyText);
+            }
+
+            if (template.ParsedBodyHtml == null && template.ParsedBodyText == null)
+            {
+                throw new DomainException("Either template for text or html body must be defined.");
+            }
+
+            return template;
+        }
+
+        public async ValueTask<EmailTemplate> GetDefaultTemplateAsync()
         {
             var template = new EmailTemplate
             {
@@ -66,32 +87,25 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 Subject = DefaultSubject
             };
 
-            return Task.FromResult(template);
+            await ParseAsync(template);
+
+            return template;
         }
 
-        public async Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user, bool noCache)
+        public async ValueTask<EmailMessage> FormatPreviewAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user)
         {
-            var context = CreateContext(notifications, app, user);
+            await ParseAsync(template);
 
-            var mailMessage = new EmailMessage
-            {
-                Subject = FormatSubject(template, context, noCache),
-                BodyHtml = await FormatHtml(template, context, notifications, noCache),
-                BodyText = FormatText(template, context, notifications, noCache),
-                ToEmail = user.EmailAddress,
-                ToName = user.FullName
-            };
-
-            return mailMessage;
+            return FormatCore(notifications, template, app, user);
         }
 
-        public Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user)
+        public ValueTask<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user)
         {
             var first = notifications.First();
 
             if (app.EmailTemplates.TryGetValue(first.UserLanguage, out var template))
             {
-                return FormatAsync(notifications, template, app, user, false);
+                return new ValueTask<EmailMessage>(FormatCore(notifications, template, app, user));
             }
             else
             {
@@ -99,57 +113,57 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static string? FormatText(EmailTemplate template, TemplateContext context, IEnumerable<BaseUserNotification> notifications, bool noCache)
+        private EmailMessage FormatCore(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user)
         {
-            var markup = template.BodyText;
+            var properties = CreateProperties(app, user);
 
-            if (string.IsNullOrWhiteSpace(markup))
+            var mailMessage = new EmailMessage
+            {
+                Subject = FormatSubject(template, properties),
+                BodyHtml = FormatHtml(template, properties, notifications),
+                BodyText = FormatText(template, properties, notifications),
+                ToEmail = user.EmailAddress,
+                ToName = user.FullName
+            };
+
+            return mailMessage;
+        }
+
+        private static string FormatSubject(EmailTemplate template, Dictionary<string, string?> properties)
+        {
+            return template.Subject.Format(properties);
+        }
+
+        private string? FormatText(EmailTemplate template, Dictionary<string, string?> properties, IEnumerable<BaseUserNotification> notifications)
+        {
+            var parsed = template.ParsedBodyText;
+
+            if (parsed == null)
             {
                 return null;
             }
 
-            var result = RenderTemplate(markup, context, noCache);
+            var result = parsed.Format(notifications, properties, false, imageFormatter);
 
-            ValidateResult(markup, result, notifications);
-
-            return result;
-        }
-
-        private static string FormatSubject(EmailTemplate template, TemplateContext context, bool noCache)
-        {
-            var markup = template.Subject;
-
-            if (string.IsNullOrWhiteSpace(markup))
-            {
-                return string.Empty;
-            }
-
-            var result = RenderTemplate(markup, context, noCache);
+            ValidateResult(template.BodyText!, result, notifications);
 
             return result;
         }
 
-        private async Task<string?> FormatHtml(EmailTemplate template, TemplateContext context, IEnumerable<BaseUserNotification> notifications, bool noCache)
+        private string? FormatHtml(EmailTemplate template, Dictionary<string, string?> properties, IEnumerable<BaseUserNotification> notifications)
         {
-            var markup = template.BodyHtml;
+            var parsed = template.ParsedBodyHtml;
 
-            if (string.IsNullOrWhiteSpace(markup))
+            if (parsed == null)
             {
-                return markup;
+                return null;
             }
 
-            var result = RenderTemplate(markup, context, noCache);
+            var result = parsed.Format(notifications, properties, true, imageFormatter);
 
-            var html = await MjmlToHtmlAsync(result);
+            ValidateResult(template.BodyText!, result, notifications);
 
-            if (string.IsNullOrWhiteSpace(html))
-            {
-                return html;
-            }
-
-            ValidateResult(markup, html, notifications);
-
-            return html;
+            return result;
         }
 
         private static void ValidateResult(string markup, string result, IEnumerable<BaseUserNotification> notifications)
@@ -165,39 +179,19 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static string RenderTemplate(string template, TemplateContext context, bool noCache)
+        private static Dictionary<string, string?> CreateProperties(App app, User user)
         {
-            try
+            var properties = new Dictionary<string, string?>
             {
-                using (Profiler.TraceMethod<EmailFormatter>())
-                {
-                    var parsedTemplate = TemplateCache.Parse(template, noCache);
+                ["app.name"] = app.Name,
+                ["user.name"] = user.FullName,
+                ["user.nameFull"] = user.FullName,
+                ["user.fullName"] = user.FullName,
+                ["user.email"] = user.EmailAddress,
+                ["user.emailAddress"] = user.EmailAddress
+            };
 
-                    return parsedTemplate.Render(context);
-                }
-            }
-            catch (TemplateParseException ex)
-            {
-                var errors = ex.Errors.Select(x => new EmailFormattingError(x)).ToList();
-
-                throw new EmailFormattingException(template, errors);
-            }
-        }
-
-        private TemplateContext CreateContext(IEnumerable<BaseUserNotification> notifications, App app, User user)
-        {
-            var context = new TemplateContext();
-
-            var emailNotifications = notifications.Select(x => EmailNotification.Create(x, user.EmailAddress, imageFormatter)).ToList();
-
-            context.SetValue("app", app);
-            context.SetValue("user", user);
-            context.SetValue("notifications", emailNotifications);
-
-            context.MemberAccessStrategy.MemberNameStrategy = MemberNameStrategies.CamelCase;
-            context.MemberAccessStrategy.Register<EmailNotification>();
-
-            return context;
+            return properties;
         }
 
         private async Task<string> MjmlToHtmlAsync(string mjml)

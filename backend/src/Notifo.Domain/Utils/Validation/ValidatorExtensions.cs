@@ -21,19 +21,6 @@ namespace FluentValidation
     {
         private static readonly HashSet<string> Timezones = DateTimeZoneProviders.Tzdb.Ids.ToHashSet();
 
-        public static IRuleBuilderOptions<T, string?> Liquid<T>(this IRuleBuilder<T, string?> ruleBuilder)
-        {
-            return ruleBuilder.Must(value =>
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    return true;
-                }
-
-                return FluidTemplate.TryParse(value, out _);
-            }).WithMessage(Texts.ValidationLiquid);
-        }
-
         public static IRuleBuilderOptions<T, string?> PhoneNumber<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
             return ruleBuilder.Must(value =>

@@ -102,7 +102,7 @@ namespace Notifo.Areas.Api.Controllers.Emails
                         BodyHtml = request.Template
                     };
 
-                    var formatted = await emailFormatter.FormatAsync(Notifications, template, app, EmailUser, true);
+                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, app, EmailUser);
 
                     var response = new PreviewDto
                     {
@@ -118,7 +118,7 @@ namespace Notifo.Areas.Api.Controllers.Emails
                         BodyText = request.Template
                     };
 
-                    var formatted = await emailFormatter.FormatAsync(Notifications, template, app, EmailUser, true);
+                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, app, EmailUser);
 
                     var response = new PreviewDto
                     {

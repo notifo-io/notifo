@@ -61,7 +61,7 @@ export const Confirm = (props: ConfirmProps) => {
                         <div>{text}</div>
                     </ModalBody>
                     <ModalFooter className='justify-content-between'>
-                        <Button color='danger' onClick={doCancel}>
+                        <Button color='danger' outline onClick={doCancel}>
                             {texts.common.no}
                         </Button>
                         <Button color='success' onClick={doConfirm}>

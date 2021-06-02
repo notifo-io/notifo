@@ -55,7 +55,7 @@ export const templatesReducer = createReducer(initialState, builder => list.init
         state.upsertingError = action.payload as ErrorDto;
     })
     .addCase(upsertTemplateAsync.fulfilled, (state, action) => {
-        state.upserting = true;
+        state.upserting = false;
         state.upsertingError = undefined;
         state.templates.items?.setOrPush(x => x.code, action.payload);
     })

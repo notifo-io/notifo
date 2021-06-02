@@ -14,7 +14,7 @@ import { Formik } from 'formik';
 import * as React from 'react';
 import { PushPreviewTarget } from 'react-push-preview';
 import { useDispatch } from 'react-redux';
-import { Button, ButtonGroup, Form } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Row, UncontrolledButtonDropdown } from 'reactstrap';
 import * as Yup from 'yup';
 import { NotificationPreview } from './NotificationPreview';
 
@@ -58,11 +58,15 @@ export interface TemplateFormProps {
 
     // Triggered when the language is selected.
     onLanguageSelect: (language: string) => void;
+
+    // Triggered when closed.
+    onClose: () => void;
 }
 
 export const TemplateForm = (props: TemplateFormProps) => {
     const {
         language,
+        onClose,
         onLanguageSelect,
         template,
     } = props;
@@ -84,57 +88,70 @@ export const TemplateForm = (props: TemplateFormProps) => {
     return (
         <Formik<TemplateDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>
             {({ handleSubmit, values }) => (
-                <>
-                    <div className='templates-column templates-form'>
-                        <div className='templates-header'>
-                            {template ? (
-                                <h2 className='truncate'>{texts.templates.templateEdit} {template.code}</h2>
-                            ) : (
-                                <h2 className='truncate'>{texts.templates.templateNew}</h2>
-                            )}
-                        </div>
-
-                        <div className='templates-body'>
-                            <Form onSubmit={handleSubmit}>
-                                <fieldset disabled={upserting}>
-                                    <Forms.Text name='code'
-                                        label={texts.common.code} />
-                                </fieldset>
-
-                                <NotificationsForm.Formatting
-                                    onLanguageSelect={onLanguageSelect}
-                                    language={language}
-                                    languages={appLanguages}
-                                    field='formatting' disabled={upserting} />
-
-                                <NotificationsForm.Settings
-                                    field='settings' disabled={upserting} />
-
-                                <FormError error={upsertingError} />
-
-                                <Button type='submit' color='success' disabled={upserting}>
-                                    <Loader light small visible={upserting} /> {texts.common.save}
-                                </Button>
-                            </Form>
-                        </div>
-                    </div>
-
-                    <div className='templates-column templates-preview'>
-                        <div className='templates-header'>
-                            <ButtonGroup size='sm'>
-                                {ALL_TARGETS.map(x =>
-                                    <Button key={x.target} type='button' color='primary' outline active={x.target === target}
-                                        onClick={() => setTarget(x.target)}>
-                                        {x.label}
-                                    </Button>,
+                <Card className='template-form slide-right'>
+                    <CardHeader>
+                        <Row className='align-items-center'>
+                            <Col>
+                                {template ? (
+                                    <h3 className='truncate'>{texts.templates.templateEdit} {template.code}</h3>
+                                ) : (
+                                    <h3 className='truncate'>{texts.templates.templateNew}</h3>
                                 )}
-                            </ButtonGroup>
-                        </div>
-                        <div className='templates-body'>
-                            <NotificationPreview formatting={values?.formatting} language={language} target={target}></NotificationPreview>
-                        </div>
-                    </div>
-                </>
+                            </Col>
+                            <Col xs='auto'>
+                                <button type="button" className="close" onClick={onClose}>
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </Col>
+                        </Row>
+                    </CardHeader>
+
+                    <CardBody>
+                        <Row className='template-form-inner'>
+                            <Col>
+                                <Form onSubmit={handleSubmit}>
+                                    <fieldset disabled={upserting}>
+                                        <Forms.Text name='code'
+                                            label={texts.common.code} />
+                                    </fieldset>
+
+                                    <NotificationsForm.Formatting
+                                        onLanguageSelect={onLanguageSelect}
+                                        language={language}
+                                        languages={appLanguages}
+                                        field='formatting' disabled={upserting} />
+
+                                    <NotificationsForm.Settings
+                                        field='settings' disabled={upserting} />
+
+                                    <FormError error={upsertingError} />
+
+                                    <Button type='submit' color='success' disabled={upserting}>
+                                        <Loader light small visible={upserting} /> {texts.common.save}
+                                    </Button>
+                                </Form>
+                            </Col>
+                            <Col xs='auto'>
+                                <div className='template-form-preview sticky-top'>
+                                    <NotificationPreview formatting={values?.formatting} language={language} target={target}></NotificationPreview>
+
+                                    <UncontrolledButtonDropdown>
+                                        <DropdownToggle color='primary' outline caret>
+                                            {target}
+                                        </DropdownToggle>
+                                        <DropdownMenu right>
+                                            {ALL_TARGETS.map(x =>
+                                                <DropdownItem key={x.target} onClick={() => setTarget(x.target)}>
+                                                    {x.label}
+                                                </DropdownItem>,
+                                            )}
+                                        </DropdownMenu>
+                                    </UncontrolledButtonDropdown>
+                                </div>
+                            </Col>
+                        </Row>
+                    </CardBody>
+                </Card>
             )}
         </Formik>
     );

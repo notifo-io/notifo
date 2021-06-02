@@ -16,6 +16,7 @@ export const TemplatesPage = () => {
     const app = useApps(getApp);
     const appId = app.id;
     const appLanguages = app.languages;
+    const [isOpen, setIsOpen] = React.useState(false);
     const templates = useTemplates(x => x.templates);
     const templateCode = useTemplates(x => x.currentTemplateCode);
     const [language, setLanguage] = React.useState<string>(appLanguages[0]);
@@ -28,11 +29,24 @@ export const TemplatesPage = () => {
         dispatch(loadTemplatesAsync(appId));
     }, [appId]);
 
+    const doOpen = React.useCallback(() => {
+        setIsOpen(true);
+    }, []);
+
+    const doClose = React.useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
     return (
         <div className='templates'>
-            <TemplatesList />
+            <TemplatesList onOpen={doOpen} />
 
-            <TemplateForm language={language} onLanguageSelect={setLanguage} template={template} />
+            {isOpen &&
+                <TemplateForm language={language}
+                    onClose={doClose}
+                    onLanguageSelect={setLanguage}
+                    template={template} />
+            }
         </div>
     );
 };

@@ -15,10 +15,12 @@ namespace Notifo.Domain.Channels.Email
 {
     public interface IEmailFormatter
     {
-        Task<EmailTemplate> GetDefaultTemplateAsync();
+        ValueTask<EmailTemplate> GetDefaultTemplateAsync();
 
-        Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user, bool noCache);
+        ValueTask<EmailTemplate> ParseAsync(EmailTemplate template);
 
-        Task<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user);
+        ValueTask<EmailMessage> FormatPreviewAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user);
+
+        ValueTask<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user);
     }
 }

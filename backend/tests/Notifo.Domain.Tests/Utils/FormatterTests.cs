@@ -60,6 +60,21 @@ namespace Notifo.Domain.Utils
         }
 
         [Fact]
+        public void Should_format_var_with_dot()
+        {
+            var input = "{{var.value}}";
+
+            var properties = new Dictionary<string, string?>
+            {
+                ["var.value"] = "123"
+            };
+
+            var result = input.Format(properties);
+
+            Assert.Equal("123", result);
+        }
+
+        [Fact]
         public void Should_format_simple_var_in_text()
         {
             var input = "Hello to {{app}}, what's up?";

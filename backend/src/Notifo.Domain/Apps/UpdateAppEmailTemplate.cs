@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels.Email;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
@@ -36,13 +37,13 @@ namespace Notifo.Domain.Apps
         {
             public EmailTemplateValidator()
             {
-                RuleFor(x => x.BodyHtml).NotNull().NotEmpty().Liquid();
-                RuleFor(x => x.BodyText).Liquid();
-                RuleFor(x => x.Subject).NotNull().NotEmpty().Liquid();
+                RuleFor(x => x.BodyHtml).NotNull().NotEmpty();
+                RuleFor(x => x.BodyText);
+                RuleFor(x => x.Subject).NotNull().NotEmpty();
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
@@ -53,9 +54,11 @@ namespace Notifo.Domain.Apps
                 throw new ValidationException(error);
             }
 
-            app.EmailTemplates[Language] = EmailTemplate;
+            var emailFormatter = serviceProvider.GetRequiredService<IEmailFormatter>()!;
 
-            return Task.FromResult(true);
+            app.EmailTemplates[Language] = await emailFormatter.ParseAsync(EmailTemplate);
+
+            return true;
         }
     }
 }

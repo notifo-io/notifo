@@ -30,7 +30,13 @@ export interface TemplateRowProps {
 }
 
 export const TemplateRow = React.memo((props: TemplateRowProps) => {
-    const { onDelete, onEdit, onPublish, template } = props;
+    const {
+        onDelete,
+        onEdit,
+        onPublish,
+        selected,
+        template,
+    } = props;
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
@@ -48,28 +54,37 @@ export const TemplateRow = React.memo((props: TemplateRowProps) => {
         onPublish && onPublish(template);
     }, [template]);
 
+    let clazz = 'list-item-summary';
+
+    if (selected) {
+        clazz += ' selected';
+    }
+
     return (
-        <tr className='list-item-summary'>
-            <td>
-                <span className='truncate mono'>{template.code}</span>
-            </td>
-            <td className='text-right'>
-                <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>
-                    <Icon type='send' />
-                </Button>
+        <>
+            <tr className={clazz}>
+                <td onClick={doEdit}>
+                    <span className='truncate mono'>{template.code}</span>
+                </td>
+                <td className='text-right'>
+                    <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>
+                        <Icon type='send' />
+                    </Button>
 
-                <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tip={texts.common.edit}>
-                    <Icon type='create' />
-                </Button>
+                    <Button className='ml-1' size='sm' color='primary' onClick={doEdit} data-tip={texts.common.edit}>
+                        <Icon type='create' />
+                    </Button>
 
-                <Confirm onConfirm={doDelete} text={texts.templates.confirmDelete}>
-                    {({ onClick }) => (
-                        <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>
-                            <Icon type='delete' />
-                        </Button>
-                    )}
-                </Confirm>
-            </td>
-        </tr>
+                    <Confirm onConfirm={doDelete} text={texts.templates.confirmDelete}>
+                        {({ onClick }) => (
+                            <Button className='ml-1' size='sm' color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                                <Icon type='delete' />
+                            </Button>
+                        )}
+                    </Confirm>
+                </td>
+            </tr>
+            <tr className='list-item-separator'></tr>
+        </>
     );
 });

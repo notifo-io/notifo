@@ -14,10 +14,18 @@ import { useDispatch } from 'react-redux';
 import { Button, Col, Row, Table } from 'reactstrap';
 import { TemplateRow } from './TemplateRow';
 
-export const TemplatesList = () => {
+export interface TemplateListProps {
+    // Triggered when opened.
+    onOpen: () => void;
+}
+
+export const TemplatesList = (props: TemplateListProps) => {
+    const { onOpen } = props;
+
     const dispatch = useDispatch();
     const app = useApps(getApp);
     const appId = app.id;
+    const selectedTemplateCode = useTemplates(x => x.currentTemplateCode);
     const templates = useTemplates(x => x.templates);
 
     React.useEffect(() => {
@@ -29,12 +37,16 @@ export const TemplatesList = () => {
     }, [appId]);
 
     const doNew = React.useCallback(() => {
+        onOpen();
+
         dispatch(selectTemplate({ code: undefined }));
-    }, []);
+    }, [onOpen]);
 
     const doSelect = React.useCallback((template: TemplateDto) => {
+        onOpen();
+
         dispatch(selectTemplate({ code: template.code }));
-    }, []);
+    }, [onOpen]);
 
     const doDelete = React.useCallback((template: TemplateDto) => {
         dispatch(deleteTemplateAsync({ appId, code: template.code }));
@@ -91,7 +103,8 @@ export const TemplatesList = () => {
                                         <TemplateRow key={template.code} template={template}
                                             onPublish={doPublish}
                                             onEdit={doSelect}
-                                            onDelete={doDelete} />
+                                            onDelete={doDelete}
+                                            selected={template.code === selectedTemplateCode} />
                                     ))}
                                 </>
                             }

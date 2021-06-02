@@ -229,10 +229,12 @@ $small-gutters: 4px;
         &-summary,
         &-empty {
             background: $color-white;
+            transition: border-color .3s ease;
 
             td {
                 border-bottom: 2px solid $color-border;
                 border-top: 0;
+                transition: border-color .3s ease;
 
                 &:first-child {
                     border-left: 1px solid $color-border;
@@ -240,6 +242,26 @@ $small-gutters: 4px;
 
                 &:last-child {
                     border-right: 1px solid $color-border;
+                }
+            }
+        }
+
+        &-summary {
+            border: 2px solid $color-white;
+
+            &:hover {
+                border: 2px solid lighten($color-primary, 10%);
+
+                td {
+                    border-bottom-color: lighten($color-primary, 10%);
+                }
+            }
+
+            &.selected {
+                border: 2px solid $color-primary;
+
+                td {
+                    border-bottom-color: $color-primary;
                 }
             }
         }
@@ -703,5 +725,27 @@ i {
 
     100% {
         transform: rotate(360deg);
+    }
+}
+
+.slide-right {
+    animation: slide-right .5s forwards;
+    transform: translateX(100%);
+}
+
+@keyframes slide-right {
+    100% {
+        transform: translateX(0%);
+    }
+}
+
+.slide-left {
+    animation: slide-left .5s forwards;
+    transform: translateX(-100%);
+}
+
+@keyframes slide-left {
+    100% {
+        transform: translateX(0%);
     }
 }

@@ -14,7 +14,7 @@ namespace Notifo.Domain.Utils
 {
     public static class Formatter
     {
-        private static readonly Regex FormatPattern = new Regex(@"\{\{[\s]*(?<Path>[\w]+)[\s]*(\|[\s]*(?<Transform>[^\?}]+))?(\?[\s]*(?<Fallback>[^\}\s]+))?[\s]*\}\}", RegexOptions.Compiled);
+        private static readonly Regex FormatPattern = new Regex(@"\{\{[\s]*(?<Path>[^\s]+)[\s]*(\|[\s]*(?<Transform>[^\?}]+))?(\?[\s]*(?<Fallback>[^\}\s]+))?[\s]*\}\}", RegexOptions.Compiled);
 
         public static string Format(this string text, Dictionary<string, string?> properties)
         {
