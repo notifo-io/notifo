@@ -1,6 +1,9 @@
 name: Build and Push to Nuget
 
-on: [push]
+on:
+  push:
+    branches:
+    - main
 
 jobs:
   build:
