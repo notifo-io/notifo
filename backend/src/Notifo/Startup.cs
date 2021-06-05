@@ -108,6 +108,8 @@ namespace Notifo
 
             services.IntegrateAmazonSES(config);
             services.IntegrateFirebase();
+            services.IntegrateMailchimp();
+            services.IntegrateMailjet();
             services.IntegrateMessageBird(config);
             services.IntegrateSmtp();
             services.IntegrateThreema();

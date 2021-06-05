@@ -93,8 +93,9 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             var filter =
                Filter.And(
                    Filter.Eq(x => x.Id, id),
-                   Filter.Exists(x => x.IsConfirmed, false),
-                   Filter.Ne($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled));
+                   Filter.Or(
+                        Filter.Exists(x => x.IsConfirmed, true),
+                        Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
 
             var count =
                 await Collection.Find(filter).Limit(1)

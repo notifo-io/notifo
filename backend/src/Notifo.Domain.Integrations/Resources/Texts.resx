@@ -129,6 +129,18 @@
   <data name="AmazonSES_Name" xml:space="preserve">
     <value>Amazon SES (Integrated)</value>
   </data>
+  <data name="Email_FromEmailDescription" xml:space="preserve">
+    <value>The sender email address.</value>
+  </data>
+  <data name="Email_FromEmailLabel" xml:space="preserve">
+    <value>From Email</value>
+  </data>
+  <data name="Email_FromNameDescription" xml:space="preserve">
+    <value>The name of the sender.</value>
+  </data>
+  <data name="Email_FromNameLabel" xml:space="preserve">
+    <value>From Name</value>
+  </data>
   <data name="Firebase_CredentialsHints" xml:space="preserve">
     <value>The credentials as JSON document.</value>
   </data>
@@ -144,6 +156,39 @@
   <data name="Firebase_ProjectIdLabel" xml:space="preserve">
     <value>Project ID</value>
   </data>
+  <data name="Mailchimp_ApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Mailchimp_Description" xml:space="preserve">
+    <value>Send emails over Mailchimp.</value>
+  </data>
+  <data name="Mailchimp_Error" xml:space="preserve">
+    <value>Failed to send email to '{0}: {1}.</value>
+  </data>
+  <data name="Mailchimp_ErrorUnknown" xml:space="preserve">
+    <value>Failed to send email to '{0}': No result provided.</value>
+  </data>
+  <data name="Mailchimp_Name" xml:space="preserve">
+    <value>Mailchimp</value>
+  </data>
+  <data name="Mailjet_ApiKeyLabel" xml:space="preserve">
+    <value>API Key</value>
+  </data>
+  <data name="Mailjet_ApiSecretLabel" xml:space="preserve">
+    <value>API Secret</value>
+  </data>
+  <data name="Mailjet_Description" xml:space="preserve">
+    <value>Send emails over Mailjet.</value>
+  </data>
+  <data name="Mailjet_Error" xml:space="preserve">
+    <value>Failed to send email to '{0}: {1}/{2}.</value>
+  </data>
+  <data name="Mailjet_ErrorUnknown" xml:space="preserve">
+    <value>Failed to send email to '{0}': No result provided.</value>
+  </data>
+  <data name="Mailjet_Name" xml:space="preserve">
+    <value>Mailjet</value>
+  </data>
   <data name="MessageBirdIntegrated_Description" xml:space="preserve">
     <value>Integrated Messagebird integration for SMS messages.</value>
   </data>
@@ -156,6 +201,12 @@
   <data name="MessageBird_Description" xml:space="preserve">
     <value>Messagebird integration using custom Access Key.</value>
   </data>
+  <data name="MessageBird_Error" xml:space="preserve">
+    <value>Failed to send sms to '{0}': {1}</value>
+  </data>
+  <data name="MessageBird_ErrorUnknown" xml:space="preserve">
+    <value>Failed to send sms to '{0}'.</value>
+  </data>
   <data name="MessageBird_Name" xml:space="preserve">
     <value>Messagebird</value>
   </data>
@@ -164,12 +215,6 @@
   </data>
   <data name="SMTP_Description" xml:space="preserve">
     <value>Send emails using a custom email server.</value>
-  </data>
-  <data name="SMTP_FromEmailLabel" xml:space="preserve">
-    <value>From Name</value>
-  </data>
-  <data name="SMTP_FromNameLabel" xml:space="preserve">
-    <value>From Email</value>
   </data>
   <data name="SMTP_HostLabel" xml:space="preserve">
     <value>Host</value>

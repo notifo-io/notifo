@@ -7,11 +7,13 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
+using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.MessageBird
@@ -90,14 +92,18 @@ namespace Notifo.Domain.Integrations.MessageBird
 
                 if (response.Recipients.TotalSentCount != 1)
                 {
-                    throw new DomainException($"Failed to send sms to {to}.");
+                    var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_ErrorUnknown, to);
+
+                    throw new DomainException(errorMessage);
                 }
 
                 return SmsResult.Sent;
             }
             catch (ArgumentException ex)
             {
-                throw new DomainException($"Failed to send sms to {to}: {ex.Message}.", ex);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_Error, to, ex.Message);
+
+                throw new DomainException(errorMessage);
             }
         }
     }

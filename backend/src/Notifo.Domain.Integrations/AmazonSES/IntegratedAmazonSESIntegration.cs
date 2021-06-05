@@ -31,7 +31,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.AmazonSES_FromEmailLabel,
-            EditorDescription = null,
+            EditorDescription = Texts.Email_FromEmailDescription,
             IsRequired = true,
             Summary = true
         };
@@ -39,7 +39,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
         private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.AmazonSES_FromNameLabel,
-            EditorDescription = null,
+            EditorDescription = Texts.Email_FromNameDescription,
             IsRequired = true
         };
 

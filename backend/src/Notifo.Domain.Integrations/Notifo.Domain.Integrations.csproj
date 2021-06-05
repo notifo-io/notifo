@@ -15,6 +15,7 @@
     <PackageReference Include="Fluid.Core" Version="1.0.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.32" />
     <PackageReference Include="libphonenumber-csharp" Version="8.12.19" />
+    <PackageReference Include="Mailjet.Api" Version="2.0.1" />
     <PackageReference Include="MailKit" Version="2.11.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
