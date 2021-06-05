@@ -106,11 +106,20 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email template is invalid and does not render template..
+        ///   Looks up a localized string similar to Email template is invalid and does not render property..
         /// </summary>
         internal static string Email_TemplateInvalid {
             get {
                 return ResourceManager.GetString("Email_TemplateInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template must have a template for notifcations..
+        /// </summary>
+        internal static string Email_TemplateNoItem {
+            get {
+                return ResourceManager.GetString("Email_TemplateNoItem", resourceCulture);
             }
         }
         
@@ -120,6 +129,15 @@ namespace Notifo.Domain.Resources {
         internal static string Email_TemplateNotFound {
             get {
                 return ResourceManager.GetString("Email_TemplateNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Either template for text or html body must be defined..
+        /// </summary>
+        internal static string Email_TemplateUndefined {
+            get {
+                return ResourceManager.GetString("Email_TemplateUndefined", resourceCulture);
             }
         }
         

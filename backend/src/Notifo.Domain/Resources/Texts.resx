@@ -133,10 +133,16 @@
     <value>Email: Integration has been removed.</value>
   </data>
   <data name="Email_TemplateInvalid" xml:space="preserve">
-    <value>Email template is invalid and does not render template.</value>
+    <value>Email template is invalid and does not render property.</value>
+  </data>
+  <data name="Email_TemplateNoItem" xml:space="preserve">
+    <value>Template must have a template for notifcations.</value>
   </data>
   <data name="Email_TemplateNotFound" xml:space="preserve">
     <value>Email: Template not found anymore.</value>
+  </data>
+  <data name="Email_TemplateUndefined" xml:space="preserve">
+    <value>Either template for text or html body must be defined.</value>
   </data>
   <data name="Email_UserDeleted" xml:space="preserve">
     <value>Email: User has been deleted before sending email.</value>

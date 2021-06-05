@@ -49,20 +49,21 @@ namespace Notifo.Domain.Integrations.Smtp
 
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
         {
-            EditorLabel = Texts.SMTP_FromEmailLabel,
-            EditorDescription = null,
-            IsRequired = true
+            EditorLabel = Texts.Email_FromEmailLabel,
+            EditorDescription = Texts.Email_FromEmailDescription,
+            IsRequired = true,
+            Summary = true
         };
 
         private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
         {
-            EditorLabel = Texts.SMTP_FromNameLabel,
-            EditorDescription = null,
+            EditorLabel = Texts.Email_FromNameLabel,
+            EditorDescription = Texts.Email_FromNameDescription,
             IsRequired = true
         };
 
-        public IntegrationDefinition Definition { get; }
-            = new IntegrationDefinition(
+        public IntegrationDefinition Definition { get; } =
+            new IntegrationDefinition(
                 "SMTP",
                 Texts.SMTP_Name,
                 "./integrations/email.svg",

@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Resources;
-using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Webhook.Integrations
 {
@@ -53,7 +52,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
 
                 if (url == null)
                 {
-                    throw new DomainException("No URL configured for integration.");
+                    return null;
                 }
 
                 return new WebhookDefinition

@@ -97,6 +97,42 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The sender email address..
+        /// </summary>
+        internal static string Email_FromEmailDescription {
+            get {
+                return ResourceManager.GetString("Email_FromEmailDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From Email.
+        /// </summary>
+        internal static string Email_FromEmailLabel {
+            get {
+                return ResourceManager.GetString("Email_FromEmailLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the sender..
+        /// </summary>
+        internal static string Email_FromNameDescription {
+            get {
+                return ResourceManager.GetString("Email_FromNameDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From Name.
+        /// </summary>
+        internal static string Email_FromNameLabel {
+            get {
+                return ResourceManager.GetString("Email_FromNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The credentials as JSON document..
         /// </summary>
         internal static string Firebase_CredentialsHints {
@@ -142,6 +178,105 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to API Key.
+        /// </summary>
+        internal static string Mailchimp_ApiKeyLabel {
+            get {
+                return ResourceManager.GetString("Mailchimp_ApiKeyLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send emails over Mailchimp..
+        /// </summary>
+        internal static string Mailchimp_Description {
+            get {
+                return ResourceManager.GetString("Mailchimp_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send email to &apos;{0}: {1}..
+        /// </summary>
+        internal static string Mailchimp_Error {
+            get {
+                return ResourceManager.GetString("Mailchimp_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send email to &apos;{0}&apos;: No result provided..
+        /// </summary>
+        internal static string Mailchimp_ErrorUnknown {
+            get {
+                return ResourceManager.GetString("Mailchimp_ErrorUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mailchimp.
+        /// </summary>
+        internal static string Mailchimp_Name {
+            get {
+                return ResourceManager.GetString("Mailchimp_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API Key.
+        /// </summary>
+        internal static string Mailjet_ApiKeyLabel {
+            get {
+                return ResourceManager.GetString("Mailjet_ApiKeyLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to API Secret.
+        /// </summary>
+        internal static string Mailjet_ApiSecretLabel {
+            get {
+                return ResourceManager.GetString("Mailjet_ApiSecretLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send emails over Mailjet..
+        /// </summary>
+        internal static string Mailjet_Description {
+            get {
+                return ResourceManager.GetString("Mailjet_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send email to &apos;{0}: {1}/{2}..
+        /// </summary>
+        internal static string Mailjet_Error {
+            get {
+                return ResourceManager.GetString("Mailjet_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send email to &apos;{0}&apos;: No result provided..
+        /// </summary>
+        internal static string Mailjet_ErrorUnknown {
+            get {
+                return ResourceManager.GetString("Mailjet_ErrorUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mailjet.
+        /// </summary>
+        internal static string Mailjet_Name {
+            get {
+                return ResourceManager.GetString("Mailjet_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Access Key.
         /// </summary>
         internal static string MessageBird_AccessKeyLabel {
@@ -156,6 +291,24 @@ namespace Notifo.Domain.Integrations.Resources {
         internal static string MessageBird_Description {
             get {
                 return ResourceManager.GetString("MessageBird_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send sms to &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string MessageBird_Error {
+            get {
+                return ResourceManager.GetString("MessageBird_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send sms to &apos;{0}&apos;..
+        /// </summary>
+        internal static string MessageBird_ErrorUnknown {
+            get {
+                return ResourceManager.GetString("MessageBird_ErrorUnknown", resourceCulture);
             }
         }
         
@@ -201,24 +354,6 @@ namespace Notifo.Domain.Integrations.Resources {
         internal static string SMTP_Description {
             get {
                 return ResourceManager.GetString("SMTP_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to From Name.
-        /// </summary>
-        internal static string SMTP_FromEmailLabel {
-            get {
-                return ResourceManager.GetString("SMTP_FromEmailLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to From Email.
-        /// </summary>
-        internal static string SMTP_FromNameLabel {
-            get {
-                return ResourceManager.GetString("SMTP_FromNameLabel", resourceCulture);
             }
         }
         

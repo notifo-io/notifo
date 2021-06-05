@@ -141,7 +141,7 @@ namespace Notifo.Domain.Channels.Sms
 
         public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt, CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Id, job.PhoneNumber, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Id, Name, job.PhoneNumber))
             {
                 await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
             }
