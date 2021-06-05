@@ -109,7 +109,7 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var job in jobs)
             {
-                if (await userNotificationStore.IsConfirmedOrHandled(job.Notification.Id, job.EmailAddress, Name))
+                if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name))
                 {
                     await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
                 }

@@ -194,7 +194,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt, CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Notification.Id, job.Token, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.Token, Name))
             {
                 await UpdateAsync(job.Notification, job.Token, ProcessStatus.Skipped);
             }

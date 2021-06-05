@@ -112,7 +112,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt, CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandled(job.Notification.Id, Name, DefaultToken))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, Name, DefaultToken))
             {
                 await UpdateAsync(job.Notification, ProcessStatus.Skipped);
             }
