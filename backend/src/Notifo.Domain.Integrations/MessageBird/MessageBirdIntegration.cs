@@ -34,8 +34,8 @@ namespace Notifo.Domain.Integrations.MessageBird
             Summary = true
         };
 
-        public IntegrationDefinition Definition { get; }
-            = new IntegrationDefinition(
+        public IntegrationDefinition Definition { get; } =
+            new IntegrationDefinition(
                 "MessageBird",
                 Texts.MessageBird_Name,
                 "./integrations/messagebird.svg",

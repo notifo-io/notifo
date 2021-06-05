@@ -72,7 +72,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
             if (template.ParsedBodyHtml == null && template.ParsedBodyText == null)
             {
-                throw new DomainException("Either template for text or html body must be defined.");
+                throw new DomainException(Texts.Email_TemplateUndefined);
             }
 
             return template;
