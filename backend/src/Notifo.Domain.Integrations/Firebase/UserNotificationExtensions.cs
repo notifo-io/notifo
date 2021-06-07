@@ -43,6 +43,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
                     .WithNonEmpty("linkText", formatting.LinkText)
                     .WithNonEmpty("linkUrl", formatting.LinkUrl)
+                    .WithNonEmpty("silent", notification.Silent.ToString())
                     .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token))
                     .WithNonEmpty("data", notification.Data);
 
