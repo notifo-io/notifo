@@ -25,8 +25,8 @@ namespace Notifo.Domain.Integrations.Firebase
             var imageSmall = "https://via.placeholder.com/100";
             var linkUrl = "https://app.notifo.io";
             var linkText = "Go to link";
-            var subject = "subject1";
             var silent = false.ToString();
+            var subject = "subject1";
             var token = "token1";
             var trackingUrl = "https://track.notifo.com";
             var data = "data1";
