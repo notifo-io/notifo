@@ -178,7 +178,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Send silent notifications to iOS.
+        ///   Looks up a localized string similar to Send silent notifications to Android.
         /// </summary>
         internal static string Firebase_SilentAndroidDescription {
             get {

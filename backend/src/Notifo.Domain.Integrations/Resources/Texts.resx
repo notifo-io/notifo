@@ -157,7 +157,7 @@
     <value>Project ID</value>
   </data>
   <data name="Firebase_SilentAndroidDescription" xml:space="preserve">
-    <value>Send silent notifications to iOS</value>
+    <value>Send silent notifications to Android</value>
   </data>
   <data name="Firebase_SilentAndroidLabel" xml:space="preserve">
     <value>Silent (Android)</value>
