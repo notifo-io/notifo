@@ -635,6 +635,12 @@ div {
     }
 }
 
+textarea {
+    &.form-control {
+        height: 10rem;
+    }
+}
+
 //
 // Toggle
 //

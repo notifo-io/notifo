@@ -177,6 +177,7 @@ $size-email-header: 5rem;
     textarea {
         background-color: $color-white !important;
         border: 0;
+        border-radius: 0;
         resize: none;
         width: 100%;
     }
