@@ -44,7 +44,7 @@ namespace Notifo.Domain.Integrations.Mailchimp
             = new IntegrationDefinition(
                 "Mailchimp",
                 Texts.Mailchimp_Name,
-                "./integrations/mailchimp.png",
+                "./integrations/mailchimp.svg",
                 new List<IntegrationProperty>
                 {
                     ApiKeyProperty,

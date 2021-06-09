@@ -8873,6 +8873,9 @@ namespace Notifo.SDK
         [System.Runtime.Serialization.EnumMember(Value = @"Password")]
         Password = 3,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"Boolean")]
+        Boolean = 4,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]

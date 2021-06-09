@@ -5,14 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Integrations
+namespace Notifo.Domain.Channels.MobilePush
 {
-    public enum IntegrationPropertyType
+    public struct MobilePushOptions
     {
-        Text,
-        Number,
-        MultilineText,
-        Password,
-        Boolean
+        public string DeviceToken { get; set; }
+
+        public MobileDeviceType DeviceType { get; set; }
+
+        public bool Wakeup { get; set; }
     }
 }

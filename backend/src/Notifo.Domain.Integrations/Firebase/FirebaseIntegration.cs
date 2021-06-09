@@ -16,7 +16,7 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public sealed class FirebaseIntegration : IIntegration
     {
-        private readonly FirebaseMobilePushSenderPool senderPool;
+        private readonly FirebaseMessagingPool senderPool;
 
         private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", IntegrationPropertyType.Text)
         {
@@ -33,6 +33,20 @@ namespace Notifo.Domain.Integrations.Firebase
             IsRequired = true
         };
 
+        private static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", IntegrationPropertyType.Boolean)
+        {
+            EditorLabel = Texts.Firebase_SilentAndroidLabel,
+            EditorDescription = Texts.Firebase_SilentAndroidDescription,
+            IsRequired = true
+        };
+
+        private static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", IntegrationPropertyType.Boolean)
+        {
+            EditorLabel = Texts.Firebase_SilentIOSLabel,
+            EditorDescription = Texts.Firebase_SilentIOSDescription,
+            IsRequired = true
+        };
+
         public IntegrationDefinition Definition { get; } =
             new IntegrationDefinition(
                 "Firebase",
@@ -41,6 +55,8 @@ namespace Notifo.Domain.Integrations.Firebase
                 new List<IntegrationProperty>
                 {
                     ProjectIdProperty,
+                    SilentAndroidProperty,
+                    SilentISOProperty,
                     CredentialsProperty
                 },
                 new HashSet<string>
@@ -53,7 +69,7 @@ namespace Notifo.Domain.Integrations.Firebase
 
         public FirebaseIntegration(IMemoryCache memoryCache)
         {
-            senderPool = new FirebaseMobilePushSenderPool(memoryCache);
+            senderPool = new FirebaseMessagingPool(memoryCache);
         }
 
         public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
@@ -79,7 +95,12 @@ namespace Notifo.Domain.Integrations.Firebase
                     return null;
                 }
 
-                return senderPool.GetSender(projectId, credentials);
+                var messaging = senderPool.GetMessaging(projectId, credentials);
+
+                var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
+                var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
+
+                return new FirebaseMobilePushSender(messaging, sendSilentIOS, sendSilentAndroid);
             }
 
             return null;

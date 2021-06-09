@@ -13,24 +13,27 @@ namespace Notifo.Domain.Channels.MobilePush
     {
         public UserNotification Notification { get; set; }
 
-        public string Token { get; set; }
+        public string DeviceToken { get; set; }
+
+        public MobileDeviceType DeviceType { get; set; }
 
         public bool IsImmediate { get; set; }
 
         public string ScheduleKey
         {
-            get => $"{Notification.Id}_{Token}";
+            get => $"{Notification.Id}_{DeviceToken}";
         }
 
         public MobilePushJob()
         {
         }
 
-        public MobilePushJob(UserNotification notification, string token)
+        public MobilePushJob(UserNotification notification, string token, MobileDeviceType deviceType)
         {
             Notification = notification;
 
-            Token = token;
+            DeviceToken = token;
+            DeviceType = deviceType;
         }
     }
 }

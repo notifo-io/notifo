@@ -178,6 +178,42 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Send silent notifications to iOS.
+        /// </summary>
+        internal static string Firebase_SilentAndroidDescription {
+            get {
+                return ResourceManager.GetString("Firebase_SilentAndroidDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Silent (Android).
+        /// </summary>
+        internal static string Firebase_SilentAndroidLabel {
+            get {
+                return ResourceManager.GetString("Firebase_SilentAndroidLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send silent notifications to iOS.
+        /// </summary>
+        internal static string Firebase_SilentIOSDescription {
+            get {
+                return ResourceManager.GetString("Firebase_SilentIOSDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Silent (iOS).
+        /// </summary>
+        internal static string Firebase_SilentIOSLabel {
+            get {
+                return ResourceManager.GetString("Firebase_SilentIOSLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to API Key.
         /// </summary>
         internal static string Mailchimp_ApiKeyLabel {

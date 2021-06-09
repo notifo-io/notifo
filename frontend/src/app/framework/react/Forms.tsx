@@ -52,6 +52,8 @@ export interface LocalizedFormProps extends FormProps {
 
 export interface BooleanFormProps extends FormProps {
     indeterminate?: boolean;
+
+    asString?: boolean;
 }
 
 export interface OptionsFormProps<T> extends FormProps {

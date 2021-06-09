@@ -156,6 +156,18 @@
   <data name="Firebase_ProjectIdLabel" xml:space="preserve">
     <value>Project ID</value>
   </data>
+  <data name="Firebase_SilentAndroidDescription" xml:space="preserve">
+    <value>Send silent notifications to iOS</value>
+  </data>
+  <data name="Firebase_SilentAndroidLabel" xml:space="preserve">
+    <value>Silent (Android)</value>
+  </data>
+  <data name="Firebase_SilentIOSDescription" xml:space="preserve">
+    <value>Send silent notifications to iOS</value>
+  </data>
+  <data name="Firebase_SilentIOSLabel" xml:space="preserve">
+    <value>Silent (iOS)</value>
+  </data>
   <data name="Mailchimp_ApiKeyLabel" xml:space="preserve">
     <value>API Key</value>
   </data>

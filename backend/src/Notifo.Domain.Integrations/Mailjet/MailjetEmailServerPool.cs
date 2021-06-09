@@ -1,12 +1,19 @@
-﻿using Mailjet.Client;
-using Microsoft.Extensions.Caching.Memory;
+﻿// ==========================================================================
+//  Notifo.io
+// ==========================================================================
+//  Copyright (c) Sebastian Stehle
+//  All rights reserved. Licensed under the MIT license.
+// ==========================================================================
+
 using System;
+using Mailjet.Client;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Mailjet
 {
     internal class MailjetEmailServerPool
     {
-        private IMemoryCache memoryCache;
+        private readonly IMemoryCache memoryCache;
 
         public MailjetEmailServerPool(IMemoryCache memoryCache)
         {

@@ -10,7 +10,7 @@ import { Types } from './../utils';
 
 export interface ToggleProps {
     // The current value.
-    value?: boolean;
+    value?: boolean | string;
 
     // Set to allow three states.
     indeterminate?: boolean;
@@ -21,12 +21,15 @@ export interface ToggleProps {
     // The label string.
     label?: string;
 
+    // Save as string.
+    asString?: boolean;
+
     // Triggered when the value is changed.
-    onChange?: (value: boolean | undefined) => void;
+    onChange?: (value: boolean | undefined | string) => void;
 }
 
 export const Toggle = (props: ToggleProps) => {
-    const { indeterminate, label, onChange } = props;
+    const { asString, indeterminate, label, onChange } = props;
 
     let value = props.value;
 
@@ -34,14 +37,14 @@ export const Toggle = (props: ToggleProps) => {
         value = false;
     }
 
-    const [internalValue, setInternalValue] = React.useState<boolean | undefined>(value);
+    const [internalValue, setInternalValue] = React.useState<boolean | undefined>(getValue(value));
 
     React.useEffect(() => {
-        setInternalValue(value);
+        setInternalValue(getValue(value));
     }, [value]);
 
     const doToggle = () => {
-        let newValue: boolean | undefined = false;
+        let newValue: boolean | undefined | string = false;
 
         if (internalValue) {
             newValue = false;
@@ -51,8 +54,13 @@ export const Toggle = (props: ToggleProps) => {
             newValue = true;
         }
 
-        onChange && onChange(newValue);
-
+        if (onChange) {
+            if (asString) {
+                onChange && onChange(newValue?.toString());
+            } else {
+                onChange(newValue);
+            }
+        }
         setInternalValue(newValue);
     };
 
@@ -72,3 +80,11 @@ export const Toggle = (props: ToggleProps) => {
         </label>
     );
 };
+
+function getValue(value: boolean | string | undefined) {
+    if (Types.isString(value)) {
+        return value === '1' || value === 'true' || value === 'True';
+    } else {
+        return value;
+    }
+}

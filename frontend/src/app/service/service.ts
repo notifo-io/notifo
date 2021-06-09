@@ -3823,7 +3823,7 @@ export interface IntegrationPropertyDto {
     defaultValue?: any | undefined;
 }
 
-export type IntegrationPropertyType = "Text" | "Number" | "MultilineText" | "Password";
+export type IntegrationPropertyType = "Text" | "Number" | "MultilineText" | "Password" | "Boolean";
 
 export interface IntegrationCreatedDto {
     /** The id of the integration. */

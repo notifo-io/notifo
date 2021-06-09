@@ -114,19 +114,19 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
         {
-            var mobileToken = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
+            var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
 
-            if (mobileToken == null)
+            if (token == null)
             {
                 return;
             }
 
-            if (mobileToken.DeviceType == MobileDeviceType.iOS)
+            if (token.DeviceType == MobileDeviceType.iOS)
             {
-                await TryWakeupAsync(notification, mobileToken, ct);
+                await TryWakeupAsync(notification, token, ct);
             }
 
-            var job = new MobilePushJob(notification, configuration)
+            var job = new MobilePushJob(notification, configuration, token.DeviceType)
             {
                 IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero
             };
@@ -163,7 +163,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 AppId = notification.AppId,
                 UserId = notification.UserId,
                 UserLanguage = notification.UserLanguage
-            }, token.Token)
+            }, token.Token, token.DeviceType)
             {
                 IsImmediate = true
             };
@@ -194,9 +194,9 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt, CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.Token, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.DeviceToken, Name))
             {
-                await UpdateAsync(job.Notification, job.Token, ProcessStatus.Skipped);
+                await UpdateAsync(job.Notification, job.DeviceToken, ProcessStatus.Skipped);
             }
             else
             {
@@ -208,7 +208,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
         {
-            return UpdateAsync(job.Notification, job.Token, ProcessStatus.Failed);
+            return UpdateAsync(job.Notification, job.DeviceToken, ProcessStatus.Failed);
         }
 
         public Task SendAsync(MobilePushJob job, CancellationToken ct)
@@ -226,25 +226,25 @@ namespace Notifo.Domain.Channels.MobilePush
                         .WriteProperty("status", "Failed")
                         .WriteProperty("reason", "App not found"));
 
-                    await UpdateAsync(notification, job.Token, ProcessStatus.Handled);
+                    await UpdateAsync(notification, job.DeviceToken, ProcessStatus.Handled);
                     return;
                 }
 
                 try
                 {
-                    await UpdateAsync(notification, job.Token, ProcessStatus.Attempt);
+                    await UpdateAsync(notification, job.DeviceToken, ProcessStatus.Attempt);
 
                     var senders = integrationManager.Resolve<IMobilePushSender>(app, notification.Test).ToList();
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(notification, job.Token, Texts.Sms_ConfigReset, ct);
+                        await SkipAsync(notification, job.DeviceToken, Texts.Sms_ConfigReset, ct);
                         return;
                     }
 
                     await SendCoreAsync(job, notification, app, senders, ct);
 
-                    await UpdateAsync(notification, job.Token, ProcessStatus.Handled);
+                    await UpdateAsync(notification, job.DeviceToken, ProcessStatus.Handled);
                 }
                 catch (DomainException ex)
                 {
@@ -262,7 +262,14 @@ namespace Notifo.Domain.Channels.MobilePush
             {
                 try
                 {
-                    await sender.SendAsync(notification, job.Token, notification.Formatting == null, ct);
+                    var options = new MobilePushOptions
+                    {
+                        DeviceType = job.DeviceType,
+                        DeviceToken = job.DeviceToken,
+                        Wakeup = notification.Formatting == null
+                    };
+
+                    await sender.SendAsync(notification, options, ct);
                     return;
                 }
                 catch (MobilePushTokenExpiredException)
@@ -271,7 +278,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
                     var command = new RemoveUserMobileToken
                     {
-                        Token = job.Token
+                        Token = job.DeviceToken
                     };
 
                     await userStore.UpsertAsync(app.Id, notification.UserId, command, ct);

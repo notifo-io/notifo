@@ -66,5 +66,36 @@ namespace Notifo.Domain.Integrations
 
             return 0;
         }
+
+        public bool GetBoolean(ConfiguredIntegration configured)
+        {
+            if (Type == IntegrationPropertyType.Boolean)
+            {
+                if (configured.Properties.TryGetValue(Name, out var value))
+                {
+                    if (bool.TryParse(value, out var parsed))
+                    {
+                        return parsed;
+                    }
+
+                    if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedNumber))
+                    {
+                        return parsedNumber == 1;
+                    }
+                }
+
+                if (bool.TryParse(DefaultValue, out var parsed2))
+                {
+                    return parsed2;
+                }
+
+                if (int.TryParse(DefaultValue, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedNumber2))
+                {
+                    return parsedNumber2 == 1;
+                }
+            }
+
+            return false;
+        }
     }
 }

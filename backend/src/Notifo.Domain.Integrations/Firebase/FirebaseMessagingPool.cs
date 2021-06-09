@@ -10,16 +10,16 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Firebase
 {
-    public sealed class FirebaseMobilePushSenderPool
+    public sealed class FirebaseMessagingPool
     {
         private readonly IMemoryCache memoryCache;
 
-        public FirebaseMobilePushSenderPool(IMemoryCache memoryCache)
+        public FirebaseMessagingPool(IMemoryCache memoryCache)
         {
             this.memoryCache = memoryCache;
         }
 
-        public FirebaseMobilePushSender GetSender(string projectId, string credentials)
+        public FirebaseMessagingWrapper GetMessaging(string projectId, string credentials)
         {
             var cacheKey = $"FirebaseSender_{projectId}_{credentials}";
 
@@ -27,7 +27,7 @@ namespace Notifo.Domain.Integrations.Firebase
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
 
-                var sender = new FirebaseMobilePushSender(projectId, credentials);
+                var sender = new FirebaseMessagingWrapper(projectId, credentials);
 
                 entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
                 {

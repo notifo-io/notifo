@@ -5,52 +5,64 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
-using Google.Apis.Auth.OAuth2;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Integrations.Firebase
 {
-    public sealed class FirebaseMobilePushSender : IMobilePushSender, IDisposable
+    public sealed class FirebaseMobilePushSender : IMobilePushSender
     {
-        private readonly FirebaseApp app;
-        private readonly FirebaseMessaging messaging;
+        private readonly FirebaseMessagingWrapper wrapper;
+        private readonly bool sendSilentAndroid;
+        private readonly bool sendSilentIOS;
 
-        public FirebaseMobilePushSender(string projectId, string credentials)
+        public FirebaseMobilePushSender(FirebaseMessagingWrapper wrapper,
+            bool sendSilentIOS,
+            bool sendSilentAndroid)
         {
-            var appOptions = new AppOptions
+            this.wrapper = wrapper;
+            this.sendSilentAndroid = sendSilentAndroid;
+            this.sendSilentIOS = sendSilentIOS;
+        }
+
+        public async Task SendAsync(UserNotification userNotification, MobilePushOptions options, CancellationToken ct)
+        {
+            if (!ShouldSend(userNotification.Silent, options.DeviceType))
             {
-                Credential = GoogleCredential.FromJson(credentials)
-            };
+                return;
+            }
 
-            appOptions.ProjectId = projectId;
-
-            app = FirebaseApp.Create(appOptions, Guid.NewGuid().ToString());
-
-            messaging = FirebaseMessaging.GetMessaging(app);
-        }
-
-        public void Dispose()
-        {
-            app.Delete();
-        }
-
-        public async Task SendAsync(UserNotification userNotification, string token, bool wakeup, CancellationToken ct)
-        {
             try
             {
-                var message = userNotification.ToFirebaseMessage(token, wakeup);
+                var message = userNotification.ToFirebaseMessage(options.DeviceToken, options.Wakeup);
 
-                await messaging.SendAsync(message, ct);
+                await wrapper.Messaging.SendAsync(message, ct);
             }
             catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.NotFound)
             {
                 throw new MobilePushTokenExpiredException();
+            }
+        }
+
+        private bool ShouldSend(bool isSilent, MobileDeviceType deviceType)
+        {
+            if (!isSilent)
+            {
+                return true;
+            }
+
+            switch (deviceType)
+            {
+                case MobileDeviceType.Android:
+                    return sendSilentAndroid;
+                case MobileDeviceType.iOS:
+                    return sendSilentIOS;
+                default:
+                    return false;
             }
         }
     }

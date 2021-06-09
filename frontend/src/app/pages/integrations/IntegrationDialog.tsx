@@ -241,6 +241,11 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
                 <Forms.GridPassword name={name}
                     label={label} hints={property.editorDescription} />
             );
+        case 'Boolean':
+            return (
+                <Forms.GridBoolean name={name} asString
+                    label={label} hints={property.editorDescription} />
+            );
         default:
             return null;
     }
