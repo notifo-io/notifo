@@ -43,7 +43,7 @@ jobs:
         tags: squidex/notifo:dev-${{ env.BUILD_NUMBER }}
 
     - name: BUILD AND PUSH PR
-      id: docker_build
+      id: docker_build_pr
       if: github.event_name == 'pull_request'
       uses: docker/build-push-action@v2
       with:
