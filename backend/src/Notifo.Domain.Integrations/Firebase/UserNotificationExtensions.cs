@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Collections.Generic;
 using FirebaseAdmin.Messaging;
 using Notifo.Domain.Channels;
@@ -52,7 +53,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("subject", formatting.Subject)
                     .WithNonEmpty("body", formatting.Body);
 
-            message.Android = new AndroidConfig
+            var androidConfig = new AndroidConfig
             {
                 Data = androidData,
                 Priority = Priority.High
@@ -68,18 +69,32 @@ namespace Notifo.Domain.Integrations.Firebase
                 apsAlert.Body = formatting.Body;
             }
 
-            message.Apns = new ApnsConfig
+            var apnsHeaders = new Dictionary<string, string>
             {
-                Headers = new Dictionary<string, string>
-                {
-                    ["apns-collapse-id"] = notification.Id.ToString()
-                },
+                ["apns-collapse-id"] = notification.Id.ToString()
+            };
+
+            if (notification.TimeToLiveInSeconds is int timeToLive)
+            {
+                androidConfig.TimeToLive = TimeSpan.FromSeconds(timeToLive);
+
+                var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString();
+
+                apnsHeaders["apns-expiration"] = timeToLive == 0 ? "0" : unixTimeSeconds;
+            }
+
+            var apnsConfig = new ApnsConfig
+            {
+                Headers = apnsHeaders,
                 Aps = new Aps
                 {
                     Alert = apsAlert,
                     MutableContent = true
                 }
             };
+
+            message.Android = androidConfig;
+            message.Apns = apnsConfig;
 
             return message;
         }

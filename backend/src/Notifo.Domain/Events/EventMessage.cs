@@ -40,6 +40,8 @@ namespace Notifo.Domain.Events
 
         public bool Test { get; set; }
 
+        public int? TimeToLiveInSeconds { get; set; }
+
         private sealed class Validator : AbstractValidator<EventMessage>
         {
             public Validator()

@@ -38,5 +38,7 @@ namespace Notifo.Domain.Events
         public CounterMap? Counters { get; set; }
 
         public bool Silent { get; set; }
+
+        public int? TimeToLiveInSeconds { get; set; }
     }
 }

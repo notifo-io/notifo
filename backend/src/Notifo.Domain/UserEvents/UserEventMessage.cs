@@ -29,6 +29,8 @@ namespace Notifo.Domain.UserEvents
 
         public bool Test { get; set; }
 
+        public int? TimeToLiveInSeconds { get; set; }
+
         public Instant Created { get; set; }
 
         public NotificationSettings? EventSettings { get; set; }
