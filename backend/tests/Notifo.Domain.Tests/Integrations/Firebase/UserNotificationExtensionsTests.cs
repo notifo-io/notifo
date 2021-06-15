@@ -132,6 +132,60 @@ namespace Notifo.Domain.Integrations.Firebase
             Assert.Equal(token, message.Token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
             Assert.Null(message.Notification);
-          }
+        }
+
+        [Fact]
+        public void Should_include_time_to_live_property_if_set()
+        {
+            var token = "token1";
+            var timeToLive = 1000;
+
+            var notification = new UserNotification
+            {
+                Formatting = new NotificationFormatting<string>(),
+                TimeToLiveInSeconds = timeToLive
+            };
+
+            var message = notification.ToFirebaseMessage(token, false);
+
+            var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds();
+
+            Assert.Equal(unixTimeSeconds, Convert.ToInt32(message.Apns.Headers["apns-expiration"]));
+            Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
+        }
+
+        [Fact]
+        public void Should_not_include_time_to_live_property_if_not_set()
+        {
+            var token = "token1";
+
+            var notification = new UserNotification
+            {
+                Formatting = new NotificationFormatting<string>()
+            };
+
+            var message = notification.ToFirebaseMessage(token, false);
+
+            Assert.False(message.Apns.Headers.ContainsKey("apns-expiration"));
+            Assert.Null(message.Android.TimeToLive);
+        }
+
+        [Fact]
+        public void Should_set_time_to_live_to_zero_if_set_to_zero()
+        {
+            var token = "token1";
+            var timeToLive = 0;
+
+            var notification = new UserNotification
+            {
+                Formatting = new NotificationFormatting<string>(),
+                TimeToLiveInSeconds = timeToLive
+            };
+
+            var message = notification.ToFirebaseMessage(token, false);
+
+            Assert.Equal(timeToLive, Convert.ToInt32(message.Apns.Headers["apns-expiration"]));
+            Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
+        }
     }
 }

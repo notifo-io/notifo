@@ -90,6 +90,11 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         [Required]
         public bool Silent { get; set; }
 
+        /// <summary>
+        /// The time to live in seconds.
+        /// </summary>
+        public int? TimeToLiveInSeconds { get; set; }
+
         public static EventDto FromDomainObject(Event @event, App app)
         {
             var result = SimpleMapper.Map(@event, new EventDto

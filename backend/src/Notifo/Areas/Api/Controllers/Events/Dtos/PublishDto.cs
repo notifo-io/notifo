@@ -73,6 +73,11 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// </summary>
         public bool Test { get; set; }
 
+        /// <summary>
+        /// The time to live in seconds.
+        /// </summary>
+        public int? TimeToLiveInSeconds { get; set; }
+
         public EventMessage ToEvent(string appId, string? topic = null)
         {
             var result = SimpleMapper.Map(this, new EventMessage());

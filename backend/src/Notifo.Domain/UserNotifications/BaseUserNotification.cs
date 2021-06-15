@@ -34,6 +34,8 @@ namespace Notifo.Domain.UserNotifications
 
         public bool Test { get; set; }
 
+        public int? TimeToLiveInSeconds { get; set; }
+
         public NotificationFormatting<string> Formatting { get; set; }
 
         public string? ComputeTrackingUrl(string channel, string? deviceIdentifier)

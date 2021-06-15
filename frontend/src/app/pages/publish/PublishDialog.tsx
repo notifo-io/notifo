@@ -105,6 +105,11 @@ export const PublishDialog = () => {
 
                             <hr />
 
+                            <Forms.Number name='timeToLiveInSeconds'
+                                label={texts.common.timeToLive} min={0} max={2419200} />
+
+                            <hr />
+
                             <NotificationsForm.Settings
                                 field='settings' disabled={publishing} />
 
