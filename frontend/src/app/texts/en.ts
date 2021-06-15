@@ -102,6 +102,7 @@ export const EN = {
         templateMode: 'Use template?',
         text: 'Text',
         timestamp: 'Timestamp',
+        timeToLive: 'Time to live in seconds',
         timezone: 'Timezone',
         threemaId: 'Threema ID',
         topic: 'Topic',
