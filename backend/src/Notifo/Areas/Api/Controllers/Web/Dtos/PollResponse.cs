@@ -1,0 +1,23 @@
+﻿// ==========================================================================
+//  Notifo.io
+// ==========================================================================
+//  Copyright (c) Sebastian Stehle
+//  All rights reserved. Licensed under the MIT license.
+// ==========================================================================
+
+using System;
+using System.Collections.Generic;
+using NodaTime;
+using Notifo.Areas.Api.Controllers.Notifications.Dto;
+
+namespace Notifo.Areas.Api.Controllers.Web.Dtos
+{
+    public sealed class PollResponse
+    {
+        public Instant ContinuationToken { get; set; }
+
+        public List<NotificationDto> Notifications { get; } = new List<NotificationDto>();
+
+        public List<Guid>? Deletions { get; set; }
+    }
+}

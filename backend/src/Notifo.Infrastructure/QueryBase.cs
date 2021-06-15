@@ -15,11 +15,11 @@ namespace Notifo.Infrastructure
 
         public int Take { get; set; } = 20;
 
-        public bool NeedsTotal { get; set; } = true;
+        public bool TotalNeeded { get; set; } = true;
 
         public bool ShouldQueryTotal(ICollection result)
         {
-            return NeedsTotal && (result.Count >= Take || Skip > 0);
+            return TotalNeeded && (result.Count >= Take || Skip > 0);
         }
     }
 }

@@ -5,92 +5,27 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as signalR from '@microsoft/signalr';
-import { NotifoNotification, SDKConfig } from '@sdk/shared';
+import { NotifoNotification } from '@sdk/shared';
 
-class Retry implements signalR.IRetryPolicy {
-    private readonly timeouts = [1000, 5000, 1000, 30000];
+export type ConnectHandler = () => void;
+export type NotificationHandler = (notification: NotifoNotification) => void;
+export type NotificationsHandler = (notifications: ReadonlyArray<NotifoNotification>) => void;
+export type DeletionHandler = (request: { id: string }) => void;
 
-    public nextRetryDelayInMilliseconds(retryContext: signalR.RetryContext): number | null {
-        return this.timeouts[retryContext.previousRetryCount] || 30000;
-    }
-}
+export interface Connection {
+    start(): Promise<any>;
 
-export class Connection {
-    private readonly signalR: signalR.HubConnection;
+    onNotification(handler: NotificationHandler): void;
 
-    constructor(
-        config: SDKConfig,
-    ) {
-        const signalRConfig: signalR.IHttpConnectionOptions = {
-            headers: {
-                ...getAuthHeader(config),
-            },
-            accessTokenFactory: () => {
-                return config.userToken!;
-            },
-            withCredentials: false,
-        };
+    onNotifications(handler: NotificationsHandler): void;
 
-        if (!config.negotiate) {
-            signalRConfig.skipNegotiation = true;
-            signalRConfig.transport = signalR.HttpTransportType.WebSockets;
-        }
+    onDelete(handler: DeletionHandler): void;
 
-        const connection = new signalR.HubConnectionBuilder()
-            .configureLogging(signalR.LogLevel.Information)
-            .withAutomaticReconnect(new Retry())
-            .withUrl(`${config.apiUrl}/hub`, signalRConfig)
-            .build();
+    onReconnected(handler: ConnectHandler): void;
 
-        this.signalR = connection;
-    }
+    onReconnecting(handler: ConnectHandler): void;
 
-    public start() {
-        return this.signalR.start();
-    }
+    delete(id: string): void;
 
-    public onNotification(handler: (notification: NotifoNotification) => void) {
-        this.signalR.on('notification', handler);
-    }
-
-    public onNotifications(handler: (notifications: ReadonlyArray<NotifoNotification>) => void) {
-        this.signalR.on('notifications', handler);
-    }
-
-    public onDelete(handler: (request: { id: string }) => void) {
-        this.signalR.on('notificationDeleted', handler);
-    }
-
-    public onReconnected(handler: () => void) {
-        this.signalR.onreconnected(handler);
-    }
-
-    public onReconnecting(handler: () => void) {
-        this.signalR.onreconnecting(handler);
-    }
-
-    public delete(id: string) {
-        return this.signalR.send('delete', id);
-    }
-
-    public confirmMany(seen: string[], confirmed: string | null | undefined = null) {
-        return this.signalR.send('confirmMany', {
-            channel: 'Web',
-            confirmed,
-            seen,
-        });
-    }
-}
-
-function getAuthHeader(config: SDKConfig): Record<string, string> {
-    if (config.userToken) {
-        return {
-            'X-ApiKey': config.userToken,
-        };
-    } else {
-        return {
-            'X-ApiKey': config.apiKey!,
-        };
-    }
+    confirmMany(seen: string[], confirmed: string | null | undefined): void;
 }

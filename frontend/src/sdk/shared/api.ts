@@ -52,6 +52,9 @@ export interface NotifoNotification {
 
     // The timestamp.
     created?: string;
+
+    // The update timestamp.
+    updated?: string;
 }
 
 export function parseShortNotification(value: any): NotifoNotification {

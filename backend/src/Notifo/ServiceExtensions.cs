@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        public static void AddMyClustering(this IServiceCollection services, IConfiguration config)
+        public static void AddMyClustering(this IServiceCollection services, IConfiguration config, bool enableSignalR)
         {
             config.ConfigureByOption("clustering:type", new Alternatives
             {
@@ -75,11 +75,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var connection = new RedisConnection(config.GetRequiredValue("clustering:redis:connectionString"));
 
-                    services.AddSignalR()
-                        .AddStackExchangeRedis(options =>
-                        {
-                            options.ConnectionFactory = connection.ConnectAsync;
-                        });
+                    if (enableSignalR)
+                    {
+                        services.AddSignalR()
+                            .AddStackExchangeRedis(options =>
+                            {
+                                options.ConnectionFactory = connection.ConnectAsync;
+                            });
+                    }
 
                     services.AddRedisPubSub(options =>
                     {

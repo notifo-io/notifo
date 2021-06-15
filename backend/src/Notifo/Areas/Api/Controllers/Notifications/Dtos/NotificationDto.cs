@@ -52,6 +52,12 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dto
         public Instant Created { get; set; }
 
         /// <summary>
+        /// The timestamp when the notification has been updated.
+        /// </summary>
+        [Required]
+        public Instant Updated { get; set; }
+
+        /// <summary>
         /// The optional body text.
         /// </summary>
         public string? Body { get; set; }

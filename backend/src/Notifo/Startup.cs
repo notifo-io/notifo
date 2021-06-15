@@ -28,6 +28,8 @@ namespace Notifo
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var enableSignalR = config.GetValue<bool>("web:signalR");
+
             services.AddDefaultWebServices(config);
             services.AddDefaultForwardRules();
 
@@ -43,11 +45,14 @@ namespace Notifo
                 options.LowercaseUrls = true;
             });
 
-            services.AddSignalR()
-                .AddJsonProtocol(options =>
-                {
-                    options.PayloadSerializerOptions.Configure();
-                });
+            if (enableSignalR)
+            {
+                services.AddSignalR()
+                    .AddJsonProtocol(options =>
+                    {
+                        options.PayloadSerializerOptions.Configure();
+                    });
+            }
 
             services.Configure<ApiBehaviorOptions>(options =>
                 {
@@ -75,12 +80,12 @@ namespace Notifo
                 })
                 .AddRazorRuntimeCompilation();
 
-            services.AddMyApi();
+            services.AddMyApi(enableSignalR);
             services.AddMyApps();
             services.AddMyAssets(config);
             services.AddMyCaching();
             services.AddMyCounters();
-            services.AddMyClustering(config);
+            services.AddMyClustering(config, enableSignalR);
             services.AddMyEmailChannel();
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
@@ -119,6 +124,8 @@ namespace Notifo
 
         public void Configure(IApplicationBuilder app)
         {
+            var enableSignalR = config.GetValue<bool>("web:signalR");
+
             app.UseDefaultForwardRules();
 
             var cultures = new[]
@@ -136,7 +143,7 @@ namespace Notifo
 
             app.UseMyHealthChecks();
 
-            app.ConfigureApi();
+            app.ConfigureApi(enableSignalR);
             app.ConfigureFrontend();
         }
     }

@@ -5,20 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
-using Notifo.Infrastructure;
+using System.Threading.Tasks;
+using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.Channels.Web
 {
-    public sealed class UserNotificationQuery : QueryBase
+    public sealed class NoopStreamClient : IStreamClient
     {
-        public Instant After { get; set; }
-
-        public UserNotificationQueryScope Scope { get; set; }
-
-        public UserNotificationQuery()
+        public Task SendAsync(UserNotification userNotification)
         {
-            TotalNeeded = false;
+            return Task.CompletedTask;
         }
     }
 }

@@ -192,7 +192,11 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
                     const index = notifications.findIndex(x => x.id === notification.id);
 
                     if (index >= 0) {
-                        notifications[index] = notification;
+                        const existing = notifications[index];
+
+                        if (!existing.updated || !notification.updated || existing.updated !== notification.updated) {
+                            notifications[index] = notification;
+                        }
                     } else {
                         notifications.push(notification);
                     }

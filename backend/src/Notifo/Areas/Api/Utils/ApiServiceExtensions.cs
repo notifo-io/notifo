@@ -15,10 +15,18 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ApiServiceExtensions
     {
-        public static void AddMyApi(this IServiceCollection services)
+        public static void AddMyApi(this IServiceCollection services, bool enableSignalR)
         {
-            services.AddSingletonAs<NotificationHubAccessor>()
-                .As<IStreamClient>();
+            if (enableSignalR)
+            {
+                services.AddSingletonAs<NotificationHubAccessor>()
+                    .As<IStreamClient>();
+            }
+            else
+            {
+                services.AddSingletonAs<NoopStreamClient>()
+                    .As<IStreamClient>();
+            }
 
             services.AddSingletonAs<UrlBuilder>()
                 .As<IUserNotificationUrl>().As<ISmsUrl>();

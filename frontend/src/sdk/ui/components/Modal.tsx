@@ -32,7 +32,9 @@ export const Modal = (props: ModalProps) => {
 
     useEffect(() => {
         const handler = (event: MouseEvent) => {
-            if (modal.current && event.target?.['parentNode'] && !modal.current.contains(event.target as any)) {
+            const target = event.target as any;
+
+            if (modal.current && !modal.current.contains(target) && document.body.contains(target)) {
                 onClickOutside && onClickOutside();
             }
         };

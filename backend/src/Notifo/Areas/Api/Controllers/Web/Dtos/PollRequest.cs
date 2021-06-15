@@ -5,20 +5,19 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using NodaTime;
-using Notifo.Infrastructure;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Areas.Api.Controllers.Web.Dtos
 {
-    public sealed class UserNotificationQuery : QueryBase
+    public class PollRequest
     {
-        public Instant After { get; set; }
+        public Guid[]? Deleted { get; set; }
 
-        public UserNotificationQueryScope Scope { get; set; }
+        public Guid[]? Seen { get; set; }
 
-        public UserNotificationQuery()
-        {
-            TotalNeeded = false;
-        }
+        public Guid[]? Confirmed { get; set; }
+
+        public Instant? Token { get; set; }
     }
 }

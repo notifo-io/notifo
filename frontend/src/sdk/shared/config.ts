@@ -6,6 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
+import { isNumber } from 'lodash';
 import { isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
@@ -157,6 +158,24 @@ export function buildSDKConfig(opts: SDKConfig) {
         options.locale = 'en';
     }
 
+    if (!isEnumOption(options.connect, SUPPORTED_CONNECTS)) {
+        logWarn(`init.connect must be one of these values: ${SUPPORTED_CONNECTS.join(',')}`);
+        options.connect = undefined!;
+    }
+
+    if (!options.connect) {
+        options.connect = SUPPORTED_CONNECTS[0];
+    }
+
+    if (!isUndefined(options.interval) || !isNumber(options.interval) || options.interval < 1000) {
+        logWarn('init.interval must be a number (>= 1000)');
+        options.interval = 0;
+    }
+
+    if (!options.interval) {
+        options.interval = 5000;
+    }
+
     if (isUndefined(options.allowEmails)) {
         options.allowEmails = true;
     }
@@ -236,7 +255,7 @@ function isStringOption(value: any) {
     return !value || isString(value);
 }
 
-function isEnumOption(value: any, allowed: string[]) {
+function isEnumOption(value: any, allowed: ReadonlyArray<string>) {
     return !value || allowed.indexOf(value) >= 0;
 }
 
@@ -250,6 +269,12 @@ export interface SDKConfig {
 
     // The API KEY when registration is needed.
     apiKey?: string;
+
+    // The type of the api connection.
+    connect: string;
+
+    // The timer interval.
+    interval: number;
 
     // The public key for web push encryption.
     publicKey?: string;
@@ -301,27 +326,27 @@ export interface SubscribeOptions {
     existingWorker?: true;
 }
 
+type OptionConnect = 'signalr' | 'polling';
+type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';
+type OptionPosition = 'bottom-left' | 'bottom-right';
 type OptionTopicStyle = 'star' | 'heart' | 'alarm' | 'bell';
 
-const SUPPORTED_TOPIC_STYLES: OptionTopicStyle[] = ['star', 'heart', 'bell', 'alarm'];
+const SUPPORTED_CONNECTS: ReadonlyArray<OptionConnect> = ['signalr', 'polling'];
+const SUPPORTED_MAIN_STYLES: ReadonlyArray<OptionMainStyle> = ['message', 'chat', 'chat_filled', 'notifo'];
+const SUPPORTED_POSITIONS: ReadonlyArray<OptionPosition> = ['bottom-left', 'bottom-right'];
+const SUPPORTED_TOPIC_STYLES: ReadonlyArray<OptionTopicStyle> = ['star', 'heart', 'bell', 'alarm'];
 
 export interface TopicOptions {
     // The style of the button.
     style: OptionTopicStyle;
 
     // The position of the modal.
-    position: OptionsPosition;
+    position: OptionPosition;
 }
-
-type OptionsPosition = 'bottom-left' | 'bottom-right';
-type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';
-
-const SUPPORTED_POSITIONS: OptionsPosition[] = ['bottom-left', 'bottom-right'];
-const SUPPORTED_MAIN_STYLES: OptionMainStyle[] = ['message', 'chat', 'chat_filled', 'notifo'];
 
 export interface NotificationsOptions {
     // The position of the modal.
-    position: OptionsPosition;
+    position: OptionPosition;
 
     // The style of the button.
     style: OptionMainStyle;

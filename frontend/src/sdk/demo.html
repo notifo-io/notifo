@@ -99,6 +99,28 @@
     <span id="topic4"></span>
 
     <script>
+        function parseQuery() {
+            const args = document.location.search.substring(1).split('&');
+            const result = {};
+
+            for (const arg of args) {
+                const kvp = arg.split('=');
+                const key = decodeURIComponent(kvp[0]).trim();
+
+                if (kvp.length === 1) {
+                    result[key] = true;
+                } else if (kvp.length === 2) {
+                    const value = decodeURIComponent(kvp[1]).trim();
+
+                    result[key] = value;
+                }
+            }
+
+            return result;
+        }
+
+        const query = parseQuery();
+
         var notifo = notifo || [];
         notifo.push(['init', {
             apiUrl: '/',
@@ -107,7 +129,7 @@
                 console.log(JSON.stringify(notification));
             },
 
-            userToken: location.search.substr(1)
+            ...query
         }]);
 
         notifo.push(['show-notifications', 'button1', { style: 'notifo', hideProfile: true }]);

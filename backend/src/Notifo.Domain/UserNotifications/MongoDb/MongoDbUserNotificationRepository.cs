@@ -74,17 +74,10 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             await Collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<UserNotification>(
                     IndexKeys
-                        .Ascending(x => x.UserId)
-                        .Ascending(x => x.EventId)),
-                null, ct);
-
-            await Collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<UserNotification>(
-                    IndexKeys
                         .Ascending(x => x.AppId)
                         .Ascending(x => x.UserId)
                         .Ascending(x => x.Updated)
-                        .Descending(x => x.Created)),
+                        .Ascending(x => x.IsDeleted)),
                 null, ct);
         }
 
@@ -109,13 +102,9 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             var filters = new List<FilterDefinition<UserNotification>>
             {
                 Filter.Eq(x => x.AppId, appId),
-                Filter.Eq(x => x.UserId, userId)
+                Filter.Eq(x => x.UserId, userId),
+                Filter.Gte(x => x.Updated, query.After)
             };
-
-            if (query.After != default)
-            {
-                filters.Add(Filter.Gte(x => x.Updated, query.After));
-            }
 
             switch (query.Scope)
             {

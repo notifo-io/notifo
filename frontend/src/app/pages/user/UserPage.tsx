@@ -35,7 +35,7 @@ export const UserPage = () => {
     }, []);
 
     const doDemo = React.useCallback(() => {
-        window.open(`/demo.html?${user.apiKey}`);
+        window.open(`/demo.html?userToken=${user.apiKey}`);
     }, [user]);
 
     const doPublish = React.useCallback(() => {

@@ -10,12 +10,12 @@
 import { h } from 'preact';
 
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
-import { Connection } from '@sdk/ui/api/connection';
 import { addNotifications, deleteNotification, setConnected, useDispatch } from '@sdk/ui/model';
 import { isFunction } from 'lodash';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { NotificationsButton } from './NotificationsButton';
 import { NotificationsModal } from './NotificationsModal';
+import { buildConnection } from './../api';
 
 export interface NotificationsUIProps {
     // The main config.
@@ -33,7 +33,7 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
 
     const dispatch = useDispatch();
     const [isOpen, setIsOpen] = useState(false);
-    const [connection] = useState(() => new Connection(config));
+    const [connection] = useState(() => buildConnection(config));
 
     useEffect(() => {
         connection.onNotifications(notifications => {
