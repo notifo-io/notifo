@@ -6,7 +6,7 @@
  */
 
 import { PUSH } from '@sdk/push';
-import { apiRegister, buildSDKConfig, isArray, JobQueue, logError, logWarn, SDKConfig } from '@sdk/shared';
+import { apiGetConnect as apiConnect, apiRegister, buildSDKConfig, isArray, JobQueue, logError, logWarn, SDKConfig } from '@sdk/shared';
 import { UI } from '@sdk/ui';
 
 import './ui/style/sdk.scss';
@@ -20,6 +20,7 @@ async function init(value: any) {
     const options = buildSDKConfig(value);
 
     if (options) {
+        await apiConnect(options);
         await apiRegister(options);
 
         queueInit.config = options;

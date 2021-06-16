@@ -55,7 +55,7 @@ export const Notifications = (props: NotificationsProps) => {
     } = props;
 
     const notifications = useStore(x => x.notifications);
-    const isLoaded = useStore(x => x.notificationsTransition !== 'InProgress');
+    const isLoaded = useStore(x => x.notificationsStatus !== 'InProgress');
     const isConnected = useStore(x => x.isConnected);
 
     const doShowArchive = useCallback((event: Event) => {

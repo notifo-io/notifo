@@ -20,9 +20,7 @@ class Retry implements signalR.IRetryPolicy {
 export class SignalRConnection implements Connection {
     private readonly signalR: signalR.HubConnection;
 
-    constructor(
-        config: SDKConfig,
-    ) {
+    constructor(config: SDKConfig, negotiate: boolean) {
         const signalRConfig: signalR.IHttpConnectionOptions = {
             headers: {
                 ...getAuthHeader(config),
@@ -33,7 +31,7 @@ export class SignalRConnection implements Connection {
             withCredentials: false,
         };
 
-        if (!config.negotiate) {
+        if (!negotiate) {
             signalRConfig.skipNegotiation = true;
             signalRConfig.transport = signalR.HttpTransportType.WebSockets;
         }

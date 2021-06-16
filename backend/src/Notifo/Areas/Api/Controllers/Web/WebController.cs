@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NodaTime;
 using Notifo.Areas.Api.Controllers.Notifications.Dto;
 using Notifo.Areas.Api.Controllers.Web.Dtos;
@@ -25,10 +26,39 @@ namespace Notifo.Areas.Api.Controllers.Web
     public sealed class WebController : BaseController
     {
         private readonly IUserNotificationStore userNotificationStore;
+        private readonly SignalROptions signalROptions;
 
-        public WebController(IUserNotificationStore userNotificationStore)
+        public WebController(IUserNotificationStore userNotificationStore,
+            IOptions<SignalROptions> signalROptions)
         {
             this.userNotificationStore = userNotificationStore;
+
+            this.signalROptions = signalROptions.Value;
+        }
+
+        [HttpPost("/api/me/web/connect")]
+        [AppPermission(NotifoRoles.AppUser)]
+        public IActionResult GetConnect()
+        {
+            var response = new ConnectDto
+            {
+                PollingInterval = signalROptions.PollingInterval
+            };
+
+            if (signalROptions.Enabled && signalROptions.Sticky)
+            {
+                response.ConnectionMode = ConnectionMode.SignalR;
+            }
+            else if (signalROptions.Enabled)
+            {
+                response.ConnectionMode = ConnectionMode.SignalRSockets;
+            }
+            else
+            {
+                response.ConnectionMode = ConnectionMode.Polling;
+            }
+
+            return Ok(response);
         }
 
         [HttpPost("/api/me/web/poll")]

@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Notifo.Pipeline;
 using StackExchange.Redis;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -67,7 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        public static void AddMyClustering(this IServiceCollection services, IConfiguration config, bool enableSignalR)
+        public static void AddMyClustering(this IServiceCollection services, IConfiguration config, SignalROptions signalROptions)
         {
             config.ConfigureByOption("clustering:type", new Alternatives
             {
@@ -75,7 +76,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var connection = new RedisConnection(config.GetRequiredValue("clustering:redis:connectionString"));
 
-                    if (enableSignalR)
+                    if (signalROptions.Enabled)
                     {
                         services.AddSignalR()
                             .AddStackExchangeRedis(options =>

@@ -140,7 +140,7 @@ export class PollingConnection implements Connection {
 
             setTimeout(() => {
                 this.poll();
-            }, this.config.interval);
+            }, this.config.pollingInterval);
         } catch (ex) {
             if (this.connectionStatus !== 'Disconnected') {
                 this.connectionStatus = 'Disconnected';
@@ -152,7 +152,7 @@ export class PollingConnection implements Connection {
 
             setTimeout(() => {
                 this.poll();
-            }, this.config.interval * 2);
+            }, this.config.pollingInterval * 2);
         }
     }
 

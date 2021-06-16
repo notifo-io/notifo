@@ -6,7 +6,6 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
-import { isNumber } from 'lodash';
 import { isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
@@ -158,24 +157,6 @@ export function buildSDKConfig(opts: SDKConfig) {
         options.locale = 'en';
     }
 
-    if (!isEnumOption(options.connect, SUPPORTED_CONNECTS)) {
-        logWarn(`init.connect must be one of these values: ${SUPPORTED_CONNECTS.join(',')}`);
-        options.connect = undefined!;
-    }
-
-    if (!options.connect) {
-        options.connect = SUPPORTED_CONNECTS[0];
-    }
-
-    if (!isUndefined(options.interval) || !isNumber(options.interval) || options.interval < 1000) {
-        logWarn('init.interval must be a number (>= 1000)');
-        options.interval = 0;
-    }
-
-    if (!options.interval) {
-        options.interval = 5000;
-    }
-
     if (isUndefined(options.allowEmails)) {
         options.allowEmails = true;
     }
@@ -271,10 +252,10 @@ export interface SDKConfig {
     apiKey?: string;
 
     // The type of the api connection.
-    connect: string;
+    connectionMode: ConnectionMode;
 
     // The timer interval.
-    interval: number;
+    pollingInterval: number;
 
     // The public key for web push encryption.
     publicKey?: string;
@@ -300,9 +281,6 @@ export interface SDKConfig {
     // The url to the styles.
     styleUrl: string;
 
-    // True to negotiate the connection, otherwise sockets are used.
-    negotiate: boolean;
-
     // True when emails are allowed.
     allowEmails: boolean;
 
@@ -326,15 +304,15 @@ export interface SubscribeOptions {
     existingWorker?: true;
 }
 
-type OptionConnect = 'signalr' | 'polling';
 type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';
 type OptionPosition = 'bottom-left' | 'bottom-right';
 type OptionTopicStyle = 'star' | 'heart' | 'alarm' | 'bell';
 
-const SUPPORTED_CONNECTS: ReadonlyArray<OptionConnect> = ['signalr', 'polling'];
 const SUPPORTED_MAIN_STYLES: ReadonlyArray<OptionMainStyle> = ['message', 'chat', 'chat_filled', 'notifo'];
 const SUPPORTED_POSITIONS: ReadonlyArray<OptionPosition> = ['bottom-left', 'bottom-right'];
 const SUPPORTED_TOPIC_STYLES: ReadonlyArray<OptionTopicStyle> = ['star', 'heart', 'bell', 'alarm'];
+
+export type ConnectionMode = 'SignalR' | 'SignalRSockets' | 'Polling';
 
 export interface TopicOptions {
     // The style of the button.

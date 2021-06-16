@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyEvents(this IServiceCollection services, IConfiguration config)
         {
-            var options = config.GetValue<EventPipelineOptions>("pipeline:events") ?? new EventPipelineOptions();
+            var options = config.GetSection("pipeline:events").Get<EventPipelineOptions>() ?? new EventPipelineOptions();
 
             services.AddMessagingConsumer<EventConsumer, EventMessage>(options.ChannelName);
             services.AddMessagingProducer<EventMessage>(options.ChannelName);

@@ -10,7 +10,7 @@
 import { Fragment, h } from 'preact';
 
 import { booleanToSend, SDKConfig, sendToBoolean, Subscription, TopicOptions } from '@sdk/shared';
-import { subscribe, Transition, unsubscribe, useDispatch } from '@sdk/ui/model';
+import { subscribe, Status, unsubscribe, useDispatch } from '@sdk/ui/model';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Loader } from './Loader';
 import { Modal } from './Modal';
@@ -27,7 +27,7 @@ export interface TopicModalProps {
     subscription: Subscription | null;
 
     // The subscription.
-    subscriptionTransition: Transition;
+    subscriptionState: Status;
 
     // The topic to watch.
     topicPrefix: string;
@@ -42,7 +42,7 @@ export const TopicModal = (props: TopicModalProps) => {
         onClickOutside,
         options,
         subscription,
-        subscriptionTransition,
+        subscriptionState,
         topicPrefix,
     } = props;
 
@@ -112,7 +112,7 @@ export const TopicModal = (props: TopicModalProps) => {
                             </button>
                         }
 
-                        <Loader size={16} visible={subscriptionTransition === 'InProgress'} />
+                        <Loader size={16} visible={subscriptionState === 'InProgress'} />
                     </div>
                 </Fragment>
             }

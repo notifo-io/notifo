@@ -7,7 +7,7 @@
 
 /* eslint-disable @typescript-eslint/return-await */
 
-import { SDKConfig } from './config';
+import { ConnectionMode, SDKConfig } from './config';
 import { combineUrl, isString } from './utils';
 
 export interface NotifoNotification {
@@ -99,6 +99,11 @@ export function sendToBoolean(send: NotificationSend | undefined) {
     }
 }
 
+export interface ConnectDto {
+    // The supported connection mode.
+    connectionMode: ConnectionMode;
+}
+
 export interface Subscription {
     // The notification settings.
     topicSettings?: NotificationSettings;
@@ -132,16 +137,14 @@ export interface UpdateProfile {
 export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topicPrefix: string }): Promise<Subscription | null> {
     const url = combineUrl(config.apiUrl, 'api/me/subscriptions/');
 
-    const request: RequestInit = {
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
         body: JSON.stringify(subscription),
-    };
-
-    const response = await fetch(url, request);
+    });
 
     if (response.status === 404) {
         return null;
@@ -152,17 +155,35 @@ export async function apiPostSubscription(config: SDKConfig, subscription: Subsc
     }
 }
 
+export async function apiGetConnect(config: SDKConfig): Promise<any> {
+    const url = combineUrl(config.apiUrl, 'api/me/web/connect');
+
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            ...getAuthHeader(config),
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error('Request failed with {response.statusCode}');
+    }
+
+    const result = await response.json();
+
+    Object.assign(config, result);
+}
+
 export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<NotifoNotification>> {
     const url = combineUrl(config.apiUrl, 'api/me/notifications/archive');
 
-    const request: RequestInit = {
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             ...getAuthHeader(config),
         },
-    };
-
-    const response = await fetch(url, request);
+    });
 
     if (response.status === 404) {
         return [];
@@ -176,14 +197,12 @@ export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<No
 export async function apiGetSubscription(config: SDKConfig, topicPrefix: string): Promise<Subscription | null> {
     const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
 
-    const request: RequestInit = {
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             ...getAuthHeader(config),
         },
-    };
-
-    const response = await fetch(url, request);
+    });
 
     if (response.status === 404) {
         return null;
@@ -197,14 +216,12 @@ export async function apiGetSubscription(config: SDKConfig, topicPrefix: string)
 export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> {
     const url = combineUrl(config.apiUrl, 'api/me/');
 
-    const request: RequestInit = {
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             ...getAuthHeader(config),
         },
-    };
-
-    const response = await fetch(url, request);
+    });
 
     if (response.status === 404) {
         return null;
@@ -218,16 +235,14 @@ export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> 
 export async function apiPostProfile(config: SDKConfig, update: UpdateProfile): Promise<Profile> {
     const url = combineUrl(config.apiUrl, 'api/me/');
 
-    const request: RequestInit = {
+    const response = await fetch(url, {
         method: 'POST',
         headers: {
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
         body: JSON.stringify(update),
-    };
-
-    const response = await fetch(url, request);
+    });
 
     if (response.status === 404) {
         throw new Error(`Request failed with ${response.status}`);
@@ -241,14 +256,12 @@ export async function apiPostProfile(config: SDKConfig, update: UpdateProfile): 
 export async function apiDeleteSubscription(config: SDKConfig, topicPrefix: string): Promise<any> {
     const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
 
-    const request: RequestInit = {
+    await fetch(url, {
         method: 'DELETE',
         headers: {
             ...getAuthHeader(config),
         },
-    };
-
-    await fetch(url, request);
+    });
 }
 
 export async function apiPostWebPush(config: SDKConfig, subscription: PushSubscription) {

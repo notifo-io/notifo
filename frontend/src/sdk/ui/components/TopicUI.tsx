@@ -35,7 +35,7 @@ export const TopicUI = (props: TopicUIProps) => {
     const dispatch = useDispatch();
     const subscriptionState = useStore(x => x.subscriptions[topicPrefix]);
     const subscription = subscriptionState?.subscription;
-    const subscriptionTransition = subscriptionState?.transition;
+    const subscriptionStatus = subscriptionState?.status;
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
@@ -63,7 +63,7 @@ export const TopicUI = (props: TopicUIProps) => {
             {isOpen &&
                 <TopicModal config={config} options={options}
                     subscription={subscription}
-                    subscriptionTransition={subscriptionTransition}
+                    subscriptionState={subscriptionStatus}
                     topicPrefix={topicPrefix}
                     onClickOutside={doHide} />
             }

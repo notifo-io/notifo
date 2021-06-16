@@ -10,14 +10,15 @@ using Notifo.Areas.Api.Utils;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Channels.Web;
 using Notifo.Domain.UserNotifications;
+using Notifo.Pipeline;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ApiServiceExtensions
     {
-        public static void AddMyApi(this IServiceCollection services, bool enableSignalR)
+        public static void AddMyApi(this IServiceCollection services, SignalROptions signalROptions)
         {
-            if (enableSignalR)
+            if (signalROptions.Enabled)
             {
                 services.AddSingletonAs<NotificationHubAccessor>()
                     .As<IStreamClient>();

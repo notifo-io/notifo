@@ -13,7 +13,7 @@ namespace Notifo.Areas.Api
 {
     public static class Startup
     {
-        public static void ConfigureApi(this IApplicationBuilder app, bool enableSignalR)
+        public static void ConfigureApi(this IApplicationBuilder app, SignalROptions signalROptions)
         {
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
@@ -44,7 +44,7 @@ namespace Notifo.Areas.Api
 
             app.UseEndpoints(endpoints =>
             {
-                if (enableSignalR)
+                if (signalROptions.Enabled)
                 {
                     endpoints.MapHub<NotificationHub>("/hub");
                 }

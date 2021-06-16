@@ -36,8 +36,8 @@ export const NotificationsArchive = (props: NotificationsArchiveProps) => {
 
     const dispatch = useDispatch();
     const notifications = useStore(x => x.archive);
-    const isLoading = useStore(x => x.archiveTransition === 'InProgress');
-    const isLoaded = useStore(x => x.archiveTransition !== 'InProgress');
+    const isLoading = useStore(x => x.archiveStatus === 'InProgress');
+    const isLoaded = useStore(x => x.archiveStatus !== 'InProgress');
 
     useEffect(() => {
         loadArchive(config, dispatch);

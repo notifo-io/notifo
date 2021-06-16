@@ -34,7 +34,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
 
     const dispatch = useDispatch();
     const profile = useStore(x => x.profile)!;
-    const profileTransition = useStore(x => x.profileTransition);
+    const profileState = useStore(x => x.profileStatus);
     const [profileToEdit, setProfileToEdit] = useState<UpdateProfile | null>(null);
 
     useEffect(() => {
@@ -168,7 +168,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                             {config.texts.cancel}
                         </button>
 
-                        <Loader size={16} visible={profileTransition === 'InProgress'} />
+                        <Loader size={16} visible={profileState === 'InProgress'} />
                     </div>
                 </form>
             )}

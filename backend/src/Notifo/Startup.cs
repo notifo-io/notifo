@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Notifo.Areas.Api;
 using Notifo.Areas.Frontend;
 using Notifo.Pipeline;
@@ -28,7 +29,9 @@ namespace Notifo
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var enableSignalR = config.GetValue<bool>("web:signalR");
+            var signalROptions = config.GetSection("web:signalR").Get<SignalROptions>();
+
+            services.ConfigureAndValidate<SignalROptions>(config, "web:signalR");
 
             services.AddDefaultWebServices(config);
             services.AddDefaultForwardRules();
@@ -45,7 +48,7 @@ namespace Notifo
                 options.LowercaseUrls = true;
             });
 
-            if (enableSignalR)
+            if (signalROptions.Enabled)
             {
                 services.AddSignalR()
                     .AddJsonProtocol(options =>
@@ -80,12 +83,12 @@ namespace Notifo
                 })
                 .AddRazorRuntimeCompilation();
 
-            services.AddMyApi(enableSignalR);
+            services.AddMyApi(signalROptions);
             services.AddMyApps();
             services.AddMyAssets(config);
             services.AddMyCaching();
             services.AddMyCounters();
-            services.AddMyClustering(config, enableSignalR);
+            services.AddMyClustering(config, signalROptions);
             services.AddMyEmailChannel();
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
@@ -124,7 +127,7 @@ namespace Notifo
 
         public void Configure(IApplicationBuilder app)
         {
-            var enableSignalR = config.GetValue<bool>("web:signalR");
+            var signalROptions = app.ApplicationServices.GetRequiredService<IOptions<SignalROptions>>().Value;
 
             app.UseDefaultForwardRules();
 
@@ -143,7 +146,7 @@ namespace Notifo
 
             app.UseMyHealthChecks();
 
-            app.ConfigureApi(enableSignalR);
+            app.ConfigureApi(signalROptions);
             app.ConfigureFrontend();
         }
     }

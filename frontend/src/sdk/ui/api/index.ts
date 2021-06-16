@@ -10,8 +10,10 @@ import { PollingConnection } from './polling-connection';
 import { SignalRConnection } from './signalr-connection';
 
 export function buildConnection(config: SDKConfig) {
-    if (config.connect === 'signalr') {
-        return new SignalRConnection(config);
+    if (config.connectionMode === 'SignalR') {
+        return new SignalRConnection(config, true);
+    } else if (config.connectionMode === 'SignalRSockets') {
+        return new SignalRConnection(config, false);
     } else {
         return new PollingConnection(config);
     }

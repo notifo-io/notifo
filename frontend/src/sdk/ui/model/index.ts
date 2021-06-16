@@ -11,11 +11,11 @@ import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscription
 import { useEffect, useState } from 'preact/hooks';
 import { Dispatch, set, Store } from './store';
 
-export type Transition = 'InProgress' | 'Failed' | 'Success';
+export type Status = 'InProgress' | 'Failed' | 'Success';
 
 export interface SubscriptionState {
     // The load state.
-    transition: Transition;
+    status: Status;
 
     // The subscription.
     subscription?: Subscription | null;
@@ -28,16 +28,16 @@ export interface NotifoState {
     archive: ReadonlyArray<NotifoNotification>;
 
     // The notifications state.
-    archiveTransition: Transition;
+    archiveStatus: Status;
 
     // The current notifications.
     notifications: ReadonlyArray<NotifoNotification>;
 
     // The notifications state.
-    notificationsTransition: Transition;
+    notificationsStatus: Status;
 
     // The profile state.
-    profileTransition?: Transition;
+    profileStatus?: Status;
 
     // The loaded profile
     profile?: Profile;
@@ -83,89 +83,89 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
             return { ...state, isConnected: action.isConnected };
         }
         case 'LoadProfileStarted': {
-            return { ...state, profileTransition: 'InProgress' };
+            return { ...state, profileStatus: 'InProgress' };
         }
         case 'LoadProfileFailed': {
-            return { ...state, profileTransition: 'Failed' };
+            return { ...state, profileStatus: 'Failed' };
         }
         case 'LoadProfileSuccess': {
-            return { ...state, profileTransition: 'Success', profile: action.profile };
+            return { ...state, profileStatus: 'Success', profile: action.profile };
         }
         case 'SaveProfileStarted': {
-            return { ...state, profileTransition: 'InProgress' };
+            return { ...state, profileStatus: 'InProgress' };
         }
         case 'SaveProfileFailed': {
-            return { ...state, profileTransition: 'Failed' };
+            return { ...state, profileStatus: 'Failed' };
         }
         case 'SaveProfileSuccess': {
-            return { ...state, profileTransition: 'Success', profile: action.profile };
+            return { ...state, profileStatus: 'Success', profile: action.profile };
         }
         case 'LoadArchiveStarted':
-            return { ...state, archiveTransition: 'InProgress' };
+            return { ...state, archiveStatus: 'InProgress' };
         case 'LoadArchiveFailed':
-            return { ...state, archiveTransition: 'Failed' };
+            return { ...state, archiveStatus: 'Failed' };
         case 'LoadArchiveSuccess':
-            return { ...state, archiveTransition: 'Success', archive: action.notifications };
+            return { ...state, archiveStatus: 'Success', archive: action.notifications };
         case 'LoadSubscriptionStarted': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, transition: 'InProgress' } as SubscriptionState));
+                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case 'LoadSubscriptionFailed': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, transition: 'Failed' } as SubscriptionState));
+                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case 'LoadSubscriptionSuccess': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    { transition: 'Success', subscription: action.subscription });
+                    { status: 'Success', subscription: action.subscription });
 
             return { ...state, subscriptions };
         }
         case 'SubscribeStarted': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, transition: 'InProgress' } as SubscriptionState));
+                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case 'SubscribeFailed': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, transition: 'Failed' } as SubscriptionState));
+                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case 'SubscribeSuccess': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    { transition: 'Success', subscription: action.subscription });
+                    { status: 'Success', subscription: action.subscription });
 
             return { ...state, subscriptions };
         }
         case 'UnsubscribeStarted': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, transition: 'InProgress' } as SubscriptionState));
+                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case 'UnsubscribeFailed': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, transition: 'Failed' } as SubscriptionState));
+                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
 
             return { ...state, subscriptions };
         }
         case 'UnsubscribeSuccess': {
             const subscriptions =
                 set(state.subscriptions, action.topicPrefix,
-                    { transition: 'Success', subscription: null });
+                    { status: 'Success', subscription: null });
 
             return { ...state, subscriptions };
         }
@@ -178,11 +178,7 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
             const newNotifications: ReadonlyArray<NotifoNotification> = action.notifications;
 
             if (newNotifications.length === 0) {
-                if (state.notificationsTransition === 'Success') {
-                    return state;
-                } else {
-                    return { ...state, notificationsTransition: 'Success' };
-                }
+                return { ...state, notificationsStatus: 'Success' };
             }
 
             const notifications = [...state.notifications];
@@ -210,7 +206,7 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
                 return x > y ? 1 : x < y ? -1 : 0;
             });
 
-            return { ...state, notifications, notificationsTransition: 'Success' };
+            return { ...state, notifications, notificationsStatus: 'Success' };
         }
     }
 
@@ -220,11 +216,11 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
 const initialState: NotifoState = {
     isConnected: false,
     archive: [],
-    archiveTransition: 'InProgress',
+    archiveStatus: 'InProgress',
     notifications: [],
-    notificationsTransition: 'InProgress',
+    notificationsStatus: 'InProgress',
     profile: undefined,
-    profileTransition: undefined,
+    profileStatus: undefined,
     subscriptions: {},
 };
 
