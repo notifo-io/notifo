@@ -7,7 +7,7 @@
 
 import * as signalR from '@microsoft/signalr';
 import { SDKConfig } from '@sdk/shared';
-import { ConnectHandler, Connection, DeletionHandler, NotificationHandler, NotificationsHandler } from './connection';
+import { HandleConnect, Connection, HandleDeletion, HandleNotifications } from './connection';
 
 class Retry implements signalR.IRetryPolicy {
     private readonly timeouts = [1000, 5000, 1000, 30000];
@@ -49,23 +49,25 @@ export class SignalRConnection implements Connection {
         return this.signalR.start();
     }
 
-    public onNotification(handler: NotificationHandler) {
-        this.signalR.on('notification', handler);
+    public onNotifications(handler: HandleNotifications) {
+        this.signalR.on('notifications', notifications => {
+            handler(notifications, false);
+        });
+
+        this.signalR.on('notification', notification => {
+            handler([notification], true);
+        });
     }
 
-    public onNotifications(handler: NotificationsHandler) {
-        this.signalR.on('notifications', handler);
-    }
-
-    public onDelete(handler: DeletionHandler) {
+    public onDelete(handler: HandleDeletion) {
         this.signalR.on('notificationDeleted', handler);
     }
 
-    public onReconnected(handler: ConnectHandler) {
+    public onReconnected(handler: HandleConnect) {
         this.signalR.onreconnected(handler);
     }
 
-    public onReconnecting(handler: ConnectHandler) {
+    public onDisconnected(handler: HandleConnect) {
         this.signalR.onreconnecting(handler);
     }
 

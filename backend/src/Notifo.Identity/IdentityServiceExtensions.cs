@@ -39,6 +39,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<UserCreator>()
                 .AsSelf();
 
+            services.AddSingletonAs<TokenStoreInitializer>()
+                .AsSelf();
+
             services.AddSingletonAs<DefaultUserResolver>()
                 .As<IUserResolver>();
 

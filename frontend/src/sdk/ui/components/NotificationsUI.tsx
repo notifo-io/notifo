@@ -36,19 +36,17 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
     const [connection] = useState(() => buildConnection(config));
 
     useEffect(() => {
-        connection.onNotifications(notifications => {
+        connection.onNotifications((notifications, isUpdate) => {
             addNotifications(notifications, dispatch);
-        });
 
-        connection.onNotification(notification => {
-            addNotifications([notification], dispatch);
-
-            if (isFunction(config.onNotification)) {
-                try {
-                    config.onNotification(notification);
-                } catch {
-                    // eslint-disable-next-line no-console
-                    console.error('Failed to invoke notification callback');
+            if (isUpdate && isFunction(config.onNotification)) {
+                for (const notification of notifications) {
+                    try {
+                        config.onNotification(notification);
+                    } catch {
+                        // eslint-disable-next-line no-console
+                        console.error('Failed to invoke notification callback');
+                    }
                 }
             }
         });
@@ -61,7 +59,7 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
             setConnected(true, dispatch);
         });
 
-        connection.onReconnecting(() => {
+        connection.onDisconnected(() => {
             setConnected(false, dispatch);
         });
 

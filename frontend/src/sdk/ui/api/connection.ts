@@ -7,23 +7,20 @@
 
 import { NotifoNotification } from '@sdk/shared';
 
-export type ConnectHandler = () => void;
-export type NotificationHandler = (notification: NotifoNotification) => void;
-export type NotificationsHandler = (notifications: ReadonlyArray<NotifoNotification>) => void;
-export type DeletionHandler = (request: { id: string }) => void;
+export type HandleConnect = () => void;
+export type HandleNotifications = (notifications: ReadonlyArray<NotifoNotification>, isUpdate: boolean) => void;
+export type HandleDeletion = (request: { id: string }) => void;
 
 export interface Connection {
     start(): Promise<any>;
 
-    onNotification(handler: NotificationHandler): void;
+    onNotifications(handler: HandleNotifications): void;
 
-    onNotifications(handler: NotificationsHandler): void;
+    onDelete(handler: HandleDeletion): void;
 
-    onDelete(handler: DeletionHandler): void;
+    onReconnected(handler: HandleConnect): void;
 
-    onReconnected(handler: ConnectHandler): void;
-
-    onReconnecting(handler: ConnectHandler): void;
+    onDisconnected(handler: HandleConnect): void;
 
     delete(id: string): void;
 

@@ -6,7 +6,7 @@
  */
 
 import { NotifoNotification, SDKConfig } from '@sdk/shared';
-import { ConnectHandler, Connection, DeletionHandler, NotificationHandler, NotificationsHandler } from './connection';
+import { HandleConnect, Connection, HandleDeletion, HandleNotifications } from './connection';
 
 type Update = {
     continuationToken: string;
@@ -17,15 +17,14 @@ type Update = {
 };
 
 export class PollingConnection implements Connection {
-    private readonly handlersConnect: ConnectHandler[] = [];
-    private readonly handlersDisconnect: ConnectHandler[] = [];
-    private readonly handlersNotification: NotificationHandler[] = [];
-    private readonly handlersNotifications: NotificationsHandler[] = [];
-    private readonly handlersDeletion: DeletionHandler[] = [];
+    private readonly handlersConnect: HandleConnect[] = [];
+    private readonly handlersDisconnect: HandleConnect[] = [];
+    private readonly handlersNotifications: HandleNotifications[] = [];
+    private readonly handlersDeletion: HandleDeletion[] = [];
     private pendingDeleted: string[] = [];
     private pendingSeen: string[] = [];
     private pendingConfirmed: string[] = [];
-    private isFirstLoad = true;
+    private isUpdatePoll = false;
     private connectionStatus: 'Pending' | 'Connected' | 'Disconnected' = 'Pending';
     private connectPromise: Promise<any>;
     private connectPromiseResolver?: (connect: boolean) => void;
@@ -108,21 +107,13 @@ export class PollingConnection implements Connection {
                 }
             }
 
-            const nonDeleted = json.notifications.filter(x => this.pendingDeleted.indexOf(x.id) < 0);
-
-            if (nonDeleted.length > 0 || this.isFirstLoad) {
-                for (const notification of nonDeleted) {
-                    for (const callback of this.handlersNotification) {
-                        callback(notification);
-                    }
-                }
-
+            if (json.notifications.length > 0) {
                 for (const callback of this.handlersNotifications) {
-                    callback(nonDeleted);
+                    callback(json.notifications, this.isUpdatePoll);
                 }
             }
 
-            this.isFirstLoad = true;
+            this.isUpdatePoll = true;
 
             if (this.pendingConfirmed.length > 0) {
                 this.pendingConfirmed = [];
@@ -156,23 +147,19 @@ export class PollingConnection implements Connection {
         }
     }
 
-    public onNotification(handler: NotificationHandler) {
-        this.handlersNotification.push(handler);
-    }
-
-    public onNotifications(handler: NotificationsHandler) {
+    public onNotifications(handler: HandleNotifications) {
         this.handlersNotifications.push(handler);
     }
 
-    public onDelete(handler: DeletionHandler) {
+    public onDelete(handler: HandleDeletion) {
         this.handlersDeletion.push(handler);
     }
 
-    public onReconnected(handler: ConnectHandler) {
+    public onReconnected(handler: HandleConnect) {
         this.handlersConnect.push(handler);
     }
 
-    public onReconnecting(handler: ConnectHandler) {
+    public onDisconnected(handler: HandleConnect) {
         this.handlersDisconnect.push(handler);
     }
 

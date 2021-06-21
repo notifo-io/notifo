@@ -7,14 +7,15 @@
 
 import { SDKConfig } from '@sdk/shared';
 import { PollingConnection } from './polling-connection';
+import { SafeConnection } from './safe-connection';
 import { SignalRConnection } from './signalr-connection';
 
 export function buildConnection(config: SDKConfig) {
     if (config.connectionMode === 'SignalR') {
-        return new SignalRConnection(config, true);
+        return new SafeConnection(new SignalRConnection(config, true));
     } else if (config.connectionMode === 'SignalRSockets') {
-        return new SignalRConnection(config, false);
+        return new SafeConnection(new SignalRConnection(config, false));
     } else {
-        return new PollingConnection(config);
+        return new SafeConnection(new PollingConnection(config));
     }
 }
