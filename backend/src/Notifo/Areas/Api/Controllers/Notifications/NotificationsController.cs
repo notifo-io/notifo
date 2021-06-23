@@ -48,10 +48,10 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             var notifications = await userNotificationsStore.QueryAsync(appId, id, q.ToQuery<UserNotificationQuery>(true), HttpContext.RequestAborted);
 
-            var response = new ListResponseDto<UserNotificationDetailsDto>
-            {
-                Items = notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails).ToList()
-            };
+            var response = new ListResponseDto<UserNotificationDetailsDto>();
+
+            response.Items.AddRange(notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails));
+            response.Total = notifications.Total;
 
             return Ok(response);
         }
@@ -70,10 +70,10 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery<UserNotificationQuery>(false), HttpContext.RequestAborted);
 
-            var response = new ListResponseDto<UserNotificationDto>
-            {
-                Items = notifications.Select(UserNotificationDto.FromDomainObject).ToList()
-            };
+            var response = new ListResponseDto<UserNotificationDto>();
+
+            response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
+            response.Total = notifications.Total;
 
             return Ok(response);
         }
@@ -91,10 +91,10 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
 
-            var response = new ListResponseDto<UserNotificationDto>
-            {
-                Items = notifications.Select(UserNotificationDto.FromDomainObject).ToList()
-            };
+            var response = new ListResponseDto<UserNotificationDto>();
+
+            response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
+            response.Total = notifications.Total;
 
             return Ok(response);
         }

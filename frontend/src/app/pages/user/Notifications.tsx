@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Icon, ListPager, Loader, Query } from '@app/framework';
+import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
 import { getApp, loadNotificationsAsync, useApps, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
@@ -49,24 +49,31 @@ export const Notifications = (props: NotificationsProps) => {
     return (
         <>
             <Row className='align-items-center header'>
-                <Col>
-                    <ButtonGroup>
-                        <Button Button color='simple' className='btn-flat active'>
-                            {texts.notifications.header}
-                        </Button>
-                        <Button Button color='simple' className='btn-flat' outline onClick={onSwitch}>
-                            {texts.subscriptions.header}
-                        </Button>
-                    </ButtonGroup>
+                <Col xs={12} lg={5}>
+                    <Row className='align-items-center flex-nowrap'>
+                        <Col>
+                            <ButtonGroup>
+                                <Button Button color='simple' className='btn-flat active'>
+                                    {texts.notifications.header}
+                                </Button>
+                                <Button Button color='simple' className='btn-flat' outline onClick={onSwitch}>
+                                    {texts.subscriptions.header}
+                                </Button>
+                            </ButtonGroup>
+                        </Col>
+                        <Col xs='auto'>
+                            {notifications.isLoading ? (
+                                <Loader visible={notifications.isLoading} />
+                            ) : (
+                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                    <Icon className='text-lg' type='refresh' />
+                                </Button>
+                            )}
+                        </Col>
+                    </Row>
                 </Col>
-                <Col xs='auto'>
-                    {notifications.isLoading ? (
-                        <Loader visible={notifications.isLoading} />
-                    ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
-                            <Icon className='text-lg' type='refresh' />
-                        </Button>
-                    )}
+                <Col xs={12} lg={7}>
+                    <ListSearch list={notifications} onSearch={doLoad} placeholder={texts.notifications.searchPlaceholder} />
                 </Col>
             </Row>
 

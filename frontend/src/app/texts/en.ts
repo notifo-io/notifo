@@ -182,6 +182,7 @@ export const EN = {
     notifications: {
         header: 'Notifications',
         notificationsNotFound: 'No matching notifications found',
+        searchPlaceholder: 'Search',
     },
     notificationSettings: {
         email: {
