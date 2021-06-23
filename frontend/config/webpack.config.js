@@ -180,7 +180,8 @@ module.exports = function (env) {
                     developerUrl: 'https://notifo.io',
                     start_url: '/',
                     theme_color: '#8c84fa',
-                }
+                },
+                publicPath: './build'
             }),
 
             new plugins.StylelintPlugin({
