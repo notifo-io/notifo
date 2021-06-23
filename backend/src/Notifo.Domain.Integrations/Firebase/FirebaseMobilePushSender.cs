@@ -42,6 +42,10 @@ namespace Notifo.Domain.Integrations.Firebase
 
                 await wrapper.Messaging.SendAsync(message, ct);
             }
+            catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.InvalidArgument)
+            {
+                throw new MobilePushTokenExpiredException();
+            }
             catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.NotFound)
             {
                 throw new MobilePushTokenExpiredException();
