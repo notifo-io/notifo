@@ -31,9 +31,14 @@ namespace Notifo.Areas.Api.Controllers
         [FromQuery(Name = "skip")]
         public int Skip { get; set; }
 
-        public T ToQuery<T>() where T : QueryBase, new()
+        public T ToQuery<T>(bool needsTotal) where T : QueryBase, new()
         {
-            return SimpleMapper.Map(this, new T());
+            var result = SimpleMapper.Map(this, new T
+            {
+                TotalNeeded = needsTotal
+            });
+
+            return result;
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         [Produces(typeof(ListResponseDto<MediaDto>))]
         public async Task<IActionResult> GetMedias(string appId, [FromQuery] QueryDto q)
         {
-            var medias = await mediaStore.QueryAsync(appId, q.ToQuery<MediaQuery>(), HttpContext.RequestAborted);
+            var medias = await mediaStore.QueryAsync(appId, q.ToQuery<MediaQuery>(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<MediaDto>();
 

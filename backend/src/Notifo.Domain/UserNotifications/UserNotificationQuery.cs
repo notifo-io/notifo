@@ -16,6 +16,8 @@ namespace Notifo.Domain.UserNotifications
 
         public UserNotificationQueryScope Scope { get; set; }
 
+        public string? Query { get; set; }
+
         public UserNotificationQuery()
         {
             TotalNeeded = false;

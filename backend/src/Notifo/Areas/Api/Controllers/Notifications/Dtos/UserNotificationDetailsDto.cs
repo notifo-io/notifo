@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
-using Notifo.Infrastructure.Reflection;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {

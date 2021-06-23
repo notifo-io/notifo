@@ -39,7 +39,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
         [Produces(typeof(ListResponseDto<TopicDto>))]
         public async Task<IActionResult> GetTopics(string appId, [FromQuery] QueryDto q)
         {
-            var topics = await topicStore.QueryAsync(appId, q.ToQuery<TopicQuery>(), HttpContext.RequestAborted);
+            var topics = await topicStore.QueryAsync(appId, q.ToQuery<TopicQuery>(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<TopicDto>();
 

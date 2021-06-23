@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -53,7 +54,7 @@ namespace Notifo.Domain.Topics.MongoDb
 
             if (!string.IsNullOrWhiteSpace(query.Query))
             {
-                var regex = new BsonRegularExpression(query.Query, "i");
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
                 filters.Add(Filter.Regex(x => x.Doc.Path, regex));
             }

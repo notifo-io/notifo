@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using NodaTime;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
-using System;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {

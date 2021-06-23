@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -122,6 +123,13 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                                 Filter.Eq(x => x.IsDeleted, false)));
                         break;
                     }
+            }
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(Filter.Regex(x => x.Formatting.Subject, regex));
             }
 
             var filter = Filter.And(filters);

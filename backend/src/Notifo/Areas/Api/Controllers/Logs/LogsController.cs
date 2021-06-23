@@ -39,7 +39,7 @@ namespace Notifo.Areas.Api.Controllers.Logs
         [Produces(typeof(ListResponseDto<LogEntryDto>))]
         public async Task<IActionResult> GetLogs(string appId, [FromQuery] QueryDto q)
         {
-            var medias = await logStore.QueryAsync(appId, q.ToQuery<LogQuery>(), HttpContext.RequestAborted);
+            var medias = await logStore.QueryAsync(appId, q.ToQuery<LogQuery>(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<LogEntryDto>();
 

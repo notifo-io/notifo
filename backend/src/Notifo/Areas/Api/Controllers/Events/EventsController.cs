@@ -44,7 +44,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         [Produces(typeof(ListResponseDto<EventDto>))]
         public async Task<IActionResult> GetEvents(string appId, [FromQuery] QueryDto q)
         {
-            var topics = await eventStore.QueryAsync(appId, q.ToQuery<EventQuery>(), HttpContext.RequestAborted);
+            var topics = await eventStore.QueryAsync(appId, q.ToQuery<EventQuery>(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<EventDto>();
 

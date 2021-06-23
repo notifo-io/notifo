@@ -44,7 +44,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [Produces(typeof(ListResponseDto<UserDto>))]
         public async Task<IActionResult> GetUsers(string appId, [FromQuery] QueryDto q)
         {
-            var users = await userStore.QueryAsync(appId, q.ToQuery<UserQuery>(), HttpContext.RequestAborted);
+            var users = await userStore.QueryAsync(appId, q.ToQuery<UserQuery>(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<UserDto>();
 
@@ -275,7 +275,7 @@ namespace Notifo.Areas.Api.Controllers.Users
 
         private static SubscriptionQuery ParseQuery(string id, QueryDto query)
         {
-            var queryObject = query.ToQuery<SubscriptionQuery>();
+            var queryObject = query.ToQuery<SubscriptionQuery>(true);
 
             queryObject.UserId = id;
 

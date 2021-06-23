@@ -38,7 +38,7 @@ namespace Notifo.Areas.Api.Controllers.Templates
         [Produces(typeof(ListResponseDto<TemplateDto>))]
         public async Task<IActionResult> GetTemplates(string appId, [FromQuery] QueryDto q)
         {
-            var templates = await templateStore.QueryAsync(appId, q.ToQuery<TemplateQuery>(), HttpContext.RequestAborted);
+            var templates = await templateStore.QueryAsync(appId, q.ToQuery<TemplateQuery>(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<TemplateDto>();
 
