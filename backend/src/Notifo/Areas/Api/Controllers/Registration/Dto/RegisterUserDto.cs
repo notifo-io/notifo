@@ -10,7 +10,7 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Registration.Dto
+namespace Notifo.Areas.Api.Controllers.Registration.Dtos
 {
     public sealed class RegisterUserDto
     {

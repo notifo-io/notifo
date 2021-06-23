@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.WebPush.Dto
+namespace Notifo.Areas.Api.Controllers.WebPush.Dtos
 {
     public sealed class WebPushSubscriptionDto
     {

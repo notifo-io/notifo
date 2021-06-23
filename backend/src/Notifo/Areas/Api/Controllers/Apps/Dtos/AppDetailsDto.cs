@@ -66,21 +66,21 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         [Required]
         public Dictionary<string, long> Counters { get; set; }
 
-        public static async Task<AppDetailsDto> FromDomainObjectAsync(App app, string userId, IUserResolver userResolver)
+        public static async Task<AppDetailsDto> FromDomainObjectAsync(App source, string userId, IUserResolver userResolver)
         {
-            var result = SimpleMapper.Map(app, new AppDetailsDto
+            var result = SimpleMapper.Map(source, new AppDetailsDto
             {
                 Contributors = new List<AppContributorDto>()
             });
 
-            if (userId != null && app.Contributors.TryGetValue(userId, out var userRole))
+            if (userId != null && source.Contributors.TryGetValue(userId, out var userRole))
             {
                 result.Role = userRole;
             }
 
-            var users = await userResolver.QueryManyAsync(app.Contributors.Keys.Distinct().ToArray());
+            var users = await userResolver.QueryManyAsync(source.Contributors.Keys.Distinct().ToArray());
 
-            foreach (var (id, role) in app.Contributors)
+            foreach (var (id, role) in source.Contributors)
             {
                 if (users.TryGetValue(id, out var user))
                 {
@@ -93,7 +93,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
                 }
             }
 
-            result.Counters = app.Counters ?? EmptyCounters;
+            result.Counters = source.Counters ?? EmptyCounters;
 
             return result;
         }

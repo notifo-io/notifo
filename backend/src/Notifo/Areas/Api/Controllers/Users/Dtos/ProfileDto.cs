@@ -62,18 +62,18 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         [Required]
         public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
-        public static ProfileDto FromDomainObject(User user, App app)
+        public static ProfileDto FromDomainObject(User source, App app)
         {
-            var result = SimpleMapper.Map(user, new ProfileDto());
+            var result = SimpleMapper.Map(source, new ProfileDto());
 
             result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
             result.SupportedLanguages = app.Languages;
 
             result.Settings ??= new Dictionary<string, NotificationSettingDto>();
 
-            if (user.Settings != null)
+            if (source.Settings != null)
             {
-                foreach (var (key, value) in user.Settings)
+                foreach (var (key, value) in source.Settings)
                 {
                     if (value != null)
                     {

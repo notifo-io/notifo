@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Notifo.Areas.Api.Controllers.Notifications.Dto;
+using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Security;
@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             var notifications = await userNotificationsStore.QueryAsync(AppId, UserId, DefaultQuery, Context.ConnectionAborted);
 
-            var dtos = notifications.Select(NotificationDto.FromNotification).ToArray();
+            var dtos = notifications.Select(UserNotificationDto.FromDomainObject).ToArray();
 
             await Clients.Caller.SendAsync("notifications", dtos, Context.ConnectionAborted);
         }

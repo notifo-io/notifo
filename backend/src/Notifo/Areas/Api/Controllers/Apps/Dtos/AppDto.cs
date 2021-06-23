@@ -52,16 +52,16 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         [Required]
         public Dictionary<string, long> Counters { get; set; }
 
-        public static AppDto FromDomainObject(App app, string userId)
+        public static AppDto FromDomainObject(App source, string userId)
         {
-            var result = SimpleMapper.Map(app, new AppDto());
+            var result = SimpleMapper.Map(source, new AppDto());
 
-            if (userId != null && app.Contributors.TryGetValue(userId, out var userRole))
+            if (userId != null && source.Contributors.TryGetValue(userId, out var userRole))
             {
                 result.Role = userRole;
             }
 
-            result.Counters = app.Counters ?? EmptyCounters;
+            result.Counters = source.Counters ?? EmptyCounters;
 
             return result;
         }

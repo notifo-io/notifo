@@ -82,7 +82,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpGet("api/me/subscriptions/{*topic}")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(SubscriptionDto))]
-        public async Task<IActionResult> GetSubscription(string topic)
+        public async Task<IActionResult> GetMySubscription(string topic)
         {
             var subscription = await subscriptionStore.GetAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
 
@@ -109,7 +109,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpPost("api/me/subscriptions")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(SubscriptionDto))]
-        public async Task<IActionResult> PostSubscription([FromBody] SubscriptionDto request)
+        public async Task<IActionResult> PostMySubscription([FromBody] SubscriptionDto request)
         {
             var update = request.ToUpdate();
 
@@ -132,7 +132,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </remarks>
         [HttpDelete("api/me/subscriptions/{*topic}")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteSubscription(string topic)
+        public async Task<IActionResult> DeleteMySubscription(string topic)
         {
             await subscriptionStore.DeleteAsync(App.Id, UserIdOrSub, topic, HttpContext.RequestAborted);
 

@@ -24,9 +24,9 @@ namespace Notifo.Areas.Api.Controllers.MobilePush.Dtos
         /// </summary>
         public MobileDeviceType DeviceType { get; set; }
 
-        public static MobilePushTokenDto FromToken(MobilePushToken token)
+        public static MobilePushTokenDto FromDomainObject(MobilePushToken source)
         {
-            return SimpleMapper.Map(token, new MobilePushTokenDto());
+            return SimpleMapper.Map(source, new MobilePushTokenDto());
         }
     }
 }

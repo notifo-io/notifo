@@ -32,13 +32,13 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         [Required]
         public Dictionary<string, NotificationSettingDto> Settings { get; set; }
 
-        public static TemplateDto FromDomainObject(Template template)
+        public static TemplateDto FromDomainObject(Template source)
         {
-            var result = SimpleMapper.Map(template, new TemplateDto());
+            var result = SimpleMapper.Map(source, new TemplateDto());
 
-            if (template.Formatting != null)
+            if (source.Formatting != null)
             {
-                result.Formatting = NotificationFormattingDto.FromDomainObject(template.Formatting);
+                result.Formatting = NotificationFormattingDto.FromDomainObject(source.Formatting);
             }
             else
             {
@@ -47,9 +47,9 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
 
             result.Settings ??= new Dictionary<string, NotificationSettingDto>();
 
-            if (template.Settings != null)
+            if (source.Settings != null)
             {
-                foreach (var (key, value) in template.Settings)
+                foreach (var (key, value) in source.Settings)
                 {
                     if (value != null)
                     {

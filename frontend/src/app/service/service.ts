@@ -129,7 +129,7 @@ export class UserClient {
      * @param topic The topic path.
      * @return Subscription exists.
      */
-    getSubscription(topic: string): Promise<SubscriptionDto> {
+    getMySubscription(topic: string): Promise<SubscriptionDto> {
         let url_ = this.baseUrl + "/api/me/subscriptions/{topic}";
         if (topic === undefined || topic === null)
             throw new Error("The parameter 'topic' must be defined.");
@@ -144,11 +144,11 @@ export class UserClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetSubscription(_response);
+            return this.processGetMySubscription(_response);
         });
     }
 
-    protected processGetSubscription(response: Response): Promise<SubscriptionDto> {
+    protected processGetMySubscription(response: Response): Promise<SubscriptionDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -186,7 +186,7 @@ export class UserClient {
      * @param topic The topic path.
      * @return Topic deleted.
      */
-    deleteSubscription(topic: string): Promise<void> {
+    deleteMySubscription(topic: string): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions/{topic}";
         if (topic === undefined || topic === null)
             throw new Error("The parameter 'topic' must be defined.");
@@ -200,11 +200,11 @@ export class UserClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDeleteSubscription(_response);
+            return this.processDeleteMySubscription(_response);
         });
     }
 
-    protected processDeleteSubscription(response: Response): Promise<void> {
+    protected processDeleteMySubscription(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -236,7 +236,7 @@ export class UserClient {
      * @param request The subscription settings.
      * @return Topic created.
      */
-    postSubscription(request: SubscriptionDto): Promise<void> {
+    postMySubscription(request: SubscriptionDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -251,11 +251,11 @@ export class UserClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPostSubscription(_response);
+            return this.processPostMySubscription(_response);
         });
     }
 
-    protected processPostSubscription(response: Response): Promise<void> {
+    protected processPostMySubscription(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -542,7 +542,7 @@ export class UsersClient {
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
-     * @return User returned.
+     * @return User subscriptions returned.
      */
     getSubscriptions(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions?";
@@ -1140,14 +1140,22 @@ export class NotificationsClient {
     }
 
     /**
-     * Query user notifications of the current user.
+     * Query user notifications.
+     * @param appId The app where the user belongs to.
+     * @param id The user id.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
-     * @return Notifications returned.
+     * @return User notifications returned.
      */
-    getNotifications(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfNotificationDto> {
-        let url_ = this.baseUrl + "/api/me/notifications?";
+    getNotifications(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfNotificationDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/notifications?";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -1181,6 +1189,72 @@ export class NotificationsClient {
             result200 = _responseText === "" ? null : <ListResponseDtoOfNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
             return result200;
             });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfNotificationDto>(<any>null);
+    }
+
+    /**
+     * Query user notifications of the current user.
+     * @param query (optional) The optional query to search for items.
+     * @param take (optional) The number of items to return.
+     * @param skip (optional) The number of items to skip.
+     * @return Notifications returned.
+     */
+    getMyNotifications(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfNotificationDto> {
+        let url_ = this.baseUrl + "/api/me/notifications?";
+        if (query !== undefined && query !== null)
+            url_ += "query=" + encodeURIComponent("" + query) + "&";
+        if (take === null)
+            throw new Error("The parameter 'take' cannot be null.");
+        else if (take !== undefined)
+            url_ += "take=" + encodeURIComponent("" + take) + "&";
+        if (skip === null)
+            throw new Error("The parameter 'skip' cannot be null.");
+        else if (skip !== undefined)
+            url_ += "skip=" + encodeURIComponent("" + skip) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetMyNotifications(_response);
+        });
+    }
+
+    protected processGetMyNotifications(response: Response): Promise<ListResponseDtoOfNotificationDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <ListResponseDtoOfNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
         } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
@@ -1205,7 +1279,7 @@ export class NotificationsClient {
      * Query archhived user notifications of the current user.
      * @return Notifications returned.
      */
-    getArchive(): Promise<ListResponseDtoOfNotificationDto> {
+    getMyArchive(): Promise<ListResponseDtoOfNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications/archive";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1217,11 +1291,11 @@ export class NotificationsClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetArchive(_response);
+            return this.processGetMyArchive(_response);
         });
     }
 
-    protected processGetArchive(response: Response): Promise<ListResponseDtoOfNotificationDto> {
+    protected processGetMyArchive(response: Response): Promise<ListResponseDtoOfNotificationDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1255,7 +1329,7 @@ export class NotificationsClient {
      * @param request The request object.
      * @return Notifications updated.
      */
-    confirm(request: TrackNotificationDto): Promise<void> {
+    confirmMe(request: TrackNotificationDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/notifications/handled";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1270,11 +1344,11 @@ export class NotificationsClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processConfirm(_response);
+            return this.processConfirmMe(_response);
         });
     }
 
-    protected processConfirm(response: Response): Promise<void> {
+    protected processConfirmMe(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -1316,7 +1390,7 @@ export class MobilePushClient {
      * Returns the mobile push tokens.
      * @return Mobile push tokens returned.
      */
-    getTokens(): Promise<ListResponseDtoOfMobilePushTokenDto> {
+    getMyToken(): Promise<ListResponseDtoOfMobilePushTokenDto> {
         let url_ = this.baseUrl + "/api/me/mobilepush";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1328,11 +1402,11 @@ export class MobilePushClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetTokens(_response);
+            return this.processGetMyToken(_response);
         });
     }
 
-    protected processGetTokens(response: Response): Promise<ListResponseDtoOfMobilePushTokenDto> {
+    protected processGetMyToken(response: Response): Promise<ListResponseDtoOfMobilePushTokenDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1366,7 +1440,7 @@ export class MobilePushClient {
      * @param request The request object.
      * @return Mobile push token registered.
      */
-    postToken(request: RegisterMobileTokenDto): Promise<void> {
+    postMyToken(request: RegisterMobileTokenDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/mobilepush";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1381,11 +1455,11 @@ export class MobilePushClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPostToken(_response);
+            return this.processPostMyToken(_response);
         });
     }
 
-    protected processPostToken(response: Response): Promise<void> {
+    protected processPostMyToken(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -1417,7 +1491,7 @@ export class MobilePushClient {
      * @param token The token to remove.
      * @return Mobile push token removed.
      */
-    deleteToken(token: string): Promise<void> {
+    deleteMyToken(token: string): Promise<void> {
         let url_ = this.baseUrl + "/api/me/mobilepush/{token}";
         if (token === undefined || token === null)
             throw new Error("The parameter 'token' must be defined.");
@@ -1431,11 +1505,11 @@ export class MobilePushClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDeleteToken(_response);
+            return this.processDeleteMyToken(_response);
         });
     }
 
-    protected processDeleteToken(response: Response): Promise<void> {
+    protected processDeleteMyToken(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -2055,7 +2129,7 @@ export class EventsClient {
      * @param request The publish request.
      * @return Event created.
      */
-    postEvents2(request: PublishDto): Promise<void> {
+    postMyEvents(request: PublishDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/events";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2070,11 +2144,11 @@ export class EventsClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPostEvents2(_response);
+            return this.processPostMyEvents(_response);
         });
     }
 
-    protected processPostEvents2(response: Response): Promise<void> {
+    protected processPostMyEvents(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -3475,6 +3549,8 @@ export interface NotificationDto {
     isSeen: boolean;
     /** The timestamp when the notification has been created. */
     created: Date;
+    /** The timestamp when the notification has been updated. */
+    updated: Date;
     /** The optional body text. */
     body?: string | undefined;
     /** The optional link to the small image. */
@@ -3612,6 +3688,8 @@ export interface EventDto {
     counters: { [key: string]: number; };
     /** True when silent. */
     silent: boolean;
+    /** The time to live in seconds. */
+    timeToLiveInSeconds?: number | undefined;
 }
 
 export interface SchedulingDto {
@@ -3657,6 +3735,8 @@ export interface PublishDto {
     silent?: boolean;
     /** True when using test integrations. */
     test?: boolean;
+    /** The time to live in seconds. */
+    timeToLiveInSeconds?: number | undefined;
 }
 
 export interface EventProperties {

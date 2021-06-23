@@ -179,6 +179,10 @@ export const EN = {
         mediaNotFound: 'No matching media found',
         searchPlaceholder: 'Search',
     },
+    notifications: {
+        header: 'Notifications',
+        notificationsNotFound: 'No matching notifications found',
+    },
     notificationSettings: {
         email: {
             name: 'Email',

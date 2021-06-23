@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using Notifo.Areas.Api.Controllers.Notifications.Dto;
+using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Areas.Api.Controllers.Web.Dtos;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
@@ -38,7 +38,7 @@ namespace Notifo.Areas.Api.Controllers.Web
 
         [HttpPost("/api/me/web/connect")]
         [AppPermission(NotifoRoles.AppUser)]
-        public IActionResult GetConnect()
+        public IActionResult GetMyConnection()
         {
             var response = new ConnectDto
             {
@@ -63,7 +63,7 @@ namespace Notifo.Areas.Api.Controllers.Web
 
         [HttpPost("/api/me/web/poll")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> PostPoll([FromBody] PollRequest request)
+        public async Task<IActionResult> GetMyPolling([FromBody] PollRequest request)
         {
             var token = request.Token ?? default;
 
@@ -127,7 +127,7 @@ namespace Notifo.Areas.Api.Controllers.Web
                 }
                 else
                 {
-                    response.Notifications.Add(NotificationDto.FromNotification(notification));
+                    response.Notifications.Add(UserNotificationDto.FromDomainObject(notification));
                 }
             }
 

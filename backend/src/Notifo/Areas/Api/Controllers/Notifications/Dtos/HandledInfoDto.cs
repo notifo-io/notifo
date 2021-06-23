@@ -5,28 +5,28 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
-using Notifo.Domain.Channels.MobilePush;
+using NodaTime;
+using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
+using System;
 
-namespace Notifo.Areas.Api.Controllers.MobilePush.Dtos
+namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
-    public sealed class RegisterMobileTokenDto
+    public sealed class HandledInfoDto
     {
         /// <summary>
-        /// The device token.
+        /// The timestamp.
         /// </summary>
-        [Required]
-        public string Token { get; set; }
+        public Instant Timestamp { get; set; }
 
         /// <summary>
-        /// The device type.
+        /// The channel over which the notification was marked as seen or confirmed.
         /// </summary>
-        public MobileDeviceType DeviceType { get; set; }
+        public string? Channel { get; set; }
 
-        public MobilePushToken ToToken()
+        public static HandledInfoDto FromDomainObject(HandledInfo source)
         {
-            return SimpleMapper.Map(this, new MobilePushToken());
+            return SimpleMapper.Map(source, new HandledInfoDto());
         }
     }
 }

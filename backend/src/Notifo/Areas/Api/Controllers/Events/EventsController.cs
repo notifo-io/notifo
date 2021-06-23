@@ -96,7 +96,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// </returns>
         [HttpPost("api/me/events/")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> PostEvents([FromBody] PublishDto request)
+        public async Task<IActionResult> PostMyEvents([FromBody] PublishDto request)
         {
             var @event = request.ToEvent(App.Id, $"users/{UserId}");
 

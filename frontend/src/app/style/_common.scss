@@ -99,6 +99,12 @@ $small-gutters: 4px;
     box-shadow: none;
 }
 
+.btn-simple {
+    &.active {
+        color: $color-black;
+    }
+}
+
 .card {
     &-title {
         font-size: 1rem;

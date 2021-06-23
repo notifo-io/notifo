@@ -8,7 +8,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Notifo.Areas.Api.Controllers.Notifications.Dto;
+using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
@@ -32,6 +32,31 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         }
 
         /// <summary>
+        /// Query user notifications.
+        /// </summary>
+        /// <param name="appId">The app where the user belongs to.</param>
+        /// <param name="id">The user id.</param>
+        /// <param name="q">The query object.</param>
+        /// <returns>
+        /// 200 => User notifications returned.
+        /// 404 => User not found.
+        /// </returns>
+        [HttpGet("api/apps/{appId}/users/{id}/notifications")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
+        public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] QueryDto q)
+        {
+            var notifications = await userNotificationsStore.QueryAsync(appId, id, q.ToQuery<UserNotificationQuery>(), HttpContext.RequestAborted);
+
+            var response = new ListResponseDto<UserNotificationDetailsDto>
+            {
+                Items = notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails).ToList()
+            };
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Query user notifications of the current user.
         /// </summary>
         /// <param name="q">The query object.</param>
@@ -40,14 +65,14 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// </returns>
         [HttpGet("/api/me/notifications")]
         [AppPermission(NotifoRoles.AppUser)]
-        [Produces(typeof(ListResponseDto<NotificationDto>))]
-        public async Task<IActionResult> GetNotifications([FromQuery] QueryDto q)
+        [Produces(typeof(ListResponseDto<UserNotificationDto>))]
+        public async Task<IActionResult> GetMyNotifications([FromQuery] QueryDto q)
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery<UserNotificationQuery>(), HttpContext.RequestAborted);
 
-            var response = new ListResponseDto<NotificationDto>
+            var response = new ListResponseDto<UserNotificationDto>
             {
-                Items = notifications.Select(NotificationDto.FromNotification).ToList()
+                Items = notifications.Select(UserNotificationDto.FromDomainObject).ToList()
             };
 
             return Ok(response);
@@ -61,14 +86,14 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// </returns>
         [HttpGet("/api/me/notifications/archive")]
         [AppPermission(NotifoRoles.AppUser)]
-        [Produces(typeof(ListResponseDto<NotificationDto>))]
-        public async Task<IActionResult> GetArchive()
+        [Produces(typeof(ListResponseDto<UserNotificationDto>))]
+        public async Task<IActionResult> GetMyArchive()
         {
             var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
 
-            var response = new ListResponseDto<NotificationDto>
+            var response = new ListResponseDto<UserNotificationDto>
             {
-                Items = notifications.Select(NotificationDto.FromNotification).ToList()
+                Items = notifications.Select(UserNotificationDto.FromDomainObject).ToList()
             };
 
             return Ok(response);
@@ -83,7 +108,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// </returns>
         [HttpPost("/api/me/notifications/handled")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> Confirm([FromBody] TrackNotificationDto request)
+        public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
         {
             var details = request.ToDetails();
 

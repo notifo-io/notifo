@@ -35,11 +35,11 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         [Required]
         public Dictionary<string, long> Counters { get; set; }
 
-        public static TopicDto FromTopic(Topic topic)
+        public static TopicDto FromDomainObject(Topic source)
         {
-            var result = SimpleMapper.Map(topic, new TopicDto());
+            var result = SimpleMapper.Map(source, new TopicDto());
 
-            result.Counters = topic.Counters ?? EmptyCounters;
+            result.Counters = source.Counters ?? EmptyCounters;
 
             return result;
         }

@@ -26,16 +26,16 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         [Required]
         public Dictionary<string, IntegrationDefinitionDto> Supported { get; set; }
 
-        public static ConfiguredIntegrationsDto FromDomainObject(App app, IIntegrationManager integrationManager)
+        public static ConfiguredIntegrationsDto FromDomainObject(App source, IIntegrationManager integrationManager)
         {
             var result = new ConfiguredIntegrationsDto
             {
                 Configured = new Dictionary<string, ConfiguredIntegrationDto>()
             };
 
-            if (app.Integrations != null)
+            if (source.Integrations != null)
             {
-                foreach (var (id, configured) in app.Integrations)
+                foreach (var (id, configured) in source.Integrations)
                 {
                     result.Configured[id] = ConfiguredIntegrationDto.FromDomainObject(configured);
                 }

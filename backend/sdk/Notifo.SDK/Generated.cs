@@ -36,21 +36,21 @@ namespace Notifo.SDK
         /// <param name="topic">The topic path.</param>
         /// <returns>Subscription exists.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<SubscriptionDto> GetSubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<SubscriptionDto> GetMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Deletes a user subscription.</summary>
         /// <param name="topic">The topic path.</param>
         /// <returns>Topic deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteSubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates a user subscription.</summary>
         /// <param name="request">The subscription settings.</param>
         /// <returns>Topic created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostSubscriptionAsync(SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PostMySubscriptionAsync(SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
     }
     
@@ -277,7 +277,7 @@ namespace Notifo.SDK
         /// <param name="topic">The topic path.</param>
         /// <returns>Subscription exists.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<SubscriptionDto> GetSubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<SubscriptionDto> GetMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (topic == null)
                 throw new System.ArgumentNullException("topic");
@@ -374,7 +374,7 @@ namespace Notifo.SDK
         /// <param name="topic">The topic path.</param>
         /// <returns>Topic deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task DeleteSubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task DeleteMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (topic == null)
                 throw new System.ArgumentNullException("topic");
@@ -459,7 +459,7 @@ namespace Notifo.SDK
         /// <param name="request">The subscription settings.</param>
         /// <returns>Topic created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task PostSubscriptionAsync(SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PostMySubscriptionAsync(SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -688,7 +688,7 @@ namespace Notifo.SDK
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
-        /// <returns>User returned.</returns>
+        /// <returns>User subscriptions returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
@@ -1173,7 +1173,7 @@ namespace Notifo.SDK
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
-        /// <returns>User returned.</returns>
+        /// <returns>User subscriptions returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -2525,26 +2525,37 @@ namespace Notifo.SDK
     public partial interface INotificationsClient
     {
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Query user notifications.</summary>
+        /// <param name="appId">The app where the user belongs to.</param>
+        /// <param name="id">The user id.</param>
+        /// <param name="query">The optional query to search for items.</param>
+        /// <param name="take">The number of items to return.</param>
+        /// <param name="skip">The number of items to skip.</param>
+        /// <returns>User notifications returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetNotificationsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query user notifications of the current user.</summary>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query archhived user notifications of the current user.</summary>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Confirms the user notifications for the current user.</summary>
         /// <param name="request">The request object.</param>
         /// <returns>Notifications updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task ConfirmAsync(TrackNotificationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task ConfirmMeAsync(TrackNotificationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
     }
     
@@ -2582,13 +2593,131 @@ namespace Notifo.SDK
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Query user notifications.</summary>
+        /// <param name="appId">The app where the user belongs to.</param>
+        /// <param name="id">The user id.</param>
+        /// <param name="query">The optional query to search for items.</param>
+        /// <param name="take">The number of items to return.</param>
+        /// <param name="skip">The number of items to skip.</param>
+        /// <returns>User notifications returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetNotificationsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+    
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/notifications?");
+            urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            if (query != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("query") + "=").Append(System.Uri.EscapeDataString(ConvertToString(query, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (take != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("take") + "=").Append(System.Uri.EscapeDataString(ConvertToString(take, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (skip != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("skip") + "=").Append(System.Uri.EscapeDataString(ConvertToString(skip, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfNotificationDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User not found.", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query user notifications of the current user.</summary>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications?");
@@ -2687,7 +2816,7 @@ namespace Notifo.SDK
         /// <summary>Query archhived user notifications of the current user.</summary>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/archive");
@@ -2774,7 +2903,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Notifications updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task ConfirmAsync(TrackNotificationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task ConfirmMeAsync(TrackNotificationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -2966,21 +3095,21 @@ namespace Notifo.SDK
         /// <summary>Returns the mobile push tokens.</summary>
         /// <returns>Mobile push tokens returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfMobilePushTokenDto> GetTokensAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfMobilePushTokenDto> GetMyTokenAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Register a mobile push token for the current user.</summary>
         /// <param name="request">The request object.</param>
         /// <returns>Mobile push token registered.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostTokenAsync(RegisterMobileTokenDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PostMyTokenAsync(RegisterMobileTokenDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Deletes a mobile push token for the current user.</summary>
         /// <param name="token">The token to remove.</param>
         /// <returns>Mobile push token removed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteMyTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
     }
     
@@ -3021,7 +3150,7 @@ namespace Notifo.SDK
         /// <summary>Returns the mobile push tokens.</summary>
         /// <returns>Mobile push tokens returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfMobilePushTokenDto> GetTokensAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfMobilePushTokenDto> GetMyTokenAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/mobilepush");
@@ -3108,7 +3237,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Mobile push token registered.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task PostTokenAsync(RegisterMobileTokenDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PostMyTokenAsync(RegisterMobileTokenDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -3195,7 +3324,7 @@ namespace Notifo.SDK
         /// <param name="token">The token to remove.</param>
         /// <returns>Mobile push token removed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task DeleteTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task DeleteMyTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (token == null)
                 throw new System.ArgumentNullException("token");
@@ -4460,7 +4589,7 @@ namespace Notifo.SDK
         /// <param name="request">The publish request.</param>
         /// <returns>Event created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostEvents2Async(PublishDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PostMyEventsAsync(PublishDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
     }
     
@@ -4701,7 +4830,7 @@ namespace Notifo.SDK
         /// <param name="request">The publish request.</param>
         /// <returns>Event created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task PostEvents2Async(PublishDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PostMyEventsAsync(PublishDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -8027,6 +8156,11 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset Created { get; set; }
     
+        /// <summary>The timestamp when the notification has been updated.</summary>
+        [Newtonsoft.Json.JsonProperty("updated", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Updated { get; set; }
+    
         /// <summary>The optional body text.</summary>
         [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Body { get; set; }
@@ -8368,6 +8502,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("silent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Silent { get; set; }
     
+        /// <summary>The time to live in seconds.</summary>
+        [Newtonsoft.Json.JsonProperty("timeToLiveInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? TimeToLiveInSeconds { get; set; }
+    
     
     }
     
@@ -8494,6 +8632,10 @@ namespace Notifo.SDK
         /// <summary>True when using test integrations.</summary>
         [Newtonsoft.Json.JsonProperty("test", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Test { get; set; }
+    
+        /// <summary>The time to live in seconds.</summary>
+        [Newtonsoft.Json.JsonProperty("timeToLiveInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? TimeToLiveInSeconds { get; set; }
     
     
     }

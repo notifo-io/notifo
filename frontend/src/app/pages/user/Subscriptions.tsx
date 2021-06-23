@@ -12,17 +12,20 @@ import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { Button, Card, CardBody, Col, Row, Table } from 'reactstrap';
+import { Button, ButtonGroup, Card, CardBody, Col, Row, Table } from 'reactstrap';
 import { SubscriptionDialog } from './SubscriptionDialog';
 import { SubscriptionRow } from './SubscriptionRow';
 
 export interface SubscriptionsProps {
     // The user id.
     userId: string;
+
+    // Toggled when switched to other tab.
+    onSwitch?: () => void;
 }
 
 export const Subscriptions = (props: SubscriptionsProps) => {
-    const { userId } = props;
+    const { onSwitch, userId } = props;
 
     const dispatch = useDispatch();
     const app = useApps(getApp);
@@ -68,7 +71,14 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                 <Col xs={12} lg={5}>
                     <Row className='align-items-center flex-nowrap'>
                         <Col>
-                            <h2 className='truncate'>{texts.subscriptions.header}</h2>
+                            <ButtonGroup>
+                                <Button Button color='simple' className='btn-flat' outline onClick={onSwitch}>
+                                    {texts.notifications.header}
+                                </Button>
+                                <Button Button color='simple' className='btn-flat active'>
+                                    {texts.subscriptions.header}
+                                </Button>
+                            </ButtonGroup>
                         </Col>
                         <Col xs='auto'>
                             {subscriptions.isLoading ? (

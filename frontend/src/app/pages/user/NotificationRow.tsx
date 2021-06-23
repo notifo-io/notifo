@@ -6,27 +6,24 @@
  */
 
 import { FromNow, Icon, JsonDetails } from '@app/framework';
-import { EventDto } from '@app/service';
+import { NotificationDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 import * as React from 'react';
 import { Button } from 'reactstrap';
 
-export interface EventRowProps {
-    // The event.
-    event: EventDto;
-
-    // True to show all counters.
-    showCounters?: boolean;
+export interface NotificationRowProps {
+    // The notification.
+    notification: NotificationDto;
 }
 
-export const EventRow = React.memo((props: EventRowProps) => {
-    const { event, showCounters } = props;
+export const NotificationRow = React.memo((props: NotificationRowProps) => {
+    const { notification } = props;
 
     const [isOpen, setIsOpen] = React.useState(false);
 
     return (
         <>
-            <CounterRow counters={event.counters} columnCount={4} showCounters={showCounters}>
+            <CounterRow counters={{}} columnCount={3} showCounters={false}>
                 <>
                     <tr className='list-item-summary'>
                         <td>
@@ -35,22 +32,19 @@ export const EventRow = React.memo((props: EventRowProps) => {
                             </Button>
                         </td>
                         <td>
-                            <span className='truncate'>{event.displayName}</span>
-                        </td>
-                        <td>
-                            <span className='truncate mono'>{event.topic}</span>
+                            <span className='truncate'>{notification.subject}</span>
                         </td>
                         <td>
                             <span className='truncate'>
-                                <FromNow date={event.created} />
+                                <FromNow date={notification.created} />
                             </span>
                         </td>
                     </tr>
 
                     {isOpen &&
                         <tr className='list-item-details'>
-                            <td className='no-padding' colSpan={4}>
-                                <JsonDetails object={event} />
+                            <td className='no-padding' colSpan={3}>
+                                <JsonDetails object={notification} />
                             </td>
                         </tr>
                     }

@@ -24,12 +24,12 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         [Required]
         public ConfiguredIntegrationDto Integration { get; set; }
 
-        public static IntegrationCreatedDto FromDomainObject(App app, string id)
+        public static IntegrationCreatedDto FromDomainObject(App source, string id)
         {
             return new IntegrationCreatedDto
             {
                 Id = id,
-                Integration = ConfiguredIntegrationDto.FromDomainObject(app.Integrations[id])
+                Integration = ConfiguredIntegrationDto.FromDomainObject(source.Integrations[id])
             };
         }
     }

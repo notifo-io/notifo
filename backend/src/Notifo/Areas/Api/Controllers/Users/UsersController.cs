@@ -87,7 +87,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// <param name="id">The user id.</param>
         /// <param name="q">The query object.</param>
         /// <returns>
-        /// 200 => User returned.
+        /// 200 => User subscriptions returned.
         /// 404 => User not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}/subscriptions")]

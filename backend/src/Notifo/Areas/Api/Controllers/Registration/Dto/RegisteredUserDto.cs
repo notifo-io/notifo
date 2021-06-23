@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.Registration.Dto
+namespace Notifo.Areas.Api.Controllers.Registration.Dtos
 {
     public sealed class RegisteredUserDto
     {

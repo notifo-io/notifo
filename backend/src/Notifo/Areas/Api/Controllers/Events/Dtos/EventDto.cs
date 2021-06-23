@@ -95,34 +95,34 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// </summary>
         public int? TimeToLiveInSeconds { get; set; }
 
-        public static EventDto FromDomainObject(Event @event, App app)
+        public static EventDto FromDomainObject(Event source, App app)
         {
-            var result = SimpleMapper.Map(@event, new EventDto
+            var result = SimpleMapper.Map(source, new EventDto
             {
                 Settings = new Dictionary<string, NotificationSettingDto>()
             });
 
-            result.Properties = @event.Properties ?? EmptyProperties;
+            result.Properties = source.Properties ?? EmptyProperties;
 
-            if (@event.Formatting.Subject.TryGetValue(app.Language, out var subject))
+            if (source.Formatting.Subject.TryGetValue(app.Language, out var subject))
             {
                 result.DisplayName = subject;
             }
             else
             {
-                result.DisplayName = @event.Formatting.Subject.Values.FirstOrDefault() ?? string.Empty;
+                result.DisplayName = source.Formatting.Subject.Values.FirstOrDefault() ?? string.Empty;
             }
 
-            if (@event.Formatting != null)
+            if (source.Formatting != null)
             {
-                result.Formatting = NotificationFormattingDto.FromDomainObject(@event.Formatting);
+                result.Formatting = NotificationFormattingDto.FromDomainObject(source.Formatting);
             }
 
-            if (@event.Settings?.Count > 0)
+            if (source.Settings?.Count > 0)
             {
                 result.Settings = new Dictionary<string, NotificationSettingDto>();
 
-                foreach (var (key, value) in @event.Settings)
+                foreach (var (key, value) in source.Settings)
                 {
                     if (value != null)
                     {
@@ -135,7 +135,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
                 result.Settings = EmptySettings;
             }
 
-            result.Counters = @event.Counters ?? EmptyCounters;
+            result.Counters = source.Counters ?? EmptyCounters;
 
             return result;
         }

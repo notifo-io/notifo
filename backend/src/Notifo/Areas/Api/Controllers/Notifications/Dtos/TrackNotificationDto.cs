@@ -8,7 +8,7 @@
 using System;
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Areas.Api.Controllers.Notifications.Dto
+namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
     public sealed class TrackNotificationDto
     {

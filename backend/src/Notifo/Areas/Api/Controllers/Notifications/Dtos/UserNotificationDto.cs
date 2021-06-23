@@ -11,9 +11,9 @@ using NodaTime;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Notifications.Dto
+namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
-    public sealed class NotificationDto
+    public class UserNotificationDto
     {
         /// <summary>
         /// The id of the notification.
@@ -102,16 +102,16 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dto
         /// </summary>
         public string? Data { get; set; }
 
-        public static NotificationDto FromNotification(UserNotification notification)
+        public static UserNotificationDto FromDomainObject(UserNotification source)
         {
-            var result = new NotificationDto
+            var result = new UserNotificationDto
             {
-                IsConfirmed = notification.IsConfirmed != null,
-                IsSeen = notification.IsSeen != null
+                IsConfirmed = source.IsConfirmed != null,
+                IsSeen = source.IsSeen != null
             };
 
-            SimpleMapper.Map(notification, result);
-            SimpleMapper.Map(notification.Formatting, result);
+            SimpleMapper.Map(source, result);
+            SimpleMapper.Map(source.Formatting, result);
 
             return result;
         }

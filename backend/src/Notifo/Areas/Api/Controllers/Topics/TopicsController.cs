@@ -43,7 +43,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
 
             var response = new ListResponseDto<TopicDto>();
 
-            response.Items.AddRange(topics.Select(TopicDto.FromTopic));
+            response.Items.AddRange(topics.Select(TopicDto.FromDomainObject));
             response.Total = topics.Total;
 
             return Ok(response);

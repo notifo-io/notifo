@@ -12,11 +12,11 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
 {
     public sealed class EmailTemplatesDto : Dictionary<string, EmailTemplateDto>
     {
-        public static EmailTemplatesDto FromDomainObject(App app)
+        public static EmailTemplatesDto FromDomainObject(App source)
         {
             var result = new EmailTemplatesDto();
 
-            foreach (var (key, value) in app.EmailTemplates)
+            foreach (var (key, value) in source.EmailTemplates)
             {
                 if (value != null)
                 {

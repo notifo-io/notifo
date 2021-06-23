@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Notifo.Areas.Api.Controllers.Registration.Dto;
+using Notifo.Areas.Api.Controllers.Registration.Dtos;
 using Notifo.Domain;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.WebPush;

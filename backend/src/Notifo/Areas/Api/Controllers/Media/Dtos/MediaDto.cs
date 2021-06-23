@@ -57,11 +57,11 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
         [Required]
         public MediaMetadata Metadata { get; set; }
 
-        public static MediaDto FromDomainObject(MediaItem media, string appId, IUrlGenerator urlGenerator)
+        public static MediaDto FromDomainObject(MediaItem source, string appId, IUrlGenerator urlGenerator)
         {
-            var result = SimpleMapper.Map(media, new MediaDto());
+            var result = SimpleMapper.Map(source, new MediaDto());
 
-            result.Url = urlGenerator.BuildUrl($"api/apps/{appId}/media/{media.FileName}", false);
+            result.Url = urlGenerator.BuildUrl($"api/apps/{appId}/media/{source.FileName}", false);
 
             return result;
         }

@@ -19,6 +19,7 @@ export * from './react/Gist';
 export * from './react/hooks';
 export * from './react/Icon';
 export * from './react/IFrame';
+export * from './react/JsonDetails';
 export * from './react/Loader';
 export * from './react/LoadScript';
 export * from './react/ListPager';

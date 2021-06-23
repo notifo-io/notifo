@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Notifo.Areas.Api.Controllers.Notifications.Dto;
+using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain.Channels.Web;
 using Notifo.Domain.UserNotifications;
 
@@ -24,7 +24,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
 
         public Task SendAsync(UserNotification userNotification)
         {
-            var dto = NotificationDto.FromNotification(userNotification);
+            var dto = UserNotificationDto.FromDomainObject(userNotification);
 
             var userId = $"{userNotification.AppId}_{userNotification.UserId}";
 

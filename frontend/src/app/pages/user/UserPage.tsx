@@ -15,11 +15,13 @@ import { useRouteMatch } from 'react-router';
 import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
 import { UserDialog } from './../users/UserDialog';
 import { Subscriptions } from './Subscriptions';
+import { Notifications } from './Notifications';
 
 export const UserPage = () => {
     const dispatch = useDispatch();
     const app = useApps(getApp);
     const appId = app.id;
+    const [activeTab, setActiveTab] = React.useState('notifications');
     const loading = useUsers(x => x.loadingUser);
     const match = useRouteMatch();
     const user = useUsers(x => x.user)!;
@@ -59,8 +61,13 @@ export const UserPage = () => {
 
                     <Row>
                         <Col className='mb-4'>
-                            <Subscriptions userId={userId} />
+                            {activeTab === 'subscriptions' ? (
+                                <Subscriptions userId={userId} onSwitch={() => setActiveTab('notifications')} />
+                            ) : (
+                                <Notifications userId={userId} onSwitch={() => setActiveTab('subscriptions')} />
+                            )}
                         </Col>
+
                         <Col xs='auto' className='user-info'>
                             <Card>
                                 <CardBody>

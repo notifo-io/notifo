@@ -88,15 +88,15 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         [Required]
         public Dictionary<string, long> Counters { get; set; }
 
-        public static UserDto FromDomainObject(User user)
+        public static UserDto FromDomainObject(User source)
         {
-            var result = SimpleMapper.Map(user, new UserDto());
+            var result = SimpleMapper.Map(source, new UserDto());
 
             result.Settings ??= new Dictionary<string, NotificationSettingDto>();
 
-            if (user.Settings != null)
+            if (source.Settings != null)
             {
-                foreach (var (key, value) in user.Settings)
+                foreach (var (key, value) in source.Settings)
                 {
                     if (value != null)
                     {
@@ -105,10 +105,10 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 }
             }
 
-            result.NumberOfMobilePushTokens = user.MobilePushTokens?.Count ?? 0;
-            result.NumberOfWebPushTokens = user.WebPushSubscriptions?.Count ?? 0;
+            result.NumberOfMobilePushTokens = source.MobilePushTokens?.Count ?? 0;
+            result.NumberOfWebPushTokens = source.WebPushSubscriptions?.Count ?? 0;
 
-            result.Counters = user.Counters ?? EmptyCounters;
+            result.Counters = source.Counters ?? EmptyCounters;
 
             return result;
         }

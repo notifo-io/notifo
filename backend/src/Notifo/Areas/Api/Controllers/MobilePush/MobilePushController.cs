@@ -9,7 +9,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Notifo.Areas.Api.Controllers.MobilePush.Dto;
 using Notifo.Areas.Api.Controllers.MobilePush.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
@@ -37,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         [HttpGet("api/me/mobilepush")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ListResponseDto<MobilePushTokenDto>))]
-        public async Task<IActionResult> GetTokens()
+        public async Task<IActionResult> GetMyToken()
         {
             var user = await userStore.GetAsync(App.Id, UserId, HttpContext.RequestAborted);
 
@@ -48,7 +47,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
 
             var response = new ListResponseDto<MobilePushTokenDto>();
 
-            response.Items.AddRange(user.MobilePushTokens.Select(MobilePushTokenDto.FromToken));
+            response.Items.AddRange(user.MobilePushTokens.Select(MobilePushTokenDto.FromDomainObject));
             response.Total = user.MobilePushTokens.Count;
 
             return Ok(response);
@@ -65,9 +64,9 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         [AppPermission(NotifoRoles.AppUser)]
         [Obsolete("Use new endpoint <api/me/mobilepush>")]
         [OpenApiIgnore]
-        public Task<IActionResult> PostTokenOld([FromBody] RegisterMobileTokenDto request)
+        public Task<IActionResult> PostMyTokenOld([FromBody] RegisterMobileTokenDto request)
         {
-            return PostToken(request);
+            return PostMyToken(request);
         }
 
         /// <summary>
@@ -79,7 +78,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         /// </returns>
         [HttpPost("api/me/mobilepush")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> PostToken([FromBody] RegisterMobileTokenDto request)
+        public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
         {
             var command = new AddUserMobileToken
             {
@@ -102,9 +101,9 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         [AppPermission(NotifoRoles.AppUser)]
         [Obsolete("Use new endpoint <api/me/mobilepush/{token}>")]
         [OpenApiIgnore]
-        public Task<IActionResult> DeleteTokenOld(string token)
+        public Task<IActionResult> DeleteMyTokenOld(string token)
         {
-            return DeleteToken(token);
+            return DeleteMyToken(token);
         }
 
         /// <summary>
@@ -116,7 +115,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         /// </returns>
         [HttpDelete("api/me/mobilepush/{token}")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteToken(string token)
+        public async Task<IActionResult> DeleteMyToken(string token)
         {
             var command = new RemoveUserMobileToken
             {

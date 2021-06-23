@@ -7,7 +7,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Notifo.Areas.Api.Controllers.WebPush.Dto;
+using Notifo.Areas.Api.Controllers.WebPush.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
@@ -28,7 +28,7 @@ namespace Notifo.Areas.Api.Controllers.WebPush
         [HttpPost("api/me/webpush")]
         [HttpPost("api/webpush")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> PostSubscription([FromBody] RegisterWebTokenDto request)
+        public async Task<IActionResult> PostMyToken([FromBody] RegisterWebTokenDto request)
         {
             var command = new AddUserWebPushSubscription
             {
@@ -43,7 +43,7 @@ namespace Notifo.Areas.Api.Controllers.WebPush
         [HttpDelete("api/me/webpush")]
         [HttpDelete("api/webpush")]
         [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteSubscription([FromBody] RegisterWebTokenDto request)
+        public async Task<IActionResult> DeleteMyToken([FromBody] RegisterWebTokenDto request)
         {
             var command = new RemoveUserWebPushSubscription
             {
