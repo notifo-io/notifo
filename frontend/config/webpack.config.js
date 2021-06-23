@@ -180,8 +180,7 @@ module.exports = function (env) {
                     developerUrl: 'https://notifo.io',
                     start_url: '/',
                     theme_color: '#8c84fa',
-                },
-                publicPath: './build'
+                }
             }),
 
             new plugins.StylelintPlugin({
@@ -229,7 +228,7 @@ module.exports = function (env) {
                  */
                 path: root('/build/'),
 
-                publicPath: './build/',
+                publicPath: '/build/',
 
                 /**
                  * Specifies the name of each output file on disk.
