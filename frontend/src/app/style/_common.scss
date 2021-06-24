@@ -89,6 +89,14 @@ $small-gutters: 4px;
     }
 }
 
+.col-button {
+    overflow: hidden;
+
+    .btn-group {
+        max-width: 100%;
+    }
+}
+
 .btn-flat {
     box-shadow: none;
 }

@@ -68,14 +68,14 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     return (
         <>
             <Row className='align-items-center header'>
-                <Col xs={12} lg={5}>
+                <Col xs={12} lg={6}>
                     <Row className='align-items-center flex-nowrap'>
-                        <Col>
+                        <Col className='col-button'>
                             <ButtonGroup>
-                                <Button Button color='simple' className='btn-flat' outline onClick={onSwitch}>
+                                <Button Button color='simple' className='btn-flat truncate' outline onClick={onSwitch}>
                                     {texts.notifications.header}
                                 </Button>
-                                <Button Button color='simple' className='btn-flat active'>
+                                <Button Button color='simple' className='btn-flat truncate active'>
                                     {texts.subscriptions.header}
                                 </Button>
                             </ButtonGroup>
@@ -91,7 +91,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                         </Col>
                     </Row>
                 </Col>
-                <Col xs={12} lg={7}>
+                <Col xs={12} lg={6}>
                     <Row noGutters>
                         <Col>
                             <ListSearch list={subscriptions} onSearch={doLoad} placeholder={texts.subscriptions.searchPlaceholder} />

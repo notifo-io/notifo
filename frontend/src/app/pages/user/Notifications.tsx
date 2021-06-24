@@ -49,14 +49,14 @@ export const Notifications = (props: NotificationsProps) => {
     return (
         <>
             <Row className='align-items-center header'>
-                <Col xs={12} lg={5}>
+                <Col xs={12} lg={6}>
                     <Row className='align-items-center flex-nowrap'>
-                        <Col>
+                        <Col className='col-button'>
                             <ButtonGroup>
-                                <Button Button color='simple' className='btn-flat active'>
+                                <Button Button color='simple' className='btn-flat truncate active'>
                                     {texts.notifications.header}
                                 </Button>
-                                <Button Button color='simple' className='btn-flat' outline onClick={onSwitch}>
+                                <Button Button color='simple' className='btn-flat truncate' outline onClick={onSwitch}>
                                     {texts.subscriptions.header}
                                 </Button>
                             </ButtonGroup>
@@ -72,7 +72,7 @@ export const Notifications = (props: NotificationsProps) => {
                         </Col>
                     </Row>
                 </Col>
-                <Col xs={12} lg={7}>
+                <Col xs={12} lg={6}>
                     <ListSearch list={notifications} onSearch={doLoad} placeholder={texts.notifications.searchPlaceholder} />
                 </Col>
             </Row>
