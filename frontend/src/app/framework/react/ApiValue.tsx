@@ -14,13 +14,16 @@ export interface ApiValueProps {
 
     // The optional label.
     label?: string;
+
+    // The bootstrap size.
+    size?: string;
 }
 
 export const ApiValue = (props: ApiValueProps) => {
-    const { value } = props;
+    const { size, value } = props;
 
     return (
-        <InputGroup>
+        <InputGroup size={size}>
             <Input className='mono' value={value} readOnly />
         </InputGroup>
     );

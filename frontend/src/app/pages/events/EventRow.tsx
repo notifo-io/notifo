@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FromNow, Icon, JsonDetails } from '@app/framework';
+import { FormatDate, Icon, JsonDetails } from '@app/framework';
 import { EventDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 import * as React from 'react';
@@ -42,7 +42,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
                         </td>
                         <td>
                             <span className='truncate'>
-                                <FromNow date={event.created} />
+                                <FormatDate date={event.created} />
                             </span>
                         </td>
                     </tr>

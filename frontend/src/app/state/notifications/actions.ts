@@ -6,12 +6,12 @@
  */
 
 import { listThunk, Query } from '@app/framework';
-import { Clients, NotificationDto } from '@app/service';
+import { Clients, UserNotificationDto } from '@app/service';
 import { createReducer } from '@reduxjs/toolkit';
 import { selectApp } from './../shared';
 import { NotificationsState } from './state';
 
-const list = listThunk<NotificationsState, NotificationDto>('notifications', 'notifications', async (params) => {
+const list = listThunk<NotificationsState, UserNotificationDto>('notifications', 'notifications', async (params) => {
     const { items, total } = await Clients.Notifications.getNotifications(params.appId, params.userId, params.search, params.take, params.skip);
 
     return { items, total };

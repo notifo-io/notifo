@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FromNow, Icon, JsonDetails } from '@app/framework';
-import { NotificationDto } from '@app/service';
+import { FormatDate, Icon, JsonDetails } from '@app/framework';
+import { UserNotificationDto } from '@app/service';
 import * as React from 'react';
 import { Button } from 'reactstrap';
 
 export interface NotificationRowProps {
     // The notification.
-    notification: NotificationDto;
+    notification: UserNotificationDto;
 }
 
 export const NotificationRow = React.memo((props: NotificationRowProps) => {
@@ -33,7 +33,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                 </td>
                 <td>
                     <span className='truncate'>
-                        <FromNow date={notification.created} />
+                        <FormatDate date={notification.created} />
                     </span>
                 </td>
             </tr>

@@ -16,6 +16,7 @@ import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
 import { UserDialog } from './../users/UserDialog';
 import { Subscriptions } from './Subscriptions';
 import { Notifications } from './Notifications';
+import { ButtonEmail, ButtonMobilePush, ButtonSms, ButtonWebPush } from './Buttons';
 
 export const UserPage = () => {
     const dispatch = useDispatch();
@@ -89,24 +90,16 @@ export const UserPage = () => {
 
                                     <Row>
                                         <Col xs={3}>
-                                            <span className={user.numberOfWebPushTokens > 0 ? 'text-primary' : 'text-muted'}>
-                                                <Icon type='browser' />&nbsp;{user.numberOfWebPushTokens}
-                                            </span>
+                                            <ButtonWebPush user={user} />
                                         </Col>
                                         <Col xs={3}>
-                                            <span className={user.numberOfWebPushTokens > 0 ? 'text-primary' : 'text-muted'}>
-                                                <Icon type='mobile' />&nbsp;{user.numberOfMobilePushTokens}
-                                            </span>
+                                            <ButtonMobilePush user={user} />
                                         </Col>
                                         <Col xs={3}>
-                                            <span className={user.emailAddress ? 'text-primary' : 'text-muted'}>
-                                                <Icon type='mail_outline' />
-                                            </span>
+                                            <ButtonEmail user={user} />
                                         </Col>
                                         <Col xs={3}>
-                                            <span className={user.phoneNumber ? 'text-primary' : 'text-muted'}>
-                                                <Icon type='sms' />
-                                            </span>
+                                            <ButtonSms user={user} />
                                         </Col>
                                     </Row>
 

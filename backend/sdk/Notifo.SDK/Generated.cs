@@ -2533,7 +2533,7 @@ namespace Notifo.SDK
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetNotificationsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query user notifications of the current user.</summary>
@@ -2542,13 +2542,13 @@ namespace Notifo.SDK
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query archhived user notifications of the current user.</summary>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Confirms the user notifications for the current user.</summary>
@@ -2601,7 +2601,7 @@ namespace Notifo.SDK
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetNotificationsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -2657,7 +2657,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfNotificationDto>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDetailsDto>(response_, headers_).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -2717,7 +2717,7 @@ namespace Notifo.SDK
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications?");
@@ -2765,7 +2765,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfNotificationDto>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDto>(response_, headers_).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -2816,7 +2816,7 @@ namespace Notifo.SDK
         /// <summary>Query archhived user notifications of the current user.</summary>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/archive");
@@ -2851,7 +2851,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfNotificationDto>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDto>(response_, headers_).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -7865,6 +7865,46 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.IDictionary<string, long> Counters { get; set; } = new System.Collections.Generic.Dictionary<string, long>();
     
+        /// <summary>The mobile push tokens.</summary>
+        [Newtonsoft.Json.JsonProperty("mobilePushTokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<MobilePushTokenDto> MobilePushTokens { get; set; } = new System.Collections.ObjectModel.Collection<MobilePushTokenDto>();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class MobilePushTokenDto 
+    {
+        /// <summary>The token.</summary>
+        [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Token { get; set; }
+    
+        /// <summary>The device type.</summary>
+        [Newtonsoft.Json.JsonProperty("deviceType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public MobileDeviceType DeviceType { get; set; }
+    
+        /// <summary>The last time the device was woken up.</summary>
+        [Newtonsoft.Json.JsonProperty("lastWakeup", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? LastWakeup { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum MobileDeviceType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
+        Unknown = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Android")]
+        Android = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"iOS")]
+        IOS = 2,
     
     }
     
@@ -8112,12 +8152,12 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class ListResponseDtoOfNotificationDto 
+    public partial class ListResponseDtoOfUserNotificationDetailsDto 
     {
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<NotificationDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<NotificationDto>();
+        public System.Collections.Generic.ICollection<UserNotificationDetailsDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<UserNotificationDetailsDto>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -8127,7 +8167,92 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class NotificationDto 
+    public partial class UserNotificationDetailsDto : UserNotificationDto
+    {
+        /// <summary>The channel details.</summary>
+        [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, UserNotificationChannelDto> Channels { get; set; } = new System.Collections.Generic.Dictionary<string, UserNotificationChannelDto>();
+    
+        /// <summary>The information when the notifcation was marked as confirmed.</summary>
+        [Newtonsoft.Json.JsonProperty("confirmed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HandledInfoDto Confirmed { get; set; }
+    
+        /// <summary>The information when the notifcation was marked as seen.</summary>
+        [Newtonsoft.Json.JsonProperty("seen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HandledInfoDto Seen { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class UserNotificationChannelDto 
+    {
+        /// <summary>The notification settings.</summary>
+        [Newtonsoft.Json.JsonProperty("setting", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public NotificationSettingDto Setting { get; set; } = new NotificationSettingDto();
+    
+        /// <summary>The status per token or configuration.</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, ChannelSendInfoDto> Status { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSendInfoDto>();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class ChannelSendInfoDto 
+    {
+        /// <summary>The send status.</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ProcessStatus Status { get; set; }
+    
+        /// <summary>The last update.</summary>
+        [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset LastUpdate { get; set; }
+    
+        /// <summary>The details.</summary>
+        [Newtonsoft.Json.JsonProperty("detail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Detail { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum ProcessStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Attempt")]
+        Attempt = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Handled")]
+        Handled = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Failed")]
+        Failed = 2,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Skipped")]
+        Skipped = 3,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class HandledInfoDto 
+    {
+        /// <summary>The timestamp.</summary>
+        [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset Timestamp { get; set; }
+    
+        /// <summary>The channel over which the notification was marked as seen or confirmed.</summary>
+        [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Channel { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class UserNotificationDto 
     {
         /// <summary>The id of the notification.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -8201,6 +8326,21 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class ListResponseDtoOfUserNotificationDto 
+    {
+        /// <summary>The items.</summary>
+        [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.ICollection<UserNotificationDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<UserNotificationDto>();
+    
+        /// <summary>The total number of items.</summary>
+        [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long Total { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class TrackNotificationDto 
     {
         /// <summary>The id of the noitifications to mark as confirmed.</summary>
@@ -8228,7 +8368,7 @@ namespace Notifo.SDK
         /// <summary>The items.</summary>
         [Newtonsoft.Json.JsonProperty("items", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<MobilePushTokenDto> Items { get; set; } = new System.Collections.ObjectModel.Collection<MobilePushTokenDto>();
+        public System.Collections.Generic.ICollection<MobilePushTokenDto2> Items { get; set; } = new System.Collections.ObjectModel.Collection<MobilePushTokenDto2>();
     
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -8238,7 +8378,7 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class MobilePushTokenDto 
+    public partial class MobilePushTokenDto2 
     {
         /// <summary>The device token.</summary>
         [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -8250,20 +8390,6 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MobileDeviceType DeviceType { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public enum MobileDeviceType
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
-        Unknown = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Android")]
-        Android = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"iOS")]
-        IOS = 2,
     
     }
     

@@ -1148,7 +1148,7 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getNotifications(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfNotificationDto> {
+    getNotifications(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1180,13 +1180,13 @@ export class NotificationsClient {
         });
     }
 
-    protected processGetNotifications(response: Response): Promise<ListResponseDtoOfNotificationDto> {
+    protected processGetNotifications(response: Response): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <ListResponseDtoOfNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <ListResponseDtoOfUserNotificationDetailsDto>JSON.parse(_responseText, this.jsonParseReviver);
             return result200;
             });
         } else if (status === 404) {
@@ -1210,7 +1210,7 @@ export class NotificationsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ListResponseDtoOfNotificationDto>(<any>null);
+        return Promise.resolve<ListResponseDtoOfUserNotificationDetailsDto>(<any>null);
     }
 
     /**
@@ -1220,7 +1220,7 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return Notifications returned.
      */
-    getMyNotifications(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfNotificationDto> {
+    getMyNotifications(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications?";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
@@ -1246,13 +1246,13 @@ export class NotificationsClient {
         });
     }
 
-    protected processGetMyNotifications(response: Response): Promise<ListResponseDtoOfNotificationDto> {
+    protected processGetMyNotifications(response: Response): Promise<ListResponseDtoOfUserNotificationDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <ListResponseDtoOfNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <ListResponseDtoOfUserNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
             return result200;
             });
         } else if (status === 500) {
@@ -1272,14 +1272,14 @@ export class NotificationsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ListResponseDtoOfNotificationDto>(<any>null);
+        return Promise.resolve<ListResponseDtoOfUserNotificationDto>(<any>null);
     }
 
     /**
      * Query archhived user notifications of the current user.
      * @return Notifications returned.
      */
-    getMyArchive(): Promise<ListResponseDtoOfNotificationDto> {
+    getMyArchive(): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications/archive";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1295,13 +1295,13 @@ export class NotificationsClient {
         });
     }
 
-    protected processGetMyArchive(response: Response): Promise<ListResponseDtoOfNotificationDto> {
+    protected processGetMyArchive(response: Response): Promise<ListResponseDtoOfUserNotificationDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : <ListResponseDtoOfNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = _responseText === "" ? null : <ListResponseDtoOfUserNotificationDto>JSON.parse(_responseText, this.jsonParseReviver);
             return result200;
             });
         } else if (status === 500) {
@@ -1321,7 +1321,7 @@ export class NotificationsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ListResponseDtoOfNotificationDto>(<any>null);
+        return Promise.resolve<ListResponseDtoOfUserNotificationDto>(<any>null);
     }
 
     /**
@@ -3417,7 +3417,20 @@ export interface UserDto {
     settings: { [key: string]: NotificationSettingDto; };
     /** The statistics counters. */
     counters: { [key: string]: number; };
+    /** The mobile push tokens. */
+    mobilePushTokens: MobilePushTokenDto[];
 }
+
+export interface MobilePushTokenDto {
+    /** The token. */
+    token: string;
+    /** The device type. */
+    deviceType: MobileDeviceType;
+    /** The last time the device was woken up. */
+    lastWakeup?: Date | undefined;
+}
+
+export type MobileDeviceType = "Unknown" | "Android" | "iOS";
 
 export interface ListResponseDtoOfSubscriptionDto {
     /** The items. */
@@ -3529,14 +3542,14 @@ export interface UpsertTemplateDto {
     settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
-export interface ListResponseDtoOfNotificationDto {
+export interface ListResponseDtoOfUserNotificationDetailsDto {
     /** The items. */
-    items: NotificationDto[];
+    items: UserNotificationDetailsDto[];
     /** The total number of items. */
     total: number;
 }
 
-export interface NotificationDto {
+export interface UserNotificationDto {
     /** The id of the notification. */
     id: string;
     /** The subject of the notification in the language of the user. */
@@ -3571,6 +3584,47 @@ export interface NotificationDto {
     data?: string | undefined;
 }
 
+export interface UserNotificationDetailsDto extends UserNotificationDto {
+    /** The channel details. */
+    channels: { [key: string]: UserNotificationChannelDto; };
+    /** The information when the notifcation was marked as confirmed. */
+    confirmed?: HandledInfoDto | undefined;
+    /** The information when the notifcation was marked as seen. */
+    seen?: HandledInfoDto | undefined;
+}
+
+export interface UserNotificationChannelDto {
+    /** The notification settings. */
+    setting: NotificationSettingDto;
+    /** The status per token or configuration. */
+    status: { [key: string]: ChannelSendInfoDto; };
+}
+
+export interface ChannelSendInfoDto {
+    /** The send status. */
+    status?: ProcessStatus;
+    /** The last update. */
+    lastUpdate?: Date;
+    /** The details. */
+    detail?: string | undefined;
+}
+
+export type ProcessStatus = "Attempt" | "Handled" | "Failed" | "Skipped";
+
+export interface HandledInfoDto {
+    /** The timestamp. */
+    timestamp?: Date;
+    /** The channel over which the notification was marked as seen or confirmed. */
+    channel?: string | undefined;
+}
+
+export interface ListResponseDtoOfUserNotificationDto {
+    /** The items. */
+    items: UserNotificationDto[];
+    /** The total number of items. */
+    total: number;
+}
+
 export interface TrackNotificationDto {
     /** The id of the noitifications to mark as confirmed. */
     confirmed?: string | undefined;
@@ -3584,19 +3638,17 @@ export interface TrackNotificationDto {
 
 export interface ListResponseDtoOfMobilePushTokenDto {
     /** The items. */
-    items: MobilePushTokenDto[];
+    items: MobilePushTokenDto2[];
     /** The total number of items. */
     total: number;
 }
 
-export interface MobilePushTokenDto {
+export interface MobilePushTokenDto2 {
     /** The device token. */
     token: string;
     /** The device type. */
     deviceType?: MobileDeviceType;
 }
-
-export type MobileDeviceType = "Unknown" | "Android" | "iOS";
 
 export interface RegisterMobileTokenDto {
     /** The device token. */

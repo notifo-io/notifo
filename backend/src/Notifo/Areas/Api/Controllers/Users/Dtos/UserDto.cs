@@ -88,6 +88,12 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         [Required]
         public Dictionary<string, long> Counters { get; set; }
 
+        /// <summary>
+        /// The mobile push tokens.
+        /// </summary>
+        [Required]
+        public List<MobilePushTokenDto> MobilePushTokens { get; set; }
+
         public static UserDto FromDomainObject(User source)
         {
             var result = SimpleMapper.Map(source, new UserDto());
@@ -105,8 +111,19 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 }
             }
 
-            result.NumberOfMobilePushTokens = source.MobilePushTokens?.Count ?? 0;
             result.NumberOfWebPushTokens = source.WebPushSubscriptions?.Count ?? 0;
+
+            result.MobilePushTokens ??= new List<MobilePushTokenDto>();
+
+            if (source.MobilePushTokens != null)
+            {
+                result.NumberOfMobilePushTokens = source.MobilePushTokens.Count;
+
+                foreach (var token in source.MobilePushTokens)
+                {
+                    result.MobilePushTokens.Add(MobilePushTokenDto.FromDomainObject(token));
+                }
+            }
 
             result.Counters = source.Counters ?? EmptyCounters;
 

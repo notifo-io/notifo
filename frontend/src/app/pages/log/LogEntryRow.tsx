@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FromNow, Numbers } from '@app/framework';
+import { FormatDate, Numbers } from '@app/framework';
 import { LogEntryDto } from '@app/service';
 import * as React from 'react';
 
@@ -27,12 +27,12 @@ export const LogEntryRow = React.memo((props: LogEntryRowProps) => {
             </td>
             <td>
                 <span className='truncate'>
-                    <FromNow date={entry.lastSeen} />
+                    <FormatDate date={entry.lastSeen} />
                 </span>
             </td>
             <td>
                 <span className='truncate'>
-                    <FromNow date={entry.firstSeen} />
+                    <FormatDate date={entry.firstSeen} />
                 </span>
             </td>
         </tr>
