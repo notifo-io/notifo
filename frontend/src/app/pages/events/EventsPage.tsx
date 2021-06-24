@@ -74,7 +74,7 @@ export const EventsPage = () => {
 
                 <thead>
                     <tr>
-                        <th>&nbsp;</th>
+                        <th>+</th>
                         <th>
                             <span className='truncate'>{texts.common.subject}</span>
                         </th>

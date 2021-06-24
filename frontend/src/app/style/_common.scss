@@ -29,12 +29,6 @@ legend {
     font-family: monospace;
 }
 
-.form-control {
-    &.mono {
-        font-size: 1rem;
-    }
-}
-
 .pagination {
     margin: 0;
 }
@@ -229,7 +223,7 @@ $small-gutters: 4px;
 .list {
     &-item {
         &-empty {
-            font-size: 90%;
+            font-size: .875rem;
         }
 
         &-summary,
@@ -538,7 +532,7 @@ div {
     }
 
     th {
-        font-size: 80%;
+        font-size: .8rem;
         padding-bottom: .5rem;
         padding-top: .5rem;
 
@@ -547,8 +541,12 @@ div {
         }
     }
 
+    td {
+        font-size: .875rem;
+    }
+
     &-sm-text {
-        font-size: 90%;
+        font-size: .875rem;
     }
 }
 
@@ -631,7 +629,7 @@ div {
     }
 
     &-info {
-        font-size: 90%;
+        font-size: .875rem;
         line-height: 2rem;
         text-align: center;
         text-decoration: none;
