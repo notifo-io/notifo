@@ -35,7 +35,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         {
             var result = SimpleMapper.Map(source, new MobilePushTokenDto());
 
-            if (result.LastWakeup == default)
+            if (source.LastWakeup != default)
+            {
+                result.LastWakeup = source.LastWakeup;
+            }
+            else
             {
                 result.LastWakeup = null;
             }

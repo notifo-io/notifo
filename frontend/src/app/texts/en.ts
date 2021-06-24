@@ -74,6 +74,7 @@ export const EN = {
         notifications: 'Notifications',
         notificationSettings: 'Notification Settings',
         notStarted: 'Not started',
+        notYet: 'Not yet',
         pagination: (start: number, end: number, total: number) => `${start} to ${end} of ${total}`,
         pending: 'Pending',
         phoneNumber: 'Phone Number',

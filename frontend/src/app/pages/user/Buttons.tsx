@@ -22,7 +22,7 @@ export const ButtonSms = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonSms' className={hasValue ? 'text-primary btn-flat' : 'text-muted btn-flat'} onClick={toggle}>
+            <Button color='' id='buttonSms' className={clazz(hasValue)} block onClick={toggle}>
                 <Icon type='sms' />
             </Button>
 
@@ -46,7 +46,7 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonEmail' className={hasValue ? 'text-primary btn-flat' : 'text-muted btn-flat'} onClick={toggle}>
+            <Button color='' id='buttonEmail' className={clazz(hasValue)} block onClick={toggle}>
                 <Icon type='mail_outline' />
             </Button>
 
@@ -70,7 +70,7 @@ export const ButtonWebPush = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonWebPush' className={hasValue ? 'text-primary btn-flat' : 'text-muted btn-flat'} onClick={toggle}>
+            <Button color='' id='buttonWebPush' className={clazz(hasValue)} block onClick={toggle}>
                 <Icon type='browser' /> {user.numberOfWebPushTokens}
             </Button>
 
@@ -94,7 +94,7 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonMobilePush' className={hasValue ? 'text-primary btn-flat' : 'text-muted btn-flat'} onClick={toggle}>
+            <Button color='' id='buttonMobilePush' className={clazz(hasValue)} block onClick={toggle}>
                 <Icon type='mobile' /> {user.numberOfMobilePushTokens}
             </Button>
 
@@ -122,8 +122,12 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
                                     <td>
                                         <ApiValue size='sm' value={token.token} />
                                     </td>
-                                    <td className='text-right'>
-                                        <FormatDate format='Pp' date={token.lastWakeup} />
+                                    <td>
+                                        {token.lastWakeup ? (
+                                            <FormatDate format='Pp' date={token.lastWakeup} />
+                                        ) : (
+                                            <>{texts.common.notYet}</>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -134,3 +138,15 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
         </>
     );
 };
+
+function clazz(hasValue: boolean) {
+    let result = 'btn-flat pl-0 pr-0';
+
+    if (hasValue) {
+        result += ' text-primary';
+    } else {
+        result += ' text-muted';
+    }
+
+    return result;
+}
