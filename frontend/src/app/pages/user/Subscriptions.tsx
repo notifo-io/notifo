@@ -111,7 +111,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                 <SubscriptionDialog userId={userId} onClose={dialogNew.close} />
             }
 
-            <Card>
+            <Card className='card-table'>
                 <CardBody>
                     <Table className='table-fixed table-simple table-middle'>
                         <colgroup>
@@ -150,10 +150,10 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                             }
                         </tbody>
                     </Table>
-
-                    <ListPager list={subscriptions} onChange={doLoad} />
                 </CardBody>
             </Card>
+
+            <ListPager list={subscriptions} onChange={doLoad} />
 
             {dialogEdit.isOpen &&
                 <SubscriptionDialog userId={userId} subscription={editSubscription} onClose={dialogEdit.close} />

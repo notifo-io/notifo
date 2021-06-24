@@ -541,6 +541,10 @@ div {
         font-size: 80%;
         padding-bottom: .5rem;
         padding-top: .5rem;
+
+        .bordered {
+            border: 1px solid $color-table;
+        }
     }
 
     &-sm-text {

@@ -79,7 +79,7 @@ export const Notifications = (props: NotificationsProps) => {
 
             <FormError error={notifications.error} />
 
-            <Card>
+            <Card className='card-table'>
                 <CardBody>
                     <Table className='table-fixed table-simple table-middle'>
                         <colgroup>
@@ -116,10 +116,10 @@ export const Notifications = (props: NotificationsProps) => {
                             }
                         </tbody>
                     </Table>
-
-                    <ListPager list={notifications} onChange={doLoad} />
                 </CardBody>
             </Card>
+
+            <ListPager list={notifications} onChange={doLoad} />
         </>
     );
 };
