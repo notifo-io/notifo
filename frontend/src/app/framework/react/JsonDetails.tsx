@@ -33,7 +33,7 @@ export const JsonDetails = React.memo((props: JsonDetailsProps) => {
     const { object } = props;
 
     return (
-        <AceEditor mode='javascript' style={style} setOptions={options} name='event-details'
+        <AceEditor mode='javascript' style={style} setOptions={options} name='json-details' className='json-details'
             value={JSON.stringify(object, null, 2)}
         />
     );

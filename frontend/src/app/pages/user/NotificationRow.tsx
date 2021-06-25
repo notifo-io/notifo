@@ -39,7 +39,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
             </tr>
 
             {isOpen &&
-                <tr>
+                <tr className='user-notification-details'>
                     <td className='no-padding bordered' colSpan={3}>
                         <JsonDetails object={notification} />
                     </td>

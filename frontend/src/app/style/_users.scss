@@ -15,4 +15,11 @@
             width: 380px;
         }
     }
+
+    &-notification-details {
+        .json-details {
+            border-left: 1px solid $color-table;
+            border-right: 1px solid $color-table;
+        }
+    }
 }
