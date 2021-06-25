@@ -21,5 +21,11 @@
             border-left: 1px solid $color-table;
             border-right: 1px solid $color-table;
         }
+
+        &:last-child {
+            .json-details {
+                border-bottom: 1px solid $color-table;
+            }
+        }
     }
 }
