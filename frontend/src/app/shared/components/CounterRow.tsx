@@ -24,7 +24,7 @@ export interface CounterRowProps {
     columnCount: number;
 
     // The children.
-    children: React.ReactElement;
+    children: React.ReactElement[] | React.ReactElement | null;
 }
 
 export const CounterRow = React.memo((props: CounterRowProps) => {
