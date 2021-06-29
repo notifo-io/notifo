@@ -12,8 +12,6 @@ using Notifo.Infrastructure.Messaging.Kafka;
 using Notifo.Infrastructure.Messaging.RabbitMq;
 using Notifo.Infrastructure.Messaging.Scheduling;
 
-#pragma warning disable RECS0002 // Convert anonymous method to method group
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class MessagingServiceExtensions

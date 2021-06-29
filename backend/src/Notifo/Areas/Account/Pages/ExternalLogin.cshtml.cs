@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -12,8 +12,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
-
-#pragma warning disable SA1649 // File name should match first type name
 
 namespace Notifo.Areas.Account.Pages
 {
@@ -81,7 +79,7 @@ namespace Notifo.Areas.Account.Pages
 
             if (string.IsNullOrWhiteSpace(email))
             {
-                return await RedirectToErrorPage("NoEmail", T["GithubEmailPrivateError"]!);
+                throw new InvalidOperationException(T["GithubEmailPrivateError"]);
             }
 
             Input = new ExternalLoginInputModel();
@@ -111,7 +109,7 @@ namespace Notifo.Areas.Account.Pages
 
                 if (loginInfo == null)
                 {
-                    return await RedirectToErrorPage("NoEmail", T["GithubEmailPrivateError"]!);
+                    throw new InvalidOperationException(T["GithubEmailPrivateError"]);
                 }
 
                 var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;

@@ -9,8 +9,6 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-#pragma warning disable SA1649 // File name should match first type name
-
 namespace Notifo.Domain
 {
     [JsonConverter(typeof(NotificationSendConverter))]

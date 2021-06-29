@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -8,8 +8,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
-#pragma warning disable SA1649 // File name should match first type name
 
 namespace Notifo.Areas.Account.Pages
 {

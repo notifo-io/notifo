@@ -64,16 +64,6 @@ namespace Notifo.Areas.Account.Pages
             value = new Lazy<TService>(() => HttpContext.RequestServices.GetRequiredService<TService>());
         }
 
-        protected Task<IActionResult> RedirectToErrorPage(string error, string errorDescription)
-        {
-            if (!string.IsNullOrWhiteSpace(error))
-            {
-                errorDescription = $"{error}: {errorDescription}";
-            }
-
-            throw new InvalidOperationException(errorDescription);
-        }
-
         protected IActionResult RedirectTo(string? returnUrl)
         {
             if (Uri.IsWellFormedUriString(returnUrl, UriKind.RelativeOrAbsolute))

@@ -13,8 +13,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-#pragma warning disable SA1649 // File name should match first type name
-
 namespace Notifo.Areas.Account.Pages
 {
     public sealed class LoginModel : PageModelBase<LoginModel>

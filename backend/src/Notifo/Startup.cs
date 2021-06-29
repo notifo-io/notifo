@@ -5,8 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -145,6 +148,13 @@ namespace Notifo
             });
 
             app.UseMyHealthChecks();
+
+            app.UseWhen(
+                context => context.Request.Path.StartsWithSegments("/account"),
+                builder =>
+                {
+                    builder.UseExceptionHandler("/account/error");
+                });
 
             app.ConfigureApi(signalROptions);
             app.ConfigureFrontend();
