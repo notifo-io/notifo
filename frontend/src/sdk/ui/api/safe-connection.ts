@@ -27,9 +27,9 @@ export class SafeConnection implements Connection {
             if (updates.length > 0) {
                 // eslint-disable-next-line no-console
                 console.debug(`NOTIFO SDK: ${updates.length} new updates received.`);
-
-                handler(updates, isUpdate);
             }
+
+            handler(updates, isUpdate);
         });
     }
 
