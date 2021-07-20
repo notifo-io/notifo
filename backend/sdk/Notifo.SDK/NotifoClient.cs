@@ -61,13 +61,15 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="httpClient">The HTTP client. Cannot be null.</param>
         /// <param name="baseUrl">The base URL. Cannot be null.</param>
-        public NotifoClient(HttpClient httpClient, string baseUrl)
+        /// <param name="readResponseAsString">True, to read the response as string.</param>
+        public NotifoClient(HttpClient httpClient, string baseUrl, bool readResponseAsString)
         {
             apps = new Lazy<IAppsClient>(() =>
             {
                 return new AppsClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -75,7 +77,8 @@ namespace Notifo.SDK
             {
                 return new ConfigsClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -83,7 +86,8 @@ namespace Notifo.SDK
             {
                 return new EventsClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -91,7 +95,8 @@ namespace Notifo.SDK
             {
                 return new LogsClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -99,7 +104,8 @@ namespace Notifo.SDK
             {
                 return new MediaClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -107,7 +113,8 @@ namespace Notifo.SDK
             {
                 return new MobilePushClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -115,7 +122,8 @@ namespace Notifo.SDK
             {
                 return new NotificationsClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -123,7 +131,8 @@ namespace Notifo.SDK
             {
                 return new TemplatesClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -131,7 +140,8 @@ namespace Notifo.SDK
             {
                 return new TopicsClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
 
@@ -139,7 +149,8 @@ namespace Notifo.SDK
             {
                 return new UsersClient(httpClient)
                 {
-                    BaseUrl = baseUrl
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
                 };
             });
         }

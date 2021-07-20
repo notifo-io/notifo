@@ -15,6 +15,7 @@ namespace Notifo.SDK
     /// </summary>
     public sealed class NotifoClientBuilder
     {
+        private bool readResponseAsString;
         private string apiKey;
         private string apiUrl = "https://app.notifo.io";
         private TimeSpan timeout = TimeSpan.FromSeconds(10);
@@ -82,6 +83,18 @@ namespace Notifo.SDK
         }
 
         /// <summary>
+        /// Configures whether the response should be read as string.
+        /// </summary>
+        /// <param name="readResponseAsString">True, if the response should be read as string.</param>
+        /// <returns>The current instance.</returns>
+        public NotifoClientBuilder ReadResponseAsString(bool readResponseAsString)
+        {
+            this.readResponseAsString = readResponseAsString;
+
+            return this;
+        }
+
+        /// <summary>
         /// Build a new instance of the <see cref="INotifoClient"/> class.
         /// </summary>
         /// <returns>The generated <see cref="INotifoClient"/> instance.</returns>
@@ -107,7 +120,7 @@ namespace Notifo.SDK
             httpClient.Timeout = timeout;
             httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
 
-            var client = new NotifoClient(httpClient, apiUrl);
+            var client = new NotifoClient(httpClient, apiUrl, readResponseAsString);
 
             return client;
         }

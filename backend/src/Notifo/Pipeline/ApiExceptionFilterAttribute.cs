@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -15,18 +15,18 @@ using Squidex.Log;
 
 namespace Notifo.Pipeline
 {
-    public sealed class ApiExceptionFilterAttribute : ActionFilterAttribute, IExceptionFilter, IAsyncActionFilter
+    public sealed class ApiExceptionFilterAttribute : ActionFilterAttribute, IExceptionFilter, IAsyncResultFilter
     {
-        public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+        public override Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            var resultContext = await next();
-
-            if (resultContext.Result is ObjectResult { Value: ProblemDetails problem })
+            if (context.Result is ObjectResult objectResult && objectResult.Value is ProblemDetails problem)
             {
                 var (error, _) = problem.ToErrorDto(context.HttpContext);
 
                 context.Result = GetResult(error);
             }
+
+            return next();
         }
 
         public void OnException(ExceptionContext context)
