@@ -12,7 +12,7 @@ namespace Notifo.Domain
 {
     public readonly struct TopicId
     {
-        private static readonly Regex Regex = new Regex("^[a-z0-9\\-_]+(\\/[a-z0-9\\-_]+)*$", RegexOptions.Compiled);
+        private static readonly Regex Regex = new Regex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled);
 
         public readonly string Id;
 
