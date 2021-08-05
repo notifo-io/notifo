@@ -87,7 +87,8 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+            CancellationToken ct)
         {
             var subscription = options.User.WebPushSubscriptions.SingleOrDefault(x => x.Endpoint == configuration);
 
@@ -124,7 +125,8 @@ namespace Notifo.Domain.Channels.WebPush
             return UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Failed);
         }
 
-        public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
+            CancellationToken ct)
         {
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.Subscription.Endpoint, Name))
             {
@@ -138,7 +140,8 @@ namespace Notifo.Domain.Channels.WebPush
             return true;
         }
 
-        private Task SendAsync(WebPushJob job, CancellationToken ct)
+        private Task SendAsync(WebPushJob job,
+            CancellationToken ct)
         {
             return log.ProfileAsync("SendWebPush", async () =>
             {
@@ -159,7 +162,8 @@ namespace Notifo.Domain.Channels.WebPush
             });
         }
 
-        private async Task SendCoreAsync(WebPushJob job, CancellationToken ct)
+        private async Task SendCoreAsync(WebPushJob job,
+            CancellationToken ct)
         {
             try
             {

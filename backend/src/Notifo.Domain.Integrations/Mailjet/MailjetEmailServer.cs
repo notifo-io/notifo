@@ -26,7 +26,8 @@ namespace Notifo.Domain.Integrations.Mailjet
             this.mailjetClient = mailjetClient;
         }
 
-        public async Task SendAsync(EmailMessage message, CancellationToken ct = default)
+        public async Task SendAsync(EmailMessage message,
+            CancellationToken ct = default)
         {
             var email = new TransactionalEmailBuilder()
                 .WithFrom(new SendContact(

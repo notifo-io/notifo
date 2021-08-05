@@ -21,7 +21,8 @@ namespace Notifo.Domain.Events.Pipeline
             this.userEventPublisher = userEventPublisher;
         }
 
-        public async Task HandleAsync(EventMessage message, CancellationToken ct)
+        public async Task HandleAsync(EventMessage message,
+            CancellationToken ct)
         {
             await userEventPublisher.PublishAsync(message, ct);
         }

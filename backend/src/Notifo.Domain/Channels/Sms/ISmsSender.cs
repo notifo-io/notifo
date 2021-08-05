@@ -15,7 +15,8 @@ namespace Notifo.Domain.Channels.Sms
 
     public interface ISmsSender
     {
-        Task<SmsResult> SendAsync(string to, string body, string? token = null, CancellationToken ct = default);
+        Task<SmsResult> SendAsync(string to, string body, string? token = null,
+            CancellationToken ct = default);
 
         Task HandleStatusAsync(HttpContext httpContext);
 

@@ -20,9 +20,11 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
 
         Task<SchedulerBatch<T>?> DequeueAsync(Instant time);
 
-        Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount = 0, CancellationToken ct = default);
+        Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount = 0,
+            CancellationToken ct = default);
 
-        Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount = 0, CancellationToken ct = default);
+        Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount = 0,
+            CancellationToken ct = default);
 
         Task ResetDeadAsync(Instant oldTime, Instant next);
 

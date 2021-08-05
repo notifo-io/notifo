@@ -22,7 +22,8 @@ namespace Notifo.Infrastructure.MongoDb
             return find.Skip(query.Skip).Limit(query.Take);
         }
 
-        public static Task<List<TDocument>> ToListAsync<TDocument>(this IFindFluent<TDocument, TDocument> find, QueryBase query, CancellationToken ct)
+        public static Task<List<TDocument>> ToListAsync<TDocument>(this IFindFluent<TDocument, TDocument> find, QueryBase query,
+            CancellationToken ct)
         {
             return find.Skip(query.Skip).Limit(query.Take).ToListAsync(ct);
         }

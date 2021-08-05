@@ -38,7 +38,8 @@ namespace Notifo.Domain.Integrations.Smtp
             GC.SuppressFinalize(this);
         }
 
-        public async Task SendAsync(EmailMessage message, CancellationToken ct)
+        public async Task SendAsync(EmailMessage message,
+            CancellationToken ct)
         {
             var smtpClient = clientPool.Get();
             try

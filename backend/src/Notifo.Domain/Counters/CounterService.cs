@@ -21,7 +21,8 @@ namespace Notifo.Domain.Counters
             this.targets = targets;
         }
 
-        public Task CollectAsync(CounterKey key, CounterMap counters, CancellationToken ct)
+        public Task CollectAsync(CounterKey key, CounterMap counters,
+            CancellationToken ct)
         {
             if (counters.Count == 0)
             {

@@ -21,14 +21,16 @@ namespace Notifo.Domain.Media
             this.assetStore = assetStore;
         }
 
-        public Task DownloadAsync(string appId, Media media, Stream stream, BytesRange range, CancellationToken ct)
+        public Task DownloadAsync(string appId, Media media, Stream stream, BytesRange range,
+            CancellationToken ct)
         {
             var fileName = CreateFileName(appId, media);
 
             return assetStore.DownloadAsync(fileName, stream, range, ct);
         }
 
-        public Task UploadAsync(string appId, Media media, Stream stream, CancellationToken ct)
+        public Task UploadAsync(string appId, Media media, Stream stream,
+            CancellationToken ct)
         {
             var fileName = CreateFileName(appId, media);
 

@@ -133,7 +133,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
             configured.Status = await GetStatusAsync(fromEmail, default);
         }
 
-        private async Task VerifyAsync(string email, CancellationToken ct)
+        private async Task VerifyAsync(string email,
+            CancellationToken ct)
         {
             await amazonSES.DeleteIdentityAsync(new DeleteIdentityRequest
             {
@@ -158,7 +159,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
             configured.Status = await GetStatusAsync(fromEmail, default);
         }
 
-        private async Task<IntegrationStatus> GetStatusAsync(string emailAddress, CancellationToken ct)
+        private async Task<IntegrationStatus> GetStatusAsync(string emailAddress,
+            CancellationToken ct)
         {
             var request = new GetIdentityVerificationAttributesRequest
             {

@@ -20,7 +20,8 @@ namespace Notifo.Domain.Users
 
         public Instant Timestamp { get; set; }
 
-        public Task<bool> ExecuteAsync(User target, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(User target, IServiceProvider serviceProvider,
+            CancellationToken ct)
         {
             var token = target.MobilePushTokens.FirstOrDefault(x => x.Token == Token);
 

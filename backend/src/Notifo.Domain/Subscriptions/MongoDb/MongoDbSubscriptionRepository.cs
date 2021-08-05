@@ -32,7 +32,8 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             return "Subscriptions";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbSubscription> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbSubscription> collection,
+            CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbSubscription>(
@@ -57,7 +58,8 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 null, ct);
         }
 
-        public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query, CancellationToken ct)
+        public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
+            CancellationToken ct)
         {
             var filters = new List<FilterDefinition<MongoDbSubscription>>
             {
@@ -132,7 +134,8 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             }
         }
 
-        public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
+        public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix,
+            CancellationToken ct)
         {
             var topicPrefix = prefix.Id;
 
@@ -143,21 +146,24 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             return (document?.ToSubscription(), document?.Etag);
         }
 
-        public Task UpsertAsync(Subscription subscription, string? oldEtag, CancellationToken ct)
+        public Task UpsertAsync(Subscription subscription, string? oldEtag,
+            CancellationToken ct)
         {
             var document = MongoDbSubscription.FromSubscription(subscription);
 
             return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
         }
 
-        public Task DeleteAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
+        public Task DeleteAsync(string appId, string userId, TopicId prefix,
+            CancellationToken ct)
         {
             var id = MongoDbSubscription.CreateId(appId, userId, prefix);
 
             return Collection.DeleteOneAsync(x => x.DocId == id, ct);
         }
 
-        public Task DeletePrefixAsync(string appId, string userId, TopicId prefix, CancellationToken ct)
+        public Task DeletePrefixAsync(string appId, string userId, TopicId prefix,
+            CancellationToken ct)
         {
             var filter = CreatePrefixFilter(appId, userId, prefix, true);
 

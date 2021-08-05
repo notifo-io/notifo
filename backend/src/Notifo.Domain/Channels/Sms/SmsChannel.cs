@@ -115,7 +115,8 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct = default)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+            CancellationToken ct = default)
         {
             if (options.IsUpdate)
             {
@@ -139,7 +140,8 @@ namespace Notifo.Domain.Channels.Sms
             return UpdateAsync(job, job.PhoneNumber, ProcessStatus.Failed);
         }
 
-        public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
+            CancellationToken ct)
         {
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name))
             {
@@ -153,7 +155,8 @@ namespace Notifo.Domain.Channels.Sms
             return false;
         }
 
-        private Task SendAsync(SmsJob job, CancellationToken ct)
+        private Task SendAsync(SmsJob job,
+            CancellationToken ct)
         {
             return log.ProfileAsync("SendSms", async () =>
             {
@@ -192,7 +195,8 @@ namespace Notifo.Domain.Channels.Sms
             });
         }
 
-        private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders, CancellationToken ct)
+        private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders,
+            CancellationToken ct)
         {
             var lastSender = senders.Last();
 
@@ -241,7 +245,8 @@ namespace Notifo.Domain.Channels.Sms
             return userNotificationStore.CollectAndUpdateAsync(token, Name, phoneNumber, status, reason);
         }
 
-        private async Task SkipAsync(SmsJob job, string token, string reason, CancellationToken ct)
+        private async Task SkipAsync(SmsJob job, string token, string reason,
+            CancellationToken ct)
         {
             await logStore.LogAsync(job.AppId, reason, ct);
 

@@ -13,12 +13,16 @@ namespace Notifo.Domain.Media
 {
     public interface IMediaRepository
     {
-        Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query, CancellationToken ct);
+        Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
+            CancellationToken ct);
 
-        Task<Media?> GetAsync(string appId, string fileName, CancellationToken ct);
+        Task<Media?> GetAsync(string appId, string fileName,
+            CancellationToken ct);
 
-        Task UpsertAsync(Media media, CancellationToken ct);
+        Task UpsertAsync(Media media,
+            CancellationToken ct);
 
-        Task DeleteAsync(string appId, string fileName, CancellationToken ct);
+        Task DeleteAsync(string appId, string fileName,
+            CancellationToken ct);
     }
 }

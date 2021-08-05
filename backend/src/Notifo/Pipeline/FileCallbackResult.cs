@@ -15,7 +15,8 @@ using Squidex.Assets;
 
 namespace Notifo.Pipeline
 {
-    public delegate Task FileCallback(Stream body, BytesRange range, CancellationToken ct);
+    public delegate Task FileCallback(Stream body, BytesRange range,
+            CancellationToken ct);
 
     public sealed class FileCallbackResult : FileResult
     {

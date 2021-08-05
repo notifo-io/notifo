@@ -41,7 +41,8 @@ namespace Notifo.Domain.Apps.MongoDb
             return "Apps";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbApp> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbApp> collection,
+            CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbApp>(
@@ -72,7 +73,8 @@ namespace Notifo.Domain.Apps.MongoDb
             return documents.Select(x => x.ToApp()).ToList();
         }
 
-        public async Task<List<App>> QueryAsync(string contributorId, CancellationToken ct)
+        public async Task<List<App>> QueryAsync(string contributorId,
+            CancellationToken ct)
         {
             var documents =
                 await Collection.Find(x => x.ContributorIds.Contains(contributorId))
@@ -81,7 +83,8 @@ namespace Notifo.Domain.Apps.MongoDb
             return documents.Select(x => x.ToApp()).ToList();
         }
 
-        public async Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct)
+        public async Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey,
+            CancellationToken ct)
         {
             var document = await
                 Collection.Find(x => x.ApiKeys.Contains(apiKey))
@@ -90,33 +93,36 @@ namespace Notifo.Domain.Apps.MongoDb
             return (document?.ToApp(), document?.Etag);
         }
 
-        public async Task<(App? App, string? Etag)> GetAsync(string id, CancellationToken ct)
+        public async Task<(App? App, string? Etag)> GetAsync(string id,
+            CancellationToken ct)
         {
             var document = await GetDocumentAsync(id, ct);
 
             return (document?.ToApp(), document?.Etag);
         }
 
-        public Task UpsertAsync(App app, string? oldEtag, CancellationToken ct)
+        public Task UpsertAsync(App app, string? oldEtag,
+            CancellationToken ct)
         {
             var document = MongoDbApp.FromApp(app);
 
             return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
         }
 
-        public Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters, CancellationToken ct)
+        public async Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters,
+            CancellationToken ct)
         {
-            var writes = new List<WriteModel<MongoDbApp>>();
+            var writes = new List<WriteModel<MongoDbApp>>(counters.Count);
 
             foreach (var (id, values) in counters)
             {
                 if (values.Any())
                 {
-                    var updates = new List<UpdateDefinition<MongoDbApp>>();
+                    var updates = new List<UpdateDefinition<MongoDbApp>>(values.Count);
 
                     foreach (var (key, value) in values)
                     {
-                        var field = $"App.Counters.{key}";
+                        var field = $"d.Counters.{key}";
 
                         updates.Add(Update.Inc(field, value));
                     }
@@ -127,7 +133,10 @@ namespace Notifo.Domain.Apps.MongoDb
                 }
             }
 
-            return Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            if (writes.Count > 0)
+            {
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            }
         }
     }
 }

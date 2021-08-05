@@ -63,7 +63,8 @@ namespace Notifo.Domain.UserNotifications
             return Task.CompletedTask;
         }
 
-        public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt,
+            CancellationToken ct)
         {
             await DistributeScheduledAsync(job, isLastAttempt);
 

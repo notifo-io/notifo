@@ -87,7 +87,8 @@ namespace Notifo.Domain.Channels.Email
             yield return options.User.EmailAddress;
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+            CancellationToken ct)
         {
             if (options.IsUpdate)
             {
@@ -103,7 +104,8 @@ namespace Notifo.Domain.Channels.Email
                 false, ct);
         }
 
-        public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt,
+            CancellationToken ct)
         {
             var nonConfirmed = new List<EmailJob>();
 
@@ -132,7 +134,8 @@ namespace Notifo.Domain.Channels.Email
             return UpdateAsync(jobs, jobs[0].EmailAddress, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(List<EmailJob> jobs, CancellationToken ct)
+        public Task SendAsync(List<EmailJob> jobs,
+            CancellationToken ct)
         {
             return log.ProfileAsync("SendEmail", async () =>
             {
@@ -194,7 +197,8 @@ namespace Notifo.Domain.Channels.Email
             });
         }
 
-        private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders, CancellationToken ct)
+        private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders,
+            CancellationToken ct)
         {
             var lastSender = senders.Last();
 
@@ -229,7 +233,8 @@ namespace Notifo.Domain.Channels.Email
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, email, status, reason);
         }
 
-        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason, CancellationToken ct)
+        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason,
+            CancellationToken ct)
         {
             await logStore.LogAsync(jobs[0].Notification.AppId, reason, ct);
 

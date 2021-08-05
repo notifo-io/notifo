@@ -29,7 +29,8 @@ namespace Notifo.Domain.Integrations.Firebase
             this.sendSilentIOS = sendSilentIOS;
         }
 
-        public async Task SendAsync(UserNotification userNotification, MobilePushOptions options, CancellationToken ct)
+        public async Task SendAsync(UserNotification userNotification, MobilePushOptions options,
+            CancellationToken ct)
         {
             if (!ShouldSend(userNotification.Silent, options.DeviceType))
             {

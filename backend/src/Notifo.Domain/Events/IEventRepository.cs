@@ -14,8 +14,10 @@ namespace Notifo.Domain.Events
 {
     public interface IEventRepository : ICounterStore<(string AppId, string EventId)>
     {
-        Task<IResultList<Event>> QueryAsync(string appId, EventQuery query, CancellationToken ct);
+        Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
+            CancellationToken ct);
 
-        Task InsertAsync(Event @event, CancellationToken ct);
+        Task InsertAsync(Event @event,
+            CancellationToken ct);
     }
 }

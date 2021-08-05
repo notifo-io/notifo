@@ -19,7 +19,8 @@ namespace Notifo.Domain.Channels
 
         bool IsSystem => false;
 
-        Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options, CancellationToken ct = default);
+        Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options,
+            CancellationToken ct = default);
 
         IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options);
 

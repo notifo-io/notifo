@@ -13,6 +13,7 @@ namespace Notifo.Domain.Topics
 {
     public interface ITopicStore
     {
-        Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query, CancellationToken ct = default);
+        Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
+            CancellationToken ct = default);
     }
 }

@@ -18,12 +18,16 @@ namespace Notifo.Infrastructure.Scheduling
 
         void Subscribe(IScheduleHandler<T> handler);
 
-        Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct = default);
+        Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
+            CancellationToken ct = default);
 
-        Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default);
+        Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+            CancellationToken ct = default);
 
-        Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct = default);
+        Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
+            CancellationToken ct = default);
 
-        Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default);
+        Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+            CancellationToken ct = default);
     }
 }

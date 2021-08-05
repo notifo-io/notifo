@@ -31,7 +31,8 @@ namespace Notifo.Domain.Log
             collector.StopAsync().Wait();
         }
 
-        public Task LogAsync(string appId, string message, CancellationToken ct)
+        public Task LogAsync(string appId, string message,
+            CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(message, nameof(message));
@@ -39,7 +40,8 @@ namespace Notifo.Domain.Log
             return collector.AddAsync(appId, message);
         }
 
-        public Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query, CancellationToken ct)
+        public Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
+            CancellationToken ct)
         {
             return repository.QueryAsync(appId, query, ct);
         }

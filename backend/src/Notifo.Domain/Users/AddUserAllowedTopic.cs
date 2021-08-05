@@ -16,7 +16,8 @@ namespace Notifo.Domain.Users
     {
         public TopicId Prefix { get; set; }
 
-        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider,
+            CancellationToken ct)
         {
             if (!user.AllowedTopics.Contains(Prefix))
             {

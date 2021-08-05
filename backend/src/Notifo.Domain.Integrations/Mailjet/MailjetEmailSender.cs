@@ -27,7 +27,8 @@ namespace Notifo.Domain.Integrations.Mailjet
             this.fromName = fromName;
         }
 
-        public Task SendAsync(EmailMessage message, CancellationToken ct = default)
+        public Task SendAsync(EmailMessage message,
+            CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(message.FromEmail))
             {

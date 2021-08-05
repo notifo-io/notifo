@@ -12,6 +12,7 @@ namespace Notifo.Domain.Channels.Email
 {
     public interface IEmailSender
     {
-        Task SendAsync(EmailMessage message, CancellationToken ct = default);
+        Task SendAsync(EmailMessage message,
+            CancellationToken ct = default);
     }
 }

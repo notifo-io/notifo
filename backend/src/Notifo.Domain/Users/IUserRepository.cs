@@ -15,16 +15,22 @@ namespace Notifo.Domain.Users
 {
     public interface IUserRepository : ICounterStore<(string AppId, string UserId)>
     {
-        IAsyncEnumerable<string> QueryIdsAsync(string appId, CancellationToken ct);
+        IAsyncEnumerable<string> QueryIdsAsync(string appId,
+            CancellationToken ct);
 
-        Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct);
+        Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
+            CancellationToken ct);
 
-        Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct);
+        Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey,
+            CancellationToken ct);
 
-        Task<(User? User, string? Etag)> GetAsync(string appId, string id, CancellationToken ct);
+        Task<(User? User, string? Etag)> GetAsync(string appId, string id,
+            CancellationToken ct);
 
-        Task UpsertAsync(User user, string? oldEtag, CancellationToken ct);
+        Task UpsertAsync(User user, string? oldEtag,
+            CancellationToken ct);
 
-        Task DeleteAsync(string appId, string id, CancellationToken ct);
+        Task DeleteAsync(string appId, string id,
+            CancellationToken ct);
     }
 }

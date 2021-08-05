@@ -5,13 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader } from '@app/framework';
+import { FormError, Forms, Loader, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { NotificationsForm, TemplateInput } from '@app/shared/components';
 import { getApp, publishAsync, togglePublishDialog, useApps, usePublish } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
+import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
@@ -49,7 +50,14 @@ export const PublishDialog = () => {
     const publishingError = usePublish(x => x.publishingError);
     const dialogOpen = usePublish(x => x.dialogOpen);
     const dialogValues = usePublish(x => x.dialogValues || {});
+    const wasPublishing = usePrevious(publishing);
     const [language, setLanguage] = React.useState<string>(appLanguages[0]);
+
+    React.useEffect(() => {
+        if (wasPublishing && !publishing && !publishingError) {
+            toast.info(texts.publish.success);
+        }
+    }, [publishing, publishingError, wasPublishing]);
 
     const doCloseForm = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: false }));

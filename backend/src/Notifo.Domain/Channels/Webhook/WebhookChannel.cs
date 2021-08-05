@@ -76,7 +76,8 @@ namespace Notifo.Domain.Channels.Webhook
             return UpdateAsync(job.Notification, job.Url, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
+        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+            CancellationToken ct)
         {
             var job = new WebhookJob(notification, configuration);
 
@@ -87,7 +88,8 @@ namespace Notifo.Domain.Channels.Webhook
                 false, ct);
         }
 
-        public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt,
+            CancellationToken ct)
         {
             await log.ProfileAsync("SendWebhook", async () =>
             {
@@ -110,7 +112,8 @@ namespace Notifo.Domain.Channels.Webhook
             return true;
         }
 
-        private async Task SendCoreAsync(WebhookJob job, string url, CancellationToken ct)
+        private async Task SendCoreAsync(WebhookJob job, string url,
+            CancellationToken ct)
         {
             using (var client = httpClientFactory.CreateClient())
             {

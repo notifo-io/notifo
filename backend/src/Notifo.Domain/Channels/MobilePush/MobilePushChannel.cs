@@ -112,7 +112,8 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct)
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+            CancellationToken ct)
         {
             var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
 
@@ -149,7 +150,8 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        private async Task TryWakeupAsync(UserNotification notification, MobilePushToken token, CancellationToken ct)
+        private async Task TryWakeupAsync(UserNotification notification, MobilePushToken token,
+            CancellationToken ct)
         {
             var nextWakeup = token.GetNextWakeupTime(clock);
 
@@ -192,7 +194,8 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
+            CancellationToken ct)
         {
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.DeviceToken, Name))
             {
@@ -211,7 +214,8 @@ namespace Notifo.Domain.Channels.MobilePush
             return UpdateAsync(job.Notification, job.DeviceToken, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(MobilePushJob job, CancellationToken ct)
+        public Task SendAsync(MobilePushJob job,
+            CancellationToken ct)
         {
             return log.ProfileAsync("SendMobilePush", async () =>
             {
@@ -254,7 +258,8 @@ namespace Notifo.Domain.Channels.MobilePush
             });
         }
 
-        private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders, CancellationToken ct)
+        private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders,
+            CancellationToken ct)
         {
             var lastSender = senders.Last();
 
@@ -308,7 +313,8 @@ namespace Notifo.Domain.Channels.MobilePush
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, token, status, reason);
         }
 
-        private async Task SkipAsync(UserNotification notification, string token, string reason, CancellationToken ct)
+        private async Task SkipAsync(UserNotification notification, string token, string reason,
+            CancellationToken ct)
         {
             await logStore.LogAsync(notification.AppId, reason, ct);
 

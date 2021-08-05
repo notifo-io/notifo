@@ -35,7 +35,8 @@ namespace Notifo.Domain.Channels.Web
             yield return options.User.Id;
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options, CancellationToken ct = default)
+        public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options,
+            CancellationToken ct = default)
         {
             try
             {

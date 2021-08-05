@@ -13,8 +13,10 @@ namespace Notifo.Domain.Events
 {
     public interface IEventStore
     {
-        Task<IResultList<Event>> QueryAsync(string appId, EventQuery query, CancellationToken ct = default);
+        Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
+            CancellationToken ct = default);
 
-        Task InsertAsync(EventMessage request, CancellationToken ct = default);
+        Task InsertAsync(EventMessage request,
+            CancellationToken ct = default);
     }
 }

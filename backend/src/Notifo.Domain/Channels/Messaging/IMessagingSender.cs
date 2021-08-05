@@ -17,6 +17,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         Task AddTargetsAsync(MessagingJob job, User user);
 
-        Task<bool> SendAsync(MessagingJob job, CancellationToken ct);
+        Task<bool> SendAsync(MessagingJob job,
+            CancellationToken ct);
     }
 }

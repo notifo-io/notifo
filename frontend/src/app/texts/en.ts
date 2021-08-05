@@ -218,6 +218,7 @@ export const EN = {
     },
     publish: {
         header: 'Publish',
+        success: 'Event has been published.',
     },
     subscriptions: {
         confirmDelete: 'Do you really want to delete the Subscription?',

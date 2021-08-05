@@ -36,7 +36,8 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             this.options = options.Value;
         }
 
-        public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message, CancellationToken ct)
+        public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message,
+            CancellationToken ct)
         {
             Guard.NotNull(message, nameof(message));
             Guard.NotNullOrEmpty(message.Body, nameof(message.Body));
@@ -119,7 +120,8 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             return result;
         }
 
-        private static async Task<Exception> HandleErrorAsync(HttpResponseMessage response, CancellationToken ct)
+        private static async Task<Exception> HandleErrorAsync(HttpResponseMessage response,
+            CancellationToken ct)
         {
             var errors = await response.Content.ReadFromJsonAsync<MessageBirdErrors>(default, ct);
             var error = errors?.Errors?.FirstOrDefault();

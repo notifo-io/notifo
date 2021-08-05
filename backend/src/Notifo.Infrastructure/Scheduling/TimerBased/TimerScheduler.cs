@@ -87,12 +87,14 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             currentHandler ??= handler;
         }
 
-        public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default)
+        public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+            CancellationToken ct = default)
         {
             return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
         }
 
-        public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct)
+        public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
+            CancellationToken ct)
         {
             if (dueTime <= Now && canInline && schedulerOptions.ExecuteInline)
             {
@@ -104,12 +106,14 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             }
         }
 
-        public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline, CancellationToken ct = default)
+        public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+            CancellationToken ct = default)
         {
             return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
         }
 
-        public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline, CancellationToken ct = default)
+        public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
+            CancellationToken ct = default)
         {
             if (dueTime <= Now && canInline && schedulerOptions.ExecuteInline)
             {

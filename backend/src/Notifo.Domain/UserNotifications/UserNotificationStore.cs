@@ -38,7 +38,8 @@ namespace Notifo.Domain.UserNotifications
             collector.StopAsync();
         }
 
-        public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct)
+        public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
+            CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(userId, nameof(userId));
@@ -52,7 +53,8 @@ namespace Notifo.Domain.UserNotifications
             return repository.FindAsync(id);
         }
 
-        public Task DeleteAsync(Guid id, CancellationToken ct)
+        public Task DeleteAsync(Guid id,
+            CancellationToken ct)
         {
             return repository.DeleteAsync(id, ct);
         }
@@ -80,7 +82,8 @@ namespace Notifo.Domain.UserNotifications
             return repository.TrackSeenAsync(ids, handle);
         }
 
-        public Task TrackAttemptAsync(UserEventMessage userEvent, CancellationToken ct)
+        public Task TrackAttemptAsync(UserEventMessage userEvent,
+            CancellationToken ct)
         {
             Guard.NotNull(userEvent, nameof(userEvent));
 
@@ -90,7 +93,8 @@ namespace Notifo.Domain.UserNotifications
             return StoreCountersAsync(counterKey, counterMap);
         }
 
-        public Task TrackFailedAsync(UserEventMessage userEvent, CancellationToken ct)
+        public Task TrackFailedAsync(UserEventMessage userEvent,
+            CancellationToken ct)
         {
             Guard.NotNull(userEvent, nameof(userEvent));
 
@@ -100,7 +104,8 @@ namespace Notifo.Domain.UserNotifications
             return StoreCountersAsync(counterKey, counterMap);
         }
 
-        public Task InsertAsync(UserNotification notification, CancellationToken ct)
+        public Task InsertAsync(UserNotification notification,
+            CancellationToken ct)
         {
             Guard.NotNull(notification, nameof(notification));
 
@@ -148,7 +153,8 @@ namespace Notifo.Domain.UserNotifications
             return counters.CollectAsync(key, counterValues);
         }
 
-        private Task StoreInternalAsync(UserNotification notification, CancellationToken ct)
+        private Task StoreInternalAsync(UserNotification notification,
+            CancellationToken ct)
         {
             return repository.InsertAsync(notification, ct);
         }

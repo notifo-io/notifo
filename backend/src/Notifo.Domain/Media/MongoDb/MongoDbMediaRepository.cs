@@ -29,7 +29,8 @@ namespace Notifo.Domain.Media.MongoDb
             return "Media";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbMedia> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbMedia> collection,
+            CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbMedia>(
@@ -39,7 +40,8 @@ namespace Notifo.Domain.Media.MongoDb
                 null, ct);
         }
 
-        public async Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query, CancellationToken ct)
+        public async Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
+            CancellationToken ct)
         {
             var filters = new List<FilterDefinition<MongoDbMedia>>
             {
@@ -66,7 +68,8 @@ namespace Notifo.Domain.Media.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToMedia()));
         }
 
-        public async Task<Media?> GetAsync(string appId, string fileName, CancellationToken ct)
+        public async Task<Media?> GetAsync(string appId, string fileName,
+            CancellationToken ct)
         {
             var docId = MongoDbMedia.CreateId(appId, fileName);
 
@@ -75,14 +78,16 @@ namespace Notifo.Domain.Media.MongoDb
             return document?.ToMedia();
         }
 
-        public Task UpsertAsync(Media media, CancellationToken ct)
+        public Task UpsertAsync(Media media,
+            CancellationToken ct)
         {
             var document = MongoDbMedia.FromMedia(media);
 
             return Collection.ReplaceOneAsync(x => x.DocId == document.DocId, document, UpsertReplace, ct);
         }
 
-        public Task DeleteAsync(string appId, string fileName, CancellationToken ct)
+        public Task DeleteAsync(string appId, string fileName,
+            CancellationToken ct)
         {
             var docId = MongoDbMedia.CreateId(appId, fileName);
 

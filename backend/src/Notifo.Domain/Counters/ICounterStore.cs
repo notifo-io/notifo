@@ -13,6 +13,7 @@ namespace Notifo.Domain.Counters
 {
     public interface ICounterStore<T> where T : notnull
     {
-        Task BatchWriteAsync(List<(T Key, CounterMap Counters)> counters, CancellationToken ct);
+        Task BatchWriteAsync(List<(T Key, CounterMap Counters)> counters,
+            CancellationToken ct);
     }
 }

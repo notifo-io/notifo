@@ -16,14 +16,19 @@ namespace Notifo.Domain.Apps
     {
         Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct);
 
-        Task<List<App>> QueryAsync(string contributorId, CancellationToken ct);
+        Task<List<App>> QueryAsync(string contributorId,
+            CancellationToken ct);
 
-        Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct);
+        Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey,
+            CancellationToken ct);
 
-        Task<(App? App, string? Etag)> GetAsync(string id, CancellationToken ct);
+        Task<(App? App, string? Etag)> GetAsync(string id,
+            CancellationToken ct);
 
-        Task UpsertAsync(App app, string? oldEtag, CancellationToken ct);
+        Task UpsertAsync(App app, string? oldEtag,
+            CancellationToken ct);
 
-        Task DeleteAsync(string id, CancellationToken ct);
+        Task DeleteAsync(string id,
+            CancellationToken ct);
     }
 }

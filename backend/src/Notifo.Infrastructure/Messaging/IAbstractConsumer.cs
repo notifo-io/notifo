@@ -12,6 +12,7 @@ namespace Notifo.Infrastructure.Messaging
 {
     public interface IAbstractConsumer<in T>
     {
-        Task HandleAsync(T message, CancellationToken ct = default);
+        Task HandleAsync(T message,
+            CancellationToken ct = default);
     }
 }

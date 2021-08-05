@@ -15,7 +15,8 @@ namespace Notifo.Infrastructure
     {
         bool CanCreate => false;
 
-        Task<bool> ExecuteAsync(T target, IServiceProvider serviceProvider, CancellationToken ct);
+        Task<bool> ExecuteAsync(T target, IServiceProvider serviceProvider,
+            CancellationToken ct);
 
         Task ExecutedAsync(T target, IServiceProvider serviceProvider)
         {

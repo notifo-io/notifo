@@ -42,7 +42,8 @@ namespace Notifo.Domain.Users.MongoDb
             return "Users";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbUser> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbUser> collection,
+            CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbUser>(
@@ -76,7 +77,8 @@ namespace Notifo.Domain.Users.MongoDb
             }
         }
 
-        public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query, CancellationToken ct)
+        public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
+            CancellationToken ct)
         {
             var filters = new List<FilterDefinition<MongoDbUser>>
             {
@@ -107,14 +109,16 @@ namespace Notifo.Domain.Users.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToUser()));
         }
 
-        public async Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey, CancellationToken ct)
+        public async Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey,
+            CancellationToken ct)
         {
             var document = await Collection.Find(x => x.Doc.ApiKey == apiKey).FirstOrDefaultAsync(ct);
 
             return (document?.ToUser(), document?.Etag);
         }
 
-        public async Task<(User? User, string? Etag)> GetAsync(string appId, string id, CancellationToken ct)
+        public async Task<(User? User, string? Etag)> GetAsync(string appId, string id,
+            CancellationToken ct)
         {
             var docId = MongoDbUser.CreateId(appId, id);
 
@@ -123,23 +127,26 @@ namespace Notifo.Domain.Users.MongoDb
             return (document?.ToUser(), document?.Etag);
         }
 
-        public Task UpsertAsync(User user, string? oldEtag, CancellationToken ct)
+        public Task UpsertAsync(User user, string? oldEtag,
+            CancellationToken ct)
         {
             var docId = MongoDbUser.FromUser(user);
 
             return UpsertDocumentAsync(docId.DocId, docId, oldEtag, ct);
         }
 
-        public Task DeleteAsync(string appId, string id, CancellationToken ct)
+        public Task DeleteAsync(string appId, string id,
+            CancellationToken ct)
         {
             var docId = MongoDbUser.CreateId(appId, id);
 
             return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
         }
 
-        public Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters, CancellationToken ct)
+        public Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters,
+            CancellationToken ct)
         {
-            var writes = new List<WriteModel<MongoDbUser>>();
+            var writes = new List<WriteModel<MongoDbUser>>(counters.Count);
 
             foreach (var ((appId, id), values) in counters)
             {
@@ -147,14 +154,17 @@ namespace Notifo.Domain.Users.MongoDb
                 {
                     var docId = MongoDbUser.CreateId(appId, id);
 
-                    var updates = new List<UpdateDefinition<MongoDbUser>>();
+                    var updates = new List<UpdateDefinition<MongoDbUser>>(values.Count);
 
                     foreach (var (key, value) in values)
                     {
                         updates.Add(Update.Inc($"d.Counters.{key}", value));
                     }
 
-                    var model = new UpdateOneModel<MongoDbUser>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates));
+                    var model = new UpdateOneModel<MongoDbUser>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
+                    {
+                        IsUpsert = true
+                    };
 
                     writes.Add(model);
                 }

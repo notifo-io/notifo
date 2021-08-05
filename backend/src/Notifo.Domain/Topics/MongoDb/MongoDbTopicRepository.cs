@@ -21,12 +21,9 @@ namespace Notifo.Domain.Topics.MongoDb
 {
     public sealed class MongoDbTopicRepository : MongoDbRepository<MongoDbTopic>, ITopicRepository
     {
-        private readonly IClock clock;
-
-        public MongoDbTopicRepository(IMongoDatabase database, IClock clock)
+        public MongoDbTopicRepository(IMongoDatabase database)
             : base(database)
         {
-            this.clock = clock;
         }
 
         protected override string CollectionName()
@@ -34,7 +31,8 @@ namespace Notifo.Domain.Topics.MongoDb
             return "Topics";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbTopic> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbTopic> collection,
+            CancellationToken ct)
         {
             await Collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbTopic>(
@@ -45,7 +43,8 @@ namespace Notifo.Domain.Topics.MongoDb
                 null, ct);
         }
 
-        public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query, CancellationToken ct)
+        public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
+            CancellationToken ct)
         {
             var filters = new List<FilterDefinition<MongoDbTopic>>
             {
@@ -72,34 +71,37 @@ namespace Notifo.Domain.Topics.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToTopic()));
         }
 
-        public Task BatchWriteAsync(List<((string AppId, string Path) Key, CounterMap Counters)> counters, CancellationToken ct)
+        public async Task BatchWriteAsync(List<((string AppId, string Path) Key, CounterMap Counters)> counters,
+            CancellationToken ct)
         {
-            var writes = new List<WriteModel<MongoDbTopic>>();
+            var writes = new List<WriteModel<MongoDbTopic>>(counters.Count);
 
-            var now = clock.GetCurrentInstant();
-
-            foreach (var ((appId, path), appCounters) in counters)
+            foreach (var ((appId, path), values) in counters)
             {
-                var docId = MongoDbTopic.CreateId(appId, path);
-
-                var updates = new List<UpdateDefinition<MongoDbTopic>>
+                if (values?.Count > 0)
                 {
-                    Update.Set(x => x.Doc.LastUpdate, now),
-                    Update.SetOnInsert(x => x.Doc.AppId, appId),
-                    Update.SetOnInsert(x => x.Doc.Path, path)
-                };
+                    var docId = MongoDbTopic.CreateId(appId, path);
 
-                foreach (var (key, value) in appCounters)
-                {
-                    updates.Add(Update.Inc($"Counters.{key}", value));
+                    var updates = new List<UpdateDefinition<MongoDbTopic>>(values.Count);
+
+                    foreach (var (key, value) in values)
+                    {
+                        updates.Add(Update.Inc($"d.Counters.{key}", value));
+                    }
+
+                    var model = new UpdateOneModel<MongoDbTopic>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
+                    {
+                        IsUpsert = true
+                    };
+
+                    writes.Add(model);
                 }
-
-                var model = new UpdateOneModel<MongoDbTopic>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates));
-
-                writes.Add(model);
             }
 
-            return Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            if (writes.Count > 0)
+            {
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            }
         }
     }
 }

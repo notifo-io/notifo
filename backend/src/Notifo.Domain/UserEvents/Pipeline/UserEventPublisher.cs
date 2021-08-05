@@ -64,7 +64,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
             this.userEventProducer = userEventProducer;
         }
 
-        public async Task PublishAsync(EventMessage message, CancellationToken ct)
+        public async Task PublishAsync(EventMessage message,
+            CancellationToken ct)
         {
             if (string.IsNullOrWhiteSpace(message.AppId))
             {

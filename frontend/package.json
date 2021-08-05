@@ -25,7 +25,7 @@
     "react-router-dom": "5.2.0",
     "react-router-redux": "4.0.8",
     "react-split": "2.0.11",
-    "react-toastify": "7.0.4",
+    "react-toastify": "^7.0.4",
     "react-tooltip": "^4.2.19",
     "reactstrap": "8.9.0",
     "redux": "4.1.0",

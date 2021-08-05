@@ -36,7 +36,8 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider, CancellationToken ct)
+        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+            CancellationToken ct)
         {
             Validate<Validator>.It(this);
 

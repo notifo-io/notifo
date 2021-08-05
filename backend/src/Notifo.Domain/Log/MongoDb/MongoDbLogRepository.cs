@@ -30,7 +30,8 @@ namespace Notifo.Domain.Log.MongoDb
             return "Log";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbLogEntry> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbLogEntry> collection,
+            CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbLogEntry>(
@@ -41,7 +42,8 @@ namespace Notifo.Domain.Log.MongoDb
                 null, ct);
         }
 
-        public async Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query, CancellationToken ct)
+        public async Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
+            CancellationToken ct)
         {
             var filters = new List<FilterDefinition<MongoDbLogEntry>>
             {
@@ -68,7 +70,8 @@ namespace Notifo.Domain.Log.MongoDb
             return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEntry()));
         }
 
-        public Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now, CancellationToken ct)
+        public Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
+            CancellationToken ct)
         {
             var writes = new List<WriteModel<MongoDbLogEntry>>();
 

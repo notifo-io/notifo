@@ -70,7 +70,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return "Notifications";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<UserNotification> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<UserNotification> collection,
+            CancellationToken ct)
         {
             await Collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<UserNotification>(
@@ -98,7 +99,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return count == 1;
         }
 
-        public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query, CancellationToken ct)
+        public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
+            CancellationToken ct)
         {
             var filters = new List<FilterDefinition<UserNotification>>
             {
@@ -152,7 +154,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return entity;
         }
 
-        public async Task DeleteAsync(Guid id, CancellationToken ct)
+        public async Task DeleteAsync(Guid id,
+            CancellationToken ct)
         {
             await Collection.UpdateOneAsync(x => x.Id == id, Update.Set(x => x.IsDeleted, true), cancellationToken: ct);
         }
@@ -211,7 +214,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return entity;
         }
 
-        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates, CancellationToken ct)
+        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates,
+            CancellationToken ct)
         {
             var writes = new List<WriteModel<UserNotification>>();
 
@@ -243,7 +247,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             await Collection.BulkWriteAsync(writes, cancellationToken: ct);
         }
 
-        public async Task InsertAsync(UserNotification notification, CancellationToken ct)
+        public async Task InsertAsync(UserNotification notification,
+            CancellationToken ct)
         {
             try
             {

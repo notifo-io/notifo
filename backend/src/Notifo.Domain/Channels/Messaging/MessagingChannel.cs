@@ -73,7 +73,8 @@ namespace Notifo.Domain.Channels.Messaging
             }
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options, CancellationToken ct = default)
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+            CancellationToken ct = default)
         {
             if (options.IsUpdate)
             {
@@ -110,7 +111,8 @@ namespace Notifo.Domain.Channels.Messaging
             return UpdateAsync(job.Notification, ProcessStatus.Failed);
         }
 
-        public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt,
+            CancellationToken ct)
         {
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, Name, DefaultToken))
             {
@@ -124,7 +126,8 @@ namespace Notifo.Domain.Channels.Messaging
             return false;
         }
 
-        private Task SendAsync(MessagingJob job, CancellationToken ct)
+        private Task SendAsync(MessagingJob job,
+            CancellationToken ct)
         {
             return log.ProfileAsync("SendMessaging", async () =>
             {
@@ -163,7 +166,8 @@ namespace Notifo.Domain.Channels.Messaging
             });
         }
 
-        private async Task SendCoreAsync(MessagingJob job, List<IMessagingSender> senders, CancellationToken ct)
+        private async Task SendCoreAsync(MessagingJob job, List<IMessagingSender> senders,
+            CancellationToken ct)
         {
             var lastSender = senders.Last();
 
@@ -203,7 +207,8 @@ namespace Notifo.Domain.Channels.Messaging
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, DefaultToken, status, reason);
         }
 
-        private async Task SkipAsync(MessagingJob job, string reason, CancellationToken ct)
+        private async Task SkipAsync(MessagingJob job, string reason,
+            CancellationToken ct)
         {
             await logStore.LogAsync(job.Notification.AppId, reason, ct);
 

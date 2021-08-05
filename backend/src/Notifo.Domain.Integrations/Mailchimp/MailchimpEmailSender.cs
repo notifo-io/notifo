@@ -56,7 +56,8 @@ namespace Notifo.Domain.Integrations.Mailchimp
             this.fromName = fromName;
         }
 
-        public async Task SendAsync(EmailMessage message, CancellationToken ct = default)
+        public async Task SendAsync(EmailMessage message,
+            CancellationToken ct = default)
         {
             using (var httpClient = httpClientFactory.CreateClient("Mailchimp"))
             {

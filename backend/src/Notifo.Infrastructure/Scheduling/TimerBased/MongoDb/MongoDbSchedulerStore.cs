@@ -30,7 +30,8 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
             return $"Scheduler_{options.QueueName.ToLowerInvariant()}";
         }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<SchedulerBatch<T>> collection, CancellationToken ct)
+        protected override async Task SetupCollectionAsync(IMongoCollection<SchedulerBatch<T>> collection,
+            CancellationToken ct)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<SchedulerBatch<T>>(
@@ -75,7 +76,8 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                     .Inc(x => x.RetryCount, 1));
         }
 
-        public Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount, CancellationToken ct)
+        public Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount,
+            CancellationToken ct)
         {
             return Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing && x.DueTime <= delay,
                 Update
@@ -89,7 +91,8 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                 Upsert, ct);
         }
 
-        public Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount, CancellationToken ct)
+        public Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount,
+            CancellationToken ct)
         {
             return Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing,
                 Update

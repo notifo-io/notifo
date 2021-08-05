@@ -191,7 +191,8 @@ namespace Notifo.Areas.Api.Controllers.Media
             };
         }
 
-        private async Task ResizeAsync(string appId, MediaItem media, Stream bodyStream, string fileName, ResizeOptions resizeOptions, bool overwrite, CancellationToken ct)
+        private async Task ResizeAsync(string appId, MediaItem media, Stream bodyStream, string fileName, ResizeOptions resizeOptions, bool overwrite,
+            CancellationToken ct)
         {
             using (Profiler.Trace("Resize"))
             {

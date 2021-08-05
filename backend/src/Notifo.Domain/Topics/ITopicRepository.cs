@@ -14,6 +14,7 @@ namespace Notifo.Domain.Topics
 {
     public interface ITopicRepository : ICounterStore<(string AppId, string Path)>
     {
-        Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query, CancellationToken ct);
+        Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
+            CancellationToken ct);
     }
 }

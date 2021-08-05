@@ -56,7 +56,8 @@ namespace Notifo.Domain.Integrations.Threema
             return Task.CompletedTask;
         }
 
-        public async Task<bool> SendAsync(MessagingJob job, CancellationToken ct)
+        public async Task<bool> SendAsync(MessagingJob job,
+            CancellationToken ct)
         {
             using (var httpClient = httpClientFactory.CreateClient())
             {
@@ -98,7 +99,8 @@ namespace Notifo.Domain.Integrations.Threema
             return false;
         }
 
-        private async Task<bool> SendAsync(HttpClient httpClient, string toKey, string toValue, string text, CancellationToken ct)
+        private async Task<bool> SendAsync(HttpClient httpClient, string toKey, string toValue, string text,
+            CancellationToken ct)
         {
             // Read the API documentation: https://gateway.threema.ch/de/developer/api
             const string Url = "https://msgapi.threema.ch/send_simple";

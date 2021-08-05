@@ -14,12 +14,14 @@ namespace Notifo.Infrastructure.Scheduling
 {
     public interface IScheduleHandler<T>
     {
-        Task<bool> HandleAsync(List<T> jobs, bool isLastAttempt, CancellationToken ct)
+        Task<bool> HandleAsync(List<T> jobs, bool isLastAttempt,
+            CancellationToken ct)
         {
             return HandleAsync(jobs[0], isLastAttempt, ct);
         }
 
-        Task<bool> HandleAsync(T job, bool isLastAttempt, CancellationToken ct)
+        Task<bool> HandleAsync(T job, bool isLastAttempt,
+            CancellationToken ct)
         {
             return Task.FromResult(true);
         }

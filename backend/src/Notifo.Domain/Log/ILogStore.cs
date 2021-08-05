@@ -13,8 +13,10 @@ namespace Notifo.Domain.Log
 {
     public interface ILogStore
     {
-        Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query, CancellationToken ct = default);
+        Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
+            CancellationToken ct = default);
 
-        Task LogAsync(string appId, string message, CancellationToken ct = default);
+        Task LogAsync(string appId, string message,
+            CancellationToken ct = default);
     }
 }

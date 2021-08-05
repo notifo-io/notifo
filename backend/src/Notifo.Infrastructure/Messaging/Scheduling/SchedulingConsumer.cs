@@ -42,7 +42,8 @@ namespace Notifo.Infrastructure.Messaging.Scheduling
             return scheduler.ReleaseAsync(ct);
         }
 
-        public async Task<bool> HandleAsync(List<T> jobs, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(List<T> jobs, bool isLastAttempt,
+            CancellationToken ct)
         {
             foreach (var job in jobs)
             {
