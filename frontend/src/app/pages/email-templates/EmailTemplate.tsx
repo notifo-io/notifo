@@ -58,31 +58,31 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const creating = useEmailTemplates(x => x.creating);
-    const creatingError = useEmailTemplates(x => x.creatingError);
-    const deleting = useEmailTemplates(x => x.deleting);
-    const deletingError = useEmailTemplates(x => x.deletingError);
-    const updating = useEmailTemplates(x => x.updating);
-    const updatingError = useEmailTemplates(x => x.updatingError);
+    const creatingLanguage = useEmailTemplates(x => x.creatingLanguage);
+    const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
+    const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
+    const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
+    const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
+    const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);
     const [showHtml, setShowHtml] = React.useState(true);
 
     React.useEffect(() => {
-        if (creatingError) {
-            toast.error(creatingError.response);
+        if (creatingLanguageError) {
+            toast.error(creatingLanguageError.response);
         }
-    }, [creatingError]);
+    }, [creatingLanguageError]);
 
     React.useEffect(() => {
-        if (updatingError) {
-            toast.error(updatingError.response);
+        if (updatingLanguageError) {
+            toast.error(updatingLanguageError.response);
         }
-    }, [updatingError]);
+    }, [updatingLanguageError]);
 
     React.useEffect(() => {
-        if (deletingError) {
-            toast.error(deletingError.response);
+        if (deletingLanguageError) {
+            toast.error(deletingLanguageError.response);
         }
-    }, [deletingError]);
+    }, [deletingLanguageError]);
 
     const doShowhtml = React.useCallback(() => {
         setShowHtml(true);
@@ -104,7 +104,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         dispatch(deleteEmailTemplateLanguage({ appId, id, language }));
     }, [appId, id, language]);
 
-    const disabled = updating || deleting;
+    const disabled = updatingLanguage || deletingLanguage;
 
     return template ? (
         <Formik<EmailTemplateDto> initialValues={template} onSubmit={doUpdate} validationSchema={FormSchema} enableReinitialize>
@@ -125,10 +125,10 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                                 </Col>
                                 <Col xs='auto'>
                                     <Button color='primary' disabled={disabled} type='submit'>
-                                        <Loader light small visible={updating} /> {texts.common.save}
+                                        <Loader light small visible={updatingLanguage} /> {texts.common.save}
                                     </Button>
                                     <Button color='danger' disabled={disabled} type='button' onClick={doDelete}>
-                                        <Loader light small visible={deleting} /> <Icon type='delete' />
+                                        <Loader light small visible={deletingLanguage} /> <Icon type='delete' />
                                     </Button>
                                 </Col>
                             </Row>
@@ -147,10 +147,10 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     ) : (
         <>
             <div className='email-none'>
-                <Label>{texts.emailTemplates.notFound}</Label>
+                <Label>{texts.emailTemplates.notFoundLanguage}</Label>
 
-                <Button size='lg' color='success' disabled={creating} onClick={doCreate}>
-                    <Loader light small visible={creating} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
+                <Button size='lg' color='success' disabled={creatingLanguage} onClick={doCreate}>
+                    <Loader light small visible={creatingLanguage} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
                 </Button>
             </div>
         </>

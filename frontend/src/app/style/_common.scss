@@ -99,6 +99,14 @@ $small-gutters: 4px;
 
 .btn-flat {
     box-shadow: none;
+
+    &:hover {
+        box-shadow: none;
+    }
+
+    &:focus {
+        box-shadow: none !important;
+    }
 }
 
 .btn-simple {
@@ -668,7 +676,7 @@ textarea {
     line-height: 1.5rem;
     margin: 0;
     padding: 0;
-    padding-left: 60px;
+    padding-left: 50px;
     width: auto;
 }
 

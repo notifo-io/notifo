@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { getApp, upsertSubscriptionAsync, useApps, useSubscriptions } from '@app/state';
+import { getApp, upsertSubscription, useApps, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -62,7 +62,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     }, []);
 
     const doSave = React.useCallback((params: SubscriptionDto) => {
-        dispatch(upsertSubscriptionAsync({ appId, userId, params }));
+        dispatch(upsertSubscription({ appId, userId, params }));
     }, [appId, userId]);
 
     const initialValues = subscription || { topicPrefix: '' };

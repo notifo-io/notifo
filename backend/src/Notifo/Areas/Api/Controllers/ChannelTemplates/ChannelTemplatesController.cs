@@ -52,7 +52,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// Get the channel template by id.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <returns>
         /// 200 => Channel templates returned.
         /// 404 => Channel template not found.
@@ -72,7 +72,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         }
 
         /// <summary>
-        /// Create an app template.
+        /// Create a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="request">The request object.</param>
@@ -95,7 +95,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
         /// <returns>
         /// 200 => Channel template created.
@@ -116,7 +116,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
         /// <returns>
         /// 204 => Channel template updated.
@@ -137,7 +137,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>
@@ -148,12 +148,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PutTemplateLanguage(string appId, string id, string language, [FromBody] TDto request)
         {
-            var update = new UpdateChannelTemplate<T>
-            {
-                Template = FromDto(request)
-            };
-
-            update.Language = language;
+            var update = new UpdateChannelTemplateLanguage<T> { Language = language, Template = FromDto(request) };
 
             await channelTemplateStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
 
@@ -164,7 +159,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>
         /// 204 => Channel template updated.
@@ -185,7 +180,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <returns>
         /// 204 => Channel template deleted.
         /// 404 => Channel template not found.

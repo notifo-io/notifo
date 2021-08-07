@@ -7,7 +7,7 @@
 
 import { FormError, Forms, Loader } from '@app/framework';
 import { AppDetailsDto, UpsertAppDto } from '@app/service';
-import { upsertAppAsync, useApps, useCore } from '@app/state';
+import { upsertApp, useApps, useCore } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -47,7 +47,7 @@ export const AppSettings = (props: AppSettingsProps) => {
     }, [languages]);
 
     const doSave = React.useCallback((params: UpsertAppDto) => {
-        dispatch(upsertAppAsync({ appId: appDetails.id, params }));
+        dispatch(upsertApp({ appId: appDetails.id, params }));
     }, [appDetails.id]);
 
     return (

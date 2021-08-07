@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
-import { getApp, loadLogAsync, useApps, useLog } from '@app/state';
+import { getApp, loadLog, useApps, useLog } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -26,15 +26,15 @@ export const LogPage = () => {
     });
 
     React.useEffect(() => {
-        dispatch(loadLogAsync(appId, {}));
+        dispatch(loadLog(appId, {}));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadLogAsync(appId));
+        dispatch(loadLog(appId));
     }, [appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadLogAsync(appId, q));
+        dispatch(loadLog(appId, q));
     }, [appId]);
 
     return (
@@ -49,7 +49,7 @@ export const LogPage = () => {
                             {logEntries.isLoading ? (
                                 <Loader visible={logEntries.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

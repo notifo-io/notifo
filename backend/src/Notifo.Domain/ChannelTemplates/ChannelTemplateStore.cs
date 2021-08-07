@@ -8,6 +8,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates
@@ -16,12 +17,14 @@ namespace Notifo.Domain.ChannelTemplates
     {
         private readonly IChannelTemplateRepository<T> repository;
         private readonly IServiceProvider serviceProvider;
+        private readonly IClock clock;
 
         public ChannelTemplateStore(IChannelTemplateRepository<T> repository,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider, IClock clock)
         {
             this.repository = repository;
             this.serviceProvider = serviceProvider;
+            this.clock = clock;
         }
 
         public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
@@ -69,36 +72,38 @@ namespace Notifo.Domain.ChannelTemplates
 
             return Updater.UpdateRetriedAsync(5, async () =>
             {
-                var (user, etag) = await repository.GetAsync(appId, id, ct);
+                var (template, etag) = await repository.GetAsync(appId, id, ct);
 
-                if (user == null)
+                if (template == null)
                 {
                     if (!command.CanCreate)
                     {
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    user = ChannelTemplate<T>.Create(appId, id);
+                    template = ChannelTemplate<T>.Create(appId, id);
                 }
 
-                if (await command.ExecuteAsync(user, serviceProvider, ct))
+                if (await command.ExecuteAsync(template, serviceProvider, ct))
                 {
-                    await repository.UpsertAsync(user, etag, ct);
+                    template.LastUpdate = clock.GetCurrentInstant();
 
-                    await command.ExecutedAsync(user, serviceProvider);
+                    await repository.UpsertAsync(template, etag, ct);
+
+                    await command.ExecutedAsync(template, serviceProvider);
                 }
 
-                return user;
+                return template;
             });
         }
 
-        public Task DeleteAsync(string appId, string code,
+        public Task DeleteAsync(string appId, string id,
             CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(code, nameof(code));
+            Guard.NotNullOrEmpty(id, nameof(id));
 
-            return repository.DeleteAsync(appId, code, ct);
+            return repository.DeleteAsync(appId, id, ct);
         }
     }
 }

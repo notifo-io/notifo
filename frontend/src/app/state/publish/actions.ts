@@ -13,7 +13,7 @@ import { PublishState } from './state';
 
 export const togglePublishDialog = createAction<{ open: boolean; values?: Partial<PublishDto> }>('publish/dialog');
 
-export const publishAsync = createApiThunk('publish/publish',
+export const publish = createApiThunk('publish/publish',
     async (arg: { appId: string; params: PublishDto }) => {
         await Clients.Events.postEvents(arg.appId, { requests: [arg.params] });
     });
@@ -27,15 +27,15 @@ export const publishReducer = createReducer(initialState, builder => builder
         state.publishing = false;
         state.publishingError = undefined;
     })
-    .addCase(publishAsync.pending, (state) => {
+    .addCase(publish.pending, (state) => {
         state.publishing = true;
         state.publishingError = undefined;
     })
-    .addCase(publishAsync.rejected, (state, action) => {
+    .addCase(publish.rejected, (state, action) => {
         state.publishing = false;
         state.publishingError = action.payload as ErrorDto;
     })
-    .addCase(publishAsync.fulfilled, (state) => {
+    .addCase(publish.fulfilled, (state) => {
         state.publishing = false;
         state.publishingError = undefined;
     }));

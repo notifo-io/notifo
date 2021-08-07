@@ -14,6 +14,7 @@ module.exports = {
     },
     "plugins": [
         "eslint-plugin-import",
+        "sort-keys-fix",
         "@typescript-eslint",
     ],
     "rules": {

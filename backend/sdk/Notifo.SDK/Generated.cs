@@ -668,7 +668,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get a user.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <returns>User returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
@@ -684,7 +684,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
@@ -695,7 +695,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Upsert a user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
         /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -704,7 +704,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Remove a user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -713,7 +713,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Add an allowed topic.</summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The upsert request.</param>
         /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -722,7 +722,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Remove an allowed topic.</summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -971,7 +971,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get a user.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <returns>User returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
@@ -1169,7 +1169,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
@@ -1287,7 +1287,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Upsert a user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
         /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -1390,7 +1390,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Remove a user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -1491,7 +1491,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Add an allowed topic.</summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The upsert request.</param>
         /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -1594,7 +1594,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Remove an allowed topic.</summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -5344,6 +5344,14 @@ namespace Notifo.SDK
     public partial interface IEmailTemplatesClient
     {
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get the HTML preview for a channel template.</summary>
+        /// <param name="appId">The id of the app where the templates belong to.</param>
+        /// <param name="id">The template ID.</param>
+        /// <returns>Channel template preview returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<FileResponse> GetPreviewImageAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get the channel templates.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="query">The optional query to search for items.</param>
@@ -5354,7 +5362,7 @@ namespace Notifo.SDK
         System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Create an app template.</summary>
+        /// <summary>Create a channel template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
@@ -5364,7 +5372,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get the channel template by id.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <returns>Channel templates returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
@@ -5372,7 +5380,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Create an app template language.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -5381,7 +5389,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update an app template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -5390,7 +5398,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Delete a channel template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
@@ -5398,7 +5406,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update a channel template language.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
@@ -5408,7 +5416,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Delete a language channel template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -5448,6 +5456,106 @@ namespace Notifo.SDK
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get the HTML preview for a channel template.</summary>
+        /// <param name="appId">The id of the app where the templates belong to.</param>
+        /// <param name="id">The template ID.</param>
+        /// <returns>Channel template preview returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<FileResponse> GetPreviewImageAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+    
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}/preview");
+            urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200 || status_ == 206)
+                        {
+                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_); 
+                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            return fileResponse_;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template not found.", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get the channel templates.</summary>
@@ -5563,7 +5671,7 @@ namespace Notifo.SDK
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Create an app template.</summary>
+        /// <summary>Create a channel template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
@@ -5669,7 +5777,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get the channel template by id.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <returns>Channel templates returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
@@ -5771,7 +5879,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Create an app template language.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -5880,7 +5988,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update an app template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -5983,7 +6091,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Delete a channel template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
@@ -6079,7 +6187,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update a channel template language.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
@@ -6187,7 +6295,7 @@ namespace Notifo.SDK
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Delete a language channel template.</summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The ID of the template.</param>
+        /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
@@ -9421,6 +9529,7 @@ namespace Notifo.SDK
     
         /// <summary>The last time the template has been updated.</summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastUpdate { get; set; }
     
     
@@ -9499,8 +9608,8 @@ namespace Notifo.SDK
         public string Name { get; set; }
     
         /// <summary>True, when the template is the primary template.</summary>
-        [Newtonsoft.Json.JsonProperty("primary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool Primary { get; set; }
+        [Newtonsoft.Json.JsonProperty("primary", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Primary { get; set; }
     
     
     }

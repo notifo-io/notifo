@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { UpsertUserDto, UserDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { getApp, upsertUserAsync, useApps, useCore, useUsers } from '@app/state';
+import { getApp, upsertUser, useApps, useCore, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -54,7 +54,7 @@ export const UserDialog = (props: UserDialogProps) => {
     }, []);
 
     const doSave = React.useCallback((params: UpsertUserDto) => {
-        dispatch(upsertUserAsync({ appId, params }));
+        dispatch(upsertUser({ appId, params }));
     }, [appId]);
 
     const initialValues: any = user || {};

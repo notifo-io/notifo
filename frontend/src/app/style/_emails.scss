@@ -55,6 +55,46 @@ $size-email-header: 5rem;
     }
 }
 
+.email-template {
+    & {
+        width: 300px;
+    }
+
+    &,
+    & .card-body {
+        position: relative;
+    }
+
+    &-preview {
+        @include force-height(300px);
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    iframe {
+        @include force-width(600px);
+        @include force-height(600px);
+        overflow: hidden;
+        pointer-events: none;
+        transform: scale(.5);
+        transform-origin: 0 0;
+    }
+
+    .card-body {
+        border-top: 1px solid $color-border;
+        padding-right: 3rem;
+        padding-top: .75rem;
+    }
+
+    .badge {
+        @include absolute(.5rem, .75rem);
+    }
+
+    .dropdown {
+        @include absolute(.5rem, .75rem);
+    }
+}
+
 .email {
     &-container {
         @include fixed($size-header + $size-email-header, 0, 0, $size-sidebar);
@@ -136,7 +176,7 @@ $size-email-header: 5rem;
     }
 
     label {
-        @include absolute(13px, null, null, .75rem);
+        @include absolute(11px, null, null, .75rem);
         color: $color-border-dark;
         font-size: .9rem;
         font-weight: normal;
@@ -145,9 +185,9 @@ $size-email-header: 5rem;
 
     input {
         border: 0;
-        border-bottom: 1px solid $color-border2;
+        border-bottom: 1px solid $color-border;
         border-radius: 0;
-        border-top: 1px solid $color-border2;
+        border-top: 1px solid $color-border;
         padding-left: 5rem;
     }
 }
@@ -209,5 +249,27 @@ $size-email-header: 5rem;
             min-height: 100%;
             min-width: 100%;
         }
+    }
+}
+
+.btn-back {
+    font-size: 1.5rem;
+    padding-bottom: .25rem;
+    padding-top: .25rem;
+}
+
+.btn-toggle {
+    align-items: center;
+    border-color: lighten($color-input, 8%);
+    border-radius: .25rem;
+    display: flex;
+
+    &:hover {
+        transform: none;
+    }
+
+    label {
+        margin-bottom: 0;
+        margin-right: .5rem;
     }
 }

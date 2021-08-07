@@ -7,7 +7,7 @@
 
 import { FormError, Icon } from '@app/framework';
 import { AppDetailsDto } from '@app/service';
-import { addContributorAsync, removeContributorAsync, useApps, useLogin } from '@app/state';
+import { addContributor, removeContributor, useApps, useLogin } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -32,15 +32,15 @@ export const Contributors = (props: ContributorsProps) => {
     }, []);
 
     const doInvite = React.useCallback(() => {
-        dispatch(addContributorAsync({ appId: appDetails.id, params: { email, role: 'Admin' } }));
+        dispatch(addContributor({ appId: appDetails.id, params: { email, role: 'Admin' } }));
     }, [appDetails.id, email]);
 
     const doChange = React.useCallback((id: string, role: string) => {
-        dispatch(addContributorAsync({ appId: appDetails.id, params: { email: id, role } }));
+        dispatch(addContributor({ appId: appDetails.id, params: { email: id, role } }));
     }, [appDetails.id]);
 
     const doRemove = React.useCallback((id: string) => {
-        dispatch(removeContributorAsync({ appId: appDetails.id, id }));
+        dispatch(removeContributor({ appId: appDetails.id, id }));
     }, [appDetails.id]);
 
     const disabled = appDetails.role !== 'Owner' || contributorsUpdating;

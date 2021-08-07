@@ -6,7 +6,7 @@
  */
 
 import { FormProps, Forms } from '@app/framework';
-import { getApp, loadTemplatesAsync, useApps, useTemplates } from '@app/state';
+import { getApp, loadTemplates, useApps, useTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -18,7 +18,7 @@ export const TemplateInput = (props: FormProps) => {
 
     React.useEffect(() => {
         if (!templates.isLoaded) {
-            dispatch(loadTemplatesAsync(appId));
+            dispatch(loadTemplates(appId));
         }
     }, [appId, templates.isLoaded]);
 

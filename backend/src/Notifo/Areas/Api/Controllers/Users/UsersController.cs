@@ -58,7 +58,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Get a user.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <returns>
         /// 200 => User returned.
         /// 404 => User not found.
@@ -84,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Query user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => User subscriptions returned.
@@ -109,7 +109,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Upsert a user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
         /// <returns>
         /// 204 => User subscribed.
@@ -137,7 +137,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Remove a user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>
         /// 204 => User subscribed.
@@ -201,7 +201,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Add an allowed topic.
         /// </summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The upsert request.</param>
         /// <returns>
         /// 204 => User updated.
@@ -230,7 +230,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Remove an allowed topic.
         /// </summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>
         /// 204 => User updated.

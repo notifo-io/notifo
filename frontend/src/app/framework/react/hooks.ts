@@ -72,3 +72,15 @@ export function usePrevious <T>(value: T) {
 
     return ref.current;
 }
+
+export function useStateWithRef<T>(initial: T): [T, (value: T) => void, { current: T }] {
+    const [state, setState] = React.useState<T>(initial);
+    const snapshot = React.useRef(initial);
+
+    const update = React.useCallback((value: T) => {
+        snapshot.current = value;
+        setState(value);
+    }, []);
+
+    return [state, update, snapshot];
+}

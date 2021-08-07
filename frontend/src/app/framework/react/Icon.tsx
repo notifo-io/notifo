@@ -24,6 +24,10 @@ export type IconType =
     'history' |
     'hourglass_empty' |
     'integration' |
+    'keyboard_arrow_down' |
+    'keyboard_arrow_left' |
+    'keyboard_arrow_right' |
+    'keyboard_arrow_up' |
     'mail_outline' |
     'message' |
     'mobile' |

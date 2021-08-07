@@ -18,16 +18,16 @@ const list = listThunk<MediaState, MediaDto>('media', 'media', async params => {
     return { items, total };
 });
 
-export const loadMediaAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+export const loadMedia = (appId: string, query?: Partial<Query>, reset = false) => {
     return list.action({ appId, query, reset });
 };
 
-export const uploadMediaAsync = createApiThunk('media/upload',
+export const uploadMedia = createApiThunk('media/upload',
     async (arg: { appId: string; file: File }) => {
         await Clients.Media.upload(arg.appId, arg.file);
     });
 
-export const deleteMediaAsync = createApiThunk('media/delete',
+export const deleteMedia = createApiThunk('media/delete',
     async (arg: { appId: string; fileName: string }) => {
         await Clients.Media.delete(arg.appId, arg.fileName);
     });
@@ -35,8 +35,8 @@ export const deleteMediaAsync = createApiThunk('media/delete',
 export const mediaMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
-    if (uploadMediaAsync.fulfilled.match(action) || deleteMediaAsync.fulfilled.match(action)) {
-        const load: any = loadMediaAsync(action.meta.arg.appId);
+    if (uploadMedia.fulfilled.match(action) || deleteMedia.fulfilled.match(action)) {
+        const load: any = loadMedia(action.meta.arg.appId);
 
         store.dispatch(load);
     }
@@ -52,6 +52,6 @@ export const mediaReducer = createReducer(initialState, builder => list.initiali
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(deleteMediaAsync.fulfilled, (state, action) => {
+    .addCase(deleteMedia.fulfilled, (state, action) => {
         state.uploadingFiles.removeBy(x => x.name, action.meta.arg.fileName);
     }));

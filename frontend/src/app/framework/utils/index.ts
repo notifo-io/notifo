@@ -8,3 +8,4 @@
 export * from './error';
 export * from './numbers';
 export * from './types';
+export * from './uri';

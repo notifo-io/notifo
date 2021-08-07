@@ -11,18 +11,20 @@ import { createEmailTemplate, deleteEmailTemplate, getApp, loadEmailTemplates, u
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
-import { Button, Col, Row } from 'reactstrap';
+import { Button, Col, Label, Row } from 'reactstrap';
 import { EmailTemplateCard } from './EmailTemplateCard';
 
-export const EmailsPage = () => {
+export const EmailTemplatesPage = () => {
     const dispatch = useDispatch();
     const app = useApps(getApp);
     const appId = app.id;
-    const emailTemplates = useEmailTemplates(x => x.templates);
     const creating = useEmailTemplates(x => x.creating);
     const creatingError = useEmailTemplates(x => x.creatingError);
     const deletingError = useEmailTemplates(x => x.deletingError);
+    const emailTemplates = useEmailTemplates(x => x.templates);
+    const match = useRouteMatch();
 
     React.useEffect(() => {
         dispatch(loadEmailTemplates(appId));
@@ -49,8 +51,8 @@ export const EmailsPage = () => {
     }, [appId]);
 
     return (
-        <>
-            <div className='email-header'>
+        <div className='email-templates'>
+            <div className='align-items-center header'>
                 <Row className='align-items-center'>
                     <Col xs='auto'>
                         <h2 className='truncate'>{texts.emailTemplates.header}</h2>
@@ -59,7 +61,7 @@ export const EmailsPage = () => {
                         <Loader visible={emailTemplates.isLoading} />
                     </Col>
                     <Col xs='auto'>
-                        <Button color='success'>
+                        <Button color='success' onClick={doCreate}>
                             <Loader light small visible={creating} /> <Icon type='add' /> {texts.emailTemplates.create}
                         </Button>
                     </Col>
@@ -71,7 +73,7 @@ export const EmailsPage = () => {
             {emailTemplates.items &&
                 <>
                     {emailTemplates.items.map(template => (
-                        <EmailTemplateCard key={template.id} template={template}
+                        <EmailTemplateCard key={template.id} template={template} appId={appId} match={match}
                             onDelete={doDelete}
                         />
                     ))}
@@ -79,10 +81,14 @@ export const EmailsPage = () => {
             }
 
             {!emailTemplates.isLoading && emailTemplates.items && emailTemplates.items.length === 0 &&
-                <Button size='lg' color='success' disabled={creating} onClick={doCreate}>
-                    <Loader light small visible={creating} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
-                </Button>
+                <div className='email-none'>
+                    <Label>{texts.emailTemplates.notFound}</Label>
+
+                    <Button size='lg' color='success' disabled={creating} onClick={doCreate}>
+                        <Loader light small visible={creating} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
+                    </Button>
+                </div>
             }
-        </>
+        </div>
     );
 };

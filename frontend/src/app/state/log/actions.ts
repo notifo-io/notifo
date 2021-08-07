@@ -17,7 +17,7 @@ const list = listThunk<LogState, LogEntryDto>('log', 'entries', async params => 
     return { items, total };
 });
 
-export const loadLogAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+export const loadLog = (appId: string, query?: Partial<Query>, reset = false) => {
     return list.action({ appId, query, reset });
 };
 

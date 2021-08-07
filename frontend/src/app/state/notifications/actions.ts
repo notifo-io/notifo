@@ -17,7 +17,7 @@ const list = listThunk<NotificationsState, UserNotificationDto>('notifications',
     return { items, total };
 });
 
-export const loadNotificationsAsync = (appId: string, userId: string, query?: Partial<Query>, reset = false) => {
+export const loadNotifications = (appId: string, userId: string, query?: Partial<Query>, reset = false) => {
     return list.action({ appId, userId, query, reset });
 };
 

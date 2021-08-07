@@ -28,11 +28,13 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         /// <summary>
         /// True, when the template is the primary template.
         /// </summary>
+        [Required]
         public bool Primary { get; set; }
 
         /// <summary>
         /// The last time the template has been updated.
         /// </summary>
+        [Required]
         public Instant LastUpdate { get; set; }
 
         public static ChannelTemplateDto FromDomainObject<T>(ChannelTemplate<T> source)

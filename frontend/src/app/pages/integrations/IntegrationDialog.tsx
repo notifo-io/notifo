@@ -7,7 +7,7 @@
 
 import { Confirm, FormError, Forms, Icon, Loader } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationPropertyDto, UpdateIntegrationDto } from '@app/service';
-import { createIntegrationAsync, deleteIntegrationAsync, updateIntegrationAsync, useIntegrations } from '@app/state';
+import { createIntegration, deleteIntegration, updateIntegration, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -61,7 +61,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
     const doDelete = React.useCallback(() => {
         if (configuredId) {
-            dispatch(deleteIntegrationAsync({ appId, id: configuredId }));
+            dispatch(deleteIntegration({ appId, id: configuredId }));
 
             onClose();
         }
@@ -73,9 +73,9 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         }
 
         if (configuredId) {
-            dispatch(updateIntegrationAsync({ appId, id: configuredId, params }));
+            dispatch(updateIntegration({ appId, id: configuredId, params }));
         } else {
-            dispatch(createIntegrationAsync({ appId, params: { type, ...params } }));
+            dispatch(createIntegration({ appId, params: { type, ...params } }));
         }
     }, [appId, configuredId, type]);
 

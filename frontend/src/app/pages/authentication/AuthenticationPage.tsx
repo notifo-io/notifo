@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { loginDoneAsync, logoutDoneAsync } from '@app/state';
+import { loginDone, logoutDone } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, Switch, useRouteMatch } from 'react-router';
@@ -14,7 +14,7 @@ export const LoginCallbackPage = () => {
     const dispatch = useDispatch();
 
     React.useEffect(() => {
-        dispatch(loginDoneAsync());
+        dispatch(loginDone());
     }, []);
 
     return <></>;
@@ -24,7 +24,7 @@ export const LogoutCallbackPage = () => {
     const dispatch = useDispatch();
 
     React.useEffect(() => {
-        dispatch(logoutDoneAsync());
+        dispatch(logoutDone());
     }, []);
 
     return <></>;

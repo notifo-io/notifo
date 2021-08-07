@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
-import { getApp, loadEventsAsync, useApps, useEvents } from '@app/state';
+import { getApp, loadEvents, useApps, useEvents } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -27,15 +27,15 @@ export const EventsPage = () => {
     });
 
     React.useEffect(() => {
-        dispatch(loadEventsAsync(appId, undefined));
+        dispatch(loadEvents(appId, undefined));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadEventsAsync(appId));
+        dispatch(loadEvents(appId));
     }, [appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadEventsAsync(appId, q));
+        dispatch(loadEvents(appId, q));
     }, [appId]);
 
     return (

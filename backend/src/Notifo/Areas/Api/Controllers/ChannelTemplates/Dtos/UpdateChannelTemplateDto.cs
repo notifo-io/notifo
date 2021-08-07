@@ -20,7 +20,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         /// <summary>
         /// True, when the template is the primary template.
         /// </summary>
-        public bool Primary { get; set; }
+        public bool? Primary { get; set; }
 
         public UpdateChannelTemplate<T> ToUpdate<T>()
         {

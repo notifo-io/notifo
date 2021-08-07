@@ -420,7 +420,7 @@ export class UsersClient {
     /**
      * Get a user.
      * @param appId The app where the user belongs to.
-     * @param id The user id.
+     * @param id The user ID.
      * @return User returned.
      */
     getUser(appId: string, id: string): Promise<UserDto> {
@@ -538,7 +538,7 @@ export class UsersClient {
     /**
      * Query user subscriptions.
      * @param appId The app where the user belongs to.
-     * @param id The user id.
+     * @param id The user ID.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
@@ -612,7 +612,7 @@ export class UsersClient {
     /**
      * Upsert a user subscriptions.
      * @param appId The app where the user belongs to.
-     * @param id The user id.
+     * @param id The user ID.
      * @param request The subscription object.
      * @return User subscribed.
      */
@@ -675,7 +675,7 @@ export class UsersClient {
     /**
      * Remove a user subscriptions.
      * @param appId The app where the user belongs to.
-     * @param id The user id.
+     * @param id The user ID.
      * @param prefix The topic prefix.
      * @return User subscribed.
      */
@@ -737,7 +737,7 @@ export class UsersClient {
     /**
      * Add an allowed topic.
      * @param appId The app where the users belong to.
-     * @param id The user id.
+     * @param id The user ID.
      * @param request The upsert request.
      * @return User updated.
      */
@@ -800,7 +800,7 @@ export class UsersClient {
     /**
      * Remove an allowed topic.
      * @param appId The app where the users belong to.
-     * @param id The user id.
+     * @param id The user ID.
      * @param prefix The topic prefix.
      * @return User updated.
      */
@@ -2296,6 +2296,66 @@ export class EmailTemplatesClient {
     }
 
     /**
+     * Get the HTML preview for a channel template.
+     * @param appId The id of the app where the templates belong to.
+     * @param id The template ID.
+     * @return Channel template preview returned.
+     */
+    getPreviewImage(appId: string, id: string): Promise<FileResponse> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}/preview";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/octet-stream"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetPreviewImage(_response);
+        });
+    }
+
+    protected processGetPreviewImage(response: Response): Promise<FileResponse> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FileResponse>(<any>null);
+    }
+
+    /**
      * Get the channel templates.
      * @param appId The id of the app where the templates belong to.
      * @param query (optional) The optional query to search for items.
@@ -2366,7 +2426,7 @@ export class EmailTemplatesClient {
     }
 
     /**
-     * Create an app template.
+     * Create a channel template.
      * @param appId The id of the app where the templates belong to.
      * @param request The request object.
      * @return Channel template created.
@@ -2430,7 +2490,7 @@ export class EmailTemplatesClient {
     /**
      * Get the channel template by id.
      * @param appId The id of the app where the templates belong to.
-     * @param id The ID of the template.
+     * @param id The template ID.
      * @return Channel templates returned.
      */
     getTemplate(appId: string, id: string): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
@@ -2491,7 +2551,7 @@ export class EmailTemplatesClient {
     /**
      * Create an app template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The ID of the template.
+     * @param id The template ID.
      * @param request The request object.
      * @return Channel template created.
      */
@@ -2557,7 +2617,7 @@ export class EmailTemplatesClient {
     /**
      * Update an app template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The ID of the template.
+     * @param id The template ID.
      * @param request The request object.
      * @return Channel template updated.
      */
@@ -2620,7 +2680,7 @@ export class EmailTemplatesClient {
     /**
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The ID of the template.
+     * @param id The template ID.
      * @return Channel template deleted.
      */
     deleteTemplate(appId: string, id: string): Promise<void> {
@@ -2678,7 +2738,7 @@ export class EmailTemplatesClient {
     /**
      * Update a channel template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The ID of the template.
+     * @param id The template ID.
      * @param language The language.
      * @param request The request object.
      * @return Channel template updated.
@@ -2745,7 +2805,7 @@ export class EmailTemplatesClient {
     /**
      * Delete a language channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The ID of the template.
+     * @param id The template ID.
      * @param language The language.
      * @return Channel template updated.
      */
@@ -4089,9 +4149,9 @@ export interface ChannelTemplateDto {
     /** The optional name of the template. */
     name?: string | undefined;
     /** True, when the template is the primary template. */
-    primary?: boolean;
+    primary: boolean;
     /** The last time the template has been updated. */
-    lastUpdate?: Date;
+    lastUpdate: Date;
 }
 
 export interface ChannelTemplateDetailsDtoOfEmailTemplateDto {
@@ -4128,7 +4188,7 @@ export interface UpdateChannelTemplateDto {
     /** The name of the template. */
     name?: string | undefined;
     /** True, when the template is the primary template. */
-    primary?: boolean;
+    primary?: boolean | undefined;
 }
 
 export interface AppDto {

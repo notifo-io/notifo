@@ -7,7 +7,7 @@
 
 import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
-import { getApp, loadUserAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
+import { getApp, loadUser, togglePublishDialog, useApps, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -30,7 +30,7 @@ export const UserPage = () => {
     const dialogEdit = useDialog();
 
     React.useEffect(() => {
-        dispatch(loadUserAsync({ appId, userId }));
+        dispatch(loadUser({ appId, userId }));
     }, [appId, userId]);
 
     const doEdit = React.useCallback(() => {

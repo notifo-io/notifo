@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { loadAppsAsync, loadLanguagesAsync, loadTimezonesAsync, logoutStartAsync, useLogin } from '@app/state';
+import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,13 +21,13 @@ export const InternalPage = () => {
     const user = useLogin(x => x.user)!;
 
     React.useEffect(() => {
-        dispatch(loadAppsAsync());
-        dispatch(loadLanguagesAsync());
-        dispatch(loadTimezonesAsync());
+        dispatch(loadApps());
+        dispatch(loadLanguages());
+        dispatch(loadTimezones());
     }, []);
 
     const doLogout = React.useCallback(() => {
-        dispatch(logoutStartAsync());
+        dispatch(logoutStart());
     }, []);
 
     return (

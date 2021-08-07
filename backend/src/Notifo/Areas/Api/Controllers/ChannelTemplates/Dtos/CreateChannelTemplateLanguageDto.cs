@@ -19,9 +19,9 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         [Required]
         public string Language { get; set; }
 
-        public CreateChannelTemplate<T> ToUpdate<T>()
+        public CreateChannelTemplateLanguage<T> ToUpdate<T>()
         {
-            var result = SimpleMapper.Map(this, new CreateChannelTemplate<T>());
+            var result = SimpleMapper.Map(this, new CreateChannelTemplateLanguage<T>());
 
             return result;
         }
