@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;

@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Mjml.AspNetCore;
 using Notifo.Domain.Apps;
@@ -78,7 +79,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return template;
         }
 
-        public async ValueTask<EmailTemplate> GetDefaultTemplateAsync()
+        public async ValueTask<EmailTemplate> CreateInitialAsync()
         {
             var template = new EmailTemplate
             {
@@ -92,25 +93,18 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return template;
         }
 
-        public async ValueTask<EmailMessage> FormatPreviewAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user)
+        public async ValueTask<EmailMessage> FormatPreviewAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user,
+            CancellationToken ct = default)
         {
             await ParseAsync(template);
 
             return FormatCore(notifications, template, app, user);
         }
 
-        public ValueTask<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, App app, User user)
+        public ValueTask<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user,
+            CancellationToken ct = default)
         {
-            var first = notifications.First();
-
-            if (app.EmailTemplates.TryGetValue(first.UserLanguage, out var template))
-            {
-                return new ValueTask<EmailMessage>(FormatCore(notifications, template, app, user));
-            }
-            else
-            {
-                throw new DomainException(Texts.Email_TemplateNotFound);
-            }
+            return new ValueTask<EmailMessage>(FormatCore(notifications, template, app, user));
         }
 
         private EmailMessage FormatCore(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user)

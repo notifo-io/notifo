@@ -64,7 +64,8 @@ namespace Notifo.Domain.Apps.MongoDb
                 null, ct);
         }
 
-        public async Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct)
+        public async Task<List<App>> QueryWithPendingIntegrationsAsync(
+            CancellationToken ct)
         {
             var documents =
                 await Collection.Find(x => x.IsPending)

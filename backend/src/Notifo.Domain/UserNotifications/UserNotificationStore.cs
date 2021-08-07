@@ -48,9 +48,10 @@ namespace Notifo.Domain.UserNotifications
             return repository.QueryAsync(appId, userId, query, ct);
         }
 
-        public Task<UserNotification?> FindAsync(Guid id)
+        public Task<UserNotification?> FindAsync(Guid id,
+            CancellationToken ct)
         {
-            return repository.FindAsync(id);
+            return repository.FindAsync(id, ct);
         }
 
         public Task DeleteAsync(Guid id,
@@ -59,27 +60,30 @@ namespace Notifo.Domain.UserNotifications
             return repository.DeleteAsync(id, ct);
         }
 
-        public Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration)
+        public Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+            CancellationToken ct)
         {
-            return repository.IsConfirmedOrHandledAsync(id, channel, configuration);
+            return repository.IsConfirmedOrHandledAsync(id, channel, configuration, ct);
         }
 
-        public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details)
+        public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details,
+            CancellationToken ct)
         {
             Guard.NotDefault(id, nameof(id));
 
             var handle = CreateHandle(details);
 
-            return repository.TrackConfirmedAsync(id, handle);
+            return repository.TrackConfirmedAsync(id, handle, ct);
         }
 
-        public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details)
+        public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details,
+            CancellationToken ct)
         {
             Guard.NotNull(ids, nameof(ids));
 
             var handle = CreateHandle(details);
 
-            return repository.TrackSeenAsync(ids, handle);
+            return repository.TrackSeenAsync(ids, handle, ct);
         }
 
         public Task TrackAttemptAsync(UserEventMessage userEvent,
@@ -90,7 +94,7 @@ namespace Notifo.Domain.UserNotifications
             var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt);
             var counterKey = CounterKey.ForUserEvent(userEvent);
 
-            return StoreCountersAsync(counterKey, counterMap);
+            return StoreCountersAsync(counterKey, counterMap, ct);
         }
 
         public Task TrackFailedAsync(UserEventMessage userEvent,
@@ -101,7 +105,7 @@ namespace Notifo.Domain.UserNotifications
             var counterMap = CounterMap.ForNotification(ProcessStatus.Failed);
             var counterKey = CounterKey.ForUserEvent(userEvent);
 
-            return StoreCountersAsync(counterKey, counterMap);
+            return StoreCountersAsync(counterKey, counterMap, ct);
         }
 
         public Task InsertAsync(UserNotification notification,
@@ -113,11 +117,12 @@ namespace Notifo.Domain.UserNotifications
             var counterKey = CounterKey.ForNotification(notification);
 
             return Task.WhenAll(
-                StoreCountersAsync(counterKey, counterMap),
+                StoreCountersAsync(counterKey, counterMap, ct),
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail)
+        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail,
+            CancellationToken ct)
         {
             Guard.NotNull(notification, nameof(notification));
             Guard.NotNullOrEmpty(channel, nameof(channel));
@@ -126,11 +131,12 @@ namespace Notifo.Domain.UserNotifications
             var counterKey = CounterKey.ForNotification(notification);
 
             return Task.WhenAll(
-                StoreCountersAsync(counterKey, counterMap),
+                StoreCountersAsync(counterKey, counterMap, ct),
                 StoreInternalAsync(notification.Id, channel, configuration, status, detail));
         }
 
-        public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status)
+        public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,
+            CancellationToken ct)
         {
             Guard.NotNull(notification, nameof(notification));
             Guard.NotNullOrEmpty(channel, nameof(channel));
@@ -138,7 +144,19 @@ namespace Notifo.Domain.UserNotifications
             var counterMap = CounterMap.ForChannel(channel, status);
             var counterKey = CounterKey.ForNotification(notification);
 
-            return StoreCountersAsync(counterKey, counterMap);
+            return StoreCountersAsync(counterKey, counterMap, ct);
+        }
+
+        private Task StoreCountersAsync(CounterKey key, CounterMap counterValues,
+            CancellationToken ct)
+        {
+            return counters.CollectAsync(key, counterValues, ct);
+        }
+
+        private Task StoreInternalAsync(UserNotification notification,
+            CancellationToken ct)
+        {
+            return repository.InsertAsync(notification, ct);
         }
 
         private async Task StoreInternalAsync(Guid id, string channel, string configuration, ProcessStatus status, string? detail)
@@ -146,17 +164,6 @@ namespace Notifo.Domain.UserNotifications
             var info = CreateInfo(status, detail);
 
             await collector.AddAsync(id, channel, configuration, info);
-        }
-
-        private Task StoreCountersAsync(CounterKey key, CounterMap counterValues)
-        {
-            return counters.CollectAsync(key, counterValues);
-        }
-
-        private Task StoreInternalAsync(UserNotification notification,
-            CancellationToken ct)
-        {
-            return repository.InsertAsync(notification, ct);
         }
 
         private ChannelSendInfo CreateInfo(ProcessStatus status, string? detail)

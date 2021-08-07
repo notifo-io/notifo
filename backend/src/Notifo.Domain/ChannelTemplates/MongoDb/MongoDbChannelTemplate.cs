@@ -7,20 +7,20 @@
 
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Templates.MongoDb
+namespace Notifo.Domain.ChannelTemplates.MongoDb
 {
-    public sealed class MongoDbTemplate : MongoDbEntity<Template>
+    public sealed class MongoDbChannelTemplate<T> : MongoDbEntity<ChannelTemplate<T>>
     {
-        public static string CreateId(string appId, string code)
+        public static string CreateId(string appId, string id)
         {
-            return $"{appId}_{code}";
+            return $"{appId}_{id}";
         }
 
-        public static MongoDbTemplate FromTemplate(Template template)
+        public static MongoDbChannelTemplate<T> FromChannelTemplate(ChannelTemplate<T> template)
         {
-            var docId = CreateId(template.AppId, template.Code);
+            var docId = CreateId(template.AppId, template.Id);
 
-            var result = new MongoDbTemplate
+            var result = new MongoDbChannelTemplate<T>
             {
                 DocId = docId,
                 Doc = template,
@@ -30,7 +30,7 @@ namespace Notifo.Domain.Templates.MongoDb
             return result;
         }
 
-        public Template ToTemplate()
+        public ChannelTemplate<T> ToChannelTemplate()
         {
             return Doc;
         }

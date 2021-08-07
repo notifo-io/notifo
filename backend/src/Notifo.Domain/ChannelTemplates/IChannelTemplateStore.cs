@@ -5,31 +5,24 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Users
+namespace Notifo.Domain.ChannelTemplates
 {
-    public interface IUserStore
+    public interface IChannelTemplateStore<T>
     {
-        IAsyncEnumerable<string> QueryIdsAsync(string appId,
+        Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct = default);
 
-        Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
+        Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
             CancellationToken ct = default);
 
-        Task<User?> GetByApiKeyAsync(string apiKey,
+        Task<ChannelTemplate<T>?> GetAsync(string appId, string id,
             CancellationToken ct = default);
 
-        Task<User?> GetCachedAsync(string appId, string id,
-            CancellationToken ct = default);
-
-        Task<User?> GetAsync(string appId, string id,
-            CancellationToken ct = default);
-
-        Task<User> UpsertAsync(string appId, string? id, ICommand<User> update,
+        Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> update,
             CancellationToken ct = default);
 
         Task DeleteAsync(string appId, string id,

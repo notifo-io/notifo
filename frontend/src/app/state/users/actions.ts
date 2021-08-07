@@ -84,5 +84,20 @@ export const usersReducer = createReducer(initialState, builder => list.initiali
     .addCase(upsertUserAsync.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
-        state.user = action.payload;
+
+        if (!state.user || state.user.id === action.payload.id) {
+            state.user = action.payload;
+        }
+    })
+    .addCase(deleteUserAsync.pending, (state) => {
+        state.deleting = true;
+        state.deletingError = undefined;
+    })
+    .addCase(deleteUserAsync.rejected, (state, action) => {
+        state.deleting = false;
+        state.deletingError = action.payload as ErrorDto;
+    })
+    .addCase(deleteUserAsync.fulfilled, (state) => {
+        state.deleting = false;
+        state.deletingError = undefined;
     }));

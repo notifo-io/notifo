@@ -12,13 +12,13 @@ using FluentValidation;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Apps
+namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed class DeleteAppEmailTemplate : ICommand<App>
+    public sealed class DeleteChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
     {
         public string Language { get; set; }
 
-        private sealed class Validator : AbstractValidator<DeleteAppEmailTemplate>
+        private sealed class Validator : AbstractValidator<DeleteChannelTemplateLanguage<T>>
         {
             public Validator()
             {
@@ -26,12 +26,12 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            var removed = app.EmailTemplates.Remove(Language);
+            var removed = template.Languages.Remove(Language);
 
             return Task.FromResult(removed);
         }

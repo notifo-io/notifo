@@ -85,7 +85,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     .addCase(loadDetailsAsync.fulfilled, (state, action) => {
         state.loadingDetails = false;
         state.loadingDetailsError = undefined;
-        state.appDetails = action.payload;
+        state.app = action.payload;
     })
     .addCase(upsertAppAsync.pending, (state) => {
         state.upserting = true;
@@ -99,7 +99,10 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
         state.upserting = false;
         state.upsertingError = undefined;
         state.apps.items?.set(x => x.id, action.payload);
-        state.appDetails = action.payload;
+
+        if (state.app && state.app.id === action.payload.id) {
+            state.app = action.payload;
+        }
     })
     .addCase(addContributorAsync.pending, (state) => {
         state.contributorsUpdating = true;
@@ -113,7 +116,10 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
         state.contributorsUpdating = false;
         state.contributorsError = undefined;
         state.apps.items?.set(x => x.id, action.payload);
-        state.appDetails = action.payload;
+
+        if (state.app && state.app.id === action.payload.id) {
+            state.app = action.payload;
+        }
     })
     .addCase(removeContributorAsync.pending, (state) => {
         state.contributorsUpdating = true;
@@ -127,5 +133,8 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
         state.contributorsUpdating = false;
         state.contributorsError = undefined;
         state.apps.items?.set(x => x.id, action.payload);
-        state.appDetails = action.payload;
+
+        if (state.app && state.app.id === action.payload.id) {
+            state.app = action.payload;
+        }
     }));

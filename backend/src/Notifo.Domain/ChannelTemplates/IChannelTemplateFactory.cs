@@ -5,12 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
+using System.Threading.Tasks;
 
-namespace Notifo.Domain.Templates
+namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed class TemplateQuery : QueryBase
+    public interface IChannelTemplateFactory<T>
     {
-        public string? Query { get; set; }
+        ValueTask<T> CreateInitialAsync();
+
+        ValueTask<T> ParseAsync(T input);
     }
 }

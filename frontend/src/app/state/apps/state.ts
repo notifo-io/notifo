@@ -25,7 +25,7 @@ export interface AppsState {
     appId?: string;
 
     // The app details.
-    appDetails?: AppDetailsDto;
+    app?: AppDetailsDto;
 
     // True if loading details.
     loadingDetails?: boolean;

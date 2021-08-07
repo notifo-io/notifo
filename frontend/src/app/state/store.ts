@@ -35,6 +35,7 @@ export const createAppStore = (history: History) =>
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware().concat(
                 routerMiddleware(history),
+                Reducers.emailTemplatesMiddleware,
                 Reducers.loginMiddleware,
                 Reducers.mediaMiddleware,
                 Reducers.subscriptionsMiddleware,

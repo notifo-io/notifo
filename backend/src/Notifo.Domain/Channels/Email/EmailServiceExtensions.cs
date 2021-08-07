@@ -26,6 +26,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<EmailFormatter>()
                 .As<IEmailFormatter>();
 
+            services.AddChannelTemplates<EmailTemplate>();
+
             services.AddScheduler<EmailJob>(new SchedulerOptions { QueueName = Providers.Email });
         }
     }

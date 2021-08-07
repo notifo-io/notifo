@@ -144,11 +144,12 @@ export const EN = {
         header: 'Apps',
         notFound: 'App not found',
     },
-    emails: {
+    emailTemplates: {
         bodyHtml: 'HTML Body',
         bodyHtmlValid: 'HTML Body is required and must be a valid template',
         bodyText: 'Text Body',
         bodyTextValid: 'Text Body is required and must be a valid template',
+        create: 'Create',
         header: 'Emails',
         notFound: 'No email template found.',
         notFoundButton: 'Create template',

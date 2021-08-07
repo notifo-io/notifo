@@ -7,9 +7,9 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Templates
+namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed class TemplateQuery : QueryBase
+    public sealed class ChannelTemplateQuery : QueryBase
     {
         public string? Query { get; set; }
     }

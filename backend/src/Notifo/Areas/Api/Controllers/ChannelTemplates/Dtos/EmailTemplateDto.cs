@@ -6,24 +6,26 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Notifo.Domain.Apps;
 
-namespace Notifo.Areas.Api.Controllers.Apps.Dtos
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
 {
-    public sealed class CreateEmailTemplateDto
+    public sealed class EmailTemplateDto
     {
         /// <summary>
-        /// The new language.
+        /// The subject text.
         /// </summary>
         [Required]
-        public string Language { get; set; }
+        public string Subject { get; set; }
 
-        public CreateAppEmailTemplate ToUpdate()
-        {
-            return new CreateAppEmailTemplate
-            {
-                Language = Language
-            };
-        }
+        /// <summary>
+        /// The body html template.
+        /// </summary>
+        [Required]
+        public string BodyHtml { get; set; }
+
+        /// <summary>
+        /// The body text template.
+        /// </summary>
+        public string? BodyText { get; set; }
     }
 }

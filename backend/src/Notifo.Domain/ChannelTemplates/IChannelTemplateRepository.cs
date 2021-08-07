@@ -5,31 +5,27 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Domain.Counters;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Apps
+namespace Notifo.Domain.ChannelTemplates
 {
-    public interface IAppRepository : ICounterStore<string>
+    public interface IChannelTemplateRepository<T>
     {
-        Task<List<App>> QueryWithPendingIntegrationsAsync(
+        Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct);
 
-        Task<List<App>> QueryAsync(string contributorId,
+        Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
             CancellationToken ct);
 
-        Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey,
+        Task<(ChannelTemplate<T>? Template, string? Etag)> GetAsync(string appId, string code,
             CancellationToken ct);
 
-        Task<(App? App, string? Etag)> GetAsync(string id,
+        Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag,
             CancellationToken ct);
 
-        Task UpsertAsync(App app, string? oldEtag,
-            CancellationToken ct);
-
-        Task DeleteAsync(string id,
+        Task DeleteAsync(string appId, string code,
             CancellationToken ct);
     }
 }

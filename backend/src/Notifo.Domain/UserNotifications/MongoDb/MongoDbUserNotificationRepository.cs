@@ -83,7 +83,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 null, ct);
         }
 
-        public async Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration)
+        public async Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+            CancellationToken ct)
         {
             var filter =
                Filter.And(
@@ -94,7 +95,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
             var count =
                 await Collection.Find(filter).Limit(1)
-                    .CountDocumentsAsync();
+                    .CountDocumentsAsync(ct);
 
             return count == 1;
         }
@@ -147,9 +148,10 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return ResultList.Create(resultTotal, resultItems);
         }
 
-        public async Task<UserNotification?> FindAsync(Guid id)
+        public async Task<UserNotification?> FindAsync(Guid id,
+            CancellationToken ct)
         {
-            var entity = await Collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            var entity = await Collection.Find(x => x.Id == id).FirstOrDefaultAsync(cancellationToken: ct);
 
             return entity;
         }
@@ -160,7 +162,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             await Collection.UpdateOneAsync(x => x.Id == id, Update.Set(x => x.IsDeleted, true), cancellationToken: ct);
         }
 
-        public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle)
+        public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
+            CancellationToken ct)
         {
             var writes = new List<WriteModel<UserNotification>>();
 
@@ -189,20 +192,19 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 return;
             }
 
-            await Collection.BulkWriteAsync(writes);
+            await Collection.BulkWriteAsync(writes, cancellationToken: ct);
         }
 
-        public async Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle)
+        public async Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle,
+            CancellationToken ct)
         {
             var entity =
-                await Collection.FindOneAndUpdateAsync(
-                    Filter.And(
+                await Collection.FindOneAndUpdateAsync(Filter.And(
                         Filter.Eq(x => x.Id, id),
                         Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
-                        Filter.Exists(x => x.IsConfirmed, false)),
-                    Update
+                        Filter.Exists(x => x.IsConfirmed, false)), Update
                         .Set(x => x.IsConfirmed, handle)
-                        .Set(x => x.Updated, handle.Timestamp));
+                        .Set(x => x.Updated, handle.Timestamp), cancellationToken: ct);
 
             if (entity != null)
             {

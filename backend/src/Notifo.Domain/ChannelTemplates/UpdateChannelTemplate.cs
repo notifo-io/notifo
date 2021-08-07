@@ -6,30 +6,32 @@
 // ==========================================================================
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 using Notifo.Domain.Channels.Email;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
-using ValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
-namespace Notifo.Domain.Apps
+namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed class UpdateAppEmailTemplate : ICommand<App>
+    public sealed class UpdateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
     {
-        public string Language { get; set; }
+        public string? Language { get; set; }
 
-        public EmailTemplate EmailTemplate { get; set; }
+        public string? Name { get; set; }
 
-        private sealed class Validator : AbstractValidator<UpdateAppEmailTemplate>
+        public bool Primary { get; set; }
+
+        public T? Template { get; set; }
+
+        private sealed class Validator : AbstractValidator<UpdateChannelTemplate<T>>
         {
             public Validator()
             {
-                RuleFor(x => x.Language).NotNull().Language();
-                RuleFor(x => x.EmailTemplate).NotNull().SetValidator(new EmailTemplateValidator());
+                RuleFor(x => x.Template).NotNull().When(x => x.Language != null);
             }
         }
 
@@ -43,21 +45,26 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public async Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            if (!app.Languages.Contains(Language))
-            {
-                var error = new ValidationError("Language is not supported.", nameof(Language));
+            var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-                throw new ValidationException(error);
+            var clock = serviceProvider.GetRequiredService<IClock>();
+
+            if (Language != null)
+            {
+                template.Languages[Language] = await factory.ParseAsync(Template!);
+            }
+            else
+            {
+                template.Name = Name;
+                template.Primary = Primary;
             }
 
-            var emailFormatter = serviceProvider.GetRequiredService<IEmailFormatter>()!;
-
-            app.EmailTemplates[Language] = await emailFormatter.ParseAsync(EmailTemplate);
+            template.LastUpdate = clock.GetCurrentInstant();
 
             return true;
         }

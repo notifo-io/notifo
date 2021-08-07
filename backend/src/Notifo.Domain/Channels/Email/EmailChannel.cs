@@ -21,6 +21,7 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using Squidex.Log;
+using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Email.EmailJob>;
 
 namespace Notifo.Domain.Channels.Email
@@ -30,6 +31,7 @@ namespace Notifo.Domain.Channels.Email
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
         private readonly IEmailFormatter emailFormatter;
+        private readonly IEmailTemplateStore emailTemplateStore;
         private readonly ILogStore logStore;
         private readonly ISemanticLog log;
         private readonly IUserNotificationQueue userNotificationQueue;
@@ -46,12 +48,14 @@ namespace Notifo.Domain.Channels.Email
             IAppStore appStore,
             IIntegrationManager integrationManager,
             IEmailFormatter emailFormatter,
+            IEmailTemplateStore emailTemplateStore,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore,
             IUserStore userStore)
         {
             this.appStore = appStore;
             this.emailFormatter = emailFormatter;
+            this.emailTemplateStore = emailTemplateStore;
             this.log = log;
             this.logStore = logStore;
             this.integrationManager = integrationManager;
@@ -75,11 +79,6 @@ namespace Notifo.Domain.Channels.Email
             }
 
             if (notification.Silent || string.IsNullOrEmpty(options.User.EmailAddress))
-            {
-                yield break;
-            }
-
-            if (!options.App.EmailTemplates.ContainsKey(notification.UserLanguage))
             {
                 yield break;
             }
@@ -111,7 +110,7 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var job in jobs)
             {
-                if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name))
+                if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name, ct))
                 {
                     await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
                 }
@@ -183,7 +182,26 @@ namespace Notifo.Domain.Channels.Email
                         return;
                     }
 
-                    var message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), app, user);
+                    var namedTemplate = await emailTemplateStore.GetBestAsync(app.Id, null, ct);
+
+                    if (namedTemplate == null)
+                    {
+                        await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound, ct);
+                        return;
+                    }
+
+                    if (!namedTemplate.Languages.TryGetValue(user.PreferredLanguage, out var template))
+                    {
+                        namedTemplate.Languages.TryGetValue(app.Language, out template);
+                    }
+
+                    if (template == null)
+                    {
+                        await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound, ct);
+                        return;
+                    }
+
+                    var message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template, app, user);
 
                     await SendCoreAsync(message, app.Id, senders, ct);
 

@@ -65,7 +65,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ListResponseDto<UserDto>))]
+        [Produces(typeof(UserDto))]
         public async Task<IActionResult> GetUser(string appId, string id)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);

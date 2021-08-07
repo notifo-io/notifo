@@ -15,19 +15,23 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationRepository
     {
-        Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration);
+        Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+            CancellationToken ct);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
             CancellationToken ct);
 
-        Task<UserNotification?> FindAsync(Guid id);
+        Task<UserNotification?> FindAsync(Guid id,
+            CancellationToken ct);
 
-        Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle);
+        Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle,
+            CancellationToken ct);
 
         Task DeleteAsync(Guid id,
             CancellationToken ct);
 
-        Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle);
+        Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
+            CancellationToken ct);
 
         Task InsertAsync(UserNotification notification,
             CancellationToken ct);

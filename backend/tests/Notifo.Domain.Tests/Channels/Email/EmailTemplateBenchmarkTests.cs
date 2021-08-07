@@ -49,14 +49,14 @@ namespace Notifo.Domain.Channels.Email
 
             for (var i = 0; i < 10; i++)
             {
-                await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+                await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
             }
 
             var watch = Stopwatch.StartNew();
 
             for (var i = 0; i < 1000; i++)
             {
-                await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+                await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
             }
 
             watch.Stop();

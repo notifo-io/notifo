@@ -28,6 +28,12 @@ export interface UsersState {
     // True if upserting.
     upserting?: boolean;
 
-    // The creating error.
+    // The error if upserting fails.
     upsertingError?: ErrorDto;
+
+    // True if deleting.
+    deleting?: boolean;
+
+    // The error if deleting fails.
+    deletingError?: ErrorDto;
 }

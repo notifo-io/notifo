@@ -5,38 +5,59 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto } from '@app/framework';
-import { EmailTemplateDto } from '@app/service';
+import { ErrorDto, ListState } from '@app/framework';
+import { ChannelTemplateDetailsDtoOfEmailTemplateDto, ChannelTemplateDto } from '@app/service';
 
 export interface EmailTemplatesStateInStore {
     emailTemplates: EmailTemplatesState;
 }
 
 export interface EmailTemplatesState {
-    // The email templates.
-    emailTemplates: { [language: string]: EmailTemplateDto };
+    // All templates.
+    templates: ListState<ChannelTemplateDto>;
+
+    // The template details.
+    template?: ChannelTemplateDetailsDtoOfEmailTemplateDto;
 
     // True if loading the email templates.
-    loading?: boolean;
+    loadingTemplate?: boolean;
 
     // The email templates loading error.
-    loadingError?: ErrorDto;
+    loadingTemplateError?: ErrorDto;
 
-    // True if updating the email template.
+    // True if creating an email template.
     creating?: boolean;
 
-    // The email template creating error.
+    // The error if creating an email template fails.
     creatingError?: ErrorDto;
 
-    // True if updating the email template.
+    // True if creating an email template language.
+    creatingLanguage?: boolean;
+
+    // The error if creating an email template language fails.
+    creatingLanguageError?: ErrorDto;
+
+    // True if updating an email template.
     updating?: boolean;
 
-    // The email template updating error.
+    // The error if updating an email template fails.
     updatingError?: ErrorDto;
 
-    // True if deleting the email template.
+    // True if updating an email template language.
+    updatingLanguage?: boolean;
+
+    // The error if updating an email template language fails.
+    updatingLanguageError?: ErrorDto;
+
+    // True if deleting an email template.
     deleting?: boolean;
 
-    // The email template deleting error.
+    // The error if deleting an email template language.
     deletingError?: ErrorDto;
+
+    // True if deleting an email template language.
+    deletingLanguage?: boolean;
+
+    // The error if deleting an email template language fails.
+    deletingLanguageError?: ErrorDto;
 }

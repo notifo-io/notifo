@@ -21,6 +21,8 @@ namespace Notifo.Domain.Channels.Email
 
         public IEmailFormatter EmailFormatter { get; private set; }
 
+        public EmailTemplate EmailTemplate { get; private set; }
+
         public App App { get; } = new App();
 
         private sealed class FakeFormatter : IImageFormatter
@@ -51,8 +53,7 @@ namespace Notifo.Domain.Channels.Email
                          .GetRequiredService<IMjmlServices>();
 
                 EmailFormatter = new EmailFormatter(ImageFormatter, mjmlServices);
-
-                App.EmailTemplates["en"] = await EmailFormatter.GetDefaultTemplateAsync();
+                EmailTemplate = await EmailFormatter.CreateInitialAsync();
             }).Wait();
         }
     }

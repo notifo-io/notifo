@@ -29,43 +29,43 @@ namespace Notifo.Infrastructure.MongoDb
         }
 
         public static IFindFluent<TDocument, BsonDocument> Only<TDocument>(this IFindFluent<TDocument, TDocument> find,
-            Expression<Func<TDocument, object>> include)
+            Expression<Func<TDocument, object?>> include)
         {
             return find.Project<BsonDocument>(Builders<TDocument>.Projection.Include(include));
         }
 
         public static IFindFluent<TDocument, BsonDocument> Only<TDocument>(this IFindFluent<TDocument, TDocument> find,
-            Expression<Func<TDocument, object>> include1,
-            Expression<Func<TDocument, object>> include2)
+            Expression<Func<TDocument, object?>> include1,
+            Expression<Func<TDocument, object?>> include2)
         {
             return find.Project<BsonDocument>(Builders<TDocument>.Projection.Include(include1).Include(include2));
         }
 
         public static IFindFluent<TDocument, BsonDocument> Only<TDocument>(this IFindFluent<TDocument, TDocument> find,
-            Expression<Func<TDocument, object>> include1,
-            Expression<Func<TDocument, object>> include2,
-            Expression<Func<TDocument, object>> include3)
+            Expression<Func<TDocument, object?>> include1,
+            Expression<Func<TDocument, object?>> include2,
+            Expression<Func<TDocument, object?>> include3)
         {
             return find.Project<BsonDocument>(Builders<TDocument>.Projection.Include(include1).Include(include2).Include(include3));
         }
 
         public static IFindFluent<TDocument, TDocument> Not<TDocument>(this IFindFluent<TDocument, TDocument> find,
-            Expression<Func<TDocument, object>> exclude)
+            Expression<Func<TDocument, object?>> exclude)
         {
             return find.Project<TDocument>(Builders<TDocument>.Projection.Exclude(exclude));
         }
 
         public static IFindFluent<TDocument, TDocument> Not<TDocument>(this IFindFluent<TDocument, TDocument> find,
-            Expression<Func<TDocument, object>> exclude1,
-            Expression<Func<TDocument, object>> exclude2)
+            Expression<Func<TDocument, object?>> exclude1,
+            Expression<Func<TDocument, object?>> exclude2)
         {
             return find.Project<TDocument>(Builders<TDocument>.Projection.Exclude(exclude1).Exclude(exclude2));
         }
 
         public static IFindFluent<TDocument, TDocument> Not<TDocument>(this IFindFluent<TDocument, TDocument> find,
-            Expression<Func<TDocument, object>> exclude1,
-            Expression<Func<TDocument, object>> exclude2,
-            Expression<Func<TDocument, object>> exclude3)
+            Expression<Func<TDocument, object?>> exclude1,
+            Expression<Func<TDocument, object?>> exclude2,
+            Expression<Func<TDocument, object?>> exclude3)
         {
             return find.Project<TDocument>(Builders<TDocument>.Projection.Exclude(exclude1).Exclude(exclude2).Exclude(exclude3));
         }

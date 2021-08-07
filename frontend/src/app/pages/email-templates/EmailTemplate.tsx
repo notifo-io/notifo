@@ -8,7 +8,7 @@
 import { FormControlError, Forms, Icon, Loader } from '@app/framework';
 import { EmailTemplateDto } from '@app/service';
 import { EmailHtmlEditor, EmailTextEditor } from '@app/shared/components';
-import { createEmailTemplateAsync, deleteEmailTemplateAsync, updateEmailTemplateAsync, useEmailTemplates } from '@app/state';
+import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik, useField, useFormikContext } from 'formik';
 import * as React from 'react';
@@ -20,15 +20,15 @@ import * as Yup from 'yup';
 const FormSchema = Yup.object().shape({
     // Required html body
     bodyHtml: Yup.string()
-        .label(texts.emails.bodyHtml).required(texts.emails.bodyHtmlValid),
+        .label(texts.emailTemplates.bodyHtml).required(texts.emailTemplates.bodyHtmlValid),
 
     // Required text body
     bodyText: Yup.string()
-        .label(texts.emails.bodyText).required(texts.emails.bodyTextValid),
+        .label(texts.emailTemplates.bodyText).required(texts.emailTemplates.bodyTextValid),
 
     // Required text body
     subject: Yup.string()
-        .label(texts.common.subject).required(texts.emails.subjectValid),
+        .label(texts.common.subject).required(texts.emailTemplates.subjectValid),
 });
 
 export interface EmailTemplateProps {
@@ -38,6 +38,9 @@ export interface EmailTemplateProps {
     // The app name.
     appName: string;
 
+    // The template id.
+    templateId: string;
+
     // The template language.
     language: string;
 
@@ -46,10 +49,16 @@ export interface EmailTemplateProps {
 }
 
 export const EmailTemplate = (props: EmailTemplateProps) => {
-    const { appId, appName, language, template } = props;
+    const {
+        appId,
+        appName,
+        templateId: id,
+        language,
+        template,
+    } = props;
 
     const dispatch = useDispatch();
-    const creating = useEmailTemplates(x => x.updating);
+    const creating = useEmailTemplates(x => x.creating);
     const creatingError = useEmailTemplates(x => x.creatingError);
     const deleting = useEmailTemplates(x => x.deleting);
     const deletingError = useEmailTemplates(x => x.deletingError);
@@ -84,16 +93,16 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     }, []);
 
     const doCreate = React.useCallback(() => {
-        dispatch(createEmailTemplateAsync({ appId, language }));
-    }, [appId, language]);
+        dispatch(createEmailTemplateLanguage({ appId, id, language }));
+    }, [appId, id, language]);
 
     const doUpdate = React.useCallback((template: EmailTemplateDto) => {
-        dispatch(updateEmailTemplateAsync({ appId, template, language }));
-    }, [appId, language]);
+        dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
+    }, [appId, id, language]);
 
     const doDelete = React.useCallback(() => {
-        dispatch(deleteEmailTemplateAsync({ appId, language }));
-    }, [appId, language]);
+        dispatch(deleteEmailTemplateLanguage({ appId, id, language }));
+    }, [appId, id, language]);
 
     const disabled = updating || deleting;
 
@@ -138,10 +147,10 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     ) : (
         <>
             <div className='email-none'>
-                <Label>{texts.emails.notFound}</Label>
+                <Label>{texts.emailTemplates.notFound}</Label>
 
                 <Button size='lg' color='success' disabled={creating} onClick={doCreate}>
-                    <Loader light small visible={creating} /> <Icon type='add' /> {texts.emails.notFoundButton}
+                    <Loader light small visible={creating} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
                 </Button>
             </div>
         </>

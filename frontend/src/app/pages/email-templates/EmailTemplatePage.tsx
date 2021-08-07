@@ -7,38 +7,41 @@
 
 import { Loader } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
-import { getApp, loadEmailTemplatesAsync, useApps, useEmailTemplates } from '@app/state';
+import { getApp, loadEmailTemplate, useApps, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { Col, Row } from 'reactstrap';
 import { EmailTemplate } from './EmailTemplate';
 
 export const EmailsPage = () => {
     const dispatch = useDispatch();
+    const match = useRouteMatch();
     const app = useApps(getApp);
     const appId = app.id;
     const appLanguages = app.languages;
     const appName = app.name;
-    const emailTemplates = useEmailTemplates(x => x.emailTemplates);
-    const loading = useEmailTemplates(x => x.loading);
-    const loadingError = useEmailTemplates(x => x.loadingError);
-    const upserting = useEmailTemplates(x => x.creating || x.deleting || x.updating);
+    const loadingTemplate = useEmailTemplates(x => x.loadingTemplate);
+    const loadingTemplateError = useEmailTemplates(x => x.loadingTemplateError);
+    const template = useEmailTemplates(x => x.template);
+    const templateId = match.params['id'];
+    const upserting = useEmailTemplates(x => x.creatingLanguage || x.deletingLanguage || x.updating || x.updatingLanguage);
     const [language, setLanguage] = React.useState(appLanguages[0]);
 
     React.useEffect(() => {
-        dispatch(loadEmailTemplatesAsync({ appId }));
-    }, [appId]);
+        dispatch(loadEmailTemplate({ appId, id: templateId }));
+    }, [appId, templateId]);
 
     React.useEffect(() => {
-        if (loadingError) {
-            toast.error(loadingError.response);
+        if (loadingTemplateError) {
+            toast.error(loadingTemplateError.response);
         }
-    }, [loadingError]);
+    }, [loadingTemplateError]);
 
     const doSetLanguage = (language: string) => {
-        if (!loading && !upserting) {
+        if (!loadingTemplate && !upserting) {
             setLanguage(language);
         }
     };
@@ -48,10 +51,10 @@ export const EmailsPage = () => {
             <div className='email-header'>
                 <Row className='align-items-center'>
                     <Col xs='auto'>
-                        <h2 className='truncate'>{texts.emails.header}</h2>
+                        <h2 className='truncate'>{texts.emailTemplates.header}</h2>
                     </Col>
                     <Col>
-                        <Loader visible={loading} />
+                        <Loader visible={loadingTemplate} />
                     </Col>
                     <Col xs='auto'>
                         <LanguageSelector
@@ -63,12 +66,13 @@ export const EmailsPage = () => {
                 </Row>
             </div>
 
-            {emailTemplates && !loading &&
+            {template && !loadingTemplate &&
                 <EmailTemplate
                     appId={appId}
                     appName={appName}
                     language={language}
-                    template={emailTemplates[language]} />
+                    template={template.languages[language]}
+                    templateId={template.id} />
             }
         </>
     );
