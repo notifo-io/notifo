@@ -84,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<ChannelTemplateDetailsDto<TDto>> PostTemplate(string appId, [FromBody] CreateChannelTemplateDto request)
         {
-            var update = request.ToUpdate<T>();
+            var update = request.ToUpdate<T>(App.Language);
 
             var template = await channelTemplateStore.UpsertAsync(appId, null!, update, HttpContext.RequestAborted);
 

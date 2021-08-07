@@ -8,6 +8,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates
@@ -16,10 +17,19 @@ namespace Notifo.Domain.ChannelTemplates
     {
         public bool CanCreate => true;
 
-        public Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        public string? Language { get; set; }
+
+        public async Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
-            return Task.FromResult(true);
+            if (Language != null)
+            {
+                var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+
+                template.Languages[Language] = await factory.CreateInitialAsync();
+            }
+
+            return true;
         }
     }
 }

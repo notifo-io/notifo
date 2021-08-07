@@ -153,6 +153,7 @@ export const EN = {
         bodyHtmlValid: 'HTML Body is required and must be a valid template',
         bodyText: 'Text Body',
         bodyTextValid: 'Text Body is required and must be a valid template',
+        confirmDelete: 'Do you really want to delete the Template?',
         create: 'Create',
         header: 'Emails',
         name: 'Template Name',

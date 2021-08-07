@@ -12,9 +12,11 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
 {
     public sealed class CreateChannelTemplateDto
     {
-        public CreateChannelTemplate<T> ToUpdate<T>()
+        public CreateChannelTemplate<T> ToUpdate<T>(string language)
         {
             var result = SimpleMapper.Map(this, new CreateChannelTemplate<T>());
+
+            result.Language = language;
 
             return result;
         }

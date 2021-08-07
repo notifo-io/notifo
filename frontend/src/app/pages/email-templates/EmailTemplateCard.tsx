@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormatDate, Icon, IFrame } from '@app/framework';
+import { Confirm, FormatDate, Icon, IFrame } from '@app/framework';
 import { Clients, ChannelTemplateDto } from '@app/service';
 import { texts } from '@app/texts';
 import { combineUrl } from '@sdk/shared';
@@ -71,16 +71,20 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
                     {texts.common.edit}
                 </NavLink>
 
-                <UncontrolledDropdown>
-                    <DropdownToggle size='sm' nav>
-                        <Icon type='more' />
-                    </DropdownToggle>
-                    <DropdownMenu right>
-                        <DropdownItem onClick={doDelete}>
-                            {texts.common.delete}
-                        </DropdownItem>
-                    </DropdownMenu>
-                </UncontrolledDropdown>
+                <Confirm onConfirm={doDelete} text={texts.emailTemplates.confirmDelete}>
+                    {({ onClick }) => (
+                        <UncontrolledDropdown>
+                            <DropdownToggle size='sm' nav>
+                                <Icon type='more' />
+                            </DropdownToggle>
+                            <DropdownMenu right>
+                                <DropdownItem onClick={onClick}>
+                                    {texts.common.delete}
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </UncontrolledDropdown>
+                    )}
+                </Confirm>
             </CardBody>
         </Card>
     );
