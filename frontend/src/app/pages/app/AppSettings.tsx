@@ -60,17 +60,17 @@ export const AppSettings = (props: AppSettingsProps) => {
                         <Card>
                             <CardBody>
                                 <fieldset disabled={upserting}>
-                                    <Forms.Text name='name'
+                                    <Forms.Text name='name' vertical
                                         label={texts.common.name} />
 
-                                    <Forms.Array name='languages' allowedValues={languageValues}
+                                    <Forms.Array name='languages' vertical allowedValues={languageValues}
                                         label={texts.common.languages} />
                                 </fieldset>
 
                                 <fieldset disabled={upserting}>
                                     <legend>{texts.app.urls}</legend>
 
-                                    <Forms.Text name='confirmUrl' placeholder={texts.common.urlPlaceholder}
+                                    <Forms.Text name='confirmUrl' vertical placeholder={texts.common.urlPlaceholder}
                                         label={texts.app.confirmUrl} />
                                 </fieldset>
 

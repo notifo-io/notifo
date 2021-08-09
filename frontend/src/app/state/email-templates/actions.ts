@@ -6,7 +6,7 @@
  */
 
 import { ErrorDto, listThunk, Query } from '@app/framework';
-import { ChannelTemplateDto, Clients, EmailTemplateDto, UpdateChannelTemplateDto } from '@app/service';
+import { ChannelTemplateDto, Clients, EmailTemplateDto, UpdateChannelTemplateDtoOfEmailTemplateDto } from '@app/service';
 import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from './../shared';
 import { EmailTemplatesState } from './state';
@@ -37,7 +37,7 @@ export const createEmailTemplateLanguage = createApiThunk('emailTemplates/create
     });
 
 export const updateEmailTemplate = createApiThunk('emailTemplates/update',
-    (arg: { appId: string; id: string; update: UpdateChannelTemplateDto }) => {
+    (arg: { appId: string; id: string; update: UpdateChannelTemplateDtoOfEmailTemplateDto }) => {
         return Clients.EmailTemplates.putTemplate(arg.appId, arg.id, arg.update);
     });
 

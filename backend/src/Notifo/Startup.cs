@@ -101,6 +101,7 @@ namespace Notifo
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
             services.AddMyOpenApi();
+            services.AddMySmsChannel();
             services.AddMyStorage(config);
             services.AddMySubscriptions();
             services.AddMyTemplates();

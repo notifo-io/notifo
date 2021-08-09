@@ -1,0 +1,50 @@
+@import '_vars';
+@import '_mixins';
+
+.sms-form {
+    max-width: 600px;
+}
+
+.sms-template {
+    & {
+        width: 300px;
+    }
+
+    h4 {
+        margin-bottom: 0;
+    }
+
+    &-preview {
+        @include force-height(300px);
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    iframe {
+        @include force-width(600px);
+        @include force-height(600px);
+        overflow: hidden;
+        pointer-events: none;
+        transform: scale(.5);
+        transform-origin: 0 0;
+    }
+
+    .card-body {
+        border-top: 1px solid $color-border;
+        padding-right: 3rem;
+        padding-top: .75rem;
+        position: relative;
+    }
+
+    .updated {
+        margin-top: .25rem;
+    }
+
+    .badge {
+        margin-top: .25rem;
+    }
+
+    .dropdown {
+        @include absolute(.5rem, .75rem);
+    }
+}

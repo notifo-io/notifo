@@ -6,8 +6,11 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates
@@ -18,7 +21,9 @@ namespace Notifo.Domain.ChannelTemplates
 
         public bool? Primary { get; set; }
 
-        public Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        public Dictionary<string, T>? Languages { get; set; }
+
+        public async Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             if (Name != null)
@@ -31,7 +36,19 @@ namespace Notifo.Domain.ChannelTemplates
                 template.Primary = Primary.Value;
             }
 
-            return Task.FromResult(true);
+            if (Languages != null)
+            {
+                var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+
+                foreach (var (key, value) in Languages.ToList())
+                {
+                    Languages[key] = await factory.ParseAsync(value);
+                }
+
+                template.Languages = Languages;
+            }
+
+            return true;
         }
     }
 }

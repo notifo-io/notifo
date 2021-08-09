@@ -34,7 +34,7 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
 
     React.useEffect(() => {
         async function loadPreview() {
-            const response = await Clients.EmailTemplates.getPreviewImage(appId, template.id);
+            const response = await Clients.EmailTemplates.getPreview(appId, template.id);
 
             setPreview(await response.data.text());
         }
@@ -49,43 +49,39 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
     const url = combineUrl(match.url, template.id);
 
     return (
-        <Card className='email-template'>
-            <div className='email-template-preview'>
-                <IFrame scrolling="no" html={preview} />
-            </div>
-
-            {template.primary &&
-                <Badge color='primary' pill>{texts.emailTemplates.primary}</Badge>
-            }
-
-            <CardBody>
-                <NavLink to={url}>
-                    <h4>{template.name || texts.common.noName}</h4>
-                </NavLink>
-
-                <div className='mb-2'>
-                    <small><FormatDate date={template.lastUpdate} /></small>
+        <NavLink className='card-link' to={url}>
+            <Card className='email-template'>
+                <div className='email-template-preview'>
+                    <IFrame scrolling="no" html={preview} />
                 </div>
 
-                <NavLink to={url}>
-                    {texts.common.edit}
-                </NavLink>
+                <CardBody>
+                    <h4>{template.name || texts.common.noName}</h4>
 
-                <Confirm onConfirm={doDelete} text={texts.emailTemplates.confirmDelete}>
-                    {({ onClick }) => (
-                        <UncontrolledDropdown>
-                            <DropdownToggle size='sm' nav>
-                                <Icon type='more' />
-                            </DropdownToggle>
-                            <DropdownMenu right>
-                                <DropdownItem onClick={onClick}>
-                                    {texts.common.delete}
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </UncontrolledDropdown>
-                    )}
-                </Confirm>
-            </CardBody>
-        </Card>
+                    {template.primary &&
+                        <Badge color='primary' pill>{texts.common.primary}</Badge>
+                    }
+
+                    <div className='updated'>
+                        <small><FormatDate date={template.lastUpdate} /></small>
+                    </div>
+
+                    <Confirm onConfirm={doDelete} text={texts.emailTemplates.confirmDelete}>
+                        {({ onClick }) => (
+                            <UncontrolledDropdown>
+                                <DropdownToggle size='sm' nav>
+                                    <Icon type='more' />
+                                </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem onClick={onClick}>
+                                        {texts.common.delete}
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                        )}
+                    </Confirm>
+                </CardBody>
+            </Card>
+        </NavLink>
     );
 };

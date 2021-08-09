@@ -80,8 +80,8 @@ export const EmailTemplatesPage = () => {
                 </>
             }
 
-            {!emailTemplates.isLoading && emailTemplates.items && emailTemplates.items.length === 0 &&
-                <div className='email-none'>
+            {!emailTemplates.isLoading && emailTemplates.items?.length === 0 &&
+                <div className='empty-button'>
                     <Label>{texts.emailTemplates.notFound}</Label>
 
                     <Button size='lg' color='success' disabled={creating} onClick={doCreate}>

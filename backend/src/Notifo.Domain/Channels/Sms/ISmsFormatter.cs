@@ -5,14 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.Emails.Dtos
+using Notifo.Domain.ChannelTemplates;
+
+namespace Notifo.Domain.Channels.Sms
 {
-    public sealed class RequestPreviewDto
+    public interface ISmsFormatter : IChannelTemplateFactory<SmsTemplate>
     {
-        public string Template { get; set; }
-
-        public PreviewType TemplateType { get; set; }
-
-        public string AppName { get; set; }
+        string Format(SmsTemplate? template, string text);
     }
 }

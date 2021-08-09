@@ -94,7 +94,7 @@ namespace Notifo.Domain.Channels.Email
                 return Task.CompletedTask;
             }
 
-            var job = new EmailJob(notification, configuration);
+            var job = new EmailJob(notification, setting.Template, configuration);
 
             return userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
@@ -182,18 +182,11 @@ namespace Notifo.Domain.Channels.Email
                         return;
                     }
 
-                    var namedTemplate = await emailTemplateStore.GetBestAsync(app.Id, null, ct);
-
-                    if (namedTemplate == null)
-                    {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound, ct);
-                        return;
-                    }
-
-                    if (!namedTemplate.Languages.TryGetValue(user.PreferredLanguage, out var template))
-                    {
-                        namedTemplate.Languages.TryGetValue(app.Language, out template);
-                    }
+                    var template = await emailTemplateStore.GetBestAsync(
+                        first.Notification.AppId,
+                        first.EmailTemplate,
+                        first.Notification.UserLanguage,
+                        ct);
 
                     if (template == null)
                     {

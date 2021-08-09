@@ -24,6 +24,11 @@ namespace Notifo.Areas.Api.Controllers
         /// </summary>
         public int? DelayInSeconds { get; set; }
 
+        /// <summary>
+        /// The template if the channel supports it.
+        /// </summary>
+        public string? Template { get; set; }
+
         public static NotificationSettingDto FromDomainObject(NotificationSetting source)
         {
             var result = SimpleMapper.Map(source, new NotificationSettingDto());

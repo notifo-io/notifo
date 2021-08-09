@@ -7,7 +7,6 @@
 
 import { FormControlError, Forms, Icon, Loader } from '@app/framework';
 import { EmailTemplateDto } from '@app/service';
-import { EmailHtmlEditor, EmailTextEditor } from '@app/shared/components';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik, useField, useFormikContext } from 'formik';
@@ -16,6 +15,8 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, ButtonGroup, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
+import { EmailHtmlEditor } from './editor/EmailHtmlEditor';
+import { EmailTextEditor } from './editor/EmailTextEditor';
 
 const FormSchema = Yup.object().shape({
     // Required html body
@@ -51,7 +52,6 @@ export interface EmailTemplateProps {
 export const EmailTemplate = (props: EmailTemplateProps) => {
     const {
         appId,
-        appName,
         templateId: id,
         language,
         template,
@@ -138,26 +138,24 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                             <Forms.Text name='subject' label={texts.common.subject} />
                         </div>
 
-                        <BodyHtml appName={appName} visible={showHtml} />
-                        <BodyText appName={appName} visible={!showHtml} />
+                        <BodyHtml appId={appId} visible={showHtml} />
+                        <BodyText appId={appId} visible={!showHtml} />
                     </div>
                 </Form>
             )}
         </Formik>
     ) : (
-        <>
-            <div className='email-none'>
-                <Label>{texts.emailTemplates.notFoundLanguage}</Label>
+        <div className='empty-button'>
+            <Label>{texts.emailTemplates.notFoundLanguage}</Label>
 
-                <Button size='lg' color='success' disabled={creatingLanguage} onClick={doCreate}>
-                    <Loader light small visible={creatingLanguage} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
-                </Button>
-            </div>
-        </>
+            <Button size='lg' color='success' disabled={creatingLanguage} onClick={doCreate}>
+                <Loader light small visible={creatingLanguage} /> <Icon type='add' /> {texts.emailTemplates.notFoundButton}
+            </Button>
+        </div>
     );
 };
 
-export const BodyText = ({ appName, visible }: { appName: string; visible: boolean }) => {
+export const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
     const [, meta, helpers] = useField('bodyText');
 
@@ -172,7 +170,7 @@ export const BodyText = ({ appName, visible }: { appName: string; visible: boole
             <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
 
             <div className={clazz}>
-                <EmailTextEditor value={initialValues.bodyText} appName={appName}
+                <EmailTextEditor value={initialValues.bodyText} appId={appId}
                     onChange={helpers.setValue}
                     onBlur={doTouch} />
             </div>
@@ -180,7 +178,7 @@ export const BodyText = ({ appName, visible }: { appName: string; visible: boole
     );
 };
 
-export const BodyHtml = ({ appName, visible }: { appName: string; visible: boolean }) => {
+export const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }) => {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
     const [, meta, helpers] = useField('bodyHtml');
 
@@ -195,7 +193,7 @@ export const BodyHtml = ({ appName, visible }: { appName: string; visible: boole
             <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
 
             <div className={clazz}>
-                <EmailHtmlEditor value={initialValues.bodyHtml} appName={appName}
+                <EmailHtmlEditor value={initialValues.bodyHtml} appId={appId}
                     onChange={helpers.setValue}
                     onBlur={doTouch} />
             </div>

@@ -68,12 +68,11 @@ namespace Notifo.Domain.UserNotifications
                 Id = Guid.NewGuid()
             });
 
-            notification.Formatting = formatting;
-            notification.UserLanguage = language;
-
             ConfigureTracking(notification, language, userEvent);
             ConfigureSettings(notification, user, userEvent);
 
+            notification.Formatting = formatting;
+            notification.UserLanguage = language;
             notification.Updated = clock.GetCurrentInstant();
 
             return notification;

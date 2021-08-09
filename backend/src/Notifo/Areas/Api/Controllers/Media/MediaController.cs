@@ -56,6 +56,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => Media returned.
+        /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/media/")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -80,7 +81,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// <param name="query">Additional query parameters.</param>
         /// <returns>
         /// 200 => Media returned.
-        /// 404 => Media does not exist.
+        /// 404 => Media or app not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/media/{fileName}")]
         [HttpGet("api/assets/{appId}/{fileName}")]
@@ -98,7 +99,8 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// <param name="appId">The app id where the media belongs to.</param>
         /// <param name="file">The file to upload.</param>
         /// <returns>
-        /// 201 => Media downloaded.
+        /// 201 => Media uploaded.
+        /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/media/")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -118,6 +120,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// <param name="fileName">The file name of the media.</param>
         /// <returns>
         /// 204 => Media deleted.
+        /// 404 => App not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/media/{fileName}")]
         [AppPermission(NotifoRoles.AppAdmin)]

@@ -11,7 +11,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates
 {
-    public interface IChannelTemplateRepository<T>
+    public interface IChannelTemplateRepository<T> where T : class
     {
         Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct);

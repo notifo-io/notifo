@@ -57,6 +57,20 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
+        public async ValueTask<EmailTemplate> CreateInitialAsync()
+        {
+            var template = new EmailTemplate
+            {
+                BodyHtml = DefaultBodyHtml,
+                BodyText = DefaultBodyText,
+                Subject = DefaultSubject
+            };
+
+            await ParseAsync(template);
+
+            return template;
+        }
+
         public async ValueTask<EmailTemplate> ParseAsync(EmailTemplate template)
         {
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
@@ -75,20 +89,6 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 throw new DomainException(Texts.Email_TemplateUndefined);
             }
-
-            return template;
-        }
-
-        public async ValueTask<EmailTemplate> CreateInitialAsync()
-        {
-            var template = new EmailTemplate
-            {
-                BodyHtml = DefaultBodyHtml,
-                BodyText = DefaultBodyText,
-                Subject = DefaultSubject
-            };
-
-            await ParseAsync(template);
 
             return template;
         }

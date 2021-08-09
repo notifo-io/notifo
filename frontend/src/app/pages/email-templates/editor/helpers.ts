@@ -7,39 +7,17 @@
 
 /* eslint-disable quote-props */
 
-import { getApiUrl } from '@app/service';
 import * as CodeMirror from 'codemirror';
 import * as React from 'react';
-
-export type TemplateError = { message: string; line: number };
-export type TemplateResult = { result: string; errors?: TemplateError[] };
-export type TemplatePreview = TemplateResult & { markup?: string };
-
-export type TemplateType = 'html' | 'text';
-
-export async function getPreview(template: string, appName: string, templateType: 'text' | 'html'): Promise<TemplateResult> {
-    const url = `${getApiUrl()}/api/email/preview`;
-
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/json',
-        },
-        body: JSON.stringify({ template, appName, templateType }),
-    });
-
-    const json = await response.json();
-
-    return json;
-}
+import { Clients, EmailPreviewDto, EmailPreviewType } from '@app/service';
 
 type RequestCode = { code: any };
 
-const EMPTY_PREVIEW: TemplatePreview = { result: '', errors: [], markup: '' };
+type MarkupResponse = EmailPreviewDto & { markup?: string };
 
-export function usePreview(appName: string, type: TemplateType): [TemplatePreview, string, (value: string) => void] {
+export function usePreview(appId: string, type: EmailPreviewType): [MarkupResponse, string, (value: string) => void] {
     const [emailMarkup, setEmailMarkup] = React.useState<string>('');
-    const [emailPreview, setEmailPreview] = React.useState<TemplatePreview>(EMPTY_PREVIEW);
+    const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({});
 
     const status = React.useRef<RequestCode>({ code: '0' });
 
@@ -49,14 +27,10 @@ export function usePreview(appName: string, type: TemplateType): [TemplatePrevie
 
             status.current.code = code;
 
-            const renderedMarkup = await getPreview(emailMarkup, appName, type);
+            const renderedMarkup = await Clients.EmailTemplates.postPreview(appId, { template: emailMarkup, type });
 
             if (status.current.code === code) {
-                if (renderedMarkup.errors && renderedMarkup.errors.length > 0) {
-                    setEmailPreview({ ...renderedMarkup });
-                } else {
-                    setEmailPreview({ ...renderedMarkup, markup: emailMarkup });
-                }
+                setEmailPreview({ ...renderedMarkup, markup: emailMarkup });
             }
         }, 300);
 

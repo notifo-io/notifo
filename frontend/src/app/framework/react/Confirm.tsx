@@ -8,6 +8,7 @@
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import { Types } from '../utils';
 import { useDialog } from './hooks';
 
 export interface ConfirmProps {
@@ -21,7 +22,7 @@ export interface ConfirmProps {
     onConfirm: () => void;
 
     // The children.
-    children: ((props: { onClick: () => void }) => React.ReactNode);
+    children: ((props: { onClick: (event: any) => void }) => React.ReactNode);
 }
 
 export const Confirm = (props: ConfirmProps) => {
@@ -40,8 +41,14 @@ export const Confirm = (props: ConfirmProps) => {
     }, [dialog, onConfirm]);
 
     const doRender = React.useCallback(() => {
-        const onClick = () => {
+        const onClick = (event: any) => {
             dialog.open();
+
+            if (Types.isFunction(event.stopPropagation)) {
+                event.stopPropagation();
+            }
+
+            return false;
         };
 
         return children({ onClick });

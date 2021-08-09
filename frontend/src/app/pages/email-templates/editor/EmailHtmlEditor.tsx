@@ -13,34 +13,32 @@ import Split from 'react-split';
 import { EmailHtmlTextEditor } from './EmailHtmlTextEditor';
 import { usePreview } from './helpers';
 
-type OnChange = (value: string) => void;
-
 export interface EmailHtmlEditorProps {
     // The value.
     value: string;
 
     // The app name.
-    appName: string;
+    appId: string;
 
     // When the html has changed.
-    onChange?: OnChange;
+    onChange?: (value: string) => void;
 
     // Called when the focus has been lost.
     onBlur?: () => void;
 }
 
 export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
-    const { appName, onChange, value } = props;
+    const { appId, onChange, value } = props;
 
-    const [emailPreview, markup, setMarkup] = usePreview(appName, 'html');
+    const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
+
+    React.useEffect(() => {
+        onChange && emailPreview.markup && onChange(emailPreview.markup);
+    }, [emailPreview]);
 
     React.useEffect(() => {
         setMarkup(value);
     }, [value]);
-
-    React.useEffect(() => {
-        onChange && onChange(emailPreview.markup!);
-    }, [emailPreview]);
 
     return (
         <div className='email-editor'>

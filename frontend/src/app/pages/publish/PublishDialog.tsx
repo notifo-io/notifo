@@ -14,7 +14,7 @@ import { Formik } from 'formik';
 import * as React from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
 import * as Yup from 'yup';
 
 const FormSchema = Yup.object({
@@ -51,6 +51,7 @@ export const PublishDialog = () => {
     const dialogOpen = usePublish(x => x.dialogOpen);
     const dialogValues = usePublish(x => x.dialogValues || {});
     const wasPublishing = usePrevious(publishing);
+    const [tab, setTab] = React.useState(0);
     const [language, setLanguage] = React.useState<string>(appLanguages[0]);
 
     React.useEffect(() => {
@@ -75,51 +76,57 @@ export const PublishDialog = () => {
                 {({ handleSubmit, values }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>
-                            {texts.publish.header}
+                            <Nav className='nav-tabs2'>
+                                <NavItem>
+                                    <NavLink onClick={() => setTab(0)} active={tab === 0}>{texts.common.publish}</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink onClick={() => setTab(1)} active={tab === 1}>{texts.common.channels}</NavLink>
+                                </NavItem>
+                            </Nav>
                         </ModalHeader>
 
                         <ModalBody>
-                            <fieldset disabled={publishing}>
-                                <Forms.Text name='topic'
-                                    label={texts.common.topic} />
-                            </fieldset>
+                            {tab === 0 ? (
+                                <fieldset disabled={publishing}>
+                                    <Forms.Text name='topic'
+                                        label={texts.common.topic} />
 
-                            <Forms.Boolean name='templated'
-                                label={texts.common.templateMode} />
+                                    <Forms.Boolean name='templated'
+                                        label={texts.common.templateMode} />
 
-                            {values['templated'] ? (
-                                <TemplateInput name='templateCode'
-                                    label={texts.common.templateCode} />
+                                    {values['templated'] ? (
+                                        <TemplateInput name='templateCode'
+                                            label={texts.common.templateCode} />
+                                    ) : (
+                                        <NotificationsForm.Formatting
+                                            onLanguageSelect={setLanguage}
+                                            language={language}
+                                            languages={appLanguages}
+                                            field='preformatted' disabled={publishing} />
+                                    )}
+
+                                    <hr />
+
+                                    <Forms.Boolean name='test'
+                                        label={texts.integrations.test} />
+
+                                    <hr />
+
+                                    <Forms.Boolean name='silent'
+                                        label={texts.common.silent} />
+
+                                    <Forms.Textarea name='data'
+                                        label={texts.common.data} />
+
+                                    <hr />
+
+                                    <Forms.Number name='timeToLiveInSeconds'
+                                        label={texts.common.timeToLive} min={0} max={2419200} />
+                                </fieldset>
                             ) : (
-                                <NotificationsForm.Formatting
-                                    onLanguageSelect={setLanguage}
-                                    language={language}
-                                    languages={appLanguages}
-                                    field='preformatted' disabled={publishing} />
+                                <NotificationsForm.Settings field='settings' disabled={publishing} />
                             )}
-
-                            <hr />
-
-                            <Forms.Boolean name='test'
-                                label={texts.integrations.test} />
-
-                            <hr />
-
-                            <Forms.Boolean name='silent'
-                                label={texts.common.silent} />
-
-                            <Forms.TextArea name='data'
-                                label={texts.common.data} />
-
-                            <hr />
-
-                            <Forms.Number name='timeToLiveInSeconds'
-                                label={texts.common.timeToLive} min={0} max={2419200} />
-
-                            <hr />
-
-                            <NotificationsForm.Settings
-                                field='settings' disabled={publishing} />
 
                             <FormError error={publishingError} />
                         </ModalBody>

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormProps, Forms } from '@app/framework';
+import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
 import { getApp, loadTemplates, useApps, useTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-export const TemplateInput = (props: FormProps) => {
+export const TemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
     const app = useApps(getApp);
     const appId = app.id;
@@ -23,7 +23,17 @@ export const TemplateInput = (props: FormProps) => {
     }, [appId, templates.isLoaded]);
 
     const options = React.useMemo(() => {
-        return templates.items?.map(x => ({ value: x.code!, label: x.code! })) || [];
+        const result: FormEditorOption<string | undefined>[] = [];
+
+        if (templates.items) {
+            for (const { code: label } of templates.items) {
+                if (label) {
+                    result.push({ label, value: label });
+                }
+            }
+        }
+
+        return result;
     }, [templates.items]);
 
     return (

@@ -33,6 +33,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => Topics returned.
+        /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/topics/")]
         [AppPermission(NotifoRoles.AppAdmin)]

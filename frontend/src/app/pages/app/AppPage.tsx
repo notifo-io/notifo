@@ -13,6 +13,8 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
 import { match, NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
+import { SmsTemplatePage } from '../sms-templates/SmsTemplatePage';
+import { SmsTemplatesPage } from '../sms-templates/SmsTemplatesPage';
 import { EmailTemplatePage } from './../email-templates/EmailTemplatePage';
 import { EmailTemplatesPage } from './../email-templates/EmailTemplatesPage';
 import { EventsPage } from './../events/EventsPage';
@@ -37,14 +39,16 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
         setIsOpen(false);
     }, []);
 
-    const urlToEmails = combineUrl(match.url, 'emails');
+    const urlToEmailTemplates = combineUrl(match.url, 'email-templates');
     const urlToMedia = combineUrl(match.url, 'media');
+    const urlToSmsTemplates = combineUrl(match.url, 'sms-templates');
     const urlToTemplates = combineUrl(match.url, 'templates');
 
     const isActive =
-        path.startsWith(urlToEmails) ||
-        path.startsWith(urlToTemplates) ||
-        path.startsWith(urlToMedia);
+        path.startsWith(urlToEmailTemplates) ||
+        path.startsWith(urlToMedia) ||
+        path.startsWith(urlToSmsTemplates) ||
+        path.startsWith(urlToTemplates);
 
     return (
         <Dropdown nav direction='right' isOpen={isOpen} toggle={doToggle} active={isActive}>
@@ -58,7 +62,10 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
                 <NavLink activeClassName='active' className='dropdown-item' to={urlToTemplates} onClick={doClose}>
                     <Icon type='file_copy' /> <span>{texts.templates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToEmails} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToSmsTemplates} onClick={doClose}>
+                    <Icon type='sms' /> <span>{texts.smsTemplates.header}</span>
+                </NavLink>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToEmailTemplates} onClick={doClose}>
                     <Icon type='mail_outline' /> <span>{texts.emailTemplates.header}</span>
                 </NavLink>
             </DropdownMenu>
@@ -186,12 +193,20 @@ export const AppPage = () => {
                     <MediaPage />
                 </Route>
 
-                <Route path={combineUrl(match.url, 'emails/')} exact>
+                <Route path={combineUrl(match.url, 'email-templates/')} exact>
                     <EmailTemplatesPage />
                 </Route>
 
-                <Route path={combineUrl(match.url, 'emails/:templateId/')} exact>
+                <Route path={combineUrl(match.url, 'email-templates/:templateId/')} exact>
                     <EmailTemplatePage />
+                </Route>
+
+                <Route path={combineUrl(match.url, 'sms-templates/')} exact>
+                    <SmsTemplatesPage />
+                </Route>
+
+                <Route path={combineUrl(match.url, 'sms-templates/:templateId/')} exact>
+                    <SmsTemplatePage />
                 </Route>
 
                 <Route path={combineUrl(match.url, 'log/')} exact>

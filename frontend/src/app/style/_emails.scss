@@ -60,9 +60,8 @@ $size-email-header: 5rem;
         width: 300px;
     }
 
-    &,
-    & .card-body {
-        position: relative;
+    h4 {
+        margin-bottom: 0;
     }
 
     &-preview {
@@ -84,10 +83,15 @@ $size-email-header: 5rem;
         border-top: 1px solid $color-border;
         padding-right: 3rem;
         padding-top: .75rem;
+        position: relative;
+    }
+
+    .updated {
+        margin-top: .25rem;
     }
 
     .badge {
-        @include absolute(.5rem, .75rem);
+        margin-top: .25rem;
     }
 
     .dropdown {
@@ -129,19 +133,6 @@ $size-email-header: 5rem;
 
     .nav-link {
         cursor: pointer;
-    }
-}
-
-.email-none {
-    padding-top: 10rem;
-    text-align: center;
-    text-decoration: none;
-
-    label {
-        display: block;
-        font-size: 1.2rem;
-        font-weight: normal;
-        margin-bottom: 2rem;
     }
 }
 

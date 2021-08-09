@@ -81,14 +81,18 @@ export const EmailTemplatePage = () => {
             <div className='email-header'>
                 <Row className='align-items-center'>
                     <Col xs='auto'>
-                        <NavLink className='btn btn-back btn-flat' to='./'>
-                            <Icon type='keyboard_arrow_left' />
-                        </NavLink>
-                    </Col>
-                    <Col xs='auto'>
-                        <Form onSubmit={doUpdateName}>
-                            <Input name={name} disabled={updating} onChange={doSetName} placeholder={texts.emailTemplates.name} />
-                        </Form>
+                        <Row noGutters className='align-items-center'>
+                            <Col xs='auto'>
+                                <NavLink className='btn btn-back btn-flat' to='./'>
+                                    <Icon type='keyboard_arrow_left' />
+                                </NavLink>
+                            </Col>
+                            <Col xs='auto'>
+                                <Form onSubmit={doUpdateName}>
+                                    <Input name={name} disabled={updating} onChange={doSetName} placeholder={texts.emailTemplates.name} />
+                                </Form>
+                            </Col>
+                        </Row>
                     </Col>
                     <Col>
                         <Loader visible={loadingTemplate} />
@@ -99,7 +103,7 @@ export const EmailTemplatePage = () => {
                             <Col xs='auto'>
                                 <div className='btn btn-toggle btn-flat'>
                                     <Label>
-                                        {texts.emailTemplates.primary}
+                                        {texts.common.primary}
                                     </Label>
 
                                     <Toggle disabled={updating} value={template?.primary} onChange={doUpdatePrimary} />

@@ -13,7 +13,7 @@ import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
 
 export interface UserDialogProps {
     // The user to edit.
@@ -33,6 +33,7 @@ export const UserDialog = (props: UserDialogProps) => {
     const coreTimezones = useCore(x => x.timezones);
     const upserting = useUsers(x => x.upserting);
     const upsertingError = useUsers(x => x.upsertingError);
+    const [tab, setTab] = React.useState(0);
     const [wasUpserting, setWasUpserting] = React.useState(false);
 
     React.useEffect(() => {
@@ -65,36 +66,43 @@ export const UserDialog = (props: UserDialogProps) => {
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>
-                            {user ? texts.users.editHeader : texts.users.createHeader}
+                            <Nav className='nav-tabs2'>
+                                <NavItem>
+                                    <NavLink onClick={() => setTab(0)} active={tab === 0}>{user ? texts.users.editHeader : texts.users.createHeader}</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink onClick={() => setTab(1)} active={tab === 1}>{texts.common.channels}</NavLink>
+                                </NavItem>
+                            </Nav>
                         </ModalHeader>
 
                         <ModalBody>
-                            <fieldset disabled={upserting}>
-                                <Forms.Text name='id'
-                                    label={texts.common.id} />
+                            {tab === 0 ? (
+                                <fieldset disabled={upserting}>
+                                    <Forms.Text name='id'
+                                        label={texts.common.id} />
 
-                                <Forms.Text name='fullName'
-                                    label={texts.common.name} />
+                                    <Forms.Text name='fullName'
+                                        label={texts.common.name} />
 
-                                <Forms.Text name='emailAddress'
-                                    label={texts.common.emailAddress} />
+                                    <Forms.Text name='emailAddress'
+                                        label={texts.common.emailAddress} />
 
-                                <Forms.Text name='phoneNumber'
-                                    label={texts.common.phoneNumber} />
+                                    <Forms.Text name='phoneNumber'
+                                        label={texts.common.phoneNumber} />
 
-                                <Forms.Text name='threemaId'
-                                    label={texts.common.threemaId} />
+                                    <Forms.Text name='threemaId'
+                                        label={texts.common.threemaId} />
 
-                                <Forms.Select name='preferredLanguage' options={coreLanguages}
-                                    label={texts.common.language} />
+                                    <Forms.Select name='preferredLanguage' options={coreLanguages}
+                                        label={texts.common.language} />
 
-                                <Forms.Select name='preferredTimezone' options={coreTimezones}
-                                    label={texts.common.timezone} />
-                            </fieldset>
-
-                            <hr />
-
-                            <NotificationsForm.Settings field='settings' disabled={upserting} />
+                                    <Forms.Select name='preferredTimezone' options={coreTimezones}
+                                        label={texts.common.timezone} />
+                                </fieldset>
+                            ) : (
+                                <NotificationsForm.Settings field='settings' disabled={upserting} />
+                            )}
 
                             <FormError error={upsertingError} />
                         </ModalBody>

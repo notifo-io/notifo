@@ -12,11 +12,12 @@ using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Reflection;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 {
-    public abstract class ChannelTemplatesController<T, TDto> : BaseController
+    public abstract class ChannelTemplatesController<T, TDto> : BaseController where T : class, new() where TDto : class, new()
     {
         private readonly IChannelTemplateStore<T> channelTemplateStore;
 
@@ -32,7 +33,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => Channel templates returned.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpGet]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -55,7 +56,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="id">The template ID.</param>
         /// <returns>
         /// 200 => Channel templates returned.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpGet("{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -78,7 +79,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="request">The request object.</param>
         /// <returns>
         /// 200 => Channel template created.
-        /// 404 => Channel template not found.
+        /// 404 => App not found.
         /// </returns>
         [HttpPost]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -99,7 +100,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="request">The request object.</param>
         /// <returns>
         /// 200 => Channel template created.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpPost("{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -120,13 +121,13 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="request">The request object.</param>
         /// <returns>
         /// 204 => Channel template updated.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpPut("{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        public async Task<IActionResult> PutTemplate(string appId, string id, [FromBody] UpdateChannelTemplateDto request)
+        public async Task<IActionResult> PutTemplate(string appId, string id, [FromBody] UpdateChannelTemplateDto<TDto> request)
         {
-            var update = request.ToUpdate<T>();
+            var update = request.ToUpdate(FromDto);
 
             await channelTemplateStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
 
@@ -142,7 +143,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="request">The request object.</param>
         /// <returns>
         /// 204 => Channel template updated.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpPut("{id}/{language}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -163,7 +164,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="language">The language.</param>
         /// <returns>
         /// 204 => Channel template updated.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpDelete("{id}/{language}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -183,7 +184,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// <param name="id">The template ID.</param>
         /// <returns>
         /// 204 => Channel template deleted.
-        /// 404 => Channel template not found.
+        /// 404 => Channel template or app not found.
         /// </returns>
         [HttpDelete("{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -194,8 +195,14 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
             return NoContent();
         }
 
-        protected abstract T FromDto(TDto dto);
+        protected virtual T FromDto(TDto dto)
+        {
+            return SimpleMapper.Map(dto, new T());
+        }
 
-        protected abstract TDto ToDto(T template);
+        protected virtual TDto ToDto(T template)
+        {
+            return SimpleMapper.Map(template, new TDto());
+        }
     }
 }

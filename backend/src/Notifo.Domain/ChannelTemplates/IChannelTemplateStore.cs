@@ -11,12 +11,12 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates
 {
-    public interface IChannelTemplateStore<T>
+    public interface IChannelTemplateStore<T> where T : class
     {
         Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct = default);
 
-        Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
+        Task<T?> GetBestAsync(string appId, string? name, string language,
             CancellationToken ct = default);
 
         Task<ChannelTemplate<T>?> GetAsync(string appId, string id,

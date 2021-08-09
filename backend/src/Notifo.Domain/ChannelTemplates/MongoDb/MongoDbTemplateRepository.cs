@@ -17,7 +17,7 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.ChannelTemplates.MongoDb
 {
-    public sealed class MongoDbChannelTemplateRepository<T> : MongoDbStore<MongoDbChannelTemplate<T>>, IChannelTemplateRepository<T>
+    public sealed class MongoDbChannelTemplateRepository<T> : MongoDbStore<MongoDbChannelTemplate<T>>, IChannelTemplateRepository<T> where T : class
     {
         public MongoDbChannelTemplateRepository(IMongoDatabase database)
             : base(database)

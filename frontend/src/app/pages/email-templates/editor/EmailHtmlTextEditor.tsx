@@ -7,6 +7,7 @@
 
 // tslint:disable: quotemark
 
+import { EmailFormattingError } from '@app/service';
 import * as CodeMirror from 'codemirror';
 import 'codemirror/addon/dialog/dialog';
 import 'codemirror/addon/edit/closetag';
@@ -25,7 +26,7 @@ import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
 import * as React from 'react';
-import { completeAfter, completeIfAfterLt, completeIfInTag, tags, TemplateError } from './helpers';
+import { completeAfter, completeIfAfterLt, completeIfInTag, tags } from './helpers';
 
 type OnChange = (value: string) => void;
 type OnBlur = () => void;
@@ -35,7 +36,7 @@ export interface EmailHtmlTextEditorProps {
     value: string;
 
     // The template errors.
-    errors?: TemplateError[];
+    errors?: EmailFormattingError[];
 
     // When the html has changed.
     onChange?: OnChange;
@@ -46,7 +47,7 @@ export interface EmailHtmlTextEditorProps {
 
 export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProps> {
     private editor: CodeMirror.Editor;
-    private ref: HTMLTextAreaElement | null;
+    private editorRef = React.createRef<HTMLTextAreaElement>();
     private value: string;
 
     public componentDidUpdate(prevProps: EmailHtmlTextEditorProps) {
@@ -64,11 +65,11 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
             schemaInfo: tags,
         };
 
-        if (!this.ref) {
+        if (!this.editorRef.current) {
             return;
         }
 
-        this.editor = CodeMirror.fromTextArea(this.ref, {
+        this.editor = CodeMirror.fromTextArea(this.editorRef.current, {
             autoCloseTags: true,
             mode: 'xml',
             extraKeys: {
@@ -96,6 +97,7 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
             indentWithTabs: false,
             indentUnit: 2,
             lineNumbers: true,
+            lineSeparator: undefined,
             matchTags: true,
             theme: 'material',
             tabSize: 2,
@@ -141,7 +143,7 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
                     }
 
                     return errors.map(({ message, line }) => {
-                        const from = CodeMirror.Pos(line - 1, 1);
+                        const from = CodeMirror.Pos(line! - 1, 1);
 
                         return { message, severity: 'error', from, to: from };
                     });
@@ -152,8 +154,7 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
 
     public render() {
         return (
-            // eslint-disable-next-line no-return-assign
-            <textarea ref={self => this.ref = self} />
+            <textarea ref={this.editorRef} />
         );
     }
 }

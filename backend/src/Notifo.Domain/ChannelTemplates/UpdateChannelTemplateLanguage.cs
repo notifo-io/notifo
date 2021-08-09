@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 

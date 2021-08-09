@@ -111,11 +111,11 @@ export const TemplateForm = (props: TemplateFormProps) => {
                             <Col>
                                 <Form onSubmit={handleSubmit}>
                                     <fieldset disabled={upserting}>
-                                        <Forms.Text name='code'
+                                        <Forms.Text name='code' vertical
                                             label={texts.common.code} />
                                     </fieldset>
 
-                                    <NotificationsForm.Formatting
+                                    <NotificationsForm.Formatting vertical
                                         onLanguageSelect={onLanguageSelect}
                                         language={language}
                                         languages={appLanguages}

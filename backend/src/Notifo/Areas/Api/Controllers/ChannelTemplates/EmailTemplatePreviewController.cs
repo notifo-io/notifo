@@ -8,7 +8,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain;
+using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
@@ -16,6 +18,8 @@ using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
+
+#pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 {
@@ -82,6 +86,8 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;
 
+        public object PreviewType { get; private set; }
+
         public EmailTemplatePreviewController(
             IEmailFormatter emailFormatter,
             IEmailTemplateStore emailTemplateStore)
@@ -102,7 +108,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         [HttpGet("api/apps/{appId}/email-templates/{id}/preview")]
         [Produces("text/html")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        public async Task<IActionResult> GetPreviewImage(string appId, string id)
+        public async Task<IActionResult> GetPreview(string appId, string id)
         {
             var template = await emailTemplateStore.GetAsync(appId, id, HttpContext.RequestAborted);
 
@@ -119,6 +125,66 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
             var formatted = await emailFormatter.FormatPreviewAsync(Notifications, language, App, EmailUser);
 
             return Content(formatted.BodyHtml, "text/html");
+        }
+
+        /// <summary>
+        /// Render a preview for a email template.
+        /// </summary>
+        /// <param name="appId">The id of the app where the templates belong to.</param>
+        /// <param name="request">The template to render.</param>
+        /// <returns>
+        /// 200 => Template rendered.
+        /// 404 => App not found.
+        /// </returns>
+        [HttpPost("api/apps/{appId}/email-templates/render")]
+        [Produces(typeof(EmailPreviewDto))]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> PostPreview(string appId, [FromBody] EmailPreviewRequestDto request)
+        {
+            try
+            {
+                if (request.Type == EmailPreviewType.Html)
+                {
+                    var template = new EmailTemplate
+                    {
+                        BodyHtml = request.Template
+                    };
+
+                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser);
+
+                    var response = new EmailPreviewDto
+                    {
+                        Result = formatted.BodyHtml!
+                    };
+
+                    return Ok(response);
+                }
+                else
+                {
+                    var template = new EmailTemplate
+                    {
+                        BodyText = request.Template
+                    };
+
+                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser);
+
+                    var response = new EmailPreviewDto
+                    {
+                        Result = formatted.BodyText!
+                    };
+
+                    return Ok(response);
+                }
+            }
+            catch (EmailFormattingException ex)
+            {
+                var response = new EmailPreviewDto
+                {
+                    Errors = ex.Errors.ToArray()
+                };
+
+                return Ok(response);
+            }
         }
     }
 }

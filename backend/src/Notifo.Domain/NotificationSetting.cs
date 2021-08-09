@@ -15,6 +15,8 @@ namespace Notifo.Domain
 
         public int? DelayInSeconds { get; set; }
 
+        public string? Template { get; set; }
+
         public bool ShouldSend
         {
             get => Send == NotificationSend.Send;

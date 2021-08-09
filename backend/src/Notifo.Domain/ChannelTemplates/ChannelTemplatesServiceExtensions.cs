@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ChannelTemplatesServiceExtensions
     {
-        public static void AddChannelTemplates<T>(this IServiceCollection services)
+        public static void AddChannelTemplates<T>(this IServiceCollection services) where T : class
         {
             services.AddSingletonAs<MongoDbChannelTemplateRepository<T>>()
                 .As<IChannelTemplateRepository<T>>();

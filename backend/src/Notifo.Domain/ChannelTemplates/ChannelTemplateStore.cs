@@ -13,7 +13,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>
+    public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T> where T : class
     {
         private readonly IChannelTemplateRepository<T> repository;
         private readonly IServiceProvider serviceProvider;
@@ -49,14 +49,22 @@ namespace Notifo.Domain.ChannelTemplates
             return template;
         }
 
-        public async Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
+        public async Task<T?> GetBestAsync(string appId, string? name, string language,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
+            Guard.NotNullOrEmpty(language, nameof(language));
 
             var template = await repository.GetBestAsync(appId, name, ct);
 
-            return template;
+            if (template == null)
+            {
+                return null;
+            }
+
+            template.Languages.TryGetValue(language, out var typedLanguage);
+
+            return typedLanguage;
         }
 
         public Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> command,

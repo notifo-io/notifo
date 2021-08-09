@@ -157,13 +157,13 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                                     </Row>
                                 }
 
-                                <Forms.GridBoolean name='test'
+                                <Forms.Boolean name='test'
                                     label={texts.integrations.test} hints={texts.integrations.testHints} indeterminate />
 
-                                <Forms.GridBoolean name='enabled'
+                                <Forms.Boolean name='enabled'
                                     label={texts.common.enabled} hints={texts.integrations.enabledHints} />
 
-                                <Forms.GridNumber name='priority'
+                                <Forms.Number name='priority'
                                     label={texts.integrations.priority} hints={texts.integrations.priorityHints} />
 
                                 {definition.properties.length > 0 &&
@@ -223,27 +223,27 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
     switch (property.type) {
         case 'Text':
             return (
-                <Forms.GridText name={name}
+                <Forms.Text name={name}
                     label={label} hints={property.editorDescription} />
             );
         case 'MultilineText':
             return (
-                <Forms.GridTextArea name={name}
+                <Forms.Textarea name={name}
                     label={label} hints={property.editorDescription} />
             );
         case 'Number':
             return (
-                <Forms.GridNumber name={name}
+                <Forms.Number name={name}
                     label={label} hints={property.editorDescription} />
             );
         case 'Password':
             return (
-                <Forms.GridPassword name={name}
+                <Forms.Password name={name}
                     label={label} hints={property.editorDescription} />
             );
         case 'Boolean':
             return (
-                <Forms.GridBoolean name={name} asString
+                <Forms.Boolean name={name} asString
                     label={label} hints={property.editorDescription} />
             );
         default:

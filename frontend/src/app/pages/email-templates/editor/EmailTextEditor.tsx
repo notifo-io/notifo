@@ -17,7 +17,7 @@ export interface EmailTextEditorProps {
     value?: string | null;
 
     // The app name.
-    appName: string;
+    appId: string;
 
     // When the text has changed.
     onChange?: (value: string) => void;
@@ -27,17 +27,17 @@ export interface EmailTextEditorProps {
 }
 
 export const EmailTextEditor = (props: EmailTextEditorProps) => {
-    const { appName, onBlur, onChange, value } = props;
+    const { appId, onBlur, onChange, value } = props;
 
-    const [emailPreview, markup, setMarkup] = usePreview(appName, 'text');
+    const [emailPreview, markup, setMarkup] = usePreview(appId, 'Text');
+
+    React.useEffect(() => {
+        onChange && emailPreview.markup && onChange(emailPreview.markup);
+    }, [emailPreview.markup]);
 
     React.useEffect(() => {
         setMarkup(value || '');
     }, [value]);
-
-    React.useEffect(() => {
-        onChange && onChange(emailPreview.markup!);
-    }, [emailPreview]);
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setMarkup(event.target.value);
