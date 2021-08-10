@@ -249,7 +249,11 @@ const FormDescription = ({ hints }: { hints?: string }) => {
 
 const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta, helper] = useField(name);
+
+    const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        helper.setValue(parseInt(event.target.value, 10));
+    }, []);
 
     return (
         <>
@@ -257,7 +261,7 @@ const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number;
                 max={max}
                 min={min}
                 step={step}
-                onChange={field.onChange}
+                onChange={doChange}
                 onBlur={field.onBlur}
             />
         </>

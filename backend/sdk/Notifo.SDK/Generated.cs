@@ -10171,17 +10171,20 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
     public enum ProcessStatus
     {
+        [System.Runtime.Serialization.EnumMember(Value = @"None")]
+        None = 0,
+    
         [System.Runtime.Serialization.EnumMember(Value = @"Attempt")]
-        Attempt = 0,
+        Attempt = 1,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Handled")]
-        Handled = 1,
+        Handled = 2,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Failed")]
-        Failed = 2,
+        Failed = 3,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Skipped")]
-        Skipped = 3,
+        Skipped = 4,
     
     }
     
@@ -11251,6 +11254,10 @@ namespace Notifo.SDK
         /// <summary>True to show this property in the summary.</summary>
         [Newtonsoft.Json.JsonProperty("summary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Summary { get; set; }
+    
+        /// <summary>The allowed values.</summary>
+        [Newtonsoft.Json.JsonProperty("allowedValues", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<string> AllowedValues { get; set; }
     
         /// <summary>True when required.</summary>
         [Newtonsoft.Json.JsonProperty("isRequired", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

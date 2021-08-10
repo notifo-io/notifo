@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
-import { getApp, getSortedIntegrations, loadIntegration, useApps, useIntegrations } from '@app/state';
+import { getApp, getSortedIntegrations, loadIntegrations, useApps, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -34,11 +34,11 @@ export const IntegrationsPage = () => {
     const [selected, setSelected] = React.useState<SelectedIntegration>();
 
     React.useEffect(() => {
-        dispatch(loadIntegration({ appId }));
+        dispatch(loadIntegrations({ appId }));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadIntegration({ appId }));
+        dispatch(loadIntegrations({ appId }));
     }, [appId]);
 
     const doAdd = React.useCallback((definition: IntegrationDefinitionDto, type: string) => {

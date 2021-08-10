@@ -169,19 +169,23 @@ namespace Notifo.Domain.UserNotifications
             {
                 if (channel.IsSystem)
                 {
-                    notification.Channels[channel.Name] = UserNotificationChannel.Create(new NotificationSetting
+                    if (!notification.Channels.TryGetValue(channel.Name, out var systemConfig))
                     {
-                        Send = NotificationSend.Send
-                    });
+                        systemConfig = UserNotificationChannel.Create();
+
+                        notification.Channels[channel.Name] = systemConfig;
+                    }
+
+                    systemConfig.Setting.Send = NotificationSend.Send;
                 }
 
-                if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel) && notificationChannel.Setting.ShouldSend)
+                if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.ShouldSend)
                 {
-                    var configurations = channel.GetConfigurations(notification, notificationChannel.Setting, options);
+                    var configurations = channel.GetConfigurations(notification, channelConfig.Setting, options);
 
                     foreach (var configuration in configurations)
                     {
-                        notificationChannel.Status[configuration] = new ChannelSendInfo();
+                        channelConfig.Status[configuration] = new ChannelSendInfo();
 
                         await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
                     }

@@ -12,6 +12,7 @@ import { CHANNELS, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { EmailTemplateInput } from './EmailTemplateInput';
 import { MediaInput } from './MediaInput';
 import { SmsTemplateInput } from './SmsTemplateInput';
+import { WebhookInput } from './WebhookInput';
 
 export module NotificationsForm {
     export interface FormattingProps {
@@ -92,8 +93,10 @@ export module NotificationsForm {
             <fieldset key={channel} disabled={disabled}>
                 <legend>{texts.notificationSettings[channel].title}</legend>
 
-                <Forms.Select name={`${field}.${channel}.send`} vertical={vertical} options={SEND_MODES}
-                    label={texts.common.send} />
+                {channel !== 'webhook' &&
+                    <Forms.Select name={`${field}.${channel}.send`} vertical={vertical} options={SEND_MODES}
+                        label={texts.common.send} />
+                }
 
                 <Forms.Number name={`${field}.${channel}.delayInSeconds`} vertical={vertical} min={0} max={6000}
                     label={texts.notificationSettings.delayInSeconds} />
@@ -105,6 +108,11 @@ export module NotificationsForm {
 
                 {channel === 'email' &&
                     <EmailTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
+                        label={texts.common.template} />
+                }
+
+                {channel === 'webhook' &&
+                    <WebhookInput name={`${field}.${channel}.template`} vertical={vertical}
                         label={texts.common.template} />
                 }
             </fieldset>

@@ -61,7 +61,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use the integrated Amazon Simple Email Service (SES) to send emails..
+        ///   Looks up a localized string similar to Preconfigured Amazon Simple Email Service (SES) to send emails..
         /// </summary>
         internal static string AmazonSES_Description {
             get {
@@ -367,7 +367,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Integrated Messagebird integration for SMS messages..
+        ///   Looks up a localized string similar to Preconfigured Messagebird integration for SMS messages..
         /// </summary>
         internal static string MessageBirdIntegrated_Description {
             get {

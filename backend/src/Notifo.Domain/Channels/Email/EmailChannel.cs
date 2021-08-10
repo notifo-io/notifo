@@ -164,21 +164,21 @@ namespace Notifo.Domain.Channels.Email
 
                     if (user == null)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_UserDeleted, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_UserDeleted);
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(user.EmailAddress))
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_UserNoEmail, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_UserNoEmail);
                         return;
                     }
 
-                    var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification.Test).ToList();
+                    var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification.Test).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_ConfigReset, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_ConfigReset);
                         return;
                     }
 
@@ -190,7 +190,7 @@ namespace Notifo.Domain.Channels.Email
 
                     if (template == null)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound);
                         return;
                     }
 
@@ -244,10 +244,9 @@ namespace Notifo.Domain.Channels.Email
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, email, status, reason);
         }
 
-        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason,
-            CancellationToken ct)
+        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason)
         {
-            await logStore.LogAsync(jobs[0].Notification.AppId, reason, ct);
+            await logStore.LogAsync(jobs[0].Notification.AppId, reason);
 
             await UpdateAsync(jobs, email, ProcessStatus.Skipped);
         }

@@ -47,7 +47,7 @@ namespace Notifo.Areas.Api.Controllers.WebPush
         {
             var command = new RemoveUserWebPushSubscription
             {
-                Subscription = request.Subscription.ToSubscription()
+                Endpoint = request.Subscription.Endpoint
             };
 
             await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);

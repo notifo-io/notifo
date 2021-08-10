@@ -11,13 +11,15 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public sealed class MobilePushJob
     {
-        public UserNotification Notification { get; set; }
+        public UserNotification Notification { get; init; }
 
-        public string DeviceToken { get; set; }
+        public string DeviceToken { get; init; }
 
-        public MobileDeviceType DeviceType { get; set; }
+        public MobileDeviceType DeviceType { get; init; }
 
-        public bool IsImmediate { get; set; }
+        public bool IsImmediate { get; init; }
+
+        public bool IsUpdate { get; init; }
 
         public string ScheduleKey
         {

@@ -184,7 +184,7 @@ namespace Notifo.Domain.Channels.Sms
                 {
                     await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<ISmsSender>(app, job.Test).ToList();
+                    var senders = integrationManager.Resolve<ISmsSender>(app, job.Test).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {

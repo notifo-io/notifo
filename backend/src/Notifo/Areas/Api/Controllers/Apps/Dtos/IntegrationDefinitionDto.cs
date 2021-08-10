@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Reflection;
 
@@ -47,14 +48,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         {
             var result = SimpleMapper.Map(source, new IntegrationDefinitionDto());
 
-            result.Properties = new List<IntegrationPropertyDto>();
-
-            foreach (var property in source.Properties)
-            {
-                var propertyDto = SimpleMapper.Map(property, new IntegrationPropertyDto());
-
-                result.Properties.Add(propertyDto);
-            }
+            result.Properties = source.Properties.Select(IntegrationPropertyDto.FromProperty).ToList();
 
             return result;
         }

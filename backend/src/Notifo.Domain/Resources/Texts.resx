@@ -219,6 +219,30 @@
   <data name="Webhook_Description" xml:space="preserve">
     <value>Make a HTTP request to your server when a notification is confirmed by a User.</value>
   </data>
+  <data name="Webhook_MethodHints" xml:space="preserve">
+    <value>The HTTP method</value>
+  </data>
+  <data name="Webhook_MethodLabel" xml:space="preserve">
+    <value>Method</value>
+  </data>
+  <data name="Webhook_NameHints" xml:space="preserve">
+    <value>The optional name when defining a template.</value>
+  </data>
+  <data name="Webhook_NameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Webhook_SendConfirmHints" xml:space="preserve">
+    <value>Send confirmed notifications to this webhook.</value>
+  </data>
+  <data name="Webhook_SendConfirmLabel" xml:space="preserve">
+    <value>Send Confirm</value>
+  </data>
+  <data name="Webhook_SendNotificationsHints" xml:space="preserve">
+    <value>Send all notification to this webhook.</value>
+  </data>
+  <data name="Webhook_SendNotificationsLabel" xml:space="preserve">
+    <value>Send Always</value>
+  </data>
   <data name="Webhook_URLHints" xml:space="preserve">
     <value>The URL to your server endpoint.</value>
   </data>

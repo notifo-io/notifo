@@ -17,7 +17,9 @@ namespace Notifo.Domain.Integrations
 
         public string? EditorLabel { get; init; }
 
-        public bool Summary { get; set; }
+        public string[]? AllowedValues { get; init; }
+
+        public bool Summary { get; init; }
 
         public bool IsRequired { get; init; }
 

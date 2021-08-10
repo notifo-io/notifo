@@ -38,6 +38,10 @@ export const SmsTemplateInput = (props: FormEditorProps) => {
         return result;
     }, [templates.items]);
 
+    if (options.length <= 1) {
+        return null;
+    }
+
     return (
         <Forms.Select {...props} options={options} />
     );

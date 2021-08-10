@@ -218,6 +218,11 @@ export const EN = {
             send: 'Send as SMS',
             title: 'SMS',
         },
+        webhook: {
+            name: 'Webhook',
+            send: 'Send to another Server',
+            title: 'Webhook',
+        },
         webpush: {
             name: 'Web Push',
             send: 'Send as Web Push',

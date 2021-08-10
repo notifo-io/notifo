@@ -9,7 +9,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
@@ -17,13 +16,13 @@ namespace Notifo.Domain.Users
 {
     public sealed class RemoveUserWebPushSubscription : ICommand<User>
     {
-        public WebPushSubscription Subscription { get; set; }
+        public string Endpoint { get; set; }
 
         private sealed class Validator : AbstractValidator<RemoveUserWebPushSubscription>
         {
             public Validator()
             {
-                RuleFor(x => x.Subscription).NotNull().NotEmpty();
+                RuleFor(x => x.Endpoint).NotNull().NotEmpty();
             }
         }
 
@@ -32,9 +31,9 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            var removed = user.WebPushSubscriptions.Remove(Subscription);
+            var removed = user.WebPushSubscriptions.RemoveWhere(x => x.Endpoint == Endpoint);
 
-            return Task.FromResult(removed);
+            return Task.FromResult(removed > 0);
         }
     }
 }

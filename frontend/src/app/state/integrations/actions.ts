@@ -11,7 +11,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from '../shared';
 import { IntegrationsState } from './state';
 
-export const loadIntegration = createApiThunk('integrations/load',
+export const loadIntegrations = createApiThunk('integrations/load',
     async (arg: { appId: string }) => {
         return await Clients.Apps.getIntegrations(arg.appId);
     });
@@ -37,15 +37,15 @@ export const integrationsReducer = createReducer(initialState, builder => builde
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(loadIntegration.pending, (state) => {
+    .addCase(loadIntegrations.pending, (state) => {
         state.loading = true;
         state.loadingError = undefined;
     })
-    .addCase(loadIntegration.rejected, (state, action) => {
+    .addCase(loadIntegrations.rejected, (state, action) => {
         state.loading = false;
         state.loadingError = action.payload as ErrorDto;
     })
-    .addCase(loadIntegration.fulfilled, (state, action) => {
+    .addCase(loadIntegrations.fulfilled, (state, action) => {
         state.configured = action.payload.configured;
         state.loading = false;
         state.loadingError = undefined;

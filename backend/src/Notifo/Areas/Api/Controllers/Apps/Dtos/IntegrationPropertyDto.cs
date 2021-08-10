@@ -7,6 +7,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Integrations;
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
 {
@@ -40,6 +41,11 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         public bool Summary { get; set; }
 
         /// <summary>
+        /// The allowed values.
+        /// </summary>
+        public string[]? AllowedValues { get; init; }
+
+        /// <summary>
         /// True when required.
         /// </summary>
         public bool IsRequired { get; set; }
@@ -68,5 +74,12 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// The default value.
         /// </summary>
         public object? DefaultValue { get; set; }
+
+        public static IntegrationPropertyDto FromProperty(IntegrationProperty property)
+        {
+            var result = SimpleMapper.Map(property, new IntegrationPropertyDto());
+
+            return result;
+        }
     }
 }

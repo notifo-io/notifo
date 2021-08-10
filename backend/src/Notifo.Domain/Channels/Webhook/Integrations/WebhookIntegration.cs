@@ -14,12 +14,37 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
 {
     public sealed class WebhookIntegration : IIntegration
     {
-        private static readonly IntegrationProperty UrlProperty = new IntegrationProperty("Url", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty HttpUrlProperty = new IntegrationProperty("Url", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.Webhook_URLLabel,
             EditorDescription = Texts.Webhook_URLHints,
             IsRequired = true,
             Summary = true
+        };
+
+        private static readonly IntegrationProperty HttpMethodProperty = new IntegrationProperty("Method", IntegrationPropertyType.Text)
+        {
+            EditorLabel = Texts.Webhook_MethodLabel,
+            EditorDescription = Texts.Webhook_MethodHints,
+            AllowedValues = new[] { "GET", "PATCH", "POST", "PUT", "DELETE" },
+            IsRequired = false,
+            Summary = false
+        };
+
+        private static readonly IntegrationProperty NameProperty = new IntegrationProperty("Name", IntegrationPropertyType.Text)
+        {
+            EditorLabel = Texts.Webhook_NameLabel,
+            EditorDescription = Texts.Webhook_NameHints,
+            IsRequired = false,
+            Summary = true
+        };
+
+        private static readonly IntegrationProperty SendConfirmProperty = new IntegrationProperty("SendConfirm", IntegrationPropertyType.Boolean)
+        {
+            EditorLabel = Texts.Webhook_SendConfirmLabel,
+            EditorDescription = Texts.Webhook_SendConfirmHints,
+            IsRequired = false,
+            Summary = false
         };
 
         public IntegrationDefinition Definition { get; } =
@@ -29,7 +54,10 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
                 "./integrations/webhook.svg",
                 new List<IntegrationProperty>
                 {
-                    UrlProperty
+                    NameProperty,
+                    HttpUrlProperty,
+                    HttpMethodProperty,
+                    SendConfirmProperty
                 },
                 new HashSet<string>
                 {
@@ -48,16 +76,21 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
         {
             if (CanCreate(serviceType, configured))
             {
-                var url = UrlProperty.GetString(configured);
+                var url = HttpUrlProperty.GetString(configured);
 
                 if (url == null)
                 {
                     return null;
                 }
 
+                var httpMethod = HttpMethodProperty.GetString(configured);
+
                 return new WebhookDefinition
                 {
-                    Url = url
+                    Name = NameProperty.GetString(configured),
+                    HttpUrl = url,
+                    HttpMethod = httpMethod ?? "POST",
+                    SendConfirm = SendConfirmProperty.GetBoolean(configured)
                 };
             }
 

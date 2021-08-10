@@ -8,11 +8,12 @@
 import { texts } from '@app/texts';
 
 export const CHANNELS = [
-    'webpush',
-    'mobilepush',
-    'messaging',
     'email',
+    'messaging',
+    'mobilepush',
     'sms',
+    'webhook',
+    'webpush',
 ];
 
 export const CONFIRM_MODES = [{

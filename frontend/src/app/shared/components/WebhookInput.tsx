@@ -6,37 +6,39 @@
  */
 
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { getApp, loadEmailTemplates, useApps, useEmailTemplates } from '@app/state';
+import { getApp, loadIntegrations, useApps, useIntegrations } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-export const EmailTemplateInput = (props: FormEditorProps) => {
+export const WebhookInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
     const app = useApps(getApp);
     const appId = app.id;
-    const templates = useEmailTemplates(x => x.templates);
+    const integrations = useIntegrations(x => x.configured);
 
     React.useEffect(() => {
-        if (!templates.isLoaded) {
-            dispatch(loadEmailTemplates(appId));
-        }
-    }, [appId, templates.isLoaded]);
+        dispatch(loadIntegrations({ appId }));
+    }, [appId, integrations.isLoaded]);
 
     const options = React.useMemo(() => {
         const result: FormEditorOption<string | undefined>[] = [{
             label: '',
         }];
 
-        if (templates.items) {
-            for (const { name: label } of templates.items) {
-                if (label) {
-                    result.push({ label, value: label });
+        if (integrations) {
+            for (const integration of Object.values(integrations)) {
+                if (integration.type === 'Webhook') {
+                    const label = integration.properties['Name'];
+
+                    if (label) {
+                        result.push({ label, value: label });
+                    }
                 }
             }
         }
 
         return result;
-    }, [templates.items]);
+    }, [integrations]);
 
     if (options.length <= 1) {
         return null;

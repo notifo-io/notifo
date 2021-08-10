@@ -4573,7 +4573,7 @@ export interface ChannelSendInfoDto {
     detail?: string | undefined;
 }
 
-export type ProcessStatus = "Attempt" | "Handled" | "Failed" | "Skipped";
+export type ProcessStatus = "None" | "Attempt" | "Handled" | "Failed" | "Skipped";
 
 export interface HandledInfoDto {
     /** The timestamp. */
@@ -4995,6 +4995,8 @@ export interface IntegrationPropertyDto {
     editorLabel?: string | undefined;
     /** True to show this property in the summary. */
     summary?: boolean;
+    /** The allowed values. */
+    allowedValues?: string[] | undefined;
     /** True when required. */
     isRequired?: boolean;
     /** The min value (for numbers). */

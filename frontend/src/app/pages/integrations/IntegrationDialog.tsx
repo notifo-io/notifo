@@ -222,10 +222,17 @@ export const FormField = ({ property }: { property: IntegrationPropertyDto }) =>
 
     switch (property.type) {
         case 'Text':
-            return (
-                <Forms.Text name={name}
-                    label={label} hints={property.editorDescription} />
-            );
+            if (property.allowedValues && property.allowedValues?.length > 0) {
+                return (
+                    <Forms.Select name={name} options={property.allowedValues.map(value => ({ value, label: value }))}
+                        label={label} hints={property.editorDescription} />
+                );
+            } else {
+                return (
+                    <Forms.Text name={name}
+                        label={label} hints={property.editorDescription} />
+                );
+            }
         case 'MultilineText':
             return (
                 <Forms.Textarea name={name}
