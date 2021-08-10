@@ -17,8 +17,10 @@ export const WebhookInput = (props: FormEditorProps) => {
     const integrations = useIntegrations(x => x.configured);
 
     React.useEffect(() => {
-        dispatch(loadIntegrations({ appId }));
-    }, [appId, integrations.isLoaded]);
+        if (!integrations) {
+            dispatch(loadIntegrations({ appId }));
+        }
+    }, [appId, integrations]);
 
     const options = React.useMemo(() => {
         const result: FormEditorOption<string | undefined>[] = [{

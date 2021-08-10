@@ -31,7 +31,7 @@ export const deleteIntegration = createApiThunk('integrations/delete',
         await Clients.Apps.deleteIntegration(arg.appId, arg.id);
     });
 
-const initialState: IntegrationsState = { configured: {}, supported: {} };
+const initialState: IntegrationsState = {};
 
 export const integrationsReducer = createReducer(initialState, builder => builder
     .addCase(selectApp, () => {
@@ -62,7 +62,10 @@ export const integrationsReducer = createReducer(initialState, builder => builde
     .addCase(createIntegration.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
-        state.configured[action.payload.id] = action.payload.integration;
+
+        if (state.configured) {
+            state.configured[action.payload.id] = action.payload.integration;
+        }
     })
     .addCase(updateIntegration.pending, (state) => {
         state.upserting = true;
@@ -73,14 +76,19 @@ export const integrationsReducer = createReducer(initialState, builder => builde
         state.upsertingError = action.payload as ErrorDto;
     })
     .addCase(updateIntegration.fulfilled, (state, action) => {
-        const { id, params } = action.meta.arg;
-
         state.upserting = false;
         state.upsertingError = undefined;
-        state.configured[id] = { id, ...params } as any;
+
+        if (state.configured) {
+            const { id, params } = action.meta.arg;
+
+            state.configured[id] = { id, ...params } as any;
+        }
     })
     .addCase(deleteIntegration.fulfilled, (state, action) => {
-        const { id } = action.meta.arg;
+        if (state.configured) {
+            const { id } = action.meta.arg;
 
-        delete state.configured[id];
+            delete state.configured[id];
+        }
     }));
