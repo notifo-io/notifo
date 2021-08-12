@@ -106,7 +106,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
             {
                 var filters = new List<FilterDefinition<UserNotification>>
                 {

@@ -95,7 +95,7 @@ namespace Notifo.Domain.Events.MongoDb
                 }
 
                 activity?.SetTag("numResults", resultItems.Count);
-                activity?.SetTag("numTotal", resultTotal;
+                activity?.SetTag("numTotal", resultTotal);
 
                 return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEvent()));
             }
