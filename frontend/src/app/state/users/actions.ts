@@ -18,23 +18,23 @@ const list = listThunk<UsersState, UserDto>('users', 'users', async params => {
     return { items, total };
 });
 
-export const loadUsersAsync = (appId: string, query?: Partial<Query>, reset = false) => {
+export const loadUsers = (appId: string, query?: Partial<Query>, reset = false) => {
     return list.action({ appId, query, reset });
 };
 
-export const loadUserAsync = createApiThunk('users/load',
+export const loadUser = createApiThunk('users/load',
     (arg: { appId: string; userId: string }) => {
         return Clients.Users.getUser(arg.appId, arg.userId);
     });
 
-export const upsertUserAsync = createApiThunk('users/upsert',
+export const upsertUser = createApiThunk('users/upsert',
     async (arg: { appId: string; params: UpsertUserDto }) => {
         const response = await Clients.Users.postUsers(arg.appId, { requests: [arg.params] });
 
         return response[0];
     });
 
-export const deleteUserAsync = createApiThunk('users/delete',
+export const deleteUser = createApiThunk('users/delete',
     (arg: { appId: string; userId: string }) => {
         return Clients.Users.deleteUser(arg.appId, arg.userId);
     });
@@ -42,8 +42,8 @@ export const deleteUserAsync = createApiThunk('users/delete',
 export const usersMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
-    if (upsertUserAsync.fulfilled.match(action) || deleteUserAsync.fulfilled.match(action)) {
-        const load: any = loadUsersAsync(action.meta.arg.appId);
+    if (upsertUser.fulfilled.match(action) || deleteUser.fulfilled.match(action)) {
+        const load: any = loadUsers(action.meta.arg.appId);
 
         store.dispatch(load);
     }
@@ -59,30 +59,45 @@ export const usersReducer = createReducer(initialState, builder => list.initiali
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(loadUserAsync.pending, (state) => {
+    .addCase(loadUser.pending, (state) => {
         state.loadingUser = true;
         state.loadingUsersError = undefined;
     })
-    .addCase(loadUserAsync.rejected, (state, action) => {
+    .addCase(loadUser.rejected, (state, action) => {
         state.loadingUser = false;
         state.loadingUsersError = action.payload as ErrorDto;
         state.user = undefined;
     })
-    .addCase(loadUserAsync.fulfilled, (state, action) => {
+    .addCase(loadUser.fulfilled, (state, action) => {
         state.loadingUser = false;
         state.loadingUsersError = undefined;
         state.user = action.payload as any;
     })
-    .addCase(upsertUserAsync.pending, (state) => {
+    .addCase(upsertUser.pending, (state) => {
         state.upserting = true;
         state.upsertingError = undefined;
     })
-    .addCase(upsertUserAsync.rejected, (state, action) => {
+    .addCase(upsertUser.rejected, (state, action) => {
         state.upserting = false;
         state.upsertingError = action.payload as ErrorDto;
     })
-    .addCase(upsertUserAsync.fulfilled, (state, action) => {
+    .addCase(upsertUser.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
-        state.user = action.payload;
+
+        if (!state.user || state.user.id === action.payload.id) {
+            state.user = action.payload;
+        }
+    })
+    .addCase(deleteUser.pending, (state) => {
+        state.deleting = true;
+        state.deletingError = undefined;
+    })
+    .addCase(deleteUser.rejected, (state, action) => {
+        state.deleting = false;
+        state.deletingError = action.payload as ErrorDto;
+    })
+    .addCase(deleteUser.fulfilled, (state) => {
+        state.deleting = false;
+        state.deletingError = undefined;
     }));

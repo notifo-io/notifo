@@ -54,6 +54,7 @@ namespace CodeGenerator
             var generatorSettings = new TypeScriptClientGeneratorSettings
             {
                 GenerateOptionalParameters = true,
+                OperationNameGenerator = new TagNameGenerator()
             };
 
             generatorSettings.TypeScriptGeneratorSettings.TypeStyle = TypeScriptTypeStyle.Interface;

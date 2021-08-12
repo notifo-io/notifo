@@ -6,7 +6,7 @@
  */
 
 import { FormError, Forms, Loader } from '@app/framework';
-import { createAppAsync, CreateAppParams, createAppReset, useApps } from '@app/state';
+import { createApp, CreateAppParams, createAppReset, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -54,7 +54,7 @@ export const AppDialog = (props: AppDialogProps) => {
     }, []);
 
     const doSave = React.useCallback((params: CreateAppParams) => {
-        dispatch(createAppAsync({ params }));
+        dispatch(createApp({ params }));
     }, []);
 
     const initialValues: any = {};

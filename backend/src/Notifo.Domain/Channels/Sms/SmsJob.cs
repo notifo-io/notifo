@@ -7,6 +7,7 @@
 
 using System;
 using Notifo.Domain.UserNotifications;
+using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Channels.Sms
@@ -27,6 +28,10 @@ namespace Notifo.Domain.Channels.Sms
 
         public string Text { get; set; }
 
+        public string TemplateLanguage { get; set; }
+
+        public string? TemplateName { get; set; }
+
         public bool IsImmediate { get; set; }
 
         public bool Test { get; set; }
@@ -40,7 +45,7 @@ namespace Notifo.Domain.Channels.Sms
         {
         }
 
-        public SmsJob(UserNotification notification, string phoneNumber)
+        public SmsJob(UserNotification notification, string? template, string phoneNumber)
         {
             PhoneNumber = phoneNumber;
 
@@ -52,6 +57,9 @@ namespace Notifo.Domain.Channels.Sms
             {
                 Text = Text.Substring(0, 137) + "...";
             }
+
+            TemplateName = template;
+            TemplateLanguage = notification.UserLanguage;
         }
 
         public static string ComputeScheduleKey(Guid id)

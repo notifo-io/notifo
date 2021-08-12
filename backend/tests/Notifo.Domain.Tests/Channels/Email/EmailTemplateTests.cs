@@ -44,7 +44,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications,  _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
@@ -82,7 +82,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
@@ -122,7 +122,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
@@ -160,7 +160,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
@@ -199,7 +199,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
@@ -239,7 +239,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
@@ -284,7 +284,7 @@ namespace Notifo.Domain.Channels.Email
                 }
             };
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;

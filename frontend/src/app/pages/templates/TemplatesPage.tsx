@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { getApp, loadTemplatesAsync, useApps, useTemplates } from '@app/state';
+import { getApp, loadTemplates, useApps, useTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { TemplateForm } from './TemplateForm';
@@ -26,7 +26,7 @@ export const TemplatesPage = () => {
     }, [templates, templateCode]);
 
     React.useEffect(() => {
-        dispatch(loadTemplatesAsync(appId));
+        dispatch(loadTemplates(appId));
     }, [appId]);
 
     const doOpen = React.useCallback(() => {

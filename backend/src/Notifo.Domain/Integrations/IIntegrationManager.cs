@@ -19,6 +19,8 @@ namespace Notifo.Domain.Integrations
 
         Task HandleConfigured(ConfiguredIntegration configured, ConfiguredIntegration? previous);
 
-        IEnumerable<T> Resolve<T>(App app, bool test) where T : class;
+        T? Resolve<T>(string id, App app, bool test) where T : class;
+
+        IEnumerable<(string Id, T Target)> Resolve<T>(App app, bool test) where T : class;
     }
 }

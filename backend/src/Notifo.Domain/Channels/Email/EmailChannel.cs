@@ -21,6 +21,7 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using Squidex.Log;
+using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Email.EmailJob>;
 
 namespace Notifo.Domain.Channels.Email
@@ -30,6 +31,7 @@ namespace Notifo.Domain.Channels.Email
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
         private readonly IEmailFormatter emailFormatter;
+        private readonly IEmailTemplateStore emailTemplateStore;
         private readonly ILogStore logStore;
         private readonly ISemanticLog log;
         private readonly IUserNotificationQueue userNotificationQueue;
@@ -46,12 +48,14 @@ namespace Notifo.Domain.Channels.Email
             IAppStore appStore,
             IIntegrationManager integrationManager,
             IEmailFormatter emailFormatter,
+            IEmailTemplateStore emailTemplateStore,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore,
             IUserStore userStore)
         {
             this.appStore = appStore;
             this.emailFormatter = emailFormatter;
+            this.emailTemplateStore = emailTemplateStore;
             this.log = log;
             this.logStore = logStore;
             this.integrationManager = integrationManager;
@@ -79,11 +83,6 @@ namespace Notifo.Domain.Channels.Email
                 yield break;
             }
 
-            if (!options.App.EmailTemplates.ContainsKey(notification.UserLanguage))
-            {
-                yield break;
-            }
-
             yield return options.User.EmailAddress;
         }
 
@@ -95,7 +94,7 @@ namespace Notifo.Domain.Channels.Email
                 return Task.CompletedTask;
             }
 
-            var job = new EmailJob(notification, configuration);
+            var job = new EmailJob(notification, setting.Template, configuration);
 
             return userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
@@ -111,7 +110,7 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var job in jobs)
             {
-                if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name))
+                if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name, ct))
                 {
                     await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
                 }
@@ -134,10 +133,10 @@ namespace Notifo.Domain.Channels.Email
             return UpdateAsync(jobs, jobs[0].EmailAddress, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(List<EmailJob> jobs,
+        public async Task SendAsync(List<EmailJob> jobs,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendEmail", async () =>
+            using (Telemetry.Activities.StartActivity("SendEmail"))
             {
                 var first = jobs[0];
 
@@ -165,25 +164,42 @@ namespace Notifo.Domain.Channels.Email
 
                     if (user == null)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_UserDeleted, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_UserDeleted);
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(user.EmailAddress))
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_UserNoEmail, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_UserNoEmail);
                         return;
                     }
 
-                    var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification.Test).ToList();
+                    var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification.Test).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_ConfigReset, ct);
+                        await SkipAsync(jobs, commonEmail, Texts.Email_ConfigReset);
                         return;
                     }
 
-                    var message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), app, user);
+                    EmailMessage? message;
+
+                    using (Telemetry.Activities.StartActivity("Format"))
+                    {
+                        var template = await emailTemplateStore.GetBestAsync(
+                            first.Notification.AppId,
+                            first.EmailTemplate,
+                            first.Notification.UserLanguage,
+                            ct);
+
+                        if (template == null)
+                        {
+                            await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound);
+                            return;
+                        }
+
+                        message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template, app, user, ct);
+                    }
 
                     await SendCoreAsync(message, app.Id, senders, ct);
 
@@ -194,7 +210,7 @@ namespace Notifo.Domain.Channels.Email
                     await logStore.LogAsync(app.Id, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders,
@@ -233,10 +249,9 @@ namespace Notifo.Domain.Channels.Email
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, email, status, reason);
         }
 
-        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason,
-            CancellationToken ct)
+        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason)
         {
-            await logStore.LogAsync(jobs[0].Notification.AppId, reason, ct);
+            await logStore.LogAsync(jobs[0].Notification.AppId, reason);
 
             await UpdateAsync(jobs, email, ProcessStatus.Skipped);
         }

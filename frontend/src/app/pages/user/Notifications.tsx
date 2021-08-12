@@ -6,7 +6,7 @@
  */
 
 import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
-import { getApp, loadNotificationsAsync, useApps, useNotifications } from '@app/state';
+import { getApp, loadNotifications, useApps, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -35,15 +35,15 @@ export const Notifications = (props: NotificationsProps) => {
     });
 
     React.useEffect(() => {
-        dispatch(loadNotificationsAsync(appId, userId, {}));
+        dispatch(loadNotifications(appId, userId, {}));
     }, [appId, userId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadNotificationsAsync(appId, userId));
+        dispatch(loadNotifications(appId, userId));
     }, [appId, userId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadNotificationsAsync(appId, userId, q));
+        dispatch(loadNotifications(appId, userId, q));
     }, [appId, userId]);
 
     return (
@@ -65,7 +65,7 @@ export const Notifications = (props: NotificationsProps) => {
                             {notifications.isLoading ? (
                                 <Loader visible={notifications.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

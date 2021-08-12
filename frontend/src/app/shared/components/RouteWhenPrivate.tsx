@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { loginStartAsync } from '@app/state';
+import { loginStart } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, RouteProps } from 'react-router';
@@ -25,7 +25,7 @@ export const RouteWhenPrivate = (props: RouteWhenPrivateProps & RouteProps) => {
 
     React.useEffect(() => {
         if (!isAuthenticated) {
-            dispatch(loginStartAsync());
+            dispatch(loginStart());
         }
     }, [isAuthenticated]);
 

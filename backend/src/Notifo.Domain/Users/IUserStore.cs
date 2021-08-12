@@ -29,7 +29,8 @@ namespace Notifo.Domain.Users
         Task<User?> GetAsync(string appId, string id,
             CancellationToken ct = default);
 
-        Task<User> UpsertAsync(string appId, string? id, ICommand<User> update,  CancellationToken ct = default);
+        Task<User> UpsertAsync(string appId, string? id, ICommand<User> update,
+            CancellationToken ct = default);
 
         Task DeleteAsync(string appId, string id,
             CancellationToken ct = default);

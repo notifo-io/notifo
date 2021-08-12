@@ -16,6 +16,7 @@ import { LoginState, LoginStateInStore } from './login';
 import { MediaState, MediaStateInStore } from './media';
 import { NotificationsState, NotificationsStateInStore } from './notifications';
 import { PublishState, PublishStateInStore } from './publish';
+import { SmsTemplatesState, SmsTemplatesStateInStore } from './sms-templates';
 import { SubscriptionsState, SubscriptionsStateInStore } from './subscriptions';
 import { TemplatesState, TemplatesStateInStore } from './templates';
 import { UsersState, UsersStateInStore } from './users';
@@ -31,6 +32,7 @@ type State =
     MediaStateInStore &
     NotificationsStateInStore &
     PublishStateInStore &
+    SmsTemplatesStateInStore &
     SubscriptionsStateInStore &
     TemplatesStateInStore &
     UsersStateInStore;
@@ -77,6 +79,10 @@ export function useNotifications<T>(mapping: (state: NotificationsState) => T) {
 
 export function usePublish<T>(mapping: (state: PublishState) => T) {
     return useStore<T>(x => mapping(x.publish));
+}
+
+export function useSmsTemplates<T>(mapping: (state: SmsTemplatesState) => T) {
+    return useStore<T>(x => mapping(x.smsTemplates));
 }
 
 export function useSubscriptions<T>(mapping: (state: SubscriptionsState) => T) {

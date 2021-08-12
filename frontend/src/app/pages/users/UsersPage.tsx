@@ -8,7 +8,7 @@
 import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
-import { deleteUserAsync, getApp, loadUsersAsync, togglePublishDialog, useApps, useUsers } from '@app/state';
+import { deleteUser, getApp, loadUsers, togglePublishDialog, useApps, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -34,19 +34,19 @@ export const UsersPage = () => {
     });
 
     React.useEffect(() => {
-        dispatch(loadUsersAsync(appId, {}));
+        dispatch(loadUsers(appId, {}));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadUsersAsync(appId));
+        dispatch(loadUsers(appId));
     }, [appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadUsersAsync(appId, q));
+        dispatch(loadUsers(appId, q));
     }, [appId]);
 
     const doDelete = React.useCallback((user: UserDto) => {
-        dispatch(deleteUserAsync({ appId, userId: user.id }));
+        dispatch(deleteUser({ appId, userId: user.id }));
     }, [appId]);
 
     const doPublish = React.useCallback((user: UserDto) => {
@@ -71,7 +71,7 @@ export const UsersPage = () => {
                             {users.isLoading ? (
                                 <Loader visible={users.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

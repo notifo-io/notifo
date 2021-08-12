@@ -17,33 +17,33 @@ const list = listThunk<AppsState, AppDto>('apps', 'apps', async () => {
     return { items, total: items.length };
 });
 
-export const loadAppsAsync = () => {
+export const loadApps = () => {
     return list.action({});
 };
 
-export const loadDetailsAsync = createApiThunk('apps/load',
+export const loadDetails = createApiThunk('apps/load',
     (arg: { appId: string }) => {
         return Clients.Apps.getApp(arg.appId);
     });
 
 export const createAppReset = createAction('apps/create/reset');
 
-export const createAppAsync = createApiThunk('apps/create',
+export const createApp = createApiThunk('apps/create',
     (arg: { params: CreateAppParams }) => {
         return Clients.Apps.postApp(arg.params);
     });
 
-export const upsertAppAsync = createApiThunk('apps/upsert',
+export const upsertApp = createApiThunk('apps/upsert',
     (arg: { appId: string; params: UpsertAppDto }) => {
         return Clients.Apps.putApp(arg.appId, arg.params);
     });
 
-export const addContributorAsync = createApiThunk('apps/contributors/add',
+export const addContributor = createApiThunk('apps/contributors/add',
     (arg: { appId: string; params: AddContributorDto }) => {
         return Clients.Apps.postContributor(arg.appId, arg.params);
     });
 
-export const removeContributorAsync = createApiThunk('apps/contributors/remove',
+export const removeContributor = createApiThunk('apps/contributors/remove',
     (arg: { appId: string; id: string }) => {
         return Clients.Apps.deleteContributor(arg.appId, arg.id);
     });
@@ -60,72 +60,81 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
         state.creating = false;
         state.creatingError = undefined;
     })
-    .addCase(createAppAsync.pending, (state) => {
+    .addCase(createApp.pending, (state) => {
         state.creating = true;
         state.creatingError = undefined;
     })
-    .addCase(createAppAsync.rejected, (state, action) => {
+    .addCase(createApp.rejected, (state, action) => {
         state.creating = false;
         state.creatingError = action.payload as ErrorDto;
     })
-    .addCase(createAppAsync.fulfilled, (state, action) => {
+    .addCase(createApp.fulfilled, (state, action) => {
         state.creating = false;
         state.creatingError = undefined;
         state.apps.items?.setOrUnshift(x => x.id, action.payload);
         state.apps.total++;
     })
-    .addCase(loadDetailsAsync.pending, (state) => {
+    .addCase(loadDetails.pending, (state) => {
         state.loadingDetails = true;
         state.loadingDetailsError = undefined;
     })
-    .addCase(loadDetailsAsync.rejected, (state, action) => {
+    .addCase(loadDetails.rejected, (state, action) => {
         state.loadingDetails = false;
         state.loadingDetailsError = action.payload as ErrorDto;
     })
-    .addCase(loadDetailsAsync.fulfilled, (state, action) => {
+    .addCase(loadDetails.fulfilled, (state, action) => {
         state.loadingDetails = false;
         state.loadingDetailsError = undefined;
-        state.appDetails = action.payload;
+        state.app = action.payload;
     })
-    .addCase(upsertAppAsync.pending, (state) => {
+    .addCase(upsertApp.pending, (state) => {
         state.upserting = true;
         state.upsertingError = undefined;
     })
-    .addCase(upsertAppAsync.rejected, (state, action) => {
+    .addCase(upsertApp.rejected, (state, action) => {
         state.upserting = false;
         state.upsertingError = action.payload as ErrorDto;
     })
-    .addCase(upsertAppAsync.fulfilled, (state, action) => {
+    .addCase(upsertApp.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
         state.apps.items?.set(x => x.id, action.payload);
-        state.appDetails = action.payload;
+
+        if (state.app && state.app.id === action.payload.id) {
+            state.app = action.payload;
+        }
     })
-    .addCase(addContributorAsync.pending, (state) => {
+    .addCase(addContributor.pending, (state) => {
         state.contributorsUpdating = true;
         state.contributorsError = undefined;
     })
-    .addCase(addContributorAsync.rejected, (state, action) => {
+    .addCase(addContributor.rejected, (state, action) => {
         state.contributorsUpdating = false;
         state.contributorsError = action.payload as ErrorDto;
     })
-    .addCase(addContributorAsync.fulfilled, (state, action) => {
+    .addCase(addContributor.fulfilled, (state, action) => {
         state.contributorsUpdating = false;
         state.contributorsError = undefined;
         state.apps.items?.set(x => x.id, action.payload);
-        state.appDetails = action.payload;
+
+        if (state.app && state.app.id === action.payload.id) {
+            state.app = action.payload;
+        }
     })
-    .addCase(removeContributorAsync.pending, (state) => {
+    .addCase(removeContributor.pending, (state) => {
         state.contributorsUpdating = true;
         state.contributorsError = undefined;
     })
-    .addCase(removeContributorAsync.rejected, (state, action) => {
+    .addCase(removeContributor.rejected, (state, action) => {
         state.contributorsUpdating = false;
         state.contributorsError = action.payload as ErrorDto;
     })
-    .addCase(removeContributorAsync.fulfilled, (state, action) => {
+    .addCase(removeContributor.fulfilled, (state, action) => {
         state.contributorsUpdating = false;
         state.contributorsError = undefined;
         state.apps.items?.set(x => x.id, action.payload);
-        state.appDetails = action.payload;
+
+        if (state.app && state.app.id === action.payload.id) {
+            state.app = action.payload;
+        }
     }));

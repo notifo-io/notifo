@@ -8,12 +8,22 @@ ARG NOTIFO__VERSION=1.0.0
 WORKDIR /src
 
 # Copy nuget project files.
-COPY backend/**/**/*.csproj /tmp/
+COPY backend/*.sln ./
 
-# Install nuget packages
-RUN bash -c 'pushd /tmp; for p in *.csproj; do dotnet restore $p --verbosity quiet; true; done; popd'
+# Copy the main source project files
+COPY backend/src/*/*.csproj ./
+RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${file%.*}/; done
+
+# Copy the test project files
+COPY backend/tests/*/*.csproj ./
+RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
+
+RUN dotnet restore
 
 COPY backend .
+ 
+# Test Backend
+RUN dotnet test --no-restore --filter Category!=Dependencies
 
 # Publish
 RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -p:version=$NOTIFO__VERSION

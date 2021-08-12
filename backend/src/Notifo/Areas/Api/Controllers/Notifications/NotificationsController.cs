@@ -39,7 +39,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => User notifications returned.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}/notifications")]
         [AppPermission(NotifoRoles.AppAdmin)]

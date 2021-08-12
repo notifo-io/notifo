@@ -9,6 +9,7 @@ namespace Notifo.Domain
 {
     public enum ProcessStatus
     {
+        None,
         Attempt,
         Handled,
         Failed,

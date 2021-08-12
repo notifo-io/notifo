@@ -43,7 +43,7 @@ export const AppsPage = () => {
             {apps.items &&
                 <div>
                     {apps.items.map(app => (
-                        <Link key={app.id} to={`${match.path}/${app.id}`} className='app-link'>
+                        <Link key={app.id} to={`${match.path}/${app.id}`} className='card-link'>
                             <Card className='app-card'>
                                 <CardBody>
                                     <h4 className='truncate'>{app.name || texts.common.unnamed}</h4>

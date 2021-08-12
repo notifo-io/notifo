@@ -5,41 +5,65 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { isErrorVisible } from '@app/framework/utils';
-import { useField, useFormikContext } from 'formik';
+import { isErrorVisible, Types } from '@app/framework/utils';
+import { FieldInputProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
-import { Badge, Button, Col, CustomInput, CustomInputProps, FormGroup, Input, Label, Row } from 'reactstrap';
-import { InputProps } from 'reactstrap/lib/Input';
+import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import { FormControlError } from './FormControlError';
 import { Icon } from './Icon';
 import { LanguageSelector } from './LanguageSelector';
 import { PasswordInput } from './PasswordInput';
 import { Toggle } from './Toggle';
 
-type Option<T> = { value: T | string; label: string };
+export type FormEditorOption<T> = { value?: T; label: string };
 
-export interface FormProps {
-    // The input label
+export interface FormEditorProps {
+    // The label.
     label?: string;
-
-    // The input hint
-    hints?: string;
-
-    // The name of the control.
-    name: string;
 
     // The optional class name.
     className?: string;
+
+    // The optional placeholder.
+    placeholder?: string;
+
+    // The hints.
+    hints?: string;
+
+    // The form name.
+    name: string;
+
+    // The layout.
+    vertical?: boolean;
 
     // True if disabled.
     disabled?: boolean;
 }
 
-export interface ArrayFormProps<T> extends FormProps {
+export interface ArrayFormProps<T> extends FormEditorProps {
+    // The allowed values.
     allowedValues: ReadonlyArray<T>;
 }
 
-export interface LocalizedFormProps extends FormProps {
+export interface BooleanFormProps extends FormEditorProps {
+    // True if 3 states are allowed.
+    indeterminate?: boolean;
+
+    // True to provide the value as string.
+    asString?: boolean;
+}
+
+export interface OptionsFormProps<T> extends FormEditorProps {
+    // The allowed selected values.
+    options: FormEditorOption<T>[];
+}
+
+export interface FormRowProps extends FormEditorProps {
+    // The children.
+    children: React.ReactNode;
+}
+
+export interface LocalizedFormProps extends FormEditorProps {
     // The available languages.
     languages: ReadonlyArray<string>;
 
@@ -50,132 +74,36 @@ export interface LocalizedFormProps extends FormProps {
     onLanguageSelect: (language: string) => void;
 }
 
-export interface BooleanFormProps extends FormProps {
-    indeterminate?: boolean;
-
-    asString?: boolean;
-}
-
-export interface OptionsFormProps<T> extends FormProps {
-    options: Option<T>[];
-}
-
-const FormError = (props: { name: string }) => {
-    const { name } = props;
-
-    const { submitCount } = useFormikContext();
-    const [, meta] = useField(name);
-
-    return (
-        <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
-    );
-};
-
 export module Forms {
-    export const Error = FormError;
+    export type Option<T = any> = { value?: T | string; label: string };
 
-    export const LocalizedText = (props: LocalizedFormProps) => {
-        const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
+    export const Error = (props: { name: string }) => {
+        const { name } = props;
 
-        const fieldName = `${name}.${language}`;
+        const { submitCount } = useFormikContext();
+        const [, meta] = useField(name);
 
         return (
-            <FormGroup className={className}>
-                <Row>
-                    <Col>
-                        <Label htmlFor={name}>{label}</Label>
-                    </Col>
-                    <Col xs='auto'>
-                        <LanguageSelector
-                            languages={languages}
-                            language={language}
-                            onSelect={onLanguageSelect} />
-                    </Col>
-                </Row>
-
-                <FormError name={name} />
-
-                <InputText {...other} name={fieldName} />
-            </FormGroup>
+            <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
         );
     };
 
-    export const LocalizedTextArea = (props: LocalizedFormProps) => {
-        const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
+    export const Row = (props: FormRowProps) => {
+        const { children, className, hints, name, label, vertical } = props;
 
-        const fieldName = `${name}.${language}`;
-
-        return (
-            <FormGroup className={className}>
-                <Row>
-                    <Col>
-                        <Label htmlFor={name}>{label}</Label>
-                    </Col>
-                    <Col xs='auto'>
-                        <LanguageSelector
-                            languages={languages}
-                            language={language}
-                            onSelect={onLanguageSelect} />
-                    </Col>
-                </Row>
-
-                <FormError name={name} />
-
-                <InputTextArea {...other} name={fieldName} />
-            </FormGroup>
-        );
-    };
-
-    export const Boolean = (props: BooleanFormProps) => {
-        const { className } = props;
-
-        return (
-            <FormGroup className={className}>
-                <InputToggle {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
-        );
-    };
-
-    export const GridBoolean = (props: BooleanFormProps) => {
-        const { className } = props;
-
-        return (
-            <FormGroup className={className} row>
-                <Col sm={4} htmlFor={props.name}></Col>
-
-                <Col sm={8}>
-                    <FormGroup>
-                        <InputToggle {...props} />
-
-                        <FormHint hints={props.hints} />
-                    </FormGroup>
-                </Col>
-            </FormGroup>
-        );
-    };
-
-    export const TextArea = (props: FormProps & InputProps) => {
-        const { className, label } = props;
-
-        return (
+        return vertical ? (
             <FormGroup className={className}>
                 {label &&
-                    <Label htmlFor={props.name}>{label}</Label>
+                    <Label htmlFor={name}>{label}</Label>
                 }
 
-                <InputTextArea {...props} />
+                <Forms.Error name={name} />
 
-                <FormHint hints={props.hints} />
+                {children}
+
+                <FormDescription hints={hints} />
             </FormGroup>
-        );
-    };
-
-    export const GridTextArea = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
-        return (
+        ) : (
             <FormGroup className={className} row>
                 {label ? (
                     <Label sm={4} htmlFor={name}>{label}</Label>
@@ -184,323 +112,228 @@ export module Forms {
                 )}
 
                 <Col sm={8}>
-                    <InputTextArea {...props} />
+                    <Forms.Error name={name} />
 
-                    <FormHint hints={props.hints} />
+                    {children}
+
+                    <FormDescription hints={hints} />
                 </Col>
             </FormGroup>
+        );
+    };
+
+    export const LocalizedText = ({ className, ...other }: LocalizedFormProps) => {
+        const clazz = `localized-value ${className}`;
+
+        return (
+            <Forms.Row className={clazz} {...other}>
+                <InputLocalizedText {...other} />
+            </Forms.Row>
+        );
+    };
+
+    export const LocalizedTextArea = ({ className, ...other }: LocalizedFormProps) => {
+        const clazz = `localized-value ${className}`;
+
+        return (
+            <Forms.Row className={clazz} {...other}>
+                <InputLocalizedTextArea {...other} />
+            </Forms.Row>
+        );
+    };
+
+    export const Boolean = ({ label, ...other }: BooleanFormProps) => {
+        return (
+            <Forms.Row {...other}>
+                <InputToggle name={other.name} label={label!} />
+            </Forms.Row>
         );
     };
 
     export const Array = (props: ArrayFormProps<any>) => {
-        const { className, label, name } = props;
-
         return (
-            <FormGroup className={className}>
-                {label &&
-                    <Label htmlFor={name}>{label}</Label>
-                }
-
+            <Forms.Row {...props}>
                 <InputArray {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
+            </Forms.Row>
         );
     };
 
-    export const Text = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
+    export const Text = (props: FormEditorProps) => {
         return (
-            <FormGroup className={className}>
-                {label &&
-                    <Label htmlFor={name}>{label}</Label>
-                }
-
-                <InputText {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
+            <Forms.Row {...props}>
+                <InputText name={props.name} />
+            </Forms.Row>
         );
     };
 
-    export const GridText = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
+    export const Url = (props: FormEditorProps) => {
         return (
-            <FormGroup className={className} row>
-                {label ? (
-                    <Label sm={4} htmlFor={name}>{label}</Label>
-                ) : (
-                    <Col sm={4} />
-                )}
-
-                <Col sm={8}>
-                    <InputText {...props} />
-
-                    <FormHint hints={props.hints} />
-                </Col>
-            </FormGroup>
+            <Forms.Row {...props}>
+                <InputUrl name={props.name} />
+            </Forms.Row>
         );
     };
 
-    export const Number = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
+    export const Textarea = (props: FormEditorProps) => {
         return (
-            <FormGroup className={className}>
-                {label &&
-                    <Label htmlFor={name}>{label}</Label>
-                }
-
-                <InputNumber {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
+            <Forms.Row {...props}>
+                <InputTextarea name={props.name} />
+            </Forms.Row>
         );
     };
 
-    export const GridNumber = (props: FormProps & { units?: string } & InputProps) => {
-        const { className, label, name, units } = props;
-
+    export const Number = ({ max, min, step, unit, ...other }: FormEditorProps & { unit?: string; min?: number; max?: number; step?: number }) => {
         return (
-            <FormGroup className={className} row>
-                {label ? (
-                    <Label sm={4} htmlFor={name}>{label}</Label>
-                ) : (
-                    <Col sm={4} />
-                )}
+            <Forms.Row {...other}>
+                <InputGroup>
+                    <InputNumber name={other.name} max={max} min={min} step={step} />
 
-                <Col sm={8}>
-                    <Row>
-                        <Col xs={6}>
-                            <InputNumber {...props} />
-                        </Col>
-                        <Label xs={6} htmlFor={name}>{units}</Label>
-                    </Row>
-
-                    <FormHint hints={props.hints} />
-                </Col>
-            </FormGroup>
+                    {unit &&
+                        <InputGroupAddon addonType='prepend'>
+                            <InputGroupText>{unit}</InputGroupText>
+                        </InputGroupAddon>
+                    }
+                </InputGroup>
+            </Forms.Row>
         );
     };
 
-    export const Email = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
+    export const Email = (props: FormEditorProps) => {
         return (
-            <FormGroup className={className}>
-                {label &&
-                    <Label htmlFor={name}>{label}</Label>
-                }
-
-                <InputEmail {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
+            <Forms.Row {...props}>
+                <InputEmail name={props.name} />
+            </Forms.Row>
         );
     };
 
-    export const GridEmail = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
+    export const Password = (props: FormEditorProps) => {
         return (
-            <FormGroup className={className} row>
-                {label ? (
-                    <Label sm={4} htmlFor={name}>{label}</Label>
-                ) : (
-                    <Col sm={4} />
-                )}
-
-                <Col sm={8}>
-                    <InputEmail {...props} />
-
-                    <FormHint hints={props.hints} />
-                </Col>
-            </FormGroup>
+            <Forms.Row {...props}>
+                <InputPassword name={props.name} />
+            </Forms.Row>
         );
     };
 
-    export const Password = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
-
+    export const Select = ({ options, ...other }: FormEditorProps & { options: Option<string | number>[] }) => {
         return (
-            <FormGroup className={className}>
-                {label &&
-                    <Label htmlFor={name}>{label}</Label>
-                }
-
-                <InputPassword {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
+            <Forms.Row {...other}>
+                <InputSelect name={other.name} options={options} />
+            </Forms.Row>
         );
     };
 
-    export const GridPassword = (props: FormProps & InputProps) => {
-        const { className, label, name } = props;
+    export const Checkboxes = ({ options, ...other }: FormEditorProps & { options: Option<string>[] }) => {
+        if (!options || options.length === 0) {
+            return null;
+        }
 
         return (
-            <FormGroup className={className} row>
-                {label ? (
-                    <Label sm={4} htmlFor={name}>{label}</Label>
-                ) : (
-                    <Col sm={4} />
-                )}
-
-                <Col sm={8}>
-                    <InputPassword {...props} />
-
-                    <FormHint hints={props.hints} />
-                </Col>
-            </FormGroup>
-        );
-    };
-
-    export const Select = (props: OptionsFormProps<string | number> & Partial<CustomInputProps>) => {
-        const { className, label, name } = props;
-
-        return (
-            <FormGroup className={className}>
-                {label &&
-                    <Label htmlFor={name}>{label}</Label>
-                }
-
-                <InputSelect {...props} />
-
-                <FormHint hints={props.hints} />
-            </FormGroup>
-        );
-    };
-
-    export const GridSelect = (props: OptionsFormProps<string | number> & Partial<CustomInputProps>) => {
-        const { className, label, name } = props;
-
-        return (
-            <FormGroup className={className} row>
-                <Label sm={4} htmlFor={name}>{label}</Label>
-
-                <Col sm={8}>
-                    <InputSelect {...props} />
-
-                    <FormHint hints={props.hints} />
-                </Col>
-            </FormGroup>
+            <Forms.Row {...other}>
+                <InputCheckboxes name={other.name} options={options} />
+            </Forms.Row>
         );
     };
 }
 
-const InputNumber = ({ name }: FormProps) => {
+const FormDescription = ({ hints }: { hints?: string }) => {
+    if (!hints) {
+        return null;
+    }
+
+    return (
+        <div className='text-muted'>
+            <small>{hints}</small>
+        </div>
+    );
+};
+
+const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta, helper] = useField(name);
+
+    const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        helper.setValue(parseInt(event.target.value, 10));
+    }, []);
 
     return (
         <>
-            <FormError name={name} />
-
-            <Input type='number' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
+            <Input type='number' name={name} id={field.name} value={field.value} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
+                max={max}
+                min={min}
+                step={step}
+                onChange={doChange}
                 onBlur={field.onBlur}
             />
         </>
     );
 };
 
-const InputText = (props: FormProps & InputProps) => {
-    const { name, ...other } = props;
-
+const InputText = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useField(name);
 
     return (
         <>
-            <FormError name={name} />
-
             <Input type='text' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                {...other}
             />
         </>
     );
 };
 
-const InputTextArea = (props: FormProps & InputProps) => {
-    const { name, ...other } = props;
-
+const InputUrl = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useField(name);
 
     return (
         <>
-            <FormError name={name} />
+            <Input type='url' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+            />
+        </>
+    );
+};
 
+const InputTextarea = ({ name }: FormEditorProps) => {
+    const { submitCount } = useFormikContext();
+    const [field, meta] = useField(name);
+
+    return (
+        <>
             <Input type='textarea' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                {...other}
             />
         </>
     );
 };
 
-const InputEmail = (props: FormProps & InputProps) => {
-    const { name, ...other } = props;
-
+const InputEmail = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useField(name);
 
     return (
         <>
-            <FormError name={name} />
-
             <Input type='email' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                {...other}
             />
         </>
     );
 };
 
-const InputPassword = (props: FormProps & InputProps) => {
-    const { name, ...other } = props;
-
+const InputPassword = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useField(name);
 
     return (
         <>
-            <FormError name={name} />
-
             <PasswordInput name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
-                {...other}
             />
-        </>
-    );
-};
-
-const InputSelect = (props: OptionsFormProps<string | number> & Partial<CustomInputProps>) => {
-    const { name, options, ...other } = props;
-
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
-
-    return (
-        <>
-            <FormError name={name} />
-
-            <CustomInput type='select' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                {...other}
-            >
-                {options.map(option =>
-                    <option key={option.value} value={option.value}>{option.label}</option>,
-                )}
-            </CustomInput>
         </>
     );
 };
@@ -514,6 +347,64 @@ const InputToggle = (props: BooleanFormProps) => {
         <>
             <Toggle {...props} value={field.value} onChange={helpers.setValue} />
         </>
+    );
+};
+
+const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Option<string | number>[] }) => {
+    const { submitCount } = useFormikContext();
+    const [field, meta] = useField<string | number>(name);
+
+    return (
+        <>
+            <CustomInput type='select' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+            >
+                {Types.isUndefined(field.value) && !options.find(x => x.value === field.value) &&
+                    <option></option>
+                }
+
+                {options.map((option, i) =>
+                    <option key={i} value={option.value}>{option.label}</option>,
+                )}
+            </CustomInput>
+        </>
+    );
+};
+
+const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.Option<string>[] }) => {
+    const [field] = useField(name);
+    const form = useFormikContext();
+
+    return (
+        <>
+            {options.map(option =>
+                <InputCheckboxOption key={option.value} field={field} form={form} option={option} />,
+            )}
+        </>
+    );
+};
+
+const InputCheckboxOption = (props: { field: FieldInputProps<string[]>; form: FormikContextType<unknown>; option: Forms.Option<string> }) => {
+    const { field, form, option } = props;
+
+    const value: string[] = field.value || [];
+    const valueExist = value && value.indexOf(option.value!) >= 0;
+
+    const doChange = React.useCallback(() => {
+        if (valueExist) {
+            form.setFieldValue(field.name, value.filter(x => x !== option.value));
+        } else {
+            form.setFieldValue(field.name, [...value, option.value]);
+        }
+    }, [valueExist, option, field, form]);
+
+    return (
+        <CustomInput type='checkbox' name={option.value} id={option.value || 'none'} checked={valueExist}
+            onChange={doChange}
+            onBlur={field.onBlur}
+            label={option.label}
+        />
     );
 };
 
@@ -576,16 +467,40 @@ const InputArray = (props: ArrayFormProps<any>) => {
     );
 };
 
-const FormHint = ({ hints }: { hints?: string }) => {
-    if (!hints) {
-        return null;
-    }
+const InputLocalizedText = (props: LocalizedFormProps) => {
+    const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
+
+    const fieldName = `${name}.${language}`;
 
     return (
-        <div>
-            <small className='text-muted'>
-                {hints}
-            </small>
+        <div className='localized-input'>
+            <Forms.Error name={name} />
+
+            <LanguageSelector
+                languages={languages}
+                language={language}
+                onSelect={onLanguageSelect} />
+
+            <InputText {...other} name={fieldName} />
+        </div>
+    );
+};
+
+const InputLocalizedTextArea = (props: LocalizedFormProps) => {
+    const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
+
+    const fieldName = `${name}.${language}`;
+
+    return (
+        <div className='localized-input'>
+            <Forms.Error name={name} />
+
+            <LanguageSelector
+                languages={languages}
+                language={language}
+                onSelect={onLanguageSelect} />
+
+            <InputTextarea {...other} name={fieldName} />
         </div>
     );
 };

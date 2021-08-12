@@ -9,13 +9,12 @@ import { Forms, Icon, isErrorVisible, LocalizedFormProps } from '@app/framework'
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { useField, useFormikContext } from 'formik';
 import * as React from 'react';
-import { Button, Col, FormGroup, Input, Label, Row } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 import { MediaPicker } from './MediaPicker';
 
 export const MediaInput = (props: LocalizedFormProps) => {
     const {
         className,
-        label,
         language,
         languages,
         name,
@@ -40,22 +39,13 @@ export const MediaInput = (props: LocalizedFormProps) => {
     };
 
     return (
-        <FormGroup className={className}>
-            <Row>
-                <Col>
-                    <Label for={field.name}>{label}</Label>
-                </Col>
-                <Col xs='auto'>
-                    <LanguageSelector
-                        languages={languages}
-                        language={language}
-                        onSelect={onLanguageSelect} />
-                </Col>
-            </Row>
+        <Forms.Row className='localized-value' {...props}>
+            <div className='input-container localized-input'>
+                <LanguageSelector
+                    languages={languages}
+                    language={language}
+                    onSelect={onLanguageSelect} />
 
-            <Forms.Error name={field.name} />
-
-            <div className='input-container'>
                 <Input type='text' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                     onChange={field.onChange}
                     onBlur={field.onBlur}
@@ -73,6 +63,6 @@ export const MediaInput = (props: LocalizedFormProps) => {
                     onSelected={doSelectUrl}
                 />
             }
-        </FormGroup>
+        </Forms.Row>
     );
 };

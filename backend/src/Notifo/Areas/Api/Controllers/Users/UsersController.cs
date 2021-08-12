@@ -38,6 +38,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => Users returned.
+        /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -58,14 +59,14 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Get a user.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <returns>
         /// 200 => User returned.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ListResponseDto<UserDto>))]
+        [Produces(typeof(UserDto))]
         public async Task<IActionResult> GetUser(string appId, string id)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -84,11 +85,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Query user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => User subscriptions returned.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/users/{id}/subscriptions")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -109,11 +110,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Upsert a user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
         /// <returns>
         /// 204 => User subscribed.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/subscriptions")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -137,11 +138,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Remove a user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>
         /// 204 => User subscribed.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}/subscriptions/{*prefix}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -166,6 +167,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// <param name="request">The upsert request.</param>
         /// <returns>
         /// 200 => Users upserted.
+        /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/users/")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -201,11 +203,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Add an allowed topic.
         /// </summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="request">The upsert request.</param>
         /// <returns>
         /// 204 => User updated.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/allowed-topics")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -230,11 +232,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// Remove an allowed topic.
         /// </summary>
         /// <param name="appId">The app where the users belong to.</param>
-        /// <param name="id">The user id.</param>
+        /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>
         /// 204 => User updated.
-        /// 404 => User not found.
+        /// 404 => User or app not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}/allowed-topics/{*prefix}")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -262,6 +264,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// <param name="id">The user id to delete.</param>
         /// <returns>
         /// 200 => User deleted.
+        /// 404 => App not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]

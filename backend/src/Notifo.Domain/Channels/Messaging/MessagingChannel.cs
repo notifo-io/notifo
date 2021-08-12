@@ -67,7 +67,7 @@ namespace Notifo.Domain.Channels.Messaging
             var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
-            if (senders.Any(x => x.HasTarget(options.User)))
+            if (senders.Any(x => x.Target.HasTarget(options.User)))
             {
                 yield return DefaultToken;
             }
@@ -86,9 +86,9 @@ namespace Notifo.Domain.Channels.Messaging
                 IsImmediate = setting.DelayDuration == Duration.Zero
             };
 
-            var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
+            var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
 
-            foreach (var sender in senders)
+            foreach (var (_, sender) in integrations)
             {
                 await sender.AddTargetsAsync(job, options.User);
             }
@@ -114,7 +114,7 @@ namespace Notifo.Domain.Channels.Messaging
         public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, Name, DefaultToken))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, Name, DefaultToken, ct))
             {
                 await UpdateAsync(job.Notification, ProcessStatus.Skipped);
             }
@@ -126,10 +126,10 @@ namespace Notifo.Domain.Channels.Messaging
             return false;
         }
 
-        private Task SendAsync(MessagingJob job,
+        private async Task SendAsync(MessagingJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendMessaging", async () =>
+            using (Telemetry.Activities.StartActivity("SendMessage"))
             {
                 var app = await appStore.GetCachedAsync(job.Notification.AppId, ct);
 
@@ -148,11 +148,11 @@ namespace Notifo.Domain.Channels.Messaging
                 {
                     await UpdateAsync(job.Notification, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<IMessagingSender>(app, job.Notification.Test).ToList();
+                    var senders = integrationManager.Resolve<IMessagingSender>(app, job.Notification.Test).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(job, Texts.Messaging_ConfigReset, ct);
+                        await SkipAsync(job, Texts.Messaging_ConfigReset);
                         return;
                     }
 
@@ -163,7 +163,7 @@ namespace Notifo.Domain.Channels.Messaging
                     await logStore.LogAsync(job.Notification.AppId, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(MessagingJob job, List<IMessagingSender> senders,
@@ -207,10 +207,9 @@ namespace Notifo.Domain.Channels.Messaging
             return userNotificationStore.CollectAndUpdateAsync(notification, Name, DefaultToken, status, reason);
         }
 
-        private async Task SkipAsync(MessagingJob job, string reason,
-            CancellationToken ct)
+        private async Task SkipAsync(MessagingJob job, string reason)
         {
-            await logStore.LogAsync(job.Notification.AppId, reason, ct);
+            await logStore.LogAsync(job.Notification.AppId, reason);
 
             await UpdateAsync(job.Notification, ProcessStatus.Skipped);
         }

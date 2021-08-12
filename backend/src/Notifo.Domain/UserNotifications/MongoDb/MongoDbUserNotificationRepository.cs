@@ -83,180 +83,209 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 null, ct);
         }
 
-        public async Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration)
+        public async Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+            CancellationToken ct)
         {
-            var filter =
-               Filter.And(
-                   Filter.Eq(x => x.Id, id),
-                   Filter.Or(
-                        Filter.Exists(x => x.IsConfirmed),
-                        Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            {
+                var filter =
+                   Filter.And(
+                       Filter.Eq(x => x.Id, id),
+                       Filter.Or(
+                            Filter.Exists(x => x.IsConfirmed),
+                            Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
 
-            var count =
-                await Collection.Find(filter).Limit(1)
-                    .CountDocumentsAsync();
+                var count =
+                    await Collection.Find(filter).Limit(1)
+                        .CountDocumentsAsync(ct);
 
-            return count == 1;
+                return count == 1;
+            }
         }
 
         public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<UserNotification>>
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
             {
-                Filter.Eq(x => x.AppId, appId),
-                Filter.Eq(x => x.UserId, userId),
-                Filter.Gte(x => x.Updated, query.After)
-            };
+                var filters = new List<FilterDefinition<UserNotification>>
+                {
+                    Filter.Eq(x => x.AppId, appId),
+                    Filter.Eq(x => x.UserId, userId),
+                    Filter.Gte(x => x.Updated, query.After)
+                };
 
-            switch (query.Scope)
-            {
-                case UserNotificationQueryScope.Deleted:
-                    {
-                        filters.Add(Filter.Eq(x => x.IsDeleted, true));
-                        break;
-                    }
+                switch (query.Scope)
+                {
+                    case UserNotificationQueryScope.Deleted:
+                        {
+                            filters.Add(Filter.Eq(x => x.IsDeleted, true));
+                            break;
+                        }
 
-                case UserNotificationQueryScope.NonDeleted:
-                    {
-                        filters.Add(
-                            Filter.Or(
-                                Filter.Exists(x => x.IsDeleted, false),
-                                Filter.Eq(x => x.IsDeleted, false)));
-                        break;
-                    }
+                    case UserNotificationQueryScope.NonDeleted:
+                        {
+                            filters.Add(
+                                Filter.Or(
+                                    Filter.Exists(x => x.IsDeleted, false),
+                                    Filter.Eq(x => x.IsDeleted, false)));
+                            break;
+                        }
+                }
+
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                    filters.Add(Filter.Regex(x => x.Formatting.Subject, regex));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                activity?.SetTag("numResults", resultItems.Count);
+                activity?.SetTag("numTotal", resultTotal);
+
+                return ResultList.Create(resultTotal, resultItems);
             }
-
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                filters.Add(Filter.Regex(x => x.Formatting.Subject, regex));
-            }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems);
         }
 
-        public async Task<UserNotification?> FindAsync(Guid id)
+        public async Task<UserNotification?> FindAsync(Guid id,
+            CancellationToken ct)
         {
-            var entity = await Collection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            {
+                var entity = await Collection.Find(x => x.Id == id).FirstOrDefaultAsync(ct);
 
-            return entity;
+                return entity;
+            }
         }
 
         public async Task DeleteAsync(Guid id,
             CancellationToken ct)
         {
-            await Collection.UpdateOneAsync(x => x.Id == id, Update.Set(x => x.IsDeleted, true), cancellationToken: ct);
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            {
+                await Collection.UpdateOneAsync(x => x.Id == id, Update.Set(x => x.IsDeleted, true), cancellationToken: ct);
+            }
         }
 
-        public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle)
+        public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
+            CancellationToken ct)
         {
-            var writes = new List<WriteModel<UserNotification>>();
-
-            foreach (var id in ids)
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
             {
-                writes.Add(new UpdateOneModel<UserNotification>(
-                    Filter.And(
-                        Filter.Eq(x => x.Id, id),
-                        Filter.Exists(x => x.IsSeen, false)),
-                    Update
-                        .Set(x => x.IsSeen, handle)
-                        .Set(x => x.Updated, handle.Timestamp)));
+                var writes = new List<WriteModel<UserNotification>>();
 
-                writes.Add(new UpdateOneModel<UserNotification>(
-                    Filter.And(
-                        Filter.Eq(x => x.Id, id),
-                        Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Seen),
-                        Filter.Exists(x => x.IsConfirmed, false)),
-                    Update
-                        .Set(x => x.IsConfirmed, handle)
-                        .Set(x => x.Updated, handle.Timestamp)));
+                foreach (var id in ids)
+                {
+                    writes.Add(new UpdateOneModel<UserNotification>(
+                        Filter.And(
+                            Filter.Eq(x => x.Id, id),
+                            Filter.Exists(x => x.IsSeen, false)),
+                        Update
+                            .Set(x => x.IsSeen, handle)
+                            .Set(x => x.Updated, handle.Timestamp)));
+
+                    writes.Add(new UpdateOneModel<UserNotification>(
+                        Filter.And(
+                            Filter.Eq(x => x.Id, id),
+                            Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Seen),
+                            Filter.Exists(x => x.IsConfirmed, false)),
+                        Update
+                            .Set(x => x.IsConfirmed, handle)
+                            .Set(x => x.Updated, handle.Timestamp)));
+                }
+
+                if (writes.Count == 0)
+                {
+                    return;
+                }
+
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
             }
-
-            if (writes.Count == 0)
-            {
-                return;
-            }
-
-            await Collection.BulkWriteAsync(writes);
         }
 
-        public async Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle)
+        public async Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle,
+            CancellationToken ct)
         {
-            var entity =
-                await Collection.FindOneAndUpdateAsync(
-                    Filter.And(
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            {
+                var entity =
+                await Collection.FindOneAndUpdateAsync(Filter.And(
                         Filter.Eq(x => x.Id, id),
                         Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
-                        Filter.Exists(x => x.IsConfirmed, false)),
-                    Update
+                        Filter.Exists(x => x.IsConfirmed, false)), Update
                         .Set(x => x.IsConfirmed, handle)
-                        .Set(x => x.Updated, handle.Timestamp));
+                        .Set(x => x.Updated, handle.Timestamp), cancellationToken: ct);
 
-            if (entity != null)
-            {
-                entity.IsConfirmed = handle;
+                if (entity != null)
+                {
+                    entity.IsConfirmed = handle;
 
-                entity.Updated = handle.Timestamp;
+                    entity.Updated = handle.Timestamp;
+                }
+
+                return entity;
             }
-
-            return entity;
         }
 
         public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates,
             CancellationToken ct)
         {
-            var writes = new List<WriteModel<UserNotification>>();
-
-            var documentUpdates = new List<UpdateDefinition<UserNotification>>();
-
-            foreach (var group in updates.GroupBy(x => x.Id))
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
             {
-                documentUpdates.Clear();
+                var writes = new List<WriteModel<UserNotification>>();
 
-                foreach (var (_, channel, configuration, info) in group)
+                var documentUpdates = new List<UpdateDefinition<UserNotification>>();
+
+                foreach (var group in updates.GroupBy(x => x.Id))
                 {
-                    var path = $"Channels.{channel}.Status.{configuration.ToBase64()}";
+                    documentUpdates.Clear();
 
-                    documentUpdates.Add(Update.Set($"{path}.Detail", info.Detail));
-                    documentUpdates.Add(Update.Set($"{path}.Status", info.Status));
-                    documentUpdates.Add(Update.Set($"{path}.LastUpdate", info.LastUpdate));
+                    foreach (var (_, channel, configuration, info) in group)
+                    {
+                        var path = $"Channels.{channel}.Status.{configuration.ToBase64()}";
+
+                        documentUpdates.Add(Update.Set($"{path}.Detail", info.Detail));
+                        documentUpdates.Add(Update.Set($"{path}.Status", info.Status));
+                        documentUpdates.Add(Update.Set($"{path}.LastUpdate", info.LastUpdate));
+                    }
+
+                    var update = Update.Combine(documentUpdates);
+
+                    writes.Add(new UpdateOneModel<UserNotification>(Filter.Eq(x => x.Id, group.Key), update));
                 }
 
-                var update = Update.Combine(documentUpdates);
+                if (writes.Count == 0)
+                {
+                    return;
+                }
 
-                writes.Add(new UpdateOneModel<UserNotification>(Filter.Eq(x => x.Id, group.Key), update));
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
             }
-
-            if (writes.Count == 0)
-            {
-                return;
-            }
-
-            await Collection.BulkWriteAsync(writes, cancellationToken: ct);
         }
 
         public async Task InsertAsync(UserNotification notification,
             CancellationToken ct)
         {
-            try
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
             {
-                await Collection.InsertOneAsync(notification, null, ct);
-            }
-            catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
-            {
-                throw new UniqueConstraintException();
+                try
+                {
+                    await Collection.InsertOneAsync(notification, null, ct);
+                }
+                catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                {
+                    throw new UniqueConstraintException();
+                }
             }
         }
     }

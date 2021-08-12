@@ -38,6 +38,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => Events returned.
+        /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/events/")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -61,6 +62,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// <param name="request">The publish request.</param>
         /// <returns>
         /// 204 => Events created.
+        /// 404 => App not found.
         /// </returns>
         [HttpPost("api/apps/{appId}/events/")]
         [AppPermission(NotifoRoles.AppAdmin)]
@@ -93,6 +95,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// <param name="request">The publish request.</param>
         /// <returns>
         /// 204 => Event created.
+        /// 404 => App not found.
         /// </returns>
         [HttpPost("api/me/events/")]
         [AppPermission(NotifoRoles.AppUser)]

@@ -33,6 +33,7 @@ namespace Notifo.Areas.Api.Controllers.Logs
         /// <param name="q">The query object.</param>
         /// <returns>
         /// 200 => Log entries returned.
+        /// 404 => App not found.
         /// </returns>
         [HttpGet("api/apps/{appId}/logs/")]
         [AppPermission(NotifoRoles.AppAdmin)]

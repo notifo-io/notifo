@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
-import { deleteSubscriptionAsync, getApp, loadSubscriptionsAsync, togglePublishDialog, useApps, useSubscriptions } from '@app/state';
+import { deleteSubscription, getApp, loadSubscriptions, togglePublishDialog, useApps, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -40,19 +40,19 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     });
 
     React.useEffect(() => {
-        dispatch(loadSubscriptionsAsync(appId, userId, {}));
+        dispatch(loadSubscriptions(appId, userId, {}));
     }, [appId, userId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadSubscriptionsAsync(appId, userId));
+        dispatch(loadSubscriptions(appId, userId));
     }, [appId, userId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadSubscriptionsAsync(appId, userId, q));
+        dispatch(loadSubscriptions(appId, userId, q));
     }, [appId, userId]);
 
     const doDelete = React.useCallback((subscription: SubscriptionDto) => {
-        dispatch(deleteSubscriptionAsync({ appId, userId, prefix: subscription.topicPrefix }));
+        dispatch(deleteSubscription({ appId, userId, prefix: subscription.topicPrefix }));
     }, [appId, userId]);
 
     const doPublish = React.useCallback((subscription: SubscriptionDto) => {
@@ -84,7 +84,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                             {subscriptions.isLoading ? (
                                 <Loader visible={subscriptions.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

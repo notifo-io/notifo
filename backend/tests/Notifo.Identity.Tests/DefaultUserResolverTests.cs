@@ -53,6 +53,9 @@ namespace Notifo.Identity
             A.CallTo(() => userService.CreateAsync(email, A<UserValues>.That.Matches(x => x.Invited == true), false))
                 .Returns(user);
 
+            A.CallTo(() => userService.FindByEmailAsync(email))
+                .Returns((IUser?)null);
+
             var result = await sut.CreateUserIfNotExistsAsync(email, true);
 
             Assert.Equal((user, true), result);

@@ -63,15 +63,18 @@ namespace Notifo.Domain.Users.MongoDb
 
         public async IAsyncEnumerable<string> QueryIdsAsync(string appId, [EnumeratorCancellation] CancellationToken ct)
         {
-            var find = Collection.Find(x => x.Doc.AppId == appId).Only(x => x.Doc.Id);
-
-            using (var cursor = await find.ToCursorAsync(ct))
+            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
             {
-                while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
+                var find = Collection.Find(x => x.Doc.AppId == appId).Only(x => x.Doc.Id);
+
+                using (var cursor = await find.ToCursorAsync(ct))
                 {
-                    foreach (var user in cursor.Current)
+                    while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
                     {
-                        yield return user["d"]["_id"].AsString;
+                        foreach (var user in cursor.Current)
+                        {
+                            yield return user["d"]["_id"].AsString;
+                        }
                     }
                 }
             }
@@ -80,97 +83,118 @@ namespace Notifo.Domain.Users.MongoDb
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<MongoDbUser>>
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbUserRepository>())
             {
-                Filter.Eq(x => x.Doc.AppId, appId)
-            };
+                var filters = new List<FilterDefinition<MongoDbUser>>
+                {
+                    Filter.Eq(x => x.Doc.AppId, appId)
+                };
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-                filters.Add(
-                    Filter.Or(
-                        Filter.Regex(x => x.Doc.Id, regex),
-                        Filter.Regex(x => x.Doc.FullName, regex),
-                        Filter.Regex(x => x.Doc.EmailAddress, regex)));
+                    filters.Add(
+                        Filter.Or(
+                            Filter.Regex(x => x.Doc.Id, regex),
+                            Filter.Regex(x => x.Doc.FullName, regex),
+                            Filter.Regex(x => x.Doc.EmailAddress, regex)));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                activity?.SetTag("numResults", resultItems.Count);
+                activity?.SetTag("numTotal", resultTotal);
+
+                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToUser()));
             }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToUser()));
         }
 
         public async Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey,
             CancellationToken ct)
         {
-            var document = await Collection.Find(x => x.Doc.ApiKey == apiKey).FirstOrDefaultAsync(ct);
+            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            {
+                var document = await Collection.Find(x => x.Doc.ApiKey == apiKey).FirstOrDefaultAsync(ct);
 
-            return (document?.ToUser(), document?.Etag);
+                return (document?.ToUser(), document?.Etag);
+            }
         }
 
         public async Task<(User? User, string? Etag)> GetAsync(string appId, string id,
             CancellationToken ct)
         {
-            var docId = MongoDbUser.CreateId(appId, id);
+            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            {
+                var docId = MongoDbUser.CreateId(appId, id);
 
-            var document = await GetDocumentAsync(docId, ct);
+                var document = await GetDocumentAsync(docId, ct);
 
-            return (document?.ToUser(), document?.Etag);
+                return (document?.ToUser(), document?.Etag);
+            }
         }
 
         public Task UpsertAsync(User user, string? oldEtag,
             CancellationToken ct)
         {
-            var docId = MongoDbUser.FromUser(user);
+            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            {
+                var docId = MongoDbUser.FromUser(user);
 
-            return UpsertDocumentAsync(docId.DocId, docId, oldEtag, ct);
+                return UpsertDocumentAsync(docId.DocId, docId, oldEtag, ct);
+            }
         }
 
         public Task DeleteAsync(string appId, string id,
             CancellationToken ct)
         {
-            var docId = MongoDbUser.CreateId(appId, id);
+            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            {
+                var docId = MongoDbUser.CreateId(appId, id);
 
-            return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+            }
         }
 
         public Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters,
             CancellationToken ct)
         {
-            var writes = new List<WriteModel<MongoDbUser>>(counters.Count);
-
-            foreach (var ((appId, id), values) in counters)
+            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
             {
-                if (values.Any())
+                var writes = new List<WriteModel<MongoDbUser>>(counters.Count);
+
+                foreach (var ((appId, id), values) in counters)
                 {
-                    var docId = MongoDbUser.CreateId(appId, id);
-
-                    var updates = new List<UpdateDefinition<MongoDbUser>>(values.Count);
-
-                    foreach (var (key, value) in values)
+                    if (values.Any())
                     {
-                        updates.Add(Update.Inc($"d.Counters.{key}", value));
+                        var docId = MongoDbUser.CreateId(appId, id);
+
+                        var updates = new List<UpdateDefinition<MongoDbUser>>(values.Count);
+
+                        foreach (var (key, value) in values)
+                        {
+                            updates.Add(Update.Inc($"d.Counters.{key}", value));
+                        }
+
+                        var model = new UpdateOneModel<MongoDbUser>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
+                        {
+                            IsUpsert = true
+                        };
+
+                        writes.Add(model);
                     }
-
-                    var model = new UpdateOneModel<MongoDbUser>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
-                    {
-                        IsUpsert = true
-                    };
-
-                    writes.Add(model);
                 }
-            }
 
-            return Collection.BulkWriteAsync(writes, cancellationToken: ct);
+                return Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            }
         }
     }
 }

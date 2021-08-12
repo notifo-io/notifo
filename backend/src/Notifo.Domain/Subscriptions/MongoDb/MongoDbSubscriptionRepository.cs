@@ -61,97 +61,112 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<MongoDbSubscription>>
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
             {
-                Filter.Eq(x => x.AppId, appId)
-            };
+                var filters = new List<FilterDefinition<MongoDbSubscription>>
+                {
+                    Filter.Eq(x => x.AppId, appId)
+                };
 
-            if (!string.IsNullOrWhiteSpace(query.UserId))
-            {
-                filters.Add(Filter.Eq(x => x.UserId, query.UserId));
+                if (!string.IsNullOrWhiteSpace(query.UserId))
+                {
+                    filters.Add(Filter.Eq(x => x.UserId, query.UserId));
+                }
+
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                    filters.Add(Filter.Regex(x => x.TopicPrefix, regex));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                activity?.SetTag("numResults", resultItems.Count);
+                activity?.SetTag("numTotal", resultTotal);
+
+                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToSubscription()));
             }
-
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                filters.Add(Filter.Regex(x => x.TopicPrefix, regex));
-            }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToSubscription()));
         }
 
         public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, [EnumeratorCancellation] CancellationToken ct)
         {
-            var filter = CreatePrefixFilter(appId, userId, topic, false);
-
-            var find = Collection.Find(filter).SortBy(x => x.UserId);
-
-            var lastSubscription = (MongoDbSubscription?)null;
-
-            using (var cursor = await find.ToCursorAsync(ct))
+            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
             {
-                while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
+                var filter = CreatePrefixFilter(appId, userId, topic, false);
+
+                var find = Collection.Find(filter).SortBy(x => x.UserId);
+
+                var lastSubscription = (MongoDbSubscription?)null;
+
+                using (var cursor = await find.ToCursorAsync(ct))
                 {
-                    foreach (var subscription in cursor.Current)
+                    while (await cursor.MoveNextAsync(ct) && !ct.IsCancellationRequested)
                     {
-                        if (topic.Id.StartsWith(subscription.TopicPrefix, StringComparison.OrdinalIgnoreCase))
+                        foreach (var subscription in cursor.Current)
                         {
-                            if (string.Equals(subscription.UserId, lastSubscription?.UserId, StringComparison.OrdinalIgnoreCase))
+                            if (topic.Id.StartsWith(subscription.TopicPrefix, StringComparison.OrdinalIgnoreCase))
                             {
-                                if (subscription.TopicPrefix.Length > lastSubscription!.TopicPrefix.Length)
+                                if (string.Equals(subscription.UserId, lastSubscription?.UserId, StringComparison.OrdinalIgnoreCase))
                                 {
+                                    if (subscription.TopicPrefix.Length > lastSubscription!.TopicPrefix.Length)
+                                    {
+                                        lastSubscription = subscription;
+                                    }
+                                }
+                                else
+                                {
+                                    if (lastSubscription != null)
+                                    {
+                                        yield return lastSubscription.ToSubscription();
+                                    }
+
                                     lastSubscription = subscription;
                                 }
-                            }
-                            else
-                            {
-                                if (lastSubscription != null)
-                                {
-                                    yield return lastSubscription.ToSubscription();
-                                }
-
-                                lastSubscription = subscription;
                             }
                         }
                     }
                 }
-            }
 
-            if (lastSubscription != null)
-            {
-                yield return lastSubscription.ToSubscription();
+                if (lastSubscription != null)
+                {
+                    yield return lastSubscription.ToSubscription();
+                }
             }
         }
 
         public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix,
             CancellationToken ct)
         {
-            var topicPrefix = prefix.Id;
+            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            {
+                var topicPrefix = prefix.Id;
 
-            var document =
-                await Collection.Find(x => x.AppId == appId && x.UserId == userId && x.TopicPrefix == topicPrefix)
-                    .FirstOrDefaultAsync(ct);
+                var document =
+                    await Collection.Find(x => x.AppId == appId && x.UserId == userId && x.TopicPrefix == topicPrefix)
+                        .FirstOrDefaultAsync(ct);
 
-            return (document?.ToSubscription(), document?.Etag);
+                return (document?.ToSubscription(), document?.Etag);
+            }
         }
 
         public Task UpsertAsync(Subscription subscription, string? oldEtag,
             CancellationToken ct)
         {
-            var document = MongoDbSubscription.FromSubscription(subscription);
+            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            {
+                var document = MongoDbSubscription.FromSubscription(subscription);
 
-            return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+                return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+            }
         }
 
         public Task DeleteAsync(string appId, string userId, TopicId prefix,
@@ -165,9 +180,12 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         public Task DeletePrefixAsync(string appId, string userId, TopicId prefix,
             CancellationToken ct)
         {
-            var filter = CreatePrefixFilter(appId, userId, prefix, true);
+            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            {
+                var filter = CreatePrefixFilter(appId, userId, prefix, true);
 
-            return Collection.DeleteManyAsync(filter, ct);
+                return Collection.DeleteManyAsync(filter, ct);
+            }
         }
 
         private static FilterDefinition<MongoDbSubscription> CreatePrefixFilter(string appId, string? userId, TopicId topic, bool withUser)

@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Collections.Generic;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Integrations;
 
@@ -23,8 +22,6 @@ namespace Notifo.Domain.Apps
         public string[] Languages { get; set; } = { DefaultAppLanguage };
 
         public string? ConfirmUrl { get; set; } = string.Empty;
-
-        public Dictionary<string, EmailTemplate> EmailTemplates { get; set; } = new Dictionary<string, EmailTemplate>();
 
         public Dictionary<string, string> ApiKeys { get; set; } = new Dictionary<string, string>();
 

@@ -18,11 +18,62 @@ main {
     padding-left: 2rem + $size-sidebar;
 }
 
+label {
+    font-size: .85rem;
+    font-weight: 600;
+
+    &.col-form-label {
+        font-size: .9rem;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .custom-toggle-label {
+        font-size: inherit;
+        font-weight: normal;
+    }
+}
+
 legend {
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
     font-size: .9rem;
     font-weight: normal;
+    margin-bottom: 1.5rem;
     padding-bottom: .25rem;
-    padding-top: .75rem;
+    padding-top: 2rem;
+    text-transform: uppercase;
+}
+
+fieldset {
+    &:first-child {
+        & > legend {
+            padding-top: 0;
+        }
+    }
+}
+
+.localized-value {
+    position: relative;
+
+    .localized-input {
+        padding-bottom: 0;
+        padding-top: 2rem;
+        position: relative;
+    }
+
+    .col-form-label {
+        position: static;
+        margin-bottom: 0;
+        margin-top: 2rem;
+    }
+
+    .btn-group {
+        @include absolute(0, 0, null, null);
+    }
+
+    > label {
+        @include absolute(.25rem, null, null, 0);
+    }
 }
 
 .mono {
@@ -76,6 +127,33 @@ legend {
     }
 }
 
+.modal-header {
+    position: relative;
+
+    .nav-tabs2 {
+        @include absolute(null, null, 0);
+    }
+}
+
+.nav-tabs2 {
+    .nav-link {
+        border-bottom: 4px solid transparent;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: normal;
+        margin-right: 2rem;
+        padding: 1rem 0;
+
+        &.active {
+            border-color: $color-primary;
+        }
+
+        &:hover {
+            border-color: $color-primary-darken;
+        }
+    }
+}
+
 $small-gutters: 4px;
 
 .small-gutters {
@@ -99,6 +177,14 @@ $small-gutters: 4px;
 
 .btn-flat {
     box-shadow: none;
+
+    &:hover {
+        box-shadow: none;
+    }
+
+    &:focus {
+        box-shadow: none !important;
+    }
 }
 
 .btn-simple {
@@ -129,6 +215,38 @@ $small-gutters: 4px;
             padding-left: .5rem;
             padding-right: .5rem;
         }
+    }
+
+    &-link {
+        & {
+            color: inherit;
+            display: inline-block;
+        }
+
+        &:hover,
+        &:focus {
+            color: inherit;
+            text-decoration: none;
+        }
+    }
+
+    &-card {
+        margin-bottom: 1rem;
+        margin-right: 1rem;
+        width: 17rem;
+    }
+}
+
+.empty-button {
+    padding-top: 10rem;
+    text-align: center;
+    text-decoration: none;
+
+    label {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: normal;
+        margin-bottom: 2rem;
     }
 }
 
@@ -457,7 +575,7 @@ div {
     }
 
     &-btn {
-        @include absolute(0, 0, auto, auto);
+        @include absolute(null, 0, 0);
         padding-left: 1rem;
         padding-right: 1rem;
 
@@ -668,36 +786,38 @@ textarea {
     line-height: 1.5rem;
     margin: 0;
     padding: 0;
-    padding-left: 60px;
+    padding-left: 50px;
     width: auto;
-}
 
-.custom-toggle-slider {
-    & {
+    &-label {
+        margin-left: .5rem;
+    }
+
+    &-slider {
         width: 50px;
-    }
 
-    &.checked {
-        border-color: $color-success;
+        &.checked {
+            border-color: $color-success;
 
-        &::before {
-            background: $color-success;
-            transform: translateX(1.625rem);
+            &::before {
+                background: $color-success;
+                transform: translateX(1.625rem);
+            }
         }
-    }
 
-    &.unchecked {
-        border-color: $color-error;
+        &.unchecked {
+            border-color: $color-error;
 
-        &::before {
-            background: $color-error;
-            transform: translateX(0);
+            &::before {
+                background: $color-error;
+                transform: translateX(0);
+            }
         }
-    }
 
-    &.indeterminate {
-        &::before {
-            transform: translateX(.8125rem);
+        &.indeterminate {
+            &::before {
+                transform: translateX(.8125rem);
+            }
         }
     }
 }

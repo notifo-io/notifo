@@ -50,6 +50,16 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         public string? Data { get; set; }
 
         /// <summary>
+        /// The optional name of the Email template.
+        /// </summary>
+        public string? EmailTemplate { get; set; }
+
+        /// <summary>
+        /// The optional name of the SMS template.
+        /// </summary>
+        public string? SmsTemplate { get; set; }
+
+        /// <summary>
         /// The time when the event has been created.
         /// </summary>
         [Required]

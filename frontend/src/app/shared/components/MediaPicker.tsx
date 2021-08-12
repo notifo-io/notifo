@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';
-import { getApp, loadMediaAsync, useApps, useMedia } from '@app/state';
+import { getApp, loadMedia, useApps, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -40,15 +40,15 @@ export const MediaPicker = (props: MediaPickerProps) => {
     const [selection, setSelection] = React.useState<string>();
 
     React.useEffect(() => {
-        dispatch(loadMediaAsync(appId));
+        dispatch(loadMedia(appId));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadMediaAsync(appId));
+        dispatch(loadMedia(appId));
     }, [appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadMediaAsync(appId, q));
+        dispatch(loadMedia(appId, q));
     }, [appId]);
 
     const doSelectMedia = React.useCallback((media: MediaDto) => {
@@ -74,7 +74,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
                                 {medias.isLoading ? (
                                     <Loader visible={medias.isLoading} />
                                 ) : (
-                                    <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                    <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                                         <Icon className='text-lg' type='refresh' />
                                     </Button>
                                 )}

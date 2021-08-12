@@ -9,6 +9,7 @@ using Mjml.AspNetCore;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
+using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -24,7 +25,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();
 
             services.AddSingletonAs<EmailFormatter>()
-                .As<IEmailFormatter>();
+                .As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
+
+            services.AddChannelTemplates<EmailTemplate>();
 
             services.AddScheduler<EmailJob>(new SchedulerOptions { QueueName = Providers.Email });
         }

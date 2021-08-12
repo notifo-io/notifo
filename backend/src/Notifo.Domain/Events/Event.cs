@@ -23,6 +23,10 @@ namespace Notifo.Domain.Events
 
         public string? TemplateCode { get; set; }
 
+        public string? EmailTemplate { get; set; }
+
+        public string? SmsTemplate { get; set; }
+
         public string? Data { get; set; }
 
         public Instant Created { get; set; }

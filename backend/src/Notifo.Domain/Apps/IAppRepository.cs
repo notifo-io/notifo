@@ -14,7 +14,8 @@ namespace Notifo.Domain.Apps
 {
     public interface IAppRepository : ICounterStore<string>
     {
-        Task<List<App>> QueryWithPendingIntegrationsAsync(CancellationToken ct);
+        Task<List<App>> QueryWithPendingIntegrationsAsync(
+            CancellationToken ct);
 
         Task<List<App>> QueryAsync(string contributorId,
             CancellationToken ct);

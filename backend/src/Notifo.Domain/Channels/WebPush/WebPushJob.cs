@@ -30,6 +30,8 @@ namespace Notifo.Domain.Channels.WebPush
 
         public bool IsImmediate { get; set; }
 
+        public bool IsUpdate { get; set; }
+
         public string ScheduleKey
         {
             get => $"{Id}_{Subscription.Endpoint}";

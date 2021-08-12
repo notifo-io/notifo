@@ -5,11 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Globalization;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -104,8 +101,10 @@ namespace Notifo
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
             services.AddMyOpenApi();
+            services.AddMySmsChannel();
             services.AddMyStorage(config);
             services.AddMySubscriptions();
+            services.AddMyTelemetry(config);
             services.AddMyTemplates();
             services.AddMyTopics();
             services.AddMyUserEvents(config);

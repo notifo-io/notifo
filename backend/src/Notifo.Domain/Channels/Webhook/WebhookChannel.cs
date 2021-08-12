@@ -17,6 +17,7 @@ using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using Squidex.Log;
@@ -65,65 +66,113 @@ namespace Notifo.Domain.Channels.Webhook
         {
             var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification.Test);
 
-            foreach (var webhook in webhooks)
+            foreach (var (id, _) in webhooks)
             {
-                yield return webhook.Url;
+                yield return id;
             }
         }
 
         public Task HandleExceptionAsync(WebhookJob job, Exception ex)
         {
-            return UpdateAsync(job.Notification, job.Url, ProcessStatus.Failed);
+            return UpdateAsync(job, ProcessStatus.Failed);
         }
 
         public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            var job = new WebhookJob(notification, configuration);
+            var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App, notification.Test);
 
-            return userNotificationQueue.ScheduleAsync(
-                job.ScheduleKey,
-                job,
-                Duration.Zero,
-                false, ct);
+            // The webhook must match the name or the conditions.
+            if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))
+            {
+                return Task.CompletedTask;
+            }
+
+            var job = new WebhookJob(notification, configuration, webhook)
+            {
+                IsUpdate = options.IsUpdate
+            };
+
+            // Do not use scheduling when the notification is an update.
+            if (options.IsUpdate)
+            {
+                return userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    default(Instant),
+                    false, ct);
+            }
+            else
+            {
+                return userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    setting.DelayDuration,
+                    false, ct);
+            }
         }
 
         public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            await log.ProfileAsync("SendWebhook", async () =>
+            using (Telemetry.Activities.StartActivity("SendWebhook"))
             {
-                var url = job.Url;
                 try
                 {
-                    await UpdateAsync(job.Notification, url, ProcessStatus.Attempt);
+                    await UpdateAsync(job, ProcessStatus.Attempt);
 
-                    await SendCoreAsync(job, url, ct);
+                    await SendCoreAsync(job, ct);
 
-                    await UpdateAsync(job.Notification, url, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                 }
                 catch (Exception ex)
                 {
                     await logStore.LogAsync(job.Notification.AppId, $"Webhook: {ex.Message}", ct);
                     throw;
                 }
-            });
+            }
 
             return true;
         }
 
-        private async Task SendCoreAsync(WebhookJob job, string url,
+        private async Task SendCoreAsync(WebhookJob job,
             CancellationToken ct)
         {
             using (var client = httpClientFactory.CreateClient())
             {
-                await client.PostAsJsonAsync(url, job.Notification, ct);
+                var request = new HttpRequestMessage(new HttpMethod(job.Webhook.HttpMethod), job.Webhook.HttpUrl)
+                {
+                    Content = JsonContent.Create(job.Notification)
+                };
+
+                await client.SendAsync(request, ct);
             }
         }
 
-        private Task UpdateAsync(UserNotification notification, string url, ProcessStatus status, string? reason = null)
+        private async Task UpdateAsync(WebhookJob job, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, url, status, reason);
+            // We only track the initial publication.
+            if (!job.IsUpdate)
+            {
+                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.WebhookId, status, reason);
+            }
+        }
+
+        private static bool ShouldSend(WebhookDefinition webhook, bool isUpdate, string? name)
+        {
+            if (webhook.SendAlways)
+            {
+                return true;
+            }
+
+            if (isUpdate)
+            {
+                return webhook.SendConfirm;
+            }
+            else
+            {
+                return !string.IsNullOrWhiteSpace(name) && string.Equals(name, webhook.Name);
+            }
         }
     }
 }

@@ -21,17 +21,20 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using Squidex.Log;
+using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Sms.SmsTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Sms.SmsJob>;
 
 namespace Notifo.Domain.Channels.Sms
 {
     public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, IInitializable
     {
-        private readonly ILogStore logStore;
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
-        private readonly IUserNotificationStore userNotificationStore;
+        private readonly ILogStore logStore;
+        private readonly ISmsFormatter smsFormatter;
+        private readonly ISmsTemplateStore smsTemplateStore;
         private readonly IUserNotificationQueue userNotificationQueue;
+        private readonly IUserNotificationStore userNotificationStore;
         private readonly ISemanticLog log;
 
         public int Order => 1000;
@@ -43,13 +46,17 @@ namespace Notifo.Domain.Channels.Sms
         public SmsChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,
             IIntegrationManager integrationManager,
+            ISmsFormatter smsFormatter,
+            ISmsTemplateStore smsTemplateStore,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore)
         {
             this.appStore = appStore;
+            this.integrationManager = integrationManager;
             this.log = log;
             this.logStore = logStore;
-            this.integrationManager = integrationManager;
+            this.smsFormatter = smsFormatter;
+            this.smsTemplateStore = smsTemplateStore;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
         }
@@ -123,7 +130,7 @@ namespace Notifo.Domain.Channels.Sms
                 return Task.CompletedTask;
             }
 
-            var job = new SmsJob(notification, configuration)
+            var job = new SmsJob(notification, setting.Template, configuration)
             {
                 IsImmediate = setting.DelayDuration == Duration.Zero
             };
@@ -143,7 +150,7 @@ namespace Notifo.Domain.Channels.Sms
         public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name, ct))
             {
                 await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
             }
@@ -155,10 +162,10 @@ namespace Notifo.Domain.Channels.Sms
             return false;
         }
 
-        private Task SendAsync(SmsJob job,
+        private async Task SendAsync(SmsJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendSms", async () =>
+            using (Telemetry.Activities.StartActivity("SendSms"))
             {
                 var app = await appStore.GetCachedAsync(job.AppId, ct);
 
@@ -177,7 +184,7 @@ namespace Notifo.Domain.Channels.Sms
                 {
                     await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<ISmsSender>(app, job.Test).ToList();
+                    var senders = integrationManager.Resolve<ISmsSender>(app, job.Test).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {
@@ -192,7 +199,7 @@ namespace Notifo.Domain.Channels.Sms
                     await logStore.LogAsync(job.AppId, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders,
@@ -209,7 +216,15 @@ namespace Notifo.Domain.Channels.Sms
             {
                 try
                 {
-                    var result = await sender.SendAsync(job.PhoneNumber, job.Text, job.Id.ToString(), ct);
+                    var template = await smsTemplateStore.GetBestAsync(
+                        job.AppId,
+                        job.TemplateName,
+                        job.TemplateLanguage,
+                        ct);
+
+                    var text = smsFormatter.Format(template, job.Text);
+
+                    var result = await sender.SendAsync(job.PhoneNumber, text, job.Id.ToString(), ct);
 
                     if (result == SmsResult.Delivered)
                     {

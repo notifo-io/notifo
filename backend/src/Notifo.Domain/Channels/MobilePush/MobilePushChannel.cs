@@ -129,7 +129,8 @@ namespace Notifo.Domain.Channels.MobilePush
 
             var job = new MobilePushJob(notification, configuration, token.DeviceType)
             {
-                IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero
+                IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero,
+                IsUpdate = options.IsUpdate,
             };
 
             if (options.IsUpdate)
@@ -167,7 +168,8 @@ namespace Notifo.Domain.Channels.MobilePush
                 UserLanguage = notification.UserLanguage
             }, token.Token, token.DeviceType)
             {
-                IsImmediate = true
+                IsImmediate = true,
+                IsUpdate = false
             };
 
             await userNotificationQueue.ScheduleAsync(
@@ -197,9 +199,9 @@ namespace Notifo.Domain.Channels.MobilePush
         public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.DeviceToken, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.DeviceToken, Name, ct))
             {
-                await UpdateAsync(job.Notification, job.DeviceToken, ProcessStatus.Skipped);
+                await UpdateAsync(job, ProcessStatus.Skipped);
             }
             else
             {
@@ -211,13 +213,13 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
         {
-            return UpdateAsync(job.Notification, job.DeviceToken, ProcessStatus.Failed);
+            return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(MobilePushJob job,
+        public async Task SendAsync(MobilePushJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendMobilePush", async () =>
+            using (Telemetry.Activities.StartActivity("SendMobilePush"))
             {
                 var notification = job.Notification;
 
@@ -230,32 +232,32 @@ namespace Notifo.Domain.Channels.MobilePush
                         .WriteProperty("status", "Failed")
                         .WriteProperty("reason", "App not found"));
 
-                    await UpdateAsync(notification, job.DeviceToken, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                     return;
                 }
 
                 try
                 {
-                    await UpdateAsync(notification, job.DeviceToken, ProcessStatus.Attempt);
+                    await UpdateAsync(job, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<IMobilePushSender>(app, notification.Test).ToList();
+                    var senders = integrationManager.Resolve<IMobilePushSender>(app, notification.Test).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(notification, job.DeviceToken, Texts.Sms_ConfigReset, ct);
+                        await SkipAsync(job, Texts.Sms_ConfigReset);
                         return;
                     }
 
                     await SendCoreAsync(job, notification, app, senders, ct);
 
-                    await UpdateAsync(notification, job.DeviceToken, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                 }
                 catch (DomainException ex)
                 {
                     await logStore.LogAsync(app.Id, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders,
@@ -308,17 +310,20 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        private Task UpdateAsync(UserNotification notification, string token, ProcessStatus status, string? reason = null)
+        private async Task UpdateAsync(MobilePushJob job, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, token, status, reason);
+            // We only track the initial publication.
+            if (!job.IsUpdate)
+            {
+                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.DeviceToken, status, reason);
+            }
         }
 
-        private async Task SkipAsync(UserNotification notification, string token, string reason,
-            CancellationToken ct)
+        private async Task SkipAsync(MobilePushJob job, string reason)
         {
-            await logStore.LogAsync(notification.AppId, reason, ct);
+            await logStore.LogAsync(job.Notification.AppId, reason);
 
-            await UpdateAsync(notification, token, ProcessStatus.Skipped);
+            await UpdateAsync(job, ProcessStatus.Skipped);
         }
     }
 }

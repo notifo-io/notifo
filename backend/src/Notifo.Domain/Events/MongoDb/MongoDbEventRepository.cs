@@ -67,79 +67,91 @@ namespace Notifo.Domain.Events.MongoDb
         public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<MongoDbEvent>>
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbEventRepository>())
             {
-                Filter.Eq(x => x.Doc.AppId, appId)
-            };
+                var filters = new List<FilterDefinition<MongoDbEvent>>
+                {
+                    Filter.Eq(x => x.Doc.AppId, appId)
+                };
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-                filters.Add(
-                    Filter.Or(
-                        Filter.Regex(x => x.Doc.Topic, regex),
-                        Filter.Regex(x => x.SearchText, regex)));
+                    filters.Add(
+                        Filter.Or(
+                            Filter.Regex(x => x.Doc.Topic, regex),
+                            Filter.Regex(x => x.SearchText, regex)));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).SortByDescending(x => x.Doc.Created).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                activity?.SetTag("numResults", resultItems.Count);
+                activity?.SetTag("numTotal", resultTotal);
+
+                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEvent()));
             }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Doc.Created).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEvent()));
         }
 
         public async Task InsertAsync(Event @event,
             CancellationToken ct)
         {
-            var document = MongoDbEvent.FromEvent(@event);
+            using (Telemetry.Activities.StartMethod<MongoDbEventRepository>())
+            {
+                var document = MongoDbEvent.FromEvent(@event);
 
-            try
-            {
-                await Collection.InsertOneAsync(document, null, ct);
-            }
-            catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
-            {
-                throw new UniqueConstraintException();
+                try
+                {
+                    await Collection.InsertOneAsync(document, null, ct);
+                }
+                catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                {
+                    throw new UniqueConstraintException();
+                }
             }
         }
 
         public async Task BatchWriteAsync(List<((string AppId, string EventId) Key, CounterMap Counters)> counters,
             CancellationToken ct)
         {
-            var writes = new List<WriteModel<MongoDbEvent>>(counters.Count);
-
-            foreach (var ((appId, id), values) in counters)
+            using (Telemetry.Activities.StartMethod<MongoDbEventRepository>())
             {
-                if (values?.Count > 0)
+                var writes = new List<WriteModel<MongoDbEvent>>(counters.Count);
+
+                foreach (var ((appId, id), values) in counters)
                 {
-                    var docId = MongoDbEvent.CreateId(appId, id);
-
-                    var updates = new List<UpdateDefinition<MongoDbEvent>>(values.Count);
-
-                    foreach (var (key, value) in values)
+                    if (values?.Count > 0)
                     {
-                        updates.Add(Update.Inc($"d.Counters.{key}", value));
+                        var docId = MongoDbEvent.CreateId(appId, id);
+
+                        var updates = new List<UpdateDefinition<MongoDbEvent>>(values.Count);
+
+                        foreach (var (key, value) in values)
+                        {
+                            updates.Add(Update.Inc($"d.Counters.{key}", value));
+                        }
+
+                        var model = new UpdateOneModel<MongoDbEvent>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
+                        {
+                            IsUpsert = true
+                        };
+
+                        writes.Add(model);
                     }
-
-                    var model = new UpdateOneModel<MongoDbEvent>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
-                    {
-                        IsUpsert = true
-                    };
-
-                    writes.Add(model);
                 }
-            }
 
-            if (writes.Count > 0)
-            {
-                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+                if (writes.Count > 0)
+                {
+                    await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+                }
             }
         }
     }

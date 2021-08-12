@@ -11,9 +11,9 @@ namespace Notifo.Domain.Templates.MongoDb
 {
     public sealed class MongoDbTemplate : MongoDbEntity<Template>
     {
-        public static string CreateId(string appId, string id)
+        public static string CreateId(string appId, string code)
         {
-            return $"{appId}_{id}";
+            return $"{appId}_{code}";
         }
 
         public static MongoDbTemplate FromTemplate(Template template)

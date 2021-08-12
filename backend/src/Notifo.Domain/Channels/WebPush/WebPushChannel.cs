@@ -122,15 +122,15 @@ namespace Notifo.Domain.Channels.WebPush
 
         public Task HandleExceptionAsync(WebPushJob job, Exception ex)
         {
-            return UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Failed);
+            return UpdateAsync(job, ProcessStatus.Failed);
         }
 
         public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.Subscription.Endpoint, Name))
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.Subscription.Endpoint, Name, ct))
             {
-                await UpdateAsync(job, job.Subscription.Endpoint, ProcessStatus.Skipped);
+                await UpdateAsync(job, ProcessStatus.Skipped);
             }
             else
             {
@@ -140,26 +140,25 @@ namespace Notifo.Domain.Channels.WebPush
             return true;
         }
 
-        private Task SendAsync(WebPushJob job,
+        private async Task SendAsync(WebPushJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendWebPush", async () =>
+            using (Telemetry.Activities.StartActivity("SendWebPush"))
             {
-                var endpoint = job.Subscription.Endpoint;
                 try
                 {
-                    await UpdateAsync(job, endpoint, ProcessStatus.Attempt);
+                    await UpdateAsync(job, ProcessStatus.Attempt);
 
                     await SendCoreAsync(job, ct);
 
-                    await UpdateAsync(job, endpoint, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                 }
                 catch (DomainException ex)
                 {
                     await logStore.LogAsync(job.AppId, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(WebPushJob job,
@@ -182,7 +181,7 @@ namespace Notifo.Domain.Channels.WebPush
 
                 var command = new RemoveUserWebPushSubscription
                 {
-                    Subscription = job.Subscription
+                    Endpoint = job.Subscription.Endpoint
                 };
 
                 await userStore.UpsertAsync(job.AppId, job.UserId, command, ct);
@@ -193,9 +192,13 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
-        private Task UpdateAsync(WebPushJob job, string endpoint, ProcessStatus status, string? reason = null)
+        private async Task UpdateAsync(WebPushJob job, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(job, Name, endpoint, status, reason);
+            // We only track the initial publication.
+            if (!job.IsUpdate)
+            {
+                await userNotificationStore.CollectAndUpdateAsync(job, Name, job.Subscription.Endpoint, status, reason);
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ export interface IntegrationsStateInStore {
     integrations: IntegrationsState;
 }
 
-export interface IntegrationsState extends ConfiguredIntegrationsDto {
+export interface IntegrationsState extends Partial<ConfiguredIntegrationsDto> {
     // True if loading integrations.
     loading?: boolean;
 

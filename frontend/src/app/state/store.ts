@@ -24,6 +24,7 @@ emailTemplates: Reducers.emailTemplatesReducer,
          media: Reducers.mediaReducer,
  notifications: Reducers.notificationsReducer,
        publish: Reducers.publishReducer,
+  smsTemplates: Reducers.smsTemplatesReducer,
  subscriptions: Reducers.subscriptionsReducer,
      templates: Reducers.templatesReducer,
          users: Reducers.usersReducer,
@@ -35,8 +36,10 @@ export const createAppStore = (history: History) =>
         middleware: (getDefaultMiddleware) =>
             getDefaultMiddleware().concat(
                 routerMiddleware(history),
+                Reducers.emailTemplatesMiddleware,
                 Reducers.loginMiddleware,
                 Reducers.mediaMiddleware,
+                Reducers.smsTemplatesMiddleware,
                 Reducers.subscriptionsMiddleware,
                 Reducers.usersMiddleware,
             ),

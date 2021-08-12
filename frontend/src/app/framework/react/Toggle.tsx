@@ -76,7 +76,11 @@ export const Toggle = (props: ToggleProps) => {
 
     return (
         <label className='custom-toggle' onClick={doToggle}>
-            <span className={clazz} /> {label}
+            <span className={clazz} />
+
+            {label &&
+                <span className='custom-toggle-label'>{label}</span>
+            }
         </label>
     );
 };

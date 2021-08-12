@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Icon } from '@app/framework';
+import { combineUrl, Icon } from '@app/framework';
 import { getApp, selectApp, togglePublishDialog, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
@@ -13,7 +13,10 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
 import { match, NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
-import { EmailsPage } from './../emails/EmailsPage';
+import { SmsTemplatePage } from '../sms-templates/SmsTemplatePage';
+import { SmsTemplatesPage } from '../sms-templates/SmsTemplatesPage';
+import { EmailTemplatePage } from './../email-templates/EmailTemplatePage';
+import { EmailTemplatesPage } from './../email-templates/EmailTemplatesPage';
 import { EventsPage } from './../events/EventsPage';
 import { IntegrationsPage } from './../integrations/IntegrationsPage';
 import { LogPage } from './../log/LogPage';
@@ -36,10 +39,16 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
         setIsOpen(false);
     }, []);
 
+    const urlToEmailTemplates = combineUrl(match.url, 'email-templates');
+    const urlToMedia = combineUrl(match.url, 'media');
+    const urlToSmsTemplates = combineUrl(match.url, 'sms-templates');
+    const urlToTemplates = combineUrl(match.url, 'templates');
+
     const isActive =
-        path.startsWith(`${match.url}/media`) ||
-        path.startsWith(`${match.url}/templates`) ||
-        path.startsWith(`${match.url}/emails`);
+        path.startsWith(urlToEmailTemplates) ||
+        path.startsWith(urlToMedia) ||
+        path.startsWith(urlToSmsTemplates) ||
+        path.startsWith(urlToTemplates);
 
     return (
         <Dropdown nav direction='right' isOpen={isOpen} toggle={doToggle} active={isActive}>
@@ -47,14 +56,17 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
                 <Icon type='create' /> <span>{texts.common.design}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/media`} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToMedia} onClick={doClose}>
                     <Icon type='photo_size_select_actual' /> <span>{texts.media.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/templates`} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToTemplates} onClick={doClose}>
                     <Icon type='file_copy' /> <span>{texts.templates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/emails`} onClick={doClose}>
-                    <Icon type='mail_outline' /> <span>{texts.emails.header}</span>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToSmsTemplates} onClick={doClose}>
+                    <Icon type='sms' /> <span>{texts.smsTemplates.header}</span>
+                </NavLink>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToEmailTemplates} onClick={doClose}>
+                    <Icon type='mail_outline' /> <span>{texts.emailTemplates.header}</span>
                 </NavLink>
             </DropdownMenu>
         </Dropdown>
@@ -72,9 +84,14 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
         setIsOpen(false);
     }, []);
 
+    const urlToLog = combineUrl(match.url, 'log');
+    const urlToIntegrations = combineUrl(match.url, 'integrations');
+    const urlToSettings = combineUrl(match.url, 'settings');
+
     const isActive =
-        path.startsWith(`${match.url}/settings`) ||
-        path.startsWith(`${match.url}/log`);
+        path.startsWith(urlToLog) ||
+        path.startsWith(urlToIntegrations) ||
+        path.startsWith(urlToSettings);
 
     return (
         <Dropdown nav direction='right' isOpen={isOpen} toggle={doToggle} active={isActive}>
@@ -82,13 +99,13 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
                 <Icon type='settings' /> <span>{texts.common.more}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/integrations`} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToIntegrations} onClick={doClose}>
                     <Icon type='extension' /> <span>{texts.integrations.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/settings`} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToSettings} onClick={doClose}>
                     <Icon type='settings' /> <span>{texts.common.settings}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={`${match.url}/log`} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToLog} onClick={doClose}>
                     <Icon type='history' /> <span>{texts.log.header}</span>
                 </NavLink>
             </DropdownMenu>
@@ -127,19 +144,19 @@ export const AppPage = () => {
         <>
             <Nav vertical className='sidebar'>
                 <NavItem>
-                    <NavLink activeClassName='active' className='nav-link' to={`${match.url}`} exact>
+                    <NavLink activeClassName='active' className='nav-link' to={match.url} exact>
                         <Icon type='dashboard' /> <span>{texts.common.dashboard}</span>
                     </NavLink>
                 </NavItem>
 
                 <NavItem>
-                    <NavLink activeClassName='active' className='nav-link' to={`${match.url}/users`}>
+                    <NavLink activeClassName='active' className='nav-link' to={combineUrl(match.url, 'users')}>
                         <Icon type='person' /> <span>{texts.users.header}</span>
                     </NavLink>
                 </NavItem>
 
                 <NavItem>
-                    <NavLink activeClassName='active' className='nav-link' to={`${match.url}/events`}>
+                    <NavLink activeClassName='active' className='nav-link' to={combineUrl(match.url, 'events')}>
                         <Icon type='message' /> <span>{texts.events.header}</span>
                     </NavLink>
                 </NavItem>
@@ -156,39 +173,51 @@ export const AppPage = () => {
             </Nav>
 
             <Switch>
-                <Route path={`${match.url}/users/:userId`}>
+                <Route path={combineUrl(match.url, 'users/:userId/')}>
                     <UserPage />
                 </Route>
 
-                <Route path={`${match.url}/users`} exact>
+                <Route path={combineUrl(match.url, 'users/')} exact>
                     <UsersPage />
                 </Route>
 
-                <Route path={`${match.url}/events`} exact>
+                <Route path={combineUrl(match.url, 'events/')} exact>
                     <EventsPage />
                 </Route>
 
-                <Route path={`${match.url}/templates`} exact>
+                <Route path={combineUrl(match.url, 'templates/')} exact>
                     <TemplatesPage />
                 </Route>
 
-                <Route path={`${match.url}/media`} exact>
+                <Route path={combineUrl(match.url, 'media/')} exact>
                     <MediaPage />
                 </Route>
 
-                <Route path={`${match.url}/emails`} exact>
-                    <EmailsPage />
+                <Route path={combineUrl(match.url, 'email-templates/')} exact>
+                    <EmailTemplatesPage />
                 </Route>
 
-                <Route path={`${match.url}/log`} exact>
+                <Route path={combineUrl(match.url, 'email-templates/:templateId/')} exact>
+                    <EmailTemplatePage />
+                </Route>
+
+                <Route path={combineUrl(match.url, 'sms-templates/')} exact>
+                    <SmsTemplatesPage />
+                </Route>
+
+                <Route path={combineUrl(match.url, 'sms-templates/:templateId/')} exact>
+                    <SmsTemplatePage />
+                </Route>
+
+                <Route path={combineUrl(match.url, 'log/')} exact>
                     <LogPage />
                 </Route>
 
-                <Route path={`${match.url}/integrations`} exact>
+                <Route path={combineUrl(match.url, 'integrations/')} exact>
                     <IntegrationsPage />
                 </Route>
 
-                <Route path={`${match.url}/settings`} exact>
+                <Route path={combineUrl(match.url, 'settings/')} exact>
                     <AppSettingsPage />
                 </Route>
 

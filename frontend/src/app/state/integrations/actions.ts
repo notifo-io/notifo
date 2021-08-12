@@ -11,76 +11,84 @@ import { createReducer } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from '../shared';
 import { IntegrationsState } from './state';
 
-export const loadIntegrationAsync = createApiThunk('integrations/load',
+export const loadIntegrations = createApiThunk('integrations/load',
     async (arg: { appId: string }) => {
         return await Clients.Apps.getIntegrations(arg.appId);
     });
 
-export const createIntegrationAsync = createApiThunk('integrations/create',
+export const createIntegration = createApiThunk('integrations/create',
     async (arg: { appId: string; params: CreateIntegrationDto }) => {
         return await Clients.Apps.postIntegration(arg.appId, arg.params);
     });
 
-export const updateIntegrationAsync = createApiThunk('integrations/update',
+export const updateIntegration = createApiThunk('integrations/update',
     async (arg: { appId: string; id: string; params: UpdateIntegrationDto }) => {
         return await Clients.Apps.putIntegration(arg.appId, arg.id, arg.params);
     });
 
-export const deleteIntegrationAsync = createApiThunk('integrations/delete',
+export const deleteIntegration = createApiThunk('integrations/delete',
     async (arg: { appId: string; id: string }) => {
         await Clients.Apps.deleteIntegration(arg.appId, arg.id);
     });
 
-const initialState: IntegrationsState = { configured: {}, supported: {} };
+const initialState: IntegrationsState = {};
 
 export const integrationsReducer = createReducer(initialState, builder => builder
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(loadIntegrationAsync.pending, (state) => {
+    .addCase(loadIntegrations.pending, (state) => {
         state.loading = true;
         state.loadingError = undefined;
     })
-    .addCase(loadIntegrationAsync.rejected, (state, action) => {
+    .addCase(loadIntegrations.rejected, (state, action) => {
         state.loading = false;
         state.loadingError = action.payload as ErrorDto;
     })
-    .addCase(loadIntegrationAsync.fulfilled, (state, action) => {
+    .addCase(loadIntegrations.fulfilled, (state, action) => {
         state.configured = action.payload.configured;
         state.loading = false;
         state.loadingError = undefined;
         state.supported = action.payload.supported;
     })
-    .addCase(createIntegrationAsync.pending, (state) => {
+    .addCase(createIntegration.pending, (state) => {
         state.upserting = true;
         state.upsertingError = undefined;
     })
-    .addCase(createIntegrationAsync.rejected, (state, action) => {
+    .addCase(createIntegration.rejected, (state, action) => {
         state.upserting = false;
         state.upsertingError = action.payload as ErrorDto;
     })
-    .addCase(createIntegrationAsync.fulfilled, (state, action) => {
+    .addCase(createIntegration.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
-        state.configured[action.payload.id] = action.payload.integration;
+
+        if (state.configured) {
+            state.configured[action.payload.id] = action.payload.integration;
+        }
     })
-    .addCase(updateIntegrationAsync.pending, (state) => {
+    .addCase(updateIntegration.pending, (state) => {
         state.upserting = true;
         state.upsertingError = undefined;
     })
-    .addCase(updateIntegrationAsync.rejected, (state, action) => {
+    .addCase(updateIntegration.rejected, (state, action) => {
         state.upserting = false;
         state.upsertingError = action.payload as ErrorDto;
     })
-    .addCase(updateIntegrationAsync.fulfilled, (state, action) => {
-        const { id, params } = action.meta.arg;
-
+    .addCase(updateIntegration.fulfilled, (state, action) => {
         state.upserting = false;
         state.upsertingError = undefined;
-        state.configured[id] = { id, ...params } as any;
-    })
-    .addCase(deleteIntegrationAsync.fulfilled, (state, action) => {
-        const { id } = action.meta.arg;
 
-        delete state.configured[id];
+        if (state.configured) {
+            const { id, params } = action.meta.arg;
+
+            state.configured[id] = { id, ...params } as any;
+        }
+    })
+    .addCase(deleteIntegration.fulfilled, (state, action) => {
+        if (state.configured) {
+            const { id } = action.meta.arg;
+
+            delete state.configured[id];
+        }
     }));

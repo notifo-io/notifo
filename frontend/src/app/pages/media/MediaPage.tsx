@@ -9,7 +9,7 @@ import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/frame
 import { MediaDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { MediaCard } from '@app/shared/components/MediaCard';
-import { deleteMediaAsync, getApp, loadMediaAsync, uploadMediaAsync, useApps, useMedia } from '@app/state';
+import { deleteMedia, getApp, loadMedia, uploadMedia, useApps, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -22,24 +22,24 @@ export const MediaPage = () => {
     const media = useMedia(x => x.media);
 
     React.useEffect(() => {
-        dispatch(loadMediaAsync(appId));
+        dispatch(loadMedia(appId));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadMediaAsync(appId));
+        dispatch(loadMedia(appId));
     }, [appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadMediaAsync(appId, q));
+        dispatch(loadMedia(appId, q));
     }, [appId]);
 
     const doDelete = React.useCallback((media: MediaDto) => {
-        dispatch(deleteMediaAsync({ appId, fileName: media.fileName }));
+        dispatch(deleteMedia({ appId, fileName: media.fileName }));
     }, [appId]);
 
     const doUpload = React.useCallback((files: File[]) => {
         for (const file of files) {
-            dispatch(uploadMediaAsync({ appId, file }));
+            dispatch(uploadMedia({ appId, file }));
         }
     }, [appId]);
 
@@ -55,7 +55,7 @@ export const MediaPage = () => {
                             {media.isLoading ? (
                                 <Loader visible={media.isLoading} />
                             ) : (
-                                <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                                <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                                     <Icon className='text-lg' type='refresh' />
                                 </Button>
                             )}

@@ -19,7 +19,7 @@ const loginFailed = createAction('login/failed');
 const logoutStarted = createAction('logout/started');
 const logoutDoneRedirect = createAction('logout/redirect');
 
-export const loginStartAsync = () => {
+export const loginStart = () => {
     return async (dispatch: Dispatch) => {
         dispatch(loginStarted());
 
@@ -45,7 +45,7 @@ export const loginStartAsync = () => {
     };
 };
 
-export const loginDoneAsync = () => {
+export const loginDone = () => {
     return async (dispatch: Dispatch) => {
         const userManager = AuthService.getUserManager();
 
@@ -61,7 +61,7 @@ export const loginDoneAsync = () => {
     };
 };
 
-export const logoutStartAsync = () => {
+export const logoutStart = () => {
     return async (dispatch: Dispatch) => {
         dispatch(logoutStarted());
 
@@ -75,7 +75,7 @@ export const logoutStartAsync = () => {
     };
 };
 
-export const logoutDoneAsync = () => {
+export const logoutDone = () => {
     return async (dispatch: Dispatch) => {
         const userManager = AuthService.getUserManager();
 

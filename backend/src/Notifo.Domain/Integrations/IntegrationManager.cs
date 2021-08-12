@@ -65,7 +65,7 @@ namespace Notifo.Domain.Integrations
 
         public bool IsConfigured<T>(App app, bool test)
         {
-            foreach (var (configured, integration) in GetIntegrations(app, test))
+            foreach (var (_, configured, integration) in GetIntegrations(app, test))
             {
                 if (integration.CanCreate(typeof(T), configured))
                 {
@@ -76,22 +76,37 @@ namespace Notifo.Domain.Integrations
             return false;
         }
 
-        public IEnumerable<T> Resolve<T>(App app, bool test) where T : class
+        public T? Resolve<T>(string id, App app, bool test) where T : class
         {
-            foreach (var (configured, integration) in GetIntegrations(app, test))
+            foreach (var (currentId, configured, integration) in GetIntegrations(app, test))
+            {
+                if (currentId == id && integration.Create(typeof(T), configured) is T created)
+                {
+                    return created;
+                }
+            }
+
+            return default;
+        }
+
+        public IEnumerable<(string, T)> Resolve<T>(App app, bool test) where T : class
+        {
+            foreach (var (id, configured, integration) in GetIntegrations(app, test))
             {
                 if (integration.Create(typeof(T), configured) is T created)
                 {
-                    yield return created;
+                    yield return (id, created);
                 }
             }
+
+            yield break;
         }
 
-        private IEnumerable<(ConfiguredIntegration Configured, IIntegration)> GetIntegrations(App app, bool test)
+        private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, bool test)
         {
             var configureds = app.Integrations;
 
-            foreach (var (_, configured) in configureds)
+            foreach (var (id, configured) in configureds)
             {
                 if (!IsReady(configured) || !IsMatchingTest(configured, test))
                 {
@@ -102,7 +117,7 @@ namespace Notifo.Domain.Integrations
 
                 if (integration != null)
                 {
-                    yield return (configured, integration);
+                    yield return (id, configured, integration);
                 }
             }
         }

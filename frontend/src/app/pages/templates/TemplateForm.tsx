@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { getApp, upsertTemplateAsync, useApps, useTemplates } from '@app/state';
+import { getApp, upsertTemplate, useApps, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -80,7 +80,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const [target, setTarget] = React.useState<PushPreviewTarget>('Notifo');
 
     const doPublish = React.useCallback((params: TemplateDto) => {
-        dispatch(upsertTemplateAsync({ appId, params }));
+        dispatch(upsertTemplate({ appId, params }));
     }, []);
 
     const initialValues: any = template || {};
@@ -111,11 +111,11 @@ export const TemplateForm = (props: TemplateFormProps) => {
                             <Col>
                                 <Form onSubmit={handleSubmit}>
                                     <fieldset disabled={upserting}>
-                                        <Forms.Text name='code'
+                                        <Forms.Text name='code' vertical
                                             label={texts.common.code} />
                                     </fieldset>
 
-                                    <NotificationsForm.Formatting
+                                    <NotificationsForm.Formatting vertical
                                         onLanguageSelect={onLanguageSelect}
                                         language={language}
                                         languages={appLanguages}

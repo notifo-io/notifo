@@ -7,7 +7,7 @@
 
 import { FormError, Forms, Loader } from '@app/framework';
 import { AppDetailsDto, UpsertAppDto } from '@app/service';
-import { upsertAppAsync, useApps, useCore } from '@app/state';
+import { upsertApp, useApps, useCore } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -47,7 +47,7 @@ export const AppSettings = (props: AppSettingsProps) => {
     }, [languages]);
 
     const doSave = React.useCallback((params: UpsertAppDto) => {
-        dispatch(upsertAppAsync({ appId: appDetails.id, params }));
+        dispatch(upsertApp({ appId: appDetails.id, params }));
     }, [appDetails.id]);
 
     return (
@@ -60,17 +60,17 @@ export const AppSettings = (props: AppSettingsProps) => {
                         <Card>
                             <CardBody>
                                 <fieldset disabled={upserting}>
-                                    <Forms.Text name='name'
+                                    <Forms.Text name='name' vertical
                                         label={texts.common.name} />
 
-                                    <Forms.Array name='languages' allowedValues={languageValues}
+                                    <Forms.Array name='languages' vertical allowedValues={languageValues}
                                         label={texts.common.languages} />
                                 </fieldset>
 
                                 <fieldset disabled={upserting}>
                                     <legend>{texts.app.urls}</legend>
 
-                                    <Forms.Text name='confirmUrl' placeholder={texts.common.urlPlaceholder}
+                                    <Forms.Text name='confirmUrl' vertical placeholder={texts.common.urlPlaceholder}
                                         label={texts.app.confirmUrl} />
                                 </fieldset>
 

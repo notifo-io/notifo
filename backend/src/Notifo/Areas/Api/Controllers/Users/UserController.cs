@@ -33,7 +33,6 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </summary>
         /// <returns>
         /// 200 => User returned.
-        /// 404 => User not found.
         /// </returns>
         [HttpGet("api/me")]
         [AppPermission(NotifoRoles.AppUser)]

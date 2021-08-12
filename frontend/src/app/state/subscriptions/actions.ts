@@ -18,16 +18,16 @@ const list = listThunk<SubscriptionsState, SubscriptionDto>('subscriptions', 'su
     return { items, total };
 });
 
-export const loadSubscriptionsAsync = (appId: string, userId: string, query?: Partial<Query>, reset = false) => {
+export const loadSubscriptions = (appId: string, userId: string, query?: Partial<Query>, reset = false) => {
     return list.action({ appId, userId, query, reset });
 };
 
-export const upsertSubscriptionAsync = createApiThunk('subscriptions/upsert',
+export const upsertSubscription = createApiThunk('subscriptions/upsert',
     (arg: { appId: string; userId: string; params: SubscriptionDto }) => {
         return Clients.Users.postSubscription(arg.appId, arg.userId, arg.params);
     });
 
-export const deleteSubscriptionAsync = createApiThunk('subscriptions/delete',
+export const deleteSubscription = createApiThunk('subscriptions/delete',
     (arg: { appId: string; userId: string; prefix: string }) => {
         return Clients.Users.deleteSubscription(arg.appId, arg.userId, arg.prefix);
     });
@@ -35,8 +35,8 @@ export const deleteSubscriptionAsync = createApiThunk('subscriptions/delete',
 export const subscriptionsMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
-    if (upsertSubscriptionAsync.fulfilled.match(action) || deleteSubscriptionAsync.fulfilled.match(action)) {
-        const load: any = loadSubscriptionsAsync(action.meta.arg.appId, action.meta.arg.userId);
+    if (upsertSubscription.fulfilled.match(action) || deleteSubscription.fulfilled.match(action)) {
+        const load: any = loadSubscriptions(action.meta.arg.appId, action.meta.arg.userId);
 
         store.dispatch(load);
     }
@@ -52,15 +52,15 @@ export const subscriptionsReducer = createReducer(initialState, builder => list.
     .addCase(selectApp, () => {
         return initialState;
     })
-    .addCase(upsertSubscriptionAsync.pending, (state) => {
+    .addCase(upsertSubscription.pending, (state) => {
         state.upserting = true;
         state.upsertingError = undefined;
     })
-    .addCase(upsertSubscriptionAsync.rejected, (state, action) => {
+    .addCase(upsertSubscription.rejected, (state, action) => {
         state.upserting = false;
         state.upsertingError = action.payload as ErrorDto;
     })
-    .addCase(upsertSubscriptionAsync.fulfilled, (state) => {
+    .addCase(upsertSubscription.fulfilled, (state) => {
         state.upserting = false;
         state.upsertingError = undefined;
     }));

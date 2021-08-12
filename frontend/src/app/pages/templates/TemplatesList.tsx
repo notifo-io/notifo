@@ -7,7 +7,7 @@
 
 import { Icon, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
-import { deleteTemplateAsync, getApp, loadTemplatesAsync, selectTemplate, togglePublishDialog, useApps, useTemplates } from '@app/state';
+import { deleteTemplate, getApp, loadTemplates, selectTemplate, togglePublishDialog, useApps, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -29,11 +29,11 @@ export const TemplatesList = (props: TemplateListProps) => {
     const templates = useTemplates(x => x.templates);
 
     React.useEffect(() => {
-        dispatch(loadTemplatesAsync(appId));
+        dispatch(loadTemplates(appId));
     }, [appId]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadTemplatesAsync(appId));
+        dispatch(loadTemplates(appId));
     }, [appId]);
 
     const doNew = React.useCallback(() => {
@@ -49,7 +49,7 @@ export const TemplatesList = (props: TemplateListProps) => {
     }, [onOpen]);
 
     const doDelete = React.useCallback((template: TemplateDto) => {
-        dispatch(deleteTemplateAsync({ appId, code: template.code }));
+        dispatch(deleteTemplate({ appId, code: template.code }));
     }, [appId]);
 
     const doPublish = React.useCallback((template: TemplateDto) => {
@@ -66,7 +66,7 @@ export const TemplatesList = (props: TemplateListProps) => {
                     {templates.isLoading ? (
                         <Loader visible={templates.isLoading} />
                     ) : (
-                        <Button color='blank' size='sm' onClick={doRefresh} data-tip={texts.common.refresh}>
+                        <Button color='blank' size='sm' className='btn-flat' onClick={doRefresh} data-tip={texts.common.refresh}>
                             <Icon className='text-lg' type='refresh' />
                         </Button>
                     )}

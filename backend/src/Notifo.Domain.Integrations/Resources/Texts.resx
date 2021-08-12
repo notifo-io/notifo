@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AmazonSES_Description" xml:space="preserve">
-    <value>Use the integrated Amazon Simple Email Service (SES) to send emails.</value>
+    <value>Preconfigured Amazon Simple Email Service (SES) to send emails.</value>
   </data>
   <data name="AmazonSES_FromEmailLabel" xml:space="preserve">
     <value>From Name</value>
@@ -202,7 +202,7 @@
     <value>Mailjet</value>
   </data>
   <data name="MessageBirdIntegrated_Description" xml:space="preserve">
-    <value>Integrated Messagebird integration for SMS messages.</value>
+    <value>Preconfigured Messagebird integration for SMS messages.</value>
   </data>
   <data name="MessageBirdIntegrated_Name" xml:space="preserve">
     <value>MessageBird (Integrated)</value>
