@@ -133,10 +133,10 @@ namespace Notifo.Domain.Channels.Email
             return UpdateAsync(jobs, jobs[0].EmailAddress, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(List<EmailJob> jobs,
+        public async Task SendAsync(List<EmailJob> jobs,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendEmail", async () =>
+            using (Telemetry.Activities.StartActivity("SendEmail"))
             {
                 var first = jobs[0];
 
@@ -182,19 +182,24 @@ namespace Notifo.Domain.Channels.Email
                         return;
                     }
 
-                    var template = await emailTemplateStore.GetBestAsync(
-                        first.Notification.AppId,
-                        first.EmailTemplate,
-                        first.Notification.UserLanguage,
-                        ct);
+                    EmailMessage? message;
 
-                    if (template == null)
+                    using (Telemetry.Activities.StartActivity("Format"))
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound);
-                        return;
-                    }
+                        var template = await emailTemplateStore.GetBestAsync(
+                            first.Notification.AppId,
+                            first.EmailTemplate,
+                            first.Notification.UserLanguage,
+                            ct);
 
-                    var message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template, app, user);
+                        if (template == null)
+                        {
+                            await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound);
+                            return;
+                        }
+
+                        message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template, app, user, ct);
+                    }
 
                     await SendCoreAsync(message, app.Id, senders, ct);
 
@@ -205,7 +210,7 @@ namespace Notifo.Domain.Channels.Email
                     await logStore.LogAsync(app.Id, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders,

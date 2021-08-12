@@ -5,11 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration;
+using Notifo;
 using Notifo.Pipeline;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using StackExchange.Redis;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -64,6 +71,49 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddMyMongoTopics();
                     services.AddMyMongoUserNotifications();
                     services.AddMyMongoUsers();
+                }
+            });
+        }
+
+        public static void AddMyTelemetry(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddOpenTelemetryTracing(builder =>
+            {
+                builder.SetResourceBuilder(
+                    ResourceBuilder.CreateDefault()
+                        .AddService("Notifo",
+                            "Notifo",
+                            typeof(Startup).Assembly.GetName().Version!.ToString()));
+
+                builder.AddSource("Notifo");
+
+                builder.AddAspNetCoreInstrumentation();
+                builder.AddHttpClientInstrumentation();
+
+                if (config.GetValue<bool>("logging:stackdriver:enabled"))
+                {
+                    var projectId = config.GetRequiredValue("logging:stackdriver:projectId");
+
+                    builder.UseStackdriverExporter(projectId);
+                }
+
+                if (config.GetValue<bool>("logging:applicationInsights:enabled"))
+                {
+                    builder.AddAzureMonitorTraceExporter(options =>
+                    {
+                        config.GetSection("logging:applicationInsights").Bind(options);
+                    });
+                }
+
+                if (config.GetValue<bool>("logging:otlp:enabled"))
+                {
+                    // See: https://docs.microsoft.com/aspnet/core/grpc/troubleshoot#call-insecure-grpc-services-with-net-core-client
+                    AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+
+                    builder.AddOtlpExporter(options =>
+                    {
+                        config.GetSection("logging:otlp").Bind(options);
+                    });
                 }
             });
         }

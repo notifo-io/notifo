@@ -43,55 +43,70 @@ namespace Notifo.Domain.Templates.MongoDb
         public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<MongoDbTemplate>>
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
             {
-                Filter.Eq(x => x.Doc.AppId, appId)
-            };
+                var filters = new List<FilterDefinition<MongoDbTemplate>>
+                {
+                    Filter.Eq(x => x.Doc.AppId, appId)
+                };
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-                filters.Add(Filter.Regex(x => x.Doc.Code, regex));
+                    filters.Add(Filter.Regex(x => x.Doc.Code, regex));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                activity?.SetTag("numResults", resultItems.Count);
+                activity?.SetTag("numTotal", resultTotal);
+
+                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToTemplate()));
             }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToTemplate()));
         }
 
         public async Task<(Template? Template, string? Etag)> GetAsync(string appId, string code,
             CancellationToken ct)
         {
-            var docId = MongoDbTemplate.CreateId(appId, code);
+            using (Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            {
+                var docId = MongoDbTemplate.CreateId(appId, code);
 
-            var document = await GetDocumentAsync(docId, ct);
+                var document = await GetDocumentAsync(docId, ct);
 
-            return (document?.ToTemplate(), document?.Etag);
+                return (document?.ToTemplate(), document?.Etag);
+            }
         }
 
         public Task UpsertAsync(Template template, string? oldEtag,
             CancellationToken ct)
         {
-            var document = MongoDbTemplate.FromTemplate(template);
+            using (Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            {
+                var document = MongoDbTemplate.FromTemplate(template);
 
-            return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+                return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+            }
         }
 
         public Task DeleteAsync(string appId, string id,
             CancellationToken ct)
         {
-            var docId = MongoDbTemplate.CreateId(appId, id);
+            using (Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            {
+                var docId = MongoDbTemplate.CreateId(appId, id);
 
-            return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+            }
         }
     }
 }

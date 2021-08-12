@@ -216,10 +216,10 @@ namespace Notifo.Domain.Channels.MobilePush
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(MobilePushJob job,
+        public async Task SendAsync(MobilePushJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendMobilePush", async () =>
+            using (Telemetry.Activities.StartActivity("SendMobilePush"))
             {
                 var notification = job.Notification;
 
@@ -257,7 +257,7 @@ namespace Notifo.Domain.Channels.MobilePush
                     await logStore.LogAsync(app.Id, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders,

@@ -16,12 +16,12 @@ using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Media;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 using Squidex.Assets;
 using Squidex.Hosting;
-using Squidex.Log;
 using MediaItem = Notifo.Domain.Media.Media;
 
 namespace Notifo.Areas.Api.Controllers.Media
@@ -197,25 +197,25 @@ namespace Notifo.Areas.Api.Controllers.Media
         private async Task ResizeAsync(string appId, MediaItem media, Stream bodyStream, string fileName, ResizeOptions resizeOptions, bool overwrite,
             CancellationToken ct)
         {
-            using (Profiler.Trace("Resize"))
+            using (Telemetry.Activities.StartActivity("Resize"))
             {
                 await using (var sourceStream = GetTempStream())
                 {
                     await using (var destinationStream = GetTempStream())
                     {
-                        using (Profiler.Trace("ResizeDownload"))
+                        using (Telemetry.Activities.StartActivity("ResizeDownload"))
                         {
                             await mediaFileStore.DownloadAsync(appId, media, sourceStream, default, ct);
                             sourceStream.Position = 0;
                         }
 
-                        using (Profiler.Trace("ResizeImage"))
+                        using (Telemetry.Activities.StartActivity("ResizeImage"))
                         {
                             await assetThumbnailGenerator.CreateThumbnailAsync(sourceStream, destinationStream, resizeOptions);
                             destinationStream.Position = 0;
                         }
 
-                        using (Profiler.Trace("ResizeUpload"))
+                        using (Telemetry.Activities.StartActivity("ResizeUpload"))
                         {
                             await assetStore.UploadAsync(fileName, destinationStream, overwrite, ct);
                             destinationStream.Position = 0;

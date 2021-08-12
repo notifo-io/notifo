@@ -42,7 +42,7 @@ namespace Notifo.Identity.MongoDb
 
                 if (securityKey.Rsa != null)
                 {
-                    var parameters = securityKey.Rsa.ExportParameters(includePrivateParameters: true);
+                    var parameters = securityKey.Rsa.ExportParameters(true);
 
                     key.Parameters = MongoDbKeyParameters.Create(parameters);
                 }

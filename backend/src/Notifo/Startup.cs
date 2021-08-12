@@ -104,6 +104,7 @@ namespace Notifo
             services.AddMySmsChannel();
             services.AddMyStorage(config);
             services.AddMySubscriptions();
+            services.AddMyTelemetry(config);
             services.AddMyTemplates();
             services.AddMyTopics();
             services.AddMyUserEvents(config);

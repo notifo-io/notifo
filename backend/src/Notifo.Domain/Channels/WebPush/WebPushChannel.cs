@@ -140,10 +140,10 @@ namespace Notifo.Domain.Channels.WebPush
             return true;
         }
 
-        private Task SendAsync(WebPushJob job,
+        private async Task SendAsync(WebPushJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendWebPush", async () =>
+            using (Telemetry.Activities.StartActivity("SendWebPush"))
             {
                 try
                 {
@@ -158,7 +158,7 @@ namespace Notifo.Domain.Channels.WebPush
                     await logStore.LogAsync(job.AppId, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(WebPushJob job,

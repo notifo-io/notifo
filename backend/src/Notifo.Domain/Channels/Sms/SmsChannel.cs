@@ -162,10 +162,10 @@ namespace Notifo.Domain.Channels.Sms
             return false;
         }
 
-        private Task SendAsync(SmsJob job,
+        private async Task SendAsync(SmsJob job,
             CancellationToken ct)
         {
-            return log.ProfileAsync("SendSms", async () =>
+            using (Telemetry.Activities.StartActivity("SendSms"))
             {
                 var app = await appStore.GetCachedAsync(job.AppId, ct);
 
@@ -199,7 +199,7 @@ namespace Notifo.Domain.Channels.Sms
                     await logStore.LogAsync(job.AppId, ex.Message, ct);
                     throw;
                 }
-            });
+            }
         }
 
         private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders,

@@ -17,6 +17,7 @@ using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using Squidex.Log;
@@ -114,7 +115,7 @@ namespace Notifo.Domain.Channels.Webhook
         public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            await log.ProfileAsync("SendWebhook", async () =>
+            using (Telemetry.Activities.StartActivity("SendWebhook"))
             {
                 try
                 {
@@ -129,7 +130,7 @@ namespace Notifo.Domain.Channels.Webhook
                     await logStore.LogAsync(job.Notification.AppId, $"Webhook: {ex.Message}", ct);
                     throw;
                 }
-            });
+            }
 
             return true;
         }

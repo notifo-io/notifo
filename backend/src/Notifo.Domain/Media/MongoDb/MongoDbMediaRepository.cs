@@ -43,55 +43,67 @@ namespace Notifo.Domain.Media.MongoDb
         public async Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<MongoDbMedia>>
+            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
             {
-                Filter.Eq(x => x.Doc.AppId, appId)
-            };
+                var filters = new List<FilterDefinition<MongoDbMedia>>
+                {
+                    Filter.Eq(x => x.Doc.AppId, appId)
+                };
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-                filters.Add(Filter.Regex(x => x.Doc.FileName, regex));
+                    filters.Add(Filter.Regex(x => x.Doc.FileName, regex));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToMedia()));
             }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToMedia()));
         }
 
         public async Task<Media?> GetAsync(string appId, string fileName,
             CancellationToken ct)
         {
-            var docId = MongoDbMedia.CreateId(appId, fileName);
+            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            {
+                var docId = MongoDbMedia.CreateId(appId, fileName);
 
-            var document = await Collection.Find(x => x.DocId == docId).FirstOrDefaultAsync(ct);
+                var document = await Collection.Find(x => x.DocId == docId).FirstOrDefaultAsync(ct);
 
-            return document?.ToMedia();
+                return document?.ToMedia();
+            }
         }
 
         public Task UpsertAsync(Media media,
             CancellationToken ct)
         {
-            var document = MongoDbMedia.FromMedia(media);
+            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            {
+                var document = MongoDbMedia.FromMedia(media);
 
-            return Collection.ReplaceOneAsync(x => x.DocId == document.DocId, document, UpsertReplace, ct);
+                return Collection.ReplaceOneAsync(x => x.DocId == document.DocId, document, UpsertReplace, ct);
+            }
         }
 
         public Task DeleteAsync(string appId, string fileName,
             CancellationToken ct)
         {
-            var docId = MongoDbMedia.CreateId(appId, fileName);
+            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            {
+                var docId = MongoDbMedia.CreateId(appId, fileName);
 
-            return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+            }
         }
     }
 }

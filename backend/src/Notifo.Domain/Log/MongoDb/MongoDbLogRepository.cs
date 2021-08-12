@@ -45,58 +45,67 @@ namespace Notifo.Domain.Log.MongoDb
         public async Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
             CancellationToken ct)
         {
-            var filters = new List<FilterDefinition<MongoDbLogEntry>>
+            using (var activity = Telemetry.Activities.StartMethod<MongoDbLogRepository>())
             {
-                Filter.Eq(x => x.Entry.AppId, appId)
-            };
-
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                filters.Add(Filter.Regex(x => x.Entry.Message, regex));
-            }
-
-            var filter = Filter.And(filters);
-
-            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Entry.LastSeen).ToListAsync(query, ct);
-            var resultTotal = (long)resultItems.Count;
-
-            if (query.ShouldQueryTotal(resultItems))
-            {
-                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
-            }
-
-            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEntry()));
-        }
-
-        public Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
-            CancellationToken ct)
-        {
-            var writes = new List<WriteModel<MongoDbLogEntry>>();
-
-            foreach (var (appId, message, count) in updates)
-            {
-                var docId = MongoDbLogEntry.CreateId(appId, message);
-
-                var update =
-                    Update
-                        .SetOnInsert(x => x.DocId, docId)
-                        .SetOnInsert(x => x.Entry.FirstSeen, now)
-                        .SetOnInsert(x => x.Entry.AppId, appId)
-                        .SetOnInsert(x => x.Entry.Message, message)
-                        .Set(x => x.Entry.LastSeen, now)
-                        .Inc(x => x.Entry.Count, count);
-
-                var model = new UpdateOneModel<MongoDbLogEntry>(Filter.Eq(x => x.DocId, docId), update)
+                var filters = new List<FilterDefinition<MongoDbLogEntry>>
                 {
-                    IsUpsert = true
+                    Filter.Eq(x => x.Entry.AppId, appId)
                 };
 
-                writes.Add(model);
-            }
+                if (!string.IsNullOrWhiteSpace(query.Query))
+                {
+                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-            return Collection.BulkWriteAsync(writes, cancellationToken: ct);
+                    filters.Add(Filter.Regex(x => x.Entry.Message, regex));
+                }
+
+                var filter = Filter.And(filters);
+
+                var resultItems = await Collection.Find(filter).SortByDescending(x => x.Entry.LastSeen).ToListAsync(query, ct);
+                var resultTotal = (long)resultItems.Count;
+
+                if (query.ShouldQueryTotal(resultItems))
+                {
+                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                }
+
+                activity?.SetTag("numResults", resultItems.Count);
+                activity?.SetTag("numTotal", resultTotal);
+
+                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEntry()));
+            }
+        }
+
+        public async Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
+            CancellationToken ct)
+        {
+            using (Telemetry.Activities.StartMethod<MongoDbLogRepository>())
+            {
+                var writes = new List<WriteModel<MongoDbLogEntry>>();
+
+                foreach (var (appId, message, count) in updates)
+                {
+                    var docId = MongoDbLogEntry.CreateId(appId, message);
+
+                    var update =
+                        Update
+                            .SetOnInsert(x => x.DocId, docId)
+                            .SetOnInsert(x => x.Entry.FirstSeen, now)
+                            .SetOnInsert(x => x.Entry.AppId, appId)
+                            .SetOnInsert(x => x.Entry.Message, message)
+                            .Set(x => x.Entry.LastSeen, now)
+                            .Inc(x => x.Entry.Count, count);
+
+                    var model = new UpdateOneModel<MongoDbLogEntry>(Filter.Eq(x => x.DocId, docId), update)
+                    {
+                        IsUpsert = true
+                    };
+
+                    writes.Add(model);
+                }
+
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            }
         }
     }
 }
