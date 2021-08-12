@@ -29,7 +29,7 @@ namespace Notifo.Domain.Integrations.Mailjet
         {
             EditorLabel = Texts.Mailjet_ApiSecretLabel,
             EditorDescription = null,
-            IsRequired = true,
+            IsRequired = true
         };
 
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)

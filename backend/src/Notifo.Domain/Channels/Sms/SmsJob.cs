@@ -7,7 +7,6 @@
 
 using System;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Channels.Sms

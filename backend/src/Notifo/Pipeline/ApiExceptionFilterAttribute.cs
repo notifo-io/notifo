@@ -19,7 +19,7 @@ namespace Notifo.Pipeline
     {
         public override Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            if (context.Result is ObjectResult objectResult && objectResult.Value is ProblemDetails problem)
+            if (context.Result is ObjectResult { Value: ProblemDetails problem })
             {
                 var (error, _) = problem.ToErrorDto(context.HttpContext);
 

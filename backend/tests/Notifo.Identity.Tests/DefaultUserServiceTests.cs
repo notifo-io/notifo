@@ -115,7 +115,7 @@ namespace Notifo.Identity
             var provider = "my-provider";
             var providerKey = "key";
 
-            var identity = CreateIdentity(found: false);
+            CreateIdentity(found: false);
 
             A.CallTo(() => userManager.FindByLoginAsync(provider, providerKey))
                 .Returns(Task.FromResult<IdentityUser>(null!));
@@ -277,7 +277,7 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 1);
 
-            await sut.CreateAsync(identity.Email, values, false);
+            await sut.CreateAsync(identity.Email, values);
 
             A.CallTo(() => userManager.AddPasswordAsync(identity, values.Password))
                 .MustHaveHappened();

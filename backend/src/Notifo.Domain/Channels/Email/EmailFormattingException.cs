@@ -27,7 +27,7 @@ namespace Notifo.Domain.Channels.Email
         protected EmailFormattingException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            Errors = (info.GetValue(nameof(Errors), typeof(List<EmailFormattingError>)) as List<EmailFormattingError>) ?? new List<EmailFormattingError>();
+            Errors = info.GetValue(nameof(Errors), typeof(List<EmailFormattingError>)) as List<EmailFormattingError> ?? new List<EmailFormattingError>();
         }
 
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

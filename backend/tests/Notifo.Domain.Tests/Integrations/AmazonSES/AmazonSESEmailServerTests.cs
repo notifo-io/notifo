@@ -6,12 +6,11 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Integrations;
-using Notifo.Domain.Integrations.AmazonSES;
+using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Smtp;
 using Xunit;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Integrations.AmazonSES
 {
     [Trait("Category", "Dependencies")]
     public class AmazonSESEmailServerTests : EmailSenderTestBase

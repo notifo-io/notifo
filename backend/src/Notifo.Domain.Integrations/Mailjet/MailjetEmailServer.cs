@@ -43,7 +43,7 @@ namespace Notifo.Domain.Integrations.Mailjet
 
             var responses = await mailjetClient.SendTransactionalEmailAsync(email);
 
-            if (responses.Messages == null || responses.Messages.Length != 1)
+            if (responses.Messages is not { Length: 1 })
             {
                 var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error, message.FromEmail);
 

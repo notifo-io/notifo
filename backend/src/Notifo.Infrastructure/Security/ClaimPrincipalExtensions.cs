@@ -14,7 +14,7 @@ namespace Notifo.Infrastructure.Security
     {
         public static string? Sub(this ClaimsPrincipal principal)
         {
-            return principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier || x.Type == "sub")?.Value;
+            return principal.Claims.FirstOrDefault(x => x.Type is ClaimTypes.NameIdentifier or "sub")?.Value;
         }
 
         public static string? AppId(this ClaimsPrincipal principal)

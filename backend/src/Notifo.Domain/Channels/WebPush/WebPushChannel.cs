@@ -17,12 +17,10 @@ using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
-using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
-using Squidex.Log;
 using WebPush;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.WebPush.WebPushJob>;
 
@@ -36,7 +34,6 @@ namespace Notifo.Domain.Channels.WebPush
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserStore userStore;
         private readonly IUserNotificationQueue userNotificationQueue;
-        private readonly ISemanticLog log;
 
         public int Order => 1000;
 
@@ -46,18 +43,17 @@ namespace Notifo.Domain.Channels.WebPush
 
         public string PublicKey { get; }
 
-        public WebPushChannel(ILogStore logStore, ISemanticLog log, IOptions<WebPushOptions> options,
+        public WebPushChannel(ILogStore logStore, IOptions<WebPushOptions> options,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore,
             IUserStore userStore,
             IJsonSerializer serializer)
         {
-            this.log = log;
-            this.logStore = logStore;
             this.serializer = serializer;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
             this.userStore = userStore;
+            this.logStore = logStore;
 
             webPushClient.SetVapidDetails(
                 options.Value.Subject,
@@ -173,7 +169,7 @@ namespace Notifo.Domain.Channels.WebPush
 
                 var json = job.Payload;
 
-                await webPushClient.SendNotificationAsync(pushSubscription, json);
+                await webPushClient.SendNotificationAsync(pushSubscription, json, cancellationToken: ct);
             }
             catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
             {

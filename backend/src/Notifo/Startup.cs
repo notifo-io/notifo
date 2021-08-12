@@ -110,7 +110,7 @@ namespace Notifo
             services.AddMyUserEvents(config);
             services.AddMyUserNotifications();
             services.AddMyUsers();
-            services.AddMyUtils(config);
+            services.AddMyUtils();
             services.AddMyWebChannel();
             services.AddMyWebhookChannel();
             services.AddMyWebPipeline();

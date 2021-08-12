@@ -17,7 +17,6 @@ using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
-using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
@@ -130,7 +129,7 @@ namespace Notifo.Domain.Channels.MobilePush
             var job = new MobilePushJob(notification, configuration, token.DeviceType)
             {
                 IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero,
-                IsUpdate = options.IsUpdate,
+                IsUpdate = options.IsUpdate
             };
 
             if (options.IsUpdate)

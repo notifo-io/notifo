@@ -45,17 +45,17 @@ namespace Notifo.Areas.Api.Controllers.Web
                 PollingInterval = signalROptions.PollingInterval
             };
 
-            if (signalROptions.Enabled && signalROptions.Sticky)
+            switch (signalROptions.Enabled)
             {
-                response.ConnectionMode = ConnectionMode.SignalR;
-            }
-            else if (signalROptions.Enabled)
-            {
-                response.ConnectionMode = ConnectionMode.SignalRSockets;
-            }
-            else
-            {
-                response.ConnectionMode = ConnectionMode.Polling;
+                case true when signalROptions.Sticky:
+                    response.ConnectionMode = ConnectionMode.SignalR;
+                    break;
+                case true:
+                    response.ConnectionMode = ConnectionMode.SignalRSockets;
+                    break;
+                default:
+                    response.ConnectionMode = ConnectionMode.Polling;
+                    break;
             }
 
             return Ok(response);

@@ -16,11 +16,9 @@ using Notifo.Domain.Channels.Webhook.Integrations;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
-using Squidex.Log;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Webhook.WebhookJob>;
 
 namespace Notifo.Domain.Channels.Webhook
@@ -30,7 +28,6 @@ namespace Notifo.Domain.Channels.Webhook
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserNotificationQueue userNotificationQueue;
-        private readonly ISemanticLog log;
         private readonly ILogStore logStore;
         private readonly IIntegrationManager integrationManager;
 
@@ -42,13 +39,12 @@ namespace Notifo.Domain.Channels.Webhook
 
         public bool IsSystem => true;
 
-        public WebhookChannel(IHttpClientFactory httpClientFactory, ISemanticLog log, ILogStore logStore,
+        public WebhookChannel(IHttpClientFactory httpClientFactory, ILogStore logStore,
             IIntegrationManager integrationManager,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore)
         {
             this.httpClientFactory = httpClientFactory;
-            this.log = log;
             this.logStore = logStore;
             this.integrationManager = integrationManager;
             this.userNotificationQueue = userNotificationQueue;

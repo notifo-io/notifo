@@ -17,17 +17,17 @@ namespace Notifo.Infrastructure
 
         public static Activity? StartMethod(this ActivitySource activity, Type type, [CallerMemberName] string? memberName = null)
         {
-            return activity.StartActivity($"{type.Name}/{memberName}", ActivityKind.Internal);
+            return activity.StartActivity($"{type.Name}/{memberName}");
         }
 
         public static Activity? StartMethod<T>(this ActivitySource activity, [CallerMemberName] string? memberName = null)
         {
-            return activity.StartActivity($"{typeof(T).Name}/{memberName}", ActivityKind.Internal);
+            return activity.StartActivity($"{typeof(T).Name}/{memberName}");
         }
 
         public static Activity? StartMethod(this ActivitySource activity, string objectName, [CallerMemberName] string? memberName = null)
         {
-            return activity.StartActivity($"{objectName}/{memberName}", ActivityKind.Internal);
+            return activity.StartActivity($"{objectName}/{memberName}");
         }
     }
 }

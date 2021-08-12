@@ -226,7 +226,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 var replacement = template.Contains(NotificationsPlaceholder) ? string.Empty : NotificationsPlaceholder;
 
-                stringBuilder.Append(span.Slice(0, startOuter));
+                stringBuilder.Append(span[..startOuter]);
                 stringBuilder.Append(replacement);
                 stringBuilder.Append(span[endOuter..]);
 

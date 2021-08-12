@@ -19,7 +19,6 @@ using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
-using Squidex.Log;
 using IUserEventProducer = Notifo.Infrastructure.Messaging.IAbstractProducer<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -40,14 +39,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
         private readonly IUserEventProducer userEventProducer;
         private readonly ICounterService counters;
-        private readonly ISemanticLog log;
         private readonly IEventStore eventStore;
         private readonly ILogStore logStore;
         private readonly ISubscriptionStore subscriptionStore;
         private readonly ITemplateStore templateStore;
         private readonly IUserStore userStore;
 
-        public UserEventPublisher(ICounterService counters, ISemanticLog log, ILogStore logStore,
+        public UserEventPublisher(ICounterService counters, ILogStore logStore,
             IEventStore eventStore,
             ISubscriptionStore subscriptionStore,
             ITemplateStore templateStore,
@@ -57,7 +55,6 @@ namespace Notifo.Domain.UserEvents.Pipeline
             this.subscriptionStore = subscriptionStore;
             this.counters = counters;
             this.eventStore = eventStore;
-            this.log = log;
             this.logStore = logStore;
             this.templateStore = templateStore;
             this.userStore = userStore;

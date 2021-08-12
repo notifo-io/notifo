@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +13,6 @@ using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration;
 using Notifo;
 using Notifo.Pipeline;
-using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using StackExchange.Redis;

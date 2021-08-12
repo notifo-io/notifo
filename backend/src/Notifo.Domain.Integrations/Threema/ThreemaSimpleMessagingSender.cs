@@ -94,6 +94,11 @@ namespace Notifo.Domain.Integrations.Threema
                         exception = ex;
                     }
                 }
+
+                if (exception != null)
+                {
+                    throw exception;
+                }
             }
 
             return false;

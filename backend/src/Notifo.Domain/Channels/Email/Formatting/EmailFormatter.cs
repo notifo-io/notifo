@@ -17,7 +17,6 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
-using Squidex.Log;
 
 namespace Notifo.Domain.Channels.Email.Formatting
 {
@@ -190,7 +189,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private async Task<string> MjmlToHtmlAsync(string mjml)
         {
-            using (Profiler.TraceMethod<EmailFormatter>())
+            using (Telemetry.Activities.StartMethod<EmailFormatter>())
             {
                 var result = await mjmlServices.Render(mjml);
 

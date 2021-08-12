@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;

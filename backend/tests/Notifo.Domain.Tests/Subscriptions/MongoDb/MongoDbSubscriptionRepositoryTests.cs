@@ -50,14 +50,14 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
                 for (var i = 0; i < Count; i++)
                 {
-                    TopicId topic = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}a";
+                    TopicId randomTopic = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}a";
 
                     inserts.Add(new MongoDbSubscription
                     {
                         DocId = Guid.NewGuid().ToString(),
                         AppId = empty,
-                        TopicArray = topic.GetParts(),
-                        TopicPrefix = topic,
+                        TopicArray = randomTopic.GetParts(),
+                        TopicPrefix = randomTopic,
                         UserId = empty
                     });
                 }

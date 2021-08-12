@@ -16,7 +16,7 @@ namespace Notifo.Infrastructure.Collections
         private static class Empties<TKey, TValue> where TKey : notnull
         {
 #pragma warning disable SA1401 // Fields should be private
-            public static ImmutableDictionary<TKey, TValue> Instance = new ImmutableDictionary<TKey, TValue>();
+            public static readonly ImmutableDictionary<TKey, TValue> Instance = new ImmutableDictionary<TKey, TValue>();
 #pragma warning restore SA1401 // Fields should be private
         }
 

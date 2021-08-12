@@ -16,7 +16,6 @@ using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;

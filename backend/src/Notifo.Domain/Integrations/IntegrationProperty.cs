@@ -35,7 +35,7 @@ namespace Notifo.Domain.Integrations
 
         public string? GetString(ConfiguredIntegration configured)
         {
-            if (Type == IntegrationPropertyType.Text || Type == IntegrationPropertyType.MultilineText || Type == IntegrationPropertyType.Password)
+            if (Type is IntegrationPropertyType.Text or IntegrationPropertyType.MultilineText or IntegrationPropertyType.Password)
             {
                 if (configured.Properties.TryGetValue(Name, out var value))
                 {

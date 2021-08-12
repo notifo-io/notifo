@@ -87,7 +87,7 @@ namespace Notifo.Domain.Integrations.Mailchimp
 
                 var responses = await responseMessage.Content.ReadFromJsonAsync<ResponseMessage[]>(cancellationToken: ct);
 
-                if (responses == null || responses.Length != 1)
+                if (responses is not { Length: 1 })
                 {
                     var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error, message.FromEmail);
 

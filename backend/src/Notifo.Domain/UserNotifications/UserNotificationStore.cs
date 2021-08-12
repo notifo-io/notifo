@@ -113,7 +113,7 @@ namespace Notifo.Domain.UserNotifications
         {
             Guard.NotNull(notification, nameof(notification));
 
-            var counterMap = CounterMap.ForNotification(ProcessStatus.Handled, 1);
+            var counterMap = CounterMap.ForNotification(ProcessStatus.Handled);
             var counterKey = CounterKey.ForNotification(notification);
 
             return Task.WhenAll(

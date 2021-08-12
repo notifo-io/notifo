@@ -16,7 +16,6 @@ using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
@@ -28,11 +27,11 @@ namespace Notifo.Domain.Channels.Messaging
     public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, IInitializable
     {
         private const string DefaultToken = "Default";
-        private readonly ILogStore logStore;
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserNotificationQueue userNotificationQueue;
+        private readonly ILogStore logStore;
         private readonly ISemanticLog log;
 
         public int Order => 1000;
