@@ -71,7 +71,8 @@ namespace Notifo.Domain.Integrations.Firebase
 
             var apnsHeaders = new Dictionary<string, string>
             {
-                ["apns-collapse-id"] = notification.Id.ToString()
+                ["apns-collapse-id"] = notification.Id.ToString(),
+                ["apns-push-type"] = "alert"
             };
 
             if (notification.TimeToLiveInSeconds is int timeToLive)
