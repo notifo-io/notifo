@@ -198,6 +198,9 @@ namespace Notifo.Domain.Channels.MobilePush
         public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
+            var id = job.Notification.Id;
+
+            // If the notification is not scheduled it is very unlikey it has been confirmed already.
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.DeviceToken, Name, ct))
             {
                 await UpdateAsync(job, ProcessStatus.Skipped);

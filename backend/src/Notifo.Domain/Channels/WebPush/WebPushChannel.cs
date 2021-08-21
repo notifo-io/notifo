@@ -124,7 +124,10 @@ namespace Notifo.Domain.Channels.WebPush
         public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.Subscription.Endpoint, Name, ct))
+            var config = job.Subscription.Endpoint;
+
+            // If the notification is not scheduled it is very unlikey it has been confirmed already.
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, config, Name, ct))
             {
                 await UpdateAsync(job, ProcessStatus.Skipped);
             }
