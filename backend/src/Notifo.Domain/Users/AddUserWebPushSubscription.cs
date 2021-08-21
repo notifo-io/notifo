@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -33,7 +34,7 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            if (!user.WebPushSubscriptions.Contains(Subscription))
+            if (!user.WebPushSubscriptions.Any(x => x.Endpoint == Subscription.Endpoint))
             {
                 user.WebPushSubscriptions.Add(Subscription);
 

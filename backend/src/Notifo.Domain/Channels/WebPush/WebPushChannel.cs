@@ -86,7 +86,7 @@ namespace Notifo.Domain.Channels.WebPush
         public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            var subscription = options.User.WebPushSubscriptions.SingleOrDefault(x => x.Endpoint == configuration);
+            var subscription = options.User.WebPushSubscriptions.FirstOrDefault(x => x.Endpoint == configuration);
 
             if (subscription == null)
             {
