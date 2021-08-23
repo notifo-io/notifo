@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<WebPushChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<WebPushJob>>().As<IWebPushService>();
 
-            services.AddScheduler<WebPushJob>(new SchedulerOptions { QueueName = Providers.WebPush });
+            services.AddScheduler<WebPushJob>(Providers.WebPush);
         }
     }
 }

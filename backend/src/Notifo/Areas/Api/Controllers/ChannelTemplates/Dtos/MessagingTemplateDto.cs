@@ -5,19 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading;
-using System.Threading.Tasks;
-using Notifo.Domain.Users;
+using System.ComponentModel.DataAnnotations;
 
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
 {
-    public interface IMessagingSender
+    public sealed class MessagingTemplateDto
     {
-        bool HasTarget(User user);
-
-        Task AddTargetsAsync(MessagingJob job, User user);
-
-        Task<bool> SendAsync(MessagingJob job, string text,
-            CancellationToken ct);
+        /// <summary>
+        /// The template text.
+        /// </summary>
+        [Required]
+        public string Text { get; set; }
     }
 }

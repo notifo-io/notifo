@@ -55,6 +55,12 @@ $size-email-header: 5rem;
     }
 }
 
+.email-templates {
+    .header {
+        margin-bottom: 2rem;
+    }
+}
+
 .email-template {
     & {
         width: 300px;
@@ -251,7 +257,7 @@ $size-email-header: 5rem;
 
 .btn-toggle {
     align-items: center;
-    border-color: lighten($color-input, 8%);
+    border-color: $secondary;
     border-radius: .25rem;
     display: flex;
 

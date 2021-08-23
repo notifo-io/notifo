@@ -14,6 +14,7 @@ import { IntegrationsState, IntegrationsStateInStore } from './integrations';
 import { LogState, LogStateInStore } from './log';
 import { LoginState, LoginStateInStore } from './login';
 import { MediaState, MediaStateInStore } from './media';
+import { MessagingTemplatesState, MessagingTemplatesStateInStore } from './messaging-templates';
 import { NotificationsState, NotificationsStateInStore } from './notifications';
 import { PublishState, PublishStateInStore } from './publish';
 import { SmsTemplatesState, SmsTemplatesStateInStore } from './sms-templates';
@@ -30,6 +31,7 @@ type State =
     LogStateInStore &
     LoginStateInStore &
     MediaStateInStore &
+    MessagingTemplatesStateInStore &
     NotificationsStateInStore &
     PublishStateInStore &
     SmsTemplatesStateInStore &
@@ -71,6 +73,10 @@ export function useLogin<T>(mapping: (state: LoginState) => T) {
 
 export function useMedia<T>(mapping: (state: MediaState) => T) {
     return useStore<T>(x => mapping(x.media));
+}
+
+export function useMessagingTemplates<T>(mapping: (state: MessagingTemplatesState) => T) {
+    return useStore<T>(x => mapping(x.messagingTemplates));
 }
 
 export function useNotifications<T>(mapping: (state: NotificationsState) => T) {

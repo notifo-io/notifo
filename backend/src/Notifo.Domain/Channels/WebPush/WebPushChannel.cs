@@ -154,7 +154,7 @@ namespace Notifo.Domain.Channels.WebPush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, ex.Message, ct);
+                    await logStore.LogAsync(job.AppId, Name, ex.Message, ct);
                     throw;
                 }
             }
@@ -176,7 +176,7 @@ namespace Notifo.Domain.Channels.WebPush
             }
             catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
             {
-                await logStore.LogAsync(job.AppId, Texts.WebPush_TokenRemoved, ct);
+                await logStore.LogAsync(job.AppId, Name, Texts.WebPush_TokenRemoved, ct);
 
                 var command = new RemoveUserWebPushSubscription
                 {

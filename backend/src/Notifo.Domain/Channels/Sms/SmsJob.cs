@@ -44,7 +44,7 @@ namespace Notifo.Domain.Channels.Sms
         {
         }
 
-        public SmsJob(UserNotification notification, string? template, string phoneNumber)
+        public SmsJob(UserNotification notification, string? templateName, string phoneNumber)
         {
             PhoneNumber = phoneNumber;
 
@@ -57,7 +57,7 @@ namespace Notifo.Domain.Channels.Sms
                 Text = Text.Substring(0, 137) + "...";
             }
 
-            TemplateName = template;
+            TemplateName = templateName;
             TemplateLanguage = notification.UserLanguage;
         }
 

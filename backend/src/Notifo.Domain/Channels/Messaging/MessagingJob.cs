@@ -14,6 +14,8 @@ namespace Notifo.Domain.Channels.Messaging
     {
         public BaseUserNotification Notification { get; set; }
 
+        public string? TemplateName { get; }
+
         public Dictionary<string, string> Targets { get; set; } = new Dictionary<string, string>();
 
         public bool IsImmediate { get; set; }
@@ -27,9 +29,11 @@ namespace Notifo.Domain.Channels.Messaging
         {
         }
 
-        public MessagingJob(BaseUserNotification notification)
+        public MessagingJob(BaseUserNotification notification, string? templateName)
         {
             Notification = notification;
+
+            TemplateName = templateName;
         }
     }
 }

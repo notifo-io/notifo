@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddChannelTemplates<EmailTemplate>();
 
-            services.AddScheduler<EmailJob>(new SchedulerOptions { QueueName = Providers.Email });
+            services.AddScheduler<EmailJob>(Providers.Email);
         }
     }
 }

@@ -11,8 +11,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class SchedulerServiceExtensions
     {
-        public static void AddScheduler<T>(this IServiceCollection services, SchedulerOptions options)
+        public static void AddScheduler<T>(this IServiceCollection services, string name, SchedulerOptions? options = null)
         {
+            options ??= new SchedulerOptions();
+            options.QueueName = name;
+
             services.AddSingletonAs(c => c.GetRequiredService<ISchedulerProvider>().GetScheduler<T>(c, options))
                 .As<IScheduler<T>>();
         }

@@ -14,6 +14,7 @@ export * from './integrations';
 export * from './log';
 export * from './login';
 export * from './media';
+export * from './messaging-templates';
 export * from './notifications';
 export * from './publish';
 export * from './shared';

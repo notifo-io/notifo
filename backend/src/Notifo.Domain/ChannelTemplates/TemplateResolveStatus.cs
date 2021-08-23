@@ -5,19 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading;
-using System.Threading.Tasks;
-using Notifo.Domain.Users;
-
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Domain.ChannelTemplates
 {
-    public interface IMessagingSender
+    public enum TemplateResolveStatus
     {
-        bool HasTarget(User user);
-
-        Task AddTargetsAsync(MessagingJob job, User user);
-
-        Task<bool> SendAsync(MessagingJob job, string text,
-            CancellationToken ct);
+        Resolved,
+        ResolvedWithFallback,
+        NotFound,
+        LanguageNotFound
     }
 }

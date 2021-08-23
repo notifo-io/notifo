@@ -7,11 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using Notifo.Domain.Apps;
+using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
@@ -20,6 +22,7 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using Squidex.Log;
+using IMessagingTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Messaging.MessagingTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Messaging.MessagingJob>;
 
 namespace Notifo.Domain.Channels.Messaging
@@ -29,6 +32,8 @@ namespace Notifo.Domain.Channels.Messaging
         private const string DefaultToken = "Default";
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
+        private readonly IMessagingFormatter messagingFormatter;
+        private readonly IMessagingTemplateStore messagingTemplateStore;
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly ILogStore logStore;
@@ -43,6 +48,8 @@ namespace Notifo.Domain.Channels.Messaging
         public MessagingChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,
             IIntegrationManager integrationManager,
+            IMessagingFormatter messagingFormatter,
+            IMessagingTemplateStore messagingTemplateStore,
             IUserNotificationQueue userNotificationQueue,
             IUserNotificationStore userNotificationStore)
         {
@@ -50,6 +57,8 @@ namespace Notifo.Domain.Channels.Messaging
             this.log = log;
             this.logStore = logStore;
             this.integrationManager = integrationManager;
+            this.messagingFormatter = messagingFormatter;
+            this.messagingTemplateStore = messagingTemplateStore;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
         }
@@ -80,7 +89,7 @@ namespace Notifo.Domain.Channels.Messaging
                 return;
             }
 
-            var job = new MessagingJob(notification)
+            var job = new MessagingJob(notification, setting.Template)
             {
                 IsImmediate = setting.DelayDuration == Duration.Zero
             };
@@ -158,17 +167,31 @@ namespace Notifo.Domain.Channels.Messaging
                         return;
                     }
 
-                    await SendCoreAsync(job, senders, ct);
+                    var (skip, template) = await GetTemplateAsync(
+                        job.Notification.AppId,
+                        job.Notification.UserId,
+                        job.TemplateName,
+                        ct);
+
+                    if (skip != null)
+                    {
+                        await SkipAsync(job, skip);
+                        return;
+                    }
+
+                    var text = messagingFormatter.Format(template, job.Notification);
+
+                    await SendCoreAsync(job, text, senders, ct);
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.Notification.AppId, ex.Message, ct);
+                    await logStore.LogAsync(job.Notification.AppId, Name, ex.Message, ct);
                     throw;
                 }
             }
         }
 
-        private async Task SendCoreAsync(MessagingJob job, List<IMessagingSender> senders,
+        private async Task SendCoreAsync(MessagingJob job, string text, List<IMessagingSender> senders,
             CancellationToken ct)
         {
             var lastSender = senders.Last();
@@ -177,7 +200,7 @@ namespace Notifo.Domain.Channels.Messaging
             {
                 try
                 {
-                    var result = await sender.SendAsync(job, ct);
+                    var result = await sender.SendAsync(job, text, ct);
 
                     if (result)
                     {
@@ -187,7 +210,7 @@ namespace Notifo.Domain.Channels.Messaging
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.Notification.AppId, ex.Message, ct);
+                    await logStore.LogAsync(job.Notification.AppId, Name, ex.Message, ct);
 
                     if (sender == lastSender)
                     {
@@ -211,9 +234,45 @@ namespace Notifo.Domain.Channels.Messaging
 
         private async Task SkipAsync(MessagingJob job, string reason)
         {
-            await logStore.LogAsync(job.Notification.AppId, reason);
+            await logStore.LogAsync(job.Notification.AppId, Name, reason);
 
             await UpdateAsync(job.Notification, ProcessStatus.Skipped);
+        }
+
+        private async Task<(string? Skip, MessagingTemplate?)> GetTemplateAsync(
+            string appId,
+            string language,
+            string? name,
+            CancellationToken ct)
+        {
+            var (status, template) = await messagingTemplateStore.GetBestAsync(appId, name, language, ct);
+
+            switch (status)
+            {
+                case TemplateResolveStatus.ResolvedWithFallback:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
+
+                        await logStore.LogAsync(appId, Name, error, ct);
+                        break;
+                    }
+
+                case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
+
+                        return (error, null);
+                    }
+
+                case TemplateResolveStatus.LanguageNotFound:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
+
+                        return (error, null);
+                    }
+            }
+
+            return (null, template);
         }
     }
 }

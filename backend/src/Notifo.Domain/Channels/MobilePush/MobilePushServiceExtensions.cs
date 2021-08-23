@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<MobilePushChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<MobilePushJob>>();
 
-            services.AddScheduler<MobilePushJob>(new SchedulerOptions { QueueName = Providers.MobilePush });
+            services.AddScheduler<MobilePushJob>(Providers.MobilePush);
         }
     }
 }

@@ -25,7 +25,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddChannelTemplates<SmsTemplate>();
 
-            services.AddScheduler<SmsJob>(new SchedulerOptions { QueueName = Providers.Sms, ExecutionRetries = Array.Empty<int>() });
+            services.AddScheduler<SmsJob>(Providers.Sms, new SchedulerOptions
+            {
+                ExecutionRetries = Array.Empty<int>()
+            });
         }
     }
 }

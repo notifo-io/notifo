@@ -31,6 +31,15 @@ namespace Notifo.Domain.Log
             collector.StopAsync().Wait();
         }
 
+        public Task LogAsync(string appId, string system, string message,
+            CancellationToken ct)
+        {
+            Guard.NotNullOrEmpty(system, nameof(system));
+            Guard.NotNullOrEmpty(message, nameof(message));
+
+            return collector.AddAsync(appId, $"{system}: {message}");
+        }
+
         public Task LogAsync(string appId, string message,
             CancellationToken ct)
         {

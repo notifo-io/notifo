@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<UserNotificationService>()
                 .As<IUserNotificationService>().As<IScheduleHandler<UserEventMessage>>();
 
-            services.AddScheduler<UserEventMessage>(new SchedulerOptions { QueueName = "UserNotifications" });
+            services.AddScheduler<UserEventMessage>("UserNotifications");
         }
 
         public static void AddMyMongoUserNotifications(this IServiceCollection services)

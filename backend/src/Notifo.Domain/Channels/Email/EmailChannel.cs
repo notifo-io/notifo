@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
+using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
@@ -185,19 +187,19 @@ namespace Notifo.Domain.Channels.Email
 
                     using (Telemetry.Activities.StartActivity("Format"))
                     {
-                        var template = await emailTemplateStore.GetBestAsync(
+                        var (skip, template) = await GetTemplateAsync(
                             first.Notification.AppId,
-                            first.EmailTemplate,
                             first.Notification.UserLanguage,
+                            first.EmailTemplate,
                             ct);
 
-                        if (template == null)
+                        if (skip != null)
                         {
-                            await SkipAsync(jobs, commonEmail, Texts.Email_TemplateNotFound);
+                            await SkipAsync(jobs, commonEmail, skip);
                             return;
                         }
 
-                        message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template, app, user, ct);
+                        message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template!, app, user, ct);
                     }
 
                     await SendCoreAsync(message, app.Id, senders, ct);
@@ -206,7 +208,7 @@ namespace Notifo.Domain.Channels.Email
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, ex.Message, ct);
+                    await logStore.LogAsync(app.Id, Name, ex.Message, ct);
                     throw;
                 }
             }
@@ -226,7 +228,7 @@ namespace Notifo.Domain.Channels.Email
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(appId, ex.Message, ct);
+                    await logStore.LogAsync(appId, Name, ex.Message, ct);
 
                     if (sender == lastSender)
                     {
@@ -250,7 +252,7 @@ namespace Notifo.Domain.Channels.Email
 
         private async Task SkipAsync(List<EmailJob> jobs, string email, string reason)
         {
-            await logStore.LogAsync(jobs[0].Notification.AppId, reason);
+            await logStore.LogAsync(jobs[0].Notification.AppId, Name, reason);
 
             await UpdateAsync(jobs, email, ProcessStatus.Skipped);
         }
@@ -261,6 +263,42 @@ namespace Notifo.Domain.Channels.Email
             {
                 await UpdateAsync(job.Notification, email, status, reason);
             }
+        }
+
+        private async Task<(string? Skip, EmailTemplate?)> GetTemplateAsync(
+            string appId,
+            string language,
+            string? name,
+            CancellationToken ct)
+        {
+            var (status, template) = await emailTemplateStore.GetBestAsync(appId, name, language, ct);
+
+            switch (status)
+            {
+                case TemplateResolveStatus.ResolvedWithFallback:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
+
+                        await logStore.LogAsync(appId, Name, error, ct);
+                        break;
+                    }
+
+                case TemplateResolveStatus.NotFound:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
+
+                        return (error, null);
+                    }
+
+                case TemplateResolveStatus.LanguageNotFound:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
+
+                        return (error, null);
+                    }
+            }
+
+            return (null, template);
         }
     }
 }

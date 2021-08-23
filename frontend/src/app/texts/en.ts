@@ -196,6 +196,15 @@ export const EN = {
         mediaNotFound: 'No matching media found',
         searchPlaceholder: 'Search',
     },
+    messagingTemplates: {
+        confirmDelete: 'Do you really want to delete the Template?',
+        create: 'Create',
+        header: 'Messaging Templates',
+        name: 'Template Name',
+        notFound: 'No Messaging template found',
+        notFoundButton: 'Create template',
+        singleHeader: 'Messaging Template',
+    },
     notificationSettings: {
         delayInSeconds: 'Delay in seconds',
         email: {

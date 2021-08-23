@@ -14,20 +14,21 @@ import { routerMiddleware } from 'react-router-redux';
 import * as Reducers from './index';
 
 const reducer = {
-          apps: Reducers.appsReducer,
-          core: Reducers.coreReducer,
-emailTemplates: Reducers.emailTemplatesReducer,
-        events: Reducers.eventsReducer,
-  integrations: Reducers.integrationsReducer,
-           log: Reducers.logReducer,
-         login: Reducers.loginReducer,
-         media: Reducers.mediaReducer,
- notifications: Reducers.notificationsReducer,
-       publish: Reducers.publishReducer,
-  smsTemplates: Reducers.smsTemplatesReducer,
- subscriptions: Reducers.subscriptionsReducer,
-     templates: Reducers.templatesReducer,
-         users: Reducers.usersReducer,
+              apps: Reducers.appsReducer,
+              core: Reducers.coreReducer,
+    emailTemplates: Reducers.emailTemplatesReducer,
+            events: Reducers.eventsReducer,
+      integrations: Reducers.integrationsReducer,
+               log: Reducers.logReducer,
+             login: Reducers.loginReducer,
+             media: Reducers.mediaReducer,
+messagingTemplates: Reducers.messagingTemplatesReducer,
+     notifications: Reducers.notificationsReducer,
+           publish: Reducers.publishReducer,
+      smsTemplates: Reducers.smsTemplatesReducer,
+     subscriptions: Reducers.subscriptionsReducer,
+         templates: Reducers.templatesReducer,
+             users: Reducers.usersReducer,
 };
 
 export const createAppStore = (history: History) =>
@@ -39,6 +40,7 @@ export const createAppStore = (history: History) =>
                 Reducers.emailTemplatesMiddleware,
                 Reducers.loginMiddleware,
                 Reducers.mediaMiddleware,
+                Reducers.messagingTemplatesMiddleware,
                 Reducers.smsTemplatesMiddleware,
                 Reducers.subscriptionsMiddleware,
                 Reducers.usersMiddleware,

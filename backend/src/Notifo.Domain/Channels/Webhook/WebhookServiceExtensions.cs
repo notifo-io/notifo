@@ -23,7 +23,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<WebhookIntegration>()
                 .As<IIntegration>();
 
-            services.AddScheduler<WebhookJob>(new SchedulerOptions { QueueName = Providers.Webhook });
+            services.AddScheduler<WebhookJob>(Providers.Webhook);
         }
     }
 }

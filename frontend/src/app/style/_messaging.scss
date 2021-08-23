@@ -1,17 +1,17 @@
 @import '_vars';
 @import '_mixins';
 
-.sms-form {
+.messaging-form {
     max-width: 600px;
 }
 
-.sms-templates {
+.messaging-templates {
     .header {
         margin-bottom: 2rem;
     }
 }
 
-.sms-template {
+.messaging-template {
     & {
         width: 300px;
     }

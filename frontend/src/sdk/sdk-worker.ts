@@ -16,7 +16,7 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
         self.skipWaiting();
     });
 
-    self.addEventListener('message', (event: MessageEvent) => {
+    self.addEventListener('message', event => {
         const message: SWMessage = event.data;
 
         switch (message.type) {
@@ -31,7 +31,7 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
         }
     });
 
-    self.addEventListener('notificationclose', (event: NotificationEvent) => {
+    self.addEventListener('notificationclick', event => {
         const notification: NotifoNotification = event.notification.data;
 
         if (notification.trackingUrl) {
@@ -39,10 +39,6 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
 
             event.waitUntil(promise);
         }
-    });
-
-    self.addEventListener('notificationclick', (event: NotificationEvent) => {
-        const notification: NotifoNotification = event.notification.data;
 
         if (event.action === 'confirm') {
             if (notification.confirmUrl) {
@@ -58,7 +54,17 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
         }
     });
 
-    self.addEventListener('push', (event: PushEvent) => {
+    self.addEventListener('notificationclose', event => {
+        const notification: NotifoNotification = event.notification.data;
+
+        if (notification.trackingUrl) {
+            const promise = fetch(notification.trackingUrl);
+
+            event.waitUntil(promise);
+        }
+    });
+
+    self.addEventListener('push', event => {
         if (event.data) {
             const notification: NotifoNotification = parseShortNotification(event.data.json());
 

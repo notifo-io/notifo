@@ -5,19 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading;
-using System.Threading.Tasks;
-using Notifo.Domain.Users;
+using Notifo.Domain.ChannelTemplates;
+using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public interface IMessagingSender
+    public interface IMessagingFormatter : IChannelTemplateFactory<MessagingTemplate>
     {
-        bool HasTarget(User user);
-
-        Task AddTargetsAsync(MessagingJob job, User user);
-
-        Task<bool> SendAsync(MessagingJob job, string text,
-            CancellationToken ct);
+        string Format(MessagingTemplate? template, BaseUserNotification notification);
     }
 }
