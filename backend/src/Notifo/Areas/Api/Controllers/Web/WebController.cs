@@ -77,6 +77,11 @@ namespace Notifo.Areas.Api.Controllers.Web
                 Channel = Providers.Web
             };
 
+            if (request.Delivered?.Length > 0)
+            {
+                await userNotificationStore.TrackSeenAsync(request.Delivered, details);
+            }
+
             if (request.Seen?.Length > 0)
             {
                 await userNotificationStore.TrackSeenAsync(request.Seen, details);

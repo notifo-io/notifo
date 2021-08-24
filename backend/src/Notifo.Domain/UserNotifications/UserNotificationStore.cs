@@ -76,6 +76,16 @@ namespace Notifo.Domain.UserNotifications
             return repository.TrackConfirmedAsync(id, handle, ct);
         }
 
+        public Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details,
+            CancellationToken ct)
+        {
+            Guard.NotNull(ids, nameof(ids));
+
+            var handle = CreateHandle(details);
+
+            return repository.TrackDeliveredAsync(ids, handle, ct);
+        }
+
         public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details,
             CancellationToken ct)
         {

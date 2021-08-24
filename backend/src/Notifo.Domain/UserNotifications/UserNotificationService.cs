@@ -237,13 +237,33 @@ namespace Notifo.Domain.UserNotifications
             return (null, null);
         }
 
+        public async Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details)
+        {
+            await userNotificationsStore.TrackDeliveredAsync(ids, details);
+
+            if (!string.IsNullOrWhiteSpace(details.Channel))
+            {
+                var channel = channels.FirstOrDefault(x => x.Name == details.Channel);
+
+                if (channel != null)
+                {
+                    foreach (var id in ids)
+                    {
+                        await channel.HandleDeliveredAsync(id, details);
+                    }
+                }
+            }
+        }
+
         public async Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details)
         {
             await userNotificationsStore.TrackSeenAsync(ids, details);
 
-            foreach (var channel in channels)
+            if (!string.IsNullOrWhiteSpace(details.Channel))
             {
-                if (channel.Name == details.Channel)
+                var channel = channels.FirstOrDefault(x => x.Name == details.Channel);
+
+                if (channel != null)
                 {
                     foreach (var id in ids)
                     {

@@ -17,6 +17,8 @@ namespace Notifo.Domain.UserNotifications
     {
         Task DistributeAsync(UserEventMessage userEvent);
 
+        Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails options);
+
         Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails options);
 
         Task<(UserNotification?, App?)> TrackConfirmedAsync(Guid id, TrackingDetails options);

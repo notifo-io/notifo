@@ -45,7 +45,9 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("linkText", formatting.LinkText)
                     .WithNonEmpty("linkUrl", formatting.LinkUrl)
                     .WithNonEmpty("silent", notification.Silent.ToString())
-                    .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
                     .WithNonEmpty("data", notification.Data);
 
             var androidData =

@@ -15,10 +15,10 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
     self.addEventListener('notificationclick', event => {
         const notification: NotifoNotification = event.notification.data.notification;
 
-        if (notification.trackingUrl && !event.notification.data.tracked) {
+        if (notification.trackSeenUrl && !event.notification.data.tracked) {
             event.notification.data.tracked = true;
 
-            const promise = fetch(notification.trackingUrl);
+            const promise = fetch(notification.trackSeenUrl);
 
             event.waitUntil(promise);
         }
@@ -40,8 +40,8 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
     self.addEventListener('notificationclose', event => {
         const notification: NotifoNotification = event.notification.data.notification;
 
-        if (notification.trackingUrl && !event.notification.data.manualClose) {
-            const promise = fetch(notification.trackingUrl);
+        if (notification.trackSeenUrl && !event.notification.data.manualClose) {
+            const promise = fetch(notification.trackSeenUrl);
 
             event.waitUntil(promise);
         }
@@ -140,10 +140,14 @@ async function showNotification(self: ServiceWorkerGlobalScope, notification: No
     }
 
     if (notification.imageLarge) {
-        options.image = withPreset(notification.imageLarge, 'WebPushSmall');
+        options.image = withPreset(notification.imageLarge, 'WebPushLarge');
     }
 
     await self.registration.showNotification(notification.subject, options);
+
+    if (notification.trackDeliveredUrl) {
+        fetch(notification.trackDeliveredUrl);
+    }
 }
 
 function urlB64ToUint8Array(base64String: string) {

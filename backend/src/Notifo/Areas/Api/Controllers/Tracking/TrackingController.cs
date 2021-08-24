@@ -24,7 +24,10 @@ namespace Notifo.Areas.Api.Controllers.Tracking
             this.userNotificationService = userNotificationService;
         }
 
-        [HttpGet("/api/tracking/notifications/{id}/seen")]
+        [HttpGet]
+        [HttpPut]
+        [HttpPost]
+        [Route("/api/tracking/notifications/{id}/seen")]
         public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
@@ -34,14 +37,17 @@ namespace Notifo.Areas.Api.Controllers.Tracking
             return TrackingPixel();
         }
 
-        [HttpPost("/api/tracking/notifications/{id}/seen")]
-        public async Task<IActionResult> SeenPost(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
+        [HttpGet]
+        [HttpPut]
+        [HttpPost]
+        [Route("/api/tracking/notifications/{id}/delivered")]
+        public async Task<IActionResult> Delivered(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
 
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), details);
+            await userNotificationService.TrackDeliveredAsync(Enumerable.Repeat(id, 1), details);
 
-            return NoContent();
+            return TrackingPixel();
         }
 
         [HttpGet("/api/tracking/notifications/{id}/confirm")]

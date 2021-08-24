@@ -16,9 +16,11 @@ namespace Notifo.Domain.UserNotifications
 
         public Dictionary<string, ChannelSendInfo> Status { get; init; }
 
-        public Instant? LastConfirmed { get; set; }
+        public Instant? FirstConfirmed { get; set; }
 
-        public Instant? LastSeen { get; set; }
+        public Instant? FirstSeen { get; set; }
+
+        public Instant? FirstDelivered { get; set; }
 
         public static UserNotificationChannel Create(NotificationSetting? setting = null)
         {

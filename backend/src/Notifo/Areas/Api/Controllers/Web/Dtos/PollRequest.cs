@@ -14,6 +14,8 @@ namespace Notifo.Areas.Api.Controllers.Web.Dtos
     {
         public Guid[]? Deleted { get; set; }
 
+        public Guid[]? Delivered { get; set; }
+
         public Guid[]? Seen { get; set; }
 
         public Guid[]? Confirmed { get; set; }

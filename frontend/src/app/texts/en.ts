@@ -46,7 +46,6 @@ export const EN = {
         confirmModes: {
             explicit: 'Explicit',
             none: 'None',
-            seen: 'Seen',
         },
         confirmText: 'Confirm Text',
         contributors: 'Contributors',

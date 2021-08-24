@@ -30,6 +30,9 @@ namespace Notifo.Domain.UserNotifications
         Task DeleteAsync(Guid id,
             CancellationToken ct);
 
+        Task TrackDeliveredAsync(IEnumerable<Guid> ids, HandledInfo handle,
+            CancellationToken ct);
+
         Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
             CancellationToken ct);
 

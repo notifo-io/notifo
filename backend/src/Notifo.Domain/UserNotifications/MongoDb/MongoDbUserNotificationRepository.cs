@@ -54,6 +54,15 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
                 cm.SetIgnoreExtraElements(true);
 
+                cm.MapProperty(x => x.FirstDelivered)
+                    .SetIgnoreIfNull(true);
+
+                cm.MapProperty(x => x.FirstSeen)
+                    .SetIgnoreIfNull(true);
+
+                cm.MapProperty(x => x.FirstConfirmed)
+                    .SetIgnoreIfNull(true);
+
                 cm.MapProperty(x => x.Status)
                     .SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<string, ChannelSendInfo>, string, ChannelSendInfo>()
                         .WithKeySerializer(new Base64Serializer()));
@@ -177,6 +186,24 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
+        public async Task TrackDeliveredAsync(IEnumerable<Guid> ids, HandledInfo handle,
+            CancellationToken ct)
+        {
+            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            {
+                var writes = new List<WriteModel<UserNotification>>();
+
+                MarkDelivered(ids, handle, writes);
+
+                if (writes.Count == 0)
+                {
+                    return;
+                }
+
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            }
+        }
+
         public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
             CancellationToken ct)
         {
@@ -184,49 +211,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             {
                 var writes = new List<WriteModel<UserNotification>>();
 
-                var timestamp = handle.Timestamp;
-
-                foreach (var id in ids)
-                {
-                    var updateSeen =
-                        Filter.Eq(x => x.Id, id);
-
-                    var updateConfirmed =
-                        Filter.And(
-                            Filter.Eq(x => x.Id, id),
-                            Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Seen));
-
-                    writes.Add(new UpdateOneModel<UserNotification>(
-                        Filter.And(
-                            updateSeen,
-                            Filter.Exists(x => x.FirstSeen, false)),
-                        Update
-                            .Set(x => x.FirstSeen, handle).Max(x => x.Updated, timestamp)));
-
-                    writes.Add(new UpdateOneModel<UserNotification>(
-                        Filter.And(
-                            updateConfirmed,
-                            Filter.Exists(x => x.FirstConfirmed, false)),
-                        Update
-                            .Set(x => x.FirstConfirmed, handle).Max(x => x.Updated, timestamp)));
-
-                    var channel = handle.Channel;
-
-                    if (!string.IsNullOrWhiteSpace(channel))
-                    {
-                        writes.Add(new UpdateOneModel<UserNotification>(
-                            Filter.And(
-                                updateSeen,
-                                Filter.Exists($"Channels.{channel}")),
-                            Update.Max($"$Channels.{channel}.LastSeen", timestamp)));
-
-                        writes.Add(new UpdateOneModel<UserNotification>(
-                            Filter.And(
-                                updateConfirmed,
-                                Filter.Exists($"Channels.{channel}")),
-                            Update.Max($"$Channels.{channel}.LastConfirmed", timestamp)));
-                    }
-                }
+                MarkDelivered(ids, handle, writes);
+                MarkSeen(ids, handle, writes);
 
                 if (writes.Count == 0)
                 {
@@ -244,32 +230,13 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             {
                 await TrackSeenAsync(Enumerable.Repeat(id, 1), handle, ct);
 
-                var timestamp = handle.Timestamp;
-
-                var updateConfirmed =
-                    Filter.And(
-                        Filter.Eq(x => x.Id, id),
-                        Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit));
-
-                var channel = handle.Channel;
-
-                if (!string.IsNullOrWhiteSpace(channel))
-                {
-                    await Collection.FindOneAndUpdateAsync(
-                        Filter.And(
-                            updateConfirmed,
-                            Filter.Exists($"Channels.{channel}")),
-                        Update.Set($"$Channels.{channel}.LastSeen", timestamp),
-                        cancellationToken: ct);
-                }
-
                 var entity =
                     await Collection.FindOneAndUpdateAsync(
                         Filter.And(
-                            updateConfirmed,
+                            Filter.Eq(x => x.Id, id),
+                            Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
                             Filter.Exists(x => x.FirstConfirmed, false)),
-                        Update
-                            .Set(x => x.FirstSeen, handle).Max(x => x.Updated, timestamp),
+                        Update.Set(x => x.FirstSeen, handle).Max(x => x.Updated, handle.Timestamp),
                         cancellationToken: ct);
 
                 if (entity != null)
@@ -330,6 +297,57 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
                 {
                     throw new UniqueConstraintException();
+                }
+            }
+        }
+
+        private static void MarkDelivered(IEnumerable<Guid> ids, HandledInfo handle, List<WriteModel<UserNotification>> writes)
+        {
+            var timestamp = handle.Timestamp;
+
+            foreach (var id in ids)
+            {
+                var channel = handle.Channel;
+
+                writes.Add(new UpdateOneModel<UserNotification>(
+                    Filter.And(
+                        Filter.Eq(x => x.Id, id),
+                        Filter.Exists(x => x.FirstDelivered, false)),
+                    Update.Set(x => x.FirstSeen, handle).Max(x => x.Updated, timestamp)));
+
+                if (!string.IsNullOrWhiteSpace(channel))
+                {
+                    writes.Add(new UpdateOneModel<UserNotification>(
+                        Filter.And(
+                            Filter.Eq(x => x.Id, id),
+                            Filter.Exists($"Channels.{channel}")),
+                        Update.Min($"Channels.{channel}.FirstDelivered", timestamp)));
+                }
+            }
+        }
+
+        private static void MarkSeen(IEnumerable<Guid> ids, HandledInfo handle, List<WriteModel<UserNotification>> writes)
+        {
+            var timestamp = handle.Timestamp;
+
+            foreach (var id in ids)
+            {
+                writes.Add(new UpdateOneModel<UserNotification>(
+                    Filter.And(
+                        Filter.Eq(x => x.Id, id),
+                        Filter.Exists(x => x.FirstSeen, false)),
+                    Update
+                        .Set(x => x.FirstSeen, handle).Max(x => x.Updated, timestamp)));
+
+                var channel = handle.Channel;
+
+                if (!string.IsNullOrWhiteSpace(channel))
+                {
+                    writes.Add(new UpdateOneModel<UserNotification>(
+                        Filter.And(
+                            Filter.Eq(x => x.Id, id),
+                            Filter.Exists($"Channels.{channel}")),
+                        Update.Min($"Channels.{channel}.FirstSeen", timestamp)));
                 }
             }
         }

@@ -34,16 +34,22 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         public bool Silent { get; set; }
 
         /// <summary>
-        /// True when the notification has been confirmed.
+        /// True when the notification has been delivered at least once.
         /// </summary>
         [Required]
-        public bool IsConfirmed { get; set; }
+        public bool IsDelivered { get; set; }
 
         /// <summary>
-        /// True when the notification has been seen.
+        /// True when the notification has been seen at least once.
         /// </summary>
         [Required]
         public bool IsSeen { get; set; }
+
+        /// <summary>
+        /// True when the notification has been confirmed at least once.
+        /// </summary>
+        [Required]
+        public bool IsConfirmed { get; set; }
 
         /// <summary>
         /// The timestamp when the notification has been created.
@@ -73,9 +79,14 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         public string? ImageLarge { get; set; }
 
         /// <summary>
-        /// The tracking url that needs to be invoked to mark the notifiation as seen.
+        /// The tracking url that needs to be invoked to mark the notification as seen.
         /// </summary>
-        public string? TrackingUrl { get; set; }
+        public string? TrackSeenUrl { get; set; }
+
+        /// <summary>
+        /// The tracking url that needs to be invoked to mark the notification as delivered.
+        /// </summary>
+        public string? TrackDeliveredUrl { get; set; }
 
         /// <summary>
         /// An optional link.
@@ -93,7 +104,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         public string? ConfirmText { get; set; }
 
         /// <summary>
-        /// The tracking url that needs to be invoked to mark the notifiation as confirmed.
+        /// The tracking url that needs to be invoked to mark the notification as confirmed.
         /// </summary>
         public string? ConfirmUrl { get; set; }
 
@@ -113,6 +124,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 
         protected virtual void MapFrom(UserNotification source)
         {
+            IsDelivered = source.FirstDelivered != null;
             IsSeen = source.FirstSeen != null;
             IsConfirmed = source.FirstConfirmed != null;
 

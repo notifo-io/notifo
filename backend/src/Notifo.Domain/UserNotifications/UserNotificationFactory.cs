@@ -98,7 +98,8 @@ namespace Notifo.Domain.UserNotifications
                 notification.Formatting.ConfirmText = null;
             }
 
-            notification.TrackingUrl = url.TrackSeen(notification.Id, language);
+            notification.TrackDeliveredUrl = url.TrackDelivered(notification.Id, language);
+            notification.TrackSeenUrl = url.TrackSeen(notification.Id, language);
         }
 
         private static void ConfigureSettings(UserNotification notification, User user, UserEventMessage userEvent)

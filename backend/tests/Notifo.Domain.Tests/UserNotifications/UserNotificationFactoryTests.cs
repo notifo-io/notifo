@@ -52,6 +52,9 @@ namespace Notifo.Domain.UserNotifications
             A.CallTo(() => notificationUrl.TrackSeen(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"seen/{id}/?lang={lang}"));
 
+            A.CallTo(() => notificationUrl.TrackDelivered(A<Guid>._, A<string>._))
+                .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"delivered/{id}/?lang={lang}"));
+
             sut = new UserNotificationFactory(clock, logStore, notificationUrl);
         }
 

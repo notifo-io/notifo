@@ -13,6 +13,8 @@ namespace Notifo.Domain.UserNotifications
     {
         string TrackConfirmed(Guid notificationId, string language);
 
+        string TrackDelivered(Guid notificationId, string language);
+
         string TrackSeen(Guid notificationId, string language);
     }
 }

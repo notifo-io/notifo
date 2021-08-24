@@ -26,7 +26,9 @@ namespace Notifo.Domain.UserNotifications
 
         public string? Data { get; set; }
 
-        public string? TrackingUrl { get; set; }
+        public string? TrackDeliveredUrl { get; set; }
+
+        public string? TrackSeenUrl { get; set; }
 
         public string? ConfirmUrl { get; set; }
 
@@ -38,9 +40,14 @@ namespace Notifo.Domain.UserNotifications
 
         public NotificationFormatting<string> Formatting { get; set; }
 
-        public string? ComputeTrackingUrl(string channel, string? deviceIdentifier)
+        public string? ComputeTrackDeliveredUrl(string channel, string? deviceIdentifier)
         {
-            return ComputeUrl(TrackingUrl, channel, deviceIdentifier);
+            return ComputeUrl(TrackDeliveredUrl, channel, deviceIdentifier);
+        }
+
+        public string? ComputeTrackSeenUrl(string channel, string? deviceIdentifier)
+        {
+            return ComputeUrl(TrackSeenUrl, channel, deviceIdentifier);
         }
 
         public string? ComputeConfirmUrl(string channel, string? deviceIdentifier)

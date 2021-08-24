@@ -19,7 +19,7 @@ namespace Notifo.Domain.Channels.Web
         private readonly IStreamClient streamClient;
         private readonly ISemanticLog log;
 
-        public string Name => "Stream";
+        public string Name => Providers.Web;
 
         public bool IsSystem => true;
 

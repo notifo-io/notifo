@@ -80,9 +80,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                     stringBuilder.AppendLine(inner);
 
-                    if (!string.IsNullOrEmpty(notification.TrackingUrl) && asHtml)
+                    if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
                     {
-                        stringBuilder.Append($"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackingUrl}\" />");
+                        stringBuilder.Append($"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackSeenUrl}\" />");
                     }
                 });
 

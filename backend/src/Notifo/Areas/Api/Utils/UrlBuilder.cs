@@ -26,6 +26,11 @@ namespace Notifo.Areas.Api.Utils
             return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/confirm?culture={language}");
         }
 
+        public string TrackDelivered(Guid notificationId, string language)
+        {
+            return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/delivered?culture={language}");
+        }
+
         public string TrackSeen(Guid notificationId, string language)
         {
             return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
