@@ -12,29 +12,12 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
 
 // eslint-disable-next-line func-names
 (function (self: ServiceWorkerGlobalScope) {
-    self.addEventListener('install', () => {
-        self.skipWaiting();
-    });
-
-    self.addEventListener('message', event => {
-        const message: SWMessage = event.data;
-
-        switch (message.type) {
-            case 'subscribe': {
-                subscribeToWebPush(self.registration, message.config);
-                break;
-            }
-            case 'unsubscribe': {
-                unsubscribeFromWebPush(self.registration, message.config);
-                break;
-            }
-        }
-    });
-
     self.addEventListener('notificationclick', event => {
-        const notification: NotifoNotification = event.notification.data;
+        const notification: NotifoNotification = event.notification.data.notification;
 
-        if (notification.trackingUrl) {
+        if (notification.trackingUrl && !event.notification.data.tracked) {
+            event.notification.data.tracked = true;
+
             const promise = fetch(notification.trackingUrl);
 
             event.waitUntil(promise);
@@ -55,12 +38,31 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
     });
 
     self.addEventListener('notificationclose', event => {
-        const notification: NotifoNotification = event.notification.data;
+        const notification: NotifoNotification = event.notification.data.notification;
 
-        if (notification.trackingUrl) {
+        if (notification.trackingUrl && !event.notification.data.manualClose) {
             const promise = fetch(notification.trackingUrl);
 
             event.waitUntil(promise);
+        }
+    });
+
+    self.addEventListener('install', () => {
+        self.skipWaiting();
+    });
+
+    self.addEventListener('message', event => {
+        const message: SWMessage = event.data;
+
+        switch (message.type) {
+            case 'subscribe': {
+                subscribeToWebPush(self.registration, message.config);
+                break;
+            }
+            case 'unsubscribe': {
+                unsubscribeFromWebPush(self.registration, message.config);
+                break;
+            }
         }
     });
 
@@ -68,39 +70,7 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
         if (event.data) {
             const notification: NotifoNotification = parseShortNotification(event.data.json());
 
-            const promise = self.registration.getNotifications({ tag: notification.id })
-                .then(notifications => {
-                    for (const openNotification of notifications) {
-                        openNotification.close();
-
-                        return Promise.resolve();
-                    }
-
-                    const options: NotificationOptions = {
-                        data: notification,
-                    };
-
-                    options.tag = notification.id;
-
-                    if (notification.confirmUrl && notification.confirmText && !notification.isConfirmed) {
-                        options.actions = [{ action: 'confirm', title: notification.confirmText }];
-                        options.requireInteraction = true;
-                    }
-
-                    if (notification.body) {
-                        options.body = notification.body;
-                    }
-
-                    if (notification.imageSmall) {
-                        options.icon = withPreset(notification.imageSmall, 'WebPushSmall');
-                    }
-
-                    if (notification.imageLarge) {
-                        options.image = withPreset(notification.imageLarge, 'WebPushSmall');
-                    }
-
-                    return self.registration.showNotification(notification.subject, options);
-                });
+            const promise = showNotification(self, notification);
 
             event.waitUntil(promise);
         }
@@ -138,6 +108,42 @@ async function unsubscribeFromWebPush(sw: ServiceWorkerRegistration, config: SDK
     }
 
     await apiDeleteWebPush(config, subscription);
+}
+
+async function showNotification(self: ServiceWorkerGlobalScope, notification: NotifoNotification) {
+    const query = { tag: notification.id };
+
+    const oldNotifications = await self.registration.getNotifications(query);
+
+    for (const openNotification of oldNotifications) {
+        openNotification.data.tracked = true;
+        openNotification.close();
+    }
+
+    const options: NotificationOptions = {
+        data: { notification },
+    };
+
+    options.tag = notification.id;
+
+    if (notification.confirmUrl && notification.confirmText && !notification.isConfirmed) {
+        options.actions = [{ action: 'confirm', title: notification.confirmText }];
+        options.requireInteraction = true;
+    }
+
+    if (notification.body) {
+        options.body = notification.body;
+    }
+
+    if (notification.imageSmall) {
+        options.icon = withPreset(notification.imageSmall, 'WebPushSmall');
+    }
+
+    if (notification.imageLarge) {
+        options.image = withPreset(notification.imageLarge, 'WebPushSmall');
+    }
+
+    await self.registration.showNotification(notification.subject, options);
 }
 
 function urlB64ToUint8Array(base64String: string) {

@@ -7,6 +7,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
@@ -24,6 +25,16 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// </summary>
         [Required]
         public Dictionary<string, ChannelSendInfoDto> Status { get; set; }
+
+        /// <summary>
+        /// The last time the notification has been marked as seen for this channel.
+        /// </summary>
+        public Instant? LastConfirmed { get; set; }
+
+        /// <summary>
+        /// The last time the notification has been marked as confirmed for this channel.
+        /// </summary>
+        public Instant? LastSeen { get; set; }
 
         public static UserNotificationChannelDto FromDomainObject(UserNotificationChannel source)
         {

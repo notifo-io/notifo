@@ -14,9 +14,9 @@ namespace Notifo.Domain.UserNotifications
     {
         public bool IsDeleted { get; set; }
 
-        public HandledInfo? IsConfirmed { get; set; }
+        public HandledInfo? FirstConfirmed { get; set; }
 
-        public HandledInfo? IsSeen { get; set; }
+        public HandledInfo? FirstSeen { get; set; }
 
         public Instant Created { get; set; }
 

@@ -104,16 +104,20 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 
         public static UserNotificationDto FromDomainObject(UserNotification source)
         {
-            var result = new UserNotificationDto
-            {
-                IsConfirmed = source.IsConfirmed != null,
-                IsSeen = source.IsSeen != null
-            };
+            var result = new UserNotificationDto();
 
-            SimpleMapper.Map(source, result);
-            SimpleMapper.Map(source.Formatting, result);
+            result.MapFrom(source);
 
             return result;
+        }
+
+        protected virtual void MapFrom(UserNotification source)
+        {
+            IsSeen = source.FirstSeen != null;
+            IsConfirmed = source.FirstConfirmed != null;
+
+            SimpleMapper.Map(source, this);
+            SimpleMapper.Map(source.Formatting, this);
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Notifo.Domain.Integrations.Firebase
             {
                 Id = id,
                 ConfirmUrl = confirmUrl,
-                IsConfirmed = new HandledInfo(),
+                FirstConfirmed = new HandledInfo(),
                 Formatting = new NotificationFormatting<string>
                 {
                     Body = body,

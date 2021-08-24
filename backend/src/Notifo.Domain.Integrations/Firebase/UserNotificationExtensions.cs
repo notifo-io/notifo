@@ -39,7 +39,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("id", notification.Id.ToString())
                     .WithNonEmpty("confirmText", formatting.ConfirmText)
                     .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("isConfirmed", (notification.IsConfirmed != null).ToString())
+                    .WithNonEmpty("isConfirmed", (notification.FirstConfirmed != null).ToString())
                     .WithNonEmpty("imageLarge", formatting.ImageLarge)
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
                     .WithNonEmpty("linkText", formatting.LinkText)
