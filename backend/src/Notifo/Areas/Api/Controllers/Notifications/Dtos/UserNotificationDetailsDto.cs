@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
@@ -20,47 +21,53 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         public Dictionary<string, UserNotificationChannelDto> Channels { get; set; }
 
         /// <summary>
-        /// The information when the notifcation was marked as confirmed.
+        /// The information when the notifcation was marked as deliverd.
         /// </summary>
-        public HandledInfoDto? FirstConfirmed { get; set; }
+        public HandledInfoDto? FirstDelivered { get; set; }
 
         /// <summary>
         /// The information when the notifcation was marked as seen.
         /// </summary>
         public HandledInfoDto? FirstSeen { get; set; }
 
+        /// <summary>
+        /// The information when the notifcation was marked as confirmed.
+        /// </summary>
+        public HandledInfoDto? FirstConfirmed { get; set; }
+
         public static UserNotificationDetailsDto FromDomainObjectAsDetails(UserNotification source)
         {
             var result = new UserNotificationDetailsDto();
 
-            result.MapFrom(source);
+            SimpleMapper.Map(source, result);
+            SimpleMapper.Map(source.Formatting, result);
 
-            return result;
-        }
-
-        protected override void MapFrom(UserNotification source)
-        {
-            base.MapFrom(source);
-
-            if (source.FirstConfirmed != null)
+            if (source.FirstDelivered != null)
             {
-                FirstConfirmed = HandledInfoDto.FromDomainObject(source.FirstConfirmed);
+                result.FirstDelivered = HandledInfoDto.FromDomainObject(source.FirstDelivered);
             }
 
             if (source.FirstSeen != null)
             {
-                FirstSeen = HandledInfoDto.FromDomainObject(source.FirstSeen);
+                result.FirstSeen = HandledInfoDto.FromDomainObject(source.FirstSeen);
             }
 
-            Channels = new Dictionary<string, UserNotificationChannelDto>();
+            if (source.FirstConfirmed != null)
+            {
+                result.FirstConfirmed = HandledInfoDto.FromDomainObject(source.FirstConfirmed);
+            }
+
+            result.Channels = new Dictionary<string, UserNotificationChannelDto>();
 
             if (source.Channels != null)
             {
                 foreach (var (key, value) in source.Channels)
                 {
-                    Channels[key] = UserNotificationChannelDto.FromDomainObject(value);
+                    result.Channels[key] = UserNotificationChannelDto.FromDomainObject(value);
                 }
             }
+
+            return result;
         }
     }
 }
