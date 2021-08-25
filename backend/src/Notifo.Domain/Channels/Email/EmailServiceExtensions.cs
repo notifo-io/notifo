@@ -10,7 +10,6 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.ChannelTemplates;
-using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -22,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddMjmlServices();
 
             services.AddSingletonAs<EmailChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();
+                .As<ICommunicationChannel>();
 
             services.AddSingletonAs<EmailFormatter>()
                 .As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();

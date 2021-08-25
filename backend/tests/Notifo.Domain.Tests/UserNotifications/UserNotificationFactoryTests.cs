@@ -156,7 +156,7 @@ namespace Notifo.Domain.UserNotifications
             Assert.Equal("deText", notification.Formatting.Subject);
             Assert.Equal("de", notification.UserLanguage);
 
-            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -172,7 +172,7 @@ namespace Notifo.Domain.UserNotifications
             Assert.Equal("enText", notification.Formatting.Subject);
             Assert.Equal("en", notification.UserLanguage);
 
-            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
                 .MustHaveHappened();
         }
 

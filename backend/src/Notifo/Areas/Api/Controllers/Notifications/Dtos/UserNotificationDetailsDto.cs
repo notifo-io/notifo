@@ -12,7 +12,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
-    public sealed class UserNotificationDetailsDto : UserNotificationDto
+    public sealed class UserNotificationDetailsDto : UserNotificationBaseDto
     {
         /// <summary>
         /// The channel details.

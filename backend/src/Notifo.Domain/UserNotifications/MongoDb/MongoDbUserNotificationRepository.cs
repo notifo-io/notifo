@@ -313,7 +313,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                     Filter.And(
                         Filter.Eq(x => x.Id, id),
                         Filter.Exists(x => x.FirstDelivered, false)),
-                    Update.Set(x => x.FirstSeen, handle).Max(x => x.Updated, timestamp)));
+                    Update.Set(x => x.FirstDelivered, handle).Max(x => x.Updated, timestamp)));
 
                 if (!string.IsNullOrWhiteSpace(channel))
                 {

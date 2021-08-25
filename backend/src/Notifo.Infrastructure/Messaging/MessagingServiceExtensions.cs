@@ -11,6 +11,8 @@ using Notifo.Infrastructure.Messaging.GooglePubSub;
 using Notifo.Infrastructure.Messaging.Kafka;
 using Notifo.Infrastructure.Messaging.RabbitMq;
 using Notifo.Infrastructure.Messaging.Scheduling;
+using System;
+using static Microsoft.Extensions.DependencyInjection.DependencyInjectionExtensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -72,17 +74,36 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IMessagingProvider>();
         }
 
-        public static void AddMessagingProducer<T>(this IServiceCollection services, string channelName)
+        public sealed class MessagingRegistration<T>
+        {
+            private readonly IServiceCollection services;
+            private readonly string channelName;
+
+            internal MessagingRegistration(IServiceCollection services, string channelName)
+            {
+                this.services = services;
+                this.channelName = channelName;
+            }
+
+            public MessagingRegistration<T> ConsumedBy<TConsumer>() where TConsumer : IAbstractConsumer<T>
+            {
+                services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetConsumer<TConsumer, T>(c, channelName))
+                    .AsSelf();
+
+                return this;
+            }
+        }
+
+        public static MessagingRegistration<T> AddMessaging<T>(this IServiceCollection services, string channelName)
         {
             services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetProducer<T>(c, channelName))
                 .As<IAbstractProducer<T>>();
+
+            return new MessagingRegistration<T>(services, channelName);
         }
 
         public static void AddMessagingConsumer<TConsumer, T>(this IServiceCollection services, string channelName) where TConsumer : class, IAbstractConsumer<T>
         {
-            services.AddSingletonAs<TConsumer>()
-                .As<IAbstractConsumer<T>>();
-
             services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetConsumer<TConsumer, T>(c, channelName))
                 .AsSelf();
         }

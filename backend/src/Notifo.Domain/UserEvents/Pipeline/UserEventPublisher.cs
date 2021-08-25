@@ -71,13 +71,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             if (string.IsNullOrWhiteSpace(message.Topic))
             {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoTopic, ct);
+                await logStore.LogAsync(message.AppId, Texts.Events_NoTopic);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(message.TemplateCode) && message.Formatting?.HasSubject() != true)
             {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode, ct);
+                await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode);
                 return;
             }
 
@@ -109,7 +109,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                     if (message.Formatting?.HasSubject() != true)
                     {
-                        await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode), ct);
+                        await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode));
                         return;
                     }
 
@@ -121,7 +121,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     }
                     catch (UniqueConstraintException)
                     {
-                        await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed, ct);
+                        await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed);
                         break;
                     }
                 }
@@ -142,7 +142,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             }
             else
             {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber, ct);
+                await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber);
             }
         }
 

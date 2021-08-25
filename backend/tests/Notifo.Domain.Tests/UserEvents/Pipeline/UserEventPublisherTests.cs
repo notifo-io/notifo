@@ -55,7 +55,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -71,7 +71,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 
@@ -87,7 +87,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 
@@ -103,7 +103,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 
@@ -119,7 +119,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => eventStore.InsertAsync(@event, default))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 
@@ -182,7 +182,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => eventStore.InsertAsync(@event, default))
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -208,7 +208,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             Assert.NotNull(publishedUserEvents[0].Properties);
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -234,7 +234,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             Assert.NotNull(publishedUserEvents[0].SubscriptionSettings);
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -268,7 +268,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -323,7 +323,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, A<CancellationToken>._))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -352,7 +352,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             Assert.Empty(publishedUserEvents);
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 
@@ -430,7 +430,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, default))
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -466,7 +466,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             Assert.Empty(publishedUserEvents);
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 
@@ -488,7 +488,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, default))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
                 .MustHaveHappened();
         }
 

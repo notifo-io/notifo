@@ -19,11 +19,14 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:events").Get<EventPipelineOptions>() ?? new EventPipelineOptions();
 
-            services.AddMessagingConsumer<EventConsumer, EventMessage>(options.ChannelName);
-            services.AddMessagingProducer<EventMessage>(options.ChannelName);
+            services.AddMessaging<EventMessage>(options.ChannelName)
+                .ConsumedBy<EventConsumer>();
 
             services.AddSingletonAs<EventStore>()
                 .As<IEventStore>().As<ICounterTarget>();
+
+            services.AddSingletonAs<EventConsumer>()
+                .AsSelf();
 
             services.AddSingletonAs<EventPublisher>()
                 .As<IEventPublisher>();

@@ -208,7 +208,7 @@ namespace Notifo.Domain.Channels.Email
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, Name, ex.Message, ct);
+                    await logStore.LogAsync(app.Id, Name, ex.Message);
                     throw;
                 }
             }
@@ -228,7 +228,7 @@ namespace Notifo.Domain.Channels.Email
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(appId, Name, ex.Message, ct);
+                    await logStore.LogAsync(appId, Name, ex.Message);
 
                     if (sender == lastSender)
                     {
@@ -279,7 +279,7 @@ namespace Notifo.Domain.Channels.Email
                     {
                         var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
 
-                        await logStore.LogAsync(appId, Name, error, ct);
+                        await logStore.LogAsync(appId, Name, error);
                         break;
                     }
 

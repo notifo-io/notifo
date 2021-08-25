@@ -18,13 +18,14 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public sealed class UserNotificationService : IInitializable, IUserNotificationService, IScheduleHandler<UserEventMessage>
+    public sealed class UserNotificationService : IInitializable, IUserNotificationService, IScheduleHandler<UserEventMessage>, IAbstractConsumer<ConfirmMessage>
     {
         private readonly IEnumerable<ICommunicationChannel> channels;
         private readonly IAppStore appStore;
@@ -33,6 +34,7 @@ namespace Notifo.Domain.UserNotifications
         private readonly IUserNotificationFactory userNotificationFactory;
         private readonly IUserEventQueue userEventQueue;
         private readonly ILogStore logStore;
+        private readonly IAbstractProducer<ConfirmMessage> confirmProducer;
         private readonly IClock clock;
 
         public int Order => 1000;
@@ -40,6 +42,7 @@ namespace Notifo.Domain.UserNotifications
         public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
             IAppStore appStore,
             ILogStore logStore,
+            IAbstractProducer<ConfirmMessage> confirmProducer,
             IUserEventQueue userEventQueue,
             IUserNotificationFactory userNotificationFactory,
             IUserNotificationStore userNotificationsStore,
@@ -49,6 +52,7 @@ namespace Notifo.Domain.UserNotifications
             this.appStore = appStore;
             this.channels = channels;
             this.logStore = logStore;
+            this.confirmProducer = confirmProducer;
             this.userEventQueue = userEventQueue;
             this.userNotificationFactory = userNotificationFactory;
             this.userNotificationsStore = userNotificationsStore;
@@ -195,46 +199,54 @@ namespace Notifo.Domain.UserNotifications
             return notification;
         }
 
-        public async Task<(UserNotification?, App?)> TrackConfirmedAsync(Guid id, TrackingDetails details)
+        public async Task HandleAsync(ConfirmMessage message, CancellationToken ct = default)
         {
-            var notification = await userNotificationsStore.TrackConfirmedAsync(id, details);
+            var notification = await userNotificationsStore.TrackConfirmedAsync(message.Id, message.Details, ct);
 
-            if (notification != null)
+            if (notification == null || !notification.Channels.Any())
             {
-                var app = await appStore.GetCachedAsync(notification.AppId);
+                return;
+            }
+
+            try
+        {
+                var app = await appStore.GetCachedAsync(notification.AppId, ct);
 
                 if (app == null)
                 {
-                    return (null, null);
+                    return;
                 }
 
-                if (notification.Channels.Any())
+                var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId, ct);
+
+                if (user == null)
                 {
-                    var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
+                    return;
+                }
 
-                    if (user == null)
+                var options = new SendOptions { App = app, User = user, IsUpdate = true };
+
+                foreach (var channel in channels)
+                {
+                    if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                     {
-                        return (null, null);
-                    }
-
-                    var options = new SendOptions { App = app, User = user, IsUpdate = true };
-
-                    foreach (var channel in channels)
-                    {
-                        if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                        foreach (var configuration in notificationChannel.Status.Keys)
                         {
-                            foreach (var configuration in notificationChannel.Status.Keys)
-                            {
-                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options);
-                            }
+                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, ct);
                         }
                     }
                 }
-
-                return (notification, app);
             }
+            catch (DomainException domainException)
+            {
+                await logStore.LogAsync(notification.AppId, domainException.Message);
+                throw;
+            }
+        }
 
-            return (null, null);
+        public async Task TrackConfirmedAsync(Guid id, TrackingDetails details)
+        {
+            await confirmProducer.ProduceAsync(id.ToString(), new ConfirmMessage { Id = id, Details = details });
         }
 
         public async Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details)

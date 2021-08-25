@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 using NSwag.Annotations;
 
@@ -17,11 +18,18 @@ namespace Notifo.Areas.Api.Controllers.Tracking
     [OpenApiIgnore]
     public sealed class TrackingController : Controller
     {
+        private readonly IAppStore appStore;
         private readonly IUserNotificationService userNotificationService;
+        private readonly IUserNotificationStore userNotificationStore;
 
-        public TrackingController(IUserNotificationService userNotificationService)
+        public TrackingController(
+            IAppStore appStore,
+            IUserNotificationService userNotificationService,
+            IUserNotificationStore userNotificationStore)
         {
+            this.appStore = appStore;
             this.userNotificationService = userNotificationService;
+            this.userNotificationStore = userNotificationStore;
         }
 
         [HttpGet]
@@ -55,7 +63,16 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
 
-            var (_, app) = await userNotificationService.TrackConfirmedAsync(id, details);
+            await userNotificationService.TrackConfirmedAsync(id, details);
+
+            var notification = await userNotificationStore.FindAsync(id, HttpContext.RequestAborted);
+
+            if (notification == null)
+            {
+                return View();
+            }
+
+            var app = await appStore.GetCachedAsync(notification.AppId, HttpContext.RequestAborted);
 
             if (app?.ConfirmUrl != null && Uri.IsWellFormedUriString(app.ConfirmUrl, UriKind.Absolute))
             {

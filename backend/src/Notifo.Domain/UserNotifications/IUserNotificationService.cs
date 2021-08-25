@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Notifo.Domain.Apps;
 using Notifo.Domain.UserEvents;
 
 namespace Notifo.Domain.UserNotifications
@@ -21,6 +20,6 @@ namespace Notifo.Domain.UserNotifications
 
         Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails options);
 
-        Task<(UserNotification?, App?)> TrackConfirmedAsync(Guid id, TrackingDetails options);
+        Task TrackConfirmedAsync(Guid id, TrackingDetails options);
     }
 }

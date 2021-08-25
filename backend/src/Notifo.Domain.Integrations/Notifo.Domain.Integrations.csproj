@@ -8,15 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.50" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.54" />
     <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
     <PackageReference Include="FirebaseAdmin" Version="2.2.0" />
-    <PackageReference Include="FluentValidation" Version="10.3.0" />
+    <PackageReference Include="FluentValidation" Version="10.3.3" />
     <PackageReference Include="Fluid.Core" Version="2.0.13" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.36" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.12.28" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.12.30" />
     <PackageReference Include="Mailjet.Api" Version="2.0.2" />
-    <PackageReference Include="MailKit" Version="2.14.0" />
+    <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />

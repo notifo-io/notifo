@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.MobilePush;
-using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMyMobilePushChannel(this IServiceCollection services)
         {
             services.AddSingletonAs<MobilePushChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<MobilePushJob>>();
+                .As<ICommunicationChannel>();
 
             services.AddScheduler<MobilePushJob>(Providers.MobilePush);
         }
