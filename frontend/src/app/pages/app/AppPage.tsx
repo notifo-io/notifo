@@ -6,7 +6,7 @@
  */
 
 import { combineUrl, Icon } from '@app/framework';
-import { getApp, selectApp, togglePublishDialog, useApps } from '@app/state';
+import { selectApp, togglePublishDialog, useApp, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -124,7 +124,7 @@ export const AppPage = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch();
     const location = useLocation();
-    const app = useApps(getApp);
+    const app = useApp();
     const appId = match.params['appId'];
     const loading = useApps(x => x.apps.isLoading);
     const [appSelected, setAppSelected] = React.useState(false);

@@ -6,7 +6,7 @@
  */
 
 import { FormError, Forms, Icon, Loader } from '@app/framework';
-import { getApp, loadMessagingTemplate, updateMessagingTemplate, useApps, useMessagingTemplates } from '@app/state';
+import { loadMessagingTemplate, updateMessagingTemplate, useApp, useMessagingTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -20,7 +20,7 @@ type FormValues = { name?: string; primary: boolean; languages: { [key: string]:
 
 export const MessagingTemplatePage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const loadingTemplate = useMessagingTemplates(x => x.loadingTemplate);

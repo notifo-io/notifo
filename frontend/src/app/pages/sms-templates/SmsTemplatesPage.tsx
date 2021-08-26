@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
-import { createSmsTemplate, deleteSmsTemplate, getApp, loadSmsTemplates, useApps, useSmsTemplates } from '@app/state';
+import { createSmsTemplate, deleteSmsTemplate, loadSmsTemplates, useApp, useSmsTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -18,7 +18,7 @@ import { SmsTemplateCard } from './SmsTemplateCard';
 
 export const SmsTemplatesPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const creating = useSmsTemplates(x => x.creating);
     const creatingError = useSmsTemplates(x => x.creatingError);

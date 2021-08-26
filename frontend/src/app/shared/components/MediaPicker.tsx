@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';
-import { getApp, loadMedia, useApps, useMedia } from '@app/state';
+import { loadMedia, useApp, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -34,7 +34,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const medias = useMedia(x => x.media);
     const [selection, setSelection] = React.useState<string>();

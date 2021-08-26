@@ -6,17 +6,23 @@
  */
 
 import { FormError, Icon, Loader, useDialog } from '@app/framework';
-import { useApps } from '@app/state';
+import { selectApp, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
 import { AppDialog } from './AppDialog';
 
 export const AppsPage = () => {
-    const match = useRouteMatch();
+    const dispatch = useDispatch();
     const apps = useApps(x => x.apps);
     const dialogNew = useDialog();
+    const match = useRouteMatch();
+
+    React.useEffect(() => {
+        dispatch(selectApp({ appId: undefined }));
+    }, []);
 
     return (
         <>

@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
-import { createEmailTemplate, deleteEmailTemplate, getApp, loadEmailTemplates, useApps, useEmailTemplates } from '@app/state';
+import { createEmailTemplate, deleteEmailTemplate, loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -18,7 +18,7 @@ import { EmailTemplateCard } from './EmailTemplateCard';
 
 export const EmailTemplatesPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const creating = useEmailTemplates(x => x.creating);
     const creatingError = useEmailTemplates(x => x.creatingError);

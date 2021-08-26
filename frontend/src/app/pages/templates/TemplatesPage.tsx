@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { getApp, loadTemplates, useApps, useTemplates } from '@app/state';
+import { loadTemplates, useApp, useTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { TemplateForm } from './TemplateForm';
@@ -13,7 +13,7 @@ import { TemplatesList } from './TemplatesList';
 
 export const TemplatesPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const [isOpen, setIsOpen] = React.useState(false);

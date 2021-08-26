@@ -43,6 +43,10 @@ export function useStore<T>(mapping: (state: State) => T) {
     return useSelector<State, T>(mapping);
 }
 
+export function useApp() {
+    return useStore(x => x.apps.apps.items?.find(a => a.id === x.apps.appId));
+}
+
 export function useApps<T>(mapping: (state: AppsState) => T) {
     return useStore<T>(x => mapping(x.apps));
 }

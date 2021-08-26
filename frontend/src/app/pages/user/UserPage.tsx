@@ -7,7 +7,7 @@
 
 import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
-import { getApp, loadUser, togglePublishDialog, useApps, useUsers } from '@app/state';
+import { loadUser, togglePublishDialog, useApp, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -20,7 +20,7 @@ import { ButtonEmail, ButtonMobilePush, ButtonSms, ButtonWebPush } from './Butto
 
 export const UserPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const [activeTab, setActiveTab] = React.useState('notifications');
     const loading = useUsers(x => x.loadingUser);
