@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Channels.Email;
@@ -13,11 +14,12 @@ namespace Notifo.Domain.Integrations.Mailjet
 {
     public sealed class MailjetEmailSender : IEmailSender
     {
-        private readonly MailjetEmailServer server;
+        private const int Attempts = 5;
+        private readonly Func<MailjetEmailServer> server;
         private readonly string fromEmail;
         private readonly string fromName;
 
-        public MailjetEmailSender(MailjetEmailServer server,
+        public MailjetEmailSender(Func<MailjetEmailServer> server,
             string fromEmail,
             string fromName)
         {
@@ -27,7 +29,7 @@ namespace Notifo.Domain.Integrations.Mailjet
             this.fromName = fromName;
         }
 
-        public Task SendAsync(EmailMessage message,
+        public async Task SendAsync(EmailMessage message,
             CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(message.FromEmail))
@@ -40,7 +42,21 @@ namespace Notifo.Domain.Integrations.Mailjet
                 message.FromName = fromName;
             }
 
-            return server.SendAsync(message, ct);
+            // Try a few attempts to get a non-disposed server instance.
+            for (var i = 1; i <= Attempts; i++)
+            {
+                try
+                {
+                    await server().SendAsync(message, ct);
+                }
+                catch (ObjectDisposedException)
+                {
+                    if (i == Attempts)
+                    {
+                        throw;
+                    }
+                }
+            }
         }
     }
 }

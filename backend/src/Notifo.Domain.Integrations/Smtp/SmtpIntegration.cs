@@ -148,9 +148,7 @@ namespace Notifo.Domain.Integrations.Smtp
                     Password = password
                 };
 
-                var server = serverPool.GetServer(options);
-
-                return new SmtpEmailSender(server, fromEmail, fromName);
+                return new SmtpEmailSender(() => serverPool.GetServer(options), fromEmail, fromName);
             }
 
             return null;

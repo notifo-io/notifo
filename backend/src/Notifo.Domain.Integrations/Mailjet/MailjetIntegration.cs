@@ -109,9 +109,7 @@ namespace Notifo.Domain.Integrations.Mailjet
                     return null;
                 }
 
-                var server = serverPool.GetServer(publicKey, privateKey);
-
-                return new MailjetEmailSender(server, fromEmail, fromName);
+                return new MailjetEmailSender(() => serverPool.GetServer(publicKey, privateKey), fromEmail, fromName);
             }
 
             return null;

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Channels.Email;
@@ -13,11 +14,12 @@ namespace Notifo.Domain.Integrations.Smtp
 {
     public sealed class SmtpEmailSender : IEmailSender
     {
-        private readonly SmtpEmailServer server;
+        private const int Attempts = 5;
+        private readonly Func<SmtpEmailServer> server;
         private readonly string fromEmail;
         private readonly string fromName;
 
-        public SmtpEmailSender(SmtpEmailServer server,
+        public SmtpEmailSender(Func<SmtpEmailServer> server,
             string fromEmail,
             string fromName)
         {
@@ -27,7 +29,7 @@ namespace Notifo.Domain.Integrations.Smtp
             this.fromName = fromName;
         }
 
-        public Task SendAsync(EmailMessage message,
+        public async Task SendAsync(EmailMessage message,
             CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(message.FromEmail))
@@ -40,7 +42,21 @@ namespace Notifo.Domain.Integrations.Smtp
                 message.FromName = fromName;
             }
 
-            return server.SendAsync(message, ct);
+            // Try a few attempts to get a non-disposed server instance.
+            for (var i = 1; i <= Attempts; i++)
+            {
+                try
+                {
+                    await server().SendAsync(message, ct);
+                }
+                catch (ObjectDisposedException)
+                {
+                    if (i == Attempts)
+                    {
+                        throw;
+                    }
+                }
+            }
         }
     }
 }

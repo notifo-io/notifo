@@ -11,8 +11,6 @@ using Notifo.Infrastructure.Messaging.GooglePubSub;
 using Notifo.Infrastructure.Messaging.Kafka;
 using Notifo.Infrastructure.Messaging.RabbitMq;
 using Notifo.Infrastructure.Messaging.Scheduling;
-using System;
-using static Microsoft.Extensions.DependencyInjection.DependencyInjectionExtensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
