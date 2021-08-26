@@ -223,6 +223,15 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Event is too old and will be skipped..
+        /// </summary>
+        internal static string Events_TooOld {
+            get {
+                return ResourceManager.GetString("Events_TooOld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Integration has been removed..
         /// </summary>
         internal static string Messaging_ConfigReset {

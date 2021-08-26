@@ -77,126 +77,135 @@ namespace Notifo.Domain.UserNotifications
 
         public async Task DistributeAsync(UserEventMessage userEvent)
         {
-            try
+            using (Telemetry.Activities.StartActivity("DistributeUserEvent"))
             {
-                var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
-
-                if (user == null)
+                try
                 {
-                    throw new DomainException(Texts.Notification_NoUser);
+                    var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
+
+                    if (user == null)
+                    {
+                        throw new DomainException(Texts.Notification_NoUser);
+                    }
+
+                    var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
+
+                    await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
                 }
+                catch (DomainException ex)
+                {
+                    await logStore.LogAsync(userEvent.AppId, ex.Message);
 
-                var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
-
-                await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
-            }
-            catch (DomainException ex)
-            {
-                await logStore.LogAsync(userEvent.AppId, ex.Message);
-
-                await userNotificationsStore.TrackFailedAsync(userEvent);
+                    await userNotificationsStore.TrackFailedAsync(userEvent);
+                }
             }
         }
 
         public async Task DistributeScheduledAsync(UserEventMessage userEvent, bool isLastAttempt)
         {
-            await userNotificationsStore.TrackAttemptAsync(userEvent);
-
-            try
+            using (Telemetry.Activities.StartActivity("DistributeUserEventScheduled"))
             {
-                var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
-
-                if (user == null)
-                {
-                    throw new DomainException(Texts.Notification_NoApp);
-                }
-
-                var app = await appStore.GetCachedAsync(userEvent.AppId);
-
-                if (app == null)
-                {
-                    throw new DomainException(Texts.Notification_NoUser);
-                }
-
-                var options = new SendOptions { App = app, User = user };
-
-                var notification = await CreateUserNotificationAsync(userEvent, options);
+                await userNotificationsStore.TrackAttemptAsync(userEvent);
 
                 try
                 {
-                    await userNotificationsStore.InsertAsync(notification);
-                }
-                catch (UniqueConstraintException)
-                {
-                    throw new DomainException(Texts.Notification_AlreadyProcessed);
-                }
+                    var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
 
-                foreach (var channel in channels)
-                {
-                    if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                    if (user == null)
                     {
-                        foreach (var configuration in notificationChannel.Status.Keys)
+                        throw new DomainException(Texts.Notification_NoApp);
+                    }
+
+                    var app = await appStore.GetCachedAsync(userEvent.AppId);
+
+                    if (app == null)
+                    {
+                        throw new DomainException(Texts.Notification_NoUser);
+                    }
+
+                    var options = new SendOptions { App = app, User = user };
+
+                    var notification = await CreateUserNotificationAsync(userEvent, options);
+
+                    try
+                    {
+                        await userNotificationsStore.InsertAsync(notification);
+                    }
+                    catch (UniqueConstraintException)
+                    {
+                        throw new DomainException(Texts.Notification_AlreadyProcessed);
+                    }
+
+                    foreach (var channel in channels)
+                    {
+                        if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                         {
-                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options);
+                            foreach (var configuration in notificationChannel.Status.Keys)
+                            {
+                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options);
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                if (isLastAttempt)
+                catch (Exception ex)
                 {
-                    await userNotificationsStore.TrackFailedAsync(userEvent);
-                }
+                    if (isLastAttempt)
+                    {
+                        await userNotificationsStore.TrackFailedAsync(userEvent);
+                    }
 
-                if (ex is DomainException domainException)
-                {
-                    await logStore.LogAsync(userEvent.AppId, domainException.Message);
-                }
-                else
-                {
-                    throw;
+                    if (ex is DomainException domainException)
+                    {
+                        await logStore.LogAsync(userEvent.AppId, domainException.Message);
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
             }
         }
 
         private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendOptions options)
         {
-            var notification = userNotificationFactory.Create(options.App, options.User, userEvent);
-
-            if (notification == null)
+            using (Telemetry.Activities.StartActivity("CreateUserNotification"))
             {
-                throw new DomainException(Texts.Notification_NoSubject);
-            }
+                var notification = userNotificationFactory.Create(options.App, options.User, userEvent);
 
-            foreach (var channel in channels)
-            {
-                if (channel.IsSystem)
+                if (notification == null)
                 {
-                    if (!notification.Channels.TryGetValue(channel.Name, out var systemConfig))
-                    {
-                        systemConfig = UserNotificationChannel.Create();
-
-                        notification.Channels[channel.Name] = systemConfig;
-                    }
-
-                    systemConfig.Setting.Send = NotificationSend.Send;
+                    throw new DomainException(Texts.Notification_NoSubject);
                 }
 
-                if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.ShouldSend)
+                foreach (var channel in channels)
                 {
-                    var configurations = channel.GetConfigurations(notification, channelConfig.Setting, options);
-
-                    foreach (var configuration in configurations)
+                    if (channel.IsSystem)
                     {
-                        channelConfig.Status[configuration] = new ChannelSendInfo();
+                        if (!notification.Channels.TryGetValue(channel.Name, out var systemConfig))
+                        {
+                            systemConfig = UserNotificationChannel.Create();
 
-                        await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
+                            notification.Channels[channel.Name] = systemConfig;
+                        }
+
+                        systemConfig.Setting.Send = NotificationSend.Send;
+                    }
+
+                    if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.ShouldSend)
+                    {
+                        var configurations = channel.GetConfigurations(notification, channelConfig.Setting, options);
+
+                        foreach (var configuration in configurations)
+                        {
+                            channelConfig.Status[configuration] = new ChannelSendInfo();
+
+                            await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
+                        }
                     }
                 }
-            }
 
-            return notification;
+                return notification;
+            }
         }
 
         public async Task HandleAsync(ConfirmMessage message, CancellationToken ct = default)
@@ -209,7 +218,7 @@ namespace Notifo.Domain.UserNotifications
             }
 
             try
-        {
+            {
                 var app = await appStore.GetCachedAsync(notification.AppId, ct);
 
                 if (app == null)

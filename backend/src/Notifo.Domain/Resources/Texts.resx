@@ -171,6 +171,9 @@
   <data name="Events_NoTopic" xml:space="preserve">
     <value>Event has no topic.</value>
   </data>
+  <data name="Events_TooOld" xml:space="preserve">
+    <value>Event is too old and will be skipped.</value>
+  </data>
   <data name="Messaging_ConfigReset" xml:space="preserve">
     <value>Integration has been removed.</value>
   </data>

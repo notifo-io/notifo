@@ -64,85 +64,88 @@ namespace Notifo.Domain.UserEvents.Pipeline
         public async Task PublishAsync(EventMessage message,
             CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(message.AppId))
+            using (Telemetry.Activities.StartActivity("PublishUserEvent"))
             {
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(message.Topic))
-            {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoTopic);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(message.TemplateCode) && message.Formatting?.HasSubject() != true)
-            {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode);
-                return;
-            }
-
-            var count = 0;
-
-            await foreach (var subscription in GetSubscriptions(message).WithCancellation(ct))
-            {
-                if (count == 0)
+                if (string.IsNullOrWhiteSpace(message.AppId))
                 {
-                    if (!string.IsNullOrWhiteSpace(message.TemplateCode))
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(message.Topic))
+                {
+                    await logStore.LogAsync(message.AppId, Texts.Events_NoTopic);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(message.TemplateCode) && message.Formatting?.HasSubject() != true)
+                {
+                    await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode);
+                    return;
+                }
+
+                var count = 0;
+
+                await foreach (var subscription in GetSubscriptions(message).WithCancellation(ct))
+                {
+                    if (count == 0)
                     {
-                        var template = await templateStore.GetAsync(message.AppId, message.TemplateCode, ct);
-
-                        if (template?.IsAutoCreated == false)
+                        if (!string.IsNullOrWhiteSpace(message.TemplateCode))
                         {
-                            message.Formatting = template.Formatting;
+                            var template = await templateStore.GetAsync(message.AppId, message.TemplateCode, ct);
 
-                            if (template.Settings?.Count > 0)
+                            if (template?.IsAutoCreated == false)
                             {
-                                var settings = new NotificationSettings();
+                                message.Formatting = template.Formatting;
 
-                                settings.OverrideBy(template.Settings);
-                                settings.OverrideBy(message.Settings);
+                                if (template.Settings?.Count > 0)
+                                {
+                                    var settings = new NotificationSettings();
 
-                                message.Settings = settings;
+                                    settings.OverrideBy(template.Settings);
+                                    settings.OverrideBy(message.Settings);
+
+                                    message.Settings = settings;
+                                }
                             }
+                        }
+
+                        if (message.Formatting?.HasSubject() != true)
+                        {
+                            await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode));
+                            return;
+                        }
+
+                        message.Formatting = message.Formatting.Format(message.Properties);
+
+                        try
+                        {
+                            await eventStore.InsertAsync(message, ct);
+                        }
+                        catch (UniqueConstraintException)
+                        {
+                            await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed);
+                            break;
                         }
                     }
 
-                    if (message.Formatting?.HasSubject() != true)
-                    {
-                        await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode));
-                        return;
-                    }
+                    var userEventMessage = CreateUserEventMessage(message, subscription);
 
-                    message.Formatting = message.Formatting.Format(message.Properties);
+                    await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
 
-                    try
-                    {
-                        await eventStore.InsertAsync(message, ct);
-                    }
-                    catch (UniqueConstraintException)
-                    {
-                        await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed);
-                        break;
-                    }
+                    count++;
                 }
 
-                var userEventMessage = CreateUserEventMessage(message, subscription);
+                if (count > 0)
+                {
+                    var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
+                    var counterKey = CounterKey.ForEvent(message);
 
-                await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
-
-                count++;
-            }
-
-            if (count > 0)
-            {
-                var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
-                var counterKey = CounterKey.ForEvent(message);
-
-                await counters.CollectAsync(counterKey, counterMap, ct);
-            }
-            else
-            {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber);
+                    await counters.CollectAsync(counterKey, counterMap, ct);
+                }
+                else
+                {
+                    await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber);
+                }
             }
         }
 

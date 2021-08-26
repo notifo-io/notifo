@@ -8,6 +8,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -21,10 +22,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
             this.userNotificationService = userNotificationService;
         }
 
-        public Task HandleAsync(UserEventMessage message,
+        public async Task HandleAsync(UserEventMessage message,
             CancellationToken ct)
         {
-            return userNotificationService.DistributeAsync(message);
+            using (Telemetry.Activities.StartActivity("ConsumeUserEvent"))
+            {
+                await userNotificationService.DistributeAsync(message);
+            }
         }
     }
 }
