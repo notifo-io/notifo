@@ -99,11 +99,5 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return new MessagingRegistration<T>(services, channelName);
         }
-
-        public static void AddMessagingConsumer<TConsumer, T>(this IServiceCollection services, string channelName) where TConsumer : class, IAbstractConsumer<T>
-        {
-            services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetConsumer<TConsumer, T>(c, channelName))
-                .AsSelf();
-        }
     }
 }

@@ -5,12 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Linq;
 using FluentValidation;
 using NodaTime;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 using Notifo.Infrastructure.Validation;
-using System.Linq;
 
 namespace Notifo.Domain.Events
 {

@@ -72,7 +72,7 @@ namespace Notifo.Domain.Events.Pipeline
                     .WriteProperty("appId", m.AppId)
                     .WriteProperty("eventId", m.Id)
                     .WriteProperty("eventTopic", m.Topic)
-                    .WriteProperty("eventType", m.TemplateCode.OrDefault(m.Formatting?.Subject.Values.FirstOrDefault() ?? string.Empty)));
+                    .WriteProperty("eventType", m.ToString()));
             }
         }
     }

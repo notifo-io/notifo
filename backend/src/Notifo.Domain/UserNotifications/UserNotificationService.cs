@@ -157,7 +157,7 @@ namespace Notifo.Domain.UserNotifications
                         .WriteProperty("appId", m.AppId)
                         .WriteProperty("eventId", m.EventId)
                         .WriteProperty("eventTopic", m.Topic)
-                    .WriteProperty("eventType", m.ToString()));
+                        .WriteProperty("eventType", m.ToString()));
                 }
                 catch (Exception ex)
                 {
