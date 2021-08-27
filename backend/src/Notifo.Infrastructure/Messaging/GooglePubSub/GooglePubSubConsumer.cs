@@ -53,7 +53,6 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
             var subcriptionName = new SubscriptionName(options.ProjectId, $"{options.Prefix}{topicId}");
 
             subscriberClient = await SubscriberClient.CreateAsync(subcriptionName);
-
             subscriberClient.StartAsync(async (pubSubMessage, subscriberToken) =>
             {
                 try
@@ -79,6 +78,17 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
                 }
 
                 return SubscriberClient.Reply.Ack;
+            }).ContinueWith(task =>
+            {
+                var exception = task.Exception?.Flatten()?.InnerException;
+
+                if (exception != null && exception is not OperationCanceledException)
+                {
+                    log.LogError(exception, w => w
+                        .WriteProperty("action", "ConsumeMessage")
+                        .WriteProperty("system", "GooglePubSub")
+                        .WriteProperty("status", "Failed"));
+                }
             }).Forget();
         }
     }

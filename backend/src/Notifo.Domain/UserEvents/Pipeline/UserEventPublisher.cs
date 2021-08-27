@@ -70,6 +70,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             using (Telemetry.Activities.StartActivity("PublishUserEvent"))
             {
+                log.LogInformation(message, (m, w) => w
+                    .WriteProperty("action", "HandleEvent")
+                    .WriteProperty("status", "Started")
+                    .WriteProperty("appId", m.AppId)
+                    .WriteProperty("eventId", m.Id)
+                    .WriteProperty("eventTopic", m.Topic));
+
                 if (string.IsNullOrWhiteSpace(message.AppId))
                 {
                     return;
@@ -152,7 +159,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
 
                 log.LogInformation(message, (m, w) => w
-                    .WriteProperty("action", "EventHandled")
+                    .WriteProperty("action", "HandleEvent")
+                    .WriteProperty("status", "Success")
                     .WriteProperty("appId", m.AppId)
                     .WriteProperty("eventId", m.Id)
                     .WriteProperty("eventTopic", m.Topic));
