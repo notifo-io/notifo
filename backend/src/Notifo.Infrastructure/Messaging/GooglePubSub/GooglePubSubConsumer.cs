@@ -90,7 +90,7 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
                         .WriteProperty("system", "GooglePubSub")
                         .WriteProperty("status", "Failed"));
                 }
-            }).Forget();
+            }, CancellationToken.None).Forget();
         }
     }
 }

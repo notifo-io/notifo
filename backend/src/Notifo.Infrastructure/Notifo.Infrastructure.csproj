@@ -11,7 +11,7 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.1.26" />
     <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
     <PackageReference Include="FluentValidation" Version="10.3.3" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.6.0" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.5.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
