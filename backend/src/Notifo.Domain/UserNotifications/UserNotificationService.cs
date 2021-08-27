@@ -21,6 +21,7 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Hosting;
+using Squidex.Log;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserNotifications
@@ -36,6 +37,7 @@ namespace Notifo.Domain.UserNotifications
         private readonly ILogStore logStore;
         private readonly IAbstractProducer<ConfirmMessage> confirmProducer;
         private readonly IClock clock;
+        private readonly ISemanticLog log;
 
         public int Order => 1000;
 
@@ -47,10 +49,12 @@ namespace Notifo.Domain.UserNotifications
             IUserNotificationFactory userNotificationFactory,
             IUserNotificationStore userNotificationsStore,
             IUserStore userStore,
-            IClock clock)
+            IClock clock,
+            ISemanticLog log)
         {
             this.appStore = appStore;
             this.channels = channels;
+            this.log = log;
             this.logStore = logStore;
             this.confirmProducer = confirmProducer;
             this.userEventQueue = userEventQueue;
@@ -146,6 +150,13 @@ namespace Notifo.Domain.UserNotifications
                             }
                         }
                     }
+
+                    log.LogInformation(userEvent, (m, w) => w
+                        .WriteProperty("action", "HandleUserEvent")
+                        .WriteProperty("status", "Success")
+                        .WriteProperty("appId", m.AppId)
+                        .WriteProperty("eventId", m.EventId)
+                        .WriteProperty("eventTopic", m.Topic));
                 }
                 catch (Exception ex)
                 {
@@ -160,6 +171,12 @@ namespace Notifo.Domain.UserNotifications
                     }
                     else
                     {
+                        log.LogError(ex, userEvent, (m, w) => w
+                            .WriteProperty("action", "HandleUserEvent")
+                            .WriteProperty("status", "Failed")
+                            .WriteProperty("appId", m.AppId)
+                            .WriteProperty("eventId", m.EventId)
+                            .WriteProperty("eventTopic", m.Topic));
                         throw;
                     }
                 }
@@ -230,7 +247,7 @@ namespace Notifo.Domain.UserNotifications
 
                 if (user == null)
                 {
-                    return;
+                    throw new DomainException(Texts.Notification_NoUser);
                 }
 
                 var options = new SendOptions { App = app, User = user, IsUpdate = true };

@@ -19,6 +19,7 @@ using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
+using Squidex.Log;
 using IUserEventProducer = Notifo.Infrastructure.Messaging.IAbstractProducer<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -38,6 +39,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         };
 
         private readonly IUserEventProducer userEventProducer;
+        private readonly ISemanticLog log;
         private readonly ICounterService counters;
         private readonly IEventStore eventStore;
         private readonly ILogStore logStore;
@@ -50,11 +52,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ISubscriptionStore subscriptionStore,
             ITemplateStore templateStore,
             IUserStore userStore,
-            IUserEventProducer userEventProducer)
+            IUserEventProducer userEventProducer,
+            ISemanticLog log)
         {
             this.subscriptionStore = subscriptionStore;
             this.counters = counters;
             this.eventStore = eventStore;
+            this.log = log;
             this.logStore = logStore;
             this.templateStore = templateStore;
             this.userStore = userStore;
@@ -146,6 +150,12 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber);
                 }
+
+                log.LogInformation(message, (m, w) => w
+                    .WriteProperty("action", "EventHandled")
+                    .WriteProperty("appId", m.AppId)
+                    .WriteProperty("eventId", m.Id)
+                    .WriteProperty("eventTopic", m.Topic));
             }
         }
 

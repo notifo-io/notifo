@@ -19,6 +19,7 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Texts;
+using Squidex.Log;
 using Xunit;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -40,7 +41,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._))
                 .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
 
-            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer);
+            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, A.Fake<ISemanticLog>());
         }
 
         [Fact]
