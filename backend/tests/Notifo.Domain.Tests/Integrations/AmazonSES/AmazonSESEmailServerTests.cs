@@ -19,7 +19,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
         {
             var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>();
 
-            return new SmtpEmailSender(new SmtpEmailServer(options), Address, Address);
+            return new SmtpEmailSender(() => new SmtpEmailServer(options), Address, Address);
         }
     }
 }
