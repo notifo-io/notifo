@@ -81,7 +81,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                 if (string.IsNullOrWhiteSpace(message.AppId))
                 {
-                    log.LogInformation(message, (m, w) => w
+                    log.LogWarning(message, (m, w) => w
                         .WriteProperty("action", "HandleEvent")
                         .WriteProperty("status", "Failed")
                         .WriteProperty("reason", "NoAppId")

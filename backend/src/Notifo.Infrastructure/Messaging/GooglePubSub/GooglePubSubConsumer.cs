@@ -53,6 +53,7 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
             var subcriptionName = new SubscriptionName(options.ProjectId, $"{options.Prefix}{topicId}");
 
             subscriberClient = await SubscriberClient.CreateAsync(subcriptionName);
+
             subscriberClient.StartAsync(async (pubSubMessage, subscriberToken) =>
             {
                 try
