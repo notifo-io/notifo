@@ -5,12 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Messaging.GooglePubSub;
 using Notifo.Infrastructure.Messaging.Kafka;
 using Notifo.Infrastructure.Messaging.RabbitMq;
 using Notifo.Infrastructure.Messaging.Scheduling;
+using Squidex.Hosting;
+using Squidex.Log;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -72,6 +76,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IMessagingProvider>();
         }
 
+        private static class MessagingConsumer
+        {
+            private static readonly HashSet<string> Consumers = new HashSet<string>();
+
+            public static bool AlreadyRegistered(string channelName)
+            {
+                return !Consumers.Add(channelName);
+            }
+        }
+
         public sealed class MessagingRegistration<T>
         {
             private readonly IServiceCollection services;
@@ -85,10 +99,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
             public MessagingRegistration<T> ConsumedBy<TConsumer>() where TConsumer : IAbstractConsumer<T>
             {
-                services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetConsumer<TConsumer, T>(c, channelName))
+                services.AddSingletonAs(c => CetConsumer<TConsumer>(c))
                     .AsSelf();
 
                 return this;
+            }
+
+            private IInitializable CetConsumer<TConsumer>(IServiceProvider provider) where TConsumer : IAbstractConsumer<T>
+            {
+                if (MessagingConsumer.AlreadyRegistered(channelName))
+                {
+                    var log = provider.GetRequiredService<ISemanticLog>();
+
+                    log.LogWarning(w => w
+                        .WriteProperty("message", "Multiple consumers subscribing to the same name.")
+                        .WriteProperty("channel", channelName));
+                }
+
+                return provider.GetRequiredService<IMessagingProvider>().GetConsumer<TConsumer, T>(provider, channelName);
             }
         }
 
