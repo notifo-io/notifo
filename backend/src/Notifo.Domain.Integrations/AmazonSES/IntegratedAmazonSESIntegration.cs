@@ -101,7 +101,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
                     return null;
                 }
 
-                return new SmtpEmailSender(smtpEmailServer, fromEmail, fromName);
+                return new SmtpEmailSender(() => smtpEmailServer, fromEmail, fromName);
             }
 
             return null;
