@@ -16,6 +16,13 @@ namespace Notifo.Domain
 {
     public static class NotificationFormatting
     {
+        public static string ToDebugString(this NotificationFormatting<LocalizedText> source)
+        {
+            var subject = source.Subject;
+
+            return subject.GetOrDefault("en").OrDefault(subject.Values.FirstOrDefault() ?? string.Empty);
+        }
+
         public static NotificationFormatting<string> SelectText(this NotificationFormatting<LocalizedText> source, string language)
         {
             return source.Transform(SelectText(language));

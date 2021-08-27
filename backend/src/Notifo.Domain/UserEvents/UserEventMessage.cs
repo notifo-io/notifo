@@ -5,8 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Linq;
 using NodaTime;
 using Notifo.Domain.Events;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Domain.UserEvents
@@ -42,5 +44,10 @@ namespace Notifo.Domain.UserEvents
         public EventProperties Properties { get; set; }
 
         public Scheduling? Scheduling { get; set; }
+
+        public override string? ToString()
+        {
+            return Formatting.ToDebugString();
+        }
     }
 }

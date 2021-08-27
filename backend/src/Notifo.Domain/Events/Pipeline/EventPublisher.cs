@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
@@ -70,7 +71,8 @@ namespace Notifo.Domain.Events.Pipeline
                     .WriteProperty("action", "EventReceived")
                     .WriteProperty("appId", m.AppId)
                     .WriteProperty("eventId", m.Id)
-                    .WriteProperty("eventTopic", m.Topic));
+                    .WriteProperty("eventTopic", m.Topic)
+                    .WriteProperty("eventType", m.TemplateCode.OrDefault(m.Formatting?.Subject.Values.FirstOrDefault() ?? string.Empty)));
             }
         }
     }

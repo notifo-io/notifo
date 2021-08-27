@@ -7,8 +7,10 @@
 
 using FluentValidation;
 using NodaTime;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 using Notifo.Infrastructure.Validation;
+using System.Linq;
 
 namespace Notifo.Domain.Events
 {
@@ -55,6 +57,11 @@ namespace Notifo.Domain.Events
         public void Validate()
         {
             Validate<Validator>.It(this);
+        }
+
+        public override string ToString()
+        {
+            return TemplateCode.OrDefault(Formatting?.ToDebugString() ?? string.Empty);
         }
     }
 }

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Counters;
@@ -75,10 +76,19 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     .WriteProperty("status", "Started")
                     .WriteProperty("appId", m.AppId)
                     .WriteProperty("eventId", m.Id)
-                    .WriteProperty("eventTopic", m.Topic));
+                    .WriteProperty("eventTopic", m.Topic)
+                    .WriteProperty("eventType", m.ToString()));
 
                 if (string.IsNullOrWhiteSpace(message.AppId))
                 {
+                    log.LogInformation(message, (m, w) => w
+                        .WriteProperty("action", "HandleEvent")
+                        .WriteProperty("status", "Failed")
+                        .WriteProperty("reason", "NoAppId")
+                        .WriteProperty("appId", m.AppId)
+                        .WriteProperty("eventId", m.Id)
+                        .WriteProperty("eventTopic", m.Topic)
+                        .WriteProperty("eventType", m.ToString()));
                     return;
                 }
 
@@ -163,7 +173,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     .WriteProperty("status", "Success")
                     .WriteProperty("appId", m.AppId)
                     .WriteProperty("eventId", m.Id)
-                    .WriteProperty("eventTopic", m.Topic));
+                    .WriteProperty("eventTopic", m.Topic)
+                    .WriteProperty("eventType", m.ToString()));
             }
         }
 
