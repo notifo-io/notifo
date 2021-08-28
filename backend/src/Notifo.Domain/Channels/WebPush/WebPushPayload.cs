@@ -35,8 +35,11 @@ namespace Notifo.Domain.Channels.WebPush
         [JsonPropertyName("lu")]
         public string? LinkUrl { get; set; }
 
-        [JsonPropertyName("tu")]
-        public string? TrackingUrl { get; set; }
+        [JsonPropertyName("td")]
+        public string? TrackDeliveredUrl { get; set; }
+
+        [JsonPropertyName("ts")]
+        public string? TrackSeenUrl { get; set; }
 
         [JsonPropertyName("ci")]
         public bool IsConfirmed { get; set; }
@@ -54,12 +57,13 @@ namespace Notifo.Domain.Channels.WebPush
             SimpleMapper.Map(notification, result);
             SimpleMapper.Map(notification.Formatting, result);
 
-            result.IsConfirmed = notification.IsConfirmed != null;
+            result.IsConfirmed = notification.FirstConfirmed != null;
 
             result.ConfirmText = notification.Formatting.ConfirmText;
             result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint);
 
-            result.TrackingUrl = notification.ComputeTrackingUrl(Providers.WebPush, endpoint);
+            result.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, endpoint);
+            result.TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, endpoint);
 
             return result;
         }

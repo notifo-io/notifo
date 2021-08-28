@@ -6,7 +6,7 @@
  */
 
 import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
-import { getApp, loadNotifications, useApps, useNotifications } from '@app/state';
+import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -26,7 +26,7 @@ export const Notifications = (props: NotificationsProps) => {
     const { onSwitch, userId } = props;
 
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const notifications = useNotifications(x => x.notifications);
 

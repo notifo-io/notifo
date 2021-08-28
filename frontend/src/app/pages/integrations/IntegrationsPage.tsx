@@ -7,7 +7,7 @@
 
 import { FormError, Icon, Loader } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
-import { getApp, getSortedIntegrations, loadIntegrations, useApps, useIntegrations } from '@app/state';
+import { getSortedIntegrations, loadIntegrations, useApp, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -25,7 +25,7 @@ type SelectedIntegration = {
 
 export const IntegrationsPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const configured = useIntegrations(x => x.configured) || {};
     const definitions = useIntegrations(x => x.supported) || {};

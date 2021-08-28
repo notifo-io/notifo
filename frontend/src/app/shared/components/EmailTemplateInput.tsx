@@ -6,13 +6,13 @@
  */
 
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { getApp, loadEmailTemplates, useApps, useEmailTemplates } from '@app/state';
+import { loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 export const EmailTemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const templates = useEmailTemplates(x => x.templates);
 

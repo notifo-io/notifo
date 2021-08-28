@@ -6,7 +6,7 @@
  */
 
 import { FormError, Forms, Icon, Loader } from '@app/framework';
-import { getApp, loadSmsTemplate, updateSmsTemplate, useApps, useSmsTemplates } from '@app/state';
+import { loadSmsTemplate, updateSmsTemplate, useApp, useSmsTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -20,7 +20,7 @@ type FormValues = { name?: string; primary: boolean; languages: { [key: string]:
 
 export const SmsTemplatePage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const loadingTemplate = useSmsTemplates(x => x.loadingTemplate);

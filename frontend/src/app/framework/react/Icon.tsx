@@ -30,6 +30,7 @@ export type IconType =
     'keyboard_arrow_up' |
     'mail_outline' |
     'message' |
+    'messaging' |
     'mobile' |
     'more' |
     'person_add' |

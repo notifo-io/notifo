@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FirebaseAdmin;
@@ -16,11 +17,12 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public sealed class FirebaseMobilePushSender : IMobilePushSender
     {
-        private readonly FirebaseMessagingWrapper wrapper;
+        private const int Attempts = 5;
+        private readonly Func<FirebaseMessagingWrapper> wrapper;
         private readonly bool sendSilentAndroid;
         private readonly bool sendSilentIOS;
 
-        public FirebaseMobilePushSender(FirebaseMessagingWrapper wrapper,
+        public FirebaseMobilePushSender(Func<FirebaseMessagingWrapper> wrapper,
             bool sendSilentIOS,
             bool sendSilentAndroid)
         {
@@ -41,7 +43,21 @@ namespace Notifo.Domain.Integrations.Firebase
             {
                 var message = userNotification.ToFirebaseMessage(options.DeviceToken, options.Wakeup);
 
-                await wrapper.Messaging.SendAsync(message, ct);
+                // Try a few attempts to get a non-disposed messaging service.
+                for (var i = 1; i <= Attempts; i++)
+                {
+                    try
+                    {
+                        await wrapper().Messaging.SendAsync(message, ct);
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                        if (i == Attempts)
+                        {
+                            throw;
+                        }
+                    }
+                }
             }
             catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.InvalidArgument)
             {

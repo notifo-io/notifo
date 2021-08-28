@@ -7,7 +7,7 @@
 
 import { Icon, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
-import { deleteTemplate, getApp, loadTemplates, selectTemplate, togglePublishDialog, useApps, useTemplates } from '@app/state';
+import { deleteTemplate, loadTemplates, selectTemplate, togglePublishDialog, useApp, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -23,7 +23,7 @@ export const TemplatesList = (props: TemplateListProps) => {
     const { onOpen } = props;
 
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const selectedTemplateCode = useTemplates(x => x.currentTemplateCode);
     const templates = useTemplates(x => x.templates);

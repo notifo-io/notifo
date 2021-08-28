@@ -39,14 +39,19 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("id", notification.Id.ToString())
                     .WithNonEmpty("confirmText", formatting.ConfirmText)
                     .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("isConfirmed", (notification.IsConfirmed != null).ToString())
+                    .WithNonEmpty("isConfirmed", (notification.FirstConfirmed != null).ToString())
                     .WithNonEmpty("imageLarge", formatting.ImageLarge)
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
                     .WithNonEmpty("linkText", formatting.LinkText)
                     .WithNonEmpty("linkUrl", formatting.LinkUrl)
                     .WithNonEmpty("silent", notification.Silent.ToString())
-                    .WithNonEmpty("trackingUrl", notification.ComputeTrackingUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("data", notification.Data);
+                    .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("data", notification.Data)
+                    // Obsolete, replaced with
+                    // * trackDeliveredUrl for delivery.
+                    // * trackSeenUrl
+                    .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token));
 
             var androidData =
                 new Dictionary<string, string>()
@@ -71,7 +76,8 @@ namespace Notifo.Domain.Integrations.Firebase
 
             var apnsHeaders = new Dictionary<string, string>
             {
-                ["apns-collapse-id"] = notification.Id.ToString()
+                ["apns-collapse-id"] = notification.Id.ToString(),
+                ["apns-push-type"] = "alert"
             };
 
             if (notification.TimeToLiveInSeconds is int timeToLive)

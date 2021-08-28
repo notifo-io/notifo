@@ -17,8 +17,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:userEvents").Get<UserEventPipelineOptions>() ?? new UserEventPipelineOptions();
 
-            services.AddMessagingConsumer<UserEventConsumer, UserEventMessage>(options.ChannelName);
-            services.AddMessagingProducer<UserEventMessage>(options.ChannelName);
+            services.AddMessaging<UserEventMessage>(options.ChannelName)
+                .ConsumedBy<UserEventConsumer>();
+
+            services.AddSingletonAs<UserEventConsumer>()
+                .AsSelf();
 
             services.AddSingletonAs<UserEventPublisher>()
                 .As<IUserEventPublisher>();

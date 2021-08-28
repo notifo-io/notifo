@@ -21,3 +21,29 @@
         width: 17rem;
     }
 }
+
+.apps-dropdown {
+    &-name {
+        @include truncate;
+        display: inline-block;
+        line-height: 1;
+        list-style: none;
+        max-width: 10rem;
+    }
+
+    .dropdown-menu {
+        margin-bottom: 0;
+        margin-top: 1rem !important;
+        max-height: 15rem;
+        overflow-y: auto;
+    }
+
+    .dropdown-toggle {
+        background-color: rgba(0, 0, 0, .1);
+        border: 0;
+        border-radius: $border-radius;
+        margin-bottom: -.5rem;
+        margin-top: -.5rem;
+        padding: .75rem 1rem !important;
+    }
+}

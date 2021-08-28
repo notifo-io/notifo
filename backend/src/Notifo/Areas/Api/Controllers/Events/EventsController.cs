@@ -81,7 +81,7 @@ namespace Notifo.Areas.Api.Controllers.Events
                     {
                         var @event = dto.ToEvent(appId);
 
-                        await eventPublisher.PublishAsync(@event);
+                        await eventPublisher.PublishAsync(@event, HttpContext.RequestAborted);
                     }
                 }
             }
@@ -103,7 +103,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         {
             var @event = request.ToEvent(App.Id, $"users/{UserId}");
 
-            await eventPublisher.PublishAsync(@event);
+            await eventPublisher.PublishAsync(@event, HttpContext.RequestAborted);
 
             return NoContent();
         }

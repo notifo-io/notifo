@@ -51,7 +51,3 @@ export interface AppsState {
     // The contributor error.
     contributorsError?: ErrorDto;
 }
-
-export function getApp(state: AppsState) {
-    return state.apps.items?.find(x => x.id === state.appId)!;
-}

@@ -38,8 +38,11 @@ export interface NotifoNotification {
     // The confirm text.
     confirmText?: string;
 
-    // The tracking url.
-    trackingUrl?: string;
+    // The url to mark the notification as deliverd.
+    trackDeliveredUrl?: string;
+
+    // The url to mark the notification as seen.
+    trackSeenUrl?: string;
 
     // True, when silent.
     silent?: boolean;
@@ -69,7 +72,8 @@ export function parseShortNotification(value: any): NotifoNotification {
         linkText: value.lt,
         linkUrl: value.lu,
         subject: value.ns,
-        trackingUrl: value.tu,
+        trackDeliveredUrl: value.td,
+        trackSeenUrl: value.ts,
     };
 }
 

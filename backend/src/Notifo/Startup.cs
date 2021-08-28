@@ -108,7 +108,7 @@ namespace Notifo
             services.AddMyTemplates();
             services.AddMyTopics();
             services.AddMyUserEvents(config);
-            services.AddMyUserNotifications();
+            services.AddMyUserNotifications(config);
             services.AddMyUsers();
             services.AddMyUtils();
             services.AddMyWebChannel();

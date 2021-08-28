@@ -18,14 +18,17 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMySmsChannel(this IServiceCollection services)
         {
             services.AddSingletonAs<SmsChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<SmsJob>>();
+                .As<ICommunicationChannel>();
 
             services.AddSingletonAs<SmsFormatter>()
                 .As<ISmsFormatter>().As<IChannelTemplateFactory<SmsTemplate>>();
 
             services.AddChannelTemplates<SmsTemplate>();
 
-            services.AddScheduler<SmsJob>(new SchedulerOptions { QueueName = Providers.Sms, ExecutionRetries = Array.Empty<int>() });
+            services.AddScheduler<SmsJob>(Providers.Sms, new SchedulerOptions
+            {
+                ExecutionRetries = Array.Empty<int>()
+            });
         }
     }
 }

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using NodaTime;
 
 namespace Notifo.Domain.UserNotifications
 {
@@ -14,6 +15,12 @@ namespace Notifo.Domain.UserNotifications
         public NotificationSetting Setting { get; init; }
 
         public Dictionary<string, ChannelSendInfo> Status { get; init; }
+
+        public Instant? FirstConfirmed { get; set; }
+
+        public Instant? FirstSeen { get; set; }
+
+        public Instant? FirstDelivered { get; set; }
 
         public static UserNotificationChannel Create(NotificationSetting? setting = null)
         {

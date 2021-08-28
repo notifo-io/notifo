@@ -7,11 +7,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
 using Notifo.Domain.Apps;
+using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
@@ -149,6 +151,7 @@ namespace Notifo.Domain.Channels.Sms
         public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
             CancellationToken ct)
         {
+            // If the notification is not scheduled it is very unlikey it has been confirmed already.
             if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name, ct))
             {
                 await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
@@ -187,7 +190,7 @@ namespace Notifo.Domain.Channels.Sms
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(job, job.PhoneNumber, Texts.Sms_ConfigReset, ct);
+                        await SkipAsync(job, Texts.Sms_ConfigReset);
                         return;
                     }
 
@@ -195,7 +198,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, ex.Message, ct);
+                    await logStore.LogAsync(job.AppId, Name, ex.Message);
                     throw;
                 }
             }
@@ -215,11 +218,16 @@ namespace Notifo.Domain.Channels.Sms
             {
                 try
                 {
-                    var template = await smsTemplateStore.GetBestAsync(
+                    var (skip, template) = await GetTemplateAsync(
                         job.AppId,
-                        job.TemplateName,
                         job.TemplateLanguage,
+                        job.TemplateName,
                         ct);
+
+                    if (skip != null)
+                    {
+                        await SkipAsync(job, skip);
+                    }
 
                     var text = smsFormatter.Format(template, job.Text);
 
@@ -237,7 +245,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, ex.Message, ct);
+                    await logStore.LogAsync(job.AppId, Name, ex.Message);
 
                     if (sender == lastSender)
                     {
@@ -259,12 +267,47 @@ namespace Notifo.Domain.Channels.Sms
             return userNotificationStore.CollectAndUpdateAsync(token, Name, phoneNumber, status, reason);
         }
 
-        private async Task SkipAsync(SmsJob job, string token, string reason,
+        private async Task SkipAsync(SmsJob job, string reason)
+        {
+            await logStore.LogAsync(job.AppId, Name, reason);
+
+            await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
+        }
+
+        private async Task<(string? Skip, SmsTemplate?)> GetTemplateAsync(
+            string appId,
+            string language,
+            string? name,
             CancellationToken ct)
         {
-            await logStore.LogAsync(job.AppId, reason, ct);
+            var (status, template) = await smsTemplateStore.GetBestAsync(appId, name, language, ct);
 
-            await UpdateAsync(job, token, ProcessStatus.Skipped);
+            switch (status)
+            {
+                case TemplateResolveStatus.ResolvedWithFallback:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
+
+                        await logStore.LogAsync(appId, Name, error);
+                        break;
+                    }
+
+                case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
+
+                        return (error, null);
+                    }
+
+                case TemplateResolveStatus.LanguageNotFound:
+                    {
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
+
+                        return (error, null);
+                    }
+            }
+
+            return (null, template);
         }
     }
 }

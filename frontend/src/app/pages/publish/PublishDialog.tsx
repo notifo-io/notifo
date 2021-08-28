@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { NotificationsForm, TemplateInput } from '@app/shared/components';
-import { getApp, publish, togglePublishDialog, useApps, usePublish } from '@app/state';
+import { publish, togglePublishDialog, useApp, usePublish } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -43,7 +43,7 @@ const FormSchema = Yup.object({
 
 export const PublishDialog = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const publishing = usePublish(x => x.publishing);

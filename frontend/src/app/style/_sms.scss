@@ -5,6 +5,12 @@
     max-width: 600px;
 }
 
+.sms-templates {
+    .header {
+        margin-bottom: 2rem;
+    }
+}
+
 .sms-template {
     & {
         width: 300px;

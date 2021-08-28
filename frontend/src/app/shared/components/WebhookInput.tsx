@@ -6,13 +6,13 @@
  */
 
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { getApp, loadIntegrations, useApps, useIntegrations } from '@app/state';
+import { loadIntegrations, useApp, useIntegrations } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 export const WebhookInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const integrations = useIntegrations(x => x.configured);
 

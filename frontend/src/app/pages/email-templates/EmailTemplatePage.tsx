@@ -7,7 +7,7 @@
 
 import { Icon, Loader, Toggle, useStateWithRef } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
-import { getApp, loadEmailTemplate, updateEmailTemplate, useApps, useEmailTemplates } from '@app/state';
+import { loadEmailTemplate, updateEmailTemplate, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -20,7 +20,7 @@ import { EmailTemplate } from './EmailTemplate';
 export const EmailTemplatePage = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const appName = app.name;

@@ -5,8 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Linq;
 using FluentValidation;
 using NodaTime;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 using Notifo.Infrastructure.Validation;
 
@@ -55,6 +57,11 @@ namespace Notifo.Domain.Events
         public void Validate()
         {
             Validate<Validator>.It(this);
+        }
+
+        public override string ToString()
+        {
+            return TemplateCode.OrDefault(Formatting?.ToDebugString() ?? string.Empty);
         }
     }
 }

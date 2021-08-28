@@ -9,7 +9,7 @@ import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/frame
 import { MediaDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { MediaCard } from '@app/shared/components/MediaCard';
-import { deleteMedia, getApp, loadMedia, uploadMedia, useApps, useMedia } from '@app/state';
+import { deleteMedia, loadMedia, uploadMedia, useApp, useMedia } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,7 @@ import { Button, Col, Row } from 'reactstrap';
 
 export const MediaPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const media = useMedia(x => x.media);
 

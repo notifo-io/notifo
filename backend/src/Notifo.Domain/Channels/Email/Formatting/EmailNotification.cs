@@ -26,7 +26,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string? LinkText { get; set; }
 
-        public string? TrackingUrl { get; set; }
+        public string? TrackSeenUrl { get; set; }
+
+        public string? TrackDeliveredUrl { get; set; }
 
         public string? ConfirmUrl { get; set; }
 
@@ -39,7 +41,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 ConfirmUrl = notification.ComputeConfirmUrl(Providers.Email, emailAddress),
                 LinkText = OrNull(notification.Formatting.LinkText),
                 LinkUrl = OrNull(notification.Formatting.LinkUrl),
-                TrackingUrl = notification.ComputeTrackingUrl(Providers.Email, emailAddress),
+                TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.Email, emailAddress),
+                TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.Email, emailAddress),
                 Subject = notification.Formatting.Subject
             };
 

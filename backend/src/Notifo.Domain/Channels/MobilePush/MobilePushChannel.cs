@@ -198,7 +198,10 @@ namespace Notifo.Domain.Channels.MobilePush
         public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.DeviceToken, Name, ct))
+            var id = job.Notification.Id;
+
+            // If the notification is not scheduled it is very unlikey it has been confirmed already.
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, job.DeviceToken, Name, ct))
             {
                 await UpdateAsync(job, ProcessStatus.Skipped);
             }
@@ -253,7 +256,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, ex.Message, ct);
+                    await logStore.LogAsync(app.Id, Name, ex.Message);
                     throw;
                 }
             }
@@ -280,7 +283,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 }
                 catch (MobilePushTokenExpiredException)
                 {
-                    await logStore.LogAsync(app.Id, Texts.MobilePush_TokenRemoved, ct);
+                    await logStore.LogAsync(app.Id, Name, Texts.MobilePush_TokenRemoved);
 
                     var command = new RemoveUserMobileToken
                     {
@@ -292,7 +295,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, ex.Message, ct);
+                    await logStore.LogAsync(app.Id, Name, ex.Message);
 
                     if (sender == lastSender)
                     {
@@ -320,7 +323,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
         private async Task SkipAsync(MobilePushJob job, string reason)
         {
-            await logStore.LogAsync(job.Notification.AppId, reason);
+            await logStore.LogAsync(job.Notification.AppId, Name, reason);
 
             await UpdateAsync(job, ProcessStatus.Skipped);
         }

@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="10.3.0" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.12.28" />
+    <PackageReference Include="FluentValidation" Version="10.3.3" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.12.30" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />

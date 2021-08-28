@@ -18,7 +18,7 @@ using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.RabbitMq
 {
-    public sealed class RabbitMqConsumer<T> : IInitializable
+    public sealed class RabbitMqConsumer<TConsumer, T> : IInitializable where TConsumer : IAbstractConsumer<T>
     {
         private readonly List<(IModel Channel, AsyncEventingBasicConsumer Consumer)> consumers = new List<(IModel Channel, AsyncEventingBasicConsumer Consumer)>();
         private readonly RabbitMqProvider connection;

@@ -6,13 +6,13 @@
  */
 
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { getApp, loadTemplates, useApps, useTemplates } from '@app/state';
+import { loadTemplates, useApp, useTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 export const TemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const templates = useTemplates(x => x.templates);
 

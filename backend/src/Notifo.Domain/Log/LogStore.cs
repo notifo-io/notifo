@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using NodaTime;
 using Notifo.Domain.Log.Internal;
 using Notifo.Infrastructure;
+using Squidex.Log;
 
 namespace Notifo.Domain.Log
 {
@@ -18,10 +19,13 @@ namespace Notifo.Domain.Log
     {
         private readonly LogCollector collector;
         private readonly ILogRepository repository;
+        private readonly ISemanticLog log;
 
-        public LogStore(ILogRepository repository, IClock clock)
+        public LogStore(ILogRepository repository, ISemanticLog log, IClock clock)
         {
             this.repository = repository;
+
+            this.log = log;
 
             collector = new LogCollector(repository, clock, 10, 3000);
         }
@@ -31,11 +35,30 @@ namespace Notifo.Domain.Log
             collector.StopAsync().Wait();
         }
 
-        public Task LogAsync(string appId, string message,
-            CancellationToken ct)
+        public Task LogAsync(string appId, string system, string message)
+        {
+            Guard.NotNullOrEmpty(system, nameof(system));
+            Guard.NotNullOrEmpty(message, nameof(message));
+
+            log.LogInformation(w => w
+                .WriteProperty("action", "UserLog")
+                .WriteProperty("appId", appId)
+                .WriteProperty("system", system)
+                .WriteProperty("message", message));
+
+            return collector.AddAsync(appId, $"{system}: {message}");
+        }
+
+        public Task LogAsync(string appId, string message)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(message, nameof(message));
+
+            log.LogInformation(w => w
+                .WriteProperty("action", "UserLog")
+                .WriteProperty("appId", appId)
+                .WriteProperty("system", string.Empty)
+                .WriteProperty("message", message));
 
             return collector.AddAsync(appId, message);
         }

@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Counters;
@@ -19,6 +20,7 @@ using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
+using Squidex.Log;
 using IUserEventProducer = Notifo.Infrastructure.Messaging.IAbstractProducer<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -38,6 +40,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         };
 
         private readonly IUserEventProducer userEventProducer;
+        private readonly ISemanticLog log;
         private readonly ICounterService counters;
         private readonly IEventStore eventStore;
         private readonly ILogStore logStore;
@@ -50,11 +53,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ISubscriptionStore subscriptionStore,
             ITemplateStore templateStore,
             IUserStore userStore,
-            IUserEventProducer userEventProducer)
+            IUserEventProducer userEventProducer,
+            ISemanticLog log)
         {
             this.subscriptionStore = subscriptionStore;
             this.counters = counters;
             this.eventStore = eventStore;
+            this.log = log;
             this.logStore = logStore;
             this.templateStore = templateStore;
             this.userStore = userStore;
@@ -64,85 +69,112 @@ namespace Notifo.Domain.UserEvents.Pipeline
         public async Task PublishAsync(EventMessage message,
             CancellationToken ct)
         {
-            if (string.IsNullOrWhiteSpace(message.AppId))
+            using (Telemetry.Activities.StartActivity("PublishUserEvent"))
             {
-                return;
-            }
+                log.LogInformation(message, (m, w) => w
+                    .WriteProperty("action", "HandleEvent")
+                    .WriteProperty("status", "Started")
+                    .WriteProperty("appId", m.AppId)
+                    .WriteProperty("eventId", m.Id)
+                    .WriteProperty("eventTopic", m.Topic)
+                    .WriteProperty("eventType", m.ToString()));
 
-            if (string.IsNullOrWhiteSpace(message.Topic))
-            {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoTopic, ct);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(message.TemplateCode) && message.Formatting?.HasSubject() != true)
-            {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode, ct);
-                return;
-            }
-
-            var count = 0;
-
-            await foreach (var subscription in GetSubscriptions(message).WithCancellation(ct))
-            {
-                if (count == 0)
+                if (string.IsNullOrWhiteSpace(message.AppId))
                 {
-                    if (!string.IsNullOrWhiteSpace(message.TemplateCode))
+                    log.LogWarning(message, (m, w) => w
+                        .WriteProperty("action", "HandleEvent")
+                        .WriteProperty("status", "Failed")
+                        .WriteProperty("reason", "NoAppId")
+                        .WriteProperty("appId", m.AppId)
+                        .WriteProperty("eventId", m.Id)
+                        .WriteProperty("eventTopic", m.Topic)
+                        .WriteProperty("eventType", m.ToString()));
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(message.Topic))
+                {
+                    await logStore.LogAsync(message.AppId, Texts.Events_NoTopic);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(message.TemplateCode) && message.Formatting?.HasSubject() != true)
+                {
+                    await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode);
+                    return;
+                }
+
+                var count = 0;
+
+                await foreach (var subscription in GetSubscriptions(message).WithCancellation(ct))
+                {
+                    if (count == 0)
                     {
-                        var template = await templateStore.GetAsync(message.AppId, message.TemplateCode, ct);
-
-                        if (template?.IsAutoCreated == false)
+                        if (!string.IsNullOrWhiteSpace(message.TemplateCode))
                         {
-                            message.Formatting = template.Formatting;
+                            var template = await templateStore.GetAsync(message.AppId, message.TemplateCode, ct);
 
-                            if (template.Settings?.Count > 0)
+                            if (template?.IsAutoCreated == false)
                             {
-                                var settings = new NotificationSettings();
+                                message.Formatting = template.Formatting;
 
-                                settings.OverrideBy(template.Settings);
-                                settings.OverrideBy(message.Settings);
+                                if (template.Settings?.Count > 0)
+                                {
+                                    var settings = new NotificationSettings();
 
-                                message.Settings = settings;
+                                    settings.OverrideBy(template.Settings);
+                                    settings.OverrideBy(message.Settings);
+
+                                    message.Settings = settings;
+                                }
                             }
+                        }
+
+                        if (message.Formatting?.HasSubject() != true)
+                        {
+                            await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode));
+                            return;
+                        }
+
+                        message.Formatting = message.Formatting.Format(message.Properties);
+
+                        try
+                        {
+                            await eventStore.InsertAsync(message, ct);
+                        }
+                        catch (UniqueConstraintException)
+                        {
+                            await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed);
+                            break;
                         }
                     }
 
-                    if (message.Formatting?.HasSubject() != true)
-                    {
-                        await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode), ct);
-                        return;
-                    }
+                    var userEventMessage = CreateUserEventMessage(message, subscription);
 
-                    message.Formatting = message.Formatting.Format(message.Properties);
+                    await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
 
-                    try
-                    {
-                        await eventStore.InsertAsync(message, ct);
-                    }
-                    catch (UniqueConstraintException)
-                    {
-                        await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed, ct);
-                        break;
-                    }
+                    count++;
                 }
 
-                var userEventMessage = CreateUserEventMessage(message, subscription);
+                if (count > 0)
+                {
+                    var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
+                    var counterKey = CounterKey.ForEvent(message);
 
-                await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
+                    await counters.CollectAsync(counterKey, counterMap, ct);
+                }
+                else
+                {
+                    await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber);
+                }
 
-                count++;
-            }
-
-            if (count > 0)
-            {
-                var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
-                var counterKey = CounterKey.ForEvent(message);
-
-                await counters.CollectAsync(counterKey, counterMap, ct);
-            }
-            else
-            {
-                await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber, ct);
+                log.LogInformation(message, (m, w) => w
+                    .WriteProperty("action", "HandleEvent")
+                    .WriteProperty("status", "Success")
+                    .WriteProperty("appId", m.AppId)
+                    .WriteProperty("eventId", m.Id)
+                    .WriteProperty("eventTopic", m.Topic)
+                    .WriteProperty("eventType", m.ToString()));
             }
         }
 

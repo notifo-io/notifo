@@ -38,6 +38,9 @@ export interface FormEditorProps {
 
     // True if disabled.
     disabled?: boolean;
+
+    // True to hide the error.
+    hideError?: boolean;
 }
 
 export interface ArrayFormProps<T> extends FormEditorProps {
@@ -89,7 +92,7 @@ export module Forms {
     };
 
     export const Row = (props: FormRowProps) => {
-        const { children, className, hints, name, label, vertical } = props;
+        const { children, className, hideError, hints, name, label, vertical } = props;
 
         return vertical ? (
             <FormGroup className={className}>
@@ -97,7 +100,9 @@ export module Forms {
                     <Label htmlFor={name}>{label}</Label>
                 }
 
-                <Forms.Error name={name} />
+                {!hideError &&
+                    <Forms.Error name={name} />
+                }
 
                 {children}
 
@@ -112,7 +117,9 @@ export module Forms {
                 )}
 
                 <Col sm={8}>
-                    <Forms.Error name={name} />
+                    {!hideError &&
+                        <Forms.Error name={name} />
+                    }
 
                     {children}
 
@@ -126,7 +133,7 @@ export module Forms {
         const clazz = `localized-value ${className}`;
 
         return (
-            <Forms.Row className={clazz} {...other}>
+            <Forms.Row className={clazz} {...other} hideError>
                 <InputLocalizedText {...other} />
             </Forms.Row>
         );
@@ -136,7 +143,7 @@ export module Forms {
         const clazz = `localized-value ${className}`;
 
         return (
-            <Forms.Row className={clazz} {...other}>
+            <Forms.Row className={clazz} {...other} hideError>
                 <InputLocalizedTextArea {...other} />
             </Forms.Row>
         );

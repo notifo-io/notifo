@@ -7,13 +7,13 @@
 
 import { ApiValue, Gist } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
-import { getApp, useApps } from '@app/state';
+import { useApp } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { Card, CardBody, FormGroup, Label } from 'reactstrap';
 
 export const AppDashboardPage = () => {
-    const app = useApps(getApp);
+    const app = useApp()!;
 
     const sortedKeys = React.useMemo(() => {
         const keys = Object.keys(app.apiKeys).map(x => ([x, app.apiKeys[x]]));

@@ -5,9 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+export * from './AppsDropdown';
 export * from './CounterCards';
 export * from './CounterRow';
 export * from './EmailTemplateInput';
+export * from './Logo';
 export * from './MediaCard';
 export * from './MediaInput';
 export * from './MediaPicker';

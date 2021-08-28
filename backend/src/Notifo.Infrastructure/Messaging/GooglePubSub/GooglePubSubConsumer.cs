@@ -79,7 +79,18 @@ namespace Notifo.Infrastructure.Messaging.GooglePubSub
                 }
 
                 return SubscriberClient.Reply.Ack;
-            }).Forget();
+            }).ContinueWith(task =>
+            {
+                var exception = task.Exception?.Flatten()?.InnerException;
+
+                if (exception != null && exception is not OperationCanceledException)
+                {
+                    log.LogError(exception, w => w
+                        .WriteProperty("action", "ConsumeMessage")
+                        .WriteProperty("system", "GooglePubSub")
+                        .WriteProperty("status", "Failed"));
+                }
+            }, CancellationToken.None).Forget();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class SmsFormatter : ISmsFormatter
     {
-        private const string NotificationPlaceholder = "<NOTIFICATION>";
+        private const string NotificationPlaceholder = "{{notification.subject}}";
 
         private sealed class Validator : AbstractValidator<SmsTemplate>
         {

@@ -16,7 +16,8 @@ namespace Notifo.Domain.Log
         Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
             CancellationToken ct = default);
 
-        Task LogAsync(string appId, string message,
-            CancellationToken ct = default);
+        Task LogAsync(string appId, string system, string message);
+
+        Task LogAsync(string appId, string message);
     }
 }

@@ -56,13 +56,11 @@ namespace Notifo.Domain.Integrations.Threema
             return Task.CompletedTask;
         }
 
-        public async Task<bool> SendAsync(MessagingJob job,
+        public async Task<bool> SendAsync(MessagingJob job, string text,
             CancellationToken ct)
         {
             using (var httpClient = httpClientFactory.CreateClient())
             {
-                var text = job.Notification.Formatting.Subject;
-
                 Exception? exception = null;
 
                 if (job.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))

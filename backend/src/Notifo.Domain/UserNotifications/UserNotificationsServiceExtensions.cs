@@ -5,17 +5,22 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Configuration;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.UserNotifications.MongoDb;
-using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class UserNotificationsServiceExtensions
     {
-        public static void AddMyUserNotifications(this IServiceCollection services)
+        public static void AddMyUserNotifications(this IServiceCollection services, IConfiguration config)
         {
+            var options = config.GetSection("pipeline:confirms").Get<ConfirmPipelineOptions>() ?? new ConfirmPipelineOptions();
+
+            services.AddMessaging<ConfirmMessage>(options.ChannelName)
+                .ConsumedBy<UserNotificationService>();
+
             services.AddSingletonAs<UserNotificationStore>()
                 .As<IUserNotificationStore>();
 
@@ -23,9 +28,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IUserNotificationFactory>();
 
             services.AddSingletonAs<UserNotificationService>()
-                .As<IUserNotificationService>().As<IScheduleHandler<UserEventMessage>>();
+                .As<IUserNotificationService>().AsSelf();
 
-            services.AddScheduler<UserEventMessage>(new SchedulerOptions { QueueName = "UserNotifications" });
+            services.AddScheduler<UserEventMessage>("UserNotifications");
         }
 
         public static void AddMyMongoUserNotifications(this IServiceCollection services)

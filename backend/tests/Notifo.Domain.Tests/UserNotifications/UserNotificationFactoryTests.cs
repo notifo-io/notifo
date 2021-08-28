@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using FakeItEasy;
 using FluentAssertions;
 using NodaTime;
@@ -51,6 +50,9 @@ namespace Notifo.Domain.UserNotifications
 
             A.CallTo(() => notificationUrl.TrackSeen(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"seen/{id}/?lang={lang}"));
+
+            A.CallTo(() => notificationUrl.TrackDelivered(A<Guid>._, A<string>._))
+                .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"delivered/{id}/?lang={lang}"));
 
             sut = new UserNotificationFactory(clock, logStore, notificationUrl);
         }
@@ -153,7 +155,7 @@ namespace Notifo.Domain.UserNotifications
             Assert.Equal("deText", notification.Formatting.Subject);
             Assert.Equal("de", notification.UserLanguage);
 
-            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
                 .MustNotHaveHappened();
         }
 
@@ -169,7 +171,7 @@ namespace Notifo.Domain.UserNotifications
             Assert.Equal("enText", notification.Formatting.Subject);
             Assert.Equal("en", notification.UserLanguage);
 
-            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
                 .MustHaveHappened();
         }
 

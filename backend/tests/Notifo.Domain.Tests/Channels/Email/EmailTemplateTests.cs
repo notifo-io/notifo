@@ -156,7 +156,7 @@ namespace Notifo.Domain.Channels.Email
                         ImageLarge = string.Empty,
                         ConfirmText = "Got It!"
                     },
-                    TrackingUrl = "https://track.notifo.com"
+                    TrackSeenUrl = "https://track.notifo.com"
                 }
             };
 
@@ -167,9 +167,9 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in notifications)
             {
-                Assert.Contains(notification.TrackingUrl, html);
+                Assert.Contains(notification.TrackSeenUrl, html);
 
-                Assert.DoesNotContain(notification.TrackingUrl, text);
+                Assert.DoesNotContain(notification.TrackSeenUrl, text);
             }
 
             DoesNotContainPlaceholders(text);

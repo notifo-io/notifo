@@ -24,6 +24,7 @@ namespace Notifo.Domain.ChannelTemplates
         {
             this.repository = repository;
             this.serviceProvider = serviceProvider;
+
             this.clock = clock;
         }
 
@@ -49,7 +50,7 @@ namespace Notifo.Domain.ChannelTemplates
             return template;
         }
 
-        public async Task<T?> GetBestAsync(string appId, string? name, string language,
+        public async Task<(TemplateResolveStatus, T?)> GetBestAsync(string appId, string? name, string language,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
@@ -59,12 +60,22 @@ namespace Notifo.Domain.ChannelTemplates
 
             if (template == null)
             {
-                return null;
+                return (TemplateResolveStatus.NotFound, null);
             }
 
-            template.Languages.TryGetValue(language, out var typedLanguage);
+            if (!template.Languages.TryGetValue(language, out var result))
+            {
+                return (TemplateResolveStatus.LanguageNotFound, null);
+            }
 
-            return typedLanguage;
+            var status = TemplateResolveStatus.Resolved;
+
+            if (!string.IsNullOrWhiteSpace(name) && !string.Equals(template.Name, name, StringComparison.Ordinal))
+            {
+                status = TemplateResolveStatus.ResolvedWithFallback;
+            }
+
+            return (status, result);
         }
 
         public Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> command,

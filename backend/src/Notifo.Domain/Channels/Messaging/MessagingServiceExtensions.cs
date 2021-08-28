@@ -8,6 +8,7 @@
 using System;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
+using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -17,9 +18,17 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMyMessagingChannel(this IServiceCollection services)
         {
             services.AddSingletonAs<MessagingChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<MessagingJob>>();
+                .As<ICommunicationChannel>();
 
-            services.AddScheduler<MessagingJob>(new SchedulerOptions { QueueName = Providers.Messaging, ExecutionRetries = Array.Empty<int>() });
+            services.AddSingletonAs<MessagingFormatter>()
+                .As<IMessagingFormatter>().As<IChannelTemplateFactory<MessagingTemplate>>();
+
+            services.AddChannelTemplates<MessagingTemplate>();
+
+            services.AddScheduler<MessagingJob>(Providers.Messaging, new SchedulerOptions
+            {
+                ExecutionRetries = Array.Empty<int>()
+            });
         }
     }
 }

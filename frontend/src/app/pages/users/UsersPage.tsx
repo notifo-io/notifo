@@ -8,7 +8,7 @@
 import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
-import { deleteUser, getApp, loadUsers, togglePublishDialog, useApps, useUsers } from '@app/state';
+import { deleteUser, loadUsers, togglePublishDialog, useApp, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,7 +21,7 @@ import { UserRow } from './UserRow';
 export const UsersPage = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const dialogEdit = useDialog();
     const dialogNew = useDialog();

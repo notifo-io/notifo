@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
-import { getApp, loadEvents, useApps, useEvents } from '@app/state';
+import { loadEvents, useApp, useEvents } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,7 @@ import { EventRow } from './EventRow';
 
 export const EventsPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const events = useEvents(x => x.events);
     const [showCounters, setshowCounters] = useSavedState(false, 'show.counters');

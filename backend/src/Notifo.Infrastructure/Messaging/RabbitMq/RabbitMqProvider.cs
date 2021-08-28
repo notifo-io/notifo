@@ -41,7 +41,7 @@ namespace Notifo.Infrastructure.Messaging.RabbitMq
 
         public IInitializable GetConsumer<TConsumer, T>(IServiceProvider serviceProvider, string channelName) where TConsumer : IAbstractConsumer<T>
         {
-            return ActivatorUtilities.CreateInstance<RabbitMqConsumer<T>>(serviceProvider, channelName);
+            return ActivatorUtilities.CreateInstance<RabbitMqConsumer<TConsumer, T>>(serviceProvider, channelName);
         }
 
         public IAbstractProducer<T> GetProducer<T>(IServiceProvider serviceProvider, string channelName)

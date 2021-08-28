@@ -31,6 +31,9 @@ namespace Notifo.Domain.UserNotifications
         Task DeleteAsync(Guid id,
             CancellationToken ct = default);
 
+        Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+            CancellationToken ct = default);
+
         Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
             CancellationToken ct = default);
 

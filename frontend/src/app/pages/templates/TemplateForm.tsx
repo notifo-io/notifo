@@ -8,7 +8,7 @@
 import { FormError, Forms, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
-import { getApp, upsertTemplate, useApps, useTemplates } from '@app/state';
+import { upsertTemplate, useApp, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
@@ -72,7 +72,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const upserting = useTemplates(x => x.upserting);

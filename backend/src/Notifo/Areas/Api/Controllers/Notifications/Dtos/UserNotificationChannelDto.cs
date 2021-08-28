@@ -7,7 +7,9 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
@@ -25,12 +27,27 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         [Required]
         public Dictionary<string, ChannelSendInfoDto> Status { get; set; }
 
+        /// <summary>
+        /// The first time the notification has been marked as delivered for this channel.
+        /// </summary>
+        public Instant? FirstDelivered { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as seen for this channel.
+        /// </summary>
+        public Instant? FirstSeen { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as confirmed for this channel.
+        /// </summary>
+        public Instant? FirstConfirmed { get; set; }
+
         public static UserNotificationChannelDto FromDomainObject(UserNotificationChannel source)
         {
-            var result = new UserNotificationChannelDto
+            var result = SimpleMapper.Map(source, new UserNotificationChannelDto
             {
                 Status = new Dictionary<string, ChannelSendInfoDto>()
-            };
+            });
 
             if (source.Setting != null)
             {

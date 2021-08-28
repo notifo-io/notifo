@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="3.7.2.2" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.1.22" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.2.6" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.1.26" />
     <PackageReference Include="Confluent.Kafka" Version="1.7.0" />
-    <PackageReference Include="FluentValidation" Version="10.3.0" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.6.0" />
+    <PackageReference Include="FluentValidation" Version="10.3.3" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.5.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
@@ -32,15 +32,15 @@
     <PackageReference Include="Squidex.Assets.Mongo" Version="1.8.0" />
     <PackageReference Include="Squidex.Assets.S3" Version="1.8.0" />
     <PackageReference Include="Squidex.Caching" Version="1.8.0" />
-    <PackageReference Include="Squidex.Hosting" Version="1.9.0" />
-    <PackageReference Include="Squidex.Hosting.Abstractions" Version="1.9.0" />
-    <PackageReference Include="Squidex.Log" Version="1.5.0" />
+    <PackageReference Include="Squidex.Hosting" Version="2.0.0" />
+    <PackageReference Include="Squidex.Hosting.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Squidex.Log" Version="1.6.0" />
     <PackageReference Include="Squidex.Text" Version="1.7.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Tools" Version="2.38.1">
+    <PackageReference Include="Grpc.Tools" Version="2.39.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

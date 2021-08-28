@@ -6,13 +6,13 @@
  */
 
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { getApp, loadSmsTemplates, useApps, useSmsTemplates } from '@app/state';
+import { loadSmsTemplates, useApp, useSmsTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 export const SmsTemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const templates = useSmsTemplates(x => x.templates);
 

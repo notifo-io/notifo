@@ -6,9 +6,14 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
+using Notifo.Domain.Log;
+using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
+using Squidex.Log;
 using IEventProducer = Notifo.Infrastructure.Messaging.IAbstractProducer<Notifo.Domain.Events.EventMessage>;
 
 namespace Notifo.Domain.Events.Pipeline
@@ -17,43 +22,58 @@ namespace Notifo.Domain.Events.Pipeline
     {
         private static readonly Duration MaxAge = Duration.FromHours(1);
         private readonly IEventProducer producer;
+        private readonly ILogStore logStore;
+        private readonly ISemanticLog log;
         private readonly IClock clock;
 
-        public EventPublisher(IEventProducer producer, IClock clock)
+        public EventPublisher(IEventProducer producer, ILogStore logStore, ISemanticLog log, IClock clock)
         {
             this.producer = producer;
-
+            this.logStore = logStore;
+            this.log = log;
             this.clock = clock;
         }
 
-        public async Task PublishAsync(EventMessage message)
+        public async Task PublishAsync(EventMessage message,
+            CancellationToken ct)
         {
             Guard.NotNull(message, nameof(message));
 
-            message.Validate();
-
-            var now = clock.GetCurrentInstant();
-
-            if (message.Created == default)
+            using (Telemetry.Activities.StartActivity("PublishEvent"))
             {
-                message.Created = clock.GetCurrentInstant();
-            }
-            else
-            {
-                var age = now - message.Created;
+                message.Validate();
 
-                if (age > MaxAge)
+                var now = clock.GetCurrentInstant();
+
+                if (message.Created == default)
                 {
-                    return;
+                    message.Created = clock.GetCurrentInstant();
                 }
-            }
+                else
+                {
+                    var age = now - message.Created;
 
-            if (string.IsNullOrWhiteSpace(message.Id))
-            {
-                message.Id = Guid.NewGuid().ToString();
-            }
+                    if (age > MaxAge)
+                    {
+                        await logStore.LogAsync(message.AppId, Texts.Events_TooOld);
+                        return;
+                    }
+                }
 
-            await producer.ProduceAsync(message.AppId, message);
+                if (string.IsNullOrWhiteSpace(message.Id))
+                {
+                    message.Id = Guid.NewGuid().ToString();
+                }
+
+                await producer.ProduceAsync(message.AppId, message);
+
+                log.LogInformation(message, (m, w) => w
+                    .WriteProperty("action", "EventReceived")
+                    .WriteProperty("appId", m.AppId)
+                    .WriteProperty("eventId", m.Id)
+                    .WriteProperty("eventTopic", m.Topic)
+                    .WriteProperty("eventType", m.ToString()));
+            }
         }
     }
 }

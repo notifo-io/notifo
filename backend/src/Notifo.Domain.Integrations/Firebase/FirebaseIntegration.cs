@@ -95,12 +95,10 @@ namespace Notifo.Domain.Integrations.Firebase
                     return null;
                 }
 
-                var messaging = senderPool.GetMessaging(projectId, credentials);
-
                 var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
                 var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
 
-                return new FirebaseMobilePushSender(messaging, sendSilentIOS, sendSilentAndroid);
+                return new FirebaseMobilePushSender(() => senderPool.GetMessaging(projectId, credentials), sendSilentIOS, sendSilentAndroid);
             }
 
             return null;

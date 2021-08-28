@@ -9,6 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 using NSwag.Annotations;
 
@@ -17,14 +18,24 @@ namespace Notifo.Areas.Api.Controllers.Tracking
     [OpenApiIgnore]
     public sealed class TrackingController : Controller
     {
+        private readonly IAppStore appStore;
         private readonly IUserNotificationService userNotificationService;
+        private readonly IUserNotificationStore userNotificationStore;
 
-        public TrackingController(IUserNotificationService userNotificationService)
+        public TrackingController(
+            IAppStore appStore,
+            IUserNotificationService userNotificationService,
+            IUserNotificationStore userNotificationStore)
         {
+            this.appStore = appStore;
             this.userNotificationService = userNotificationService;
+            this.userNotificationStore = userNotificationStore;
         }
 
-        [HttpGet("/api/tracking/notifications/{id}/seen")]
+        [HttpGet]
+        [HttpPut]
+        [HttpPost]
+        [Route("/api/tracking/notifications/{id}/seen")]
         public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
@@ -34,14 +45,17 @@ namespace Notifo.Areas.Api.Controllers.Tracking
             return TrackingPixel();
         }
 
-        [HttpPost("/api/tracking/notifications/{id}/seen")]
-        public async Task<IActionResult> SeenPost(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
+        [HttpGet]
+        [HttpPut]
+        [HttpPost]
+        [Route("/api/tracking/notifications/{id}/delivered")]
+        public async Task<IActionResult> Delivered(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
 
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), details);
+            await userNotificationService.TrackDeliveredAsync(Enumerable.Repeat(id, 1), details);
 
-            return NoContent();
+            return TrackingPixel();
         }
 
         [HttpGet("/api/tracking/notifications/{id}/confirm")]
@@ -49,7 +63,16 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
 
-            var (_, app) = await userNotificationService.TrackConfirmedAsync(id, details);
+            await userNotificationService.TrackConfirmedAsync(id, details);
+
+            var notification = await userNotificationStore.FindAsync(id, HttpContext.RequestAborted);
+
+            if (notification == null)
+            {
+                return View();
+            }
+
+            var app = await appStore.GetCachedAsync(notification.AppId, HttpContext.RequestAborted);
 
             if (app?.ConfirmUrl != null && Uri.IsWellFormedUriString(app.ConfirmUrl, UriKind.Absolute))
             {

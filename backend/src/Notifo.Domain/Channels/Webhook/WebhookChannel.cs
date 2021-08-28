@@ -123,7 +123,7 @@ namespace Notifo.Domain.Channels.Webhook
                 }
                 catch (Exception ex)
                 {
-                    await logStore.LogAsync(job.Notification.AppId, $"Webhook: {ex.Message}", ct);
+                    await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
                     throw;
                 }
             }

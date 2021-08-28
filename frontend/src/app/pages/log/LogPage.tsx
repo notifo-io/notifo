@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
-import { getApp, loadLog, useApps, useLog } from '@app/state';
+import { loadLog, useApp, useLog } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,7 @@ import { LogEntryRow } from './LogEntryRow';
 
 export const LogPage = () => {
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const logEntries = useLog(x => x.entries);
 

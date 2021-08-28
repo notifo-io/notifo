@@ -18,7 +18,7 @@ namespace Notifo.Domain.Integrations.Smtp
         {
             var options = TestHelpers.Configuration.GetSection("email:smtp").Get<SmtpOptions>();
 
-            return new SmtpEmailSender(new SmtpEmailServer(options), Address, Address);
+            return new SmtpEmailSender(() => new SmtpEmailServer(options), Address, Address);
         }
     }
 }

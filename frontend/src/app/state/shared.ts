@@ -8,7 +8,7 @@
 import { buildError } from '@app/framework';
 import { AsyncThunkPayloadCreator, createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-export const selectApp = createAction<{ appId: string }>('apps/select');
+export const selectApp = createAction<{ appId: string | undefined }>('apps/select');
 
 export function createApiThunk<Returned, ThunkArg = void>(typePrefix: string, payloadCreator: AsyncThunkPayloadCreator<Returned, ThunkArg, any>) {
     return createAsyncThunk<Returned, ThunkArg>(typePrefix, async (arg, thunkApi) => {

@@ -69,20 +69,20 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     }
 
                     notificationProperties.Clear();
-                    notificationProperties["notification.body"] = GetBody(notification.Formatting, asHtml);
-                    notificationProperties["notification.confirmText"] = GetConfirmText(notification.Formatting);
-                    notificationProperties["notification.confirmUrl"] = GetConfirmUrl(notification);
-                    notificationProperties["notification.imageLarge"] = GetImageLarge(notification.Formatting, imageFormatter);
-                    notificationProperties["notification.imageSmall"] = GetImageSmall(notification.Formatting, imageFormatter);
-                    notificationProperties["notification.subject"] = GetSubject(notification.Formatting, asHtml);
+                    notificationProperties["notification.body"] = notification.Body(asHtml);
+                    notificationProperties["notification.confirmText"] = notification.ConfirmText();
+                    notificationProperties["notification.confirmUrl"] = notification.ConfirmUrl();
+                    notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge");
+                    notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall");
+                    notificationProperties["notification.subject"] = notification.Subject(asHtml);
 
                     inner = inner.Format(notificationProperties);
 
                     stringBuilder.AppendLine(inner);
 
-                    if (!string.IsNullOrEmpty(notification.TrackingUrl) && asHtml)
+                    if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
                     {
-                        stringBuilder.Append($"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackingUrl}\" />");
+                        stringBuilder.Append($"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackSeenUrl}\" />");
                     }
                 });
 
@@ -92,69 +92,6 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 Pool.Return(stringBuilder);
             }
-        }
-
-        private static string? GetConfirmText(NotificationFormatting<string> formatting)
-        {
-            return formatting.ConfirmText;
-        }
-
-        private static string? GetConfirmUrl(BaseUserNotification notification)
-        {
-            return notification.ConfirmUrl;
-        }
-
-        private static string? GetImageSmall(NotificationFormatting<string> formatting, IImageFormatter imageFormatter)
-        {
-            return imageFormatter.Format(formatting.ImageSmall, "EmailSmall");
-        }
-
-        private static string? GetImageLarge(NotificationFormatting<string> formatting, IImageFormatter imageFormatter)
-        {
-            return imageFormatter.Format(formatting.ImageLarge, "EmailSmall");
-        }
-
-        private static string GetSubject(NotificationFormatting<string> formatting, bool asHtml)
-        {
-            var subject = formatting.Subject!;
-
-            if (asHtml && !string.IsNullOrWhiteSpace(formatting.LinkUrl))
-            {
-                subject = $"<a href=\"{formatting.LinkUrl}\" target=\"_blank\" rel=\"noopener\">{subject}</a>";
-            }
-
-            return subject;
-        }
-
-        private static string? GetBody(NotificationFormatting<string> formatting, bool asHtml)
-        {
-            var body = formatting.Body;
-
-            if (asHtml && !string.IsNullOrWhiteSpace(formatting.LinkText) && !string.IsNullOrWhiteSpace(formatting.LinkUrl))
-            {
-                if (body?.Length > 0)
-                {
-                    return $"{body} <a href=\"{formatting.LinkUrl}\">{formatting.LinkText}</a>";
-                }
-                else
-                {
-                    return $"<a href=\"{formatting.LinkUrl}\">{formatting.LinkText}</a>";
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(formatting.LinkUrl))
-            {
-                if (body?.Length > 0)
-                {
-                    return $"{body} {formatting.LinkUrl}";
-                }
-                else
-                {
-                    return formatting.LinkUrl;
-                }
-            }
-
-            return body;
         }
 
         public static ParsedTemplate? Create(string? body)

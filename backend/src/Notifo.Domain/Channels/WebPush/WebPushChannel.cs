@@ -86,7 +86,7 @@ namespace Notifo.Domain.Channels.WebPush
         public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            var subscription = options.User.WebPushSubscriptions.SingleOrDefault(x => x.Endpoint == configuration);
+            var subscription = options.User.WebPushSubscriptions.FirstOrDefault(x => x.Endpoint == configuration);
 
             if (subscription == null)
             {
@@ -124,7 +124,10 @@ namespace Notifo.Domain.Channels.WebPush
         public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.Subscription.Endpoint, Name, ct))
+            var config = job.Subscription.Endpoint;
+
+            // If the notification is not scheduled it is very unlikey it has been confirmed already.
+            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, config, Name, ct))
             {
                 await UpdateAsync(job, ProcessStatus.Skipped);
             }
@@ -151,7 +154,7 @@ namespace Notifo.Domain.Channels.WebPush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, ex.Message, ct);
+                    await logStore.LogAsync(job.AppId, Name, ex.Message);
                     throw;
                 }
             }
@@ -173,7 +176,7 @@ namespace Notifo.Domain.Channels.WebPush
             }
             catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
             {
-                await logStore.LogAsync(job.AppId, Texts.WebPush_TokenRemoved, ct);
+                await logStore.LogAsync(job.AppId, Name, Texts.WebPush_TokenRemoved);
 
                 var command = new RemoveUserWebPushSubscription
                 {

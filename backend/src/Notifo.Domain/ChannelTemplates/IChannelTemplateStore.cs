@@ -16,7 +16,7 @@ namespace Notifo.Domain.ChannelTemplates
         Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct = default);
 
-        Task<T?> GetBestAsync(string appId, string? name, string language,
+        Task<(TemplateResolveStatus Status, T?)> GetBestAsync(string appId, string? name, string language,
             CancellationToken ct = default);
 
         Task<ChannelTemplate<T>?> GetAsync(string appId, string id,

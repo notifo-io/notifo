@@ -7,7 +7,7 @@
 
 import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
-import { deleteSubscription, getApp, loadSubscriptions, togglePublishDialog, useApps, useSubscriptions } from '@app/state';
+import { deleteSubscription, loadSubscriptions, togglePublishDialog, useApp, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -28,7 +28,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     const { onSwitch, userId } = props;
 
     const dispatch = useDispatch();
-    const app = useApps(getApp);
+    const app = useApp()!;
     const appId = app.id;
     const dialogEdit = useDialog();
     const dialogNew = useDialog();

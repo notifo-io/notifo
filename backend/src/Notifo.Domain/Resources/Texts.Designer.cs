@@ -97,7 +97,34 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email: Integration has been removed..
+        ///   Looks up a localized string similar to Cannot find language {0} in template {1}..
+        /// </summary>
+        internal static string ChannelTemplate_LanguageNotFound {
+            get {
+                return ResourceManager.GetString("ChannelTemplate_LanguageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find template {0}..
+        /// </summary>
+        internal static string ChannelTemplate_NotFound {
+            get {
+                return ResourceManager.GetString("ChannelTemplate_NotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find named template {0}, falling back to primary..
+        /// </summary>
+        internal static string ChannelTemplate_ResolvedWithFallback {
+            get {
+                return ResourceManager.GetString("ChannelTemplate_ResolvedWithFallback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integration has been removed..
         /// </summary>
         internal static string Email_ConfigReset {
             get {
@@ -124,15 +151,6 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email: Template not found anymore..
-        /// </summary>
-        internal static string Email_TemplateNotFound {
-            get {
-                return ResourceManager.GetString("Email_TemplateNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Either template for text or html body must be defined..
         /// </summary>
         internal static string Email_TemplateUndefined {
@@ -142,7 +160,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email: User has been deleted before sending email..
+        ///   Looks up a localized string similar to User has been deleted before sending email..
         /// </summary>
         internal static string Email_UserDeleted {
             get {
@@ -151,7 +169,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email: User has no email address anymore..
+        ///   Looks up a localized string similar to User has no email address anymore..
         /// </summary>
         internal static string Email_UserNoEmail {
             get {
@@ -205,7 +223,16 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Messaging: Integration has been removed..
+        ///   Looks up a localized string similar to Event is too old and will be skipped..
+        /// </summary>
+        internal static string Events_TooOld {
+            get {
+                return ResourceManager.GetString("Events_TooOld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integration has been removed..
         /// </summary>
         internal static string Messaging_ConfigReset {
             get {
@@ -214,7 +241,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MobilePush: Integration has been removed..
+        ///   Looks up a localized string similar to Integration has been removed..
         /// </summary>
         internal static string MobilePush_ConfigReset {
             get {
@@ -223,7 +250,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to MobilePush: Token has been removed..
+        ///   Looks up a localized string similar to Token has been removed..
         /// </summary>
         internal static string MobilePush_TokenRemoved {
             get {
@@ -268,7 +295,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SMS: Integration has been removed..
+        ///   Looks up a localized string similar to Integration has been removed..
         /// </summary>
         internal static string Sms_ConfigReset {
             get {
@@ -457,7 +484,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WebPush: Token does not exist anymore..
+        ///   Looks up a localized string similar to Token does not exist anymore..
         /// </summary>
         internal static string WebPush_TokenRemoved {
             get {

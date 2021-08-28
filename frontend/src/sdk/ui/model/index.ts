@@ -248,7 +248,7 @@ export function getUnseen(state: NotifoState) {
     let count = 0;
 
     for (const notification of state.notifications) {
-        if (notification.trackingUrl && !notification.isSeen) {
+        if (notification.trackSeenUrl && !notification.isSeen) {
             count++;
         }
     }
