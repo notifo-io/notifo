@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.54" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.2" />
+    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.2.0" />
     <PackageReference Include="Google.Cloud.Trace.V2" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.9" />
