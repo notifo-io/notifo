@@ -33,15 +33,15 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
 
             await _.Store.EnqueueScheduledAsync("1", 1, time, 0, default);
 
-            var notDequeued = await _.Store.DequeueAsync(now);
+            var notDequeued = await _.Store.DequeueAsync(now, default);
 
             Assert.Null(notDequeued);
 
-            var dequeued = await _.Store.DequeueAsync(time);
+            var dequeued = await _.Store.DequeueAsync(time, default);
 
             Assert.NotNull(dequeued);
 
-            var dequeuedAgain = await _.Store.DequeueAsync(time);
+            var dequeuedAgain = await _.Store.DequeueAsync(time, default);
 
             Assert.Null(dequeuedAgain);
         }
@@ -55,11 +55,11 @@ namespace Notifo.Infrastructure.MongoDb.Scheduling
             await _.Store.EnqueueGroupedAsync("2", 3, now.Plus(delay1), 0, default);
             await _.Store.EnqueueGroupedAsync("2", 4, now.Plus(delay2), 0, default);
 
-            var notDequeued = await _.Store.DequeueAsync(now);
+            var notDequeued = await _.Store.DequeueAsync(now, default);
 
             Assert.Null(notDequeued);
 
-            var dequeued = await _.Store.DequeueAsync(now.Plus(delay2));
+            var dequeued = await _.Store.DequeueAsync(now.Plus(delay2), default);
 
             Assert.Equal(new List<int> { 3, 4 }, dequeued!.Jobs);
         }
