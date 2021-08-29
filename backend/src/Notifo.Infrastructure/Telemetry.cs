@@ -15,9 +15,9 @@ namespace Notifo.Infrastructure
     {
         public static readonly ActivitySource Activities = new ActivitySource("Notifo");
 
-        public static Activity? StartMethod(this ActivitySource activity, Type type, [CallerMemberName] string? memberName = null)
+        public static Activity? StartMethod(this ActivitySource activity, Type type, [CallerMemberName] string? memberName = null, bool force = true)
         {
-            if (Activity.Current == null)
+            if (Activity.Current == null && !force)
             {
                 return null;
             }
@@ -25,9 +25,9 @@ namespace Notifo.Infrastructure
             return activity.StartActivity($"{type.Name}/{memberName}");
         }
 
-        public static Activity? StartMethod<T>(this ActivitySource activity, [CallerMemberName] string? memberName = null)
+        public static Activity? StartMethod<T>(this ActivitySource activity, [CallerMemberName] string? memberName = null, bool force = true)
         {
-            if (Activity.Current == null)
+            if (Activity.Current == null && !force)
             {
                 return null;
             }
@@ -35,9 +35,9 @@ namespace Notifo.Infrastructure
             return activity.StartActivity($"{typeof(T).Name}/{memberName}");
         }
 
-        public static Activity? StartMethod(this ActivitySource activity, string objectName, [CallerMemberName] string? memberName = null)
+        public static Activity? StartMethod(this ActivitySource activity, string objectName, [CallerMemberName] string? memberName = null, bool force = true)
         {
-            if (Activity.Current == null)
+            if (Activity.Current == null && !force)
             {
                 return null;
             }
