@@ -28,6 +28,8 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
         private readonly ActionBlock<SchedulerBatch<T>> actionBlock;
         private readonly IClock clock;
         private readonly ISemanticLog log;
+        private readonly string activityHandle;
+        private readonly string activityQuery;
         private IScheduleHandler<T>? currentHandler;
 
         private Instant Now
@@ -43,15 +45,21 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             this.schedulerStore = schedulerStore;
             this.schedulerOptions = schedulerOptions;
 
+            activityHandle = $"Scheduler.Handle({schedulerOptions.QueueName})";
+            activityQuery = $"Scheduler.Query({schedulerOptions.QueueName})";
+
             actionBlock = new ActionBlock<SchedulerBatch<T>>(async batch =>
             {
-                try
+                using (Telemetry.Activities.StartActivity(activityHandle))
                 {
-                    await HandleAsync(batch);
-                }
-                catch (OperationCanceledException ex)
-                {
-                    throw new AggregateException(ex);
+                    try
+                    {
+                        await HandleAsync(batch);
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        throw new AggregateException(ex);
+                    }
                 }
             }, new ExecutionDataflowBlockOptions
             {
@@ -93,6 +101,12 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
         }
 
+        public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+            CancellationToken ct = default)
+        {
+            return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
+        }
+
         public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
             CancellationToken ct)
         {
@@ -104,12 +118,6 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
             {
                 await schedulerStore.EnqueueScheduledAsync(key, job, dueTime, 0, ct);
             }
-        }
-
-        public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct = default)
-        {
-            return ScheduleAsync(key, job, Now.Plus(dueTimeFromNow), canInline, ct);
         }
 
         public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
@@ -217,29 +225,35 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased
                 return;
             }
 
-            while (!ct.IsCancellationRequested)
+            using (Telemetry.Activities.StartActivity(activityQuery))
             {
-                try
+                while (!ct.IsCancellationRequested)
                 {
-                    var time = clock.GetCurrentInstant();
-
-                    var document = await schedulerStore.DequeueAsync(time);
-
-                    if (document == null)
+                    try
                     {
-                        var oldTime = time.PlusTicks(-schedulerOptions.FailedTimeout.Ticks);
+                        var time = clock.GetCurrentInstant();
 
-                        await schedulerStore.ResetDeadAsync(oldTime, time);
-                        break;
+                        var document = await schedulerStore.DequeueAsync(time, ct);
+
+                        if (document == null)
+                        {
+                            var oldTime = time.PlusTicks(-schedulerOptions.FailedTimeout.Ticks);
+
+                            // If we are not busy, we can reset the dead entries.
+                            await schedulerStore.ResetDeadAsync(oldTime, time, ct);
+
+                            // If nothing has been queried we end our loop, if somethine has been returned it is very likely there is something else.
+                            break;
+                        }
+
+                        await actionBlock.SendAsync(document, ct);
                     }
-
-                    await actionBlock.SendAsync(document, ct);
-                }
-                catch (Exception ex)
-                {
-                    log.LogError(ex, w => w
-                        .WriteProperty("action", "DequeueJobs")
-                        .WriteProperty("status", "Failed"));
+                    catch (Exception ex)
+                    {
+                        log.LogError(ex, w => w
+                            .WriteProperty("action", "DequeueJobs")
+                            .WriteProperty("status", "Failed"));
+                    }
                 }
             }
         }

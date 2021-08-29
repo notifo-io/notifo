@@ -48,22 +48,26 @@ namespace Notifo.Infrastructure.Scheduling.TimerBased.MongoDb
                 null, ct);
         }
 
-        public async Task<SchedulerBatch<T>?> DequeueAsync(Instant time)
+        public async Task<SchedulerBatch<T>?> DequeueAsync(Instant time,
+            CancellationToken ct)
         {
             return await Collection.FindOneAndUpdateAsync(x => !x.Progressing && x.DueTime <= time,
                 Update
                     .Set(x => x.Progressing, true)
-                    .Set(x => x.ProgressingStarted, time));
+                    .Set(x => x.ProgressingStarted, time),
+                cancellationToken: ct);
         }
 
-        public Task ResetDeadAsync(Instant oldTime, Instant next)
+        public Task ResetDeadAsync(Instant oldTime, Instant next,
+            CancellationToken ct)
         {
             return Collection.UpdateManyAsync(x => x.Progressing && x.ProgressingStarted < oldTime,
                 Update
                     .Set(x => x.DueTime, next)
                     .Set(x => x.Progressing, false)
                     .Set(x => x.ProgressingStarted, null)
-                    .Inc(x => x.RetryCount, 1));
+                    .Inc(x => x.RetryCount, 1),
+                cancellationToken: ct);
         }
 
         public Task RetryAsync(string id, Instant next)
