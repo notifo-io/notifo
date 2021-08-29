@@ -34,17 +34,35 @@ jobs:
 
     - name: BUILD AND PUSH
       id: docker_build
-      if: github.event_name != 'pull_request'
-      uses: docker/build-push-action@v2
-      with:
-        push: ${{ github.ref == 'refs/heads/main' }}
-        cache-from: type=registry,ref=squidex/notifo:cache-dev
-        cache-to: type=registry,ref=squidex/notifo:cache-dev
-        tags: squidex/notifo:dev-${{ env.BUILD_NUMBER }}
-
-    - name: BUILD AND PUSH PR
-      id: docker_build_pr
-      if: github.event_name == 'pull_request'
       uses: docker/build-push-action@v2
       with:
         push: false
+        load: true
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+        tags: notifo-temp
+
+    - name: Save Image to Cache
+      uses: actions/cache@v2
+      with:
+        path: squidex-tmp.tar.gz
+        key: squidex-dev-image-${{ github.sha }}
+
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+    - name: Rename Tags
+      if: github.event_name != 'pull_request'
+      run: |
+        docker tag notifo-tmp squidex/notifo:dev-latest
+        docker tag notifo-tmp squidex/notifo:dev-${{ env.BUILD_NUMBER }}
+
+    - name: Push Tags
+      if: github.event_name != 'pull_request'
+      run: |
+        docker push squidex/notifo:dev-latest
+        docker push squidex/notifo:dev-${{ env.BUILD_NUMBER }}
+
+
