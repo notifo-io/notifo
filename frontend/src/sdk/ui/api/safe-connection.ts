@@ -35,7 +35,7 @@ export class SafeConnection implements Connection {
 
     public onDelete(handler: HandleDeletion) {
         this.inner.onDelete(deletion => {
-            if (this.deletions[deletion.id]) {
+            if (!this.deletions[deletion.id]) {
                 this.deletions[deletion.id] = true;
 
                 // eslint-disable-next-line no-console
