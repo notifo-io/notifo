@@ -48,6 +48,7 @@ namespace Notifo.Domain.Integrations.Smtp
                 try
                 {
                     await server().SendAsync(message, ct);
+                    break;
                 }
                 catch (ObjectDisposedException)
                 {

@@ -48,6 +48,7 @@ namespace Notifo.Domain.Integrations.Mailjet
                 try
                 {
                     await server().SendAsync(message, ct);
+                    break;
                 }
                 catch (ObjectDisposedException)
                 {

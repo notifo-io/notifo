@@ -49,6 +49,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     try
                     {
                         await wrapper().Messaging.SendAsync(message, ct);
+                        break;
                     }
                     catch (ObjectDisposedException)
                     {
