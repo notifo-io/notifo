@@ -36,7 +36,7 @@ export const EmailTemplatePage = () => {
 
     React.useEffect(() => {
         dispatch(loadEmailTemplate({ appId, id: templateId }));
-    }, [appId, templateId]);
+    }, [dispatch, appId, templateId]);
 
     React.useEffect(() => {
         if (loadingTemplateError) {
@@ -54,21 +54,21 @@ export const EmailTemplatePage = () => {
         if (template) {
             setName(template.name || '');
         }
-    }, [template]);
+    }, [setName, template]);
 
     const doSetName = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
-    }, []);
+    }, [setName]);
 
     const doUpdatePrimary = React.useCallback((primary: boolean) => {
         dispatch(updateEmailTemplate({ appId, id: templateId, update: { primary } }));
-    }, [appId, templateId]);
+    }, [dispatch, appId, templateId]);
 
     const doUpdateName = React.useCallback((event: React.FormEvent<HTMLFormElement>) => {
         dispatch(updateEmailTemplate({ appId, id: templateId, update: { name: nameRef.current } }));
 
         event.preventDefault();
-    }, [appId, templateId]);
+    }, [dispatch, appId, templateId, nameRef]);
 
     const doSetLanguage = (language: string) => {
         if (!loadingTemplate && !upserting) {

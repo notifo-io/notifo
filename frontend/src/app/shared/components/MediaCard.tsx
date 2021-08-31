@@ -40,11 +40,11 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
 
     const doDelete = React.useCallback(() => {
         onDelete && onDelete(media);
-    }, [media]);
+    }, [media, onDelete]);
 
     const doClick = React.useCallback(() => {
         onClick && onClick(media);
-    }, [media]);
+    }, [media, onClick]);
 
     const image = `${media.url}?width=200&height=150&mode=Pad`;
 

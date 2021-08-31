@@ -29,7 +29,7 @@ export const Gist = ({ id }: { id: string }) => {
                 document.close();
             }
         }
-    }, [iframe, id]);
+    }, [iframe, id, elementId]);
 
     return (
         <iframe id={elementId} ref={setIFrame} width='100%' frameBorder={0} />

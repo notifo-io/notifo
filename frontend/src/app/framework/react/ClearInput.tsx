@@ -41,7 +41,7 @@ export const ClearInput = (props: InputProps) => {
                 onClear();
             }
         }
-    }, [container.current, onClear]);
+    }, [onClear]);
 
     return (
         <div className='input-container' ref={container}>

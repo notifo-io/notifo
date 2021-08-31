@@ -31,11 +31,7 @@ export const UserPage = () => {
 
     React.useEffect(() => {
         dispatch(loadUser({ appId, userId }));
-    }, [appId, userId]);
-
-    const doEdit = React.useCallback(() => {
-        dialogEdit.open();
-    }, []);
+    }, [dispatch, appId, userId]);
 
     const doDemo = React.useCallback(() => {
         window.open(`/demo.html?userToken=${user.apiKey}`);
@@ -43,7 +39,7 @@ export const UserPage = () => {
 
     const doPublish = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${userId}` } }));
-    }, [userId]);
+    }, [dispatch, userId]);
 
     return (
         <div className='user'>
@@ -123,7 +119,7 @@ export const UserPage = () => {
                                         <ApiValue value={user.emailAddress} />
                                     </FormGroup>
 
-                                    <Button color='primary' onClick={doEdit}>
+                                    <Button color='primary' onClick={dialogEdit.open}>
                                         <Icon type='create' /> {texts.common.edit}
                                     </Button>
                                 </CardBody>

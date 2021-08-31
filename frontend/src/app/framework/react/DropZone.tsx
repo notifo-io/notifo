@@ -49,7 +49,7 @@ export const DropZone = (props: DropZoneProps) => {
     const doPaste = React.useCallback((event: React.ClipboardEvent) => {
         const result = getAllowedFiles(event.clipboardData, files);
 
-        if (result) {
+        if (result && disabled && !noPaste) {
             onDrop && onDrop(result);
         }
     }, [onDrop, disabled, files, noPaste]);
@@ -58,7 +58,7 @@ export const DropZone = (props: DropZoneProps) => {
         if (hasFiles(event.dataTransfer)) {
             const result = getAllowedFiles(event.dataTransfer, files);
 
-            if (result) {
+            if (result && !disabled) {
                 onDrop && onDrop(result);
             }
 
@@ -74,7 +74,7 @@ export const DropZone = (props: DropZoneProps) => {
         if (hasFile) {
             dragEnd();
         }
-    }, [files, dragStart]);
+    }, [files, dragEnd]);
 
     const doDragEnter = React.useCallback((event: React.DragEvent) => {
         const hasFile = hasAllowedFile(event.dataTransfer, files);

@@ -62,11 +62,11 @@ export const PublishDialog = () => {
 
     const doCloseForm = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: false }));
-    }, []);
+    }, [dispatch]);
 
     const doPublish = React.useCallback((params: PublishDto) => {
         dispatch(publish({ appId, params }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const initialValues: any = dialogValues || {};
 

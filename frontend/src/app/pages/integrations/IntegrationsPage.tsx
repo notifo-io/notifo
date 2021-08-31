@@ -23,23 +23,25 @@ type SelectedIntegration = {
     configuredId?: string;
 };
 
+const DEFAULTS: any = {};
+
 export const IntegrationsPage = () => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
-    const configured = useIntegrations(x => x.configured) || {};
-    const definitions = useIntegrations(x => x.supported) || {};
+    const configured = useIntegrations(x => x.configured || DEFAULTS);
+    const definitions = useIntegrations(x => x.supported || DEFAULTS);
     const loading = useIntegrations(x => x.loading);
     const loadingError = useIntegrations(x => x.loadingError);
     const [selected, setSelected] = React.useState<SelectedIntegration>();
 
     React.useEffect(() => {
         dispatch(loadIntegrations({ appId }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadIntegrations({ appId }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doAdd = React.useCallback((definition: IntegrationDefinitionDto, type: string) => {
         setSelected(({ definition, type }));

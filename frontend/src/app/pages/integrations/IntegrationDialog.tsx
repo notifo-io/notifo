@@ -65,7 +65,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
             onClose();
         }
-    }, [appId, configuredId, onClose]);
+    }, [dispatch, appId, configuredId, onClose]);
 
     const doUpsert = React.useCallback((params: UpdateIntegrationDto) => {
         for (const key of Object.keys(params.properties)) {
@@ -77,7 +77,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         } else {
             dispatch(createIntegration({ appId, params: { type, ...params } }));
         }
-    }, [appId, configuredId, type]);
+    }, [dispatch, appId, configuredId, type]);
 
     const schema = React.useMemo(() => {
         const properties: { [name: string]: any } = {};

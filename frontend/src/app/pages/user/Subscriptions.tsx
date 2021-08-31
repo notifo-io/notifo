@@ -41,29 +41,29 @@ export const Subscriptions = (props: SubscriptionsProps) => {
 
     React.useEffect(() => {
         dispatch(loadSubscriptions(appId, userId, {}));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadSubscriptions(appId, userId));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadSubscriptions(appId, userId, q));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const doDelete = React.useCallback((subscription: SubscriptionDto) => {
         dispatch(deleteSubscription({ appId, userId, prefix: subscription.topicPrefix }));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const doPublish = React.useCallback((subscription: SubscriptionDto) => {
         dispatch(togglePublishDialog({ open: true, values: { topic: subscription.topicPrefix } }));
-    }, []);
+    }, [dispatch]);
 
     const doEdit = React.useCallback((subscription: SubscriptionDto) => {
         dialogEdit.open();
 
         setEditSubscription(subscription);
-    }, [dialogEdit.open]);
+    }, [dialogEdit]);
 
     return (
         <>

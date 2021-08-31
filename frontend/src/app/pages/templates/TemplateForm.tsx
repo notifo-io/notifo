@@ -81,7 +81,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
 
     const doPublish = React.useCallback((params: TemplateDto) => {
         dispatch(upsertTemplate({ appId, params }));
-    }, []);
+    }, [dispatch, appId]);
 
     const initialValues: any = template || {};
 

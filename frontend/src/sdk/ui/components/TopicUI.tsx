@@ -42,11 +42,11 @@ export const TopicUI = (props: TopicUIProps) => {
         if (isUndefined(subscription)) {
             loadSubscription(config, topicPrefix, dispatch);
         }
-    }, []);
+    }, [dispatch, config, subscription, topicPrefix]);
 
     const doShow = useCallback(() => {
         setIsOpen(true);
-    }, [subscription]);
+    }, []);
 
     const doHide = useCallback(() => {
         setIsOpen(false);

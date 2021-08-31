@@ -44,15 +44,15 @@ export const UserRow = React.memo((props: UserRowProps) => {
 
     const doDelete = React.useCallback(() => {
         onDelete && onDelete(user);
-    }, [user]);
+    }, [onDelete, user]);
 
     const doEdit = React.useCallback(() => {
         onEdit && onEdit(user);
-    }, [user]);
+    }, [onEdit, user]);
 
     const doPublish = React.useCallback(() => {
         onPublish && onPublish(user);
-    }, [user]);
+    }, [onPublish, user]);
 
     const url = combineUrl(match.url, user.id);
 

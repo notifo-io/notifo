@@ -44,7 +44,7 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
 
     const doDelete = React.useCallback(() => {
         onDelete(template);
-    }, [template]);
+    }, [onDelete, template]);
 
     const url = combineUrl(match.url, template.id);
 

@@ -33,15 +33,15 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
 
     React.useEffect(() => {
         onChange && emailPreview.markup && onChange(emailPreview.markup);
-    }, [emailPreview.markup]);
+    }, [emailPreview.markup, onChange]);
 
     React.useEffect(() => {
         setMarkup(value || '');
-    }, [value]);
+    }, [setMarkup, value]);
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setMarkup(event.target.value);
-    }, []);
+    }, [setMarkup]);
 
     return (
         <div className='email-editor white'>

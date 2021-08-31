@@ -94,15 +94,15 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
 
     const doCreate = React.useCallback(() => {
         dispatch(createEmailTemplateLanguage({ appId, id, language }));
-    }, [appId, id, language]);
+    }, [dispatch, appId, id, language]);
 
     const doUpdate = React.useCallback((template: EmailTemplateDto) => {
         dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
-    }, [appId, id, language]);
+    }, [dispatch, appId, id, language]);
 
     const doDelete = React.useCallback(() => {
         dispatch(deleteEmailTemplateLanguage({ appId, id, language }));
-    }, [appId, id, language]);
+    }, [dispatch, appId, id, language]);
 
     const disabled = updatingLanguage || deletingLanguage;
 

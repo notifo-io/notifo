@@ -23,25 +23,25 @@ export const MediaPage = () => {
 
     React.useEffect(() => {
         dispatch(loadMedia(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadMedia(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadMedia(appId, q));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doDelete = React.useCallback((media: MediaDto) => {
         dispatch(deleteMedia({ appId, fileName: media.fileName }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doUpload = React.useCallback((files: File[]) => {
         for (const file of files) {
             dispatch(uploadMedia({ appId, file }));
         }
-    }, [appId]);
+    }, [dispatch, appId]);
 
     return (
         <div className='medias'>

@@ -37,7 +37,7 @@ export function usePreview(appId: string, type: EmailPreviewType): [MarkupRespon
         return () => {
             clearTimeout(timeout);
         };
-    }, [emailMarkup]);
+    }, [appId, emailMarkup, type]);
 
     return [emailPreview, emailMarkup, setEmailMarkup];
 }

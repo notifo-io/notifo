@@ -15,7 +15,7 @@ export const LoginCallbackPage = () => {
 
     React.useEffect(() => {
         dispatch(loginDone());
-    }, []);
+    }, [dispatch]);
 
     return <></>;
 };
@@ -25,7 +25,7 @@ export const LogoutCallbackPage = () => {
 
     React.useEffect(() => {
         dispatch(logoutDone());
-    }, []);
+    }, [dispatch]);
 
     return <></>;
 };

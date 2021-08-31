@@ -66,23 +66,23 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
         connection.start().then(() => {
             setConnected(true, dispatch);
         });
-    }, [config]);
+    }, [dispatch, config, connection]);
 
     const doConfirm = useCallback(async (notification: NotifoNotification) => {
         await connection.confirmMany([], notification.id);
 
         addNotifications([{ ...notification, isConfirmed: true }], dispatch);
-    }, []);
+    }, [dispatch, connection]);
 
     const doSee = useCallback(async (notification: NotifoNotification) => {
         await connection.confirmMany([notification.id]);
 
         addNotifications([{ ...notification, isSeen: true }], dispatch);
-    }, []);
+    }, [dispatch, connection]);
 
     const doDelete = useCallback(async (notification: NotifoNotification) => {
         await connection.delete(notification.id);
-    }, []);
+    }, [connection]);
 
     const doShow = useCallback(() => {
         setIsOpen(true);

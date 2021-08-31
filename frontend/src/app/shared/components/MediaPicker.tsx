@@ -41,15 +41,15 @@ export const MediaPicker = (props: MediaPickerProps) => {
 
     React.useEffect(() => {
         dispatch(loadMedia(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadMedia(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadMedia(appId, q));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doSelectMedia = React.useCallback((media: MediaDto) => {
         setSelection(media.url);

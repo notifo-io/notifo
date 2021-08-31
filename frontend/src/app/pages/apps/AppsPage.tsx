@@ -22,7 +22,7 @@ export const AppsPage = () => {
 
     React.useEffect(() => {
         dispatch(selectApp({ appId: undefined }));
-    }, []);
+    }, [dispatch]);
 
     return (
         <>

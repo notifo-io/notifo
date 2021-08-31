@@ -38,7 +38,7 @@
     "test": "karma start",
     "test:coverage": "karma start karma.coverage.conf.js",
     "test:clean": "rimraf _test-output",
-    "tslint": "tslint -c tslint.json -p tsconfig.json app/**/*.ts",
+    "lint": "eslint src/**/*.ts[x]",
     "build": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production",
     "build:clean": "rimraf wwwroot/build",
     "build:analyze": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production --env analyze"
@@ -71,6 +71,7 @@
     "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-plugin-import": "^2.23.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-sort-keys-fix": "^1.1.2",
     "eslint-webpack-plugin": "^2.5.4",
     "favicons": "^6.2.2",

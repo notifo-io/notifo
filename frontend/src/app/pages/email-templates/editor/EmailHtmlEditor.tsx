@@ -34,11 +34,11 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
 
     React.useEffect(() => {
         onChange && emailPreview.markup && onChange(emailPreview.markup);
-    }, [emailPreview]);
+    }, [emailPreview, onChange]);
 
     React.useEffect(() => {
         setMarkup(value);
-    }, [value]);
+    }, [setMarkup, value]);
 
     return (
         <div className='email-editor'>

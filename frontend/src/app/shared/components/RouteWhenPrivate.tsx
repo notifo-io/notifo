@@ -27,7 +27,7 @@ export const RouteWhenPrivate = (props: RouteWhenPrivateProps & RouteProps) => {
         if (!isAuthenticated) {
             dispatch(loginStart());
         }
-    }, [isAuthenticated]);
+    }, [dispatch, isAuthenticated]);
 
     if (!isAuthenticated) {
         return null;

@@ -34,7 +34,7 @@ export const SmsTemplatePage = () => {
 
     React.useEffect(() => {
         dispatch(loadSmsTemplate({ appId, id: templateId }));
-    }, [appId, templateId]);
+    }, [dispatch, appId, templateId]);
 
     React.useEffect(() => {
         if (loadingTemplateError) {
@@ -58,7 +58,7 @@ export const SmsTemplatePage = () => {
         }
 
         dispatch(updateSmsTemplate({ appId, id: templateId, update }));
-    }, [appId, templateId]);
+    }, [dispatch, appId, templateId]);
 
     const initialValues = React.useMemo(() => {
         const result: any = { ...template, languages: {} };

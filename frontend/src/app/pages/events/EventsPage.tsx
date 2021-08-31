@@ -28,15 +28,15 @@ export const EventsPage = () => {
 
     React.useEffect(() => {
         dispatch(loadEvents(appId, undefined));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadEvents(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadEvents(appId, q));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     return (
         <div className='events'>

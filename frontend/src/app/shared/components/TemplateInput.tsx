@@ -20,7 +20,7 @@ export const TemplateInput = (props: FormEditorProps) => {
         if (!templates.isLoaded) {
             dispatch(loadTemplates(appId));
         }
-    }, [appId, templates.isLoaded]);
+    }, [dispatch, appId, templates.isLoaded]);
 
     const options = React.useMemo(() => {
         const result: FormEditorOption<string | undefined>[] = [];

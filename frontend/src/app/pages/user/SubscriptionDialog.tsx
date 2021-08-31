@@ -50,20 +50,20 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     }, [upserting]);
 
     React.useEffect(() => {
-        if (!upserting && wasUpserting && !upsertingError) {
-            doCloseForm();
+        if (!upserting && wasUpserting && !upsertingError && onClose) {
+            onClose();
         }
-    }, [upserting, upsertingError, wasUpserting]);
+    }, [onClose, upserting, upsertingError, wasUpserting]);
 
     const doCloseForm = React.useCallback(() => {
         if (onClose) {
             onClose();
         }
-    }, []);
+    }, [onClose]);
 
     const doSave = React.useCallback((params: SubscriptionDto) => {
         dispatch(upsertSubscription({ appId, userId, params }));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const initialValues = subscription || { topicPrefix: '' };
 

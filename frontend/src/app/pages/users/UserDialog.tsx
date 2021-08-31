@@ -42,21 +42,21 @@ export const UserDialog = (props: UserDialogProps) => {
         }
     }, [upserting]);
 
-    React.useEffect(() => {
-        if (!upserting && wasUpserting && !upsertingError) {
-            doCloseForm();
-        }
-    }, [upserting, upsertingError, wasUpserting]);
-
     const doCloseForm = React.useCallback(() => {
         if (onClose) {
             onClose();
         }
-    }, []);
+    }, [onClose]);
+
+    React.useEffect(() => {
+        if (!upserting && wasUpserting && !upsertingError) {
+            doCloseForm();
+        }
+    }, [dispatch, doCloseForm, upserting, upsertingError, wasUpserting]);
 
     const doSave = React.useCallback((params: UpsertUserDto) => {
         dispatch(upsertUser({ appId, params }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const initialValues: any = user || {};
 

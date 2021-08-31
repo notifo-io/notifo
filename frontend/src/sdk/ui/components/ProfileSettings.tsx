@@ -39,7 +39,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
 
     useEffect(() => {
         loadProfile(config, dispatch);
-    }, []);
+    }, [dispatch, config]);
 
     useEffect(() => {
         if (profile) {
@@ -59,7 +59,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
         }
 
         event.preventDefault();
-    }, [profileToEdit]);
+    }, [dispatch, config, profileToEdit]);
 
     const doSetEmail = useCallback((send: boolean | undefined) => {
         if (profileToEdit) {

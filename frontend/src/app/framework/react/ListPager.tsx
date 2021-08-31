@@ -29,11 +29,6 @@ export const ListPager = (props: ListPagerProps) => {
         page,
         pageSize,
     } = list;
-
-    if (items == null && total === 0) {
-        return null;
-    }
-
     const pageCount = Math.ceil(total / pageSize);
 
     const canGoNext = total > 0 ? page < pageCount - 1 : (items && items.length >= pageSize);
@@ -41,19 +36,23 @@ export const ListPager = (props: ListPagerProps) => {
 
     const doGoFirst = React.useCallback(() => {
         onChange({ page: 0 });
-    }, []);
+    }, [onChange]);
 
     const doGoPrev = React.useCallback(() => {
         onChange({ page: page - 1 });
-    }, [page]);
+    }, [onChange, page]);
 
     const doGoNext = React.useCallback(() => {
         onChange({ page: page + 1 });
-    }, [page]);
+    }, [onChange, page]);
 
     const doGoLast = React.useCallback(() => {
         onChange({ page: pageCount - 1 });
-    }, [pageCount]);
+    }, [onChange, pageCount]);
+
+    if (items == null && total === 0) {
+        return null;
+    }
 
     const offset = page * pageSize;
 

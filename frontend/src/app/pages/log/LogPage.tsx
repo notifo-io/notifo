@@ -27,15 +27,15 @@ export const LogPage = () => {
 
     React.useEffect(() => {
         dispatch(loadLog(appId, {}));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadLog(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadLog(appId, q));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     return (
         <div className='log'>

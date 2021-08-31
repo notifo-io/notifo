@@ -19,7 +19,7 @@ export const AppSettingsPage = () => {
 
     React.useEffect(() => {
         dispatch(loadDetails({ appId }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     if (!appDetails) {
         return null;

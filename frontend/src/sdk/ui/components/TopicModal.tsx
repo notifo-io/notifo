@@ -69,11 +69,11 @@ export const TopicModal = (props: TopicModalProps) => {
         if (subscriptionToEdit) {
             subscribe(config, topicPrefix, subscriptionToEdit, dispatch);
         }
-    }, [subscriptionToEdit, topicPrefix]);
+    }, [dispatch, config, subscriptionToEdit, topicPrefix]);
 
     const doUnsubscribe = useCallback(() => {
         unsubscribe(config, topicPrefix, dispatch);
-    }, [topicPrefix]);
+    }, [dispatch, config, topicPrefix]);
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>

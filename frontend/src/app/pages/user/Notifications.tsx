@@ -36,15 +36,15 @@ export const Notifications = (props: NotificationsProps) => {
 
     React.useEffect(() => {
         dispatch(loadNotifications(appId, userId, {}));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadNotifications(appId, userId));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadNotifications(appId, userId, q));
-    }, [appId, userId]);
+    }, [dispatch, appId, userId]);
 
     return (
         <>

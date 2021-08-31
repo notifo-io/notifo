@@ -25,11 +25,11 @@ export const InternalPage = () => {
         dispatch(loadApps());
         dispatch(loadLanguages());
         dispatch(loadTimezones());
-    }, []);
+    }, [dispatch]);
 
     const doLogout = React.useCallback(() => {
         dispatch(logoutStart());
-    }, []);
+    }, [dispatch]);
 
     return (
         <>

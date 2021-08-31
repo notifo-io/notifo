@@ -121,7 +121,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
         }
 
         return undefined;
-    }, [inView, notification, doSee]);
+    }, [inView, notification, doSee, modal]);
 
     const time = useMemo(() => {
         if (!notification.created) {

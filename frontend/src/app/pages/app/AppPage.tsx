@@ -133,11 +133,11 @@ export const AppPage = () => {
         dispatch(selectApp({ appId }));
 
         setAppSelected(true);
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doPublish = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: true }));
-    }, []);
+    }, [dispatch]);
 
     if (loading || !appSelected) {
         return null;

@@ -27,7 +27,7 @@ export const TemplatesPage = () => {
 
     React.useEffect(() => {
         dispatch(loadTemplates(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doOpen = React.useCallback(() => {
         setIsOpen(true);

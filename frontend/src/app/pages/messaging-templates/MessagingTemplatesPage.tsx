@@ -28,7 +28,7 @@ export const MessagingTemplatesPage = () => {
 
     React.useEffect(() => {
         dispatch(loadMessagingTemplates(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     React.useEffect(() => {
         if (creatingError) {
@@ -44,11 +44,11 @@ export const MessagingTemplatesPage = () => {
 
     const doCreate = React.useCallback(() => {
         dispatch(createMessagingTemplate({ appId }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doDelete = React.useCallback((template: ChannelTemplateDto) => {
         dispatch(deleteMessagingTemplate({ appId, id: template.id }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     return (
         <div className='messaging-templates'>

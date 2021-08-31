@@ -30,10 +30,6 @@ export const Confirm = (props: ConfirmProps) => {
 
     const dialog = useDialog();
 
-    const doCancel = React.useCallback(() => {
-        dialog.close();
-    }, [dialog, onConfirm]);
-
     const doConfirm = React.useCallback(() => {
         onConfirm();
 
@@ -68,7 +64,7 @@ export const Confirm = (props: ConfirmProps) => {
                         <div>{text}</div>
                     </ModalBody>
                     <ModalFooter className='justify-content-between'>
-                        <Button color='danger' outline onClick={doCancel}>
+                        <Button color='danger' outline onClick={dialog.close}>
                             {texts.common.no}
                         </Button>
                         <Button color='success' onClick={doConfirm}>

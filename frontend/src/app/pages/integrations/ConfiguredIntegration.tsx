@@ -36,7 +36,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
 
     const doEdit = React.useCallback(() => {
         onEdit(definition, configured, configuredId);
-    }, [definition, configured, configuredId]);
+    }, [onEdit, definition, configured, configuredId]);
 
     const properties = React.useMemo(() => {
         return getSummaryProperties(definition, configured);

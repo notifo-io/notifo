@@ -48,7 +48,7 @@ export const AppSettings = (props: AppSettingsProps) => {
 
     const doSave = React.useCallback((params: UpsertAppDto) => {
         dispatch(upsertApp({ appId: appDetails.id, params }));
-    }, [appDetails.id]);
+    }, [dispatch, appDetails.id]);
 
     return (
         <>

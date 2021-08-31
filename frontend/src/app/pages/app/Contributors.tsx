@@ -33,15 +33,15 @@ export const Contributors = (props: ContributorsProps) => {
 
     const doInvite = React.useCallback(() => {
         dispatch(addContributor({ appId: appDetails.id, params: { email, role: 'Admin' } }));
-    }, [appDetails.id, email]);
+    }, [dispatch, appDetails.id, email]);
 
     const doChange = React.useCallback((id: string, role: string) => {
         dispatch(addContributor({ appId: appDetails.id, params: { email: id, role } }));
-    }, [appDetails.id]);
+    }, [dispatch, appDetails.id]);
 
     const doRemove = React.useCallback((id: string) => {
         dispatch(removeContributor({ appId: appDetails.id, id }));
-    }, [appDetails.id]);
+    }, [dispatch, appDetails.id]);
 
     const disabled = appDetails.role !== 'Owner' || contributorsUpdating;
 

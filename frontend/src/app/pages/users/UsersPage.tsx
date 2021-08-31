@@ -35,29 +35,29 @@ export const UsersPage = () => {
 
     React.useEffect(() => {
         dispatch(loadUsers(appId, {}));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadUsers(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
         dispatch(loadUsers(appId, q));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doDelete = React.useCallback((user: UserDto) => {
         dispatch(deleteUser({ appId, userId: user.id }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doPublish = React.useCallback((user: UserDto) => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${user.id}` } }));
-    }, []);
+    }, [dispatch]);
 
     const doEdit = React.useCallback((user: UserDto) => {
         setCurrentUser(user);
 
         dialogEdit.open();
-    }, []);
+    }, [dialogEdit]);
 
     return (
         <div className='users'>

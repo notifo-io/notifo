@@ -30,31 +30,31 @@ export const TemplatesList = (props: TemplateListProps) => {
 
     React.useEffect(() => {
         dispatch(loadTemplates(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doRefresh = React.useCallback(() => {
         dispatch(loadTemplates(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doNew = React.useCallback(() => {
         onOpen();
 
         dispatch(selectTemplate({ code: undefined }));
-    }, [onOpen]);
+    }, [dispatch, onOpen]);
 
     const doSelect = React.useCallback((template: TemplateDto) => {
         onOpen();
 
         dispatch(selectTemplate({ code: template.code }));
-    }, [onOpen]);
+    }, [dispatch, onOpen]);
 
     const doDelete = React.useCallback((template: TemplateDto) => {
         dispatch(deleteTemplate({ appId, code: template.code }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doPublish = React.useCallback((template: TemplateDto) => {
         dispatch(togglePublishDialog({ open: true, values: { templateCode: template.code } }));
-    }, []);
+    }, [dispatch]);
 
     return (
         <div className='templates-column templates-overview'>

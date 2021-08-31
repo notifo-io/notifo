@@ -260,7 +260,7 @@ const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number;
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         helper.setValue(parseInt(event.target.value, 10));
-    }, []);
+    }, [helper]);
 
     return (
         <>
@@ -392,10 +392,12 @@ const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.O
     );
 };
 
+const EMPTY_ARRAY: any[] = [];
+
 const InputCheckboxOption = (props: { field: FieldInputProps<string[]>; form: FormikContextType<unknown>; option: Forms.Option<string> }) => {
     const { field, form, option } = props;
 
-    const value: string[] = field.value || [];
+    const value: string[] = field.value || EMPTY_ARRAY;
     const valueExist = value && value.indexOf(option.value!) >= 0;
 
     const doChange = React.useCallback(() => {
@@ -404,7 +406,7 @@ const InputCheckboxOption = (props: { field: FieldInputProps<string[]>; form: Fo
         } else {
             form.setFieldValue(field.name, [...value, option.value]);
         }
-    }, [valueExist, option, field, form]);
+    }, [valueExist, form, field.name, value, option.value]);
 
     return (
         <CustomInput type='checkbox' name={option.value} id={option.value || 'none'} checked={valueExist}
@@ -419,7 +421,7 @@ const InputArray = (props: ArrayFormProps<any>) => {
     const { allowedValues, name } = props;
 
     const [field, , helpers] = useField<any[]>(name);
-    const fieldValue = field.value || [];
+    const fieldValue = field.value || EMPTY_ARRAY;
 
     const [newValue, setNewValue] = React.useState<any>(undefined);
 
@@ -433,11 +435,11 @@ const InputArray = (props: ArrayFormProps<any>) => {
 
     const doRemove = React.useCallback((value: any) => {
         helpers.setValue(fieldValue.filter(x => x !== value));
-    }, [fieldValue]);
+    }, [fieldValue, helpers]);
 
     const doAdd = React.useCallback(() => {
         helpers.setValue([...fieldValue, newValue]);
-    }, [fieldValue, newValue]);
+    }, [fieldValue, helpers, newValue]);
 
     const doSelectValue = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
         setNewValue(ev.target.value);

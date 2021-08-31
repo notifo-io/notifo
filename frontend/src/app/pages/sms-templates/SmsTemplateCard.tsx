@@ -29,7 +29,7 @@ export const SmsTemplateCard = (props: SmsTemplateCardProps) => {
 
     const doDelete = React.useCallback(() => {
         onDelete(template);
-    }, [template]);
+    }, [onDelete, template]);
 
     const url = combineUrl(match.url, template.id);
 

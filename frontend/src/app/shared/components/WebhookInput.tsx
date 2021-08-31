@@ -20,7 +20,7 @@ export const WebhookInput = (props: FormEditorProps) => {
         if (!integrations) {
             dispatch(loadIntegrations({ appId }));
         }
-    }, [appId, integrations]);
+    }, [dispatch, appId, integrations]);
 
     const options = React.useMemo(() => {
         const result: FormEditorOption<string | undefined>[] = [{

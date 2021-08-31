@@ -44,15 +44,15 @@ export const TemplateRow = React.memo((props: TemplateRowProps) => {
 
     const doDelete = React.useCallback(() => {
         onDelete && onDelete(template);
-    }, [template]);
+    }, [onDelete, template]);
 
     const doEdit = React.useCallback(() => {
         onEdit && onEdit(template);
-    }, [template]);
+    }, [onEdit, template]);
 
     const doPublish = React.useCallback(() => {
         onPublish && onPublish(template);
-    }, [template]);
+    }, [onPublish, template]);
 
     let clazz = 'list-item-summary';
 

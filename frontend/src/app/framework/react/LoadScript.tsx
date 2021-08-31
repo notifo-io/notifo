@@ -44,7 +44,7 @@ export const Script = (props: ScriptProps) => {
         };
 
         document.body.appendChild(script);
-    }, [url]);
+    }, [onCreate, onDestroy, onLoad, url]);
 
     return <></>;
 };

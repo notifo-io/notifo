@@ -41,7 +41,7 @@ export const NotificationsArchive = (props: NotificationsArchiveProps) => {
 
     useEffect(() => {
         loadArchive(config, dispatch);
-    }, []);
+    }, [dispatch, config]);
 
     const doClose = useCallback((event: Event) => {
         onClose && onClose();

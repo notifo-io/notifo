@@ -25,6 +25,7 @@ export function useDialog() {
 
 export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => void] {
     if (!window.localStorage) {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         return React.useState(initial);
     }
 
@@ -42,8 +43,10 @@ export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => 
         return initial;
     };
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [value, setValue] = React.useState(factory);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const valueSetter = React.useCallback((newValue: T) => {
         try {
             if (newValue) {
@@ -58,7 +61,7 @@ export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => 
         }
 
         setValue(newValue);
-    }, []);
+    }, [key]);
 
     return [value, valueSetter];
 }

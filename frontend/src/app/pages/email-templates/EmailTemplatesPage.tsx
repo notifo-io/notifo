@@ -28,7 +28,7 @@ export const EmailTemplatesPage = () => {
 
     React.useEffect(() => {
         dispatch(loadEmailTemplates(appId));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     React.useEffect(() => {
         if (creatingError) {
@@ -44,11 +44,11 @@ export const EmailTemplatesPage = () => {
 
     const doCreate = React.useCallback(() => {
         dispatch(createEmailTemplate({ appId }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     const doDelete = React.useCallback((template: ChannelTemplateDto) => {
         dispatch(deleteEmailTemplate({ appId, id: template.id }));
-    }, [appId]);
+    }, [dispatch, appId]);
 
     return (
         <div className='email-templates'>

@@ -35,15 +35,15 @@ export const SubscriptionRow = (props: SubscriptionRowProps) => {
 
     const doDelete = React.useCallback(() => {
         onDelete && onDelete(subscription);
-    }, [subscription]);
+    }, [onDelete, subscription]);
 
     const doEdit = React.useCallback(() => {
         onEdit && onEdit(subscription);
-    }, [subscription]);
+    }, [onEdit, subscription]);
 
     const doPublish = React.useCallback(() => {
         onPublish && onPublish(subscription);
-    }, [subscription]);
+    }, [onPublish, subscription]);
 
     return (
         <tr>

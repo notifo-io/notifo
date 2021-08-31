@@ -35,7 +35,7 @@ export const AppDialog = (props: AppDialogProps) => {
 
     React.useEffect(() => {
         dispatch(createAppReset());
-    }, []);
+    }, [dispatch]);
 
     React.useEffect(() => {
         if (creating) {
@@ -44,18 +44,18 @@ export const AppDialog = (props: AppDialogProps) => {
     }, [creating]);
 
     React.useEffect(() => {
-        if (!creating && wasCreating && !creatingError) {
-            doCloseForm();
+        if (!creating && wasCreating && !creatingError && onClose) {
+            onClose();
         }
-    }, [creating, creatingError, wasCreating]);
+    }, [creating, creatingError, onClose, wasCreating]);
 
     const doCloseForm = React.useCallback(() => {
         onClose && onClose();
-    }, []);
+    }, [onClose]);
 
     const doSave = React.useCallback((params: CreateAppParams) => {
         dispatch(createApp({ params }));
-    }, []);
+    }, [dispatch]);
 
     const initialValues: any = {};
 

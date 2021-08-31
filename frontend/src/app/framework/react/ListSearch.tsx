@@ -66,13 +66,13 @@ export const ListSearch = (props: ListSearchProps) => {
         if (hasChanged(list.search, currentValue.current) && onSearch && isEnter(event)) {
             onSearch({ search: currentValue.current });
         }
-    }, [list]);
+    }, [list.search, onSearch]);
 
     const doClear = React.useCallback(() => {
         if (hasChanged(list.search, undefined) && onSearch) {
             onSearch({ search: undefined });
         }
-    }, [list]);
+    }, [list.search, onSearch]);
 
     return (
         <ClearInput {...other} value={value || ''} disabled={list.isLoading}
