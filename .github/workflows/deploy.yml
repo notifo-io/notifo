@@ -56,8 +56,8 @@ jobs:
     - name: Rename Tags
       if: github.event_name != 'pull_request'
       run: |
-        docker tag notifo-tmp squidex/notifo:dev-latest
-        docker tag notifo-tmp squidex/notifo:dev-${{ env.BUILD_NUMBER }}
+        docker tag notifo-temp squidex/notifo:dev-latest
+        docker tag notifo-temp squidex/notifo:dev-${{ env.BUILD_NUMBER }}
 
     - name: Push Tags
       if: github.event_name != 'pull_request'
