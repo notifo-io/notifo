@@ -21,7 +21,11 @@ export interface ClickOutsideProps extends React.DetailedHTMLProps<React.HTMLAtt
 export const ClickOutside = React.memo((props: ClickOutsideProps) => {
     const { children, disabled, onClickOutside, ...other } = props;
 
-    const container = React.createRef<HTMLDivElement>();
+    const container = React.useRef<HTMLDivElement>();
+
+    const setContainer = React.useCallback((div: HTMLDivElement) => {
+        container.current = div;
+    }, []);
 
     React.useEffect(() => {
         const onClick = (event: MouseEvent) => {
@@ -39,10 +43,10 @@ export const ClickOutside = React.memo((props: ClickOutsideProps) => {
         }
 
         return undefined;
-    }, [disabled, container, onClickOutside]);
+    }, [disabled, onClickOutside]);
 
     return (
-        <div {...other} ref={container}>
+        <div {...other} ref={setContainer}>
             {children}
         </div>
     );

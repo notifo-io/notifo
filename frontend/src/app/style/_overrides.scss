@@ -1,8 +1,12 @@
 @import '_vars';
 
+// Custom primary color.
 $primary: $color-primary;
 
 $secondary: darken(#f4f5f7, 7%);
+
+// Override cards
+$card-shadow: 0 .25rem .5rem rgba(18, 38, 63, .03);
 
 /* stylelint-disable-next-line selector-class-pattern */
 .__react_component_tooltip {
