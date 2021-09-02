@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
+using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Log;
@@ -41,7 +42,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._))
                 .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
 
-            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, A.Fake<ISemanticLog>());
+            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, A.Fake<ISemanticLog>(), A.Fake<IClock>());
         }
 
         [Fact]

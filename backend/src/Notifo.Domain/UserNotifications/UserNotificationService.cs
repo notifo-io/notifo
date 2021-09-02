@@ -79,34 +79,34 @@ namespace Notifo.Domain.UserNotifications
             return true;
         }
 
-        public async Task DistributeAsync(UserEventMessage message)
+        public async Task DistributeAsync(UserEventMessage userEvent)
         {
             using (var trace = Telemetry.Activities.StartActivity("HandleUserEvent"))
             {
-                if (message.Enqueued != default && trace?.Id != null)
+                if (userEvent.Enqueued != default && trace?.Id != null)
                 {
                     Telemetry.Activities.StartActivity("QueueTime", System.Diagnostics.ActivityKind.Internal, trace.Id,
-                        startTime: message.Enqueued.ToDateTimeOffset())?.Stop();
+                        startTime: userEvent.Enqueued.ToDateTimeOffset())?.Stop();
                 }
 
                 try
                 {
-                    var user = await userStore.GetCachedAsync(message.AppId, message.UserId);
+                    var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
 
                     if (user == null)
                     {
                         throw new DomainException(Texts.Notification_NoUser);
                     }
 
-                    var dueTime = Scheduling.CalculateScheduleTime(message.Scheduling, clock, user.PreferredTimezone);
+                    var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
 
-                    await userEventQueue.ScheduleAsync(ScheduleKey(message), message, dueTime, true);
+                    await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(message.AppId, ex.Message);
+                    await logStore.LogAsync(userEvent.AppId, ex.Message);
 
-                    await userNotificationsStore.TrackFailedAsync(message);
+                    await userNotificationsStore.TrackFailedAsync(userEvent);
                 }
             }
         }
