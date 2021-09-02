@@ -79,28 +79,34 @@ namespace Notifo.Domain.UserNotifications
             return true;
         }
 
-        public async Task DistributeAsync(UserEventMessage userEvent)
+        public async Task DistributeAsync(UserEventMessage message)
         {
-            using (Telemetry.Activities.StartActivity("DistributeUserEvent"))
+            using (var trace = Telemetry.Activities.StartActivity("HandleUserEvent"))
             {
+                if (message.Enqueued != default && trace?.Id != null)
+                {
+                    Telemetry.Activities.StartActivity("QueueTime", System.Diagnostics.ActivityKind.Internal, trace.Id,
+                        startTime: message.Enqueued.ToDateTimeOffset())?.Stop();
+                }
+
                 try
                 {
-                    var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
+                    var user = await userStore.GetCachedAsync(message.AppId, message.UserId);
 
                     if (user == null)
                     {
                         throw new DomainException(Texts.Notification_NoUser);
                     }
 
-                    var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
+                    var dueTime = Scheduling.CalculateScheduleTime(message.Scheduling, clock, user.PreferredTimezone);
 
-                    await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
+                    await userEventQueue.ScheduleAsync(ScheduleKey(message), message, dueTime, true);
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(userEvent.AppId, ex.Message);
+                    await logStore.LogAsync(message.AppId, ex.Message);
 
-                    await userNotificationsStore.TrackFailedAsync(userEvent);
+                    await userNotificationsStore.TrackFailedAsync(message);
                 }
             }
         }

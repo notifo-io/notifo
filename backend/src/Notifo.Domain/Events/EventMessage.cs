@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Linq;
 using FluentValidation;
 using NodaTime;
 using Notifo.Infrastructure;
@@ -29,6 +28,8 @@ namespace Notifo.Domain.Events
         public string? Data { get; set; }
 
         public Instant Created { get; set; }
+
+        public Instant Enqueued { get; set; }
 
         public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 

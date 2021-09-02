@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
@@ -43,15 +42,16 @@ namespace Notifo.Domain.Events.Pipeline
             {
                 message.Validate();
 
-                var now = clock.GetCurrentInstant();
+                message.Enqueued = clock.GetCurrentInstant();
 
                 if (message.Created == default)
                 {
-                    message.Created = clock.GetCurrentInstant();
+                    message.Created = message.Enqueued;
+                    message.Enqueued = message.Created;
                 }
                 else
                 {
-                    var age = now - message.Created;
+                    var age = message.Enqueued - message.Created;
 
                     if (age > MaxAge)
                     {

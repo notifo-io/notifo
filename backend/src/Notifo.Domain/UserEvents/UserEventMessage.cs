@@ -5,10 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Linq;
 using NodaTime;
 using Notifo.Domain.Events;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Domain.UserEvents
@@ -34,6 +32,8 @@ namespace Notifo.Domain.UserEvents
         public int? TimeToLiveInSeconds { get; set; }
 
         public Instant Created { get; set; }
+
+        public Instant Enqueued { get; set; }
 
         public NotificationSettings? EventSettings { get; set; }
 

@@ -11,6 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Log;
@@ -39,13 +40,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
             "user/"
         };
 
-        private readonly IUserEventProducer userEventProducer;
-        private readonly ISemanticLog log;
+        private readonly IClock clock;
         private readonly ICounterService counters;
         private readonly IEventStore eventStore;
         private readonly ILogStore logStore;
+        private readonly ISemanticLog log;
         private readonly ISubscriptionStore subscriptionStore;
         private readonly ITemplateStore templateStore;
+        private readonly IUserEventProducer userEventProducer;
         private readonly IUserStore userStore;
 
         public UserEventPublisher(ICounterService counters, ILogStore logStore,
@@ -54,23 +56,31 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ITemplateStore templateStore,
             IUserStore userStore,
             IUserEventProducer userEventProducer,
-            ISemanticLog log)
+            ISemanticLog log,
+            IClock clock)
         {
-            this.subscriptionStore = subscriptionStore;
+            this.clock = clock;
             this.counters = counters;
             this.eventStore = eventStore;
             this.log = log;
             this.logStore = logStore;
+            this.subscriptionStore = subscriptionStore;
             this.templateStore = templateStore;
-            this.userStore = userStore;
             this.userEventProducer = userEventProducer;
+            this.userStore = userStore;
         }
 
         public async Task PublishAsync(EventMessage message,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("PublishUserEvent"))
+            using (var trace = Telemetry.Activities.StartActivity("HandlehUserEvent"))
             {
+                if (message.Enqueued != default && trace?.Id != null)
+                {
+                    Telemetry.Activities.StartActivity("QueueTime", System.Diagnostics.ActivityKind.Internal, trace.Id,
+                        startTime: message.Enqueued.ToDateTimeOffset())?.Stop();
+                }
+
                 log.LogInformation(message, (m, w) => w
                     .WriteProperty("action", "HandleEvent")
                     .WriteProperty("status", "Started")
@@ -241,7 +251,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             return false;
         }
 
-        private static UserEventMessage CreateUserEventMessage(EventMessage @event, Subscription subscription)
+        private UserEventMessage CreateUserEventMessage(EventMessage @event, Subscription subscription)
         {
             var result = SimpleMapper.Map(@event, new UserEventMessage
             {
@@ -262,6 +272,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 result.SubscriptionSettings = new NotificationSettings();
             }
+
+            result.Enqueued = clock.GetCurrentInstant();
 
             return result;
         }
