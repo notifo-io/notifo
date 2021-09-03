@@ -17,11 +17,10 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
-using Squidex.Hosting;
 
 namespace Notifo.Domain.UserNotifications.MongoDb
 {
-    public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNotification>, IUserNotificationRepository, IInitializable
+    public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNotification>, IUserNotificationRepository
     {
         static MongoDbUserNotificationRepository()
         {

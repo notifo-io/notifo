@@ -45,6 +45,14 @@ namespace Notifo.Identity
             });
         }
 
+        public async Task ReleaseAsync(CancellationToken ct)
+        {
+            if (timer != null)
+            {
+                await timer.StopAsync();
+            }
+        }
+
         private async Task PruneAsync(CancellationToken ct)
         {
             using (var scope = serviceProvider.CreateScope())
@@ -68,14 +76,6 @@ namespace Notifo.Identity
                         Builders<OpenIddictMongoDbToken<string>>.IndexKeys
                             .Ascending(x => x.ReferenceId)),
                     cancellationToken: ct);
-            }
-        }
-
-        public async Task ReleaseAsync(CancellationToken ct)
-        {
-            if (timer != null)
-            {
-                await timer.StopAsync();
             }
         }
     }

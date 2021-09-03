@@ -20,14 +20,13 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Hosting;
 using Squidex.Log;
 using IMessagingTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Messaging.MessagingTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Messaging.MessagingJob>;
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, IInitializable
+    public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>
     {
         private const string DefaultToken = "Default";
         private readonly IAppStore appStore;
@@ -39,11 +38,7 @@ namespace Notifo.Domain.Channels.Messaging
         private readonly ILogStore logStore;
         private readonly ISemanticLog log;
 
-        public int Order => 1000;
-
         public string Name => Providers.Messaging;
-
-        string ISystem.Name => $"Providers({Providers.Messaging})";
 
         public MessagingChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,
@@ -61,13 +56,6 @@ namespace Notifo.Domain.Channels.Messaging
             this.messagingTemplateStore = messagingTemplateStore;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
-        }
-
-        public Task InitializeAsync(CancellationToken ct)
-        {
-            userNotificationQueue.Subscribe(this);
-
-            return Task.CompletedTask;
         }
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)

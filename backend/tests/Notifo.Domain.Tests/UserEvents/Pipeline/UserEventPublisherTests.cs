@@ -10,7 +10,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
-using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Log;
@@ -33,16 +32,16 @@ namespace Notifo.Domain.UserEvents.Pipeline
         private readonly ILogStore logStore = A.Fake<ILogStore>();
         private readonly IEventStore eventStore = A.Fake<IEventStore>();
         private readonly IUserStore userStore = A.Fake<IUserStore>();
-        private readonly IAbstractProducer<UserEventMessage> producer = A.Fake<IAbstractProducer<UserEventMessage>>();
+        private readonly IMessageProducer<UserEventMessage> producer = A.Fake<IMessageProducer<UserEventMessage>>();
         private readonly List<UserEventMessage> publishedUserEvents = new List<UserEventMessage>();
         private readonly UserEventPublisher sut;
 
         public UserEventPublisherTests()
         {
-            A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._))
+            A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._, A<CancellationToken>._))
                 .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
 
-            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, A.Fake<ISemanticLog>(), A.Fake<IClock>());
+            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, A.Fake<ISemanticLog>());
         }
 
         [Fact]

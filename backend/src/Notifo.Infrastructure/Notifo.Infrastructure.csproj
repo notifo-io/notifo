@@ -32,8 +32,8 @@
     <PackageReference Include="Squidex.Assets.Mongo" Version="1.8.0" />
     <PackageReference Include="Squidex.Assets.S3" Version="1.8.0" />
     <PackageReference Include="Squidex.Caching" Version="1.8.0" />
-    <PackageReference Include="Squidex.Hosting" Version="2.0.0" />
-    <PackageReference Include="Squidex.Hosting.Abstractions" Version="2.0.0" />
+    <PackageReference Include="Squidex.Hosting" Version="2.1.0" />
+    <PackageReference Include="Squidex.Hosting.Abstractions" Version="2.1.0" />
     <PackageReference Include="Squidex.Log" Version="1.6.0" />
     <PackageReference Include="Squidex.Text" Version="1.7.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />

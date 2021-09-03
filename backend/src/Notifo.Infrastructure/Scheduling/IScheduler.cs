@@ -8,15 +8,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
-using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Scheduling
 {
-    public interface IScheduler<T> : IInitializable
+    public interface IScheduler<T>
     {
         void Complete(string key);
-
-        void Subscribe(IScheduleHandler<T> handler);
 
         Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
             CancellationToken ct = default);

@@ -51,7 +51,7 @@ namespace Notifo.Domain.ChannelTemplates
         }
 
         public async Task<(TemplateResolveStatus, T?)> GetBestAsync(string appId, string? name, string language,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(language, nameof(language));
