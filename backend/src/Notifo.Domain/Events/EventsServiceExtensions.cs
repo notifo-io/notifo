@@ -10,6 +10,7 @@ using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Events.MongoDb;
 using Notifo.Domain.Events.Pipeline;
+using Notifo.Infrastructure.Messaging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -19,14 +20,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:events").Get<EventPipelineOptions>() ?? new EventPipelineOptions();
 
-            services.AddMessaging<EventMessage>(options.ChannelName)
-                .ConsumedBy<EventConsumer>();
+            services.AddMessaging<EventMessage>(options.ChannelName);
 
             services.AddSingletonAs<EventStore>()
                 .As<IEventStore>().As<ICounterTarget>();
 
             services.AddSingletonAs<EventConsumer>()
-                .AsSelf();
+                .AsSelf().As<IMessageHandler<EventMessage>>();
 
             services.AddSingletonAs<EventPublisher>()
                 .As<IEventPublisher>();

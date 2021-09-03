@@ -20,13 +20,12 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Hosting;
 using WebPush;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.WebPush.WebPushJob>;
 
 namespace Notifo.Domain.Channels.WebPush
 {
-    public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<WebPushJob>, IWebPushService, IInitializable
+    public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<WebPushJob>, IWebPushService
     {
         private readonly WebPushClient webPushClient = new WebPushClient();
         private readonly IJsonSerializer serializer;
@@ -35,11 +34,7 @@ namespace Notifo.Domain.Channels.WebPush
         private readonly IUserStore userStore;
         private readonly IUserNotificationQueue userNotificationQueue;
 
-        public int Order => 1000;
-
         public string Name => Providers.WebPush;
-
-        string ISystem.Name => $"Providers({Providers.WebPush})";
 
         public string PublicKey { get; }
 
@@ -61,13 +56,6 @@ namespace Notifo.Domain.Channels.WebPush
                 options.Value.VapidPrivateKey);
 
             PublicKey = options.Value.VapidPublicKey;
-        }
-
-        public Task InitializeAsync(CancellationToken ct)
-        {
-            userNotificationQueue.Subscribe(this);
-
-            return Task.CompletedTask;
         }
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)

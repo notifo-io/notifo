@@ -13,7 +13,7 @@ namespace Notifo.Domain.UserEvents
 {
     public interface IUserEventPublisher
     {
-        Task PublishAsync(EventMessage message,
+        Task PublishAsync(EventMessage @event,
             CancellationToken ct);
     }
 }

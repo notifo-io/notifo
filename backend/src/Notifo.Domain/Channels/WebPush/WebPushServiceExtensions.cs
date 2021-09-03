@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.WebPush;
+using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -18,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.ConfigureAndValidate<WebPushOptions>(config, "webPush");
 
             services.AddSingletonAs<WebPushChannel>()
-                .As<ICommunicationChannel>().As<IWebPushService>();
+                .As<ICommunicationChannel>().As<IWebPushService>().As<IScheduleHandler<WebPushJob>>();
 
             services.AddScheduler<WebPushJob>(Providers.WebPush);
         }

@@ -20,13 +20,12 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Hosting;
 using Squidex.Log;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public sealed class UserNotificationService : IInitializable, IUserNotificationService, IScheduleHandler<UserEventMessage>, IAbstractConsumer<ConfirmMessage>
+    public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
     {
         private readonly IEnumerable<ICommunicationChannel> channels;
         private readonly IAppStore appStore;
@@ -35,16 +34,14 @@ namespace Notifo.Domain.UserNotifications
         private readonly IUserNotificationFactory userNotificationFactory;
         private readonly IUserEventQueue userEventQueue;
         private readonly ILogStore logStore;
-        private readonly IAbstractProducer<ConfirmMessage> confirmProducer;
+        private readonly IMessageProducer<ConfirmMessage> confirmProducer;
         private readonly IClock clock;
         private readonly ISemanticLog log;
-
-        public int Order => 1000;
 
         public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
             IAppStore appStore,
             ILogStore logStore,
-            IAbstractProducer<ConfirmMessage> confirmProducer,
+            IMessageProducer<ConfirmMessage> confirmProducer,
             IUserEventQueue userEventQueue,
             IUserNotificationFactory userNotificationFactory,
             IUserNotificationStore userNotificationsStore,
@@ -64,13 +61,6 @@ namespace Notifo.Domain.UserNotifications
             this.clock = clock;
         }
 
-        public Task InitializeAsync(CancellationToken ct)
-        {
-            userEventQueue.Subscribe(this);
-
-            return Task.CompletedTask;
-        }
-
         public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt,
             CancellationToken ct)
         {
@@ -81,14 +71,8 @@ namespace Notifo.Domain.UserNotifications
 
         public async Task DistributeAsync(UserEventMessage userEvent)
         {
-            using (var trace = Telemetry.Activities.StartActivity("HandleUserEvent"))
+            using (Telemetry.Activities.StartActivity("HandleUserEvent"))
             {
-                if (userEvent.Enqueued != default && trace?.Id != null)
-                {
-                    Telemetry.Activities.StartActivity("QueueTime", System.Diagnostics.ActivityKind.Internal, trace.Id,
-                        startTime: userEvent.Enqueued.ToDateTimeOffset())?.Stop();
-                }
-
                 try
                 {
                     var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
@@ -152,7 +136,7 @@ namespace Notifo.Domain.UserNotifications
                         {
                             foreach (var configuration in notificationChannel.Status.Keys)
                             {
-                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options);
+                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
                             }
                         }
                     }

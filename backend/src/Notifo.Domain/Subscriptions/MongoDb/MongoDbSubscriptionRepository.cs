@@ -16,11 +16,10 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
-using Squidex.Hosting;
 
 namespace Notifo.Domain.Subscriptions.MongoDb
 {
-    public sealed class MongoDbSubscriptionRepository : MongoDbStore<MongoDbSubscription>, ISubscriptionRepository, IInitializable
+    public sealed class MongoDbSubscriptionRepository : MongoDbStore<MongoDbSubscription>, ISubscriptionRepository
     {
         public MongoDbSubscriptionRepository(IMongoDatabase database)
             : base(database)

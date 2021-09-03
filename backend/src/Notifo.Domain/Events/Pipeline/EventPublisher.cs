@@ -13,7 +13,7 @@ using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
 using Squidex.Log;
-using IEventProducer = Notifo.Infrastructure.Messaging.IAbstractProducer<Notifo.Domain.Events.EventMessage>;
+using IEventProducer = Notifo.Infrastructure.Messaging.IMessageProducer<Notifo.Domain.Events.EventMessage>;
 
 namespace Notifo.Domain.Events.Pipeline
 {
@@ -42,16 +42,15 @@ namespace Notifo.Domain.Events.Pipeline
             {
                 message.Validate();
 
-                message.Enqueued = clock.GetCurrentInstant();
+                var now = clock.GetCurrentInstant();
 
                 if (message.Created == default)
                 {
-                    message.Created = message.Enqueued;
-                    message.Enqueued = message.Created;
+                    message.Created = now;
                 }
                 else
                 {
-                    var age = message.Enqueued - message.Created;
+                    var age = now - message.Created;
 
                     if (age > MaxAge)
                     {
@@ -65,7 +64,9 @@ namespace Notifo.Domain.Events.Pipeline
                     message.Id = Guid.NewGuid().ToString();
                 }
 
+#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods that take one
                 await producer.ProduceAsync(message.AppId, message);
+#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods that take one
 
                 log.LogInformation(message, (m, w) => w
                     .WriteProperty("action", "EventReceived")

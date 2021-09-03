@@ -9,6 +9,7 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Webhook;
 using Notifo.Domain.Channels.Webhook.Integrations;
 using Notifo.Domain.Integrations;
+using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -17,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMyWebhookChannel(this IServiceCollection services)
         {
             services.AddSingletonAs<WebhookChannel>()
-                .As<ICommunicationChannel>();
+                .As<ICommunicationChannel>().As<IScheduleHandler<WebhookJob>>();
 
             services.AddSingletonAs<WebhookIntegration>()
                 .As<IIntegration>();

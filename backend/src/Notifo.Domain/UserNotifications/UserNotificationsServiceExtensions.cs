@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.UserNotifications.MongoDb;
+using Notifo.Infrastructure.Messaging;
+using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -18,8 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:confirms").Get<ConfirmPipelineOptions>() ?? new ConfirmPipelineOptions();
 
-            services.AddMessaging<ConfirmMessage>(options.ChannelName)
-                .ConsumedBy<UserNotificationService>();
+            services.AddMessaging<ConfirmMessage>(options.ChannelName);
 
             services.AddSingletonAs<UserNotificationStore>()
                 .As<IUserNotificationStore>();
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IUserNotificationFactory>();
 
             services.AddSingletonAs<UserNotificationService>()
-                .As<IUserNotificationService>().AsSelf();
+                .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler<ConfirmMessage>>();
 
             services.AddScheduler<UserEventMessage>("UserNotifications");
         }

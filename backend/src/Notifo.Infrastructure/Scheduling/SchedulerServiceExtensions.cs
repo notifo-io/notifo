@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using Notifo.Infrastructure.Scheduling;
+using Notifo.Infrastructure.Scheduling.Implementation;
+using static Microsoft.Extensions.DependencyInjection.DependencyInjectionExtensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,8 +18,18 @@ namespace Microsoft.Extensions.DependencyInjection
             options ??= new SchedulerOptions();
             options.QueueName = name;
 
-            services.AddSingletonAs(c => c.GetRequiredService<ISchedulerProvider>().GetScheduler<T>(c, options))
+            services.AddSingletonAs(c => c.GetRequiredService<ISchedulingProvider>().GetScheduling<T>(c, options));
+
+            services.AddSingletonAs<DelegatingScheduler<T>>()
                 .As<IScheduler<T>>();
+
+            services.AddSingletonAs<DelegatingScheduleHandler<T>>()
+                .AsSelf();
+        }
+
+        public static InterfaceRegistrator<T> AsSchedulingHandler<T>(this InterfaceRegistrator<T> registrator) where T : notnull, IScheduleHandler<T>
+        {
+            return registrator.As<IScheduleHandler<T>>();
         }
     }
 }

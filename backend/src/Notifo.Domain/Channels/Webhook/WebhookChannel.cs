@@ -18,12 +18,11 @@ using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Hosting;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Webhook.WebhookJob>;
 
 namespace Notifo.Domain.Channels.Webhook
 {
-    public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<WebhookJob>, IInitializable
+    public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<WebhookJob>
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IUserNotificationStore userNotificationStore;
@@ -31,11 +30,7 @@ namespace Notifo.Domain.Channels.Webhook
         private readonly ILogStore logStore;
         private readonly IIntegrationManager integrationManager;
 
-        public int Order => 1000;
-
         public string Name => Providers.Webhook;
-
-        string ISystem.Name => $"Providers({Providers.Webhook})";
 
         public bool IsSystem => true;
 
@@ -49,13 +44,6 @@ namespace Notifo.Domain.Channels.Webhook
             this.integrationManager = integrationManager;
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
-        }
-
-        public Task InitializeAsync(CancellationToken ct)
-        {
-            userNotificationQueue.Subscribe(this);
-
-            return Task.CompletedTask;
         }
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting setting, SendOptions options)

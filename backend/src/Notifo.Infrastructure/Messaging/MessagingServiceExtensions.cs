@@ -5,16 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Notifo.Infrastructure.Messaging;
-using Notifo.Infrastructure.Messaging.GooglePubSub;
-using Notifo.Infrastructure.Messaging.Kafka;
-using Notifo.Infrastructure.Messaging.RabbitMq;
-using Notifo.Infrastructure.Messaging.Scheduling;
-using Squidex.Hosting;
-using Squidex.Log;
+using Notifo.Infrastructure.Messaging.Implementation;
+using Notifo.Infrastructure.Messaging.Implementation.GooglePubSub;
+using Notifo.Infrastructure.Messaging.Implementation.Kafka;
+using Notifo.Infrastructure.Messaging.Implementation.RabbitMq;
+using Notifo.Infrastructure.Messaging.Implementation.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -43,89 +40,48 @@ namespace Microsoft.Extensions.DependencyInjection
             });
         }
 
-        public static void AddMyKafkaMessaging(this IServiceCollection services, IConfiguration config)
-        {
-            services.ConfigureAndValidate<KafkaOptions>(config, "messaging:kafka");
-
-            services.AddSingletonAs<KafkaProvider>()
-                .As<IMessagingProvider>().AsSelf();
-        }
-
-        public static void AddMySchedulingMessaging(this IServiceCollection services)
-        {
-            services.AddSingletonAs<SchedulingProvider>()
-                .As<IMessagingProvider>().AsSelf();
-        }
-
         public static void AddMyRabbitMqMessaging(this IServiceCollection services, IConfiguration config)
         {
             services.ConfigureAndValidate<RabbitMqOptions>(config, "messaging:rabbitMq");
 
-            services.AddSingletonAs<RabbitMqProvider>()
+            services.AddSingletonAs<RabbitMqMessagingProvider>()
                 .As<IMessagingProvider>().AsSelf();
 
-            services.AddSingletonAs<RabbitMqPrimitiveProducer>()
+            services.AddSingletonAs<RabbitMqProducer>()
                 .AsSelf();
+        }
+
+        public static void AddMyKafkaMessaging(this IServiceCollection services, IConfiguration config)
+        {
+            services.ConfigureAndValidate<KafkaOptions>(config, "messaging:kafka");
+
+            services.AddSingletonAs<KafkaMessagingProvider>()
+                .As<IMessagingProvider>().AsSelf();
         }
 
         public static void AddMyGooglePubSubMessaging(this IServiceCollection services, IConfiguration config)
         {
             services.ConfigureAndValidate<GooglePubSubOptions>(config, "messaging:googlePubSub");
 
-            services.AddSingletonAs<GooglePubSubProvider>()
+            services.AddSingletonAs<GooglePubSubMessagingProvider>()
                 .As<IMessagingProvider>();
         }
 
-        private static class MessagingConsumer
+        public static void AddMySchedulingMessaging(this IServiceCollection services)
         {
-            private static readonly HashSet<string> Consumers = new HashSet<string>();
-
-            public static bool AlreadyRegistered(string channelName)
-            {
-                return !Consumers.Add(channelName);
-            }
+            services.AddSingletonAs<SchedulingMessagingProvider>()
+                .As<IMessagingProvider>().AsSelf();
         }
 
-        public sealed class MessagingRegistration<T>
+        public static void AddMessaging<T>(this IServiceCollection services, string channelName)
         {
-            private readonly IServiceCollection services;
-            private readonly string channelName;
+            services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetMessaging<T>(c, channelName));
 
-            internal MessagingRegistration(IServiceCollection services, string channelName)
-            {
-                this.services = services;
-                this.channelName = channelName;
-            }
+            services.AddSingletonAs<DelegatingProducer<T>>()
+                .As<IMessageProducer<T>>();
 
-            public MessagingRegistration<T> ConsumedBy<TConsumer>() where TConsumer : IAbstractConsumer<T>
-            {
-                services.AddSingletonAs(c => CetConsumer<TConsumer>(c))
-                    .AsSelf();
-
-                return this;
-            }
-
-            private IInitializable CetConsumer<TConsumer>(IServiceProvider provider) where TConsumer : IAbstractConsumer<T>
-            {
-                if (MessagingConsumer.AlreadyRegistered(channelName))
-                {
-                    var log = provider.GetRequiredService<ISemanticLog>();
-
-                    log.LogWarning(w => w
-                        .WriteProperty("message", "Multiple consumers subscribing to the same name.")
-                        .WriteProperty("channel", channelName));
-                }
-
-                return provider.GetRequiredService<IMessagingProvider>().GetConsumer<TConsumer, T>(provider, channelName);
-            }
-        }
-
-        public static MessagingRegistration<T> AddMessaging<T>(this IServiceCollection services, string channelName)
-        {
-            services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetProducer<T>(c, channelName))
-                .As<IAbstractProducer<T>>();
-
-            return new MessagingRegistration<T>(services, channelName);
+            services.AddSingletonAs<DelegatingConsumer<T>>()
+                .AsSelf();
         }
     }
 }

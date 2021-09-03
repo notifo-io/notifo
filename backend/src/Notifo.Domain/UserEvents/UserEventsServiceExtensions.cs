@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserEvents.Pipeline;
+using Notifo.Infrastructure.Messaging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -17,11 +18,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:userEvents").Get<UserEventPipelineOptions>() ?? new UserEventPipelineOptions();
 
-            services.AddMessaging<UserEventMessage>(options.ChannelName)
-                .ConsumedBy<UserEventConsumer>();
+            services.AddMessaging<UserEventMessage>(options.ChannelName);
 
             services.AddSingletonAs<UserEventConsumer>()
-                .AsSelf();
+                .AsSelf().As<IMessageHandler<UserEventMessage>>();
 
             services.AddSingletonAs<UserEventPublisher>()
                 .As<IUserEventPublisher>();

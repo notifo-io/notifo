@@ -11,7 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Log;
@@ -22,7 +21,7 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 using Squidex.Log;
-using IUserEventProducer = Notifo.Infrastructure.Messaging.IAbstractProducer<Notifo.Domain.UserEvents.UserEventMessage>;
+using IUserEventProducer = Notifo.Infrastructure.Messaging.IMessageProducer<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserEvents.Pipeline
 {
@@ -40,7 +39,6 @@ namespace Notifo.Domain.UserEvents.Pipeline
             "user/"
         };
 
-        private readonly IClock clock;
         private readonly ICounterService counters;
         private readonly IEventStore eventStore;
         private readonly ILogStore logStore;
@@ -56,10 +54,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ITemplateStore templateStore,
             IUserStore userStore,
             IUserEventProducer userEventProducer,
-            ISemanticLog log,
-            IClock clock)
+            ISemanticLog log)
         {
-            this.clock = clock;
             this.counters = counters;
             this.eventStore = eventStore;
             this.log = log;
@@ -70,18 +66,12 @@ namespace Notifo.Domain.UserEvents.Pipeline
             this.userStore = userStore;
         }
 
-        public async Task PublishAsync(EventMessage message,
+        public async Task PublishAsync(EventMessage @event,
             CancellationToken ct)
         {
-            using (var trace = Telemetry.Activities.StartActivity("HandlehUserEvent"))
+            using (Telemetry.Activities.StartActivity("HandleUserEvent"))
             {
-                if (message.Enqueued != default && trace?.Id != null)
-                {
-                    Telemetry.Activities.StartActivity("QueueTime", System.Diagnostics.ActivityKind.Internal, trace.Id,
-                        startTime: message.Enqueued.ToDateTimeOffset())?.Stop();
-                }
-
-                log.LogInformation(message, (m, w) => w
+                log.LogInformation(@event, (m, w) => w
                     .WriteProperty("action", "HandleEvent")
                     .WriteProperty("status", "Started")
                     .WriteProperty("appId", m.AppId)
@@ -89,9 +79,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     .WriteProperty("eventTopic", m.Topic)
                     .WriteProperty("eventType", m.ToString()));
 
-                if (string.IsNullOrWhiteSpace(message.AppId))
+                if (string.IsNullOrWhiteSpace(@event.AppId))
                 {
-                    log.LogWarning(message, (m, w) => w
+                    log.LogWarning(@event, (m, w) => w
                         .WriteProperty("action", "HandleEvent")
                         .WriteProperty("status", "Failed")
                         .WriteProperty("reason", "NoAppId")
@@ -102,66 +92,68 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(message.Topic))
+                if (string.IsNullOrWhiteSpace(@event.Topic))
                 {
-                    await logStore.LogAsync(message.AppId, Texts.Events_NoTopic);
+                    await logStore.LogAsync(@event.AppId, Texts.Events_NoTopic);
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(message.TemplateCode) && message.Formatting?.HasSubject() != true)
+                if (string.IsNullOrWhiteSpace(@event.TemplateCode) && @event.Formatting?.HasSubject() != true)
                 {
-                    await logStore.LogAsync(message.AppId, Texts.Events_NoSubjectOrTemplateCode);
+                    await logStore.LogAsync(@event.AppId, Texts.Events_NoSubjectOrTemplateCode);
                     return;
                 }
 
                 var count = 0;
 
-                await foreach (var subscription in GetSubscriptions(message).WithCancellation(ct))
+                await foreach (var subscription in GetSubscriptions(@event).WithCancellation(ct))
                 {
                     if (count == 0)
                     {
-                        if (!string.IsNullOrWhiteSpace(message.TemplateCode))
+                        if (!string.IsNullOrWhiteSpace(@event.TemplateCode))
                         {
-                            var template = await templateStore.GetAsync(message.AppId, message.TemplateCode, ct);
+                            var template = await templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct);
 
                             if (template?.IsAutoCreated == false)
                             {
-                                message.Formatting = template.Formatting;
+                                @event.Formatting = template.Formatting;
 
                                 if (template.Settings?.Count > 0)
                                 {
                                     var settings = new NotificationSettings();
 
                                     settings.OverrideBy(template.Settings);
-                                    settings.OverrideBy(message.Settings);
+                                    settings.OverrideBy(@event.Settings);
 
-                                    message.Settings = settings;
+                                    @event.Settings = settings;
                                 }
                             }
                         }
 
-                        if (message.Formatting?.HasSubject() != true)
+                        if (@event.Formatting?.HasSubject() != true)
                         {
-                            await logStore.LogAsync(message.AppId, string.Format(Texts.Template_NoSubject, message.TemplateCode));
+                            await logStore.LogAsync(@event.AppId, string.Format(Texts.Template_NoSubject, @event.TemplateCode));
                             return;
                         }
 
-                        message.Formatting = message.Formatting.Format(message.Properties);
+                        @event.Formatting = @event.Formatting.Format(@event.Properties);
 
                         try
                         {
-                            await eventStore.InsertAsync(message, ct);
+                            await eventStore.InsertAsync(@event, ct);
                         }
                         catch (UniqueConstraintException)
                         {
-                            await logStore.LogAsync(message.AppId, Texts.Events_AlreadyProcessed);
+                            await logStore.LogAsync(@event.AppId, Texts.Events_AlreadyProcessed);
                             break;
                         }
                     }
 
-                    var userEventMessage = CreateUserEventMessage(message, subscription);
+                    var userEventMessage = CreateUserEventMessage(@event, subscription);
 
+#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods that take one
                     await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
+#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods that take one
 
                     count++;
                 }
@@ -169,16 +161,16 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 if (count > 0)
                 {
                     var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
-                    var counterKey = CounterKey.ForEvent(message);
+                    var counterKey = CounterKey.ForEvent(@event);
 
                     await counters.CollectAsync(counterKey, counterMap, ct);
                 }
                 else
                 {
-                    await logStore.LogAsync(message.AppId, Texts.Events_NoSubscriber);
+                    await logStore.LogAsync(@event.AppId, Texts.Events_NoSubscriber);
                 }
 
-                log.LogInformation(message, (m, w) => w
+                log.LogInformation(@event, (m, w) => w
                     .WriteProperty("action", "HandleEvent")
                     .WriteProperty("status", "Success")
                     .WriteProperty("appId", m.AppId)
@@ -251,7 +243,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             return false;
         }
 
-        private UserEventMessage CreateUserEventMessage(EventMessage @event, Subscription subscription)
+        private static UserEventMessage CreateUserEventMessage(EventMessage @event, Subscription subscription)
         {
             var result = SimpleMapper.Map(@event, new UserEventMessage
             {
@@ -272,8 +264,6 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 result.SubscriptionSettings = new NotificationSettings();
             }
-
-            result.Enqueued = clock.GetCurrentInstant();
 
             return result;
         }

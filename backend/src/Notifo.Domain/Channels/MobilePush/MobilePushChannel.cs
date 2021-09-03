@@ -19,13 +19,12 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Hosting;
 using Squidex.Log;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.MobilePush.MobilePushJob>;
 
 namespace Notifo.Domain.Channels.MobilePush
 {
-    public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>, IInitializable
+    public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>
     {
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
@@ -36,11 +35,7 @@ namespace Notifo.Domain.Channels.MobilePush
         private readonly IUserStore userStore;
         private readonly IClock clock;
 
-        public int Order => 1000;
-
         public string Name => Providers.MobilePush;
-
-        string ISystem.Name => $"Providers({Providers.MobilePush})";
 
         public MobilePushChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,
@@ -58,13 +53,6 @@ namespace Notifo.Domain.Channels.MobilePush
             this.userNotificationStore = userNotificationStore;
             this.userStore = userStore;
             this.clock = clock;
-        }
-
-        public Task InitializeAsync(CancellationToken ct)
-        {
-            userNotificationQueue.Subscribe(this);
-
-            return Task.CompletedTask;
         }
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)

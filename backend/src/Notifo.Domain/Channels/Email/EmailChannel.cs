@@ -20,14 +20,13 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Hosting;
 using Squidex.Log;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Email.EmailJob>;
 
 namespace Notifo.Domain.Channels.Email
 {
-    public sealed class EmailChannel : IInitializable, ICommunicationChannel, IScheduleHandler<EmailJob>
+    public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<EmailJob>
     {
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
@@ -39,11 +38,7 @@ namespace Notifo.Domain.Channels.Email
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserStore userStore;
 
-        public int Order => 1000;
-
         public string Name => Providers.Email;
-
-        string ISystem.Name => $"Providers({Providers.Email})";
 
         public EmailChannel(ISemanticLog log, ILogStore logStore,
             IAppStore appStore,
@@ -63,13 +58,6 @@ namespace Notifo.Domain.Channels.Email
             this.userNotificationQueue = userNotificationQueue;
             this.userNotificationStore = userNotificationStore;
             this.userStore = userStore;
-        }
-
-        public Task InitializeAsync(CancellationToken ct)
-        {
-            userNotificationQueue.Subscribe(this);
-
-            return Task.CompletedTask;
         }
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
