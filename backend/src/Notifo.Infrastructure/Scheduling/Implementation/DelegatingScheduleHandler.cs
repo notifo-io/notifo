@@ -17,36 +17,23 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
     public sealed class DelegatingScheduleHandler<T> : IInitializable
     {
         private readonly IScheduling<T> scheduling;
-        private readonly IEnumerable<IScheduleHandler<T>> handlers;
+        private readonly IEnumerable<IScheduleHandler<T>> scheduleHandlers;
 
         public string Name => $"SchedulingHandler({typeof(T).Name})";
 
         public int Order => int.MaxValue - 1;
 
-        public DelegatingScheduleHandler(IScheduling<T> scheduling, IEnumerable<IScheduleHandler<T>> handlers)
+        public DelegatingScheduleHandler(IScheduling<T> scheduling, IEnumerable<IScheduleHandler<T>> scheduleHandlers)
         {
             this.scheduling = scheduling;
-            this.handlers = handlers;
+            this.scheduleHandlers = scheduleHandlers;
         }
 
         public async Task InitializeAsync(CancellationToken ct)
         {
-            if (scheduling is IInitializable initializable)
-            {
-                await initializable.InitializeAsync(ct);
-            }
-
-            if (handlers.Any())
+            if (scheduleHandlers.Any())
             {
                 await scheduling.SubscribeAsync(OnSuccessAsync, OnErrorAsync, ct);
-            }
-        }
-
-        public async Task ReleaseAsync(CancellationToken ct)
-        {
-            if (scheduling is IInitializable initializable)
-            {
-                await initializable.ReleaseAsync(ct);
             }
         }
 
@@ -54,9 +41,9 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
         {
             var result = false;
 
-            foreach (var consumer in handlers)
+            foreach (var handler in scheduleHandlers)
             {
-                result |= await consumer.HandleAsync(jobs, isLastAttempt, ct);
+                result |= await handler.HandleAsync(jobs, isLastAttempt, ct);
             }
 
             return result;
@@ -64,9 +51,9 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
 
         private async Task OnErrorAsync(List<T> jobs, Exception exception, CancellationToken ct)
         {
-            foreach (var consumer in handlers)
+            foreach (var handler in scheduleHandlers)
             {
-                await consumer.HandleExceptionAsync(jobs, exception);
+                await handler.HandleExceptionAsync(jobs, exception);
             }
         }
     }

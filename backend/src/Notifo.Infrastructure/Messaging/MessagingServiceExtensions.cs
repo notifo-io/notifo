@@ -75,7 +75,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void AddMessaging<T>(this IServiceCollection services, string channelName)
         {
-            services.AddSingleton(c => c.GetRequiredService<IMessagingProvider>().GetMessaging<T>(c, channelName));
+            services.AddSingletonAs(c => c.GetRequiredService<IMessagingProvider>().GetMessaging<T>(c, channelName));
 
             services.AddSingletonAs<DelegatingProducer<T>>()
                 .As<IMessageProducer<T>>();

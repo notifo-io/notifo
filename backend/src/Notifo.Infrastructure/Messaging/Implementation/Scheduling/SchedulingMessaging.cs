@@ -28,14 +28,16 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Scheduling
             handler = new DelegatingScheduleHandler<Envelope<T>>(scheduling, new IScheduleHandler<Envelope<T>>[] { this });
         }
 
-        public Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(CancellationToken ct)
         {
-            return handler.InitializeAsync(ct);
+            await scheduling.InitializeAsync(ct);
+
+            await handler.InitializeAsync(ct);
         }
 
-        public Task ReleaseAsync(CancellationToken ct)
+        public async Task ReleaseAsync(CancellationToken ct)
         {
-            return handler.ReleaseAsync(ct);
+            await scheduling.ReleaseAsync(ct);
         }
 
         public Task ProduceAsync(string key, Envelope<T> envelope,

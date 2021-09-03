@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
             options ??= new SchedulerOptions();
             options.QueueName = name;
 
-            services.AddSingleton(c => c.GetRequiredService<ISchedulingProvider>().GetScheduling<T>(c, options));
+            services.AddSingletonAs(c => c.GetRequiredService<ISchedulingProvider>().GetScheduling<T>(c, options));
 
             services.AddSingletonAs<DelegatingScheduler<T>>()
                 .As<IScheduler<T>>();

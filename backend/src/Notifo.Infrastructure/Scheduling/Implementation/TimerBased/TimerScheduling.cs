@@ -58,7 +58,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             var now = clock.GetCurrentInstant();
 
@@ -66,7 +66,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             var now = clock.GetCurrentInstant();
 
@@ -92,7 +92,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             var now = clock.GetCurrentInstant();
 
@@ -114,7 +114,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             schedulerStore.CompleteByKeyAsync(key).Forget();
         }
 
-        public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError, CancellationToken ct = default)
+        public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError, CancellationToken ct)
         {
             consumer = new TimerConsumer<T>(schedulerStore, schedulerOptions, onSuccess, onError, clock, log);
             consumer.Subscribe();

@@ -29,6 +29,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             this.topicName = topicName;
             this.onMessage = onMessage;
             this.serializer = serializer;
+
             this.log = log;
         }
 

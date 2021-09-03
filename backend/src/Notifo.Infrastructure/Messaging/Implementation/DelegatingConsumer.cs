@@ -19,7 +19,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation
     public sealed class DelegatingConsumer<T> : IInitializable
     {
         private readonly IMessaging<T> messaging;
-        private readonly IEnumerable<IMessageHandler<T>> consumers;
+        private readonly IEnumerable<IMessageHandler<T>> messageHandlers;
         private readonly ISemanticLog log;
         private readonly string activity = $"Messaging.Consume({typeof(T).Name})";
 
@@ -27,10 +27,10 @@ namespace Notifo.Infrastructure.Messaging.Implementation
 
         public int Order => int.MaxValue;
 
-        public DelegatingConsumer(IMessaging<T> messaging, IEnumerable<IMessageHandler<T>> consumers, ISemanticLog log)
+        public DelegatingConsumer(IMessaging<T> messaging, IEnumerable<IMessageHandler<T>> messageHandlers, ISemanticLog log)
         {
             this.messaging = messaging;
-            this.consumers = consumers;
+            this.messageHandlers = messageHandlers;
 
             this.log = log;
         }
@@ -42,7 +42,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation
                 await initializable.InitializeAsync(ct);
             }
 
-            if (consumers.Any())
+            if (messageHandlers.Any())
             {
                 await messaging.SubscribeAsync(OnMessageAsync, ct);
             }
@@ -66,11 +66,11 @@ namespace Notifo.Infrastructure.Messaging.Implementation
                         startTime: message.Created.ToDateTimeOffset())?.Stop();
                 }
 
-                foreach (var consumer in consumers)
+                foreach (var handler in messageHandlers)
                 {
                     try
                     {
-                        await consumer.HandleAsync(message.Payload, ct);
+                        await handler.HandleAsync(message.Payload, ct);
                     }
                     catch (OperationCanceledException)
                     {

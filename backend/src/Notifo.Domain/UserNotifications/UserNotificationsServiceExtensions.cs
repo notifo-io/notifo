@@ -10,6 +10,7 @@ using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.UserNotifications.MongoDb;
 using Notifo.Infrastructure.Messaging;
+using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -28,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IUserNotificationFactory>();
 
             services.AddSingletonAs<UserNotificationService>()
-                .As<IUserNotificationService>().AsSelf().As<IMessageHandler<ConfirmMessage>>();
+                .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler<ConfirmMessage>>();
 
             services.AddScheduler<UserEventMessage>("UserNotifications");
         }
