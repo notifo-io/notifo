@@ -21,5 +21,10 @@ namespace Notifo.Infrastructure.Texts
             : base(source, StringComparer.OrdinalIgnoreCase)
         {
         }
+
+        public LocalizedText Clone()
+        {
+            return new LocalizedText(this);
+        }
     }
 }

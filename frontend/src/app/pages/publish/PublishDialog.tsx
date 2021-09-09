@@ -95,16 +95,16 @@ export const PublishDialog = () => {
                                     <Forms.Boolean name='templated'
                                         label={texts.common.templateMode} />
 
-                                    {values['templated'] ? (
+                                    {values['templated'] &&
                                         <TemplateInput name='templateCode'
                                             label={texts.common.templateCode} />
-                                    ) : (
-                                        <NotificationsForm.Formatting
-                                            onLanguageSelect={setLanguage}
-                                            language={language}
-                                            languages={appLanguages}
-                                            field='preformatted' disabled={publishing} />
-                                    )}
+                                    }
+
+                                    <NotificationsForm.Formatting
+                                        onLanguageSelect={setLanguage}
+                                        language={language}
+                                        languages={appLanguages}
+                                        field='preformatted' disabled={publishing} />
 
                                     <hr />
 

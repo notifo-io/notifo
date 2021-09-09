@@ -59,9 +59,52 @@ namespace Notifo.Domain
             };
         }
 
-        private static NotificationFormatting<TOut> Transform<TIn, TOut>(this NotificationFormatting<TIn> formatting, Func<TIn?, TOut> transform)
-            where TIn : class
-            where TOut : class
+        public static NotificationFormatting<string> Clone(this NotificationFormatting<string> source)
+        {
+            return new NotificationFormatting<string>
+            {
+                Body = source.Body,
+                ConfirmMode = source.ConfirmMode,
+                ConfirmText = source.ConfirmText,
+                ImageLarge = source.ImageLarge,
+                ImageSmall = source.ImageSmall,
+                LinkText = source.LinkText,
+                LinkUrl = source.LinkUrl,
+                Subject = source.Subject
+            };
+        }
+
+        public static NotificationFormatting<LocalizedText> MergedWith(this NotificationFormatting<LocalizedText> source, NotificationFormatting<LocalizedText>? other)
+        {
+            return new NotificationFormatting<LocalizedText>
+            {
+                Body = Merged(source.Body, other?.Body),
+                ConfirmMode = source.ConfirmMode ?? other?.ConfirmMode,
+                ConfirmText = Merged(source.ConfirmText, other?.ConfirmText),
+                ImageLarge = Merged(source.ImageLarge, other?.ImageLarge),
+                ImageSmall = Merged(source.ImageSmall, other?.ImageSmall),
+                LinkText = Merged(source.LinkText, other?.LinkText),
+                LinkUrl = Merged(source.LinkUrl, other?.LinkUrl),
+                Subject = Merged(source.Subject, other?.Subject)!,
+            };
+        }
+
+        public static NotificationFormatting<LocalizedText> Clone(this NotificationFormatting<LocalizedText> source)
+        {
+            return new NotificationFormatting<LocalizedText>
+            {
+                Body = source.Body?.Clone(),
+                ConfirmMode = source.ConfirmMode,
+                ConfirmText = source.ConfirmText?.Clone(),
+                ImageLarge = source.ImageLarge?.Clone(),
+                ImageSmall = source.ImageSmall?.Clone(),
+                LinkText = source.LinkText?.Clone(),
+                LinkUrl = source.LinkUrl?.Clone(),
+                Subject = source.Subject.Clone()
+            };
+        }
+
+        public static NotificationFormatting<TOut> Transform<TIn, TOut>(this NotificationFormatting<TIn> formatting, Func<TIn?, TOut> transform) where TIn : class where TOut : class
         {
             Guard.NotNull(transform, nameof(transform));
 
@@ -78,6 +121,26 @@ namespace Notifo.Domain
             };
 
             return result;
+        }
+
+        private static LocalizedText? Merged(LocalizedText? source, LocalizedText? other)
+        {
+            if (source != null && other != null)
+            {
+                var result = new LocalizedText(source);
+
+                foreach (var (key, value) in source)
+                {
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        result[key] = value;
+                    }
+                }
+
+                return result;
+            }
+
+            return other ?? source;
         }
     }
 }

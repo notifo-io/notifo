@@ -23,6 +23,6 @@ namespace Notifo.Domain
 
         public TText? LinkText { get; set; }
 
-        public ConfirmMode ConfirmMode { get; set; }
+        public ConfirmMode? ConfirmMode { get; set; }
     }
 }

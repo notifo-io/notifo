@@ -116,7 +116,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                             if (template?.IsAutoCreated == false)
                             {
-                                @event.Formatting = template.Formatting;
+                                if (@event.Formatting != null)
+                                {
+                                    @event.Formatting = template.Formatting.MergedWith(@event.Formatting);
+                                }
+                                else
+                                {
+                                    @event.Formatting = template.Formatting;
+                                }
 
                                 if (template.Settings?.Count > 0)
                                 {
