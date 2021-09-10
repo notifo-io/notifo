@@ -45,7 +45,7 @@ namespace Notifo.Domain.Topics.MongoDb
         public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbTopicRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbTopicRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbTopic>>
                 {
@@ -79,7 +79,7 @@ namespace Notifo.Domain.Topics.MongoDb
         public async Task BatchWriteAsync(List<((string AppId, string Path) Key, CounterMap Counters)> counters,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbTopicRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbTopicRepository/BatchWriteAsync"))
             {
                 var writes = new List<WriteModel<MongoDbTopic>>(counters.Count);
 

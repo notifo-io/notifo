@@ -68,7 +68,7 @@ namespace Notifo.Domain.Apps.MongoDb
         public async Task<List<App>> QueryWithPendingIntegrationsAsync(
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbAppRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/QueryWithPendingIntegrationsAsync"))
             {
                 var documents =
                     await Collection.Find(x => x.IsPending)
@@ -81,7 +81,7 @@ namespace Notifo.Domain.Apps.MongoDb
         public async Task<List<App>> QueryAsync(string contributorId,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbAppRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/QueryAsync"))
             {
                 var documents =
                     await Collection.Find(x => x.ContributorIds.Contains(contributorId))
@@ -94,7 +94,7 @@ namespace Notifo.Domain.Apps.MongoDb
         public async Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbAppRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/GetByApiKeyAsync"))
             {
                 var document = await
                     Collection.Find(x => x.ApiKeys.Contains(apiKey))
@@ -107,7 +107,7 @@ namespace Notifo.Domain.Apps.MongoDb
         public async Task<(App? App, string? Etag)> GetAsync(string id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbAppRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/GetAsync"))
             {
                 var document = await GetDocumentAsync(id, ct);
 
@@ -115,21 +115,21 @@ namespace Notifo.Domain.Apps.MongoDb
             }
         }
 
-        public Task UpsertAsync(App app, string? oldEtag,
+        public async Task UpsertAsync(App app, string? oldEtag,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbAppRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/UpsertAsync"))
             {
                 var document = MongoDbApp.FromApp(app);
 
-                return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+                await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
             }
         }
 
         public async Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbAppRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/BatchWriteAsync"))
             {
                 var writes = new List<WriteModel<MongoDbApp>>(counters.Count);
 

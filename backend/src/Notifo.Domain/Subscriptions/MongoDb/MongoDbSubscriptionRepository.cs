@@ -60,7 +60,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbSubscription>>
                 {
@@ -98,7 +98,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, [EnumeratorCancellation] CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/QueryAsyncByTopic"))
             {
                 var filter = CreatePrefixFilter(appId, userId, topic, false);
 
@@ -145,7 +145,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/GetAsync"))
             {
                 var topicPrefix = prefix.Id;
 
@@ -157,33 +157,36 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             }
         }
 
-        public Task UpsertAsync(Subscription subscription, string? oldEtag,
+        public async Task UpsertAsync(Subscription subscription, string? oldEtag,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/UpsertAsync"))
             {
                 var document = MongoDbSubscription.FromSubscription(subscription);
 
-                return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+                await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
             }
         }
 
-        public Task DeleteAsync(string appId, string userId, TopicId prefix,
+        public async Task DeleteAsync(string appId, string userId, TopicId prefix,
             CancellationToken ct)
         {
-            var id = MongoDbSubscription.CreateId(appId, userId, prefix);
+            using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/DeleteAsync"))
+            {
+                var id = MongoDbSubscription.CreateId(appId, userId, prefix);
 
-            return Collection.DeleteOneAsync(x => x.DocId == id, ct);
+                await Collection.DeleteOneAsync(x => x.DocId == id, ct);
+            }
         }
 
-        public Task DeletePrefixAsync(string appId, string userId, TopicId prefix,
+        public async Task DeletePrefixAsync(string appId, string userId, TopicId prefix,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSubscriptionRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/DeletePrefixAsync"))
             {
                 var filter = CreatePrefixFilter(appId, userId, prefix, true);
 
-                return Collection.DeleteManyAsync(filter, ct);
+                await Collection.DeleteManyAsync(filter, ct);
             }
         }
 

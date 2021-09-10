@@ -51,7 +51,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task<SchedulerBatch<T>?> DequeueAsync(Instant time,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/DequeueAsync"))
             {
                 return await Collection.FindOneAndUpdateAsync(x => !x.Progressing && x.DueTime <= time,
                     Update
@@ -64,7 +64,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task ResetDeadAsync(Instant oldTime, Instant next,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/ResetDeadAsync"))
             {
                 await Collection.UpdateManyAsync(x => x.Progressing && x.ProgressingStarted < oldTime,
                     Update
@@ -79,7 +79,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task RetryAsync(string id, Instant next,
             CancellationToken ct = default)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/RetryAsync"))
             {
                 await Collection.UpdateOneAsync(x => x.Id == id,
                     Update
@@ -94,7 +94,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/EnqueueGroupedAsync"))
             {
                 await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing && x.DueTime <= delay,
                     Update
@@ -112,7 +112,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/EnqueueScheduledAsync"))
             {
                 await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing,
                     Update
@@ -130,7 +130,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task CompleteAsync(string id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/CompleteAsync"))
             {
                 await Collection.DeleteOneAsync(x => x.Id == id, ct);
             }
@@ -139,7 +139,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         public async Task CompleteByKeyAsync(string key,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbSchedulerStore<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/CompleteByKeyAsync"))
             {
                 await Collection.DeleteOneAsync(x => x.Key == key, ct);
             }

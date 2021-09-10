@@ -94,7 +94,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsConfirmedOrHandledAsync"))
             {
                 var filter =
                    Filter.And(
@@ -114,7 +114,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<UserNotification>>
                 {
@@ -168,7 +168,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task<UserNotification?> FindAsync(Guid id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/FindAsync"))
             {
                 var entity = await Collection.Find(x => x.Id == id).FirstOrDefaultAsync(ct);
 
@@ -179,7 +179,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task DeleteAsync(Guid id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/DeleteAsync"))
             {
                 await Collection.UpdateOneAsync(x => x.Id == id, Update.Set(x => x.IsDeleted, true), cancellationToken: ct);
             }
@@ -188,7 +188,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task TrackDeliveredAsync(IEnumerable<Guid> ids, HandledInfo handle,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackDeliveredAsync"))
             {
                 var writes = new List<WriteModel<UserNotification>>();
 
@@ -206,7 +206,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackSeenAsync"))
             {
                 var writes = new List<WriteModel<UserNotification>>();
 
@@ -225,7 +225,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackConfirmedAsync"))
             {
                 await TrackSeenAsync(Enumerable.Repeat(id, 1), handle, ct);
 
@@ -251,7 +251,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))
             {
                 var writes = new List<WriteModel<UserNotification>>();
 
@@ -287,7 +287,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         public async Task InsertAsync(UserNotification notification,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserNotificationRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/InsertAsync"))
             {
                 try
                 {

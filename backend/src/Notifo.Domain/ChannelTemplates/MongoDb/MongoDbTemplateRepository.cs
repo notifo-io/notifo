@@ -43,7 +43,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbChannelTemplateRepository<T>>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbChannelTemplate<T>>>
                 {
@@ -77,7 +77,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         public async Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
             CancellationToken ct )
         {
-            using (Telemetry.Activities.StartMethod<MongoDbChannelTemplateRepository<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetBestAsync"))
             {
                 var templates =
                     await Collection.Find(x => x.Doc.AppId == appId)
@@ -118,7 +118,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         public async Task<(ChannelTemplate<T>? Template, string? Etag)> GetAsync(string appId, string code,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbChannelTemplateRepository<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetAsync"))
             {
                 var docId = MongoDbChannelTemplate<T>.CreateId(appId, code);
 
@@ -128,25 +128,25 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
             }
         }
 
-        public Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag,
+        public async Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbChannelTemplateRepository<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/UpsertAsync"))
             {
                 var document = MongoDbChannelTemplate<T>.FromChannelTemplate(template);
 
-                return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+                await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
             }
         }
 
-        public Task DeleteAsync(string appId, string id,
+        public async Task DeleteAsync(string appId, string id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbChannelTemplateRepository<T>>())
+            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/DeleteAsync"))
             {
                 var docId = MongoDbChannelTemplate<T>.CreateId(appId, id);
 
-                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
         }
     }

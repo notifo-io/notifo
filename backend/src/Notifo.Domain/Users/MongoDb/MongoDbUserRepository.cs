@@ -63,7 +63,7 @@ namespace Notifo.Domain.Users.MongoDb
 
         public async IAsyncEnumerable<string> QueryIdsAsync(string appId, [EnumeratorCancellation] CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/QueryIdsAsync"))
             {
                 var find = Collection.Find(x => x.Doc.AppId == appId).Only(x => x.Doc.Id);
 
@@ -83,7 +83,7 @@ namespace Notifo.Domain.Users.MongoDb
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbUserRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbUser>>
                 {
@@ -121,7 +121,7 @@ namespace Notifo.Domain.Users.MongoDb
         public async Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByApiKeyAsync"))
             {
                 var document = await Collection.Find(x => x.Doc.ApiKey == apiKey).FirstOrDefaultAsync(ct);
 
@@ -132,7 +132,7 @@ namespace Notifo.Domain.Users.MongoDb
         public async Task<(User? User, string? Etag)> GetAsync(string appId, string id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetAsync"))
             {
                 var docId = MongoDbUser.CreateId(appId, id);
 
@@ -142,32 +142,32 @@ namespace Notifo.Domain.Users.MongoDb
             }
         }
 
-        public Task UpsertAsync(User user, string? oldEtag,
+        public async Task UpsertAsync(User user, string? oldEtag,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetAsync"))
             {
                 var docId = MongoDbUser.FromUser(user);
 
-                return UpsertDocumentAsync(docId.DocId, docId, oldEtag, ct);
+                await UpsertDocumentAsync(docId.DocId, docId, oldEtag, ct);
             }
         }
 
-        public Task DeleteAsync(string appId, string id,
+        public async Task DeleteAsync(string appId, string id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/DeleteAsync"))
             {
                 var docId = MongoDbUser.CreateId(appId, id);
 
-                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
         }
 
-        public Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters,
+        public async Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbUserRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/BatchWriteAsync"))
             {
                 var writes = new List<WriteModel<MongoDbUser>>(counters.Count);
 
@@ -193,7 +193,7 @@ namespace Notifo.Domain.Users.MongoDb
                     }
                 }
 
-                return Collection.BulkWriteAsync(writes, cancellationToken: ct);
+                await Collection.BulkWriteAsync(writes, cancellationToken: ct);
             }
         }
     }

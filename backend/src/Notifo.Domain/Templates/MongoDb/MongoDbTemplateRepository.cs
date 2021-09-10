@@ -43,7 +43,7 @@ namespace Notifo.Domain.Templates.MongoDb
         public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbTemplateRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbTemplate>>
                 {
@@ -77,7 +77,7 @@ namespace Notifo.Domain.Templates.MongoDb
         public async Task<(Template? Template, string? Etag)> GetAsync(string appId, string code,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/GetAsync"))
             {
                 var docId = MongoDbTemplate.CreateId(appId, code);
 
@@ -87,25 +87,25 @@ namespace Notifo.Domain.Templates.MongoDb
             }
         }
 
-        public Task UpsertAsync(Template template, string? oldEtag,
+        public async Task UpsertAsync(Template template, string? oldEtag,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/UpsertAsync"))
             {
                 var document = MongoDbTemplate.FromTemplate(template);
 
-                return UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
+                await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
             }
         }
 
-        public Task DeleteAsync(string appId, string id,
+        public async Task DeleteAsync(string appId, string id,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbTemplateRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/DeleteAsync"))
             {
                 var docId = MongoDbTemplate.CreateId(appId, id);
 
-                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
         }
     }

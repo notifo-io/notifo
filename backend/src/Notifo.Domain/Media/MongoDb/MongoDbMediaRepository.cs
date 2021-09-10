@@ -43,7 +43,7 @@ namespace Notifo.Domain.Media.MongoDb
         public async Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbMedia>>
                 {
@@ -74,7 +74,7 @@ namespace Notifo.Domain.Media.MongoDb
         public async Task<Media?> GetAsync(string appId, string fileName,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/GetAsync"))
             {
                 var docId = MongoDbMedia.CreateId(appId, fileName);
 
@@ -84,25 +84,25 @@ namespace Notifo.Domain.Media.MongoDb
             }
         }
 
-        public Task UpsertAsync(Media media,
+        public async Task UpsertAsync(Media media,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/UpsertAsync"))
             {
                 var document = MongoDbMedia.FromMedia(media);
 
-                return Collection.ReplaceOneAsync(x => x.DocId == document.DocId, document, UpsertReplace, ct);
+                await Collection.ReplaceOneAsync(x => x.DocId == document.DocId, document, UpsertReplace, ct);
             }
         }
 
-        public Task DeleteAsync(string appId, string fileName,
+        public async Task DeleteAsync(string appId, string fileName,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbMediaRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/DeleteAsync"))
             {
                 var docId = MongoDbMedia.CreateId(appId, fileName);
 
-                return Collection.DeleteOneAsync(x => x.DocId == docId, ct);
+                await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
         }
     }

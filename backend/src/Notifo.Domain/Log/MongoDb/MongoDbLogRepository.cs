@@ -45,7 +45,7 @@ namespace Notifo.Domain.Log.MongoDb
         public async Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbLogRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbLogRepository/DeleteAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbLogEntry>>
                 {
@@ -79,7 +79,7 @@ namespace Notifo.Domain.Log.MongoDb
         public async Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbLogRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbLogRepository/MatchWriteAsync"))
             {
                 var writes = new List<WriteModel<MongoDbLogEntry>>();
 

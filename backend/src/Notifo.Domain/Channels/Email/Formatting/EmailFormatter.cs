@@ -189,7 +189,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private async Task<string> MjmlToHtmlAsync(string mjml)
         {
-            using (Telemetry.Activities.StartMethod<EmailFormatter>(force: true))
+            using (Telemetry.Activities.StartActivity("MongoDbAppRepository/MjmlToHtmlAsync"))
             {
                 var result = await mjmlServices.Render(mjml);
 

@@ -67,7 +67,7 @@ namespace Notifo.Domain.Events.MongoDb
         public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
             CancellationToken ct)
         {
-            using (var activity = Telemetry.Activities.StartMethod<MongoDbEventRepository>())
+            using (var activity = Telemetry.Activities.StartActivity("MongoDbEventRepository/QueryAsync"))
             {
                 var filters = new List<FilterDefinition<MongoDbEvent>>
                 {
@@ -104,7 +104,7 @@ namespace Notifo.Domain.Events.MongoDb
         public async Task InsertAsync(Event @event,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbEventRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbEventRepository/InsertAsync"))
             {
                 var document = MongoDbEvent.FromEvent(@event);
 
@@ -122,7 +122,7 @@ namespace Notifo.Domain.Events.MongoDb
         public async Task BatchWriteAsync(List<((string AppId, string EventId) Key, CounterMap Counters)> counters,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartMethod<MongoDbEventRepository>())
+            using (Telemetry.Activities.StartActivity("MongoDbEventRepository/BatchWriteAsync"))
             {
                 var writes = new List<WriteModel<MongoDbEvent>>(counters.Count);
 
