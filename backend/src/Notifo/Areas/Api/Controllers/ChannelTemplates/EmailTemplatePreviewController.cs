@@ -121,7 +121,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                 language = template.Languages.Values.First();
             }
 
-            var formatted = await emailFormatter.FormatPreviewAsync(Notifications, language, App, EmailUser);
+            var formatted = await emailFormatter.FormatPreviewAsync(Notifications, language, App, EmailUser, HttpContext.RequestAborted);
 
             return Content(formatted.BodyHtml, "text/html");
         }
@@ -149,7 +149,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                         BodyHtml = request.Template
                     };
 
-                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser);
+                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser, HttpContext.RequestAborted);
 
                     var response = new EmailPreviewDto
                     {
@@ -165,7 +165,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                         BodyText = request.Template
                     };
 
-                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser);
+                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser, HttpContext.RequestAborted);
 
                     var response = new EmailPreviewDto
                     {

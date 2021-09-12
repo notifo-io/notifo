@@ -22,7 +22,7 @@ namespace Notifo.Infrastructure.MongoDb
 
         public static string GenerateEtag()
         {
-            return Guid.NewGuid().ToString().Replace("-", string.Empty);
+            return Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
         }
     }
 

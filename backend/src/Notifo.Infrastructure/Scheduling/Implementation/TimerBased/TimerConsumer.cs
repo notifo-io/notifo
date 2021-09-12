@@ -163,7 +163,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             }
         }
 
-        public async Task QueryAsync(CancellationToken ct)
+        public async Task QueryAsync(
+            CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity(activity))
             {

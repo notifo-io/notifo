@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Notifo.Identity.InMemory;
 using OpenIddict.Abstractions;
@@ -27,7 +28,7 @@ namespace Notifo.Identity
 
             foreach (var c in bytes)
             {
-                sb.Append(c.ToString("X2"));
+                sb.Append(c.ToString("X2", CultureInfo.InvariantCulture));
 
                 if (sb.Length == MongoDbLength)
                 {

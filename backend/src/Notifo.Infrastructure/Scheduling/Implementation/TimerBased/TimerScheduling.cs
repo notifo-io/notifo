@@ -36,7 +36,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             this.log = log;
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             if (schedulerStore is IInitializable initializable)
             {
@@ -44,7 +45,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             }
         }
 
-        public async Task ReleaseAsync(CancellationToken ct)
+        public async Task ReleaseAsync(
+            CancellationToken ct)
         {
             if (schedulerStore is IInitializable initializable)
             {
@@ -58,7 +60,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var now = clock.GetCurrentInstant();
 
@@ -66,7 +68,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var now = clock.GetCurrentInstant();
 
@@ -74,7 +76,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var now = clock.GetCurrentInstant();
 
@@ -92,7 +94,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         }
 
         public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var now = clock.GetCurrentInstant();
 
@@ -114,7 +116,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             schedulerStore.CompleteByKeyAsync(key).Forget();
         }
 
-        public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError, CancellationToken ct)
+        public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError,
+            CancellationToken ct = default)
         {
             consumer = new TimerConsumer<T>(schedulerStore, schedulerOptions, onSuccess, onError, clock, log);
             consumer.Subscribe();

@@ -11,7 +11,8 @@ using Squidex.Hosting;
 
 namespace Notifo.Infrastructure.Messaging.Implementation
 {
-    public delegate Task MessageCallback<T>(Envelope<T> envelope, CancellationToken ct);
+    public delegate Task MessageCallback<T>(Envelope<T> envelope,
+            CancellationToken ct);
 
     public interface IMessaging<T> : IMessageProducer<Envelope<T>>, IInitializable
     {

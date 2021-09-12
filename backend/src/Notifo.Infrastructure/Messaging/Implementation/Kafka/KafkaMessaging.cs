@@ -36,7 +36,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             this.log = log;
         }
 
-        public Task InitializeAsync(CancellationToken ct)
+        public Task InitializeAsync(
+            CancellationToken ct)
         {
             producer =
                 new DependentProducerBuilder<string, Envelope<T>>(provider.Handle)
@@ -46,7 +47,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             return Task.CompletedTask;
         }
 
-        public Task ReleaseAsync(CancellationToken ct)
+        public Task ReleaseAsync(
+            CancellationToken ct)
         {
             if (producer != null)
             {
@@ -63,7 +65,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
         }
 
         public async Task ProduceAsync(string key, Envelope<T> envelope,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             if (producer == null)
             {

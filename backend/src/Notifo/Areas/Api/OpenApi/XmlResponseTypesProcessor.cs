@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.OpenApi
 
                     var description = match.Groups["Description"].Value;
 
-                    if (description.Contains("=&gt;"))
+                    if (description.Contains("=&gt;", StringComparison.OrdinalIgnoreCase))
                     {
                         throw new InvalidOperationException("Description not formatted correcly.");
                     }

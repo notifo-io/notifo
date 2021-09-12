@@ -29,7 +29,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
 
@@ -37,7 +37,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
 
@@ -45,7 +45,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
 
@@ -55,7 +55,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(command, nameof(command));
 
@@ -85,7 +85,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public async Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var command = new AddUserAllowedTopic
             {
@@ -98,7 +98,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public async Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var command = new RemoveUserAllowedTopic
             {
@@ -111,7 +111,7 @@ namespace Notifo.Domain.Subscriptions
         }
 
         public Task DeleteAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return repository.DeleteAsync(appId, userId, prefix, ct);
         }

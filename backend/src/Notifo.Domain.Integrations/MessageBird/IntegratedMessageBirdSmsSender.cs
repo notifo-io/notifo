@@ -82,8 +82,8 @@ namespace Notifo.Domain.Integrations.MessageBird
             }
         }
 
-        public async Task<SmsResult> SendAsync(string to, string body, string? token,
-            CancellationToken ct)
+        public async Task<SmsResult> SendAsync(string to, string body, string? token = null,
+            CancellationToken ct = default)
         {
             try
             {

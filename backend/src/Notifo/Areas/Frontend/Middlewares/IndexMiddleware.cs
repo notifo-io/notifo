@@ -43,7 +43,7 @@ namespace Notifo.Areas.Frontend.Middlewares
                     context.Response.ContentLength = Encoding.UTF8.GetByteCount(html);
                     context.Response.Body = responseBody;
 
-                    await context.Response.WriteAsync(html);
+                    await context.Response.WriteAsync(html, context.RequestAborted);
                 }
             }
             else

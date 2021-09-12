@@ -43,7 +43,7 @@ namespace Notifo.Pipeline
                 {
                     var appStore = context.HttpContext.RequestServices.GetRequiredService<IAppStore>();
 
-                    var app = await appStore.GetAsync(appId);
+                    var app = await appStore.GetAsync(appId, context.HttpContext.RequestAborted);
 
                     if (app == null)
                     {

@@ -28,14 +28,16 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Scheduling
             handler = new DelegatingScheduleHandler<Envelope<T>>(scheduling, new IScheduleHandler<Envelope<T>>[] { this });
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             await scheduling.InitializeAsync(ct);
 
             await handler.InitializeAsync(ct);
         }
 
-        public async Task ReleaseAsync(CancellationToken ct)
+        public async Task ReleaseAsync(
+            CancellationToken ct)
         {
             await scheduling.ReleaseAsync(ct);
         }
@@ -54,7 +56,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Scheduling
             return Task.CompletedTask;
         }
 
-        public async Task<bool> HandleAsync(Envelope<T> job, bool isLastAttempt, CancellationToken ct)
+        public async Task<bool> HandleAsync(Envelope<T> job, bool isLastAttempt,
+            CancellationToken ct)
         {
             if (onMessage != null)
             {

@@ -33,7 +33,8 @@ namespace Notifo.Identity
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             await SetupIndexAsync(ct);
 
@@ -45,7 +46,8 @@ namespace Notifo.Identity
             });
         }
 
-        public async Task ReleaseAsync(CancellationToken ct)
+        public async Task ReleaseAsync(
+            CancellationToken ct)
         {
             if (timer != null)
             {
@@ -53,7 +55,8 @@ namespace Notifo.Identity
             }
         }
 
-        private async Task PruneAsync(CancellationToken ct)
+        private async Task PruneAsync(
+            CancellationToken ct)
         {
             using (var scope = serviceProvider.CreateScope())
             {
@@ -63,7 +66,8 @@ namespace Notifo.Identity
             }
         }
 
-        private async Task SetupIndexAsync(CancellationToken ct)
+        private async Task SetupIndexAsync(
+            CancellationToken ct)
         {
             using (var scope = serviceProvider.CreateScope())
             {

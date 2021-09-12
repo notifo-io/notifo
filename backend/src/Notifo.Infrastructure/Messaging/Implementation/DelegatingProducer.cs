@@ -21,7 +21,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation
         }
 
         public async Task ProduceAsync(string key, T message,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity(activity))
             {

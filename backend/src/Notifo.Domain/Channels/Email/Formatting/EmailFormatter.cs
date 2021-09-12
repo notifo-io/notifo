@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -161,7 +162,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private static void ValidateResult(string markup, string result, IEnumerable<BaseUserNotification> notifications)
         {
-            if (notifications.Any(x => !result.Contains(x.Formatting.Subject)))
+            if (notifications.Any(x => !result.Contains(x.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
             {
                 var errors = new[]
                 {

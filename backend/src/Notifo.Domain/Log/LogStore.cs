@@ -64,7 +64,7 @@ namespace Notifo.Domain.Log
         }
 
         public Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return repository.QueryAsync(appId, query, ct);
         }

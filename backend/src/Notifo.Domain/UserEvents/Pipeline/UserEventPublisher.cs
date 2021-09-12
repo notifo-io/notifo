@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -139,7 +140,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                         if (@event.Formatting?.HasSubject() != true)
                         {
-                            await logStore.LogAsync(@event.AppId, string.Format(Texts.Template_NoSubject, @event.TemplateCode));
+                            await logStore.LogAsync(@event.AppId, string.Format(CultureInfo.InvariantCulture, Texts.Template_NoSubject, @event.TemplateCode));
                             return;
                         }
 
@@ -159,7 +160,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     var userEventMessage = CreateUserEventMessage(@event, subscription);
 
 #pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods that take one
+#pragma warning disable MA0040 // Flow the cancellation token
                     await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
+#pragma warning restore MA0040 // Flow the cancellation token
 #pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods that take one
 
                     count++;

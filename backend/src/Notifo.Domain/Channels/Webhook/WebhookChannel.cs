@@ -155,7 +155,7 @@ namespace Notifo.Domain.Channels.Webhook
             }
             else
             {
-                return !string.IsNullOrWhiteSpace(name) && string.Equals(name, webhook.Name);
+                return !string.IsNullOrWhiteSpace(name) && string.Equals(name, webhook.Name, StringComparison.Ordinal);
             }
         }
     }

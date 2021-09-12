@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using Microsoft.AspNetCore.Builder;
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Pipeline;
@@ -32,7 +33,7 @@ namespace Notifo.Areas.Api
                 settings.DocumentPath = "/api/openapi.json";
             });
 
-            app.UseWhen(x => x.Request.Path.StartsWithSegments("/api"), builder =>
+            app.UseWhen(x => x.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase), builder =>
             {
                 builder.UseMiddleware<RequestExceptionMiddleware>();
             });

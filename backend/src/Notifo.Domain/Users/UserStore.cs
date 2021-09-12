@@ -39,7 +39,7 @@ namespace Notifo.Domain.Users
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             if (key.AppId != null && key.UserId != null)
             {
@@ -48,13 +48,13 @@ namespace Notifo.Domain.Users
         }
 
         public IAsyncEnumerable<string> QueryIdsAsync(string appId,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return repository.QueryIdsAsync(appId, ct);
         }
 
         public Task<User?> GetCachedAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(id, nameof(id));
@@ -68,7 +68,7 @@ namespace Notifo.Domain.Users
         }
 
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));
@@ -84,7 +84,7 @@ namespace Notifo.Domain.Users
         }
 
         public async Task<User?> GetByApiKeyAsync(string apiKey,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(apiKey, nameof(apiKey));
 
@@ -96,7 +96,7 @@ namespace Notifo.Domain.Users
         }
 
         public async Task<User?> GetAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(id, nameof(id));
@@ -109,7 +109,7 @@ namespace Notifo.Domain.Users
         }
 
         public Task<User> UpsertAsync(string appId, string? id, ICommand<User> command,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(command, nameof(command));
@@ -147,7 +147,7 @@ namespace Notifo.Domain.Users
         }
 
         public async Task DeleteAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(id, nameof(id));

@@ -68,7 +68,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
                     {
                         var result = kafkaConsumer.Consume(cancellationTokenSource.Token);
 
-                        onMessage(result.Message.Value, cancellationTokenSource.Token).Wait();
+                        onMessage(result.Message.Value, cancellationTokenSource.Token).Wait(cancellationTokenSource.Token);
                     }
                 }
                 finally

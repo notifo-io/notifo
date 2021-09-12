@@ -32,7 +32,8 @@ namespace Notifo.Identity
             this.log = log;
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             if (users?.Length > 0)
             {

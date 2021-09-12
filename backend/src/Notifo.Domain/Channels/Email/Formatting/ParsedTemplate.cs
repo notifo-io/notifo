@@ -148,7 +148,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
             var startOuter = start.Index;
             var startInner = startOuter + start.Length;
 
+#pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
             var end = new Regex($"<!--[\\s]*END:[\\s]*{type}[\\s]*-->[\r\n]*", RegexOptions.IgnoreCase).Match(template, startOuter);
+#pragma warning restore MA0023 // Add RegexOptions.ExplicitCapture
 
             if (!end.Success)
             {
@@ -161,7 +163,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             var stringBuilder = Pool.Get();
             try
             {
-                var replacement = template.Contains(NotificationsPlaceholder) ? string.Empty : NotificationsPlaceholder;
+                var replacement = template.Contains(NotificationsPlaceholder, StringComparison.OrdinalIgnoreCase) ? string.Empty : NotificationsPlaceholder;
 
                 stringBuilder.Append(span[..startOuter]);
                 stringBuilder.Append(replacement);

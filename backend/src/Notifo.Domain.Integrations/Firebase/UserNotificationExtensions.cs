@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using FirebaseAdmin.Messaging;
 using Notifo.Domain.Channels;
 using Notifo.Domain.UserNotifications;
@@ -84,7 +85,7 @@ namespace Notifo.Domain.Integrations.Firebase
             {
                 androidConfig.TimeToLive = TimeSpan.FromSeconds(timeToLive);
 
-                var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString();
+                var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
 
                 apnsHeaders["apns-expiration"] = timeToLive == 0 ? "0" : unixTimeSeconds;
             }

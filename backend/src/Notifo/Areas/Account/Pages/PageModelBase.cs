@@ -82,7 +82,9 @@ namespace Notifo.Areas.Account.Pages
 
             if (user == null)
             {
+#pragma warning disable MA0014 // Do not raise System.ApplicationException type
                 throw new ApplicationException($"Unable to load user with ID '{UserService.GetUserId(User)}'.");
+#pragma warning restore MA0014 // Do not raise System.ApplicationException type
             }
 
             return user;

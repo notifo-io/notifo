@@ -18,14 +18,14 @@ namespace Notifo.Infrastructure
             return Guid.NewGuid()
                 .ToString().Sha256Base64()
                 .ToLowerInvariant()
-                .Replace("+", "x")
-                .Replace("=", "x")
-                .Replace("/", "x");
+                .Replace("+", "x", StringComparison.OrdinalIgnoreCase)
+                .Replace("=", "x", StringComparison.OrdinalIgnoreCase)
+                .Replace("/", "x", StringComparison.OrdinalIgnoreCase);
         }
 
         public static string Simple()
         {
-            return Guid.NewGuid().ToString().Replace("-", string.Empty);
+            return Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
         }
 
         public static string Sha256Base64(this string value)

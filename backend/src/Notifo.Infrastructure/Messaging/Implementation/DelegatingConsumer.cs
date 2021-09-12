@@ -35,7 +35,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation
             this.log = log;
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             if (messaging is IInitializable initializable)
             {
@@ -48,7 +49,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation
             }
         }
 
-        public async Task ReleaseAsync(CancellationToken ct)
+        public async Task ReleaseAsync(
+            CancellationToken ct)
         {
             if (messaging is IInitializable initializable)
             {
@@ -56,7 +58,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation
             }
         }
 
-        private async Task OnMessageAsync(Envelope<T> message, CancellationToken ct)
+        private async Task OnMessageAsync(Envelope<T> message,
+            CancellationToken ct)
         {
             using (var trace = Telemetry.Activities.StartActivity(activity))
             {

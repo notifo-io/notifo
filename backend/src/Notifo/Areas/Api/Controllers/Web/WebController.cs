@@ -77,6 +77,7 @@ namespace Notifo.Areas.Api.Controllers.Web
                 Channel = Providers.Web
             };
 
+#pragma warning disable MA0040 // Flow the cancellation token
             if (request.Delivered?.Length > 0)
             {
                 await userNotificationStore.TrackSeenAsync(request.Delivered, details);
@@ -94,12 +95,13 @@ namespace Notifo.Areas.Api.Controllers.Web
                     await userNotificationStore.TrackConfirmedAsync(id, details);
                 }
             }
+#pragma warning restore MA0040 // Flow the cancellation token
 
             if (request.Deleted != null)
             {
                 foreach (var id in request.Deleted)
                 {
-                    await userNotificationStore.DeleteAsync(id);
+                    await userNotificationStore.DeleteAsync(id, HttpContext.RequestAborted);
                 }
             }
 
@@ -109,7 +111,7 @@ namespace Notifo.Areas.Api.Controllers.Web
                 Scope = UserNotificationQueryScope.All,
                 Take = 100,
                 TotalNeeded = false
-            });
+            }, HttpContext.RequestAborted);
 
             var continuationToken = notifications.Select(x => x.Updated).OrderBy(x => x).LastOrDefault();
 

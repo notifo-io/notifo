@@ -61,7 +61,7 @@ namespace Notifo.Areas.Frontend.Middlewares
                     context.Response.ContentLength = Encoding.UTF8.GetByteCount(html);
                     context.Response.Body = responseBody;
 
-                    await context.Response.WriteAsync(html);
+                    await context.Response.WriteAsync(html, context.RequestAborted);
                 }
             }
             else
@@ -78,13 +78,13 @@ namespace Notifo.Areas.Frontend.Middlewares
 
                 using (var client = new HttpClient(handler))
                 {
-                    var result = await client.GetAsync(url);
+                    var result = await client.GetAsync(url, context.RequestAborted);
 
                     context.Response.StatusCode = (int)result.StatusCode;
 
                     if (result.IsSuccessStatusCode)
                     {
-                        var text = await result.Content.ReadAsStringAsync();
+                        var text = await result.Content.ReadAsStringAsync(context.RequestAborted);
 
                         if (result.Content.Headers.ContentType?.MediaType == "text/html")
                         {
@@ -101,7 +101,7 @@ namespace Notifo.Areas.Frontend.Middlewares
                             context.Response.Headers[key] = new StringValues(value.ToArray());
                         }
 
-                        await context.Response.WriteAsync(text);
+                        await context.Response.WriteAsync(text, context.RequestAborted);
                     }
                 }
             }

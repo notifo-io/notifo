@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Threading.Tasks;
 using FluentValidation;
 using Notifo.Infrastructure;
@@ -51,11 +52,11 @@ namespace Notifo.Domain.Channels.Sms
                 return MaxLength(text, 140);
             }
 
-            var templateLength = template.Text.Replace(NotificationPlaceholder, string.Empty).Length;
+            var templateLength = template.Text.Replace(NotificationPlaceholder, string.Empty, StringComparison.OrdinalIgnoreCase).Length;
 
             var maxLength = 140 - templateLength;
 
-            return template.Text.Replace(NotificationPlaceholder, MaxLength(text, maxLength));
+            return template.Text.Replace(NotificationPlaceholder, MaxLength(text, maxLength), StringComparison.OrdinalIgnoreCase);
         }
 
         private static string MaxLength(string source, int maxLength)

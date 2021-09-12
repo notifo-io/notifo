@@ -22,7 +22,7 @@ namespace Notifo.Domain.Counters
         }
 
         public Task CollectAsync(CounterKey key, CounterMap counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             if (counters.Count == 0)
             {

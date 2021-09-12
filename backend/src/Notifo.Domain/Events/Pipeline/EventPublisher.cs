@@ -34,7 +34,7 @@ namespace Notifo.Domain.Events.Pipeline
         }
 
         public async Task PublishAsync(EventMessage message,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(message, nameof(message));
 
@@ -65,7 +65,9 @@ namespace Notifo.Domain.Events.Pipeline
                 }
 
 #pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods that take one
+#pragma warning disable MA0040 // Flow the cancellation token
                 await producer.ProduceAsync(message.AppId, message);
+#pragma warning restore MA0040 // Flow the cancellation token
 #pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods that take one
 
                 log.LogInformation(message, (m, w) => w

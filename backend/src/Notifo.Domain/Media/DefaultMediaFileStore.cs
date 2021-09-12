@@ -22,7 +22,7 @@ namespace Notifo.Domain.Media
         }
 
         public Task DownloadAsync(string appId, Media media, Stream stream, BytesRange range,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var fileName = CreateFileName(appId, media);
 
@@ -30,7 +30,7 @@ namespace Notifo.Domain.Media
         }
 
         public Task UploadAsync(string appId, Media media, Stream stream,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var fileName = CreateFileName(appId, media);
 

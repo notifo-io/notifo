@@ -68,7 +68,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
             smtpEmailServer = new SmtpEmailServer(options.Value);
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             amazonSES = new AmazonSimpleEmailServiceClient(
                 options.AwsAccessKeyId,

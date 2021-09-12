@@ -56,7 +56,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
             }
         }
 
-        public Task InitializeAsync(CancellationToken ct)
+        public Task InitializeAsync(
+            CancellationToken ct)
         {
             channel = provider.Connection.CreateModel();
 
@@ -69,7 +70,9 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
             {
                 CleanOutstanding(@event.DeliveryTag, @event.Multiple, found =>
                 {
+#pragma warning disable MA0040 // Flow the cancellation token
                     if (!retryQueue.TryAdd(found, 2000))
+#pragma warning restore MA0040 // Flow the cancellation token
                     {
                         log.LogError(w => w
                             .WriteProperty("action", "Shutdown")

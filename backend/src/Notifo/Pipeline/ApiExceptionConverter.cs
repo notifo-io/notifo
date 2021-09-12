@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -134,13 +135,13 @@ namespace Notifo.Pipeline
 
                 var builder = new StringBuilder(property.Length);
 
-                builder.Append(char.ToLower(property[0]));
+                builder.Append(char.ToLower(property[0], CultureInfo.InvariantCulture));
 
                 foreach (var character in property.Skip(1))
                 {
                     if (prevChar == '.')
                     {
-                        builder.Append(char.ToLower(character));
+                        builder.Append(char.ToLower(character, CultureInfo.InvariantCulture));
                     }
                     else
                     {

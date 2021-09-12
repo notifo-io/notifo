@@ -58,7 +58,8 @@ namespace Notifo.Domain.Counters
             return timer.StopAsync();
         }
 
-        private async Task StoreAsync(CancellationToken ct)
+        private async Task StoreAsync(
+            CancellationToken ct)
         {
             if (counters.IsEmpty)
             {

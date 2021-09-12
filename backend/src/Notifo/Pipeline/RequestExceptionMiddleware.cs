@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ namespace Notifo.Pipeline
 
         public async Task InvokeAsync(HttpContext context, IActionResultExecutor<ObjectResult> writer, ISemanticLog log)
         {
-            if (context.Request.Query.TryGetValue("error", out var header) && int.TryParse(header, out var statusCode) && IsErrorStatusCode(statusCode))
+            if (context.Request.Query.TryGetValue("error", out var header) && int.TryParse(header, NumberStyles.Integer, CultureInfo.InvariantCulture, out var statusCode) && IsErrorStatusCode(statusCode))
             {
                 var (error, _) = ApiExceptionConverter.ToErrorDto(statusCode, context);
 

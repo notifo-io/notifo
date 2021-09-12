@@ -32,7 +32,7 @@ namespace Notifo.Domain.Topics
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             if (key.AppId != null && key.Topic != null)
             {
@@ -41,7 +41,7 @@ namespace Notifo.Domain.Topics
         }
 
         public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));

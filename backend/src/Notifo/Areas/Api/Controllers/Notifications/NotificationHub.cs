@@ -49,7 +49,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             await userNotificationsStore.DeleteAsync(id, Context.ConnectionAborted);
 
-            await Clients.User(Context.User?.Sub()!).SendAsync("notificationDeleted", new { id });
+            await Clients.User(Context.User?.Sub()!).SendAsync("notificationDeleted", new { id }, Context.ConnectionAborted);
         }
 
         public async Task ConfirmMany(TrackNotificationDto request)

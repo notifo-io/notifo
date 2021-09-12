@@ -23,7 +23,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         }
 
         public async Task HandleAsync(UserEventMessage message,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var trace = Telemetry.Activities.StartActivity("ConsumeUserEvent"))
             {

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ namespace Notifo.Areas.Api.OpenApi
                         {
                             tag.Description ??= string.Empty;
 
-                            if (!tag.Description.Contains(description))
+                            if (!tag.Description.Contains(description, StringComparison.OrdinalIgnoreCase))
                             {
                                 tag.Description += "\n\n" + description;
                             }

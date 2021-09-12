@@ -30,7 +30,7 @@ namespace Notifo.Pipeline.Telemetry
 
             public string GetHttpMethod()
             {
-                return httpContextAccessor.HttpContext?.Request?.Method?.ToString() ?? string.Empty;
+                return httpContextAccessor.HttpContext?.Request?.Method ?? string.Empty;
             }
 
             public string GetUri()

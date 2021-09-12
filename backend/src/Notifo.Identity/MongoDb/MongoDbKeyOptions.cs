@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
+using Notifo.Infrastructure;
 using OpenIddict.Server;
 
 namespace Notifo.Identity.MongoDb

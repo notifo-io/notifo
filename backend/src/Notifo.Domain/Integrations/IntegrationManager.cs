@@ -39,14 +39,16 @@ namespace Notifo.Domain.Integrations
             this.log = log;
         }
 
-        public Task InitializeAsync(CancellationToken ct)
+        public Task InitializeAsync(
+            CancellationToken ct)
         {
             timer = new CompletionTimer(5000, CheckAsync, 5000);
 
             return Task.CompletedTask;
         }
 
-        public Task ReleaseAsync(CancellationToken ct)
+        public Task ReleaseAsync(
+            CancellationToken ct)
         {
             return timer.StopAsync();
         }
@@ -132,7 +134,8 @@ namespace Notifo.Domain.Integrations
             return configured.Test == null || configured.Test.Value == test;
         }
 
-        public async Task CheckAsync(CancellationToken ct)
+        public async Task CheckAsync(
+            CancellationToken ct)
         {
             try
             {

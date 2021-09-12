@@ -56,7 +56,7 @@ namespace Notifo.Areas.Account.Controllers
             value = new Lazy<TService>(() => HttpContext.RequestServices.GetRequiredService<TService>());
         }
 
-        protected Task<IActionResult> RedirectToErrorPage(string error, string errorDescription)
+        protected static Task<IActionResult> RedirectToErrorPage(string error, string errorDescription)
         {
             if (!string.IsNullOrWhiteSpace(error))
             {

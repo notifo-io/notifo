@@ -65,7 +65,8 @@ namespace Notifo.Domain.Log.Internal
             return timer.StopAsync();
         }
 
-        private async Task StoreAsync(CancellationToken ct)
+        private async Task StoreAsync(
+            CancellationToken ct)
         {
             if (updates.IsEmpty)
             {

@@ -23,7 +23,7 @@ namespace Notifo.Areas.Frontend.Middlewares
 
             if (httpContext.Request.PathBase.HasValue)
             {
-                result = result.Replace("<base href=\"/\">", $"<base href=\"{httpContext.Request.PathBase}/\">");
+                result = result.Replace("<base href=\"/\">", $"<base href=\"{httpContext.Request.PathBase}/\">", StringComparison.OrdinalIgnoreCase);
             }
 
             return result;

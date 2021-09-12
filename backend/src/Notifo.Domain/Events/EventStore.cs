@@ -33,7 +33,7 @@ namespace Notifo.Domain.Events
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             if (key.AppId != null && key.EventId != null)
             {
@@ -42,7 +42,7 @@ namespace Notifo.Domain.Events
         }
 
         public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));
@@ -55,7 +55,7 @@ namespace Notifo.Domain.Events
         }
 
         public Task InsertAsync(EventMessage request,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(request, nameof(request));
 

@@ -39,7 +39,7 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(userId, nameof(userId));
@@ -49,25 +49,25 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public Task<UserNotification?> FindAsync(Guid id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return repository.FindAsync(id, ct);
         }
 
         public Task DeleteAsync(Guid id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return repository.DeleteAsync(id, ct);
         }
 
         public Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return repository.IsConfirmedOrHandledAsync(id, channel, configuration, ct);
         }
 
-        public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details,
-            CancellationToken ct)
+        public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details = default,
+            CancellationToken ct = default)
         {
             Guard.NotDefault(id, nameof(id));
 
@@ -76,8 +76,8 @@ namespace Notifo.Domain.UserNotifications
             return repository.TrackConfirmedAsync(id, handle, ct);
         }
 
-        public Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details,
-            CancellationToken ct)
+        public Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+            CancellationToken ct = default)
         {
             Guard.NotNull(ids, nameof(ids));
 
@@ -86,8 +86,8 @@ namespace Notifo.Domain.UserNotifications
             return repository.TrackDeliveredAsync(ids, handle, ct);
         }
 
-        public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details,
-            CancellationToken ct)
+        public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+            CancellationToken ct = default)
         {
             Guard.NotNull(ids, nameof(ids));
 
@@ -97,7 +97,7 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public Task TrackAttemptAsync(UserEventMessage userEvent,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(userEvent, nameof(userEvent));
 
@@ -108,7 +108,7 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public Task TrackFailedAsync(UserEventMessage userEvent,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(userEvent, nameof(userEvent));
 
@@ -119,7 +119,7 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public Task InsertAsync(UserNotification notification,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(notification, nameof(notification));
 
@@ -131,8 +131,8 @@ namespace Notifo.Domain.UserNotifications
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail,
-            CancellationToken ct)
+        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail = null,
+            CancellationToken ct = default)
         {
             Guard.NotNull(notification, nameof(notification));
             Guard.NotNullOrEmpty(channel, nameof(channel));
@@ -146,7 +146,7 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNull(notification, nameof(notification));
             Guard.NotNullOrEmpty(channel, nameof(channel));

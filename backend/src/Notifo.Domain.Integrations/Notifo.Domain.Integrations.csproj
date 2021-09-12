@@ -17,6 +17,10 @@
     <PackageReference Include="libphonenumber-csharp" Version="8.12.30" />
     <PackageReference Include="Mailjet.Api" Version="2.0.2" />
     <PackageReference Include="MailKit" Version="2.15.0" />
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.670">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />

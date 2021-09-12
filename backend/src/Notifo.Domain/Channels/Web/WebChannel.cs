@@ -36,7 +36,7 @@ namespace Notifo.Domain.Channels.Web
         }
 
         public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             try
             {

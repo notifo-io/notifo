@@ -46,7 +46,7 @@ namespace Notifo.Infrastructure.Reflection
 
             foreach (var t1Value in t1Values.ToList())
             {
-                var t2Value = (T2)Enum.Parse(typeof(T2), t1Value.ToString()!.Replace("_", string.Empty), true);
+                var t2Value = (T2)Enum.Parse(typeof(T2), t1Value.ToString()!.Replace("_", string.Empty, StringComparison.OrdinalIgnoreCase), true);
 
                 result.Add(t1Value, t2Value);
 

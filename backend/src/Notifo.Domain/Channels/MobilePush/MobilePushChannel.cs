@@ -253,7 +253,7 @@ namespace Notifo.Domain.Channels.MobilePush
         private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders,
             CancellationToken ct)
         {
-            var lastSender = senders.Last();
+            var lastSender = senders[^1];
 
             foreach (var sender in senders)
             {

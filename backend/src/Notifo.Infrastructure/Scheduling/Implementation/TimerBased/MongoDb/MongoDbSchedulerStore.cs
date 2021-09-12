@@ -49,7 +49,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         }
 
         public async Task<SchedulerBatch<T>?> DequeueAsync(Instant time,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/DequeueAsync"))
             {
@@ -62,7 +62,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         }
 
         public async Task ResetDeadAsync(Instant oldTime, Instant next,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/ResetDeadAsync"))
             {
@@ -91,8 +91,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
             }
         }
 
-        public async Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount,
-            CancellationToken ct)
+        public async Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount = 0,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/EnqueueGroupedAsync"))
             {
@@ -109,8 +109,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
             }
         }
 
-        public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount,
-            CancellationToken ct)
+        public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount = 0,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/EnqueueScheduledAsync"))
             {
@@ -128,7 +128,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         }
 
         public async Task CompleteAsync(string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/CompleteAsync"))
             {
@@ -137,7 +137,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         }
 
         public async Task CompleteByKeyAsync(string key,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/CompleteByKeyAsync"))
             {

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -51,7 +52,7 @@ namespace Notifo.Domain.UserNotifications
 
             if (!app.Languages.Contains(language))
             {
-                logstore.LogAsync(app.Id, string.Format(Texts.UserLanguage_NotValid, language, app.Language));
+                logstore.LogAsync(app.Id, string.Format(CultureInfo.InvariantCulture, Texts.UserLanguage_NotValid, language, app.Language));
 
                 language = app.Language;
             }

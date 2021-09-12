@@ -29,7 +29,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
             this.scheduleHandlers = scheduleHandlers;
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             if (scheduleHandlers.Any())
             {
@@ -37,7 +38,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
             }
         }
 
-        private async Task<bool> OnSuccessAsync(List<T> jobs, bool isLastAttempt, CancellationToken ct)
+        private async Task<bool> OnSuccessAsync(List<T> jobs, bool isLastAttempt,
+            CancellationToken ct)
         {
             var result = false;
 
@@ -49,7 +51,8 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
             return result;
         }
 
-        private async Task OnErrorAsync(List<T> jobs, Exception exception, CancellationToken ct)
+        private async Task OnErrorAsync(List<T> jobs, Exception exception,
+            CancellationToken ct)
         {
             foreach (var handler in scheduleHandlers)
             {

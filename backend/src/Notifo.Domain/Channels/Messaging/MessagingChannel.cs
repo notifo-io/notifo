@@ -70,7 +70,7 @@ namespace Notifo.Domain.Channels.Messaging
         }
 
         public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             if (options.IsUpdate)
             {
@@ -182,7 +182,7 @@ namespace Notifo.Domain.Channels.Messaging
         private async Task SendCoreAsync(MessagingJob job, string text, List<IMessagingSender> senders,
             CancellationToken ct)
         {
-            var lastSender = senders.Last();
+            var lastSender = senders[^1];
 
             foreach (var sender in senders)
             {

@@ -34,7 +34,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
             this.serializer = serializer;
         }
 
-        public Task InitializeAsync(CancellationToken ct)
+        public Task InitializeAsync(
+            CancellationToken ct)
         {
             producer.CreateQueue(queueName);
 
@@ -42,7 +43,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
         }
 
         public Task ProduceAsync(string key, Envelope<T> envelope,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var bytes = serializer.SerializeToBytes(envelope);
 
@@ -51,7 +52,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
             return Task.CompletedTask;
         }
 
-        public Task SubscribeAsync(MessageCallback<T> onMessage, CancellationToken ct = default)
+        public Task SubscribeAsync(MessageCallback<T> onMessage,
+            CancellationToken ct = default)
         {
             consumer = new RabbitMqConsumer<T>(provider, queueName, onMessage, serializer);
             consumer.Subscribe();

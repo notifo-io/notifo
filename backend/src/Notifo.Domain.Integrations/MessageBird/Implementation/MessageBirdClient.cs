@@ -19,7 +19,6 @@ using Notifo.Infrastructure;
 using PhoneNumbers;
 
 #pragma warning disable CA1822 // Mark members as static
-#pragma warning disable CA2208 // Instantiate argument exceptions correctly
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
@@ -47,14 +46,14 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
             if (body.Length > 140)
             {
-                throw new ArgumentException("Text must not have more than 140 characters.", nameof(message.Body));
+                throw new ArgumentException("Text must not have more than 140 characters.", nameof(message));
             }
 
             to = PhoneNumberUtil.Normalize(to).TrimStart(TrimChars);
 
             if (!long.TryParse(to, NumberStyles.Integer, CultureInfo.InvariantCulture, out var recipient))
             {
-                throw new ArgumentException("Not a valid phone number.", nameof(message.To));
+                throw new ArgumentException("Not a valid phone number.", nameof(message));
             }
 
             using (var client = httpClientFactory.CreateClient())
@@ -112,7 +111,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 result.Status = status;
             }
 
-            if (query.TryGetValue("statusErrorCode", out var codeString) && int.TryParse(codeString, out var code))
+            if (query.TryGetValue("statusErrorCode", out var codeString) && int.TryParse(codeString, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code))
             {
                 result.StatusErrorCode = code;
             }

@@ -216,7 +216,8 @@ namespace Notifo.Domain.UserNotifications
             }
         }
 
-        public async Task HandleAsync(ConfirmMessage message, CancellationToken ct = default)
+        public async Task HandleAsync(ConfirmMessage message,
+            CancellationToken ct = default)
         {
             var notification = await userNotificationsStore.TrackConfirmedAsync(message.Id, message.Details, ct);
 

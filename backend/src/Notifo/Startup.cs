@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.Globalization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Localization;
@@ -149,7 +150,7 @@ namespace Notifo
             app.UseMyHealthChecks();
 
             app.UseWhen(
-                context => context.Request.Path.StartsWithSegments("/account"),
+                context => context.Request.Path.StartsWithSegments("/account", StringComparison.OrdinalIgnoreCase),
                 builder =>
                 {
                     builder.UseExceptionHandler("/account/error");

@@ -29,7 +29,7 @@ namespace Notifo.Domain.ChannelTemplates
         }
 
         public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(query, nameof(query));
@@ -40,7 +40,7 @@ namespace Notifo.Domain.ChannelTemplates
         }
 
         public async Task<ChannelTemplate<T>?> GetAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(id, nameof(id));
@@ -51,7 +51,7 @@ namespace Notifo.Domain.ChannelTemplates
         }
 
         public async Task<(TemplateResolveStatus, T?)> GetBestAsync(string appId, string? name, string language,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(language, nameof(language));
@@ -79,7 +79,7 @@ namespace Notifo.Domain.ChannelTemplates
         }
 
         public Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> command,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(command, nameof(command));
@@ -117,7 +117,7 @@ namespace Notifo.Domain.ChannelTemplates
         }
 
         public Task DeleteAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNullOrEmpty(id, nameof(id));

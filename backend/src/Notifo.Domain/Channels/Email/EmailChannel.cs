@@ -205,7 +205,7 @@ namespace Notifo.Domain.Channels.Email
         private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders,
             CancellationToken ct)
         {
-            var lastSender = senders.Last();
+            var lastSender = senders[^1];
 
             foreach (var sender in senders)
             {

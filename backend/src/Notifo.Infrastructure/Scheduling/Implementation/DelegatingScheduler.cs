@@ -26,25 +26,25 @@ namespace Notifo.Infrastructure.Scheduling.Implementation
         }
 
         public Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return scheduling.ScheduleAsync(key, job, dueTime, canInline, ct);
         }
 
         public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return scheduling.ScheduleAsync(key, job, dueTimeFromNow, canInline, ct);
         }
 
         public Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return scheduling.ScheduleGroupedAsync(key, job, dueTime, canInline, ct);
         }
 
         public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return scheduling.ScheduleGroupedAsync(key, job, dueTimeFromNow, canInline, ct);
         }

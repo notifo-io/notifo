@@ -39,7 +39,7 @@ namespace Notifo.Domain.Integrations.Smtp
         }
 
         public async Task SendAsync(EmailMessage message,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             var smtpClient = clientPool.Get();
             try

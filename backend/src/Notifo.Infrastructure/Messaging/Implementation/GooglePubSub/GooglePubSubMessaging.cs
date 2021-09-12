@@ -40,14 +40,16 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
             this.log = log;
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             var topicName = new TopicName(options.ProjectId, $"{options.Prefix}{topicId}");
 
             publisherClient = await PublisherClient.CreateAsync(topicName);
         }
 
-        public async Task ReleaseAsync(CancellationToken ct)
+        public async Task ReleaseAsync(
+            CancellationToken ct)
         {
             if (subscriberClient != null)
             {
@@ -56,7 +58,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
         }
 
         public async Task ProduceAsync(string key, Envelope<T> envelope,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             if (publisherClient == null)
             {
@@ -74,14 +76,14 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
         }
 
         public Task SubscribeAsync(MessageCallback<T> onMessage,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
-            SubscribeAsync(onMessage).Forget();
+            SubscribeCoreAsync(onMessage).Forget();
 
             return Task.CompletedTask;
         }
 
-        private async Task SubscribeAsync(MessageCallback<T> onMessage)
+        private async Task SubscribeCoreAsync(MessageCallback<T> onMessage)
         {
             var subcriptionName = new SubscriptionName(options.ProjectId, $"{options.Prefix}{topicId}");
 

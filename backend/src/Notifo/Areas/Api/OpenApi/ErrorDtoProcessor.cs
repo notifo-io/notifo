@@ -61,8 +61,8 @@ namespace Notifo.Areas.Api.OpenApi
             foreach (var (code, response) in operation.Responses.ToList())
             {
                 if (string.IsNullOrWhiteSpace(response.Description) ||
-                    response.Description?.Contains("=&gt;") == true ||
-                    response.Description?.Contains("=>") == true)
+                    response.Description?.Contains("=&gt;", StringComparison.OrdinalIgnoreCase) == true ||
+                    response.Description?.Contains("=>", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     operation.Responses.Remove(code);
                 }

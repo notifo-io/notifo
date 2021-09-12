@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Globalization;
 using Notifo.Domain.UserNotifications;
 using Xunit;
 
@@ -153,7 +154,7 @@ namespace Notifo.Domain.Integrations.Firebase
 
             var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds();
 
-            Assert.Equal(unixTimeSeconds, Convert.ToInt32(message.Apns.Headers["apns-expiration"]));
+            Assert.Equal(unixTimeSeconds, int.Parse(message.Apns.Headers["apns-expiration"], NumberStyles.Integer, CultureInfo.InvariantCulture));
             Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
         }
 
@@ -187,7 +188,7 @@ namespace Notifo.Domain.Integrations.Firebase
 
             var message = notification.ToFirebaseMessage(token, false);
 
-            Assert.Equal(timeToLive, Convert.ToInt32(message.Apns.Headers["apns-expiration"]));
+            Assert.Equal(timeToLive, int.Parse(message.Apns.Headers["apns-expiration"], NumberStyles.Integer, CultureInfo.InvariantCulture));
             Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
         }
     }

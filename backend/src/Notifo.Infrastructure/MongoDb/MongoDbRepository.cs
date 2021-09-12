@@ -88,7 +88,8 @@ namespace Notifo.Infrastructure.MongoDb
             await InitializeAsync(default);
         }
 
-        public async Task InitializeAsync(CancellationToken ct)
+        public async Task InitializeAsync(
+            CancellationToken ct)
         {
             try
             {
