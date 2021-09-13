@@ -14,18 +14,18 @@ namespace Notifo.Domain.ChannelTemplates
     public interface IChannelTemplateRepository<T> where T : class
     {
         Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
-            CancellationToken ct);
+            CancellationToken ct = default);
 
         Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
-            CancellationToken ct);
+            CancellationToken ct = default);
 
         Task<(ChannelTemplate<T>? Template, string? Etag)> GetAsync(string appId, string code,
-            CancellationToken ct);
+            CancellationToken ct = default);
 
-        Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag,
-            CancellationToken ct);
+        Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag = null,
+            CancellationToken ct = default);
 
         Task DeleteAsync(string appId, string code,
-            CancellationToken ct);
+            CancellationToken ct = default);
     }
 }

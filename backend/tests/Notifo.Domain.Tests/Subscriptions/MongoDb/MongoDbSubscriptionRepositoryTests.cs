@@ -67,12 +67,12 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             var topicToSearch = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}a";
 
-            await ToList(_.Repository.QueryAsync(empty, topicToSearch, null, default));
-            await ToList(_.Repository.QueryAsync(empty, topicToSearch, null, default));
+            await ToList(_.Repository.QueryAsync(empty, topicToSearch));
+            await ToList(_.Repository.QueryAsync(empty, topicToSearch));
 
             var watch = Stopwatch.StartNew();
 
-            await ToList(_.Repository.QueryAsync(empty, topicToSearch, null, default));
+            await ToList(_.Repository.QueryAsync(empty, topicToSearch));
 
             watch.Stop();
 
@@ -93,7 +93,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             await SubscribeAsync(userId2, subscriptionTopic1);
             await SubscribeAsync(userId2, subscriptionTopic2, true);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
 
             Assert.Equal(2, subscriptions.Count);
             Assert.Equal(subscriptionTopic2, subscriptions[0].TopicPrefix);
@@ -107,7 +107,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             await SubscribeAsync(userId1, subscriptionTopic);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
 
             Assert.Single(subscriptions);
             Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
@@ -120,7 +120,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             await SubscribeAsync(userId1, subscriptionTopic);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
 
             Assert.Single(subscriptions);
             Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
@@ -133,7 +133,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             await SubscribeAsync(userId1, subscriptionTopic);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic, null, default));
+            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
 
             Assert.Empty(subscriptions);
         }
@@ -219,7 +219,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 };
             }
 
-            return _.Repository.UpsertAsync(subscription, null, default);
+            return _.Repository.UpsertAsync(subscription);
         }
 
         private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)

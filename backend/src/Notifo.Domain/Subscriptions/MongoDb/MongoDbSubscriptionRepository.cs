@@ -32,7 +32,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbSubscription> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbSubscription>(
@@ -58,7 +58,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         }
 
         public async Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/QueryAsync"))
             {
@@ -96,7 +96,8 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             }
         }
 
-        public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId, [EnumeratorCancellation] CancellationToken ct)
+        public async IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId = null,
+            [EnumeratorCancellation] CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/QueryAsyncByTopic"))
             {
@@ -143,7 +144,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         }
 
         public async Task<(Subscription? Subscription, string? Etag)> GetAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/GetAsync"))
             {
@@ -157,8 +158,8 @@ namespace Notifo.Domain.Subscriptions.MongoDb
             }
         }
 
-        public async Task UpsertAsync(Subscription subscription, string? oldEtag,
-            CancellationToken ct)
+        public async Task UpsertAsync(Subscription subscription, string? oldEtag = null,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/UpsertAsync"))
             {
@@ -169,7 +170,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         }
 
         public async Task DeleteAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/DeleteAsync"))
             {
@@ -180,7 +181,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         }
 
         public async Task DeletePrefixAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/DeletePrefixAsync"))
             {

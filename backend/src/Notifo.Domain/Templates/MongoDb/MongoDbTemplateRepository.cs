@@ -30,7 +30,7 @@ namespace Notifo.Domain.Templates.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbTemplate> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbTemplate>(
@@ -41,7 +41,7 @@ namespace Notifo.Domain.Templates.MongoDb
         }
 
         public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbTemplateRepository/QueryAsync"))
             {
@@ -75,7 +75,7 @@ namespace Notifo.Domain.Templates.MongoDb
         }
 
         public async Task<(Template? Template, string? Etag)> GetAsync(string appId, string code,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/GetAsync"))
             {
@@ -87,8 +87,8 @@ namespace Notifo.Domain.Templates.MongoDb
             }
         }
 
-        public async Task UpsertAsync(Template template, string? oldEtag,
-            CancellationToken ct)
+        public async Task UpsertAsync(Template template, string? oldEtag = null,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/UpsertAsync"))
             {
@@ -99,7 +99,7 @@ namespace Notifo.Domain.Templates.MongoDb
         }
 
         public async Task DeleteAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/DeleteAsync"))
             {

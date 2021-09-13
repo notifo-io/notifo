@@ -30,7 +30,7 @@ namespace Notifo.Domain.Media.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbMedia> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbMedia>(
@@ -41,7 +41,7 @@ namespace Notifo.Domain.Media.MongoDb
         }
 
         public async Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/QueryAsync"))
             {
@@ -72,7 +72,7 @@ namespace Notifo.Domain.Media.MongoDb
         }
 
         public async Task<Media?> GetAsync(string appId, string fileName,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/GetAsync"))
             {
@@ -85,7 +85,7 @@ namespace Notifo.Domain.Media.MongoDb
         }
 
         public async Task UpsertAsync(Media media,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/UpsertAsync"))
             {
@@ -96,7 +96,7 @@ namespace Notifo.Domain.Media.MongoDb
         }
 
         public async Task DeleteAsync(string appId, string fileName,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/DeleteAsync"))
             {

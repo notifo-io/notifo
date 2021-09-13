@@ -68,7 +68,8 @@ namespace Notifo.Identity.InMemory
             return result.AsValueTask();
         }
 
-        public virtual async IAsyncEnumerable<ImmutableApplication> FindByPostLogoutRedirectUriAsync(string address, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<ImmutableApplication> FindByPostLogoutRedirectUriAsync(string address,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = applications.Where(x => x.PostLogoutRedirectUris.Contains(address));
 
@@ -78,7 +79,8 @@ namespace Notifo.Identity.InMemory
             }
         }
 
-        public virtual async IAsyncEnumerable<ImmutableApplication> FindByRedirectUriAsync(string address, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<ImmutableApplication> FindByRedirectUriAsync(string address,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = applications.Where(x => x.RedirectUris.Contains(address));
 
@@ -88,7 +90,8 @@ namespace Notifo.Identity.InMemory
             }
         }
 
-        public virtual async IAsyncEnumerable<ImmutableApplication> ListAsync(int? count, int? offset, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<ImmutableApplication> ListAsync(int? count, int? offset,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = applications;
 
@@ -98,7 +101,8 @@ namespace Notifo.Identity.InMemory
             }
         }
 
-        public virtual async IAsyncEnumerable<TResult> ListAsync<TState, TResult>(Func<IQueryable<ImmutableApplication>, TState, IQueryable<TResult>> query, TState state, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<TResult> ListAsync<TState, TResult>(Func<IQueryable<ImmutableApplication>, TState, IQueryable<TResult>> query, TState state,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = query(applications.AsQueryable(), state);
 

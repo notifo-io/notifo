@@ -31,7 +31,7 @@ namespace Notifo.Domain.Log.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbLogEntry> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbLogEntry>(
@@ -43,7 +43,7 @@ namespace Notifo.Domain.Log.MongoDb
         }
 
         public async Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbLogRepository/DeleteAsync"))
             {
@@ -77,7 +77,7 @@ namespace Notifo.Domain.Log.MongoDb
         }
 
         public async Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbLogRepository/MatchWriteAsync"))
             {

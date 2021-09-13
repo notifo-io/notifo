@@ -45,7 +45,7 @@ namespace Notifo.Domain.Events.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbEvent> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await Collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbEvent>(
@@ -65,7 +65,7 @@ namespace Notifo.Domain.Events.MongoDb
         }
 
         public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbEventRepository/QueryAsync"))
             {
@@ -102,7 +102,7 @@ namespace Notifo.Domain.Events.MongoDb
         }
 
         public async Task InsertAsync(Event @event,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbEventRepository/InsertAsync"))
             {
@@ -120,7 +120,7 @@ namespace Notifo.Domain.Events.MongoDb
         }
 
         public async Task BatchWriteAsync(List<((string AppId, string EventId) Key, CounterMap Counters)> counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbEventRepository/BatchWriteAsync"))
             {

@@ -26,6 +26,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
 {
     public class UserEventPublisherTests
     {
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationToken ct;
         private readonly ISubscriptionStore subscriptionStore = A.Fake<ISubscriptionStore>();
         private readonly ICounterService counters = A.Fake<ICounterService>();
         private readonly ITemplateStore templateStore = A.Fake<ITemplateStore>();
@@ -38,6 +40,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
         public UserEventPublisherTests()
         {
+            ct = cts.Token;
+
             A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._, A<CancellationToken>._))
                 .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
 
@@ -51,9 +55,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.AppId = null!;
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -67,9 +71,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Topic = null!;
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
@@ -83,9 +87,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Formatting = null!;
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
@@ -99,9 +103,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Formatting = null!;
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
@@ -113,11 +117,11 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             var @event = CreateMinimumEvent();
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             Assert.Empty(publishedUserEvents);
 
-            A.CallTo(() => eventStore.InsertAsync(@event, default))
+            A.CallTo(() => eventStore.InsertAsync(@event, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
@@ -147,10 +151,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             };
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -180,7 +184,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             });
 
-            A.CallTo(() => eventStore.InsertAsync(@event, default))
+            A.CallTo(() => eventStore.InsertAsync(@event, ct))
                 .MustHaveHappenedOnceExactly();
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -202,10 +206,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             };
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             Assert.NotNull(publishedUserEvents[0].Properties);
 
@@ -228,10 +232,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             };
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             Assert.NotNull(publishedUserEvents[0].SubscriptionSettings);
 
@@ -248,7 +252,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             @event.Topic = topic;
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -266,7 +270,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             });
 
-            A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -288,10 +292,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 "456"
             };
 
-            A.CallTo(() => userStore.QueryIdsAsync(@event.AppId, default))
+            A.CallTo(() => userStore.QueryIdsAsync(@event.AppId, ct))
                 .Returns(CreateAsyncEnumerable(userIds));
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -321,7 +325,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             });
 
-            A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -343,13 +347,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             };
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            A.CallTo(() => eventStore.InsertAsync(@event, default))
+            A.CallTo(() => eventStore.InsertAsync(@event, ct))
                 .Throws(new UniqueConstraintException());
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             Assert.Empty(publishedUserEvents);
 
@@ -369,7 +373,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             var template = CreateMinimumTemplate();
 
-            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, default))
+            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
                 .Returns(template);
 
             var subscriptions = new[]
@@ -388,10 +392,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             };
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
@@ -425,10 +429,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             });
 
-            A.CallTo(() => eventStore.InsertAsync(@event, default))
+            A.CallTo(() => eventStore.InsertAsync(@event, ct))
                 .MustHaveHappenedOnceExactly();
 
-            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, default))
+            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
                 .MustHaveHappenedOnceExactly();
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -447,7 +451,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             template.IsAutoCreated = true;
 
-            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, default))
+            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
                 .Returns(template);
 
             var subscriptions = new[]
@@ -460,10 +464,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             };
 
-            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, A<CancellationToken>._))
+            A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, new TopicId(@event.Topic), @event.CreatorId, ct))
                 .Returns(CreateAsyncEnumerable(subscriptions));
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             Assert.Empty(publishedUserEvents);
 
@@ -479,14 +483,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
             @event.TemplateCode = "TEMPL";
             @event.Formatting = null;
 
-            await sut.PublishAsync(@event, default);
+            await sut.PublishAsync(@event, ct);
 
             Assert.Empty(publishedUserEvents);
 
-            A.CallTo(() => eventStore.InsertAsync(@event, default))
+            A.CallTo(() => eventStore.InsertAsync(@event, ct))
                 .MustNotHaveHappened();
 
-            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, default))
+            A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))

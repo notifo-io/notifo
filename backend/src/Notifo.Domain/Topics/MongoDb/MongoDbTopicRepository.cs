@@ -31,7 +31,7 @@ namespace Notifo.Domain.Topics.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbTopic> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await Collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbTopic>(
@@ -43,7 +43,7 @@ namespace Notifo.Domain.Topics.MongoDb
         }
 
         public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbTopicRepository/QueryAsync"))
             {
@@ -77,7 +77,7 @@ namespace Notifo.Domain.Topics.MongoDb
         }
 
         public async Task BatchWriteAsync(List<((string AppId, string Path) Key, CounterMap Counters)> counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbTopicRepository/BatchWriteAsync"))
             {

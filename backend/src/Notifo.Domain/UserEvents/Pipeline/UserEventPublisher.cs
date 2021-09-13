@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Counters;
@@ -107,8 +108,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                 var count = 0;
 
-                await foreach (var subscription in GetSubscriptions(@event).WithCancellation(ct))
+                await foreach (var subscription in GetSubscriptions(@event, ct))
                 {
+                    ct.ThrowIfCancellationRequested();
+
                     if (count == 0)
                     {
                         if (!string.IsNullOrWhiteSpace(@event.TemplateCode))
@@ -190,13 +193,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
             }
         }
 
-        private async IAsyncEnumerable<Subscription> GetSubscriptions(EventMessage @event)
+        private async IAsyncEnumerable<Subscription> GetSubscriptions(EventMessage @event,
+            [EnumeratorCancellation] CancellationToken ct)
         {
             var topic = @event.Topic;
 
             if (IsAllUsers(topic))
             {
-                await foreach (var userId in userStore.QueryIdsAsync(@event.AppId))
+                await foreach (var userId in userStore.QueryIdsAsync(@event.AppId, ct))
                 {
                     yield return new Subscription
                     {
@@ -219,7 +223,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             }
             else
             {
-                await foreach (var subscription in subscriptionStore.QueryAsync(@event.AppId, @event.Topic, @event.CreatorId))
+                await foreach (var subscription in subscriptionStore.QueryAsync(@event.AppId, @event.Topic, @event.CreatorId, ct))
                 {
                     yield return subscription;
                 }

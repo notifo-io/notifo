@@ -43,7 +43,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbApp> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbApp>(
@@ -66,7 +66,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         public async Task<List<App>> QueryWithPendingIntegrationsAsync(
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/QueryWithPendingIntegrationsAsync"))
             {
@@ -79,7 +79,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         public async Task<List<App>> QueryAsync(string contributorId,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/QueryAsync"))
             {
@@ -92,7 +92,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         public async Task<(App? App, string? Etag)> GetByApiKeyAsync(string apiKey,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/GetByApiKeyAsync"))
             {
@@ -105,7 +105,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         public async Task<(App? App, string? Etag)> GetAsync(string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/GetAsync"))
             {
@@ -115,8 +115,8 @@ namespace Notifo.Domain.Apps.MongoDb
             }
         }
 
-        public async Task UpsertAsync(App app, string? oldEtag,
-            CancellationToken ct)
+        public async Task UpsertAsync(App app, string? oldEtag = null,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/UpsertAsync"))
             {
@@ -127,7 +127,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         public async Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/BatchWriteAsync"))
             {

@@ -68,7 +68,8 @@ namespace Notifo.Identity.InMemory
             return result.AsValueTask();
         }
 
-        public virtual async IAsyncEnumerable<ImmutableScope> FindByNamesAsync(ImmutableArray<string> names, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<ImmutableScope> FindByNamesAsync(ImmutableArray<string> names,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = scopes.Where(x => x.Name != null && names.Contains(x.Name));
 
@@ -78,7 +79,8 @@ namespace Notifo.Identity.InMemory
             }
         }
 
-        public virtual async IAsyncEnumerable<ImmutableScope> FindByResourceAsync(string resource, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<ImmutableScope> FindByResourceAsync(string resource,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = scopes.Where(x => x.Resources.Contains(resource));
 
@@ -88,7 +90,8 @@ namespace Notifo.Identity.InMemory
             }
         }
 
-        public virtual async IAsyncEnumerable<ImmutableScope> ListAsync(int? count, int? offset, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<ImmutableScope> ListAsync(int? count, int? offset,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = scopes;
 
@@ -98,7 +101,8 @@ namespace Notifo.Identity.InMemory
             }
         }
 
-        public virtual async IAsyncEnumerable<TResult> ListAsync<TState, TResult>(Func<IQueryable<ImmutableScope>, TState, IQueryable<TResult>> query, TState state, [EnumeratorCancellation] CancellationToken cancellationToken)
+        public virtual async IAsyncEnumerable<TResult> ListAsync<TState, TResult>(Func<IQueryable<ImmutableScope>, TState, IQueryable<TResult>> query, TState state,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
             var result = query(scopes.AsQueryable(), state);
 

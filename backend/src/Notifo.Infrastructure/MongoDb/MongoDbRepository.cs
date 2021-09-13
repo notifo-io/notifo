@@ -66,7 +66,7 @@ namespace Notifo.Infrastructure.MongoDb
         }
 
         protected virtual Task SetupCollectionAsync(IMongoCollection<TEntity> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return Task.CompletedTask;
         }
@@ -89,7 +89,7 @@ namespace Notifo.Infrastructure.MongoDb
         }
 
         public async Task InitializeAsync(
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             try
             {

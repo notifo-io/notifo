@@ -30,7 +30,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbChannelTemplate<T>> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbChannelTemplate<T>>(
@@ -41,7 +41,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         }
 
         public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/QueryAsync"))
             {
@@ -116,7 +116,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         }
 
         public async Task<(ChannelTemplate<T>? Template, string? Etag)> GetAsync(string appId, string code,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetAsync"))
             {
@@ -128,8 +128,8 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
             }
         }
 
-        public async Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag,
-            CancellationToken ct)
+        public async Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag = null,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/UpsertAsync"))
             {
@@ -140,7 +140,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         }
 
         public async Task DeleteAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/DeleteAsync"))
             {

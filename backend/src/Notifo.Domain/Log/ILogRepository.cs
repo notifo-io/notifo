@@ -16,9 +16,9 @@ namespace Notifo.Domain.Log
     public interface ILogRepository
     {
         Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
-            CancellationToken ct);
+            CancellationToken ct = default);
 
         Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
-            CancellationToken ct);
+            CancellationToken ct = default);
     }
 }

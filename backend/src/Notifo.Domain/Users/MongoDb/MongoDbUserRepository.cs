@@ -43,7 +43,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbUser> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<MongoDbUser>(
@@ -61,7 +61,8 @@ namespace Notifo.Domain.Users.MongoDb
                 null, ct);
         }
 
-        public async IAsyncEnumerable<string> QueryIdsAsync(string appId, [EnumeratorCancellation] CancellationToken ct)
+        public async IAsyncEnumerable<string> QueryIdsAsync(string appId,
+            [EnumeratorCancellation] CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/QueryIdsAsync"))
             {
@@ -81,7 +82,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbUserRepository/QueryAsync"))
             {
@@ -119,7 +120,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         public async Task<(User? User, string? Etag)> GetByApiKeyAsync(string apiKey,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByApiKeyAsync"))
             {
@@ -130,7 +131,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         public async Task<(User? User, string? Etag)> GetAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetAsync"))
             {
@@ -142,8 +143,8 @@ namespace Notifo.Domain.Users.MongoDb
             }
         }
 
-        public async Task UpsertAsync(User user, string? oldEtag,
-            CancellationToken ct)
+        public async Task UpsertAsync(User user, string? oldEtag = null,
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetAsync"))
             {
@@ -154,7 +155,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         public async Task DeleteAsync(string appId, string id,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/DeleteAsync"))
             {
@@ -165,7 +166,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         public async Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/BatchWriteAsync"))
             {
