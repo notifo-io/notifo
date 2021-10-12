@@ -67,7 +67,10 @@ namespace Notifo.Domain.Channels.WebPush
 
             foreach (var subscription in options.User.WebPushSubscriptions)
             {
-                yield return subscription.Endpoint;
+                if (!string.IsNullOrWhiteSpace(subscription.Endpoint))
+                {
+                    yield return subscription.Endpoint;
+                }
             }
         }
 

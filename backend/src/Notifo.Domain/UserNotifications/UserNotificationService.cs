@@ -187,7 +187,7 @@ namespace Notifo.Domain.UserNotifications
 
                 foreach (var channel in channels)
                 {
-                    if (channel.IsSystem)
+                    if (channel.IsSystem && !string.IsNullOrWhiteSpace(channel.Name))
                     {
                         if (!notification.Channels.TryGetValue(channel.Name, out var systemConfig))
                         {
@@ -205,9 +205,12 @@ namespace Notifo.Domain.UserNotifications
 
                         foreach (var configuration in configurations)
                         {
-                            channelConfig.Status[configuration] = new ChannelSendInfo();
+                            if (!string.IsNullOrWhiteSpace(configuration))
+                            {
+                                channelConfig.Status[configuration] = new ChannelSendInfo();
 
-                            await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
+                                await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
+                            }
                         }
                     }
                 }

@@ -64,7 +64,10 @@ namespace Notifo.Domain.Channels.MobilePush
 
             foreach (var token in options.User.MobilePushTokens)
             {
-                yield return token.Token;
+                if (!string.IsNullOrWhiteSpace(token.Token))
+                {
+                    yield return token.Token;
+                }
             }
         }
 
