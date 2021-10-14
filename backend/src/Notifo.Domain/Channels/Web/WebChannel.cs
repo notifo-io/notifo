@@ -24,8 +24,9 @@ namespace Notifo.Domain.Channels.Web
 
         public bool IsSystem => true;
 
-        public WebChannel(IStreamClient streamClient,
+        public WebChannel(
             IUserNotificationStore userNotificationStore,
+            IStreamClient streamClient,
             ISemanticLog log)
         {
             this.streamClient = streamClient;
