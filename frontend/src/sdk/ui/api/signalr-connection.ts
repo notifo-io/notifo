@@ -10,7 +10,7 @@ import { SDKConfig } from '@sdk/shared';
 import { HandleConnect, Connection, HandleDeletion, HandleNotifications } from './connection';
 
 class Retry implements signalR.IRetryPolicy {
-    private readonly timeouts = [1000, 5000, 1000, 30000];
+    private readonly timeouts = [1000, 5000, 10000, 30000];
 
     public nextRetryDelayInMilliseconds(retryContext: signalR.RetryContext): number | null {
         return this.timeouts[retryContext.previousRetryCount] || 30000;

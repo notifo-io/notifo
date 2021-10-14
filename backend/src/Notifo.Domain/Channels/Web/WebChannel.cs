@@ -17,15 +17,19 @@ namespace Notifo.Domain.Channels.Web
     public sealed class WebChannel : ICommunicationChannel
     {
         private readonly IStreamClient streamClient;
+        private readonly IUserNotificationStore userNotificationStore;
         private readonly ISemanticLog log;
 
         public string Name => Providers.Web;
 
         public bool IsSystem => true;
 
-        public WebChannel(IStreamClient streamClient, ISemanticLog log)
+        public WebChannel(IStreamClient streamClient,
+            IUserNotificationStore userNotificationStore,
+            ISemanticLog log)
         {
             this.streamClient = streamClient;
+            this.userNotificationStore = userNotificationStore;
 
             this.log = log;
         }
@@ -41,9 +45,13 @@ namespace Notifo.Domain.Channels.Web
             try
             {
                 await streamClient.SendAsync(notification);
+
+                await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Handled, ct: ct);
             }
             catch (Exception ex)
             {
+                await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Failed, ct: ct);
+
                 log.LogError(ex, w => w
                     .WriteProperty("action", "SendWeb")
                     .WriteProperty("status", "Failed"));
