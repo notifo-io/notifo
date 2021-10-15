@@ -46,7 +46,7 @@ namespace Notifo.Domain.Log
                 .WriteProperty("system", system)
                 .WriteProperty("message", message));
 
-            return collector.AddAsync(appId, $"{system}: {message}");
+            return collector.AddAsync(appId, $"{system.ToUpperInvariant()}: {message}");
         }
 
         public Task LogAsync(string appId, string message)
