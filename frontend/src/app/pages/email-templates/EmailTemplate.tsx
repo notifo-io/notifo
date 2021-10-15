@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormControlError, Forms, Icon, Loader } from '@app/framework';
+import { FormControlError, Forms, Icon, Loader, useFieldNew } from '@app/framework';
 import { EmailTemplateDto } from '@app/service';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -135,7 +135,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                         </div>
 
                         <div className='email-subject' >
-                            <Forms.Text name='subject' label={texts.common.subject} />
+                            <Forms.Text name='subject' label={texts.common.subject} vertical />
                         </div>
 
                         <BodyHtml appId={appId} visible={showHtml} />
@@ -157,7 +157,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
 
 export const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
-    const [, meta, helpers] = useField('bodyText');
+    const [, meta, helpers] = useFieldNew('bodyText');
 
     const doTouch = React.useCallback(() => {
         helpers.setTouched(true);
@@ -180,7 +180,7 @@ export const BodyText = ({ appId, visible }: { appId: string; visible: boolean }
 
 export const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }) => {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
-    const [, meta, helpers] = useField('bodyHtml');
+    const [, meta, helpers] = useFieldNew('bodyHtml');
 
     const doTouch = React.useCallback(() => {
         helpers.setTouched(true);

@@ -70,7 +70,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Name.
+        ///   Looks up a localized string similar to From Email.
         /// </summary>
         internal static string AmazonSES_FromEmailLabel {
             get {
@@ -79,7 +79,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Email.
+        ///   Looks up a localized string similar to From Name.
         /// </summary>
         internal static string AmazonSES_FromNameLabel {
             get {

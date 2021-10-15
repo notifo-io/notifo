@@ -11,7 +11,7 @@
     "core-js": "3.12.1",
     "create-react-context": "0.3.0",
     "date-fns": "2.21.3",
-    "formik": "2.2.6",
+    "formik": "2.2.9",
     "mousetrap": "1.6.5",
     "oidc-client": "1.11.5",
     "preact": "10.5.13",
@@ -44,6 +44,7 @@
     "build:analyze": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production --env analyze"
   },
   "devDependencies": {
+    "@simbathesailor/use-what-changed": "^2.0.0",
     "@types/codemirror": "5.60.0",
     "@types/core-js": "2.5.4",
     "@types/date-fns": "2.6.0",

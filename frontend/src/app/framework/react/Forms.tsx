@@ -6,7 +6,7 @@
  */
 
 import { isErrorVisible, Types } from '@app/framework/utils';
-import { FieldInputProps, FormikContextType, useField, useFormikContext } from 'formik';
+import { FieldHelperProps, FieldMetaProps, FieldInputProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import { FormControlError } from './FormControlError';
@@ -77,6 +77,25 @@ export interface LocalizedFormProps extends FormEditorProps {
     onLanguageSelect: (language: string) => void;
 }
 
+export function useFieldNew<T = any>(name: string): [FieldInputProps<T>, FieldMetaProps<T>, FieldHelperProps<T>] {
+    const [field, meta] = useField<T>(name);
+    const { setFieldTouched, setFieldValue, setFieldError } = useFormikContext();
+
+    const helpers = React.useMemo(() => ({
+        setValue: (value: T, shouldValidate?: boolean) => {
+            setFieldValue(field.name, value, shouldValidate);
+        },
+        setTouched: (isTouched?: boolean, shouldValidate?: boolean) => {
+            setFieldTouched(field.name, isTouched, shouldValidate);
+        },
+        setError: (message?: string) => {
+            setFieldError(field.name, message);
+        },
+    }), [setFieldTouched, setFieldValue, setFieldError, field.name]);
+
+    return [field, meta, helpers];
+}
+
 export module Forms {
     export type Option<T = any> = { value?: T | string; label: string };
 
@@ -84,7 +103,7 @@ export module Forms {
         const { name } = props;
 
         const { submitCount } = useFormikContext();
-        const [, meta] = useField(name);
+        const [, meta] = useFieldNew(name);
 
         return (
             <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
@@ -256,7 +275,7 @@ const FormDescription = ({ hints }: { hints?: string }) => {
 
 const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
     const { submitCount } = useFormikContext();
-    const [field, meta, helper] = useField(name);
+    const [field, meta, helper] = useFieldNew(name);
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         helper.setValue(parseInt(event.target.value, 10));
@@ -277,7 +296,7 @@ const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number;
 
 const InputText = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta] = useFieldNew(name);
 
     return (
         <>
@@ -291,7 +310,7 @@ const InputText = ({ name }: FormEditorProps) => {
 
 const InputUrl = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta] = useFieldNew(name);
 
     return (
         <>
@@ -305,7 +324,7 @@ const InputUrl = ({ name }: FormEditorProps) => {
 
 const InputTextarea = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta] = useFieldNew(name);
 
     return (
         <>
@@ -319,7 +338,7 @@ const InputTextarea = ({ name }: FormEditorProps) => {
 
 const InputEmail = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta] = useFieldNew(name);
 
     return (
         <>
@@ -333,7 +352,7 @@ const InputEmail = ({ name }: FormEditorProps) => {
 
 const InputPassword = ({ name }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useField(name);
+    const [field, meta] = useFieldNew(name);
 
     return (
         <>
@@ -347,8 +366,7 @@ const InputPassword = ({ name }: FormEditorProps) => {
 
 const InputToggle = (props: BooleanFormProps) => {
     const { name } = props;
-
-    const [field, , helpers] = useField(name);
+    const [field, , helpers] = useFieldNew(name);
 
     return (
         <>
@@ -380,8 +398,8 @@ const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Optio
 };
 
 const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.Option<string>[] }) => {
-    const [field] = useField(name);
     const form = useFormikContext();
+    const [field] = useFieldNew(name);
 
     return (
         <>
