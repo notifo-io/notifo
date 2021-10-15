@@ -109,7 +109,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private EmailMessage FormatCore(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user)
         {
-            var properties = CreateProperties(app, user);
+            var properties = CreateProperties(notifications, app, user);
 
             var mailMessage = new EmailMessage
             {
@@ -173,8 +173,10 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static Dictionary<string, string?> CreateProperties(App app, User user)
+        private static Dictionary<string, string?> CreateProperties(IEnumerable<BaseUserNotification> notifications, App app, User user)
         {
+            var firstNotification = notifications.First();
+
             var properties = new Dictionary<string, string?>
             {
                 ["app.name"] = app.Name,
@@ -182,7 +184,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 ["user.nameFull"] = user.FullName,
                 ["user.fullName"] = user.FullName,
                 ["user.email"] = user.EmailAddress,
-                ["user.emailAddress"] = user.EmailAddress
+                ["user.emailAddress"] = user.EmailAddress,
+                ["notification.subject"] = firstNotification.Formatting.Subject,
+                ["notification.body"] = firstNotification.Formatting.Body
             };
 
             return properties;
