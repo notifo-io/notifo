@@ -5010,7 +5010,7 @@ export interface LocalizedText {
     [key: string]: string | any; 
 }
 
-export type ConfirmMode = "Seen" | "Explicit" | "None";
+export type ConfirmMode = "None" | "Explicit" | "Seen";
 
 export interface UpsertTemplatesDto {
     /** The templates to update. */
@@ -5033,17 +5033,13 @@ export interface ListResponseDtoOfUserNotificationDetailsDto {
     total: number;
 }
 
-export interface UserNotificationDto {
+export interface UserNotificationBaseDto {
     /** The id of the notification. */
     id: string;
     /** The subject of the notification in the language of the user. */
     subject: string;
     /** True when the notification is silent. */
     silent: boolean;
-    /** True when the notification has been confirmed. */
-    isConfirmed: boolean;
-    /** True when the notification has been seen. */
-    isSeen: boolean;
     /** The timestamp when the notification has been created. */
     created: Date;
     /** The timestamp when the notification has been updated. */
@@ -5054,27 +5050,31 @@ export interface UserNotificationDto {
     imageSmall?: string | undefined;
     /** The optional link to the large image. */
     imageLarge?: string | undefined;
-    /** The tracking url that needs to be invoked to mark the notifiation as seen. */
-    trackingUrl?: string | undefined;
+    /** The tracking url that needs to be invoked to mark the notification as seen. */
+    trackSeenUrl?: string | undefined;
+    /** The tracking url that needs to be invoked to mark the notification as delivered. */
+    trackDeliveredUrl?: string | undefined;
     /** An optional link. */
     linkUrl?: string | undefined;
     /** The link text. */
     linkText?: string | undefined;
     /** The text for the confirm button. */
     confirmText?: string | undefined;
-    /** The tracking url that needs to be invoked to mark the notifiation as confirmed. */
+    /** The tracking url that needs to be invoked to mark the notification as confirmed. */
     confirmUrl?: string | undefined;
     /** Optional data, usually a json object. */
     data?: string | undefined;
 }
 
-export interface UserNotificationDetailsDto extends UserNotificationDto {
+export interface UserNotificationDetailsDto extends UserNotificationBaseDto {
     /** The channel details. */
     channels: { [key: string]: UserNotificationChannelDto; };
-    /** The information when the notifcation was marked as confirmed. */
-    confirmed?: HandledInfoDto | undefined;
+    /** The information when the notifcation was marked as deliverd. */
+    firstDelivered?: HandledInfoDto | undefined;
     /** The information when the notifcation was marked as seen. */
-    seen?: HandledInfoDto | undefined;
+    firstSeen?: HandledInfoDto | undefined;
+    /** The information when the notifcation was marked as confirmed. */
+    firstConfirmed?: HandledInfoDto | undefined;
 }
 
 export interface UserNotificationChannelDto {
@@ -5082,6 +5082,12 @@ export interface UserNotificationChannelDto {
     setting: NotificationSettingDto;
     /** The status per token or configuration. */
     status: { [key: string]: ChannelSendInfoDto; };
+    /** The first time the notification has been marked as delivered for this channel. */
+    firstDelivered?: Date | undefined;
+    /** The first time the notification has been marked as seen for this channel. */
+    firstSeen?: Date | undefined;
+    /** The first time the notification has been marked as confirmed for this channel. */
+    firstConfirmed?: Date | undefined;
 }
 
 export interface ChannelSendInfoDto {
@@ -5107,6 +5113,13 @@ export interface ListResponseDtoOfUserNotificationDto {
     items: UserNotificationDto[];
     /** The total number of items. */
     total: number;
+}
+
+export interface UserNotificationDto extends UserNotificationBaseDto {
+    /** True when the notification has been seen at least once. */
+    isSeen: boolean;
+    /** True when the notification has been confirmed at least once. */
+    isConfirmed: boolean;
 }
 
 export interface TrackNotificationDto {
@@ -5555,6 +5568,8 @@ export interface IntegrationPropertyDto {
     minLength?: number;
     /** The min length (for strings). */
     maxLength?: number;
+    /** The pattern (for strings). */
+    pattern?: string | undefined;
     /** The default value. */
     defaultValue?: any | undefined;
 }

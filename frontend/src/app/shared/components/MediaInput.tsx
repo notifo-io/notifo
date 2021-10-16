@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Forms, Icon, isErrorVisible, LocalizedFormProps } from '@app/framework';
+import { Forms, Icon, isErrorVisible, LocalizedFormProps, useFieldNew } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
-import { useField, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import * as React from 'react';
 import { Button, Input } from 'reactstrap';
 import { MediaPicker } from './MediaPicker';
@@ -27,7 +27,7 @@ export const MediaInput = (props: LocalizedFormProps) => {
     const [isPickerOpen, setIsPickerOpen] = React.useState(false);
 
     const { submitCount, setFieldValue } = useFormikContext();
-    const [field, meta] = useField(fieldName);
+    const [field, meta] = useFieldNew(fieldName);
 
     const doSelectUrl = (url: string) => {
         setFieldValue(fieldName, url);

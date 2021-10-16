@@ -30,6 +30,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
 
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
         {
+            Pattern = Patterns.Email,
             EditorLabel = Texts.AmazonSES_FromEmailLabel,
             EditorDescription = Texts.Email_FromEmailDescription,
             IsRequired = true,

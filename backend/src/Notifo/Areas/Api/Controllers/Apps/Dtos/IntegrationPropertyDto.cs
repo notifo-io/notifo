@@ -71,6 +71,11 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         public int MaxLength { get; set; }
 
         /// <summary>
+        /// The pattern (for strings).
+        /// </summary>
+        public string? Pattern { get; set; }
+
+        /// <summary>
         /// The default value.
         /// </summary>
         public object? DefaultValue { get; set; }

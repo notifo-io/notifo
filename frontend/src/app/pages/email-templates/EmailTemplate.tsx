@@ -9,7 +9,7 @@ import { FormControlError, Forms, Icon, Loader, useFieldNew } from '@app/framewo
 import { EmailTemplateDto } from '@app/service';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
-import { Formik, useField, useFormikContext } from 'formik';
+import { Formik, useFormikContext } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';

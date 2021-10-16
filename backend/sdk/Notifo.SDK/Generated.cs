@@ -11105,14 +11105,14 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
     public enum ConfirmMode
     {
-        [System.Runtime.Serialization.EnumMember(Value = @"Seen")]
-        Seen = 0,
+        [System.Runtime.Serialization.EnumMember(Value = @"None")]
+        None = 0,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Explicit")]
         Explicit = 1,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"None")]
-        None = 2,
+        [System.Runtime.Serialization.EnumMember(Value = @"Seen")]
+        Seen = 2,
     
     }
     
@@ -11163,20 +11163,24 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class UserNotificationDetailsDto : UserNotificationDto
+    public partial class UserNotificationDetailsDto : UserNotificationBaseDto
     {
         /// <summary>The channel details.</summary>
         [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.IDictionary<string, UserNotificationChannelDto> Channels { get; set; } = new System.Collections.Generic.Dictionary<string, UserNotificationChannelDto>();
     
-        /// <summary>The information when the notifcation was marked as confirmed.</summary>
-        [Newtonsoft.Json.JsonProperty("confirmed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public HandledInfoDto Confirmed { get; set; }
+        /// <summary>The information when the notifcation was marked as deliverd.</summary>
+        [Newtonsoft.Json.JsonProperty("firstDelivered", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HandledInfoDto FirstDelivered { get; set; }
     
         /// <summary>The information when the notifcation was marked as seen.</summary>
-        [Newtonsoft.Json.JsonProperty("seen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public HandledInfoDto Seen { get; set; }
+        [Newtonsoft.Json.JsonProperty("firstSeen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HandledInfoDto FirstSeen { get; set; }
+    
+        /// <summary>The information when the notifcation was marked as confirmed.</summary>
+        [Newtonsoft.Json.JsonProperty("firstConfirmed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HandledInfoDto FirstConfirmed { get; set; }
     
     
     }
@@ -11193,6 +11197,18 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.IDictionary<string, ChannelSendInfoDto> Status { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSendInfoDto>();
+    
+        /// <summary>The first time the notification has been marked as delivered for this channel.</summary>
+        [Newtonsoft.Json.JsonProperty("firstDelivered", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? FirstDelivered { get; set; }
+    
+        /// <summary>The first time the notification has been marked as seen for this channel.</summary>
+        [Newtonsoft.Json.JsonProperty("firstSeen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? FirstSeen { get; set; }
+    
+        /// <summary>The first time the notification has been marked as confirmed for this channel.</summary>
+        [Newtonsoft.Json.JsonProperty("firstConfirmed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? FirstConfirmed { get; set; }
     
     
     }
@@ -11251,7 +11267,7 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class UserNotificationDto 
+    public abstract partial class UserNotificationBaseDto 
     {
         /// <summary>The id of the notification.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -11266,14 +11282,6 @@ namespace Notifo.SDK
         /// <summary>True when the notification is silent.</summary>
         [Newtonsoft.Json.JsonProperty("silent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Silent { get; set; }
-    
-        /// <summary>True when the notification has been confirmed.</summary>
-        [Newtonsoft.Json.JsonProperty("isConfirmed", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsConfirmed { get; set; }
-    
-        /// <summary>True when the notification has been seen.</summary>
-        [Newtonsoft.Json.JsonProperty("isSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool IsSeen { get; set; }
     
         /// <summary>The timestamp when the notification has been created.</summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -11297,9 +11305,13 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("imageLarge", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ImageLarge { get; set; }
     
-        /// <summary>The tracking url that needs to be invoked to mark the notifiation as seen.</summary>
-        [Newtonsoft.Json.JsonProperty("trackingUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string TrackingUrl { get; set; }
+        /// <summary>The tracking url that needs to be invoked to mark the notification as seen.</summary>
+        [Newtonsoft.Json.JsonProperty("trackSeenUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TrackSeenUrl { get; set; }
+    
+        /// <summary>The tracking url that needs to be invoked to mark the notification as delivered.</summary>
+        [Newtonsoft.Json.JsonProperty("trackDeliveredUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TrackDeliveredUrl { get; set; }
     
         /// <summary>An optional link.</summary>
         [Newtonsoft.Json.JsonProperty("linkUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -11313,7 +11325,7 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("confirmText", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ConfirmText { get; set; }
     
-        /// <summary>The tracking url that needs to be invoked to mark the notifiation as confirmed.</summary>
+        /// <summary>The tracking url that needs to be invoked to mark the notification as confirmed.</summary>
         [Newtonsoft.Json.JsonProperty("confirmUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ConfirmUrl { get; set; }
     
@@ -11335,6 +11347,20 @@ namespace Notifo.SDK
         /// <summary>The total number of items.</summary>
         [Newtonsoft.Json.JsonProperty("total", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public long Total { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class UserNotificationDto : UserNotificationBaseDto
+    {
+        /// <summary>True when the notification has been seen at least once.</summary>
+        [Newtonsoft.Json.JsonProperty("isSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsSeen { get; set; }
+    
+        /// <summary>True when the notification has been confirmed at least once.</summary>
+        [Newtonsoft.Json.JsonProperty("isConfirmed", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool IsConfirmed { get; set; }
     
     
     }
@@ -12387,6 +12413,10 @@ namespace Notifo.SDK
         /// <summary>The min length (for strings).</summary>
         [Newtonsoft.Json.JsonProperty("maxLength", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int MaxLength { get; set; }
+    
+        /// <summary>The pattern (for strings).</summary>
+        [Newtonsoft.Json.JsonProperty("pattern", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Pattern { get; set; }
     
         /// <summary>The default value.</summary>
         [Newtonsoft.Json.JsonProperty("defaultValue", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

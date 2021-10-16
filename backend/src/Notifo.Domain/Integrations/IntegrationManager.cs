@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Resources;
 using Notifo.Infrastructure.Timers;
 using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
@@ -33,7 +35,6 @@ namespace Notifo.Domain.Integrations
         public IntegrationManager(IEnumerable<IIntegration> integrations, IAppStore appStore, ISemanticLog log)
         {
             this.integrations = integrations;
-
             this.appStore = appStore;
 
             this.log = log;
@@ -53,13 +54,46 @@ namespace Notifo.Domain.Integrations
             return timer.StopAsync();
         }
 
-        public Task HandleConfigured(ConfiguredIntegration configured, ConfiguredIntegration? previous)
+        public Task ValidateAsync(ConfiguredIntegration configured)
         {
             var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration == null)
             {
-                throw new ValidationException("Integration type is not valid.");
+                var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
+
+                throw new ValidationException(error);
+            }
+
+            var errors = new List<ValidationError>();
+
+            foreach (var property in integration.Definition.Properties)
+            {
+                var value = configured.Properties.GetValueOrDefault(property.Name);
+
+                foreach (var error in property.Validate(value))
+                {
+                    errors.Add(new ValidationError(error, property.Name));
+                }
+            }
+
+            if (errors.Count > 0)
+            {
+                throw new ValidationException(errors);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task HandleConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous)
+        {
+            var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+
+            if (integration == null)
+            {
+                var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
+
+                throw new ValidationException(error);
             }
 
             return integration.OnConfiguredAsync(configured, previous);

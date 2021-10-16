@@ -232,6 +232,87 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Integration of type {0} does not exist..
+        /// </summary>
+        internal static string IntegrationNotFound {
+            get {
+                return ResourceManager.GetString("IntegrationNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Integration is not valid..
+        /// </summary>
+        internal static string IntegrationNotValid {
+            get {
+                return ResourceManager.GetString("IntegrationNotValid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid number..
+        /// </summary>
+        internal static string IntegrationPropertyInvalidNumber {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyInvalidNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value must have less than {0} characters..
+        /// </summary>
+        internal static string IntegrationPropertyMaxLength {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyMaxLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value must be lower than {0}..
+        /// </summary>
+        internal static string IntegrationPropertyMaxValue {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyMaxValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value must have more than {0} characters..
+        /// </summary>
+        internal static string IntegrationPropertyMinLength {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyMinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value must be higher than {0}..
+        /// </summary>
+        internal static string IntegrationPropertyMinValue {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyMinValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field format not valid..
+        /// </summary>
+        internal static string IntegrationPropertyPattern {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyPattern", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is required..
+        /// </summary>
+        internal static string IntegrationPropertyRequired {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Integration has been removed..
         /// </summary>
         internal static string Messaging_ConfigReset {

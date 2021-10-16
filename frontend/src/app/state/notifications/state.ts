@@ -6,7 +6,7 @@
  */
 
 import { ListState } from '@app/framework';
-import { UserNotificationDto } from '@app/service';
+import { UserNotificationDetailsDto } from '@app/service';
 
 export interface NotificationsStateInStore {
     notifications: NotificationsState;
@@ -14,5 +14,5 @@ export interface NotificationsStateInStore {
 
 export interface NotificationsState {
     // All subscriptions.
-    notifications: ListState<UserNotificationDto>;
+    notifications: ListState<UserNotificationDetailsDto>;
 }

@@ -17,7 +17,9 @@ namespace Notifo.Domain.Integrations
 
         bool IsConfigured<T>(App app, bool test);
 
-        Task HandleConfigured(ConfiguredIntegration configured, ConfiguredIntegration? previous);
+        Task ValidateAsync(ConfiguredIntegration configured);
+
+        Task HandleConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous);
 
         T? Resolve<T>(string id, App app, bool test) where T : class;
 

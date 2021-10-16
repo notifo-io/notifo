@@ -6,13 +6,13 @@
  */
 
 import { FormatDate, Icon, JsonDetails } from '@app/framework';
-import { UserNotificationDto } from '@app/service';
+import { UserNotificationDetailsDto } from '@app/service';
 import * as React from 'react';
 import { Button } from 'reactstrap';
 
 export interface NotificationRowProps {
     // The notification.
-    notification: UserNotificationDto;
+    notification: UserNotificationDetailsDto;
 }
 
 export const NotificationRow = React.memo((props: NotificationRowProps) => {

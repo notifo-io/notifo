@@ -54,6 +54,8 @@ namespace Notifo.Domain.Apps
         {
             ConfiguredIntegration configuration;
 
+            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
+
             if (app.Integrations.TryGetValue(Id, out var previousIntegration))
             {
                 Validate<UpdateValidator>.It(this);
@@ -71,11 +73,11 @@ namespace Notifo.Domain.Apps
             configuration.Enabled = Enabled;
             configuration.Priority = Priority;
 
+            await integrationManager.ValidateAsync(configuration);
+
             app.Integrations[Id] = configuration;
 
-            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
-
-            await integrationManager.HandleConfigured(configuration, previousIntegration);
+            await integrationManager.HandleConfiguredAsync(configuration, previousIntegration);
 
             return true;
         }

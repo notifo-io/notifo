@@ -92,12 +92,32 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                     propertyType = propertyType.requiredI18n();
                 }
 
+                if (property.minValue) {
+                    propertyType = propertyType.min(property.minValue, texts.validation.minFn);
+                }
+
+                if (property.maxValue) {
+                    propertyType = propertyType.max(property.maxValue, texts.validation.maxFn);
+                }
+
                 properties[property.name] = propertyType;
-            } else {
+            } else if (property.type !== 'Boolean') {
                 let propertyType = Yup.string().label(label);
 
                 if (property.isRequired) {
                     propertyType = propertyType.requiredI18n();
+                }
+
+                if (property.minLength) {
+                    propertyType = propertyType.min(property.minLength, texts.validation.minLengthFn);
+                }
+
+                if (property.maxLength) {
+                    propertyType = propertyType.max(property.maxLength, texts.validation.maxLengthFn);
+                }
+
+                if (property.pattern) {
+                    propertyType = propertyType.matches(new RegExp(property.pattern), texts.validation.patternFn);
                 }
 
                 properties[property.name] = propertyType;
