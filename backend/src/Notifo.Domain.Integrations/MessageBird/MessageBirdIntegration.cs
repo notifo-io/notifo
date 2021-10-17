@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
-using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.MessageBird
@@ -18,7 +17,6 @@ namespace Notifo.Domain.Integrations.MessageBird
     public sealed class MessageBirdIntegration : IIntegration
     {
         private readonly MessageBirdClientPool clientPool;
-        private readonly MessageBirdSmsSenderFactory senderFactory;
 
         private static readonly IntegrationProperty AccessKeyProperty = new IntegrationProperty("accessKey", IntegrationPropertyType.Text)
         {
@@ -53,16 +51,9 @@ namespace Notifo.Domain.Integrations.MessageBird
                 Description = Texts.MessageBird_Description
             };
 
-        public MessageBirdIntegration(MessageBirdClientPool clientPool, IServiceProvider serviceProvider)
+        public MessageBirdIntegration(MessageBirdClientPool clientPool)
         {
             this.clientPool = clientPool;
-
-            var factory = ActivatorUtilities.CreateFactory(typeof(MessageBirdSmsSender), new[] { typeof(MessageBirdClient), typeof(string) });
-
-            senderFactory = (client, id) =>
-            {
-                return (MessageBirdSmsSender)factory(serviceProvider, new object?[] { client, id });
-            };
         }
 
         public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
@@ -70,7 +61,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             return serviceType == typeof(ISmsSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {
@@ -90,7 +81,11 @@ namespace Notifo.Domain.Integrations.MessageBird
 
                 var client = clientPool.GetServer(accessKey, phoneNumber);
 
-                return senderFactory(client, id);
+                return new MessageBirdSmsSender(
+                    client,
+                    serviceProvider.GetRequiredService<ISmsCallback>(),
+                    serviceProvider.GetRequiredService<ISmsUrl>(),
+                    id);
             }
 
             return null;

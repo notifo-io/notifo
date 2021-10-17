@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
@@ -16,8 +17,6 @@ namespace Notifo.Domain.Integrations.Mailchimp
 {
     public sealed class MailchimpIntegration : IIntegration
     {
-        private readonly IHttpClientFactory httpClientFactory;
-
         private static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", IntegrationPropertyType.Password)
         {
             EditorLabel = Texts.Mailchimp_ApiKeyLabel,
@@ -60,17 +59,12 @@ namespace Notifo.Domain.Integrations.Mailchimp
                 Description = Texts.Mailchimp_Description
             };
 
-        public MailchimpIntegration(IHttpClientFactory httpClientFactory)
-        {
-            this.httpClientFactory = httpClientFactory;
-        }
-
         public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {
@@ -95,7 +89,11 @@ namespace Notifo.Domain.Integrations.Mailchimp
                     return null;
                 }
 
-                return new MailchimpEmailSender(httpClientFactory, apiKey, fromEmail, fromName);
+                return new MailchimpEmailSender(
+                    serviceProvider.GetRequiredService<IHttpClientFactory>(),
+                    apiKey,
+                    fromEmail,
+                    fromName);
             }
 
             return null;

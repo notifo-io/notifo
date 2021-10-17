@@ -18,8 +18,6 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
-    public delegate MessageBirdSmsSender MessageBirdSmsSenderFactory(MessageBirdClient client, string id);
-
     public sealed class MessageBirdSmsSender : ISmsSender
     {
         private readonly MessageBirdClient messageBirdClient;

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
@@ -21,7 +22,7 @@ namespace Notifo.Domain.Integrations.Telegram
     public sealed class TelegramIntegration : IIntegration
     {
         private readonly TelegramBotClientPool botClientPool;
-
+        private readonly IMessagingUrl messagingUrl;
         private static readonly IntegrationProperty AccessToken = new IntegrationProperty("accessToken", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.Telegram_AccessKeyLabel,
@@ -29,8 +30,6 @@ namespace Notifo.Domain.Integrations.Telegram
             IsRequired = true,
             Summary = true
         };
-        private readonly IMessagingUrl messagingUrl;
-        private readonly IUserStore userStore;
 
         public IntegrationDefinition Definition { get; } =
             new IntegrationDefinition(
@@ -49,11 +48,10 @@ namespace Notifo.Domain.Integrations.Telegram
                 Description = Texts.Telegram_Description
             };
 
-        public TelegramIntegration(TelegramBotClientPool botClientPool, IMessagingUrl messagingUrl, IUserStore userStore)
+        public TelegramIntegration(TelegramBotClientPool botClientPool, IMessagingUrl messagingUrl)
         {
             this.botClientPool = botClientPool;
             this.messagingUrl = messagingUrl;
-            this.userStore = userStore;
         }
 
         public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
@@ -61,7 +59,7 @@ namespace Notifo.Domain.Integrations.Telegram
             return serviceType == typeof(IMessagingSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {
@@ -72,7 +70,9 @@ namespace Notifo.Domain.Integrations.Telegram
                     return null;
                 }
 
-                return new TelegramMessagingSender(() => botClientPool.GetBotClient(accessToken), userStore);
+                return new TelegramMessagingSender(
+                    () => botClientPool.GetBotClient(accessToken),
+                    serviceProvider.GetRequiredService<IUserStore>());
             }
 
             return null;

@@ -17,9 +17,6 @@ namespace Notifo.Domain.Integrations.MessageBird
 {
     public sealed class IntegratedMessageBirdIntegration : IIntegration
     {
-        private readonly MessageBirdSmsSenderFactory senderFactory;
-        private readonly MessageBirdClient messageBirdClient;
-
         public IntegrationDefinition Definition { get; } =
             new IntegrationDefinition(
                 "MessageBirdIntegrated",
@@ -34,28 +31,20 @@ namespace Notifo.Domain.Integrations.MessageBird
                 Description = Texts.MessageBirdIntegrated_Description
             };
 
-        public IntegratedMessageBirdIntegration(MessageBirdClient messageBirdClient, IServiceProvider serviceProvider)
-        {
-            this.messageBirdClient = messageBirdClient;
-
-            var factory = ActivatorUtilities.CreateFactory(typeof(MessageBirdSmsSender), new[] { typeof(MessageBirdClient), typeof(string) });
-
-            senderFactory = (client, id) =>
-            {
-                return (MessageBirdSmsSender)factory(serviceProvider, new object?[] { client, id });
-            };
-        }
-
         public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(ISmsSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {
-                return senderFactory(messageBirdClient, id);
+                return new MessageBirdSmsSender(
+                    serviceProvider.GetRequiredService<MessageBirdClient>(),
+                    serviceProvider.GetRequiredService<ISmsCallback>(),
+                    serviceProvider.GetRequiredService<ISmsUrl>(),
+                    id);
             }
 
             return null;

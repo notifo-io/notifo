@@ -10,32 +10,20 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Notifo.Domain.Integrations.Smtp
 {
-    public sealed class SmtpEmailServerPool
+    public sealed class SmtpEmailServerPool : CachePool<SmtpEmailServer>
     {
-        private readonly IMemoryCache memoryCache;
-
         public SmtpEmailServerPool(IMemoryCache memoryCache)
+            : base(memoryCache)
         {
-            this.memoryCache = memoryCache;
         }
 
         public SmtpEmailServer GetServer(SmtpOptions options)
         {
             var cacheKey = $"SMTPServer_{options.Host}_{options.Username}_{options.Password}_{options.Host}";
 
-            var found = memoryCache.GetOrCreate(cacheKey, entry =>
+            var found = GetOrCreate(cacheKey, () =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
-
                 var sender = new SmtpEmailServer(options);
-
-                entry.PostEvictionCallbacks.Add(new PostEvictionCallbackRegistration
-                {
-                    EvictionCallback = (key, value, reason, state) =>
-                    {
-                        sender.Dispose();
-                    }
-                });
 
                 return sender;
             });

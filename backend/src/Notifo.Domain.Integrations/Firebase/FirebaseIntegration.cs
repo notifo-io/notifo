@@ -76,7 +76,7 @@ namespace Notifo.Domain.Integrations.Firebase
             return serviceType == typeof(IMobilePushSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {
@@ -97,7 +97,8 @@ namespace Notifo.Domain.Integrations.Firebase
                 var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
                 var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
 
-                return new FirebaseMobilePushSender(() => messagingPool.GetMessaging(projectId, credentials),
+                return new FirebaseMobilePushSender(
+                    () => messagingPool.GetMessaging(projectId, credentials),
                     sendSilentIOS,
                     sendSilentAndroid);
             }

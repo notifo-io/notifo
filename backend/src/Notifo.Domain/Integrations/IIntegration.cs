@@ -16,7 +16,7 @@ namespace Notifo.Domain.Integrations
     {
         IntegrationDefinition Definition { get; }
 
-        object? Create(Type serviceType, string id, ConfiguredIntegration configured);
+        object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider);
 
         bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured);
 

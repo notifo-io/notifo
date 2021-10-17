@@ -85,7 +85,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
             return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {

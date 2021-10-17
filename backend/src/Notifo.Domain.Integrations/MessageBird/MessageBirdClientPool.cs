@@ -10,19 +10,17 @@ using System.Globalization;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
-    public sealed class MessageBirdClientPool
+    public sealed class MessageBirdClientPool : CachePool<MessageBirdClient>
     {
-        private readonly IMemoryCache memoryCache;
         private readonly IHttpClientFactory httpClientFactory;
 
         public MessageBirdClientPool(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory)
+            : base(memoryCache)
         {
-            this.memoryCache = memoryCache;
             this.httpClientFactory = httpClientFactory;
         }
 
@@ -30,10 +28,8 @@ namespace Notifo.Domain.Integrations.MessageBird
         {
             var cacheKey = $"MessageBirdSmsSender_{accessKey}_{phoneNumber}";
 
-            var found = memoryCache.GetOrCreate(cacheKey, entry =>
+            var found = GetOrCreate(cacheKey, () =>
             {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
-
                 var options = Options.Create(new MessageBirdOptions
                 {
                     AccessKey = accessKey,

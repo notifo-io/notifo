@@ -72,7 +72,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
             return serviceType == typeof(WebhookDefinition);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {

@@ -77,7 +77,7 @@ namespace Notifo.Domain.Integrations.Mailjet
             return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (CanCreate(serviceType, id, configured))
             {
@@ -109,7 +109,10 @@ namespace Notifo.Domain.Integrations.Mailjet
                     return null;
                 }
 
-                return new MailjetEmailSender(() => serverPool.GetServer(publicKey, privateKey), fromEmail, fromName);
+                return new MailjetEmailSender(
+                    () => serverPool.GetServer(publicKey, privateKey),
+                    fromEmail,
+                    fromName);
             }
 
             return null;

@@ -24,6 +24,7 @@ namespace Notifo.Domain.Integrations
     {
         private readonly IEnumerable<IIntegration> appIntegrations;
         private readonly IAppStore appStore;
+        private readonly IServiceProvider serviceProvider;
         private readonly ISemanticLog log;
         private CompletionTimer timer;
 
@@ -32,11 +33,12 @@ namespace Notifo.Domain.Integrations
             get => appIntegrations.Select(x => x.Definition);
         }
 
-        public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore, ISemanticLog log)
+        public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore, IServiceProvider serviceProvider,
+            ISemanticLog log)
         {
             this.appIntegrations = appIntegrations;
             this.appStore = appStore;
-
+            this.serviceProvider = serviceProvider;
             this.log = log;
         }
 
@@ -133,7 +135,7 @@ namespace Notifo.Domain.Integrations
         {
             foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
             {
-                if (IsMatch(id, actualId) && integration.Create(typeof(T), actualId, configured) is T created)
+                if (IsMatch(id, actualId) && integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
                 {
                     return created;
                 }
@@ -146,7 +148,7 @@ namespace Notifo.Domain.Integrations
         {
             foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
             {
-                if (integration.Create(typeof(T), actualId, configured) is T created)
+                if (integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
                 {
                     yield return (actualId, created);
                 }
