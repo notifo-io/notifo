@@ -6,7 +6,9 @@
 // ==========================================================================
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Notifo.Domain.Apps;
 
 namespace Notifo.Domain.Integrations
 {
@@ -14,16 +16,24 @@ namespace Notifo.Domain.Integrations
     {
         IntegrationDefinition Definition { get; }
 
-        object? Create(Type serviceType, ConfiguredIntegration configured);
+        object? Create(Type serviceType, string id, ConfiguredIntegration configured);
 
-        bool CanCreate(Type serviceType, ConfiguredIntegration configured);
+        bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured);
 
-        Task OnConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous)
+        Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+            CancellationToken ct)
         {
             return Task.CompletedTask;
         }
 
-        Task CheckStatusAsync(ConfiguredIntegration configured)
+        Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
+            CancellationToken ct)
+        {
+            return Task.CompletedTask;
+        }
+
+        Task CheckStatusAsync(App app, string id, ConfiguredIntegration configured,
+            CancellationToken ct)
         {
             return Task.CompletedTask;
         }

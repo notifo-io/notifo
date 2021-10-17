@@ -127,7 +127,7 @@ namespace Notifo.Domain.Apps.MongoDb
         }
 
         public async Task BatchWriteAsync(List<(string Key, CounterMap Counters)> counters,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/BatchWriteAsync"))
             {

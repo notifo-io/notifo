@@ -26,7 +26,7 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.Sms
 {
-    public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
+    public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ISmsCallback
     {
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
@@ -70,11 +70,12 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task HandleResponseAsync(SmsResponse response)
+        public async Task HandleCallbackAsync(SmsResponse response,
+            CancellationToken ct)
         {
             if (Guid.TryParse(response.Reference, out var id))
             {
-                var notification = await userNotificationStore.FindAsync(id);
+                var notification = await userNotificationStore.FindAsync(id, ct);
 
                 if (notification != null)
                 {
@@ -182,7 +183,7 @@ namespace Notifo.Domain.Channels.Sms
                         return;
                     }
 
-                    await SendCoreAsync(job, senders, ct);
+                    await SendCoreAsync(app, job, senders, ct);
                 }
                 catch (DomainException ex)
                 {
@@ -192,15 +193,10 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders,
+        private async Task SendCoreAsync(App app, SmsJob job, List<ISmsSender> senders,
             CancellationToken ct)
         {
             var lastSender = senders[^1];
-
-            foreach (var sender in senders)
-            {
-                await sender.RegisterAsync(HandleResponseAsync);
-            }
 
             foreach (var sender in senders)
             {
@@ -219,7 +215,7 @@ namespace Notifo.Domain.Channels.Sms
 
                     var text = smsFormatter.Format(template, job.Text);
 
-                    var result = await sender.SendAsync(job.PhoneNumber, text, job.Id.ToString(), ct);
+                    var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Id.ToString(), ct);
 
                     if (result == SmsResult.Delivered)
                     {

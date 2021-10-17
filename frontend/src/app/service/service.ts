@@ -4887,6 +4887,10 @@ export interface UserDto {
     phoneNumber?: string | undefined;
     /** The threema id. */
     threemaId?: string | undefined;
+    /** The telegram username. */
+    telegramUsername?: string | undefined;
+    /** The telegram chat ID. */
+    telegramChatId?: string | undefined;
     /** The preferred language of the user. */
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
@@ -4939,6 +4943,10 @@ export interface UpsertUserDto {
     phoneNumber?: string | undefined;
     /** The threema id. */
     threemaId?: string | undefined;
+    /** The telegram username. */
+    telegramUsername?: string | undefined;
+    /** The telegram chat ID. */
+    telegramChatId?: string | undefined;
     /** The preferred language of the user. */
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
@@ -5561,13 +5569,13 @@ export interface IntegrationPropertyDto {
     /** True when required. */
     isRequired?: boolean;
     /** The min value (for numbers). */
-    minValue?: number;
+    minValue?: number | undefined;
     /** The max value (for numbers). */
-    maxValue?: number;
+    maxValue?: number | undefined;
     /** The min length (for strings). */
-    minLength?: number;
+    minLength?: number | undefined;
     /** The min length (for strings). */
-    maxLength?: number;
+    maxLength?: number | undefined;
     /** The pattern (for strings). */
     pattern?: string | undefined;
     /** The default value. */

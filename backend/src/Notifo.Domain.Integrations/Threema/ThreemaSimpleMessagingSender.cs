@@ -11,6 +11,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Users;
 
@@ -129,6 +131,11 @@ namespace Notifo.Domain.Integrations.Threema
             response.EnsureSuccessStatusCode();
 
             return true;
+        }
+
+        public Task HandleCallbackAsync(App app, HttpContext httpContext)
+        {
+            return Task.CompletedTask;
         }
     }
 }

@@ -129,6 +129,8 @@ export const EN = {
         statisticsLabelFn: (name: string) => `${name} (Handled / Attempts / Failed)`,
         status: 'Status',
         subject: 'Subject',
+        telegramChatId: 'Telegram Chat Id',
+        telegramUsername: 'Telegram Username',
         template: 'Template',
         templateCode: 'Template Code',
         templateMode: 'Use template?',

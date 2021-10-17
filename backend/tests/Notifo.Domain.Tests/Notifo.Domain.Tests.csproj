@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FakeItEasy" Version="7.1.0" />
+    <PackageReference Include="FakeItEasy" Version="7.2.0" />
     <PackageReference Include="FluentAssertions" Version="6.1.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.670">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.672">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

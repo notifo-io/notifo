@@ -6,17 +6,17 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.54" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.82" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.2" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.2.0" />
-    <PackageReference Include="Google.Cloud.Trace.V2" Version="2.2.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.670">
+    <PackageReference Include="Google.Cloud.Trace.V2" Version="2.3.0" />
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.672">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="5.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="5.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.13.2" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0-alpha1" />

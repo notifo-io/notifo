@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Messaging
 {
-    public interface ISmsUrl
+    public interface IMessagingUrl
     {
-        string SmsWebhookUrl(string appId, string integrationId);
+        string MessagingWebhookUrl(string appId, string integrationId);
     }
 }

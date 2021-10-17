@@ -26,6 +26,10 @@ namespace Notifo.Domain.Users
 
         public string? ThreemaId { get; set; }
 
+        public string? TelegramChatId { get; set; }
+
+        public string? TelegramUsername { get; set; }
+
         public string? PreferredLanguage { get; set; }
 
         public string? PreferredTimezone { get; set; }
@@ -65,6 +69,16 @@ namespace Notifo.Domain.Users
             if (PhoneNumber != null)
             {
                 user.PhoneNumber = PhoneNumber;
+            }
+
+            if (TelegramChatId != null)
+            {
+                user.TelegramChatId = TelegramChatId;
+            }
+
+            if (TelegramUsername != null)
+            {
+                user.TelegramUsername = TelegramUsername;
             }
 
             if (ThreemaId != null)

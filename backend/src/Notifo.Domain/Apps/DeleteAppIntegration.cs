@@ -9,6 +9,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
@@ -26,14 +28,19 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            var removed = app.Integrations.Remove(Id);
+            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
-            return Task.FromResult(removed);
+            if (app.Integrations.TryGetValue(Id, out var configured))
+            {
+                await integrationManager.HandleRemovedAsync(Id, app, configured, ct);
+            }
+
+            return app.Integrations.Remove(Id);
         }
     }
 }

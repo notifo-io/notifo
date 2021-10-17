@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Icon, Loader } from '@app/framework';
+import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
 import { loadSmsTemplate, updateSmsTemplate, useApp, useSmsTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
@@ -61,7 +61,7 @@ export const SmsTemplatePage = () => {
     }, [dispatch, appId, templateId]);
 
     const initialValues = React.useMemo(() => {
-        const result: any = { ...template, languages: {} };
+        const result: any = { ...Types.clone(template), languages: {} };
 
         if (template?.languages) {
             for (const key of Object.keys(template.languages)) {

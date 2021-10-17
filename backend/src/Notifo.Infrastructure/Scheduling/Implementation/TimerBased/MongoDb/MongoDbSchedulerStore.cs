@@ -31,7 +31,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
         }
 
         protected override async Task SetupCollectionAsync(IMongoCollection<SchedulerBatch<T>> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             await collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<SchedulerBatch<T>>(

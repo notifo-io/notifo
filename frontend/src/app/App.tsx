@@ -12,13 +12,14 @@ import * as React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
+import { ErrorBoundary } from '@app/framework';
 import { AuthenticationPage } from './pages/authentication/AuthenticationPage';
 
 export const App = () => {
     const isAuthenticated = useLogin(x => !!x.user);
 
     return (
-        <>
+        <ErrorBoundary>
             <Switch>
                 <RouteWhenPrivate path='/app' isAuthenticated={isAuthenticated}
                     component={InternalPage} />
@@ -35,6 +36,6 @@ export const App = () => {
             <ReactTooltip place='top' effect='solid' />
 
             <ToastContainer position='bottom-right' />
-        </>
+        </ErrorBoundary>
     );
 };

@@ -85,7 +85,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             }
         }
 
-        public MessageBirdSmsStatus ParseStatus(HttpContext httpContext)
+        public Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext)
         {
             var result = new MessageBirdSmsStatus();
 
@@ -116,7 +116,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 result.StatusErrorCode = code;
             }
 
-            return result;
+            return Task.FromResult(result);
         }
 
         private static async Task<Exception> HandleErrorAsync(HttpResponseMessage response,

@@ -6,13 +6,14 @@
 // ==========================================================================
 
 using System;
+using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.UserNotifications;
 using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Utils
 {
-    public sealed class UrlBuilder : IUserNotificationUrl, ISmsUrl
+    public sealed class UrlBuilder : IUserNotificationUrl, ISmsUrl, IMessagingUrl
     {
         private readonly IUrlGenerator urlGenerator;
 
@@ -36,9 +37,14 @@ namespace Notifo.Areas.Api.Utils
             return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
         }
 
-        public string WebhookUrl()
+        public string SmsWebhookUrl(string appId, string integrationId)
         {
-            return urlGenerator.BuildCallbackUrl("api/callback/sms");
+            return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}");
+        }
+
+        public string MessagingWebhookUrl(string appId, string integrationId)
+        {
+            return urlGenerator.BuildCallbackUrl($"api/callback/messaging?appId={appId}&integrationId={integrationId}");
         }
     }
 }

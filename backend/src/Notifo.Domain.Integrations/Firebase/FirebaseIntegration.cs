@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Integrations.Resources;
@@ -16,7 +15,7 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public sealed class FirebaseIntegration : IIntegration
     {
-        private readonly FirebaseMessagingPool senderPool;
+        private readonly FirebaseMessagingPool messagingPool;
 
         private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", IntegrationPropertyType.Text)
         {
@@ -67,19 +66,19 @@ namespace Notifo.Domain.Integrations.Firebase
                 Description = Texts.Firebase_Description
             };
 
-        public FirebaseIntegration(IMemoryCache memoryCache)
+        public FirebaseIntegration(FirebaseMessagingPool messagingPool)
         {
-            senderPool = new FirebaseMessagingPool(memoryCache);
+            this.messagingPool = messagingPool;
         }
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(IMobilePushSender);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
                 var projectId = ProjectIdProperty.GetString(configured);
 
@@ -98,7 +97,9 @@ namespace Notifo.Domain.Integrations.Firebase
                 var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
                 var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
 
-                return new FirebaseMobilePushSender(() => senderPool.GetMessaging(projectId, credentials), sendSilentIOS, sendSilentAndroid);
+                return new FirebaseMobilePushSender(() => messagingPool.GetMessaging(projectId, credentials),
+                    sendSilentIOS,
+                    sendSilentAndroid);
             }
 
             return null;

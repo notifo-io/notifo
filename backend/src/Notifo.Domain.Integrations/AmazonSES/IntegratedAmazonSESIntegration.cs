@@ -80,14 +80,14 @@ namespace Notifo.Domain.Integrations.AmazonSES
             await amazonSES.GetSendQuotaAsync(ct);
         }
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
                 var fromEmail = FromEmailProperty.GetString(configured);
 

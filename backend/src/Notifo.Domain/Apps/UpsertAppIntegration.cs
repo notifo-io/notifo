@@ -52,7 +52,7 @@ namespace Notifo.Domain.Apps
         public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
-            ConfiguredIntegration configuration;
+            ConfiguredIntegration configured;
 
             var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
@@ -60,24 +60,24 @@ namespace Notifo.Domain.Apps
             {
                 Validate<UpdateValidator>.It(this);
 
-                configuration = previousIntegration with { Properties = Properties };
+                configured = previousIntegration with { Properties = Properties };
             }
             else
             {
                 Validate<CreateValidator>.It(this);
 
-                configuration = new ConfiguredIntegration(Type, Properties);
+                configured = new ConfiguredIntegration(Type, Properties);
             }
 
-            configuration.Test = Test;
-            configuration.Enabled = Enabled;
-            configuration.Priority = Priority;
+            configured.Test = Test;
+            configured.Enabled = Enabled;
+            configured.Priority = Priority;
 
-            await integrationManager.ValidateAsync(configuration);
+            await integrationManager.ValidateAsync(configured, ct);
 
-            app.Integrations[Id] = configuration;
+            app.Integrations[Id] = configured;
 
-            await integrationManager.HandleConfiguredAsync(configuration, previousIntegration);
+            await integrationManager.HandleConfiguredAsync(Id, app, configured, previousIntegration, ct);
 
             return true;
         }

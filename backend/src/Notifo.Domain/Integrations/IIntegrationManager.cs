@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
 
@@ -15,14 +16,19 @@ namespace Notifo.Domain.Integrations
     {
         IEnumerable<IntegrationDefinition> Definitions { get; }
 
-        bool IsConfigured<T>(App app, bool test);
+        bool IsConfigured<T>(App app, bool? test = null);
 
-        Task ValidateAsync(ConfiguredIntegration configured);
+        Task ValidateAsync(ConfiguredIntegration configured,
+            CancellationToken ct = default);
 
-        Task HandleConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous);
+        Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+            CancellationToken ct = default);
 
-        T? Resolve<T>(string id, App app, bool test) where T : class;
+        Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+            CancellationToken ct = default);
 
-        IEnumerable<(string Id, T Target)> Resolve<T>(App app, bool test) where T : class;
+        T? Resolve<T>(string id, App app, bool? test = null) where T : class;
+
+        IEnumerable<(string Id, T Target)> Resolve<T>(App app, bool? test = null) where T : class;
     }
 }

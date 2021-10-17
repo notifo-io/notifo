@@ -27,15 +27,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingletonAs<MessageBirdClient>()
                     .AsSelf();
 
-                services.AddSingletonAs<IntegratedMessageBirdSmsSender>()
-                    .AsSelf();
-
                 services.AddSingletonAs<IntegratedMessageBirdIntegration>()
                     .As<IIntegration>();
             }
 
             services.AddSingletonAs<MessageBirdIntegration>()
                 .As<IIntegration>();
+
+            services.AddSingletonAs<MessageBirdClientPool>()
+                .AsSelf();
         }
     }
 }

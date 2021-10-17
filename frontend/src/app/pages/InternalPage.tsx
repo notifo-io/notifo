@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { ErrorBoundary } from '@app/framework';
 import { AppsDropdown, Logo } from '@app/shared/components';
 import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
@@ -65,15 +66,17 @@ export const InternalPage = () => {
             </Navbar>
 
             <main>
-                <Switch>
-                    <Route path={`${match.path}/:appId`}>
-                        <AppPage />
-                    </Route>
+                <ErrorBoundary>
+                    <Switch>
+                        <Route path={`${match.path}/:appId`}>
+                            <AppPage />
+                        </Route>
 
-                    <Route path={match.path} exact>
-                        <AppsPage />
-                    </Route>
-                </Switch>
+                        <Route path={match.path} exact>
+                            <AppsPage />
+                        </Route>
+                    </Switch>
+                </ErrorBoundary>
             </main>
         </>
     );

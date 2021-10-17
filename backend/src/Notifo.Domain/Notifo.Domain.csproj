@@ -15,8 +15,8 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="10.3.3" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.12.30" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.670">
+    <PackageReference Include="libphonenumber-csharp" Version="8.12.34" />
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.672">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -24,8 +24,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
     <PackageReference Include="Mjml.AspNetCore" Version="1.2.27" />
-    <PackageReference Include="MongoDB.Driver" Version="2.13.1" />
-    <PackageReference Include="NodaTime" Version="3.0.5" />
+    <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+    <PackageReference Include="NodaTime" Version="3.0.7" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />

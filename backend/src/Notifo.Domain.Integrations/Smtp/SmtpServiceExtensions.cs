@@ -16,6 +16,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingletonAs<SmtpIntegration>()
                 .As<IIntegration>();
+
+            services.AddSingletonAs<SmtpEmailServerPool>()
+                .AsSelf();
         }
     }
 }

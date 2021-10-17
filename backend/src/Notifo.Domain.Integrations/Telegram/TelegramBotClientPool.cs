@@ -6,31 +6,33 @@
 // ==========================================================================
 
 using System;
+using Mailjet.Client;
 using Microsoft.Extensions.Caching.Memory;
-using Telegram.Bot;
 
-namespace Notifo.Domain.Integrations.Telegram
+namespace Notifo.Domain.Integrations.Mailjet
 {
-    public sealed class TelegramBotClientPool
+    public sealed class MailjetEmailServerPool
     {
         private readonly IMemoryCache memoryCache;
 
-        public TelegramBotClientPool(IMemoryCache memoryCache)
+        public MailjetEmailServerPool(IMemoryCache memoryCache)
         {
             this.memoryCache = memoryCache;
         }
 
-        public ITelegramBotClient GetBotClient(string accessToken)
+        public MailjetEmailServer GetServer(string apiKey, string apiSecret)
         {
-            var cacheKey = $"TelegramBotClient_{accessToken}";
+            var cacheKey = $"MailjetEmailServer_{apiKey}_{apiSecret}";
 
             var found = memoryCache.GetOrCreate(cacheKey, entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
 
-                var botClient = new TelegramBotClient(accessToken);
+                var sender =
+                    new MailjetEmailServer(
+                        new MailjetClient(apiKey, apiSecret));
 
-                return botClient;
+                return sender;
             });
 
             return found;

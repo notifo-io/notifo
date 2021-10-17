@@ -457,6 +457,62 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Access Key.
+        /// </summary>
+        internal static string Telegram_AccessKeyLabel {
+            get {
+                return ResourceManager.GetString("Telegram_AccessKeyLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send messages using Telegram..
+        /// </summary>
+        internal static string Telegram_Description {
+            get {
+                return ResourceManager.GetString("Telegram_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Telegram.
+        /// </summary>
+        internal static string Telegram_Name {
+            get {
+                return ResourceManager.GetString("Telegram_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We have found your user. You will receive notifications now..
+        /// </summary>
+        internal static string Telegram_UserLinked {
+            get {
+                return ResourceManager.GetString("Telegram_UserLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We cannot find your user. Please create a username and configure the username in your {0} account.
+        ///
+        ///When you have done this send me an /update command..
+        /// </summary>
+        internal static string Telegram_UserNotFound {
+            get {
+                return ResourceManager.GetString("Telegram_UserNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Welcome to the {0} bot. I will send you your notifications..
+        /// </summary>
+        internal static string Telegram_WelcomeMessage {
+            get {
+                return ResourceManager.GetString("Telegram_WelcomeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to API Identity.
         /// </summary>
         internal static string ThreemaSimple_ApiIdentityLabel {

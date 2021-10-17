@@ -28,13 +28,13 @@ namespace Notifo.Domain.Integrations
 
         public bool IsRequired { get; init; }
 
-        public int MinValue { get; init; }
+        public long? MinValue { get; init; }
 
-        public int MaxValue { get; init; } = int.MaxValue;
+        public long? MaxValue { get; init; }
 
-        public int MinLength { get; init; }
+        public long? MinLength { get; init; }
 
-        public int MaxLength { get; init; } = int.MaxValue;
+        public long? MaxLength { get; init; }
 
         public string? Pattern { get; init; }
 
@@ -60,17 +60,17 @@ namespace Notifo.Domain.Integrations
                 yield return Texts.IntegrationPropertyRequired;
             }
 
-            if (!TryParseInt(value, out var number))
+            if (!TryParseLong(value, out var number))
             {
                 yield return Texts.IntegrationPropertyInvalidNumber;
             }
 
-            if (number < MinValue)
+            if (MinValue.HasValue && number < MinValue)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinValue, MinValue);
             }
 
-            if (number > MaxValue)
+            if (MaxValue.HasValue && number > MaxValue)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxValue, MaxValue);
             }
@@ -85,12 +85,12 @@ namespace Notifo.Domain.Integrations
 
             var length = value?.Length ?? 0;
 
-            if (length < MinLength)
+            if (MinLength.HasValue && length < MinLength)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinLength, MinLength);
             }
 
-            if (length > MaxLength)
+            if (MaxLength.HasValue && length > MaxLength)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxLength, MaxLength);
             }
@@ -129,19 +129,19 @@ namespace Notifo.Domain.Integrations
             return null;
         }
 
-        public int GetInt(ConfiguredIntegration configured)
+        public long GetNumber(ConfiguredIntegration configured)
         {
             if (Type == IntegrationPropertyType.Number)
             {
                 if (configured.Properties.TryGetValue(Name, out var value))
                 {
-                    if (TryParseInt(value, out var result))
+                    if (TryParseLong(value, out var result))
                     {
                         return result;
                     }
                 }
 
-                if (TryParseInt(DefaultValue, out var defaultResult))
+                if (TryParseLong(DefaultValue, out var defaultResult))
                 {
                     return defaultResult;
                 }
@@ -171,20 +171,20 @@ namespace Notifo.Domain.Integrations
             return false;
         }
 
-        private static bool TryParseInt(string? value, out int result)
+        private static bool TryParseLong(string? value, out long result)
         {
-            if (!string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 result = 0;
                 return true;
             }
 
-            return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+            return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
         }
 
         private static bool TryParseBoolean(string? value, out bool result)
         {
-            if (!string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(value))
             {
                 result = false;
                 return true;

@@ -130,6 +130,17 @@ namespace Notifo.Domain.Users.MongoDb
             }
         }
 
+        public async Task<(User? User, string? Etag)> GetByTelegramUsernameAsync(string appId, string username,
+            CancellationToken ct = default)
+        {
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByTelegramUsernameAsync"))
+            {
+                var document = await Collection.Find(x => x.Doc.AppId == appId && x.Doc.TelegramUsername == username).FirstOrDefaultAsync(ct);
+
+                return (document?.ToUser(), document?.Etag);
+            }
+        }
+
         public async Task<(User? User, string? Etag)> GetAsync(string appId, string id,
             CancellationToken ct = default)
         {
@@ -166,7 +177,7 @@ namespace Notifo.Domain.Users.MongoDb
         }
 
         public async Task BatchWriteAsync(List<((string AppId, string UserId) Key, CounterMap Counters)> counters,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserRepository/BatchWriteAsync"))
             {

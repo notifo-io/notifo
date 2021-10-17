@@ -67,14 +67,14 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
                 Description = Texts.Webhook_Description
             };
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(WebhookDefinition);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
                 var url = HttpUrlProperty.GetString(configured);
 

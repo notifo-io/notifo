@@ -157,7 +157,7 @@ namespace Notifo.Domain.Channels.Messaging
 
                     var (skip, template) = await GetTemplateAsync(
                         job.Notification.AppId,
-                        job.Notification.UserId,
+                        job.Notification.UserLanguage,
                         job.TemplateName,
                         ct);
 

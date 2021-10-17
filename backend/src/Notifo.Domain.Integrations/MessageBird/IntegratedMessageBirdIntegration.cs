@@ -7,15 +7,18 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
+using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
     public sealed class IntegratedMessageBirdIntegration : IIntegration
     {
-        private readonly IntegratedMessageBirdSmsSender smsSender;
+        private readonly MessageBirdSmsSenderFactory senderFactory;
+        private readonly MessageBirdClient messageBirdClient;
 
         public IntegrationDefinition Definition { get; } =
             new IntegrationDefinition(
@@ -31,21 +34,28 @@ namespace Notifo.Domain.Integrations.MessageBird
                 Description = Texts.MessageBirdIntegrated_Description
             };
 
-        public IntegratedMessageBirdIntegration(IntegratedMessageBirdSmsSender smsSender)
+        public IntegratedMessageBirdIntegration(MessageBirdClient messageBirdClient, IServiceProvider serviceProvider)
         {
-            this.smsSender = smsSender;
+            this.messageBirdClient = messageBirdClient;
+
+            var factory = ActivatorUtilities.CreateFactory(typeof(MessageBirdSmsSender), new[] { typeof(MessageBirdClient), typeof(string) });
+
+            senderFactory = (client, id) =>
+            {
+                return (MessageBirdSmsSender)factory(serviceProvider, new object?[] { client, id });
+            };
         }
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(ISmsSender);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
-                return smsSender;
+                return senderFactory(messageBirdClient, id);
             }
 
             return null;

@@ -7,17 +7,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
+using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
     public sealed class MessageBirdIntegration : IIntegration
     {
-        private readonly MessageBirdSmsSenderPool senderPool;
+        private readonly MessageBirdClientPool clientPool;
+        private readonly MessageBirdSmsSenderFactory senderFactory;
 
         private static readonly IntegrationProperty AccessKeyProperty = new IntegrationProperty("accessKey", IntegrationPropertyType.Text)
         {
@@ -52,19 +53,26 @@ namespace Notifo.Domain.Integrations.MessageBird
                 Description = Texts.MessageBird_Description
             };
 
-        public MessageBirdIntegration(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache)
+        public MessageBirdIntegration(MessageBirdClientPool clientPool, IServiceProvider serviceProvider)
         {
-            senderPool = new MessageBirdSmsSenderPool(httpClientFactory, memoryCache);
+            this.clientPool = clientPool;
+
+            var factory = ActivatorUtilities.CreateFactory(typeof(MessageBirdSmsSender), new[] { typeof(MessageBirdClient), typeof(string) });
+
+            senderFactory = (client, id) =>
+            {
+                return (MessageBirdSmsSender)factory(serviceProvider, new object?[] { client, id });
+            };
         }
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(ISmsSender);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
                 var accessKey = AccessKeyProperty.GetString(configured);
 
@@ -73,14 +81,16 @@ namespace Notifo.Domain.Integrations.MessageBird
                     return null;
                 }
 
-                var phoneNumber = PhoneNumberProperty.GetString(configured);
+                var phoneNumber = PhoneNumberProperty.GetNumber(configured);
 
-                if (string.IsNullOrWhiteSpace(phoneNumber))
+                if (phoneNumber == 0)
                 {
                     return null;
                 }
 
-                return senderPool.GetServer(accessKey, phoneNumber);
+                var client = clientPool.GetServer(accessKey, phoneNumber);
+
+                return senderFactory(client, id);
             }
 
             return null;

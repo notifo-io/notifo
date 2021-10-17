@@ -56,14 +56,14 @@ namespace Notifo.Domain.Integrations.Threema
             this.httpClientFactory = httpClientFactory;
         }
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(IMessagingSender);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
                 var apiIdentity = ApiIdentity.GetString(configured);
 

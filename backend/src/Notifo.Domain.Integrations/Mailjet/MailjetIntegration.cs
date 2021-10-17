@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
@@ -68,19 +67,19 @@ namespace Notifo.Domain.Integrations.Mailjet
                 Description = Texts.Mailjet_Description
             };
 
-        public MailjetIntegration(IMemoryCache memoryCache)
+        public MailjetIntegration(MailjetEmailServerPool serverPool)
         {
-            serverPool = new MailjetEmailServerPool(memoryCache);
+            this.serverPool = serverPool;
         }
 
-        public bool CanCreate(Type serviceType, ConfiguredIntegration configured)
+        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
             return serviceType == typeof(IEmailSender);
         }
 
-        public object? Create(Type serviceType, ConfiguredIntegration configured)
+        public object? Create(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            if (CanCreate(serviceType, configured))
+            if (CanCreate(serviceType, id, configured))
             {
                 var publicKey = ApiKeyProperty.GetString(configured);
 

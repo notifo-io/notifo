@@ -16,6 +16,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingletonAs<MailjetIntegration>()
                 .As<IIntegration>();
+
+            services.AddSingletonAs<MailjetEmailServerPool>()
+                .AsSelf();
         }
     }
 }

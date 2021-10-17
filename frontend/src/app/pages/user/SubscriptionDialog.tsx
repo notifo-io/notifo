@@ -5,9 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader } from '@app/framework';
+import { FormError, Forms, Loader, Types } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
+import { CHANNELS } from '@app/shared/utils/model';
 import { upsertSubscription, useApp, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
@@ -65,7 +66,17 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
         dispatch(upsertSubscription({ appId, userId, params }));
     }, [dispatch, appId, userId]);
 
-    const initialValues = subscription || { topicPrefix: '' };
+    const initialValues: any = React.useMemo(() => {
+        const result: Partial<SubscriptionDto> = Types.clone(subscription || { topicPrefix: '' });
+
+        result.topicSettings ||= {};
+
+        for (const channel of CHANNELS) {
+            result.topicSettings[channel] ||= { send: 'Inherit' };
+        }
+
+        return result;
+    }, [subscription]);
 
     return (
         <Modal isOpen={true} size='lg' toggle={doCloseForm}>

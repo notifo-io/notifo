@@ -75,7 +75,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         }
 
         public async Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
-            CancellationToken ct )
+            CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetBestAsync"))
             {

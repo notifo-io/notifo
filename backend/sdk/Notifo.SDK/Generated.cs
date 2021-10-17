@@ -10831,6 +10831,14 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("threemaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ThreemaId { get; set; }
     
+        /// <summary>The telegram username.</summary>
+        [Newtonsoft.Json.JsonProperty("telegramUsername", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TelegramUsername { get; set; }
+    
+        /// <summary>The telegram chat ID.</summary>
+        [Newtonsoft.Json.JsonProperty("telegramChatId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TelegramChatId { get; set; }
+    
         /// <summary>The preferred language of the user.</summary>
         [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredLanguage { get; set; }
@@ -10952,6 +10960,14 @@ namespace Notifo.SDK
         /// <summary>The threema id.</summary>
         [Newtonsoft.Json.JsonProperty("threemaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string ThreemaId { get; set; }
+    
+        /// <summary>The telegram username.</summary>
+        [Newtonsoft.Json.JsonProperty("telegramUsername", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TelegramUsername { get; set; }
+    
+        /// <summary>The telegram chat ID.</summary>
+        [Newtonsoft.Json.JsonProperty("telegramChatId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TelegramChatId { get; set; }
     
         /// <summary>The preferred language of the user.</summary>
         [Newtonsoft.Json.JsonProperty("preferredLanguage", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12399,20 +12415,20 @@ namespace Notifo.SDK
         public bool IsRequired { get; set; }
     
         /// <summary>The min value (for numbers).</summary>
-        [Newtonsoft.Json.JsonProperty("minValue", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int MinValue { get; set; }
+        [Newtonsoft.Json.JsonProperty("minValue", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long? MinValue { get; set; }
     
         /// <summary>The max value (for numbers).</summary>
-        [Newtonsoft.Json.JsonProperty("maxValue", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int MaxValue { get; set; }
+        [Newtonsoft.Json.JsonProperty("maxValue", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long? MaxValue { get; set; }
     
         /// <summary>The min length (for strings).</summary>
-        [Newtonsoft.Json.JsonProperty("minLength", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int MinLength { get; set; }
+        [Newtonsoft.Json.JsonProperty("minLength", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long? MinLength { get; set; }
     
         /// <summary>The min length (for strings).</summary>
-        [Newtonsoft.Json.JsonProperty("maxLength", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int MaxLength { get; set; }
+        [Newtonsoft.Json.JsonProperty("maxLength", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long? MaxLength { get; set; }
     
         /// <summary>The pattern (for strings).</summary>
         [Newtonsoft.Json.JsonProperty("pattern", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

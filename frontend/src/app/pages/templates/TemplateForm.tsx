@@ -5,9 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader } from '@app/framework';
+import { FormError, Forms, Loader, Types } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
+import { CHANNELS } from '@app/shared/utils/model';
 import { upsertTemplate, useApp, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
@@ -83,7 +84,17 @@ export const TemplateForm = (props: TemplateFormProps) => {
         dispatch(upsertTemplate({ appId, params }));
     }, [dispatch, appId]);
 
-    const initialValues: any = template || {};
+    const initialValues: any = React.useMemo(() => {
+        const result: Partial<TemplateDto> = Types.clone(template || {});
+
+        result.settings ||= {};
+
+        for (const channel of CHANNELS) {
+            result.settings[channel] ||= { send: 'Inherit' };
+        }
+
+        return result;
+    }, [template]);
 
     return (
         <Formik<TemplateDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>

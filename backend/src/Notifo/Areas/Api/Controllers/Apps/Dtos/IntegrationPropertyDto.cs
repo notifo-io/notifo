@@ -53,22 +53,22 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The min value (for numbers).
         /// </summary>
-        public int MinValue { get; set; }
+        public long? MinValue { get; set; }
 
         /// <summary>
         /// The max value (for numbers).
         /// </summary>
-        public int MaxValue { get; set; }
+        public long? MaxValue { get; set; }
 
         /// <summary>
         /// The min length (for strings).
         /// </summary>
-        public int MinLength { get; set; }
+        public long? MinLength { get; set; }
 
         /// <summary>
         /// The min length (for strings).
         /// </summary>
-        public int MaxLength { get; set; }
+        public long? MaxLength { get; set; }
 
         /// <summary>
         /// The pattern (for strings).

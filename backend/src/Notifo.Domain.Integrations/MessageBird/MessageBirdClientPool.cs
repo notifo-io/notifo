@@ -6,26 +6,27 @@
 // ==========================================================================
 
 using System;
+using System.Globalization;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
-    public sealed class MessageBirdSmsSenderPool
+    public sealed class MessageBirdClientPool
     {
-        private readonly IHttpClientFactory httpClientFactory;
         private readonly IMemoryCache memoryCache;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public MessageBirdSmsSenderPool(IHttpClientFactory httpClientFactory, IMemoryCache memoryCache)
+        public MessageBirdClientPool(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory)
         {
-            this.httpClientFactory = httpClientFactory;
-
             this.memoryCache = memoryCache;
+            this.httpClientFactory = httpClientFactory;
         }
 
-        public MessageBirdSmsSender GetServer(string accessKey, string phoneNumber)
+        public MessageBirdClient GetServer(string accessKey, long phoneNumber)
         {
             var cacheKey = $"MessageBirdSmsSender_{accessKey}_{phoneNumber}";
 
@@ -36,11 +37,11 @@ namespace Notifo.Domain.Integrations.MessageBird
                 var options = Options.Create(new MessageBirdOptions
                 {
                     AccessKey = accessKey,
-                    PhoneNumber = phoneNumber,
+                    PhoneNumber = phoneNumber.ToString(CultureInfo.InvariantCulture),
                     PhoneNumbers = null
                 });
 
-                var sender = new MessageBirdSmsSender(new MessageBirdClient(httpClientFactory, options));
+                var sender = new MessageBirdClient(httpClientFactory, options);
 
                 return sender;
             });

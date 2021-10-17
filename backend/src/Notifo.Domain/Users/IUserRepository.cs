@@ -27,6 +27,9 @@ namespace Notifo.Domain.Users
         Task<(User? User, string? Etag)> GetAsync(string appId, string id,
             CancellationToken ct = default);
 
+        Task<(User? User, string? Etag)> GetByTelegramUsernameAsync(string appId, string username,
+            CancellationToken ct = default);
+
         Task UpsertAsync(User user, string? oldEtag = null,
             CancellationToken ct = default);
 

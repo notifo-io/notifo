@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMySmsChannel(this IServiceCollection services)
         {
             services.AddSingletonAs<SmsChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<SmsJob>>();
+                .As<ICommunicationChannel>().As<IScheduleHandler<SmsJob>>().As<ISmsCallback>();
 
             services.AddSingletonAs<SmsFormatter>()
                 .As<ISmsFormatter>().As<IChannelTemplateFactory<SmsTemplate>>();

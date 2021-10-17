@@ -7,16 +7,12 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Apps;
 
 namespace Notifo.Domain.Channels.Sms
 {
-    public interface ISmsSender
+    public interface ISmsCallback
     {
-        Task<SmsResult> SendAsync(App app, string to, string body, string? token = null,
-            CancellationToken ct = default);
-
-        Task HandleCallbackAsync(App app, HttpContext httpContext);
+        Task HandleCallbackAsync(SmsResponse response,
+            CancellationToken ct);
     }
 }

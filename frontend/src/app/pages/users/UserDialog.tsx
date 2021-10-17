@@ -5,9 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader } from '@app/framework';
+import { FormError, Forms, Loader, Types } from '@app/framework';
 import { UpsertUserDto, UserDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
+import { CHANNELS } from '@app/shared/utils/model';
 import { upsertUser, useApp, useCore, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import { Formik } from 'formik';
@@ -58,7 +59,17 @@ export const UserDialog = (props: UserDialogProps) => {
         dispatch(upsertUser({ appId, params }));
     }, [dispatch, appId]);
 
-    const initialValues: any = user || {};
+    const initialValues: any = React.useMemo(() => {
+        const result: Partial<UserDto> = Types.clone(user || {});
+
+        result.settings ||= {};
+
+        for (const channel of CHANNELS) {
+            result.settings[channel] ||= { send: 'Inherit' };
+        }
+
+        return result;
+    }, [user]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm}>
@@ -93,6 +104,12 @@ export const UserDialog = (props: UserDialogProps) => {
 
                                     <Forms.Text name='threemaId'
                                         label={texts.common.threemaId} />
+
+                                    <Forms.Text name='telegramUsername'
+                                        label={texts.common.telegramUsername} />
+
+                                    <Forms.Text name='telegramChatId'
+                                        label={texts.common.telegramChatId} />
 
                                     <Forms.Select name='preferredLanguage' options={coreLanguages}
                                         label={texts.common.language} />

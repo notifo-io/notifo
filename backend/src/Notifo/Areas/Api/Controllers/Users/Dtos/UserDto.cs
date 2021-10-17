@@ -49,6 +49,16 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public string? ThreemaId { get; set; }
 
         /// <summary>
+        /// The telegram username.
+        /// </summary>
+        public string? TelegramUsername { get; set; }
+
+        /// <summary>
+        /// The telegram chat ID.
+        /// </summary>
+        public string? TelegramChatId { get; set; }
+
+        /// <summary>
         /// The preferred language of the user.
         /// </summary>
         public string? PreferredLanguage { get; set; }

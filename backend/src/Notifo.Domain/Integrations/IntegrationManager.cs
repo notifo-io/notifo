@@ -22,19 +22,19 @@ namespace Notifo.Domain.Integrations
 {
     public sealed class IntegrationManager : IIntegrationManager, IInitializable
     {
-        private readonly IEnumerable<IIntegration> integrations;
+        private readonly IEnumerable<IIntegration> appIntegrations;
         private readonly IAppStore appStore;
         private readonly ISemanticLog log;
         private CompletionTimer timer;
 
         public IEnumerable<IntegrationDefinition> Definitions
         {
-            get => integrations.Select(x => x.Definition);
+            get => appIntegrations.Select(x => x.Definition);
         }
 
-        public IntegrationManager(IEnumerable<IIntegration> integrations, IAppStore appStore, ISemanticLog log)
+        public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore, ISemanticLog log)
         {
-            this.integrations = integrations;
+            this.appIntegrations = appIntegrations;
             this.appStore = appStore;
 
             this.log = log;
@@ -54,9 +54,10 @@ namespace Notifo.Domain.Integrations
             return timer.StopAsync();
         }
 
-        public Task ValidateAsync(ConfiguredIntegration configured)
+        public Task ValidateAsync(ConfiguredIntegration configured,
+            CancellationToken ct = default)
         {
-            var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+            var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration == null)
             {
@@ -85,9 +86,10 @@ namespace Notifo.Domain.Integrations
             return Task.CompletedTask;
         }
 
-        public Task HandleConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous)
+        public Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+            CancellationToken ct = default)
         {
-            var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+            var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration == null)
             {
@@ -96,14 +98,29 @@ namespace Notifo.Domain.Integrations
                 throw new ValidationException(error);
             }
 
-            return integration.OnConfiguredAsync(configured, previous);
+            return integration.OnConfiguredAsync(app, id, configured, previous, ct);
         }
 
-        public bool IsConfigured<T>(App app, bool test)
+        public Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+            CancellationToken ct = default)
         {
-            foreach (var (_, configured, integration) in GetIntegrations(app, test))
+            var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+
+            if (integration == null)
             {
-                if (integration.CanCreate(typeof(T), configured))
+                var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
+
+                throw new ValidationException(error);
+            }
+
+            return integration.OnRemovedAsync(app, id, configured, ct);
+        }
+
+        public bool IsConfigured<T>(App app, bool? test = null)
+        {
+            foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
+            {
+                if (integration.CanCreate(typeof(T), actualId, configured))
                 {
                     return true;
                 }
@@ -112,11 +129,11 @@ namespace Notifo.Domain.Integrations
             return false;
         }
 
-        public T? Resolve<T>(string id, App app, bool test) where T : class
+        public T? Resolve<T>(string id, App app, bool? test = null) where T : class
         {
-            foreach (var (currentId, configured, integration) in GetIntegrations(app, test))
+            foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
             {
-                if (currentId == id && integration.Create(typeof(T), configured) is T created)
+                if (IsMatch(id, actualId) && integration.Create(typeof(T), actualId, configured) is T created)
                 {
                     return created;
                 }
@@ -125,35 +142,35 @@ namespace Notifo.Domain.Integrations
             return default;
         }
 
-        public IEnumerable<(string, T)> Resolve<T>(App app, bool test) where T : class
+        public IEnumerable<(string, T)> Resolve<T>(App app, bool? test = null) where T : class
         {
-            foreach (var (id, configured, integration) in GetIntegrations(app, test))
+            foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
             {
-                if (integration.Create(typeof(T), configured) is T created)
+                if (integration.Create(typeof(T), actualId, configured) is T created)
                 {
-                    yield return (id, created);
+                    yield return (actualId, created);
                 }
             }
 
             yield break;
         }
 
-        private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, bool test)
+        private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, bool? test)
         {
             var configureds = app.Integrations;
 
-            foreach (var (id, configured) in configureds)
+            foreach (var (actualId, configured) in configureds)
             {
                 if (!IsReady(configured) || !IsMatchingTest(configured, test))
                 {
                     continue;
                 }
 
-                var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+                var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
                 if (integration != null)
                 {
-                    yield return (id, configured, integration);
+                    yield return (actualId, configured, integration);
                 }
             }
         }
@@ -163,9 +180,14 @@ namespace Notifo.Domain.Integrations
             return configured.Enabled && configured.Status == IntegrationStatus.Verified;
         }
 
-        private static bool IsMatchingTest(ConfiguredIntegration configured, bool test)
+        private static bool IsMatchingTest(ConfiguredIntegration configured, bool? test)
         {
-            return configured.Test == null || configured.Test.Value == test;
+            return test == null || configured.Test == null || configured.Test.Value == test;
+        }
+
+        private static bool IsMatch(string id, string actualId)
+        {
+            return actualId == id;
         }
 
         public async Task CheckAsync(
@@ -193,7 +215,7 @@ namespace Notifo.Domain.Integrations
                             continue;
                         }
 
-                        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+                        var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
                         if (integration == null)
                         {
@@ -201,7 +223,16 @@ namespace Notifo.Domain.Integrations
                             continue;
                         }
 
-                        await integration.CheckStatusAsync(configured);
+                        try
+                        {
+                            await integration.CheckStatusAsync(app, id, configured, ct);
+                        }
+                        catch (Exception ex)
+                        {
+                            log.LogError(ex, w => w
+                                .WriteProperty("action", "CheckIntegrations")
+                                .WriteProperty("status", "Failed"));
+                        }
 
                         if (status != configured.Status)
                         {

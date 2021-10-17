@@ -123,6 +123,7 @@ namespace Notifo
             services.IntegrateMailjet();
             services.IntegrateMessageBird(config);
             services.IntegrateSmtp();
+            services.IntegrateTelegram();
             services.IntegrateThreema();
 
             services.AddInitializer();

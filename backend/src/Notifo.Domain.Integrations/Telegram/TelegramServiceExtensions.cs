@@ -6,16 +6,19 @@
 // ==========================================================================
 
 using Notifo.Domain.Integrations;
-using Notifo.Domain.Integrations.Threema;
+using Notifo.Domain.Integrations.Telegram;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class MessagingServiceExtensions
+    public static class TelegramServiceExtensions
     {
-        public static void IntegrateThreema(this IServiceCollection services)
+        public static void IntegrateTelegram(this IServiceCollection services)
         {
-            services.AddSingletonAs<ThreemaSimpleIntegration>()
+            services.AddSingletonAs<TelegramIntegration>()
                 .As<IIntegration>();
+
+            services.AddSingletonAs<TelegramBotClientPool>()
+                .AsSelf();
         }
     }
 }

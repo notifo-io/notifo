@@ -42,7 +42,7 @@ namespace Notifo.Identity.MongoDb
         }
 
         protected override Task SetupCollectionAsync(IMongoCollection<IdentityRole> collection,
-            CancellationToken ct)
+            CancellationToken ct = default)
         {
             return collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<IdentityRole>(

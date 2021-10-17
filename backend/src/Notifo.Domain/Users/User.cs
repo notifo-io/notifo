@@ -29,6 +29,10 @@ namespace Notifo.Domain.Users
 
         public string ThreemaId { get; set; } = string.Empty;
 
+        public string TelegramUsername { get; set; } = string.Empty;
+
+        public string TelegramChatId { get; set; } = string.Empty;
+
         public string PreferredLanguage { get; set; } = "en";
 
         public string PreferredTimezone { get; set; } = "UTC";

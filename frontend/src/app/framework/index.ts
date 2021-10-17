@@ -12,6 +12,7 @@ export * from './react/ApiValue';
 export * from './react/ClickOutside';
 export * from './react/Confirm';
 export * from './react/DropZone';
+export * from './react/ErrorBoundary';
 export * from './react/FormatDate';
 export * from './react/FormControlError';
 export * from './react/FormError';

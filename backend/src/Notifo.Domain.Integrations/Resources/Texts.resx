@@ -249,6 +249,26 @@
   <data name="SMTP_UsernameLabel" xml:space="preserve">
     <value>Username</value>
   </data>
+  <data name="Telegram_AccessKeyLabel" xml:space="preserve">
+    <value>Access Key</value>
+  </data>
+  <data name="Telegram_Description" xml:space="preserve">
+    <value>Send messages using Telegram.</value>
+  </data>
+  <data name="Telegram_Name" xml:space="preserve">
+    <value>Telegram</value>
+  </data>
+  <data name="Telegram_UserLinked" xml:space="preserve">
+    <value>We have found your user. You will receive notifications now.</value>
+  </data>
+  <data name="Telegram_UserNotFound" xml:space="preserve">
+    <value>We cannot find your user. Please create a username and configure the username in your {0} account.
+
+When you have done this send me an /update command.</value>
+  </data>
+  <data name="Telegram_WelcomeMessage" xml:space="preserve">
+    <value>Welcome to the {0} bot. I will send you your notifications.</value>
+  </data>
   <data name="ThreemaSimple_ApiIdentityLabel" xml:space="preserve">
     <value>API Identity</value>
   </data>
