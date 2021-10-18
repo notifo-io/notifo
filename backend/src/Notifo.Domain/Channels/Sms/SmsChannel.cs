@@ -91,14 +91,14 @@ namespace Notifo.Domain.Channels.Sms
 
         private async Task UpdateAsync(SmsResponse response, UserNotification notification)
         {
-            var phoneNumber = response.Recipient;
+            var phoneNumber = response.ReferenceNumber;
 
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
                 return;
             }
 
-            if (channel.Status.TryGetValue(response.Recipient, out var status) && status.Status == ProcessStatus.Attempt)
+            if (channel.Status.TryGetValue(response.ReferenceNumber, out var status) && status.Status == ProcessStatus.Attempt)
             {
                 switch (response.Status)
                 {

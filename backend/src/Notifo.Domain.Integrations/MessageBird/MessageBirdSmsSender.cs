@@ -64,7 +64,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                     {
                         Status = smsResult,
                         Reference = status.Reference,
-                        Recipient = status.Recipient
+                        ReferenceNumber = status.Recipient
                     };
 
                     await smsCallback.HandleCallbackAsync(response, httpContext.RequestAborted);
@@ -72,12 +72,12 @@ namespace Notifo.Domain.Integrations.MessageBird
             }
         }
 
-        public async Task<SmsResult> SendAsync(App app, string to, string body, string? token = null,
+        public async Task<SmsResult> SendAsync(App app, string to, string body, string reference,
             CancellationToken ct = default)
         {
             try
             {
-                var sms = new MessageBirdSmsMessage(to, body, token, smsUrl.SmsWebhookUrl(app.Id, integrationId));
+                var sms = new MessageBirdSmsMessage(to, body, reference, smsUrl.SmsWebhookUrl(app.Id, integrationId));
 
                 var response = await messageBirdClient.SendSmsAsync(sms, ct);
 

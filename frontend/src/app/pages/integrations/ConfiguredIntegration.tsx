@@ -85,7 +85,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                             {properties.filter(x => !!x.value).map(property => (
                                 <div key={property.label} className='mt-2'>
                                     <small>
-                                        <strong>{property.label}</strong>:&nbsp;{property.value}
+                                        <strong>{property.label}</strong><br />{property.value}
                                     </small>
                                 </div>
                             ))}

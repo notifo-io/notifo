@@ -5,10 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
+
 namespace Notifo.Domain.Channels.Sms
 {
     public interface ISmsUrl
     {
-        string SmsWebhookUrl(string appId, string integrationId);
+        string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
     }
 }

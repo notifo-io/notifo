@@ -547,5 +547,77 @@ namespace Notifo.Domain.Integrations.Resources {
                 return ResourceManager.GetString("ThreemaSimple_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Account SID.
+        /// </summary>
+        internal static string Twilio_AccountSidLabel {
+            get {
+                return ResourceManager.GetString("Twilio_AccountSidLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auth Token.
+        /// </summary>
+        internal static string Twilio_AuthTokenLabel {
+            get {
+                return ResourceManager.GetString("Twilio_AuthTokenLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Twilio integration for sending SMS messages..
+        /// </summary>
+        internal static string Twilio_Description {
+            get {
+                return ResourceManager.GetString("Twilio_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send sms to &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string Twilio_Error {
+            get {
+                return ResourceManager.GetString("Twilio_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid config. Cannot authenticate or find phone number..
+        /// </summary>
+        internal static string Twilio_ErrorInvalidConfig {
+            get {
+                return ResourceManager.GetString("Twilio_ErrorInvalidConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send sms to &apos;{0}&apos;..
+        /// </summary>
+        internal static string Twilio_ErrorUnknown {
+            get {
+                return ResourceManager.GetString("Twilio_ErrorUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Twilio.
+        /// </summary>
+        internal static string Twilio_Name {
+            get {
+                return ResourceManager.GetString("Twilio_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone Number.
+        /// </summary>
+        internal static string Twilio_PhoneNumberLabel {
+            get {
+                return ResourceManager.GetString("Twilio_PhoneNumberLabel", resourceCulture);
+            }
+        }
     }
 }

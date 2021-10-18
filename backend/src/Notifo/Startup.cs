@@ -125,6 +125,7 @@ namespace Notifo
             services.IntegrateSmtp();
             services.IntegrateTelegram();
             services.IntegrateThreema();
+            services.IntegrateTwilio();
 
             services.AddInitializer();
         }

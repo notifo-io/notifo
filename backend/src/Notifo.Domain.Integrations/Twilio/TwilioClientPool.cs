@@ -6,25 +6,26 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Caching.Memory;
+using Twilio.Clients;
 
-namespace Notifo.Domain.Integrations.Smtp
+namespace Notifo.Domain.Integrations.Twilio
 {
-    public sealed class SmtpEmailServerPool : CachePool<SmtpEmailServer>
+    public sealed class TwilioClientPool : CachePool<ITwilioRestClient>
     {
-        public SmtpEmailServerPool(IMemoryCache memoryCache)
+        public TwilioClientPool(IMemoryCache memoryCache)
             : base(memoryCache)
         {
         }
 
-        public SmtpEmailServer GetServer(SmtpOptions options)
+        public ITwilioRestClient GetServer(string username, string password)
         {
-            var cacheKey = $"SMTPServer_{options.Host}_{options.Username}_{options.Password}_{options.Host}";
+            var cacheKey = $"TwilioRestClient_{username}_{password}";
 
             var found = GetOrCreate(cacheKey, () =>
             {
-                var sender = new SmtpEmailServer(options);
+                var client = new TwilioRestClient(username, password);
 
-                return sender;
+                return client;
             });
 
             return found;

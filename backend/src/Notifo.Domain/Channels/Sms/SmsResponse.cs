@@ -9,7 +9,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public struct SmsResponse
     {
-        public string Recipient { get; init; }
+        public string ReferenceNumber { get; init; }
 
         public string Reference { get; init; }
 

@@ -31,6 +31,10 @@
             width: 100%;
         }
     }
+
+    strong {
+        white-space: nowrap;
+    }
 }
 
 .integration-dialog {
