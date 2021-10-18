@@ -35,23 +35,30 @@ namespace Microsoft.Extensions.DependencyInjection
                 },
                 ["GoogleCloud"] = () =>
                 {
-                    var options = config.GetSection("assetStore:googleCloud").Get<GoogleCloudAssetOptions>();
+                    var options = new GoogleCloudAssetOptions
+                    {
+                        BucketName = config.GetRequiredValue("assetStore:googleCloud:bucket")
+                    };
 
                     services.AddSingletonAs(c => new GoogleCloudAssetStore(options))
                         .As<IAssetStore>();
                 },
                 ["AzureBlob"] = () =>
                 {
-                    var options = config.GetSection("assetStore:azureBlob").Get<AzureBlobAssetOptions>();
+                    var options = new AzureBlobAssetOptions
+                    {
+                        ConnectionString = config.GetRequiredValue("assetStore:azureBlob:connectionString"),
+                        ContainerName = config.GetRequiredValue("assetStore:azureBlob:containerName")
+                    };
 
                     services.AddSingletonAs(c => new AzureBlobAssetStore(options))
                         .As<IAssetStore>();
                 },
                 ["AmazonS3"] = () =>
                 {
-                    var options = config.GetSection("assetStore:amazonS3").Get<AmazonS3AssetOptions>();
+                    var amazonS3Options = config.GetSection("assetStore:amazonS3").Get<AmazonS3AssetOptions>();
 
-                    services.AddSingletonAs(c => new AmazonS3AssetStore(options))
+                    services.AddSingletonAs(c => new AmazonS3AssetStore(amazonS3Options))
                         .As<IAssetStore>();
                 },
                 ["MongoDb"] = () =>
@@ -73,13 +80,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 },
                 ["Ftp"] = () =>
                 {
-                    var options = config.GetSection("assetStore:ftp").Get<FTPAssetOptions>();
-
                     var serverHost = config.GetRequiredValue("assetStore:ftp:serverHost");
                     var serverPort = config.GetOptionalValue<int>("assetStore:ftp:serverPort", 21);
 
                     var username = config.GetRequiredValue("assetStore:ftp:username");
                     var password = config.GetRequiredValue("assetStore:ftp:password");
+
+                    var options = new FTPAssetOptions
+                    {
+                        Path = config.GetOptionalValue("assetStore:ftp:path", "/")
+                    };
 
                     services.AddSingletonAs(c =>
                     {
