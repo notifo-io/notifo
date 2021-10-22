@@ -135,17 +135,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
                 return;
             }
 
-            foreach (var email in fromEmails)
-            {
-                var key = StoreKey(email);
-
-                if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), app.Id, ct) != app.Id)
-                {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.AmazonSES_ReservedEmailAddress, email);
-
-                    throw new ValidationException(error);
-                }
-            }
+            // Ensure that the email address is not used by another app.
+            await ValidateEmailAddressesAsync(app, fromEmails, ct);
 
             var previousEmails = GetEmailAddresses(previous).ToList();
 
@@ -154,10 +145,12 @@ namespace Notifo.Domain.Integrations.AmazonSES
                 return;
             }
 
+            // Remove unused email addresses to make them available for other apps.
             await CleanEmailsAsync(previousEmails.Except(fromEmails), ct);
 
             var unconfirmed = await GetUnconfirmedAsync(fromEmails, ct);
 
+            // If all email addresses are already confirmed, we can use the integration.
             if (unconfirmed.Count == 0)
             {
                 configured.Status = IntegrationStatus.Verified;
@@ -175,23 +168,31 @@ namespace Notifo.Domain.Integrations.AmazonSES
         public async Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
             CancellationToken ct)
         {
-            var fromEmails = GetEmailAddresses(configured).ToList();
-
-            if (fromEmails.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var email in fromEmails)
-            {
-                await keyValueStore.RemvoveAsync(StoreKey(email), ct);
-            }
+            // Remove unused email addresses to make them available for other apps.
+            await CleanEmailsAsync(GetEmailAddresses(configured), ct);
         }
 
         public async Task CheckStatusAsync(ConfiguredIntegration configured,
             CancellationToken ct)
         {
+            // Check the status every few minutes to update the integration.
             configured.Status = await GetStatusAsync(GetEmailAddresses(configured).ToList(), ct);
+        }
+
+        private async Task ValidateEmailAddressesAsync(App app, List<string> fromEmails,
+            CancellationToken ct)
+        {
+            foreach (var email in fromEmails)
+            {
+                var key = StoreKey(email);
+
+                if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), app.Id, ct) != app.Id)
+                {
+                    var error = string.Format(CultureInfo.InvariantCulture, Texts.AmazonSES_ReservedEmailAddress, email);
+
+                    throw new ValidationException(error);
+                }
+            }
         }
 
         private async Task CleanEmailsAsync(IEnumerable<string> emails,
