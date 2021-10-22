@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using NodaTime;
-using Notifo.Domain.Events;
 using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Domain.UserEvents
@@ -41,7 +40,7 @@ namespace Notifo.Domain.UserEvents
 
         public NotificationFormatting<LocalizedText> Formatting { get; set; }
 
-        public EventProperties Properties { get; set; }
+        public NotificationProperties Properties { get; set; }
 
         public Scheduling? Scheduling { get; set; }
 

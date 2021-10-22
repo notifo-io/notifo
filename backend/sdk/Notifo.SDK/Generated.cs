@@ -10722,6 +10722,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("template", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Template { get; set; }
     
+        /// <summary>Additional properties.</summary>
+        [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public NotificationProperties Properties { get; set; }
+    
     
     }
     
@@ -10739,6 +10743,12 @@ namespace Notifo.SDK
     
         [System.Runtime.Serialization.EnumMember(Value = @"NotAllowed")]
         NotAllowed = 3,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class NotificationProperties : System.Collections.Generic.Dictionary<string, string>
+    {
     
     }
     
@@ -11797,7 +11807,7 @@ namespace Notifo.SDK
     
         /// <summary>User defined properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public EventProperties Properties { get; set; }
+        public NotificationProperties Properties { get; set; }
     
         /// <summary>The scheduling options.</summary>
         [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -11815,12 +11825,6 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("timeToLiveInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? TimeToLiveInSeconds { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class EventProperties : System.Collections.Generic.Dictionary<string, string>
-    {
     
     }
     

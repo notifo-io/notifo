@@ -56,7 +56,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// User defined properties.
         /// </summary>
-        public EventProperties? Properties { get; set; }
+        public NotificationProperties? Properties { get; set; }
 
         /// <summary>
         /// The scheduling options.
@@ -111,7 +111,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
 
             if (result.Properties == null)
             {
-                result.Properties = new EventProperties();
+                result.Properties = new NotificationProperties();
             }
 
             if (topic != null)

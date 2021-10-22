@@ -11,7 +11,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.ObjectPool;
 using Notifo.Domain.Resources;
-using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 
@@ -30,7 +29,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public Dictionary<string, string> ItemTemplates { get; set; } = new Dictionary<string, string>();
 
-        public string Format(IEnumerable<BaseUserNotification> notifications, Dictionary<string, string?> properties, bool asHtml, IImageFormatter imageFormatter)
+        public string Format(List<EmailJob> jobs, Dictionary<string, string?> properties, bool asHtml, IImageFormatter imageFormatter)
         {
             var notificationProperties = new Dictionary<string, string?>();
 
@@ -39,13 +38,15 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 var text = Text.Format(properties);
 
-                notifications.Foreach((notification, index) =>
+                jobs.Foreach((job, index) =>
                 {
+                    var notification = job.Notification;
+
                     var formatting = notification.Formatting;
 
                     var inner = string.Empty;
 
-                    var hasButton = !string.IsNullOrWhiteSpace(formatting.ConfirmText) && !string.IsNullOrWhiteSpace(notification.ConfirmUrl);
+                    var hasButton = !string.IsNullOrWhiteSpace(formatting.ConfirmText) && !string.IsNullOrWhiteSpace(job.Notification.ConfirmUrl);
                     var hasImage = !string.IsNullOrWhiteSpace(formatting.ImageSmall) || !string.IsNullOrWhiteSpace(formatting.ImageLarge);
 
                     if (hasButton && hasImage)

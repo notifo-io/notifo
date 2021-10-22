@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
@@ -30,8 +31,7 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_simple_template()
         {
-            var notifications = new List<UserNotification>
-            {
+            var jobs = ToJobs(
                 new UserNotification
                 {
                     UserLanguage = "en",
@@ -42,15 +42,14 @@ namespace Notifo.Domain.Channels.Email
                         ImageSmall = string.Empty,
                         ImageLarge = string.Empty
                     }
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications,  _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs,  _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.Formatting.Body, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, html, StringComparison.OrdinalIgnoreCase);
@@ -66,9 +65,8 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_template_with_link()
         {
-            var notifications = new List<UserNotification>
-            {
-                new UserNotification
+            var jobs = ToJobs(
+                    new UserNotification
                 {
                     UserLanguage = "en",
                     Formatting = new NotificationFormatting<string>
@@ -80,15 +78,14 @@ namespace Notifo.Domain.Channels.Email
                         LinkUrl = "https://app.notifo.io/custom/link",
                         LinkText = "Go to link"
                     }
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.Formatting.Body, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, html, StringComparison.OrdinalIgnoreCase);
@@ -108,8 +105,7 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_template_with_image()
         {
-            var notifications = new List<UserNotification>
-            {
+            var jobs = ToJobs(
                 new UserNotification
                 {
                     UserLanguage = "en",
@@ -120,15 +116,14 @@ namespace Notifo.Domain.Channels.Email
                         ImageSmall = "https://via.placeholder.com/100",
                         ImageLarge = "https://via.placeholder.com/600"
                     }
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.Formatting.ImageSmall, html, StringComparison.OrdinalIgnoreCase);
 
@@ -144,8 +139,7 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_template_with_tracking_url()
         {
-            var notifications = new List<UserNotification>
-            {
+            var jobs = ToJobs(
                 new UserNotification
                 {
                     UserLanguage = "en",
@@ -158,15 +152,14 @@ namespace Notifo.Domain.Channels.Email
                         ConfirmText = "Got It!"
                     },
                     TrackSeenUrl = "https://track.notifo.com"
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.TrackSeenUrl, html, StringComparison.OrdinalIgnoreCase);
 
@@ -182,8 +175,7 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_template_with_button()
         {
-            var notifications = new List<UserNotification>
-            {
+            var jobs = ToJobs(
                 new UserNotification
                 {
                     UserLanguage = "en",
@@ -197,15 +189,14 @@ namespace Notifo.Domain.Channels.Email
                         ConfirmMode = ConfirmMode.Explicit
                     },
                     ConfirmUrl = "https://confirm.notifo.com"
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.Formatting.ConfirmText, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.ConfirmUrl, html, StringComparison.OrdinalIgnoreCase);
@@ -222,8 +213,7 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_template_with_button_and_image()
         {
-            var notifications = new List<UserNotification>
-            {
+            var jobs = ToJobs(
                 new UserNotification
                 {
                     UserLanguage = "en",
@@ -237,15 +227,14 @@ namespace Notifo.Domain.Channels.Email
                         ConfirmMode = ConfirmMode.Explicit
                     },
                     ConfirmUrl = "https://confirm.notifo.com"
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.Formatting.ImageSmall, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.ConfirmText, html, StringComparison.OrdinalIgnoreCase);
@@ -263,8 +252,7 @@ namespace Notifo.Domain.Channels.Email
         [Fact]
         public async Task Should_generate_multi_template()
         {
-            var notifications = new List<UserNotification>
-            {
+            var jobs = ToJobs(
                 new UserNotification
                 {
                     Formatting = new NotificationFormatting<string>
@@ -282,15 +270,14 @@ namespace Notifo.Domain.Channels.Email
                         Subject = "subject2"
                     },
                     UserLanguage = "en"
-                }
-            };
+                });
 
-            var email = await _.EmailFormatter.FormatAsync(notifications, _.EmailTemplate, _.App, new User());
+            var email = await _.EmailFormatter.FormatAsync(jobs, _.EmailTemplate, _.App, new User());
 
             var html = email.BodyHtml;
             var text = email.BodyText;
 
-            foreach (var notification in notifications)
+            foreach (var notification in jobs.Select(x => x.Notification))
             {
                 Assert.Contains(notification.Formatting.Body, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, html, StringComparison.OrdinalIgnoreCase);
@@ -309,6 +296,11 @@ namespace Notifo.Domain.Channels.Email
         {
             Assert.DoesNotContain("<!--", text, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("-->", text, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static List<EmailJob> ToJobs(params UserNotification[] notifications)
+        {
+            return notifications.Select(x => new EmailJob(x, new NotificationSetting(), "john.doe@email.com")).ToList();
         }
     }
 }

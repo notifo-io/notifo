@@ -83,7 +83,7 @@ namespace Notifo.Domain.Channels.Email
                 return Task.CompletedTask;
             }
 
-            var job = new EmailJob(notification, setting.Template, configuration);
+            var job = new EmailJob(notification, setting, configuration);
 
             return userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
@@ -183,11 +183,16 @@ namespace Notifo.Domain.Channels.Email
 
                         if (skip != null)
                         {
-                            await SkipAsync(jobs, commonEmail, skip);
+                            await SkipAsync(jobs, commonEmail, skip!);
                             return;
                         }
 
-                        message = await emailFormatter.FormatAsync(jobs.Select(x => x.Notification), template!, app, user, ct);
+                        if (template == null)
+                        {
+                            return;
+                        }
+
+                        message = await emailFormatter.FormatAsync(jobs, template, app, user, ct);
                     }
 
                     await SendCoreAsync(message, app.Id, senders, ct);

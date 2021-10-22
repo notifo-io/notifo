@@ -4841,9 +4841,16 @@ export interface NotificationSettingDto {
     delayInSeconds?: number | undefined;
     /** The template if the channel supports it. */
     template?: string | undefined;
+    /** Additional properties. */
+    properties?: NotificationProperties | undefined;
 }
 
 export type NotificationSend = "Inherit" | "Send" | "NotSending" | "NotAllowed";
+
+export interface NotificationProperties {
+
+    [key: string]: string | any; 
+}
 
 export interface UpdateProfileDto {
     /** The full name of the user. */
@@ -5290,7 +5297,7 @@ export interface PublishDto {
     /** The notification settings. */
     settings?: { [key: string]: NotificationSettingDto; } | undefined;
     /** User defined properties. */
-    properties?: EventProperties | undefined;
+    properties?: NotificationProperties | undefined;
     /** The scheduling options. */
     scheduling?: SchedulingDto | undefined;
     /** True when silent. */
@@ -5299,11 +5306,6 @@ export interface PublishDto {
     test?: boolean;
     /** The time to live in seconds. */
     timeToLiveInSeconds?: number | undefined;
-}
-
-export interface EventProperties {
-
-    [key: string]: string | any; 
 }
 
 export interface EmailPreviewDto {

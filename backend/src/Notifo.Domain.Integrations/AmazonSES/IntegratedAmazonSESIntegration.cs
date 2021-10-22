@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,16 +15,21 @@ using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Microsoft.Extensions.Options;
+using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Integrations.Smtp;
+using Notifo.Infrastructure;
+using Notifo.Infrastructure.KeyValueStore;
+using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.AmazonSES
 {
     public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable
     {
+        private readonly IKeyValueStore keyValueStore;
         private readonly AmazonSESOptions options;
         private readonly SmtpEmailServer smtpEmailServer;
         private AmazonSimpleEmailServiceClient amazonSES;
@@ -31,7 +37,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
         {
             Pattern = Patterns.Email,
-            EditorLabel = Texts.AmazonSES_FromEmailLabel,
+            EditorLabel = Texts.Email_FromEmailLabel,
             EditorDescription = Texts.Email_FromEmailDescription,
             IsRequired = true,
             Summary = true
@@ -39,9 +45,16 @@ namespace Notifo.Domain.Integrations.AmazonSES
 
         private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
         {
-            EditorLabel = Texts.AmazonSES_FromNameLabel,
+            EditorLabel = Texts.Email_FromNameLabel,
             EditorDescription = Texts.Email_FromNameDescription,
             IsRequired = true
+        };
+
+        private static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", IntegrationPropertyType.MultilineText)
+        {
+            EditorLabel = Texts.Email_AdditionalFromEmailsLabel,
+            EditorDescription = Texts.Email_AdditionalFromEmailsDescription,
+            IsRequired = false
         };
 
         public IntegrationDefinition Definition { get; } =
@@ -52,7 +65,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
                 new List<IntegrationProperty>
                 {
                     FromEmailProperty,
-                    FromNameProperty
+                    FromNameProperty,
+                    AdditionalFromEmails
                 },
                 new HashSet<string>
                 {
@@ -62,11 +76,13 @@ namespace Notifo.Domain.Integrations.AmazonSES
                 Description = Texts.AmazonSES_Description
             };
 
-        public IntegratedAmazonSESIntegration(IOptions<AmazonSESOptions> options)
+        public IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> options)
         {
             this.options = options.Value;
 
             smtpEmailServer = new SmtpEmailServer(options.Value);
+
+            this.keyValueStore = keyValueStore;
         }
 
         public async Task InitializeAsync(
@@ -109,30 +125,87 @@ namespace Notifo.Domain.Integrations.AmazonSES
             return null;
         }
 
-        public async Task OnConfiguredAsync(ConfiguredIntegration configured, ConfiguredIntegration? previous)
+        public async Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+            CancellationToken ct)
         {
-            var fromEmail = FromEmailProperty.GetString(configured);
+            var fromEmails = GetEmailAddresses(configured).ToList();
 
-            if (string.IsNullOrWhiteSpace(fromEmail))
+            if (fromEmails.Count == 0)
             {
                 return;
             }
 
-            var previousEmail = (string?)null;
-
-            if (previous != null)
+            foreach (var email in fromEmails)
             {
-                previousEmail = FromEmailProperty.GetString(previous);
+                var key = StoreKey(email);
+
+                if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), app.Id, ct) != app.Id)
+                {
+                    var error = string.Format(CultureInfo.InvariantCulture, Texts.AmazonSES_ReservedEmailAddress, email);
+
+                    throw new ValidationException(error);
+                }
             }
 
-            if (string.Equals(previousEmail, fromEmail, StringComparison.OrdinalIgnoreCase))
+            var previousEmails = GetEmailAddresses(previous).ToList();
+
+            if (previousEmails.SetEquals(fromEmails, StringComparer.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            await VerifyAsync(fromEmail, default);
+            await CleanEmailsAsync(previousEmails.Except(fromEmails), ct);
 
-            configured.Status = await GetStatusAsync(fromEmail, default);
+            var unconfirmed = await GetUnconfirmedAsync(fromEmails, ct);
+
+            if (unconfirmed.Count == 0)
+            {
+                configured.Status = IntegrationStatus.Verified;
+                return;
+            }
+
+            foreach (var email in unconfirmed)
+            {
+                await VerifyAsync(email, default);
+            }
+
+            configured.Status = IntegrationStatus.Pending;
+        }
+
+        public async Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
+            CancellationToken ct)
+        {
+            var fromEmails = GetEmailAddresses(configured).ToList();
+
+            if (fromEmails.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var email in fromEmails)
+            {
+                await keyValueStore.RemvoveAsync(StoreKey(email), ct);
+            }
+        }
+
+        public async Task CheckStatusAsync(ConfiguredIntegration configured,
+            CancellationToken ct)
+        {
+            configured.Status = await GetStatusAsync(GetEmailAddresses(configured).ToList(), ct);
+        }
+
+        private async Task CleanEmailsAsync(IEnumerable<string> emails,
+            CancellationToken ct)
+        {
+            foreach (var email in emails)
+            {
+                await amazonSES.DeleteIdentityAsync(new DeleteIdentityRequest
+                {
+                    Identity = email
+                }, ct);
+
+                await keyValueStore.RemvoveAsync(StoreKey(email), ct);
+            }
         }
 
         private async Task VerifyAsync(string email,
@@ -149,31 +222,64 @@ namespace Notifo.Domain.Integrations.AmazonSES
             }, ct);
         }
 
-        public async Task CheckStatusAsync(ConfiguredIntegration configured)
-        {
-            var fromEmail = FromEmailProperty.GetString(configured);
-
-            if (string.IsNullOrWhiteSpace(fromEmail))
-            {
-                return;
-            }
-
-            configured.Status = await GetStatusAsync(fromEmail, default);
-        }
-
-        private async Task<IntegrationStatus> GetStatusAsync(string emailAddress,
+        private async Task<IntegrationStatus> GetStatusAsync(List<string> fromEmails,
             CancellationToken ct)
         {
             var request = new GetIdentityVerificationAttributesRequest
             {
-                Identities = new List<string> { emailAddress }
+                Identities = fromEmails.ToList()
             };
 
             var response = await amazonSES.GetIdentityVerificationAttributesAsync(request, ct);
 
-            var status = response.VerificationAttributes.FirstOrDefault(x => string.Equals(emailAddress, x.Key, StringComparison.OrdinalIgnoreCase));
+            var statuses = new List<IntegrationStatus>();
 
-            return MapStatus(status.Value.VerificationStatus);
+            foreach (var emailAddress in fromEmails)
+            {
+                var status = IntegrationStatus.Pending;
+
+                if (response.VerificationAttributes.TryGetValue(emailAddress, out var result))
+                {
+                    status = MapStatus(result.VerificationStatus);
+                }
+
+                if (status == IntegrationStatus.VerificationFailed)
+                {
+                    return status;
+                }
+
+                statuses.Add(status);
+            }
+
+            if (statuses.All(x => x == IntegrationStatus.Verified))
+            {
+                return IntegrationStatus.Verified;
+            }
+
+            return IntegrationStatus.Pending;
+        }
+
+        private async Task<List<string>> GetUnconfirmedAsync(List<string> fromEmails,
+            CancellationToken ct)
+        {
+            var request = new GetIdentityVerificationAttributesRequest
+            {
+                Identities = fromEmails.ToList()
+            };
+
+            var response = await amazonSES.GetIdentityVerificationAttributesAsync(request, ct);
+
+            var result = new List<string>();
+
+            foreach (var emailAddress in fromEmails)
+            {
+                if (!response.VerificationAttributes.TryGetValue(emailAddress, out var item) || item.VerificationStatus != VerificationStatus.Success)
+                {
+                    result.Add(emailAddress);
+                }
+            }
+
+            return result;
         }
 
         private static IntegrationStatus MapStatus(VerificationStatus status)
@@ -194,6 +300,50 @@ namespace Notifo.Domain.Integrations.AmazonSES
             }
 
             return IntegrationStatus.VerificationFailed;
+        }
+
+        private static IEnumerable<string> GetEmailAddresses(ConfiguredIntegration? configured)
+        {
+            if (configured == null)
+            {
+                yield break;
+            }
+
+            var hasAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var fromEmail = FromEmailProperty.GetString(configured);
+
+            if (!string.IsNullOrWhiteSpace(fromEmail))
+            {
+                if (hasAdded.Add(fromEmail))
+                {
+                    yield return fromEmail;
+                }
+            }
+
+            var additionalEmails = AdditionalFromEmails.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(additionalEmails))
+            {
+                yield break;
+            }
+
+            var emails = additionalEmails.Split(new[] { '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var email in emails)
+            {
+                var trimmed = email.Trim().ToLowerInvariant();
+
+                if (hasAdded.Add(trimmed))
+                {
+                    yield return trimmed;
+                }
+            }
+        }
+
+        private static string StoreKey(string email)
+        {
+            return $"{nameof(IntegratedAmazonSESIntegration)}_{email}";
         }
     }
 }

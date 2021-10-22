@@ -8,16 +8,16 @@
 using System;
 using System.Collections.Generic;
 
-namespace Notifo.Domain.Events
+namespace Notifo.Domain
 {
-    public sealed class EventProperties : Dictionary<string, string>
+    public sealed class NotificationProperties : Dictionary<string, string>
     {
-        public EventProperties()
+        public NotificationProperties()
             : base(StringComparer.OrdinalIgnoreCase)
         {
         }
 
-        public EventProperties(IReadOnlyDictionary<string, string> source)
+        public NotificationProperties(IReadOnlyDictionary<string, string> source)
             : base(source, StringComparer.OrdinalIgnoreCase)
         {
         }

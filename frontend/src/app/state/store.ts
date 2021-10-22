@@ -39,6 +39,7 @@ export const createAppStore = (history: History) =>
                 routerMiddleware(history),
                 Reducers.emailTemplatesMiddleware,
                 Reducers.loginMiddleware,
+                Reducers.integrationsMiddleware,
                 Reducers.mediaMiddleware,
                 Reducers.messagingTemplatesMiddleware,
                 Reducers.smsTemplatesMiddleware,

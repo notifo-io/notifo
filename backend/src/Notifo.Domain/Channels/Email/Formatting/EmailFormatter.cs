@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using Mjml.AspNetCore;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
-using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
@@ -93,31 +92,35 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return template;
         }
 
-        public async ValueTask<EmailMessage> FormatPreviewAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user,
+        public async ValueTask<EmailMessage> FormatPreviewAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user,
             CancellationToken ct = default)
         {
             await ParseAsync(template);
 
-            return FormatCore(notifications, template, app, user);
+            return FormatCore(jobs, template, app, user);
         }
 
-        public ValueTask<EmailMessage> FormatAsync(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user,
+        public ValueTask<EmailMessage> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user,
             CancellationToken ct = default)
         {
-            return new ValueTask<EmailMessage>(FormatCore(notifications, template, app, user));
+            return new ValueTask<EmailMessage>(FormatCore(jobs, template, app, user));
         }
 
-        private EmailMessage FormatCore(IEnumerable<BaseUserNotification> notifications, EmailTemplate template, App app, User user)
+        private EmailMessage FormatCore(List<EmailJob> jobs, EmailTemplate template, App app, User user)
         {
-            var properties = CreateProperties(notifications, app, user);
+            var firstJob = jobs[0];
+
+            var properties = CreateProperties(firstJob, app, user);
 
             var mailMessage = new EmailMessage
             {
                 Subject = FormatSubject(template, properties),
-                BodyHtml = FormatHtml(template, properties, notifications),
-                BodyText = FormatText(template, properties, notifications),
+                BodyHtml = FormatHtml(template, properties, jobs),
+                BodyText = FormatText(template, properties, jobs),
+                FromEmail = firstJob.FromEmail!,
+                FromName = firstJob.FromName!,
                 ToEmail = user.EmailAddress,
-                ToName = user.FullName
+                ToName = user.FullName,
             };
 
             return mailMessage;
@@ -128,7 +131,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return template.Subject.Format(properties);
         }
 
-        private string? FormatText(EmailTemplate template, Dictionary<string, string?> properties, IEnumerable<BaseUserNotification> notifications)
+        private string? FormatText(EmailTemplate template, Dictionary<string, string?> properties, List<EmailJob> jobs)
         {
             var parsed = template.ParsedBodyText;
 
@@ -137,14 +140,14 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 return null;
             }
 
-            var result = parsed.Format(notifications, properties, false, imageFormatter);
+            var result = parsed.Format(jobs, properties, false, imageFormatter);
 
-            ValidateResult(template.BodyText!, result, notifications);
+            ValidateResult(template.BodyText!, result, jobs);
 
             return result;
         }
 
-        private string? FormatHtml(EmailTemplate template, Dictionary<string, string?> properties, IEnumerable<BaseUserNotification> notifications)
+        private string? FormatHtml(EmailTemplate template, Dictionary<string, string?> properties, List<EmailJob> jobs)
         {
             var parsed = template.ParsedBodyHtml;
 
@@ -153,16 +156,16 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 return null;
             }
 
-            var result = parsed.Format(notifications, properties, true, imageFormatter);
+            var result = parsed.Format(jobs, properties, true, imageFormatter);
 
-            ValidateResult(template.BodyText!, result, notifications);
+            ValidateResult(template.BodyText!, result, jobs);
 
             return result;
         }
 
-        private static void ValidateResult(string markup, string result, IEnumerable<BaseUserNotification> notifications)
+        private static void ValidateResult(string markup, string result, List<EmailJob> jobs)
         {
-            if (notifications.Any(x => !result.Contains(x.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
+            if (jobs.Any(x => !result.Contains(x.Notification.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
             {
                 var errors = new[]
                 {
@@ -173,10 +176,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static Dictionary<string, string?> CreateProperties(IEnumerable<BaseUserNotification> notifications, App app, User user)
+        private static Dictionary<string, string?> CreateProperties(EmailJob job, App app, User user)
         {
-            var firstNotification = notifications.First();
-
             var properties = new Dictionary<string, string?>
             {
                 ["app.name"] = app.Name,
@@ -185,8 +186,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 ["user.fullName"] = user.FullName,
                 ["user.email"] = user.EmailAddress,
                 ["user.emailAddress"] = user.EmailAddress,
-                ["notification.subject"] = firstNotification.Formatting.Subject,
-                ["notification.body"] = firstNotification.Formatting.Body
+                ["notification.subject"] = job.Notification.Formatting.Subject,
+                ["notification.body"] = job.Notification.Formatting.Body
             };
 
             return properties;

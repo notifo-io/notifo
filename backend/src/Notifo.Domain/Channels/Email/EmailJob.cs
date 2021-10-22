@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Email
 {
@@ -17,20 +18,34 @@ namespace Notifo.Domain.Channels.Email
 
         public string? EmailTemplate { get; set; }
 
+        public string? FromEmail { get; set; }
+
+        public string? FromName { get; set; }
+
         public string ScheduleKey
         {
-            get => $"{Notification.AppId}_{Notification.UserId}_{Notification.UserLanguage}_{Notification.Test}_{EmailAddress}_{EmailTemplate}";
+            get => string.Join("_",
+                Notification.AppId,
+                Notification.UserId,
+                Notification.UserLanguage,
+                Notification.Test,
+                EmailAddress,
+                EmailTemplate,
+                FromEmail,
+                FromName);
         }
 
         public EmailJob()
         {
         }
 
-        public EmailJob(BaseUserNotification notification, string? emailTemplate, string emailAddress)
+        public EmailJob(BaseUserNotification notification, NotificationSetting setting, string emailAddress)
         {
-            Notification = notification;
             EmailAddress = emailAddress;
-            EmailTemplate = emailTemplate;
+            EmailTemplate = setting.Template;
+            FromEmail = setting.Properties?.GetOrDefault(nameof(FromEmail));
+            FromName = setting.Properties?.GetOrDefault(nameof(FromName));
+            Notification = notification;
         }
     }
 }

@@ -7,7 +7,6 @@
 
 using System;
 using System.Linq;
-using Notifo.Domain.Events;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
@@ -28,7 +27,7 @@ namespace Notifo.Domain
             return source.Transform(SelectText(language));
         }
 
-        public static NotificationFormatting<LocalizedText> Format(this NotificationFormatting<LocalizedText> source, EventProperties properties)
+        public static NotificationFormatting<LocalizedText> Format(this NotificationFormatting<LocalizedText> source, NotificationProperties properties)
         {
             return source.Transform(FormatText(properties));
         }
@@ -51,7 +50,7 @@ namespace Notifo.Domain
             };
         }
 
-        private static Func<LocalizedText?, LocalizedText> FormatText(EventProperties properties)
+        private static Func<LocalizedText?, LocalizedText> FormatText(NotificationProperties properties)
         {
             return text =>
             {

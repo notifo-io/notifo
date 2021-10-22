@@ -116,23 +116,40 @@ namespace Notifo.Domain.UserNotifications
         {
             if (source != null)
             {
-                foreach (var (key, value) in source)
+                foreach (var (channelName, sourceSetting) in source)
                 {
-                    if (notification.Channels.TryGetValue(key, out var channel))
+                    if (notification.Channels.TryGetValue(channelName, out var channel))
                     {
-                        if (value.Send != NotificationSend.Inherit && channel.Setting.Send != NotificationSend.NotAllowed)
+                        var setting = channel.Setting;
+
+                        if (sourceSetting.Send != NotificationSend.Inherit && setting.Send != NotificationSend.NotAllowed)
                         {
-                            channel.Setting.Send = value.Send;
+                            setting.Send = sourceSetting.Send;
                         }
 
-                        if (value.DelayInSeconds.HasValue)
+                        if (sourceSetting.DelayInSeconds.HasValue)
                         {
-                            channel.Setting.DelayInSeconds = value.DelayInSeconds;
+                            setting.DelayInSeconds = sourceSetting.DelayInSeconds;
+                        }
+
+                        if (sourceSetting.Properties?.Count > 0)
+                        {
+                            setting.Properties ??= new NotificationProperties();
+
+                            foreach (var (key, value) in sourceSetting.Properties)
+                            {
+                                setting.Properties[key] = value;
+                            }
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(sourceSetting.Template))
+                        {
+                            setting.Template = sourceSetting.Template;
                         }
                     }
                     else
                     {
-                        notification.Channels[key] = UserNotificationChannel.Create(value);
+                        notification.Channels[channelName] = UserNotificationChannel.Create(sourceSetting);
                     }
                 }
             }

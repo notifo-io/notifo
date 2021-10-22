@@ -270,7 +270,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             if (result.Properties == null)
             {
-                result.Properties = new EventProperties();
+                result.Properties = new NotificationProperties();
             }
 
             if (result.SubscriptionSettings == null)

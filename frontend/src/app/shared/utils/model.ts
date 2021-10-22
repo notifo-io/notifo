@@ -31,9 +31,9 @@ export const SEND_MODES = [{
     value: 'Send',
     label: texts.common.sendModes.send,
 }, {
-    value: 'DoNotSend',
+    value: 'NotSending',
     label: texts.common.sendModes.doNotSend,
 }, {
-    value: 'DoNotAllow',
+    value: 'NotAllowed',
     label: texts.common.sendModes.doNotAllow,
 }];

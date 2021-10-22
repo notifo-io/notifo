@@ -73,6 +73,8 @@ export const EN = {
         failed: 'Failed',
         firstSeen: 'First seen',
         formatting: 'Formatting',
+        fromEmail: 'From Email Address',
+        fromEmailName: 'From Name',
         html: 'HTML',
         id: 'Id',
         imageLarge: 'Large Image',

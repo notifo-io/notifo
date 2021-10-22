@@ -29,6 +29,11 @@ namespace Notifo.Areas.Api.Controllers
         /// </summary>
         public string? Template { get; set; }
 
+        /// <summary>
+        /// Additional properties.
+        /// </summary>
+        public NotificationProperties? Properties { get; set; }
+
         public static NotificationSettingDto FromDomainObject(NotificationSetting source)
         {
             var result = SimpleMapper.Map(source, new NotificationSettingDto());

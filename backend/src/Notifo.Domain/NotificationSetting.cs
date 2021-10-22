@@ -17,6 +17,8 @@ namespace Notifo.Domain
 
         public string? Template { get; set; }
 
+        public NotificationProperties? Properties { get; set; }
+
         public bool ShouldSend
         {
             get => Send == NotificationSend.Send;

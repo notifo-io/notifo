@@ -7,7 +7,7 @@
 
 import { ErrorDto } from '@app/framework';
 import { Clients, CreateIntegrationDto, UpdateIntegrationDto } from '@app/service';
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from '../shared';
 import { IntegrationsState } from './state';
 
@@ -30,6 +30,19 @@ export const deleteIntegration = createApiThunk('integrations/delete',
     async (arg: { appId: string; id: string }) => {
         await Clients.Apps.deleteIntegration(arg.appId, arg.id);
     });
+
+export const integrationsMiddleware: Middleware = store => next => action => {
+    const result = next(action);
+
+    if (createIntegration.fulfilled.match(action) || updateIntegration.fulfilled.match(action)) {
+        const load: any = loadIntegrations({ appId: action.meta.arg.appId });
+
+        store.dispatch(load);
+    }
+
+    return result;
+};
+
 
 const initialState: IntegrationsState = {};
 

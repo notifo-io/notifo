@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     
-    <Version>1.0.0-beta9</Version>
+    <Version>1.0.0-beta10</Version>
   </PropertyGroup>
 
   <ItemGroup>

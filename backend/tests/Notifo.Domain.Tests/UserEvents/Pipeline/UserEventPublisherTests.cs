@@ -133,7 +133,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             var @event = CreateMinimumEvent();
 
-            @event.Properties = new EventProperties();
+            @event.Properties = new NotificationProperties();
 
             var subscriptions = new[]
             {
@@ -262,7 +262,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     EventId = @event.Id,
                     EventSettings = @event.Settings,
                     Formatting = @event.Formatting!,
-                    Properties = new EventProperties(),
+                    Properties = new NotificationProperties(),
                     SubscriptionPrefix = "users/123",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
@@ -305,7 +305,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     EventId = @event.Id,
                     EventSettings = @event.Settings,
                     Formatting = @event.Formatting!,
-                    Properties = new EventProperties(),
+                    Properties = new NotificationProperties(),
                     SubscriptionPrefix = "users/all",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
@@ -317,7 +317,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     EventId = @event.Id,
                     EventSettings = @event.Settings,
                     Formatting = @event.Formatting!,
-                    Properties = new EventProperties(),
+                    Properties = new NotificationProperties(),
                     SubscriptionPrefix = "users/all",
                     SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
@@ -406,7 +406,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     EventId = @event.Id,
                     EventSettings = @event.Settings,
                     Formatting = template.Formatting.Format(@event.Properties),
-                    Properties = new EventProperties(),
+                    Properties = new NotificationProperties(),
                     Silent = true,
                     SubscriptionPrefix = subscriptions[0].TopicPrefix.ToString(),
                     SubscriptionSettings = subscriptions[0].TopicSettings,
@@ -420,7 +420,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     EventId = @event.Id,
                     EventSettings = @event.Settings,
                     Formatting = template.Formatting.Format(@event.Properties),
-                    Properties = new EventProperties(),
+                    Properties = new NotificationProperties(),
                     Silent = true,
                     SubscriptionPrefix = subscriptions[1].TopicPrefix.ToString(),
                     SubscriptionSettings = new NotificationSettings(),

@@ -5,21 +5,23 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Notifo.Domain.Apps;
-using Notifo.Domain.ChannelTemplates;
-using Notifo.Domain.Users;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Infrastructure.KeyValueStore
 {
-    public interface IEmailFormatter : IChannelTemplateFactory<EmailTemplate>
+    public interface IKeyValueStore
     {
-        ValueTask<EmailMessage> FormatPreviewAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user,
+        Task<string?> GetAsync(string key,
             CancellationToken ct = default);
 
-        ValueTask<EmailMessage> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user,
+        Task<string?> SetIfNotExistsAsync(string key, string? value,
+            CancellationToken ct = default);
+
+        Task<bool> SetAsync(string key, string? value,
+            CancellationToken ct = default);
+
+        Task<bool> RemvoveAsync(string key,
             CancellationToken ct = default);
     }
 }

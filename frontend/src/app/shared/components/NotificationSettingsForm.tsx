@@ -102,18 +102,30 @@ export module NotificationsForm {
                     label={texts.notificationSettings.delayInSeconds} />
 
                 {channel === 'sms' &&
-                    <SmsTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
-                        label={texts.common.template} />
+                    <>
+                        <SmsTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
+                            label={texts.common.template} />
+                    </>
                 }
 
                 {channel === 'email' &&
-                    <EmailTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
-                        label={texts.common.template} />
+                    <>
+                        <EmailTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
+                            label={texts.common.template} />
+
+                        <Forms.Email name={`${field}.${channel}.properties.fromEmail`} vertical={vertical}
+                            label={texts.common.fromEmail} />
+
+                        <Forms.Text name={`${field}.${channel}.properties.fromName`} vertical={vertical}
+                            label={texts.common.fromEmailName} />
+                    </>
                 }
 
                 {channel === 'webhook' &&
-                    <WebhookInput name={`${field}.${channel}.template`} vertical={vertical}
-                        label={texts.common.template} />
+                    <>
+                        <WebhookInput name={`${field}.${channel}.template`} vertical={vertical}
+                            label={texts.common.template} />
+                    </>
                 }
             </fieldset>
         );

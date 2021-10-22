@@ -70,29 +70,38 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to From Email.
-        /// </summary>
-        internal static string AmazonSES_FromEmailLabel {
-            get {
-                return ResourceManager.GetString("AmazonSES_FromEmailLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to From Name.
-        /// </summary>
-        internal static string AmazonSES_FromNameLabel {
-            get {
-                return ResourceManager.GetString("AmazonSES_FromNameLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Amazon SES (Integrated).
         /// </summary>
         internal static string AmazonSES_Name {
             get {
                 return ResourceManager.GetString("AmazonSES_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email address {0} is already used by another app..
+        /// </summary>
+        internal static string AmazonSES_ReservedEmailAddress {
+            get {
+                return ResourceManager.GetString("AmazonSES_ReservedEmailAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comma or line-separated list of additional email-addresses.
+        /// </summary>
+        internal static string Email_AdditionalFromEmailsDescription {
+            get {
+                return ResourceManager.GetString("Email_AdditionalFromEmailsDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Email Addresses.
+        /// </summary>
+        internal static string Email_AdditionalFromEmailsLabel {
+            get {
+                return ResourceManager.GetString("Email_AdditionalFromEmailsLabel", resourceCulture);
             }
         }
         

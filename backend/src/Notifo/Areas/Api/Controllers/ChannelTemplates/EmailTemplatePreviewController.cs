@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
     public class EmailTemplatePreviewController : BaseController
     {
         private static readonly User EmailUser = new User();
-        private static readonly UserNotification[] Notifications =
+        private static readonly List<EmailJob> EmailJobs = new[]
         {
             new UserNotification
             {
@@ -80,7 +81,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                     LinkUrl = "/url/to/link"
                 }
             }
-        };
+        }.Select(x => new EmailJob(x, new NotificationSetting(), "john@internet.com")).ToList();
 
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;
@@ -121,7 +122,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                 language = template.Languages.Values.First();
             }
 
-            var formatted = await emailFormatter.FormatPreviewAsync(Notifications, language, App, EmailUser, HttpContext.RequestAborted);
+            var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, language, App, EmailUser, HttpContext.RequestAborted);
 
             return Content(formatted.BodyHtml, "text/html");
         }
@@ -149,7 +150,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                         BodyHtml = request.Template
                     };
 
-                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser, HttpContext.RequestAborted);
+                    var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, template, App, EmailUser, HttpContext.RequestAborted);
 
                     var response = new EmailPreviewDto
                     {
@@ -165,7 +166,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
                         BodyText = request.Template
                     };
 
-                    var formatted = await emailFormatter.FormatPreviewAsync(Notifications, template, App, EmailUser, HttpContext.RequestAborted);
+                    var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, template, App, EmailUser, HttpContext.RequestAborted);
 
                     var response = new EmailPreviewDto
                     {

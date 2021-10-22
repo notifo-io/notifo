@@ -23,12 +23,12 @@ namespace Notifo.Domain.Integrations.Telegram
     {
         private readonly TelegramBotClientPool botClientPool;
         private readonly IMessagingUrl messagingUrl;
+
         private static readonly IntegrationProperty AccessToken = new IntegrationProperty("accessToken", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.Telegram_AccessKeyLabel,
             EditorDescription = null,
-            IsRequired = true,
-            Summary = true
+            IsRequired = true
         };
 
         public IntegrationDefinition Definition { get; } =

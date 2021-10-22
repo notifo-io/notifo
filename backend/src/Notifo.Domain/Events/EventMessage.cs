@@ -35,7 +35,7 @@ namespace Notifo.Domain.Events
 
         public NotificationSettings? Settings { get; set; } = new NotificationSettings();
 
-        public EventProperties Properties { get; set; }
+        public NotificationProperties Properties { get; set; }
 
         public Scheduling? Scheduling { get; set; }
 

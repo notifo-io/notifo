@@ -120,14 +120,17 @@
   <data name="AmazonSES_Description" xml:space="preserve">
     <value>Preconfigured Amazon Simple Email Service (SES) to send emails.</value>
   </data>
-  <data name="AmazonSES_FromEmailLabel" xml:space="preserve">
-    <value>From Email</value>
-  </data>
-  <data name="AmazonSES_FromNameLabel" xml:space="preserve">
-    <value>From Name</value>
-  </data>
   <data name="AmazonSES_Name" xml:space="preserve">
     <value>Amazon SES (Integrated)</value>
+  </data>
+  <data name="AmazonSES_ReservedEmailAddress" xml:space="preserve">
+    <value>Email address {0} is already used by another app.</value>
+  </data>
+  <data name="Email_AdditionalFromEmailsDescription" xml:space="preserve">
+    <value>Comma or line-separated list of additional email-addresses</value>
+  </data>
+  <data name="Email_AdditionalFromEmailsLabel" xml:space="preserve">
+    <value>Email Addresses</value>
   </data>
   <data name="Email_FromEmailDescription" xml:space="preserve">
     <value>The sender email address.</value>
