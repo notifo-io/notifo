@@ -43,41 +43,36 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             if (status.Reference != null)
             {
-                var smsResult = default(SmsResult);
+                var result = default(SmsResult);
 
                 switch (status.Status)
                 {
                     case MessageBirdStatus.Delivered:
-                        smsResult = SmsResult.Delivered;
+                        result = SmsResult.Delivered;
                         break;
                     case MessageBirdStatus.Delivery_Failed:
-                        smsResult = SmsResult.Failed;
+                        result = SmsResult.Failed;
                         break;
                     case MessageBirdStatus.Sent:
-                        smsResult = SmsResult.Sent;
+                        result = SmsResult.Sent;
                         break;
                 }
 
-                if (smsResult != SmsResult.Unknown)
+                if (result != SmsResult.Unknown)
                 {
-                    var response = new SmsResponse
-                    {
-                        Status = smsResult,
-                        Reference = status.Reference,
-                        ReferenceNumber = status.Recipient
-                    };
-
-                    await smsCallback.HandleCallbackAsync(response, httpContext.RequestAborted);
+                    await smsCallback.HandleCallbackAsync(status.Recipient, status.Reference, result, httpContext.RequestAborted);
                 }
             }
         }
 
-        public async Task<SmsResult> SendAsync(App app, string to, string body, string reference,
+        public async Task<SmsResult> SendAsync(App app, string to, string body, string token,
             CancellationToken ct = default)
         {
             try
             {
-                var sms = new MessageBirdSmsMessage(to, body, reference, smsUrl.SmsWebhookUrl(app.Id, integrationId));
+                var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId);
+
+                var sms = new MessageBirdSmsMessage(to, body, token, callbackUrl);
 
                 var response = await messageBirdClient.SendSmsAsync(sms, ct);
 

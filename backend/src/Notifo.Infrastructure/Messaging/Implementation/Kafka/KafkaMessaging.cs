@@ -56,10 +56,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
                 producer.Dispose();
             }
 
-            if (consumer != null)
-            {
-                consumer.Dispose();
-            }
+            consumer?.Dispose();
 
             return Task.CompletedTask;
         }

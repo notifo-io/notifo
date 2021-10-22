@@ -150,10 +150,8 @@ namespace Notifo.Infrastructure.Reflection
 
             public static TTarget MapClass(TSource source, TTarget destination, CultureInfo culture)
             {
-                for (var i = 0; i < Mappers.Count; i++)
+                foreach (var mapper in Mappers)
                 {
-                    var mapper = Mappers[i];
-
                     mapper.MapProperty(source, destination, culture);
                 }
 

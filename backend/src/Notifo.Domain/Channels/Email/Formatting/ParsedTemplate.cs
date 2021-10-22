@@ -136,7 +136,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             var span = template.AsSpan();
 
-            var start = Regex.Match(template, $"<!--[\\s]*START:(?<Type>.*)-->[\r\n]*", RegexOptions.IgnoreCase);
+            var start = Regex.Match(template, "<!--[\\s]*START:(?<Type>.*)-->[\r\n]*", RegexOptions.IgnoreCase);
 
             if (!start.Success)
             {

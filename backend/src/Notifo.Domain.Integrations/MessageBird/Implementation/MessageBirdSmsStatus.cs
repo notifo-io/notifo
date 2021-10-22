@@ -11,7 +11,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     {
         public string Id { get; set; }
 
-        public string Reference { get; set; }
+        public string? Reference { get; set; }
 
         public string Recipient { get; set; }
 

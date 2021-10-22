@@ -85,7 +85,7 @@ namespace Notifo.Domain
                 ImageSmall = Merged(source.ImageSmall, other?.ImageSmall),
                 LinkText = Merged(source.LinkText, other?.LinkText),
                 LinkUrl = Merged(source.LinkUrl, other?.LinkUrl),
-                Subject = Merged(source.Subject, other?.Subject)!,
+                Subject = Merged(source.Subject, other?.Subject)!
             };
         }
 

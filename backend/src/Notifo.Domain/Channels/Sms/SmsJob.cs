@@ -54,7 +54,7 @@ namespace Notifo.Domain.Channels.Sms
 
             if (Text.Length > 140)
             {
-                Text = Text.Substring(0, 137) + "...";
+                Text = Text[..137] + "...";
             }
 
             TemplateName = templateName;

@@ -65,12 +65,12 @@ namespace Notifo.Domain.Integrations
                 yield return Texts.IntegrationPropertyInvalidNumber;
             }
 
-            if (MinValue.HasValue && number < MinValue)
+            if (number < MinValue)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinValue, MinValue);
             }
 
-            if (MaxValue.HasValue && number > MaxValue)
+            if (number > MaxValue)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxValue, MaxValue);
             }
@@ -85,12 +85,12 @@ namespace Notifo.Domain.Integrations
 
             var length = value?.Length ?? 0;
 
-            if (MinLength.HasValue && length < MinLength)
+            if (length < MinLength)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinLength, MinLength);
             }
 
-            if (MaxLength.HasValue && length > MaxLength)
+            if (length > MaxLength)
             {
                 yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxLength, MaxLength);
             }

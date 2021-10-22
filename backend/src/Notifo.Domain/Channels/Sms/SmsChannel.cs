@@ -70,43 +70,41 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task HandleCallbackAsync(SmsResponse response,
+        public async Task HandleCallbackAsync(string to, string token, SmsResult result,
             CancellationToken ct)
         {
-            if (Guid.TryParse(response.Reference, out var id))
+            if (Guid.TryParse(token, out var id))
             {
                 var notification = await userNotificationStore.FindAsync(id, ct);
 
                 if (notification != null)
                 {
-                    await UpdateAsync(response, notification);
+                    await UpdateAsync(to, result, notification);
                 }
 
-                if (response.Status == SmsResult.Delivered)
+                if (result == SmsResult.Delivered)
                 {
                     userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
                 }
             }
         }
 
-        private async Task UpdateAsync(SmsResponse response, UserNotification notification)
+        private async Task UpdateAsync(string to, SmsResult result, UserNotification notification)
         {
-            var phoneNumber = response.ReferenceNumber;
-
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
                 return;
             }
 
-            if (channel.Status.TryGetValue(response.ReferenceNumber, out var status) && status.Status == ProcessStatus.Attempt)
+            if (channel.Status.TryGetValue(to, out var status) && status.Status == ProcessStatus.Attempt)
             {
-                switch (response.Status)
+                switch (result)
                 {
                     case SmsResult.Delivered:
-                        await UpdateAsync(notification, phoneNumber, ProcessStatus.Handled);
+                        await UpdateAsync(notification, to, ProcessStatus.Handled);
                         break;
                     case SmsResult.Failed:
-                        await UpdateAsync(notification, phoneNumber, ProcessStatus.Failed);
+                        await UpdateAsync(notification, to, ProcessStatus.Failed);
                         break;
                 }
             }

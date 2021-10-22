@@ -45,7 +45,7 @@ namespace Notifo.Domain.UserEvents
 
         public Scheduling? Scheduling { get; set; }
 
-        public override string? ToString()
+        public override string ToString()
         {
             return Formatting.ToDebugString();
         }

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,34 +50,27 @@ namespace Notifo.Domain.Integrations.Twilio
             var status = request.Form["MessageStatus"].ToString();
 
             var reference = request.Query["reference"].ToString();
-            var referenceNumber = request.Query["referenceNumber"].ToString();
+            var referenceNumber = request.Query["reference_number"].ToString();
 
-            var smsResult = default(SmsResult);
+            var result = default(SmsResult);
 
             switch (status)
             {
                 case "sent":
-                    smsResult = SmsResult.Sent;
+                    result = SmsResult.Sent;
                     break;
                 case "delivered":
-                    smsResult = SmsResult.Delivered;
+                    result = SmsResult.Delivered;
                     break;
                 case "failed":
                 case "undelivered":
-                    smsResult = SmsResult.Failed;
+                    result = SmsResult.Failed;
                     break;
             }
 
-            if (smsResult != SmsResult.Unknown)
+            if (result != SmsResult.Unknown)
             {
-                var response = new SmsResponse
-                {
-                    Status = smsResult,
-                    Reference = reference,
-                    ReferenceNumber = referenceNumber
-                };
-
-                await smsCallback.HandleCallbackAsync(response, httpContext.RequestAborted);
+                await smsCallback.HandleCallbackAsync(reference, referenceNumber, result, httpContext.RequestAborted);
             }
         }
 
@@ -85,10 +79,10 @@ namespace Notifo.Domain.Integrations.Twilio
         {
             try
             {
-                var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId, new System.Collections.Generic.Dictionary<string, string>
+                var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId, new Dictionary<string, string>
                 {
                     ["reference"] = reference,
-                    ["referenceNumber"] = to
+                    ["reference_number"] = to
                 });
 
                 var result = await MessageResource.CreateAsync(

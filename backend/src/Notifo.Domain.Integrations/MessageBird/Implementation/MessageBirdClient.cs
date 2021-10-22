@@ -143,7 +143,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         {
             if (options.PhoneNumbers?.Count > 0 && phoneNumber.Length > 2)
             {
-                var countryCode = phoneNumber.Substring(0, 2);
+                var countryCode = phoneNumber[..2];
 
                 if (options.PhoneNumbers.TryGetValue(countryCode, out var originator))
                 {

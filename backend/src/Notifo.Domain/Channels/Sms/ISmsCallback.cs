@@ -12,7 +12,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public interface ISmsCallback
     {
-        Task HandleCallbackAsync(SmsResponse response,
+        Task HandleCallbackAsync(string to, string token, SmsResult result,
             CancellationToken ct);
     }
 }
