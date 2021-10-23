@@ -60,7 +60,7 @@ namespace Notifo.Domain.Channels.Messaging
                 return notification.Formatting.Subject;
             }
 
-            var notificationProperties = new Dictionary<string, string?>
+            var formattingProperties = new Dictionary<string, string?>
             {
                 ["notification.body"] = notification.Body(),
                 ["notification.confirmText"] = notification.ConfirmText(),
@@ -70,7 +70,17 @@ namespace Notifo.Domain.Channels.Messaging
                 ["notification.subject"] = notification.Subject()
             };
 
-            return template.Text.Format(notificationProperties);
+            var properties = notification.Properties;
+
+            if (properties != null)
+            {
+                foreach (var (key, value) in properties)
+                {
+                    formattingProperties[$"notification.custom.{key}"] = value;
+                }
+            }
+
+            return template.Text.Format(formattingProperties);
         }
     }
 }

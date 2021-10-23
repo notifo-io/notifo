@@ -19,6 +19,8 @@ namespace Notifo.Domain.Apps
 
         public string Name { get; set; }
 
+        public string Language => Languages[0];
+
         public string[] Languages { get; set; } = { DefaultAppLanguage };
 
         public string? ConfirmUrl { get; set; } = string.Empty;
@@ -30,8 +32,6 @@ namespace Notifo.Domain.Apps
         public Dictionary<string, ConfiguredIntegration> Integrations { get; set; } = new Dictionary<string, ConfiguredIntegration>();
 
         public CounterMap? Counters { get; set; } = new CounterMap();
-
-        public string Language => Languages[0];
 
         public static App Create(string appId)
         {

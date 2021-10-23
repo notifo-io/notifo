@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -45,7 +46,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private static string ReadResource(string name)
         {
-            var stream = typeof(EmailFormatter).Assembly.GetManifestResourceStream($"Notifo.Domain.Channels.Email.{name}")!;
+            var stream = typeof(EmailFormatter).Assembly.GetManifestResourceStream($"Notifo.Domain.Channels.Email.Formatting.{name}")!;
 
             using (stream)
             {
@@ -110,7 +111,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             var firstJob = jobs[0];
 
-            var properties = CreateProperties(firstJob, app, user);
+            var properties = CreateProperties(jobs, app, user, firstJob);
 
             var mailMessage = new EmailMessage
             {
@@ -176,9 +177,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static Dictionary<string, string?> CreateProperties(EmailJob job, App app, User user)
+        private static Dictionary<string, string?> CreateProperties(List<EmailJob> jobs, App app, User user, EmailJob firstJob)
         {
-            var properties = new Dictionary<string, string?>
+            var notification = firstJob.Notification;
+
+            var formattingProperties = new Dictionary<string, string?>(StringComparer.InvariantCulture)
             {
                 ["app.name"] = app.Name,
                 ["user.name"] = user.FullName,
@@ -186,11 +189,24 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 ["user.fullName"] = user.FullName,
                 ["user.email"] = user.EmailAddress,
                 ["user.emailAddress"] = user.EmailAddress,
-                ["notification.subject"] = job.Notification.Formatting.Subject,
-                ["notification.body"] = job.Notification.Formatting.Body
+                ["notification.subject"] = notification.Formatting.Subject,
+                ["notification.body"] = notification.Formatting.Body
             };
 
-            return properties;
+            foreach (var job in jobs)
+            {
+                var properties = job.Notification.Properties;
+
+                if (properties != null)
+                {
+                    foreach (var (key, value) in properties)
+                    {
+                        formattingProperties[$"notification.custom.{key}"] = value;
+                    }
+                }
+            }
+
+            return formattingProperties;
         }
 
         private async Task<string> MjmlToHtmlAsync(string mjml)

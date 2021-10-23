@@ -182,6 +182,11 @@ namespace Notifo.Domain.Integrations.AmazonSES
         private async Task ValidateEmailAddressesAsync(App app, List<string> fromEmails,
             CancellationToken ct)
         {
+            if (!options.BindEmailAddresses)
+            {
+                return;
+            }
+
             foreach (var email in fromEmails)
             {
                 var key = StoreKey(email);

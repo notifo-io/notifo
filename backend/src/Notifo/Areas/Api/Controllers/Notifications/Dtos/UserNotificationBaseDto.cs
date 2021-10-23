@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using NodaTime;
+using Notifo.Domain;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
@@ -92,5 +93,10 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// Optional data, usually a json object.
         /// </summary>
         public string? Data { get; set; }
+
+        /// <summary>
+        /// Optional properties.
+        /// </summary>
+        public NotificationProperties? Properties { get; set; }
     }
 }

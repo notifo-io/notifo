@@ -19,6 +19,8 @@ namespace Notifo.Domain.Integrations.AmazonSES
 
         public string AwsSecretAccessKey { get; set; }
 
+        public bool BindEmailAddresses { get; set; }
+
         public override IEnumerable<ConfigurationError> Validate()
         {
             foreach (var error in base.Validate())

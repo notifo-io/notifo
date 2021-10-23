@@ -38,6 +38,8 @@ namespace Notifo.Domain.UserNotifications
 
         public int? TimeToLiveInSeconds { get; set; }
 
+        public NotificationProperties? Properties { get; set; }
+
         public NotificationFormatting<string> Formatting { get; set; }
 
         public string? ComputeTrackDeliveredUrl(string channel, string? deviceIdentifier)

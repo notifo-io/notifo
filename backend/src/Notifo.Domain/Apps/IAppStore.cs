@@ -31,8 +31,5 @@ namespace Notifo.Domain.Apps
 
         Task<App> UpsertAsync(string? id, ICommand<App> update,
             CancellationToken ct = default);
-
-        Task DeleteAsync(string id,
-            CancellationToken ct = default);
     }
 }

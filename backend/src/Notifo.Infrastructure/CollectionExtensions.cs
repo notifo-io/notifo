@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -70,6 +71,16 @@ namespace Notifo.Infrastructure
         public static IEnumerable<T> Duplicates<T>(this IEnumerable<T> input)
         {
             return input.GroupBy(x => x).Where(x => x.Count() > 1).Select(x => x.Key);
+        }
+
+        public static bool TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> source, TKey key, [MaybeNullWhen(false)] out TValue value) where TKey : notnull
+        {
+            if (source.TryGetValue(key, out value))
+            {
+                return source.Remove(key);
+            }
+
+            return false;
         }
 
         public static int IndexOf<T>(this IEnumerable<T> input, Func<T, bool> predicate)

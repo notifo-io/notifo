@@ -18,6 +18,8 @@ namespace Notifo.Domain.Apps
 {
     public sealed class DeleteAppIntegration : ICommand<App>
     {
+        private ConfiguredIntegration? removed;
+
         public string Id { get; set; }
 
         private sealed class Validator : AbstractValidator<DeleteAppIntegration>
@@ -28,19 +30,25 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
+            return Task.FromResult(app.Integrations.TryRemove(Id, out removed));
+        }
 
-            if (app.Integrations.TryGetValue(Id, out var configured))
+        public async Task ExecutedAsync(App app, IServiceProvider serviceProvider,
+            CancellationToken ct)
+        {
+            if (removed == null)
             {
-                await integrationManager.HandleRemovedAsync(Id, app, configured, ct);
+                return;
             }
 
-            return app.Integrations.Remove(Id);
+            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
+
+            await integrationManager.HandleRemovedAsync(Id, app, removed, ct);
         }
     }
 }

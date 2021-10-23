@@ -39,7 +39,7 @@ namespace Notifo.Domain.Apps
             {
                 if (app.Integrations.TryGetValue(id, out var current) && current.Status != status)
                 {
-                    current.Status = status;
+                    app.Integrations[id] = current with { Status = status };
 
                     isChanged = true;
                 }

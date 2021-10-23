@@ -77,7 +77,7 @@ namespace Notifo.Domain.Subscriptions
                 {
                     await repository.UpsertAsync(subscription, etag, ct);
 
-                    await command.ExecutedAsync(subscription, serviceProvider);
+                    await command.ExecutedAsync(subscription, serviceProvider, ct);
                 }
 
                 return subscription;

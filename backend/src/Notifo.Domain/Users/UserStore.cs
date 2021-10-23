@@ -152,7 +152,7 @@ namespace Notifo.Domain.Users
 
                     await DeliverAsync(user);
 
-                    await command.ExecutedAsync(user, serviceProvider);
+                    await command.ExecutedAsync(user, serviceProvider, ct);
                 }
 
                 return user;

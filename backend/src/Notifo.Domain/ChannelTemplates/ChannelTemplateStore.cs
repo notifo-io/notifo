@@ -109,7 +109,7 @@ namespace Notifo.Domain.ChannelTemplates
 
                     await repository.UpsertAsync(template, etag, ct);
 
-                    await command.ExecutedAsync(template, serviceProvider);
+                    await command.ExecutedAsync(template, serviceProvider, ct);
                 }
 
                 return template;

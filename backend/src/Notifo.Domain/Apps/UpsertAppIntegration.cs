@@ -18,6 +18,9 @@ namespace Notifo.Domain.Apps
 {
     public sealed class UpsertAppIntegration : ICommand<App>
     {
+        private ConfiguredIntegration? previousIntegration;
+        private ConfiguredIntegration? configured;
+
         public string Id { get; set; }
 
         public string Type { get; set; }
@@ -52,11 +55,9 @@ namespace Notifo.Domain.Apps
         public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
-            ConfiguredIntegration configured;
-
             var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
-            if (app.Integrations.TryGetValue(Id, out var previousIntegration))
+            if (app.Integrations.TryGetValue(Id, out previousIntegration))
             {
                 Validate<UpdateValidator>.It(this);
 
@@ -69,17 +70,39 @@ namespace Notifo.Domain.Apps
                 configured = new ConfiguredIntegration(Type, Properties);
             }
 
-            configured.Test = Test;
-            configured.Enabled = Enabled;
-            configured.Priority = Priority;
+            if (Test != configured.Test)
+            {
+                configured = configured with { Test = Test };
+            }
+
+            if (Enabled != configured.Enabled)
+            {
+                configured = configured with { Enabled = Enabled };
+            }
+
+            if (Priority != configured.Priority)
+            {
+                configured = configured with { Priority = Priority };
+            }
 
             await integrationManager.ValidateAsync(configured, ct);
 
             app.Integrations[Id] = configured;
 
-            await integrationManager.HandleConfiguredAsync(Id, app, configured, previousIntegration, ct);
-
             return true;
+        }
+
+        public async Task ExecutedAsync(App app, IServiceProvider serviceProvider,
+            CancellationToken ct)
+        {
+            if (configured == null)
+            {
+                return;
+            }
+
+            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
+
+            await integrationManager.HandleConfiguredAsync(Id, app, configured, previousIntegration, ct);
         }
     }
 }

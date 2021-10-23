@@ -142,21 +142,11 @@ namespace Notifo.Domain.Apps
 
                     await DeliverAsync(app);
 
-                    await command.ExecutedAsync(app, serviceProvider);
+                    await command.ExecutedAsync(app, serviceProvider, ct);
                 }
 
                 return app;
             });
-        }
-
-        public async Task DeleteAsync(string id,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(id, nameof(id));
-
-            await repository.DeleteAsync(id, ct);
-
-            await cache.RemoveAsync(id);
         }
 
         private async Task DeliverAsync(App? app)

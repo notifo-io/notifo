@@ -18,7 +18,8 @@ namespace Notifo.Infrastructure
         Task<bool> ExecuteAsync(T target, IServiceProvider serviceProvider,
             CancellationToken ct);
 
-        Task ExecutedAsync(T target, IServiceProvider serviceProvider)
+        Task ExecutedAsync(T target, IServiceProvider serviceProvider,
+            CancellationToken ct)
         {
             return Task.CompletedTask;
         }
