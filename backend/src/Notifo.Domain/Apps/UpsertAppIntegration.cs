@@ -86,7 +86,7 @@ namespace Notifo.Domain.Apps
 
             var newApp = app with
             {
-                Integrations = newIntegrations.ToImmutableDictionary()
+                Integrations = newIntegrations.ToReadonlyDictionary()
             };
 
             return newApp;

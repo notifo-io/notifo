@@ -48,7 +48,7 @@ namespace Notifo.Domain.ChannelTemplates
 
             var newTemplate = template with
             {
-                Languages = newLanguages.ToImmutableDictionary()
+                Languages = newLanguages.ToReadonlyDictionary()
             };
 
             return newTemplate;

@@ -34,9 +34,9 @@ namespace Notifo.Infrastructure.Collections
             return new ReadonlyList<T>(items.ToList());
         }
 
-        public static ReadonlyList<T> ToImmutableList<T>(this IEnumerable<T> source)
+        public static ReadonlyList<T> ToReadonlyList<T>(this IEnumerable<T> source)
         {
-            var inner = source.ToList();
+            var inner = new List<T>(source);
 
             if (inner.Count == 0)
             {

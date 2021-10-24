@@ -65,7 +65,7 @@ namespace Notifo.Domain.Apps
 
             var newApp = app with
             {
-                Contributors = newContributors.ToImmutableDictionary()
+                Contributors = newContributors.ToReadonlyDictionary()
             };
 
             return newApp;

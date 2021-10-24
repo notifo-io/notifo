@@ -40,7 +40,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user with
             {
-                WebPushSubscriptions = user.WebPushSubscriptions.Where(x => x.Endpoint != Endpoint).ToImmutableList()
+                WebPushSubscriptions = user.WebPushSubscriptions.Where(x => x.Endpoint != Endpoint).ToReadonlyList()
             };
 
             return new ValueTask<User?>(newUser);

@@ -49,7 +49,7 @@ namespace Notifo.Domain.Apps
             {
                 newApp = newApp with
                 {
-                    Languages = Languages.ToImmutableList()
+                    Languages = Languages.ToReadonlyList()
                 };
             }
 
@@ -79,7 +79,7 @@ namespace Notifo.Domain.Apps
                         [RandomHash.New()] = NotifoRoles.AppAdmin,
                         [RandomHash.New()] = NotifoRoles.AppWebManager,
                         [RandomHash.New()] = NotifoRoles.AppWebManager
-                    }.ToImmutableDictionary()
+                    }.ToReadonlyDictionary()
                 };
             }
 
@@ -90,7 +90,7 @@ namespace Notifo.Domain.Apps
                     Contributors = new Dictionary<string, string>
                     {
                         [UserId] = NotifoRoles.AppOwner
-                    }.ToImmutableDictionary()
+                    }.ToReadonlyDictionary()
                 };
             }
 

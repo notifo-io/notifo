@@ -46,7 +46,7 @@ namespace Notifo.Domain.Apps
 
             var newApp = app with
             {
-                Integrations = app.Integrations.Where(x => x.Key != Id).ToImmutableDictionary()
+                Integrations = app.Integrations.Where(x => x.Key != Id).ToReadonlyDictionary()
             };
 
             return newApp;

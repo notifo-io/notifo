@@ -40,7 +40,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user with
             {
-                MobilePushTokens = user.MobilePushTokens.Where(x => x.Token != Token).ToImmutableList()
+                MobilePushTokens = user.MobilePushTokens.Where(x => x.Token != Token).ToReadonlyList()
             };
 
             return new ValueTask<User?>(newUser);

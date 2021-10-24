@@ -40,7 +40,7 @@ namespace Notifo.Domain.ChannelTemplates
 
             var newTemplate = template with
             {
-                Languages = template.Languages.Where(x => x.Key != Language).ToImmutableDictionary()
+                Languages = template.Languages.Where(x => x.Key != Language).ToReadonlyDictionary()
             };
 
             return new ValueTask<ChannelTemplate<T>?>(newTemplate);

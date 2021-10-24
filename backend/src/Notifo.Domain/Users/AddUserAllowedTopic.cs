@@ -33,7 +33,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user with
             {
-                AllowedTopics = newAllowedTopics.ToImmutableList()
+                AllowedTopics = newAllowedTopics.ToReadonlyList()
             };
 
             return new ValueTask<User?>(newUser);

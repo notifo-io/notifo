@@ -49,7 +49,7 @@ namespace Notifo.Domain.Apps
 
             var newApp = app with
             {
-                Contributors = app.Contributors.Where(x => x.Key != ContributorId).ToImmutableDictionary()
+                Contributors = app.Contributors.Where(x => x.Key != ContributorId).ToReadonlyDictionary()
             };
 
             return new ValueTask<App?>(newApp);

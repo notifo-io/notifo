@@ -33,7 +33,7 @@ namespace Notifo.Domain.ChannelTemplates
                     Languages = new Dictionary<string, T>(template.Languages)
                     {
                         [Language] = await factory.CreateInitialAsync()
-                    }.ToImmutableDictionary()
+                    }.ToReadonlyDictionary()
                 };
             }
 

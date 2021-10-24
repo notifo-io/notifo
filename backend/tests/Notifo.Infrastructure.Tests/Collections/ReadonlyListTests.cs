@@ -32,7 +32,7 @@ namespace Notifo.Infrastructure.Collections
         [Fact]
         public void Should_return_empty_instance_for_empty_enumerable()
         {
-            var result = Enumerable.Empty<int>().ToImmutableList();
+            var result = Enumerable.Empty<int>().ToReadonlyList();
 
             Assert.Same(ReadonlyList.Empty<int>(), result);
         }
