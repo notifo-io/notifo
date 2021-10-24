@@ -7,19 +7,25 @@
 
 namespace Notifo.Domain.Subscriptions
 {
-    public sealed class Subscription
+    public sealed record Subscription
     {
-        public string AppId { get; set; }
+        public string AppId { get; init; }
 
-        public string UserId { get; set;  }
+        public string UserId { get; init;  }
 
-        public TopicId TopicPrefix { get; set; }
+        public TopicId TopicPrefix { get; init; }
 
-        public NotificationSettings? TopicSettings { get; set; }
+        public NotificationSettings? TopicSettings { get; init; }
 
         public static Subscription Create(string appId, string userId, TopicId prefix)
         {
-            var subscription = new Subscription { AppId = appId, UserId = userId, TopicPrefix = prefix };
+            var subscription = new Subscription
+            {
+                AppId = appId,
+                TopicPrefix = prefix,
+                TopicSettings = null,
+                UserId = userId,
+            };
 
             return subscription;
         }

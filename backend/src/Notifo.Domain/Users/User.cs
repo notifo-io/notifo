@@ -5,55 +5,58 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users
 {
-    public sealed class User
+    public sealed record User
     {
         public string Id { get; private init; }
 
         public string AppId { get; private init; }
 
-        public string ApiKey { get; set; }
+        public string ApiKey { get; init; }
 
-        public string FullName { get; set; } = string.Empty;
+        public string PreferredLanguage { get; init; } = "en";
 
-        public string EmailAddress { get; set; } = string.Empty;
+        public string PreferredTimezone { get; init; } = "UTC";
 
-        public string PhoneNumber { get; set; } = string.Empty;
+        public string? FullName { get; init; }
 
-        public string ThreemaId { get; set; } = string.Empty;
+        public string? EmailAddress { get; init; }
 
-        public string TelegramUsername { get; set; } = string.Empty;
+        public string? PhoneNumber { get; init; }
 
-        public string TelegramChatId { get; set; } = string.Empty;
+        public string? ThreemaId { get; init; }
 
-        public string PreferredLanguage { get; set; } = "en";
+        public string? TelegramUsername { get; init; }
 
-        public string PreferredTimezone { get; set; } = "UTC";
+        public string? TelegramChatId { get; init; }
 
-        public bool RequiresWhitelistedTopics { get; set; }
+        public bool RequiresWhitelistedTopics { get; init; }
 
-        public HashSet<string> AllowedTopics { get; set; } = new HashSet<string>();
+        public ReadonlyList<string> AllowedTopics { get; init; } = ReadonlyList.Empty<string>();
 
-        public HashSet<MobilePushToken> MobilePushTokens { get; set; } = new HashSet<MobilePushToken>();
+        public ReadonlyList<MobilePushToken> MobilePushTokens { get; init; } = ReadonlyList.Empty<MobilePushToken>();
 
-        public HashSet<WebPushSubscription> WebPushSubscriptions { get; set; } = new HashSet<WebPushSubscription>();
+        public ReadonlyList<WebPushSubscription> WebPushSubscriptions { get; init; } = ReadonlyList.Empty<WebPushSubscription>();
 
-        public NotificationSettings Settings { get; set; } = new NotificationSettings();
+        public NotificationSettings Settings { get; init; } = new NotificationSettings();
 
-        public CounterMap Counters { get; set; } = new CounterMap();
+        public CounterMap Counters { get; init; } = new CounterMap();
 
         public static User Create(string appId, string userId)
         {
-            var user = new User { AppId = appId, Id = userId };
-
-            user.ApiKey = RandomHash.New();
+            var user = new User
+            {
+                ApiKey = RandomHash.New(),
+                AppId = appId,
+                Id = userId
+            };
 
             return user;
         }

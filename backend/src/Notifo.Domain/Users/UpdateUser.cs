@@ -51,74 +51,104 @@ namespace Notifo.Domain.Users
             }
         }
 
-        public async Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        public async ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            if (FullName != null)
+            var newUser = user;
+
+            if (FullName != null && !string.Equals(FullName, user.FullName, StringComparison.Ordinal))
             {
-                user.FullName = FullName;
+                newUser = newUser with
+                {
+                    FullName = FullName.Trim()
+                };
             }
 
-            if (EmailAddress != null)
+            if (EmailAddress != null && !string.Equals(EmailAddress, user.EmailAddress, StringComparison.OrdinalIgnoreCase))
             {
-                user.EmailAddress = EmailAddress;
+                newUser = newUser with
+                {
+                    EmailAddress = EmailAddress.Trim().ToLowerInvariant()
+                };
             }
 
-            if (PhoneNumber != null)
+            if (PhoneNumber != null && !string.Equals(PhoneNumber, user.PhoneNumber, StringComparison.OrdinalIgnoreCase))
             {
-                user.PhoneNumber = PhoneNumber;
+                newUser = newUser with
+                {
+                    PhoneNumber = PhoneNumber.Trim().ToLowerInvariant()
+                };
             }
 
-            if (TelegramChatId != null)
+            if (TelegramChatId != null && !string.Equals(TelegramChatId, user.TelegramChatId, StringComparison.Ordinal))
             {
-                user.TelegramChatId = TelegramChatId;
+                newUser = newUser with
+                {
+                    TelegramChatId = TelegramChatId.Trim()
+                };
             }
 
-            if (TelegramUsername != null)
+            if (TelegramUsername != null && !string.Equals(TelegramUsername, user.TelegramUsername, StringComparison.Ordinal))
             {
-                user.TelegramUsername = TelegramUsername;
+                newUser = newUser with
+                {
+                    TelegramUsername = TelegramUsername.Trim()
+                };
             }
 
-            if (ThreemaId != null)
+            if (ThreemaId != null && !string.Equals(ThreemaId, user.ThreemaId, StringComparison.Ordinal))
             {
-                user.ThreemaId = ThreemaId;
+                newUser = newUser with
+                {
+                    ThreemaId = ThreemaId.Trim()
+                };
             }
 
-            if (PreferredLanguage != null)
+            if (PreferredLanguage != null && !string.Equals(PreferredLanguage, user.PreferredLanguage, StringComparison.Ordinal))
             {
-                user.PreferredLanguage = PreferredLanguage;
+                newUser = newUser with
+                {
+                    PreferredLanguage = PreferredLanguage.Trim()
+                };
             }
 
-            if (PreferredTimezone != null)
+            if (PreferredTimezone != null && !string.Equals(PreferredTimezone, user.PreferredTimezone, StringComparison.Ordinal))
             {
-                user.PreferredTimezone = PreferredTimezone;
+                newUser = newUser with
+                {
+                    PreferredTimezone = PreferredTimezone.Trim()
+                };
             }
 
-            if (RequiresWhitelistedTopics != null)
+            if (RequiresWhitelistedTopics != null && RequiresWhitelistedTopics != user.RequiresWhitelistedTopics)
             {
-                user.RequiresWhitelistedTopics = RequiresWhitelistedTopics.Value;
+                newUser = newUser with
+                {
+                    RequiresWhitelistedTopics = RequiresWhitelistedTopics.Value
+                };
             }
 
             if (Settings != null)
             {
-                user.Settings ??= new NotificationSettings();
-
-                foreach (var (key, value) in Settings)
+                newUser = newUser with
                 {
-                    user.Settings[key] = value;
-                }
+                    Settings = new NotificationSettings(Settings)
+                };
             }
 
             if (string.IsNullOrWhiteSpace(user.ApiKey))
             {
                 var tokenGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
 
-                user.ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id);
+                newUser = newUser with
+                {
+                    ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id)
+                };
             }
 
-            return true;
+            return newUser;
         }
     }
 }

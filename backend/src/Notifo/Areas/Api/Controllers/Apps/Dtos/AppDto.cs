@@ -8,6 +8,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Apps;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
@@ -38,13 +39,13 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// The supported languages.
         /// </summary>
         [Required]
-        public string[] Languages { get; set; }
+        public ReadonlyList<string> Languages { get; set; }
 
         /// <summary>
         /// The api keys.
         /// </summary>
         [Required]
-        public Dictionary<string, string> ApiKeys { get; set; }
+        public ReadonlyDictionary<string, string> ApiKeys { get; set; }
 
         /// <summary>
         /// The statistics counters.

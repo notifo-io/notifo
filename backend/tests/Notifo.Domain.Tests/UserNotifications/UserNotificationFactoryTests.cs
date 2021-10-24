@@ -16,6 +16,7 @@ using Notifo.Domain.Log;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
 using Xunit;
 
@@ -35,11 +36,7 @@ namespace Notifo.Domain.UserNotifications
         {
             app = new App
             {
-                Languages = new[]
-                {
-                    "en",
-                    "de"
-                }
+                Languages = ReadonlyList.Create("en", "de")
             };
 
             A.CallTo(() => clock.GetCurrentInstant())
@@ -148,9 +145,12 @@ namespace Notifo.Domain.UserNotifications
         {
             var userEvent = CreateMinimumUserEvent();
 
-            user.PreferredLanguage = "de";
+            var germanUser = user with
+            {
+                PreferredLanguage = "de"
+            };
 
-            var notification = sut.Create(app, user, userEvent)!;
+            var notification = sut.Create(app, germanUser, userEvent)!;
 
             Assert.Equal("deText", notification.Formatting.Subject);
             Assert.Equal("de", notification.UserLanguage);
@@ -164,9 +164,12 @@ namespace Notifo.Domain.UserNotifications
         {
             var userEvent = CreateMinimumUserEvent();
 
-            user.PreferredLanguage = "dk";
+            var danishUser = user with
+            {
+                PreferredLanguage = "de"
+            };
 
-            var notification = sut.Create(app, user, userEvent)!;
+            var notification = sut.Create(app, danishUser, userEvent)!;
 
             Assert.Equal("enText", notification.Formatting.Subject);
             Assert.Equal("en", notification.UserLanguage);

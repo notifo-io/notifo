@@ -6,21 +6,20 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps
 {
     public sealed class UpsertAppIntegration : ICommand<App>
     {
-        private ConfiguredIntegration? previousIntegration;
-        private ConfiguredIntegration? configured;
-
         public string Id { get; set; }
 
         public string Type { get; set; }
@@ -31,7 +30,7 @@ namespace Notifo.Domain.Apps
 
         public int Priority { get; set; }
 
-        public IntegrationProperties Properties { get; set; }
+        public ReadonlyDictionary<string, string> Properties { get; set; }
 
         private sealed class CreateValidator : AbstractValidator<UpsertAppIntegration>
         {
@@ -52,12 +51,14 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
-            if (app.Integrations.TryGetValue(Id, out previousIntegration))
+            ConfiguredIntegration configured;
+
+            if (app.Integrations.TryGetValue(Id, out var previousIntegration))
             {
                 Validate<UpdateValidator>.It(this);
 
@@ -70,39 +71,25 @@ namespace Notifo.Domain.Apps
                 configured = new ConfiguredIntegration(Type, Properties);
             }
 
-            if (Test != configured.Test)
+            if (Test != configured.Test || Enabled != configured.Enabled || Priority != configured.Priority)
             {
-                configured = configured with { Test = Test };
-            }
-
-            if (Enabled != configured.Enabled)
-            {
-                configured = configured with { Enabled = Enabled };
-            }
-
-            if (Priority != configured.Priority)
-            {
-                configured = configured with { Priority = Priority };
+                configured = configured with { Test = Test, Enabled = Enabled, Priority = Priority };
             }
 
             await integrationManager.ValidateAsync(configured, ct);
-
-            app.Integrations[Id] = configured;
-
-            return true;
-        }
-
-        public async Task ExecutedAsync(App app, IServiceProvider serviceProvider,
-            CancellationToken ct)
-        {
-            if (configured == null)
-            {
-                return;
-            }
-
-            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
-
             await integrationManager.HandleConfiguredAsync(Id, app, configured, previousIntegration, ct);
+
+            var newIntegrations = new Dictionary<string, ConfiguredIntegration>(app.Integrations)
+            {
+                [Id] = configured
+            };
+
+            var newApp = app with
+            {
+                Integrations = newIntegrations.ToImmutableDictionary()
+            };
+
+            return newApp;
         }
     }
 }

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 using ValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
@@ -35,7 +37,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public async Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
@@ -56,9 +58,17 @@ namespace Notifo.Domain.Apps
                 throw new DomainException(Texts.App_CannotUpdateYourself);
             }
 
-            app.Contributors[user.Id] = Role;
+            var newContributors = new Dictionary<string, string>(app.Contributors)
+            {
+                [user.Id] = Role
+            };
 
-            return true;
+            var newApp = app with
+            {
+                Contributors = newContributors.ToImmutableDictionary()
+            };
+
+            return newApp;
         }
     }
 }

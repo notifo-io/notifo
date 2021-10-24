@@ -40,6 +40,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 settings.ConfigureName();
                 settings.ConfigureSchemaSettings();
+
+                settings.ReflectionService = new ReflectionServices();
             });
         }
 

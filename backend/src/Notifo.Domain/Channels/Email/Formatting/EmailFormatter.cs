@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -120,7 +119,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 BodyText = FormatText(template, properties, jobs),
                 FromEmail = firstJob.FromEmail!,
                 FromName = firstJob.FromName!,
-                ToEmail = user.EmailAddress,
+                ToEmail = user.EmailAddress!,
                 ToName = user.FullName,
             };
 

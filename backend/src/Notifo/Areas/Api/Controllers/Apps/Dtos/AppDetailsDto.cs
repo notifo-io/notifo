@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Identity;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos
@@ -38,21 +39,21 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         public string Role { get; set; }
 
         /// <summary>
-        /// The supported languages.
-        /// </summary>
-        [Required]
-        public string[] Languages { get; set; }
-
-        /// <summary>
         /// The confirm URL.
         /// </summary>
         public string? ConfirmUrl { get; set; }
 
         /// <summary>
+        /// The supported languages.
+        /// </summary>
+        [Required]
+        public ReadonlyList<string> Languages { get; set; }
+
+        /// <summary>
         /// The api keys.
         /// </summary>
         [Required]
-        public Dictionary<string, string> ApiKeys { get; set; }
+        public ReadonlyDictionary<string, string> ApiKeys { get; set; }
 
         /// <summary>
         /// The contributors.

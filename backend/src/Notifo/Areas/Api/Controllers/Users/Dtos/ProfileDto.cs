@@ -67,7 +67,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
             var result = SimpleMapper.Map(source, new ProfileDto());
 
             result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
-            result.SupportedLanguages = app.Languages;
+            result.SupportedLanguages = app.Languages.ToArray();
 
             result.Settings ??= new Dictionary<string, NotificationSettingDto>();
 

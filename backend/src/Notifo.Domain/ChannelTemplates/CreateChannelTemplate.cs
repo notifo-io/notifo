@@ -6,10 +6,12 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates
 {
@@ -19,17 +21,23 @@ namespace Notifo.Domain.ChannelTemplates
 
         public string? Language { get; set; }
 
-        public async Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             if (Language != null)
             {
                 var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-                template.Languages[Language] = await factory.CreateInitialAsync();
+                template = template with
+                {
+                    Languages = new Dictionary<string, T>(template.Languages)
+                    {
+                        [Language] = await factory.CreateInitialAsync()
+                    }.ToImmutableDictionary()
+                };
             }
 
-            return true;
+            return template;
         }
     }
 }

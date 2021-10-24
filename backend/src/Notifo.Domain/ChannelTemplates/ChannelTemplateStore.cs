@@ -103,16 +103,21 @@ namespace Notifo.Domain.ChannelTemplates
                     template = ChannelTemplate<T>.Create(appId, id);
                 }
 
-                if (await command.ExecuteAsync(template, serviceProvider, ct))
+                var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
+
+                if (newTemplate == null || ReferenceEquals(template, newTemplate))
                 {
-                    template.LastUpdate = clock.GetCurrentInstant();
-
-                    await repository.UpsertAsync(template, etag, ct);
-
-                    await command.ExecutedAsync(template, serviceProvider, ct);
+                    return template;
                 }
 
-                return template;
+                newTemplate = newTemplate with
+                {
+                    LastUpdate = clock.GetCurrentInstant()
+                };
+
+                await repository.UpsertAsync(newTemplate, etag, ct);
+
+                return newTemplate;
             });
         }
 

@@ -6,10 +6,12 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.ChannelTemplates
@@ -26,14 +28,22 @@ namespace Notifo.Domain.ChannelTemplates
             }
         }
 
-        public Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        public ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            var removed = template.Languages.Remove(Language);
+            if (!template.Languages.ContainsKey(Language))
+            {
+                return default;
+            }
 
-            return Task.FromResult(removed);
+            var newTemplate = template with
+            {
+                Languages = template.Languages.Where(x => x.Key != Language).ToImmutableDictionary()
+            };
+
+            return new ValueTask<ChannelTemplate<T>?>(newTemplate);
         }
     }
 }

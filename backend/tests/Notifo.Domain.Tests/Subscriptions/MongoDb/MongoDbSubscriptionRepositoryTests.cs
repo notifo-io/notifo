@@ -210,12 +210,9 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
             if (sendEmail)
             {
-                subscription.TopicSettings = new NotificationSettings
+                subscription.TopicSettings[Providers.Email] = new NotificationSetting
                 {
-                    [Providers.Email] = new NotificationSetting
-                    {
-                        Send = NotificationSend.Send
-                    }
+                    Send = NotificationSend.Send
                 };
             }
 

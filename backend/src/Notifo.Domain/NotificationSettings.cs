@@ -17,6 +17,11 @@ namespace Notifo.Domain
         {
         }
 
+        public NotificationSettings(IDictionary<string, NotificationSetting> dictionary)
+            : base(dictionary, StringComparer.OrdinalIgnoreCase)
+        {
+        }
+
         public void OverrideBy(NotificationSettings? source)
         {
             if (source != null)

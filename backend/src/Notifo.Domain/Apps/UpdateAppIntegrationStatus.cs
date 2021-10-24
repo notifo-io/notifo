@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps
@@ -28,24 +29,27 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            var isChanged = false;
+            var newIntegrations = new Dictionary<string, ConfiguredIntegration>(app.Integrations);
 
             foreach (var (id, status) in Status)
             {
-                if (app.Integrations.TryGetValue(id, out var current) && current.Status != status)
+                if (newIntegrations.TryGetValue(id, out var current) && current.Status != status)
                 {
-                    app.Integrations[id] = current with { Status = status };
-
-                    isChanged = true;
+                    newIntegrations[id] = current with { Status = status };
                 }
             }
 
-            return Task.FromResult(isChanged);
+            var newApp = app with
+            {
+                Integrations = newIntegrations.ToImmutableDictionary()
+            };
+
+            return new ValueTask<App?>(newApp);
         }
     }
 }

@@ -6,12 +6,13 @@
 // ==========================================================================
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users
@@ -29,19 +30,22 @@ namespace Notifo.Domain.Users
             }
         }
 
-        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            if (!user.MobilePushTokens.Any(x => x.Token == Token.Token))
+            var newMobilePushTokens = new List<MobilePushToken>();
+
+            newMobilePushTokens.RemoveAll(x => x.Token == Token.Token);
+            newMobilePushTokens.Add(Token);
+
+            var newUser = user with
             {
-                user.MobilePushTokens.Add(Token);
+                MobilePushTokens = newMobilePushTokens.ToImmutableList()
+            };
 
-                return Task.FromResult(true);
-            }
-
-            return Task.FromResult(false);
+            return new ValueTask<User?>(newUser);
         }
     }
 }

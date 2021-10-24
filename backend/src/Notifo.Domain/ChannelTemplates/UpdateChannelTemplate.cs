@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates
 {
@@ -23,32 +23,45 @@ namespace Notifo.Domain.ChannelTemplates
 
         public Dictionary<string, T>? Languages { get; set; }
 
-        public async Task<bool> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
-            if (Name != null)
-            {
-                template.Name = Name;
-            }
-
-            if (Primary != null)
-            {
-                template.Primary = Primary.Value;
-            }
+            var newTemplate = template;
 
             if (Languages != null)
             {
+                var languages = new Dictionary<string, T>();
+
                 var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-                foreach (var (key, value) in Languages.ToList())
+                foreach (var (key, value) in Languages)
                 {
-                    Languages[key] = await factory.ParseAsync(value);
+                    languages[key] = await factory.ParseAsync(value);
                 }
 
-                template.Languages = Languages;
+                newTemplate = template with
+                {
+                    Languages = languages.ToImmutableDictionary()
+                };
             }
 
-            return true;
+            if (Name != null && !string.Equals(Name, template.Name, StringComparison.Ordinal))
+            {
+                newTemplate = template with
+                {
+                    Name = Name.Trim()
+                };
+            }
+
+            if (Primary.HasValue && Primary != template.Primary)
+            {
+                newTemplate = template with
+                {
+                    Primary = Primary.Value
+                };
+            }
+
+            return newTemplate;
         }
     }
 }

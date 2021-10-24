@@ -9,6 +9,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson.Serialization;
+using Notifo.Infrastructure.Collections;
+using Notifo.Infrastructure.Collections.Bson;
 using Notifo.Pipeline;
 using StackExchange.Redis;
 
@@ -52,6 +55,14 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 ["MongoDB"] = () =>
                 {
+                    BsonSerializer.RegisterGenericSerializerDefinition(
+                        typeof(ReadonlyList<>),
+                        typeof(ReadonlyListSerializer<>));
+
+                    BsonSerializer.RegisterGenericSerializerDefinition(
+                        typeof(ReadonlyDictionary<,>),
+                        typeof(ReadonlyDictionarySerializer<,>));
+
                     services.AddMyMongoApps();
                     services.AddMyMongoDb(config);
                     services.AddMyMongoDbIdentity();

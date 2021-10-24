@@ -6,20 +6,20 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps
 {
     public sealed class DeleteAppIntegration : ICommand<App>
     {
-        private ConfiguredIntegration? removed;
-
         public string Id { get; set; }
 
         private sealed class Validator : AbstractValidator<DeleteAppIntegration>
@@ -30,25 +30,26 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            return Task.FromResult(app.Integrations.TryRemove(Id, out removed));
-        }
-
-        public async Task ExecutedAsync(App app, IServiceProvider serviceProvider,
-            CancellationToken ct)
-        {
-            if (removed == null)
+            if (!app.Integrations.TryGetValue(Id, out var removed))
             {
-                return;
+                return default;
             }
 
             var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
             await integrationManager.HandleRemovedAsync(Id, app, removed, ct);
+
+            var newApp = app with
+            {
+                Integrations = app.Integrations.Where(x => x.Key != Id).ToImmutableDictionary()
+            };
+
+            return newApp;
         }
     }
 }

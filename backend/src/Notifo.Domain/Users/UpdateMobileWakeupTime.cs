@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using NodaTime;
+using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users
 {
@@ -20,19 +22,29 @@ namespace Notifo.Domain.Users
 
         public Instant Timestamp { get; set; }
 
-        public Task<bool> ExecuteAsync(User target, IServiceProvider serviceProvider,
+        public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
-            var token = target.MobilePushTokens.FirstOrDefault(x => x.Token == Token);
+            var index = user.MobilePushTokens.IndexOf(x => x.Token == Token);
 
-            if (token != null && token.LastWakeup < Timestamp)
+            if (index < 0)
             {
-                token.LastWakeup = Timestamp;
-
-                return Task.FromResult(true);
+                return default;
             }
 
-            return Task.FromResult(false);
+            var newTokens = new List<MobilePushToken>(user.MobilePushTokens);
+
+            newTokens[index] = newTokens[index] with
+            {
+                LastWakeup = Timestamp
+            };
+
+            var newUser = user with
+            {
+                MobilePushTokens = newTokens.ToImmutableList()
+            };
+
+            return new ValueTask<User?>(newUser);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
+using Notifo.Infrastructure.Collections.Json;
 using Notifo.Infrastructure.Json;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -32,6 +33,8 @@ namespace Microsoft.Extensions.DependencyInjection
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             options.Converters.Add(new JsonInstantConverter());
+            options.Converters.Add(new JsonReadonlyDictionaryConverterFactory());
+            options.Converters.Add(new JsonReadonlyListConverterFactory());
             options.Converters.Add(new JsonStringEnumConverter());
             options.Converters.Add(new JsonTimeSpanConverter());
             options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);

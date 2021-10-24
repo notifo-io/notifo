@@ -21,34 +21,29 @@ namespace Notifo.Domain.Subscriptions
 
         public bool CanCreate => true;
 
-        public async Task<bool> ExecuteAsync(Subscription target, IServiceProvider serviceProvider,
+        public async ValueTask<Subscription?> ExecuteAsync(Subscription subscription, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             var userStore = serviceProvider.GetRequiredService<IUserStore>();
 
-            await CheckWhitelistAsync(userStore, target, ct);
+            await CheckWhitelistAsync(userStore, subscription, ct);
 
-            if (TopicSettings != null)
+            var newSubscription = subscription with
             {
-                target.TopicSettings ??= new NotificationSettings();
+                TopicSettings = TopicSettings ?? subscription.TopicSettings
+            };
 
-                foreach (var (key, value) in TopicSettings)
-                {
-                    target.TopicSettings[key] = value;
-                }
-            }
-
-            return true;
+            return newSubscription;
         }
 
-        private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription target,
+        private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription subscription,
             CancellationToken ct)
         {
-            var user = await userStore.GetCachedAsync(target.AppId, target.UserId, ct);
+            var user = await userStore.GetCachedAsync(subscription.AppId, subscription.UserId, ct);
 
             if (user == null)
             {
-                throw new DomainObjectNotFoundException(target.UserId);
+                throw new DomainObjectNotFoundException(subscription.UserId);
             }
 
             if (user.AllowedTopics == null)
@@ -61,7 +56,7 @@ namespace Notifo.Domain.Subscriptions
                 return;
             }
 
-            if (!user.AllowedTopics.Any(x => target.TopicPrefix.StartsWith(x)))
+            if (!user.AllowedTopics.Any(x => subscription.TopicPrefix.StartsWith(x)))
             {
                 throw new DomainForbiddenException("Topic is not whitelisted.");
             }

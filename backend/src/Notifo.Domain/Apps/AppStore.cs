@@ -136,16 +136,18 @@ namespace Notifo.Domain.Apps
                     app = App.Create(id);
                 }
 
-                if (await command.ExecuteAsync(app, serviceProvider, ct))
+                var newApp = await command.ExecuteAsync(app, serviceProvider, ct);
+
+                if (newApp == null || ReferenceEquals(app, newApp))
                 {
-                    await repository.UpsertAsync(app, etag, ct);
-
-                    await DeliverAsync(app);
-
-                    await command.ExecutedAsync(app, serviceProvider, ct);
+                    return app;
                 }
 
-                return app;
+                await repository.UpsertAsync(newApp, etag, ct);
+
+                await DeliverAsync(newApp);
+
+                return newApp;
             });
         }
 

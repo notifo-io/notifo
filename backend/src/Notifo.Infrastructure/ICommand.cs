@@ -11,17 +11,11 @@ using System.Threading.Tasks;
 
 namespace Notifo.Infrastructure
 {
-    public interface ICommand<in T>
+    public interface ICommand<T> where T : notnull
     {
         bool CanCreate => false;
 
-        Task<bool> ExecuteAsync(T target, IServiceProvider serviceProvider,
+        ValueTask<T?> ExecuteAsync(T target, IServiceProvider serviceProvider,
             CancellationToken ct);
-
-        Task ExecutedAsync(T target, IServiceProvider serviceProvider,
-            CancellationToken ct)
-        {
-            return Task.CompletedTask;
-        }
     }
 }

@@ -73,14 +73,16 @@ namespace Notifo.Domain.Subscriptions
                     subscription = Subscription.Create(appId, userId, prefix);
                 }
 
-                if (await command.ExecuteAsync(subscription, serviceProvider, ct))
-                {
-                    await repository.UpsertAsync(subscription, etag, ct);
+                var newSubscription = await command.ExecuteAsync(subscription, serviceProvider, ct);
 
-                    await command.ExecutedAsync(subscription, serviceProvider, ct);
+                if (newSubscription == null || ReferenceEquals(subscription, newSubscription))
+                {
+                    return subscription;
                 }
 
-                return subscription;
+                await repository.UpsertAsync(subscription, etag, ct);
+
+                return newSubscription;
             });
         }
 

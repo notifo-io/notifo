@@ -9,12 +9,12 @@ using NodaTime;
 
 namespace Notifo.Domain.Channels.MobilePush
 {
-    public sealed class MobilePushToken
+    public sealed record MobilePushToken
     {
-        public string Token { get; set; }
+        public string Token { get; init; }
 
-        public MobileDeviceType DeviceType { get; set; }
+        public MobileDeviceType DeviceType { get; init; }
 
-        public Instant LastWakeup { get; set; }
+        public Instant LastWakeup { get; init; }
     }
 }

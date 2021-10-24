@@ -6,9 +6,11 @@
 // ==========================================================================
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users
 {
@@ -16,17 +18,25 @@ namespace Notifo.Domain.Users
     {
         public TopicId Prefix { get; set; }
 
-        public Task<bool> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
-            if (!user.AllowedTopics.Contains(Prefix))
+            if (user.AllowedTopics.Contains(Prefix))
             {
-                user.AllowedTopics.Add(Prefix);
-
-                return Task.FromResult(true);
+                return default;
             }
 
-            return Task.FromResult(false);
+            var newAllowedTopics = new List<string>(user.AllowedTopics)
+            {
+                Prefix
+            };
+
+            var newUser = user with
+            {
+                AllowedTopics = newAllowedTopics.ToImmutableList()
+            };
+
+            return new ValueTask<User?>(newUser);
         }
     }
 }

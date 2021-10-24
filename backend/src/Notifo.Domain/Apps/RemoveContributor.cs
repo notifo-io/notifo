@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps
@@ -30,7 +32,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public Task<bool> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
@@ -40,9 +42,17 @@ namespace Notifo.Domain.Apps
                 throw new DomainException(Texts.App_CannotRemoveYourself);
             }
 
-            var removed = app.Contributors.Remove(ContributorId);
+            if (!app.Contributors.ContainsKey(ContributorId))
+            {
+                return default;
+            }
 
-            return Task.FromResult(removed);
+            var newApp = app with
+            {
+                Contributors = app.Contributors.Where(x => x.Key != ContributorId).ToImmutableDictionary()
+            };
+
+            return new ValueTask<App?>(newApp);
         }
     }
 }

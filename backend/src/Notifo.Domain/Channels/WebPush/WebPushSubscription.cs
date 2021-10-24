@@ -5,14 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Channels.WebPush
 {
-    public sealed class WebPushSubscription
+    public sealed record WebPushSubscription
     {
-        public string Endpoint { get; set; }
+        public string Endpoint { get; init; }
 
-        public Dictionary<string, string> Keys { get; set; } = new Dictionary<string, string>();
+        public ReadonlyDictionary<string, string> Keys { get; init; } = ReadonlyDictionary.Empty<string, string>();
     }
 }

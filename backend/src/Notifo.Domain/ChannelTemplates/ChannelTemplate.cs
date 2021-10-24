@@ -5,24 +5,24 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using NodaTime;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed class ChannelTemplate<T>
+    public sealed record ChannelTemplate<T>
     {
         public string Id { get; private init; }
 
         public string AppId { get; private init; }
 
-        public string? Name { get; set; }
+        public string? Name { get; init; }
 
-        public bool Primary { get; set; }
+        public bool Primary { get; init; }
 
-        public Instant LastUpdate { get; set; }
+        public Instant LastUpdate { get; init; }
 
-        public Dictionary<string, T> Languages { get; set; } = new Dictionary<string, T>();
+        public ReadonlyDictionary<string, T> Languages { get; init; } = ReadonlyDictionary.Empty<string, T>();
 
         public static ChannelTemplate<T> Create(string appId, string id)
         {
