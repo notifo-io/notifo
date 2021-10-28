@@ -13,8 +13,8 @@ import { Input } from 'reactstrap';
 import { usePreview } from './helpers';
 
 export interface EmailTextEditorProps {
-    // The value.
-    value?: string | null;
+    // The initial value.
+    initialValue?: string | null;
 
     // The app name.
     appId: string;
@@ -27,7 +27,7 @@ export interface EmailTextEditorProps {
 }
 
 export const EmailTextEditor = (props: EmailTextEditorProps) => {
-    const { appId, onBlur, onChange, value } = props;
+    const { appId, onBlur, onChange, initialValue } = props;
 
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Text');
 
@@ -36,8 +36,8 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
     }, [emailPreview.markup, onChange]);
 
     React.useEffect(() => {
-        setMarkup(value || '');
-    }, [setMarkup, value]);
+        setMarkup(initialValue || '');
+    }, [setMarkup, initialValue]);
 
     const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setMarkup(event.target.value);

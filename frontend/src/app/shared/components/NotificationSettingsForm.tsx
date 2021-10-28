@@ -117,7 +117,7 @@ export module NotificationsForm {
                             label={texts.common.fromEmail} />
 
                         <Forms.Text name={`${field}.${channel}.properties.fromName`} vertical={vertical}
-                            label={texts.common.fromEmailName} />
+                            label={texts.common.fromName} />
                     </>
                 }
 

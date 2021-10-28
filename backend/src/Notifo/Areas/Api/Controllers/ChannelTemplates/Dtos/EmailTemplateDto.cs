@@ -27,5 +27,15 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         /// The body text template.
         /// </summary>
         public string? BodyText { get; set; }
+
+        /// <summary>
+        /// The optional from email.
+        /// </summary>
+        public string? FromEmail { get; set; }
+
+        /// <summary>
+        /// The optional from name.
+        /// </summary>
+        public string? FromName { get; set; }
     }
 }

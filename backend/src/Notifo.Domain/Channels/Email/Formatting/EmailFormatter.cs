@@ -112,13 +112,26 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
             var properties = CreateProperties(jobs, app, user, firstJob);
 
+            var fromEmail = firstJob.FromEmail;
+            var fromName = firstJob.FromName;
+
+            if (string.IsNullOrWhiteSpace(fromEmail))
+            {
+                fromEmail = template.FromEmail;
+            }
+
+            if (string.IsNullOrWhiteSpace(fromName))
+            {
+                fromName = template.FromName;
+            }
+
             var mailMessage = new EmailMessage
             {
                 Subject = FormatSubject(template, properties),
                 BodyHtml = FormatHtml(template, properties, jobs),
                 BodyText = FormatText(template, properties, jobs),
-                FromEmail = firstJob.FromEmail!,
-                FromName = firstJob.FromName!,
+                FromEmail = fromEmail!,
+                FromName = fromName,
                 ToEmail = user.EmailAddress!,
                 ToName = user.FullName,
             };

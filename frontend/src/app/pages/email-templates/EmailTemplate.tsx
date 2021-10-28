@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormControlError, Forms, Icon, Loader, useFieldNew } from '@app/framework';
+import { FormControlError, Forms, Icon, Loader, useDialog, useFieldNew } from '@app/framework';
 import { EmailTemplateDto } from '@app/service';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -17,6 +17,7 @@ import { Button, ButtonGroup, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import { EmailHtmlEditor } from './editor/EmailHtmlEditor';
 import { EmailTextEditor } from './editor/EmailTextEditor';
+import { EmailTemplateMoreDialog } from './EmailTemplateMoreDialog';
 
 const FormSchema = Yup.object().shape({
     // Required html body
@@ -62,8 +63,10 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
     const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
     const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
+    const moreDialog = useDialog();
     const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
     const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);
+    const [templateCopy, setTemplateCopy] = React.useState(template);
     const [showHtml, setShowHtml] = React.useState(true);
 
     React.useEffect(() => {
@@ -84,6 +87,14 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         }
     }, [deletingLanguageError]);
 
+    React.useEffect(() => {
+        if (template) {
+            setTemplateCopy({ ...template });
+        } else {
+            undefined;
+        }
+    }, [template]);
+
     const doShowhtml = React.useCallback(() => {
         setShowHtml(true);
     }, []);
@@ -96,54 +107,71 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         dispatch(createEmailTemplateLanguage({ appId, id, language }));
     }, [dispatch, appId, id, language]);
 
-    const doUpdate = React.useCallback((template: EmailTemplateDto) => {
-        dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
-    }, [dispatch, appId, id, language]);
-
     const doDelete = React.useCallback(() => {
         dispatch(deleteEmailTemplateLanguage({ appId, id, language }));
     }, [dispatch, appId, id, language]);
 
+    const doUpdate = React.useCallback((params: EmailTemplateDto) => {
+        const template = {
+            ...params,
+            fromEmail: templateCopy?.fromEmail,
+            fromName: templateCopy?.fromName,
+        };
+
+        dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
+    }, [dispatch, appId, id, language, templateCopy]);
+
     const disabled = updatingLanguage || deletingLanguage;
 
-    return template ? (
-        <Formik<EmailTemplateDto> initialValues={template} onSubmit={doUpdate} validationSchema={FormSchema} enableReinitialize>
-            {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                    <div className='email-container'>
-                        <div className='email-menu'>
-                            <Row className='align-items-center'>
-                                <Col>
-                                    <ButtonGroup>
-                                        <Button color='secondary' className='btn-flat' outline={!showHtml} onClick={doShowhtml}>
-                                            {texts.common.html}
+    return templateCopy ? (
+        <>
+            <Formik<EmailTemplateDto> initialValues={templateCopy} onSubmit={doUpdate} validationSchema={FormSchema} enableReinitialize>
+                {({ handleSubmit }) => (
+                    <Form onSubmit={handleSubmit}>
+                        <div className='email-container'>
+                            <div className='email-menu'>
+                                <Row className='align-items-center'>
+                                    <Col xs='auto'>
+                                        <ButtonGroup>
+                                            <Button color='secondary' className='btn-flat' outline={!showHtml} onClick={doShowhtml}>
+                                                {texts.common.html}
+                                            </Button>
+                                            <Button color='secondary' className='btn-flat' outline={showHtml} onClick={doShowText}>
+                                                {texts.common.text}
+                                            </Button>
+                                        </ButtonGroup>
+                                    </Col>
+                                    <Col>
+                                        <Button color='blank' onClick={moreDialog.open}>
+                                            <Icon className='text-lg' type='create' />
                                         </Button>
-                                        <Button color='secondary' className='btn-flat' outline={showHtml} onClick={doShowText}>
-                                            {texts.common.text}
+                                    </Col>
+                                    <Col xs='auto'>
+                                        <Button color='primary' disabled={disabled} type='submit'>
+                                            <Loader light small visible={updatingLanguage} /> {texts.common.save}
                                         </Button>
-                                    </ButtonGroup>
-                                </Col>
-                                <Col xs='auto'>
-                                    <Button color='primary' disabled={disabled} type='submit'>
-                                        <Loader light small visible={updatingLanguage} /> {texts.common.save}
-                                    </Button>
-                                    <Button color='danger' disabled={disabled} type='button' onClick={doDelete}>
-                                        <Loader light small visible={deletingLanguage} /> <Icon type='delete' />
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </div>
+                                        <Button color='danger' disabled={disabled} type='button' onClick={doDelete}>
+                                            <Loader light small visible={deletingLanguage} /> <Icon type='delete' />
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </div>
 
-                        <div className='email-subject' >
-                            <Forms.Text name='subject' label={texts.common.subject} vertical />
-                        </div>
+                            <div className='email-subject' >
+                                <Forms.Text name='subject' label={texts.common.subject} vertical />
+                            </div>
 
-                        <BodyHtml appId={appId} visible={showHtml} />
-                        <BodyText appId={appId} visible={!showHtml} />
-                    </div>
-                </Form>
-            )}
-        </Formik>
+                            <BodyHtml appId={appId} visible={showHtml} />
+                            <BodyText appId={appId} visible={!showHtml} />
+                        </div>
+                    </Form>
+                )}
+            </Formik>
+
+            {moreDialog.isOpen &&
+                <EmailTemplateMoreDialog template={templateCopy} onClose={moreDialog.close} />
+            }
+        </>
     ) : (
         <div className='empty-button'>
             <Label>{texts.emailTemplates.notFoundLanguage}</Label>
@@ -155,30 +183,39 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     );
 };
 
-export const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
-    const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
-    const [, meta, helpers] = useFieldNew('bodyText');
-
-    const doTouch = React.useCallback(() => {
-        helpers.setTouched(true);
-    }, [helpers]);
-
-    const clazz = !visible ? 'email-body hidden' : 'email-body';
+const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
+    const field = useFieldContext('bodyText', visible);
 
     return (
         <>
-            <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
+            <FormControlError error={field.meta.error} touched={field.meta.touched} submitCount={field.submitCount} />
 
-            <div className={clazz}>
-                <EmailTextEditor value={initialValues.bodyText} appId={appId}
-                    onChange={helpers.setValue}
-                    onBlur={doTouch} />
+            <div className={field.className}>
+                <EmailTextEditor initialValue={field.value} appId={appId}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur} />
             </div>
         </>
     );
 };
 
-export const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }) => {
+const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }) => {
+    const field = useFieldContext('bodyHtml', visible);
+
+    return (
+        <>
+            <FormControlError error={field.meta.error} touched={field.meta.touched} submitCount={field.submitCount} />
+
+            <div className={field.className}>
+                <EmailHtmlEditor initialValue={field.value} appId={appId}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur} />
+            </div>
+        </>
+    );
+};
+
+function useFieldContext(name: string, visible: boolean) {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
     const [, meta, helpers] = useFieldNew('bodyHtml');
 
@@ -188,15 +225,12 @@ export const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }
 
     const clazz = !visible ? 'email-body hidden' : 'email-body';
 
-    return (
-        <>
-            <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
-
-            <div className={clazz}>
-                <EmailHtmlEditor value={initialValues.bodyHtml} appId={appId}
-                    onChange={helpers.setValue}
-                    onBlur={doTouch} />
-            </div>
-        </>
-    );
-};
+    return {
+        className: clazz,
+        meta,
+        onBlur: doTouch,
+        onChange: helpers.setValue,
+        submitCount,
+        value: initialValues[name],
+    };
+}

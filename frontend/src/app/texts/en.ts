@@ -74,7 +74,7 @@ export const EN = {
         firstSeen: 'First seen',
         formatting: 'Formatting',
         fromEmail: 'From Email Address',
-        fromEmailName: 'From Name',
+        fromName: 'From Name',
         html: 'HTML',
         id: 'Id',
         imageLarge: 'Large Image',

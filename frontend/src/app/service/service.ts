@@ -5079,6 +5079,8 @@ export interface UserNotificationBaseDto {
     confirmUrl?: string | undefined;
     /** Optional data, usually a json object. */
     data?: string | undefined;
+    /** Optional properties. */
+    properties?: NotificationProperties | undefined;
 }
 
 export interface UserNotificationDetailsDto extends UserNotificationBaseDto {
@@ -5367,6 +5369,10 @@ export interface EmailTemplateDto {
     bodyHtml: string;
     /** The body text template. */
     bodyText?: string | undefined;
+    /** The optional from email. */
+    fromEmail?: string | undefined;
+    /** The optional from name. */
+    fromName?: string | undefined;
 }
 
 export interface CreateChannelTemplateDto {
@@ -5462,10 +5468,10 @@ export interface AppDetailsDto {
     name: string;
     /** The current role. */
     role: string;
-    /** The supported languages. */
-    languages: string[];
     /** The confirm URL. */
     confirmUrl?: string | undefined;
+    /** The supported languages. */
+    languages: string[];
     /** The api keys. */
     apiKeys: { [key: string]: string; };
     /** The contributors. */
@@ -5524,7 +5530,7 @@ export interface ConfiguredIntegrationDto {
     /** The integration type. */
     type: string;
     /** The configured properties. */
-    properties: IntegrationProperties;
+    properties: { [key: string]: string; };
     /** True when enabled. */
     enabled?: boolean;
     /** True or false when only used for test or production mode. */
@@ -5533,11 +5539,6 @@ export interface ConfiguredIntegrationDto {
     priority?: number;
     /** The status of the integration. */
     status: IntegrationStatus;
-}
-
-export interface IntegrationProperties {
-
-    [key: string]: string | any; 
 }
 
 export type IntegrationStatus = "Verified" | "VerificationFailed" | "Pending";
@@ -5597,7 +5598,7 @@ export interface CreateIntegrationDto {
     /** The integration type. */
     type: string;
     /** The configured properties. */
-    properties: IntegrationProperties;
+    properties: { [key: string]: string; };
     /** True when enabled. */
     enabled?: boolean;
     /** True when used for test events. */
@@ -5608,7 +5609,7 @@ export interface CreateIntegrationDto {
 
 export interface UpdateIntegrationDto {
     /** The configured properties. */
-    properties: IntegrationProperties;
+    properties: { [key: string]: string; };
     /** True when enabled. */
     enabled?: boolean;
     /** True when used for test events. */

@@ -15,7 +15,7 @@ import { usePreview } from './helpers';
 
 export interface EmailHtmlEditorProps {
     // The value.
-    value: string;
+    initialValue: string;
 
     // The app name.
     appId: string;
@@ -28,7 +28,7 @@ export interface EmailHtmlEditorProps {
 }
 
 export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
-    const { appId, onChange, value } = props;
+    const { appId, onChange, initialValue } = props;
 
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
 
@@ -37,8 +37,8 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
     }, [emailPreview, onChange]);
 
     React.useEffect(() => {
-        setMarkup(value);
-    }, [setMarkup, value]);
+        setMarkup(initialValue);
+    }, [setMarkup, initialValue]);
 
     return (
         <div className='email-editor'>

@@ -43,7 +43,6 @@ export const integrationsMiddleware: Middleware = store => next => action => {
     return result;
 };
 
-
 const initialState: IntegrationsState = {};
 
 export const integrationsReducer = createReducer(initialState, builder => builder

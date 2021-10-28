@@ -11359,6 +11359,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Data { get; set; }
     
+        /// <summary>Optional properties.</summary>
+        [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public NotificationProperties Properties { get; set; }
+    
     
     }
     
@@ -11966,6 +11970,14 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("bodyText", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string BodyText { get; set; }
     
+        /// <summary>The optional from email.</summary>
+        [Newtonsoft.Json.JsonProperty("fromEmail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string FromEmail { get; set; }
+    
+        /// <summary>The optional from name.</summary>
+        [Newtonsoft.Json.JsonProperty("fromName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string FromName { get; set; }
+    
     
     }
     
@@ -12174,14 +12186,14 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
     
+        /// <summary>The confirm URL.</summary>
+        [Newtonsoft.Json.JsonProperty("confirmUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ConfirmUrl { get; set; }
+    
         /// <summary>The supported languages.</summary>
         [Newtonsoft.Json.JsonProperty("languages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.ICollection<string> Languages { get; set; } = new System.Collections.ObjectModel.Collection<string>();
-    
-        /// <summary>The confirm URL.</summary>
-        [Newtonsoft.Json.JsonProperty("confirmUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ConfirmUrl { get; set; }
     
         /// <summary>The api keys.</summary>
         [Newtonsoft.Json.JsonProperty("apiKeys", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12311,7 +12323,7 @@ namespace Notifo.SDK
         /// <summary>The configured properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public IntegrationProperties Properties { get; set; } = new IntegrationProperties();
+        public System.Collections.Generic.IDictionary<string, string> Properties { get; set; } = new System.Collections.Generic.Dictionary<string, string>();
     
         /// <summary>True when enabled.</summary>
         [Newtonsoft.Json.JsonProperty("enabled", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12331,12 +12343,6 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public IntegrationStatus Status { get; set; }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class IntegrationProperties : System.Collections.Generic.Dictionary<string, string>
-    {
     
     }
     
@@ -12492,7 +12498,7 @@ namespace Notifo.SDK
         /// <summary>The configured properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public IntegrationProperties Properties { get; set; } = new IntegrationProperties();
+        public System.Collections.Generic.IDictionary<string, string> Properties { get; set; } = new System.Collections.Generic.Dictionary<string, string>();
     
         /// <summary>True when enabled.</summary>
         [Newtonsoft.Json.JsonProperty("enabled", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12515,7 +12521,7 @@ namespace Notifo.SDK
         /// <summary>The configured properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public IntegrationProperties Properties { get; set; } = new IntegrationProperties();
+        public System.Collections.Generic.IDictionary<string, string> Properties { get; set; } = new System.Collections.Generic.Dictionary<string, string>();
     
         /// <summary>True when enabled.</summary>
         [Newtonsoft.Json.JsonProperty("enabled", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
