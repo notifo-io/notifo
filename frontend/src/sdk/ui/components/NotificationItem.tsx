@@ -153,7 +153,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
     }, [notification.linkUrl]);
 
     return (
-        <div class='notifo-notification' ref={setRef}>
+        <div class='notifo-notification' ref={setRef} onClick={doSee}>
             <Image class='notifo-notification-image-large' src={withPreset(notification.imageLarge, 'WebLarge')} />
 
             <div class='notifo-notification-row2'>
