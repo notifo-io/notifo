@@ -67,7 +67,7 @@ namespace Notifo.Identity.ApiKey
                 {
                     var identity = new ClaimsIdentity(new[]
                     {
-                        new Claim(ClaimTypes.NameIdentifier, user.UniqueId()),
+                        new Claim(ClaimTypes.NameIdentifier, user.UniqueId),
                         new Claim(DefaultClaimTypes.AppId, user.AppId),
                         new Claim(DefaultClaimTypes.AppName, user.AppId),
                         new Claim(DefaultClaimTypes.UserId, user.Id)
