@@ -8,7 +8,6 @@
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Counters;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users
@@ -18,6 +17,8 @@ namespace Notifo.Domain.Users
         public string Id { get; private init; }
 
         public string AppId { get; private init; }
+
+        public string UniqueId => "{AppId}_{Id}";
 
         public string ApiKey { get; init; }
 
@@ -51,19 +52,7 @@ namespace Notifo.Domain.Users
 
         public static User Create(string appId, string userId)
         {
-            var user = new User
-            {
-                ApiKey = RandomHash.New(),
-                AppId = appId,
-                Id = userId
-            };
-
-            return user;
-        }
-
-        public string ToFullId()
-        {
-            return $"{AppId}_{Id}";
+            return new User { Id = userId, AppId = appId };
         }
     }
 }

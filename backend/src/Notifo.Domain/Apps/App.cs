@@ -35,12 +35,7 @@ namespace Notifo.Domain.Apps
 
         public static App Create(string appId)
         {
-            var app = new App
-            {
-                Id = appId
-            };
-
-            return app;
+            return new App { Id = appId };
         }
     }
 }

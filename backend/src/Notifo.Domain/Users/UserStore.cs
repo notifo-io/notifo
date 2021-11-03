@@ -178,7 +178,7 @@ namespace Notifo.Domain.Users
 
             if (user != null)
             {
-                await cache.AddAsync(user.ToFullId(), user, CacheDuration);
+                await cache.AddAsync(user.UniqueId, user, CacheDuration);
             }
         }
     }
