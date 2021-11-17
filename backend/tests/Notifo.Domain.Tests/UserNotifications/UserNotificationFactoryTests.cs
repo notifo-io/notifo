@@ -166,7 +166,7 @@ namespace Notifo.Domain.UserNotifications
 
             var danishUser = user with
             {
-                PreferredLanguage = "de"
+                PreferredLanguage = "it"
             };
 
             var notification = sut.Create(app, danishUser, userEvent)!;
