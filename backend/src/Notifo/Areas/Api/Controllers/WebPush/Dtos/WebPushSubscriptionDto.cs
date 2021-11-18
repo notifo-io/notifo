@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure.Reflection;
 

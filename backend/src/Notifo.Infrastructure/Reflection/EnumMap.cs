@@ -5,9 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Text;
 
 namespace Notifo.Infrastructure.Reflection
@@ -60,12 +58,12 @@ namespace Notifo.Infrastructure.Reflection
 
                 foreach (var t1Value in t1Values)
                 {
-                    exceptionBuilder.AppendLine($"{typeof(T1)} {t1Value}");
+                    exceptionBuilder.AppendLine(CultureInfo.InvariantCulture, $"{typeof(T1)} {t1Value}");
                 }
 
                 foreach (var t2Value in t2Values)
                 {
-                    exceptionBuilder.AppendLine($"{typeof(T2)} {t2Value}");
+                    exceptionBuilder.AppendLine(CultureInfo.InvariantCulture, $"{typeof(T2)} {t2Value}");
                 }
 
                 throw new InvalidOperationException(exceptionBuilder.ToString());

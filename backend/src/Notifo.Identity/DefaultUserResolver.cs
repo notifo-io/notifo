@@ -5,10 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
@@ -30,7 +26,7 @@ namespace Notifo.Identity
         {
             Guard.NotNullOrEmpty(emailOrId, nameof(emailOrId));
 
-            using (var scope = serviceProvider.CreateScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
@@ -41,7 +37,7 @@ namespace Notifo.Identity
                     return (found, false);
                 }
 
-                if (!emailOrId.Contains("@", StringComparison.OrdinalIgnoreCase))
+                if (!emailOrId.Contains('@', StringComparison.OrdinalIgnoreCase))
                 {
                     return (null, false);
                 }
@@ -69,7 +65,7 @@ namespace Notifo.Identity
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
-            using (var scope = serviceProvider.CreateScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
@@ -81,11 +77,11 @@ namespace Notifo.Identity
         {
             Guard.NotNullOrEmpty(idOrEmail, nameof(idOrEmail));
 
-            using (var scope = serviceProvider.CreateScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                if (idOrEmail.Contains("@", StringComparison.OrdinalIgnoreCase))
+                if (idOrEmail.Contains('@', StringComparison.OrdinalIgnoreCase))
                 {
                     return await userService.FindByEmailAsync(idOrEmail);
                 }
@@ -98,7 +94,7 @@ namespace Notifo.Identity
 
         public async Task<List<IUser>> QueryAllAsync()
         {
-            using (var scope = serviceProvider.CreateScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
@@ -112,7 +108,7 @@ namespace Notifo.Identity
         {
             Guard.NotNullOrEmpty(email, nameof(email));
 
-            using (var scope = serviceProvider.CreateScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
@@ -126,7 +122,7 @@ namespace Notifo.Identity
         {
             Guard.NotNull(ids, nameof(ids));
 
-            using (var scope = serviceProvider.CreateScope())
+            await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 

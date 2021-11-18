@@ -7,10 +7,7 @@
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Notifo.Domain.Resources;
 

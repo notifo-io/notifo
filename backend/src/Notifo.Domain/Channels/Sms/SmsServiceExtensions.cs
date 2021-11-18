@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;

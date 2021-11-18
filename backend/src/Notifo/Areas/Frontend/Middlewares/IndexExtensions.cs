@@ -5,9 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using Microsoft.AspNetCore.Http;
-
 namespace Notifo.Areas.Frontend.Middlewares
 {
     public static class IndexExtensions

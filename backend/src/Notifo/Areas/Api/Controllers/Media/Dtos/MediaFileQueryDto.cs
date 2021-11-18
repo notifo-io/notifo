@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Infrastructure.Reflection;
 using Squidex.Assets;

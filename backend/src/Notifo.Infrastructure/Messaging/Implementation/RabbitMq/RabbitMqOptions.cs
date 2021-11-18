@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using Squidex.Hosting.Configuration;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq

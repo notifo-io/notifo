@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using Microsoft.AspNetCore.Builder;
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Pipeline;
 

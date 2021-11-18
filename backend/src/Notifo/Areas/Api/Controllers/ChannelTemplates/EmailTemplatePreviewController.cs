@@ -5,9 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain;
@@ -124,7 +121,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 
             var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, language, App, EmailUser, HttpContext.RequestAborted);
 
-            return Content(formatted.BodyHtml, "text/html");
+            return Content(formatted.BodyHtml!, "text/html");
         }
 
         /// <summary>

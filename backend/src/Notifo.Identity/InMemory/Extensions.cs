@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading.Tasks;
-
 namespace Notifo.Identity.InMemory
 {
     public static class Extensions

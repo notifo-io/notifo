@@ -5,9 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
@@ -78,7 +75,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
             {
                 var url = app.ConfirmUrl!;
 
-                if (url.Contains("?", StringComparison.OrdinalIgnoreCase))
+                if (url.Contains('?', StringComparison.OrdinalIgnoreCase))
                 {
                     url += $"&id={id}";
                 }

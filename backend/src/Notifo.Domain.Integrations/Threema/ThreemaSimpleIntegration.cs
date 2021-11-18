@@ -5,9 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;

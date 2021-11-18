@@ -5,9 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-
 namespace Notifo.Domain
 {
     public sealed class NotificationProperties : Dictionary<string, string>

@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using MongoDB.Driver;
 using Notifo.Infrastructure.Scheduling;
 using Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
