@@ -54,7 +54,7 @@ RUN cp -a build /build/
 #
 # Stage 3, Build runtime
 #
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.0-buster-slim
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.0-bullseye-slim
 
 RUN apt-get update \
  && apt-get install -y curl
