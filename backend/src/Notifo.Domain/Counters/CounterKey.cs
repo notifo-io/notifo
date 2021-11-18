@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Notifo.Domain.Events;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;

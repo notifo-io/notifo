@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using FirebaseAdmin.Messaging;
 using Notifo.Domain.Channels;

@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using System.Text;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;

@@ -37,7 +37,7 @@ namespace Notifo.Areas.Api.Controllers
 
         public App App
         {
-            get => HttpContext.Features.Get<IAppFeature>().App;
+            get => HttpContext.Features.Get<IAppFeature>()!.App;
         }
     }
 }

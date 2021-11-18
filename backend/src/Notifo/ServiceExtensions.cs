@@ -5,10 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Bson.Serialization;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;

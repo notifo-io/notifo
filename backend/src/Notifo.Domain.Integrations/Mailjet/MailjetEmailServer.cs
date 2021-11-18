@@ -6,9 +6,6 @@
 // ==========================================================================
 
 using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Mailjet.Client;
 using Mailjet.Client.TransactionalEmails;
 using Notifo.Domain.Channels.Email;

@@ -5,9 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;

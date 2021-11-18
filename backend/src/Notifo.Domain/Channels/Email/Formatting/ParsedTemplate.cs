@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.ObjectPool;
@@ -83,7 +81,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                     if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
                     {
-                        stringBuilder.Append($"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackSeenUrl}\" />");
+                        var trackingLink = $"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackSeenUrl}\" />";
+
+                        stringBuilder.Append(trackingLink);
                     }
                 });
 

@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
-using System.Threading;
 using Notifo.Infrastructure.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

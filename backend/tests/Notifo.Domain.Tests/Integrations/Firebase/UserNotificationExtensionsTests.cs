@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Globalization;
 using Notifo.Domain.UserNotifications;
 using Xunit;

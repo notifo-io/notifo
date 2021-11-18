@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Reflection;

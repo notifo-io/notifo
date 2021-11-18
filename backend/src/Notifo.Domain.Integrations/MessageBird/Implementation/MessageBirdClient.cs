@@ -5,14 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Notifo.Infrastructure;
@@ -76,7 +72,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<MessageBirdSmsResponse>(default, ct);
+                    var result = await response.Content.ReadFromJsonAsync<MessageBirdSmsResponse>((JsonSerializerOptions?)null, ct);
 
                     return result!;
                 }
@@ -122,7 +118,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         private static async Task<Exception> HandleErrorAsync(HttpResponseMessage response,
             CancellationToken ct)
         {
-            var errors = await response.Content.ReadFromJsonAsync<MessageBirdErrors>(default, ct);
+            var errors = await response.Content.ReadFromJsonAsync<MessageBirdErrors>((JsonSerializerOptions?)null, ct);
             var error = errors?.Errors?.FirstOrDefault();
 
             if (error != null)

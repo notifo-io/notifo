@@ -5,9 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace Notifo.Domain.Identity
 {
     public interface IUserResolver

@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain.Channels.Web;

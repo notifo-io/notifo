@@ -5,12 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using NodaTime;
 using Notifo.Domain.Channels.Webhook.Integrations;
 using Notifo.Domain.Integrations;

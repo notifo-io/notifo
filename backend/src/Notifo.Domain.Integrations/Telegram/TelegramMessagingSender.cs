@@ -5,11 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Globalization;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Notifo.Domain.Apps;
@@ -65,13 +61,13 @@ namespace Notifo.Domain.Integrations.Telegram
                 case UpdateType.Message when IsUpdate(update):
                     await UpdateUser(
                         app,
-                        update.Message.From,
-                        update.Message.Chat,
+                        update.Message?.From!,
+                        update.Message?.Chat!,
                         ct);
                     break;
                 case UpdateType.MyChatMember:
                     {
-                        var chatId = GetChatId(update.MyChatMember.Chat);
+                        var chatId = GetChatId(update.MyChatMember!.Chat);
 
                         await SendMessageAsync(GetWelcomeMessage(app), chatId, ct);
 
@@ -169,7 +165,7 @@ namespace Notifo.Domain.Integrations.Telegram
 
         private static bool IsUpdate(TelegramUpdate update)
         {
-            return update.Message.Type == MessageType.Text && update.Message.Text == "/update";
+            return update.Message?.Type == MessageType.Text && update.Message?.Text == "/update";
         }
 
         private static async Task<TelegramUpdate> ParseUpdateAsync(Stream stream)

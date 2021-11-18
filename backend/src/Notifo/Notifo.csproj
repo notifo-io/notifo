@@ -1,24 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
+    <NoWarn>1701;1702;8618;1591;CS1591;NU1608</NoWarn>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.82" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.100" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.2" />
-    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.2.0" />
+    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.3.1" />
     <PackageReference Include="Google.Cloud.Trace.V2" Version="2.3.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.672">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.676">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.11" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="5.0.11" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
-    <PackageReference Include="NSwag.AspNetCore" Version="13.13.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
+	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.14.4" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0-alpha1" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-alpha1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc7" />
@@ -60,10 +66,6 @@
 	
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-	
-  <PropertyGroup>
-    <NoWarn>1701;1702;1591;8618;CS1591;1591</NoWarn>
   </PropertyGroup>
 
 </Project>

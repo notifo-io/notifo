@@ -6,11 +6,8 @@
 // ==========================================================================
 
 using System.Globalization;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;

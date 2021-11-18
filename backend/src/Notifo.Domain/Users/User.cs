@@ -18,7 +18,7 @@ namespace Notifo.Domain.Users
 
         public string AppId { get; private init; }
 
-        public string UniqueId => "{AppId}_{Id}";
+        public string UniqueId => $"{AppId}_{Id}";
 
         public string ApiKey { get; init; }
 

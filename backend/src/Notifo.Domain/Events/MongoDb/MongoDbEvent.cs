@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Text;
 using Microsoft.Extensions.ObjectPool;
 using Notifo.Infrastructure.MongoDb;

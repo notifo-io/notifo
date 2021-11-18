@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using System.Text;
 
 namespace Notifo.Domain.UserNotifications
@@ -63,7 +62,7 @@ namespace Notifo.Domain.UserNotifications
             {
                 var builder = new StringBuilder(url);
 
-                var hasQuery = url.Contains("?", StringComparison.OrdinalIgnoreCase);
+                var hasQuery = url.Contains('?', StringComparison.OrdinalIgnoreCase);
 
                 void Append(string key, string? value)
                 {
@@ -83,7 +82,7 @@ namespace Notifo.Domain.UserNotifications
 
                     builder.Append(key);
                     builder.Append('=');
-                    builder.Append(Uri.EscapeUriString(value));
+                    builder.Append(Uri.EscapeDataString(value));
 
                     hasQuery = true;
                 }

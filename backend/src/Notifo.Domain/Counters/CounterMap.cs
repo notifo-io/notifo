@@ -5,11 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-
 #pragma warning disable CS0162
 #pragma warning disable RECS0092 // Convert field to readonly
 #pragma warning disable RECS0065 // Expression is always 'true' or always 'false'

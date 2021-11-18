@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Generic;
 using NodaTime;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased

@@ -1,7 +1,7 @@
 #
 # Stage 1, Build Backend
 #
-FROM mcr.microsoft.com/dotnet/sdk:5.0 as backend
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as backend
 
 ARG NOTIFO__VERSION=1.0.0
 
@@ -54,7 +54,7 @@ RUN cp -a build /build/
 #
 # Stage 3, Build runtime
 #
-FROM mcr.microsoft.com/dotnet/aspnet:5.0.0-buster-slim
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.0-bullseye-slim
 
 RUN apt-get update \
  && apt-get install -y curl

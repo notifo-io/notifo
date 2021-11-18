@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb
