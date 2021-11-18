@@ -4,13 +4,13 @@
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
-    <NoWarn>1701;1702;8618;1591;CS1591;NU1608</NoWarn>
+    <NoWarn>1701;1702;8618;1591;CS1591</NoWarn>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.100" />
-    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.2" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.3" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.3.1" />
     <PackageReference Include="Google.Cloud.Trace.V2" Version="2.3.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="1.0.676">
@@ -20,16 +20,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
-	<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.14.4" />
-    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0-alpha1" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-alpha1" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc7" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc7" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc7" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0-beta1" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-beta1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc8" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc8" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="Squidex.Caching.Redis" Version="1.8.0" />
     <PackageReference Include="Squidex.OpenTelemetry.Exporter.Stackdriver" Version="0.0.0-alpha.0.97" />
