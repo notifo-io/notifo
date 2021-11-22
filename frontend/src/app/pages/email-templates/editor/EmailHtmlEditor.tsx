@@ -10,6 +10,7 @@
 import { IFrame } from '@app/framework';
 import * as React from 'react';
 import Split from 'react-split';
+import { Alert } from 'reactstrap';
 import { EmailHtmlTextEditor } from './EmailHtmlTextEditor';
 import { usePreview } from './helpers';
 
@@ -33,7 +34,7 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
 
     React.useEffect(() => {
-        onChange && emailPreview.markup && onChange(emailPreview.markup);
+        onChange && emailPreview.emailMarkup && onChange(emailPreview.emailMarkup);
     }, [emailPreview, onChange]);
 
     React.useEffect(() => {
@@ -44,11 +45,15 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
         <div className='email-editor'>
             <Split direction='horizontal'>
                 <div className='left'>
-                    <EmailHtmlTextEditor value={markup} errors={emailPreview.errors} onChange={setMarkup} />
+                    <EmailHtmlTextEditor value={markup} errors={emailPreview.rendering?.errors} onChange={setMarkup} />
                 </div>
 
                 <div className='right'>
-                    <IFrame html={emailPreview?.result} />
+                    <IFrame html={emailPreview?.rendering?.result} />
+
+                    {emailPreview.error &&
+                        <Alert color='danger'>{emailPreview.error}</Alert>
+                    }
                 </div>
             </Split>
         </div>

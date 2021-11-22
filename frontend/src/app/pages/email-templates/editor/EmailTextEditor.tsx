@@ -9,7 +9,7 @@
 
 import * as React from 'react';
 import Split from 'react-split';
-import { Input } from 'reactstrap';
+import { Alert, Input } from 'reactstrap';
 import { usePreview } from './helpers';
 
 export interface EmailTextEditorProps {
@@ -32,8 +32,8 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Text');
 
     React.useEffect(() => {
-        onChange && emailPreview.markup && onChange(emailPreview.markup);
-    }, [emailPreview.markup, onChange]);
+        onChange && emailPreview.emailMarkup && onChange(emailPreview.emailMarkup);
+    }, [emailPreview.emailMarkup, onChange]);
 
     React.useEffect(() => {
         setMarkup(initialValue || '');
@@ -51,7 +51,11 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
                 </div>
 
                 <div className='right'>
-                    <textarea className='form-control' readOnly value={emailPreview.result}></textarea>
+                    <textarea className='form-control' readOnly value={emailPreview.rendering?.result}></textarea>
+
+                    {emailPreview.error &&
+                        <Alert color='danger'>{emailPreview.error}</Alert>
+                    }
                 </div>
             </Split>
         </div>

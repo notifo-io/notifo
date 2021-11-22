@@ -22,7 +22,7 @@ interface Array<T> {
 Array.prototype.removeBy = function<T, TId>(field: (value: T) => TId, oldId: TId): boolean {
     for (let i = 0; i < this.length; i++) {
         if (field(this[i]) === oldId) {
-            this.slice(i, 1);
+            this.splice(i, 1);
             return true;
         }
     }
