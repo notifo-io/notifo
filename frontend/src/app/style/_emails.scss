@@ -242,8 +242,7 @@ $size-email-header: 5rem;
         position: relative;
 
         .alert {
-            @include absolute(0, 0, null, 0);
-            border-radius: 0;
+            @include absolute(1.5rem, 1.5rem, null, 1.5rem);
         }
 
         iframe {
