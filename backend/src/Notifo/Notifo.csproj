@@ -31,6 +31,7 @@
     <PackageReference Include="Squidex.Caching.Redis" Version="1.8.0" />
     <PackageReference Include="Squidex.OpenTelemetry.Exporter.Stackdriver" Version="0.0.0-alpha.0.97" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

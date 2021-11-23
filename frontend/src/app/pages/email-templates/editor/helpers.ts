@@ -13,11 +13,11 @@ import { Clients, EmailPreviewDto, EmailPreviewType } from '@app/service';
 
 type RequestCode = { code: any };
 
-type MarkupResponse = { rendering?: EmailPreviewDto; emailMarkup?: string; error?: string };
+type MarkupResponse = { rendering: EmailPreviewDto; emailMarkup?: string };
 
 export function usePreview(appId: string, type: EmailPreviewType): [MarkupResponse, string, (value: string) => void] {
     const [emailMarkup, setEmailMarkup] = React.useState<string>('');
-    const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({});
+    const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({ rendering: {} });
 
     const status = React.useRef<RequestCode>({ code: '0' });
 
@@ -35,9 +35,13 @@ export function usePreview(appId: string, type: EmailPreviewType): [MarkupRespon
                 }
             } catch (ex) {
                 if (status.current.code === code) {
-                    const error = ex.message;
+                    const rendering: EmailPreviewDto = {
+                        errors: [{
+                            message: ex.message,
+                        }],
+                    };
 
-                    setEmailPreview({ emailMarkup, error });
+                    setEmailPreview({ rendering, emailMarkup });
                 }
             }
         }, 300);

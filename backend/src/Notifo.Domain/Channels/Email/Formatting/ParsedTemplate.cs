@@ -95,18 +95,23 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        public static ParsedTemplate? Create(string? body)
+        public static (ParsedTemplate? Template, string? Error) Create(string? body)
         {
             if (string.IsNullOrWhiteSpace(body))
             {
-                return null;
+                return default;
             }
 
             var result = new ParsedTemplate();
 
             result.Prepare(body);
 
-            return result;
+            if (!result.ItemTemplates.ContainsKey(ItemDefault))
+            {
+                return (null, Texts.Email_TemplateNoItem);
+            }
+
+            return (result, null);
         }
 
         private void Prepare(string template)
@@ -123,11 +128,6 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 ItemTemplates[type.ToUpperInvariant()] = item;
 
                 template = newTemplate;
-            }
-
-            if (!ItemTemplates.ContainsKey(ItemDefault))
-            {
-                throw new DomainException(Texts.Email_TemplateNoItem);
             }
 
             Text = template;

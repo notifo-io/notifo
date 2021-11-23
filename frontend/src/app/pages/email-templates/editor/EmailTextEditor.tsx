@@ -43,6 +43,8 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
         setMarkup(event.target.value);
     }, [setMarkup]);
 
+    const error = emailPreview.rendering.errors?.find(x => !x.line || x.line < 0);
+
     return (
         <div className='email-editor white'>
             <Split direction='horizontal'>
@@ -53,8 +55,8 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
                 <div className='right'>
                     <textarea className='form-control' readOnly value={emailPreview.rendering?.result}></textarea>
 
-                    {emailPreview.error &&
-                        <Alert color='danger'>{emailPreview.error}</Alert>
+                    {error &&
+                        <Alert color='danger'>{error.message}</Alert>
                     }
                 </div>
             </Split>

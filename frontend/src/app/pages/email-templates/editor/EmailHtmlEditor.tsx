@@ -41,6 +41,8 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
         setMarkup(initialValue);
     }, [setMarkup, initialValue]);
 
+    const error = emailPreview.rendering.errors?.find(x => !x.line || x.line <= 0);
+
     return (
         <div className='email-editor'>
             <Split direction='horizontal'>
@@ -51,8 +53,8 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
                 <div className='right'>
                     <IFrame html={emailPreview?.rendering?.result} />
 
-                    {emailPreview.error &&
-                        <Alert color='danger'>{emailPreview.error}</Alert>
+                    {error &&
+                        <Alert color='danger'>{error.message}</Alert>
                     }
                 </div>
             </Split>

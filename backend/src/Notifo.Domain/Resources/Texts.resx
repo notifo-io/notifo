@@ -142,10 +142,10 @@
     <value>Integration has been removed.</value>
   </data>
   <data name="Email_TemplateInvalid" xml:space="preserve">
-    <value>Email template is invalid and does not render property.</value>
+    <value>Email template does not render notification subject, add '{{ notification.subject }}' to each template.</value>
   </data>
   <data name="Email_TemplateNoItem" xml:space="preserve">
-    <value>Template must have a template for notifcations.</value>
+    <value>Template must have a default template for notifcations, add '&lt;!-- START: NOTIFICATION --&gt;'.</value>
   </data>
   <data name="Email_TemplateUndefined" xml:space="preserve">
     <value>Either template for text or html body must be defined.</value>

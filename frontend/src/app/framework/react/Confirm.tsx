@@ -44,6 +44,10 @@ export const Confirm = (props: ConfirmProps) => {
                 event.stopPropagation();
             }
 
+            if (Types.isFunction(event.preventDefault)) {
+                event.preventDefault();
+            }
+
             return false;
         };
 

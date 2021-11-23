@@ -121,7 +121,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 
             var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, language, App, EmailUser, HttpContext.RequestAborted);
 
-            return Content(formatted.BodyHtml!, "text/html");
+            return Content(formatted.Message!.BodyHtml!, "text/html");
         }
 
         /// <summary>
@@ -138,6 +138,8 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostPreview(string appId, [FromBody] EmailPreviewRequestDto request)
         {
+            var response = new EmailPreviewDto();
+
             try
             {
                 if (request.Type == EmailPreviewType.Html)
@@ -149,10 +151,8 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 
                     var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, template, App, EmailUser, HttpContext.RequestAborted);
 
-                    var response = new EmailPreviewDto
-                    {
-                        Result = formatted.BodyHtml!
-                    };
+                    response.Result = formatted.Message?.BodyHtml;
+                    response.Errors = formatted.Errors?.ToArray();
 
                     return Ok(response);
                 }
@@ -165,23 +165,16 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 
                     var formatted = await emailFormatter.FormatPreviewAsync(EmailJobs, template, App, EmailUser, HttpContext.RequestAborted);
 
-                    var response = new EmailPreviewDto
-                    {
-                        Result = formatted.BodyText!
-                    };
-
-                    return Ok(response);
+                    response.Result = formatted.Message?.BodyHtml;
+                    response.Errors = formatted.Errors?.ToArray();
                 }
             }
             catch (EmailFormattingException ex)
             {
-                var response = new EmailPreviewDto
-                {
-                    Errors = ex.Errors.ToArray()
-                };
-
-                return Ok(response);
+                response.Errors = ex.Errors?.ToArray();
             }
+
+            return Ok(response);
         }
     }
 }

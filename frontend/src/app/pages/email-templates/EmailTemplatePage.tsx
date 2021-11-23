@@ -56,6 +56,18 @@ export const EmailTemplatePage = () => {
         }
     }, [setName, template]);
 
+    React.useEffect(() => {
+        const timer = setTimeout(() => {
+            if (name !== template?.name) {
+                dispatch(updateEmailTemplate({ appId, id: templateId, update: { name } }));
+            }
+        }, 100);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [dispatch, appId, name, template?.name, templateId]);
+
     const doSetName = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
     }, [setName]);

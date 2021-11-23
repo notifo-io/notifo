@@ -15,8 +15,8 @@ namespace Notifo.Domain.Channels.Email
     {
         public IReadOnlyList<EmailFormattingError> Errors { get; }
 
-        public EmailFormattingException(string template, IEnumerable<EmailFormattingError> errors)
-            : base(BuildErrorMessage(errors, template))
+        public EmailFormattingException(IEnumerable<EmailFormattingError> errors)
+            : base(BuildErrorMessage(errors))
         {
             Errors = errors.ToList();
         }
@@ -32,7 +32,7 @@ namespace Notifo.Domain.Channels.Email
             info.AddValue(nameof(Errors), Errors.ToList());
         }
 
-        private static string BuildErrorMessage(IEnumerable<EmailFormattingError> errors, string template)
+        private static string BuildErrorMessage(IEnumerable<EmailFormattingError> errors)
         {
             var sb = new StringBuilder();
 
@@ -41,12 +41,15 @@ namespace Notifo.Domain.Channels.Email
             foreach (var error in errors)
             {
                 sb.Append(" * ");
-                sb.AppendLine(error.Message);
+                sb.Append("Line: ");
+                sb.Append(error.Line);
+                sb.Append(", ");
+                sb.Append("Template: ");
+                sb.Append(error.Template);
+                sb.Append(", ");
+                sb.Append(error.Message);
+                sb.AppendLine();
             }
-
-            sb.AppendLine();
-            sb.AppendLine("Template:");
-            sb.AppendLine(template);
 
             return sb.ToString();
         }

@@ -19,7 +19,7 @@ namespace Notifo.Domain.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Texts {
@@ -133,7 +133,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Email template is invalid and does not render property..
+        ///   Looks up a localized string similar to Email template does not render notification subject, add &apos;{{ notification.subject }}&apos; to each template..
         /// </summary>
         internal static string Email_TemplateInvalid {
             get {
@@ -142,7 +142,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Template must have a template for notifcations..
+        ///   Looks up a localized string similar to Template must have a default template for notifcations, add &apos;&lt;!-- START: NOTIFICATION --&gt;&apos;..
         /// </summary>
         internal static string Email_TemplateNoItem {
             get {
