@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.Channels.WebPush;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.WebPush.Dtos
@@ -14,7 +15,7 @@ namespace Notifo.Areas.Api.Controllers.WebPush.Dtos
     {
         public string Endpoint { get; set; }
 
-        public Dictionary<string, string> Keys { get; set; }
+        public ReadonlyDictionary<string, string> Keys { get; set; }
 
         public WebPushSubscription ToSubscription()
         {
