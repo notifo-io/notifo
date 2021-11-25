@@ -94,7 +94,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
                 return Forbid();
             }
 
-            var update = request.ToUpdate(subject);
+            var update = request.ToUpsert(subject);
 
             var app = await appStore.UpsertAsync(null, update, HttpContext.RequestAborted);
 
@@ -117,7 +117,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PutApp(string appId, [FromBody] UpsertAppDto request)
         {
-            var update = request.ToUpdate(UserIdOrSub);
+            var update = request.ToUpsert(UserIdOrSub);
 
             var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
 

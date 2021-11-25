@@ -44,7 +44,7 @@ namespace Notifo.Areas.Api.Controllers.Registration
             {
                 userId = Guid.NewGuid().ToString();
 
-                var update = request.ToUpdate();
+                var update = request.ToUpsert();
 
                 var user = await userStore.UpsertAsync(App.Id, userId, update, HttpContext.RequestAborted);
 

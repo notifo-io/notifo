@@ -81,11 +81,12 @@ namespace Notifo
                 .AddRazorRuntimeCompilation();
 
             services.AddMyApi(signalROptions);
+            services.AddMyApiKey();
             services.AddMyApps();
             services.AddMyAssets(config);
             services.AddMyCaching();
-            services.AddMyCounters();
             services.AddMyClustering(config, signalROptions);
+            services.AddMyCounters();
             services.AddMyEmailChannel();
             services.AddMyEvents(config);
             services.AddMyIdentity(config);

@@ -33,6 +33,13 @@ namespace Notifo.Areas.Api.Controllers
         /// </summary>
         public LocalTime Time { get; set; }
 
+        public static SchedulingDto FromDomainObject(Scheduling source)
+        {
+            var result = SimpleMapper.Map(source, new SchedulingDto());
+
+            return result;
+        }
+
         public Scheduling ToDomainObject()
         {
             var result = SimpleMapper.Map(this, new Scheduling());

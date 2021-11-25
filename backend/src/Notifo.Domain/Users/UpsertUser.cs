@@ -13,7 +13,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users
 {
-    public sealed class UpdateUser : ICommand<User>
+    public sealed class UpsertUser : ICommand<User>
     {
         public string? FullName { get; set; }
 
@@ -37,7 +37,7 @@ namespace Notifo.Domain.Users
 
         public bool CanCreate => true;
 
-        private sealed class Validator : AbstractValidator<UpdateUser>
+        private sealed class Validator : AbstractValidator<UpsertUser>
         {
             public Validator()
             {

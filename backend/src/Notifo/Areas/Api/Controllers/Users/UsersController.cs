@@ -184,7 +184,7 @@ namespace Notifo.Areas.Api.Controllers.Users
                 {
                     if (dto != null)
                     {
-                        var update = dto.ToUpdate();
+                        var update = dto.ToUpsert();
 
                         var user = await userStore.UpsertAsync(appId, dto.Id, update, HttpContext.RequestAborted);
 

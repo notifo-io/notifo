@@ -62,9 +62,9 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// </summary>
         public bool? AllowSms { get; set; }
 
-        public UpdateApp ToUpdate(string userId)
+        public UpsertApp ToUpsert(string userId)
         {
-            var result = SimpleMapper.Map(this, new UpdateApp());
+            var result = SimpleMapper.Map(this, new UpsertApp());
 
             result.UserId = userId;
 

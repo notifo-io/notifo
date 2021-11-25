@@ -102,7 +102,7 @@ namespace Notifo.Domain.Integrations.Telegram
                 return;
             }
 
-            await userStore.UpsertAsync(app.Id, user.Id, new UpdateUser
+            await userStore.UpsertAsync(app.Id, user.Id, new UpsertUser
             {
                 TelegramChatId = chatId
             }, ct);

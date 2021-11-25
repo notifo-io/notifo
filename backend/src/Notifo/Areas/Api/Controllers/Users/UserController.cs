@@ -57,7 +57,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [Produces(typeof(ProfileDto))]
         public async Task<IActionResult> PostUser([FromBody] UpdateProfileDto request)
         {
-            var update = request.ToUpdate();
+            var update = request.ToUpsert();
 
             var user = await userStore.UpsertAsync(App.Id, UserIdOrSub, update, HttpContext.RequestAborted);
 

@@ -6,14 +6,16 @@
 // ==========================================================================
 
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps
 {
-    public sealed class UpdateApp : ICommand<App>
+    public sealed class UpsertApp : ICommand<App>
     {
         public string UserId { get; set; }
 
@@ -25,7 +27,7 @@ namespace Notifo.Domain.Apps
 
         public bool CanCreate => true;
 
-        private sealed class Validator : AbstractValidator<UpdateApp>
+        private sealed class Validator : AbstractValidator<UpsertApp>
         {
             public Validator()
             {
@@ -34,7 +36,7 @@ namespace Notifo.Domain.Apps
             }
         }
 
-        public ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             Validate<Validator>.It(this);
@@ -67,14 +69,16 @@ namespace Notifo.Domain.Apps
 
             if (app.ApiKeys.Count == 0)
             {
+                var apiKeyGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
+
                 newApp = newApp with
                 {
                     ApiKeys = new Dictionary<string, string>
                     {
-                        [RandomHash.New()] = NotifoRoles.AppAdmin,
-                        [RandomHash.New()] = NotifoRoles.AppAdmin,
-                        [RandomHash.New()] = NotifoRoles.AppWebManager,
-                        [RandomHash.New()] = NotifoRoles.AppWebManager
+                        [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppAdmin,
+                        [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppAdmin,
+                        [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppWebManager,
+                        [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppWebManager
                     }.ToReadonlyDictionary()
                 };
             }
@@ -90,7 +94,7 @@ namespace Notifo.Domain.Apps
                 };
             }
 
-            return new ValueTask<App?>(newApp);
+            return newApp;
         }
     }
 }

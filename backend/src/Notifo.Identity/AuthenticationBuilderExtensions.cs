@@ -10,7 +10,7 @@ using Notifo.Identity;
 
 namespace Microsoft.AspNetCore.Authentication
 {
-    public static class AuthenticationBuilderServiceExtensions
+    public static class AuthenticationBuilderExtensions
     {
         public static AuthenticationBuilder AddGoogle(this AuthenticationBuilder authBuilder, NotifoIdentityOptions identityOptions)
         {

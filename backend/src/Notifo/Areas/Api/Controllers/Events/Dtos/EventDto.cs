@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Events;
@@ -84,7 +85,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The scheduling options.
         /// </summary>
-        public SchedulingDto? Scheduling { get; set; }
+        // public SchedulingDto? Scheduling { get; set; }
 
         /// <summary>
         /// The statistics counters.
@@ -124,6 +125,11 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
             if (source.Formatting != null)
             {
                 result.Formatting = NotificationFormattingDto.FromDomainObject(source.Formatting);
+            }
+
+            if (source.Scheduling != null)
+            {
+                // result.Scheduling = SchedulingDto.FromDomainObject(source.Scheduling);
             }
 
             if (source.Settings?.Count > 0)

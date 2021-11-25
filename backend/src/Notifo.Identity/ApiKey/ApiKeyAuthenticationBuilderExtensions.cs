@@ -5,17 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Utils;
 using Notifo.Identity.ApiKey;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.AspNetCore.Authentication
 {
-    public static class ApiKeyServiceExtensions
+    public static class ApiKeyAuthenticationBuilderExtensions
     {
-        public static void AddMyApiKey(this IServiceCollection services)
+        public static AuthenticationBuilder AddApiKey(this AuthenticationBuilder builder)
         {
-            services.AddSingletonAs<ApiKeyGenerator>()
-                .As<IApiKeyGenerator>();
+            return builder.AddScheme<ApiKeyOptions, ApiKeyHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
         }
     }
 }

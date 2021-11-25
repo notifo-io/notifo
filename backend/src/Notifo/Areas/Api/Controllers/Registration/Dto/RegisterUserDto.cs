@@ -26,9 +26,9 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dtos
 
         public string[]? Topics { get; set; }
 
-        public UpdateUser ToUpdate()
+        public UpsertUser ToUpsert()
         {
-            var result = SimpleMapper.Map(this, new UpdateUser());
+            var result = SimpleMapper.Map(this, new UpsertUser());
 
             result.FullName = DisplayName;
 

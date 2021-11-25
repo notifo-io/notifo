@@ -43,9 +43,9 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// </summary>
         public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
 
-        public UpdateUser ToUpdate()
+        public UpsertUser ToUpsert()
         {
-            var result = SimpleMapper.Map(this, new UpdateUser());
+            var result = SimpleMapper.Map(this, new UpsertUser());
 
             if (Settings != null)
             {
