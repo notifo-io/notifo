@@ -62,7 +62,9 @@ namespace Notifo.Domain.Channels.WebPush
 
             foreach (var subscription in options.User.WebPushSubscriptions)
             {
-                if (!string.IsNullOrWhiteSpace(subscription.Endpoint))
+                if (!string.IsNullOrWhiteSpace(subscription.Endpoint) &&
+                    subscription.Keys.ContainsKey("p256dh") &&
+                    subscription.Keys.ContainsKey("auth"))
                 {
                     yield return subscription.Endpoint;
                 }
