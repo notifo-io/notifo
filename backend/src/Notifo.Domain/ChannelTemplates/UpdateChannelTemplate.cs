@@ -35,7 +35,7 @@ namespace Notifo.Domain.ChannelTemplates
                     languages[key] = await factory.ParseAsync(value);
                 }
 
-                newTemplate = template with
+                newTemplate = newTemplate with
                 {
                     Languages = languages.ToReadonlyDictionary()
                 };
@@ -43,7 +43,7 @@ namespace Notifo.Domain.ChannelTemplates
 
             if (Name != null && !string.Equals(Name, template.Name, StringComparison.Ordinal))
             {
-                newTemplate = template with
+                newTemplate = newTemplate with
                 {
                     Name = Name.Trim()
                 };
@@ -51,7 +51,7 @@ namespace Notifo.Domain.ChannelTemplates
 
             if (Primary.HasValue && Primary != template.Primary)
             {
-                newTemplate = template with
+                newTemplate = newTemplate with
                 {
                     Primary = Primary.Value
                 };

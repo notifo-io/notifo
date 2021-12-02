@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Icon, Loader, Toggle, useStateWithRef } from '@app/framework';
+import { Icon, Loader, Toggle } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { loadEmailTemplate, updateEmailTemplate, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -14,8 +14,9 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Col, Form, Input, Label, Row } from 'reactstrap';
+import { Col, Label, Row } from 'reactstrap';
 import { EmailTemplate } from './EmailTemplate';
+import { EmailTemplateName } from './EmailTemplateName';
 
 export const EmailTemplatePage = () => {
     const dispatch = useDispatch();
@@ -31,7 +32,6 @@ export const EmailTemplatePage = () => {
     const updating = useEmailTemplates(x => x.updating);
     const updatingError = useEmailTemplates(x => x.updatingError);
     const upserting = useEmailTemplates(x => x.creatingLanguage || x.deletingLanguage || x.updatingLanguage);
-    const [name, setName, nameRef] = useStateWithRef('');
     const [language, setLanguage] = React.useState(appLanguages[0]);
 
     React.useEffect(() => {
@@ -50,37 +50,9 @@ export const EmailTemplatePage = () => {
         }
     }, [updatingError]);
 
-    React.useEffect(() => {
-        if (template) {
-            setName(template.name || '');
-        }
-    }, [setName, template]);
-
-    React.useEffect(() => {
-        const timer = setTimeout(() => {
-            if (name !== template?.name) {
-                dispatch(updateEmailTemplate({ appId, id: templateId, update: { name } }));
-            }
-        }, 100);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [dispatch, appId, name, template?.name, templateId]);
-
-    const doSetName = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
-    }, [setName]);
-
     const doUpdatePrimary = React.useCallback((primary: boolean) => {
         dispatch(updateEmailTemplate({ appId, id: templateId, update: { primary } }));
     }, [dispatch, appId, templateId]);
-
-    const doUpdateName = React.useCallback((event: React.FormEvent<HTMLFormElement>) => {
-        dispatch(updateEmailTemplate({ appId, id: templateId, update: { name: nameRef.current } }));
-
-        event.preventDefault();
-    }, [dispatch, appId, templateId, nameRef]);
 
     const doSetLanguage = (language: string) => {
         if (!loadingTemplate && !upserting) {
@@ -100,9 +72,7 @@ export const EmailTemplatePage = () => {
                                 </NavLink>
                             </Col>
                             <Col xs='auto'>
-                                <Form onSubmit={doUpdateName}>
-                                    <Input name={name} disabled={updating} onChange={doSetName} placeholder={texts.emailTemplates.name} />
-                                </Form>
+                                <EmailTemplateName template={template} appId={appId} />
                             </Col>
                         </Row>
                     </Col>

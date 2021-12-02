@@ -20,11 +20,13 @@ namespace Notifo.Domain.ChannelTemplates
         public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
+            var newTemplate = template;
+
             if (Language != null)
             {
                 var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-                template = template with
+                newTemplate = newTemplate with
                 {
                     Languages = new Dictionary<string, T>(template.Languages)
                     {
@@ -33,7 +35,7 @@ namespace Notifo.Domain.ChannelTemplates
                 };
             }
 
-            return template;
+            return newTemplate;
         }
     }
 }

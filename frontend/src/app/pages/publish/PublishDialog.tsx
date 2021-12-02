@@ -131,7 +131,7 @@ export const PublishDialog = () => {
                             <FormError error={publishingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between' disabled={publishing}>
-                            <Button type='button' color='' onClick={doCloseForm}>
+                            <Button type='button' color='none' onClick={doCloseForm}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='success' disabled={publishing}>

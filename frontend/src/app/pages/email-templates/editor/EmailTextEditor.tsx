@@ -53,7 +53,7 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
                 </div>
 
                 <div className='right'>
-                    <textarea className='form-control' readOnly value={emailPreview.rendering?.result}></textarea>
+                    <textarea className='form-control' readOnly value={emailPreview.rendering?.result || ''}></textarea>
 
                     {error &&
                         <Alert color='danger'>{error.message}</Alert>

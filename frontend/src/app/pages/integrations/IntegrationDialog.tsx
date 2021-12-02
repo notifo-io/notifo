@@ -220,7 +220,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                             <FormError className='mt-4 mb-0' error={upsertingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between' disabled={upserting}>
-                            <Button type='button' color='' onClick={onClose}>
+                            <Button type='button' color='none' onClick={onClose}>
                                 {texts.common.cancel}
                             </Button>
 

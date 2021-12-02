@@ -36,7 +36,7 @@ export const ButtonSms = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonSms' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonSms' className={clazz(hasValue)} block onClick={open}>
                 <Icon type='sms' />
             </Button>
 
@@ -58,7 +58,7 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonEmail' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonEmail' className={clazz(hasValue)} block onClick={open}>
                 <Icon type='mail_outline' />
             </Button>
 
@@ -80,7 +80,7 @@ export const ButtonWebPush = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonWebPush' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonWebPush' className={clazz(hasValue)} block onClick={open}>
                 <Icon type='browser' /> {user.numberOfWebPushTokens}
             </Button>
 
@@ -102,7 +102,7 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='' id='buttonMobilePush' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonMobilePush' className={clazz(hasValue)} block onClick={open}>
                 <Icon type='mobile' /> {user.numberOfMobilePushTokens}
             </Button>
 

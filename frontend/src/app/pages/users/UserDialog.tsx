@@ -124,7 +124,7 @@ export const UserDialog = (props: UserDialogProps) => {
                             <FormError error={upsertingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='' onClick={doCloseForm} disabled={upserting}>
+                            <Button type='button' color='none' onClick={doCloseForm} disabled={upserting}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary' disabled={upserting}>

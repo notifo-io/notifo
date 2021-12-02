@@ -52,7 +52,7 @@ export const EmailTemplateMoreDialog = (props: EmailTemplateMoreDialogProps) => 
                             </fieldset>
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='' onClick={doCloseForm}>
+                            <Button type='button' color='none' onClick={doCloseForm}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary'>
