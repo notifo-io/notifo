@@ -11,6 +11,7 @@ using MongoDB.Bson.Serialization;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;
 using Notifo.Infrastructure.Collections.Json;
+using Notifo.Infrastructure.Json;
 
 namespace Notifo.Infrastructure.TestHelpers
 {
@@ -22,6 +23,9 @@ namespace Notifo.Infrastructure.TestHelpers
         {
             DefaultOptions.Converters.Add(new JsonReadonlyListConverterFactory());
             DefaultOptions.Converters.Add(new JsonReadonlyDictionaryConverterFactory());
+            DefaultOptions.Converters.Add(new JsonActivityContextConverter());
+            DefaultOptions.Converters.Add(new JsonActivitySpanIdConverter());
+            DefaultOptions.Converters.Add(new JsonActivityTraceIdConverter());
 
             BsonSerializer.RegisterGenericSerializerDefinition(
                 typeof(ReadonlyList<>),

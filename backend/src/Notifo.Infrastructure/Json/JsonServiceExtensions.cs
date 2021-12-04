@@ -32,6 +32,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
+            options.Converters.Add(new JsonActivityContextConverter());
+            options.Converters.Add(new JsonActivitySpanIdConverter());
+            options.Converters.Add(new JsonActivityTraceIdConverter());
             options.Converters.Add(new JsonInstantConverter());
             options.Converters.Add(new JsonReadonlyDictionaryConverterFactory());
             options.Converters.Add(new JsonReadonlyListConverterFactory());

@@ -13,6 +13,8 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public class UserNotificationExtensionsTests
     {
+        private readonly string token = "token1";
+
         [Fact]
         public void Should_generate_firebase_message()
         {
@@ -27,7 +29,6 @@ namespace Notifo.Domain.Integrations.Firebase
             var linkText = "Go to link";
             var silent = false.ToString();
             var subject = "subject1";
-            var token = "token1";
             var trackDeliveredUrl = "https://track-delivered.notifo.com";
             var trackSeenUrl = "https://track-seen.notifo.com";
             var data = "data1";
@@ -90,7 +91,6 @@ namespace Notifo.Domain.Integrations.Firebase
             var imageLarge = string.Empty;
             var imageSmall = (string?)null;
             var subject = "subject1";
-            var token = "token1";
             var trackingUrl = (string?)null;
 
             var notification = new UserNotification
@@ -123,7 +123,6 @@ namespace Notifo.Domain.Integrations.Firebase
         public void Should_create_silent_notification_when_flag_is_true()
         {
             var id = Guid.NewGuid();
-            var token = "token1";
 
             var notification = new UserNotification
             {
@@ -140,7 +139,6 @@ namespace Notifo.Domain.Integrations.Firebase
         [Fact]
         public void Should_include_time_to_live_property_if_set()
         {
-            var token = "token1";
             var timeToLive = 1000;
 
             var notification = new UserNotification
@@ -160,7 +158,6 @@ namespace Notifo.Domain.Integrations.Firebase
         [Fact]
         public void Should_set_time_to_live_to_zero_if_set_to_zero()
         {
-            var token = "token1";
             var timeToLive = 0;
 
             var notification = new UserNotification
@@ -178,8 +175,6 @@ namespace Notifo.Domain.Integrations.Firebase
         [Fact]
         public void Should_not_include_time_to_live_property_if_not_set()
         {
-            var token = "token1";
-
             var notification = new UserNotification
             {
                 Formatting = new NotificationFormatting<string>()
