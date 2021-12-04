@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using System.Net.Http.Json;
 using NodaTime;
 using Notifo.Domain.Channels.Webhook.Integrations;
@@ -56,51 +57,58 @@ namespace Notifo.Domain.Channels.Webhook
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App, notification.Test);
+            using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
+            {
+                var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App, notification.Test);
 
-            // The webhook must match the name or the conditions.
-            if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))
-            {
-                return Task.CompletedTask;
-            }
+                // The webhook must match the name or the conditions.
+                if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))
+                {
+                    return;
+                }
 
-            var job = new WebhookJob(notification, configuration, webhook)
-            {
-                IsUpdate = options.IsUpdate
-            };
+                var job = new WebhookJob(notification, configuration, webhook)
+                {
+                    IsUpdate = options.IsUpdate
+                };
 
-            // Do not use scheduling when the notification is an update.
-            if (options.IsUpdate)
-            {
-                return userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    default(Instant),
-                    false, ct);
-            }
-            else
-            {
-                return userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    setting.DelayDuration,
-                    false, ct);
+                // Do not use scheduling when the notification is an update.
+                if (options.IsUpdate)
+                {
+                    await userNotificationQueue.ScheduleAsync(
+                        job.ScheduleKey,
+                        job,
+                        default(Instant),
+                        false, ct);
+                }
+                else
+                {
+                    await userNotificationQueue.ScheduleAsync(
+                        job.ScheduleKey,
+                        job,
+                        setting.DelayDuration,
+                        false, ct);
+                }
             }
         }
 
         public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("SendWebhook"))
+            var links = job.Notification.Links();
+
+            var parentContext = Activity.Current?.Context ?? default;
+
+            using (Telemetry.Activities.StartActivity("WebhookChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
             {
                 try
                 {
                     await UpdateAsync(job, ProcessStatus.Attempt);
 
-                    await SendCoreAsync(job, ct);
+                    await SendJobAsync(job, ct);
 
                     await UpdateAsync(job, ProcessStatus.Handled);
                 }
@@ -109,22 +117,25 @@ namespace Notifo.Domain.Channels.Webhook
                     await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
                     throw;
                 }
-            }
 
-            return true;
+                return true;
+            }
         }
 
-        private async Task SendCoreAsync(WebhookJob job,
+        private async Task SendJobAsync(WebhookJob job,
             CancellationToken ct)
         {
-            using (var client = httpClientFactory.CreateClient())
+            using (Telemetry.Activities.StartActivity("Send"))
             {
-                var request = new HttpRequestMessage(new HttpMethod(job.Webhook.HttpMethod), job.Webhook.HttpUrl)
+                using (var client = httpClientFactory.CreateClient())
                 {
-                    Content = JsonContent.Create(job.Notification)
-                };
+                    var request = new HttpRequestMessage(new HttpMethod(job.Webhook.HttpMethod), job.Webhook.HttpUrl)
+                    {
+                        Content = JsonContent.Create(job.Notification)
+                    };
 
-                await client.SendAsync(request, ct);
+                    await client.SendAsync(request, ct);
+                }
             }
         }
 

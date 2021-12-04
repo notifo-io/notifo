@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using System.Globalization;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -67,34 +68,37 @@ namespace Notifo.Domain.Channels.Messaging
         public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            using (Telemetry.Activities.StartActivity("MessagingChannel/SendAsync"))
             {
-                return;
+                if (options.IsUpdate)
+                {
+                    return;
+                }
+
+                var job = new MessagingJob(notification, setting.Template)
+                {
+                    IsImmediate = setting.DelayDuration == Duration.Zero
+                };
+
+                var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
+
+                foreach (var (_, sender) in integrations)
+                {
+                    await sender.AddTargetsAsync(job, options.User);
+                }
+
+                // Should not happen because we check before if there is at least one target.
+                if (job.Targets.Count == 0)
+                {
+                    await UpdateAsync(notification, ProcessStatus.Skipped);
+                }
+
+                await userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    setting.DelayDuration,
+                    false, ct);
             }
-
-            var job = new MessagingJob(notification, setting.Template)
-            {
-                IsImmediate = setting.DelayDuration == Duration.Zero
-            };
-
-            var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification.Test);
-
-            foreach (var (_, sender) in integrations)
-            {
-                await sender.AddTargetsAsync(job, options.User);
-            }
-
-            // Should not happen because we check before if there is at least one target.
-            if (job.Targets.Count == 0)
-            {
-                await UpdateAsync(notification, ProcessStatus.Skipped);
-            }
-
-            await userNotificationQueue.ScheduleAsync(
-                job.ScheduleKey,
-                job,
-                setting.DelayDuration,
-                false, ct);
         }
 
         public Task HandleExceptionAsync(MessagingJob job, Exception ex)
@@ -105,25 +109,32 @@ namespace Notifo.Domain.Channels.Messaging
         public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            var id = job.Notification.Id;
+            var links = job.Notification.Links();
 
-            // If the notification is not scheduled it is very unlikey it has been confirmed already.
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, Name, DefaultToken, ct))
-            {
-                await UpdateAsync(job.Notification, ProcessStatus.Skipped);
-            }
-            else
-            {
-                await SendAsync(job, ct);
-            }
+            var parentContext = Activity.Current?.Context ?? default;
 
-            return false;
+            using (Telemetry.Activities.StartActivity("MessagingChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+            {
+                var id = job.Notification.Id;
+
+                // If the notification is not scheduled it is very unlikey it has been confirmed already.
+                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, Name, DefaultToken, ct))
+                {
+                    await UpdateAsync(job.Notification, ProcessStatus.Skipped);
+                }
+                else
+                {
+                    await SendJobAsync(job, ct);
+                }
+
+                return false;
+            }
         }
 
-        private async Task SendAsync(MessagingJob job,
+        private async Task SendJobAsync(MessagingJob job,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("SendMessage"))
+            using (Telemetry.Activities.StartActivity("Send"))
             {
                 var app = await appStore.GetCachedAsync(job.Notification.AppId, ct);
 

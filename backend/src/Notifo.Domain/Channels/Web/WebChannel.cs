@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 using Squidex.Log;
 
 namespace Notifo.Domain.Channels.Web
@@ -39,19 +40,22 @@ namespace Notifo.Domain.Channels.Web
         public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            try
+            using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))
             {
-                await streamClient.SendAsync(notification);
+                try
+                {
+                    await streamClient.SendAsync(notification);
 
-                await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Handled, ct: ct);
-            }
-            catch (Exception ex)
-            {
-                await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Failed, ct: ct);
+                    await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Handled, ct: ct);
+                }
+                catch (Exception ex)
+                {
+                    await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Failed, ct: ct);
 
-                log.LogError(ex, w => w
-                    .WriteProperty("action", "SendWeb")
-                    .WriteProperty("status", "Failed"));
+                    log.LogError(ex, w => w
+                        .WriteProperty("action", "SendWeb")
+                        .WriteProperty("status", "Failed"));
+                }
             }
         }
     }

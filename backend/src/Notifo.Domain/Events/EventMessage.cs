@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using FluentValidation;
 using NodaTime;
 using Notifo.Infrastructure;
@@ -26,6 +27,8 @@ namespace Notifo.Domain.Events
         public string? TemplateCode { get; set; }
 
         public string? Data { get; set; }
+
+        public ActivityContext EventActivity { get; set; }
 
         public Instant Created { get; set; }
 

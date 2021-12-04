@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Reflection;
@@ -26,6 +27,12 @@ namespace Notifo.Domain.Channels.WebPush
         public string Payload { get; set; }
 
         public WebPushSubscription Subscription { get; set; }
+
+        public ActivityContext UserEventActivity { get; set; }
+
+        public ActivityContext EventActivity { get; set; }
+
+        public ActivityContext NotificationActivity { get; set; }
 
         public bool IsImmediate { get; set; }
 

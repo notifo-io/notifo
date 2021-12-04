@@ -66,7 +66,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         public async Task PublishAsync(EventMessage @event,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("HandleUserEvent"))
+            using (var activity = Telemetry.Activities.StartActivity("HandleUserEvent"))
             {
                 log.LogInformation(@event, (m, w) => w
                     .WriteProperty("action", "HandleEvent")
@@ -157,12 +157,12 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                     var userEventMessage = CreateUserEventMessage(@event, subscription);
 
-#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods that take one
-#pragma warning disable MA0040 // Flow the cancellation token
-                    await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
-#pragma warning restore MA0040 // Flow the cancellation token
-#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods that take one
+                    if (activity != null)
+                    {
+                        userEventMessage.UserEventActivity = activity.Context;
+                    }
 
+                    await ProduceAsync(subscription, userEventMessage);
                     count++;
                 }
 
@@ -186,6 +186,11 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     .WriteProperty("eventTopic", m.Topic)
                     .WriteProperty("eventType", m.ToString()));
             }
+        }
+
+        private async Task ProduceAsync(Subscription subscription, UserEventMessage userEventMessage)
+        {
+            await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
         }
 
         private async IAsyncEnumerable<Subscription> GetSubscriptions(EventMessage @event,

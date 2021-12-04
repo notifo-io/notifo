@@ -11,7 +11,7 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public interface IMobilePushSender
     {
-        Task SendAsync(UserNotification userNotification, MobilePushOptions options,
+        Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
             CancellationToken ct);
     }
 }
