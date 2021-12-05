@@ -15,14 +15,29 @@ namespace Notifo.Infrastructure.Json
     {
         public override ActivitySpanId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var text = reader.GetString();
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                    return default;
+                case JsonTokenType.String:
+                    var text = reader.GetString();
 
-            return ActivitySpanId.CreateFromString(text);
+                    return ActivitySpanId.CreateFromString(text);
+                default:
+                    throw new JsonException($"Expected JsonTokenType.String or JsonTokenType.Null, got {reader.TokenType}.");
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, ActivitySpanId value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString());
+            if (value == default)
+            {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStringValue(value.ToString());
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ using System.Diagnostics;
 using Notifo.Infrastructure.TestHelpers;
 using Xunit;
 
-namespace Notifo.Infrastructure.Json
+namespace Notifo.Infrastructure.MongoDB
 {
     public class ActivityContextTests
     {
@@ -18,7 +18,7 @@ namespace Notifo.Infrastructure.Json
         {
             var sut = ActivityTraceId.CreateRandom();
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -28,7 +28,7 @@ namespace Notifo.Infrastructure.Json
         {
             var sut = default(ActivityTraceId);
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -38,7 +38,7 @@ namespace Notifo.Infrastructure.Json
         {
             var sut = ActivitySpanId.CreateRandom();
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -48,7 +48,7 @@ namespace Notifo.Infrastructure.Json
         {
             var sut = default(ActivitySpanId);
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -64,7 +64,7 @@ namespace Notifo.Infrastructure.Json
                     "State",
                     true);
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -80,7 +80,7 @@ namespace Notifo.Infrastructure.Json
                     null,
                     true);
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -96,7 +96,7 @@ namespace Notifo.Infrastructure.Json
                     "State",
                     true);
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }
@@ -106,7 +106,7 @@ namespace Notifo.Infrastructure.Json
         {
             var sut = default(ActivityContext);
 
-            var serialized = sut.SerializeAndDeserialize();
+            var serialized = sut.SerializeAndDeserializeBson();
 
             Assert.Equal(sut, serialized);
         }

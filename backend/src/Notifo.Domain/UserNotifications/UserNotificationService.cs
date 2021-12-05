@@ -121,6 +121,8 @@ namespace Notifo.Domain.UserNotifications
 
                     var notification = await CreateUserNotificationAsync(userEvent, options);
 
+                    notification.NotificationActivity = activity?.Context ?? default;
+
                     try
                     {
                         await userNotificationsStore.InsertAsync(notification);
