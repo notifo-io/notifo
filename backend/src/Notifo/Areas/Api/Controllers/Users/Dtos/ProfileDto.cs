@@ -10,6 +10,7 @@ using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {
@@ -35,7 +36,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// The allowed Topics.
         /// </summary>
-        public string[] AllowedTopics { get; set; }
+        public ReadonlyList<string> AllowedTopics { get; set; }
 
         /// <summary>
         /// The preferred language of the user.
@@ -69,7 +70,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         {
             var result = SimpleMapper.Map(source, new ProfileDto());
 
-            result.AllowedTopics = source.AllowedTopics.ToArray();
             result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
             result.SupportedLanguages = app.Languages.ToArray();
 
