@@ -33,6 +33,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public string? PhoneNumber { get; set; }
 
         /// <summary>
+        /// The allowed Topics.
+        /// </summary>
+        public string[] AllowedTopics { get; set; }
+
+        /// <summary>
         /// The preferred language of the user.
         /// </summary>
         public string? PreferredLanguage { get; set; }
@@ -64,6 +69,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         {
             var result = SimpleMapper.Map(source, new ProfileDto());
 
+            result.AllowedTopics = source.AllowedTopics.ToArray();
             result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
             result.SupportedLanguages = app.Languages.ToArray();
 
