@@ -267,9 +267,6 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 }
             });
 
-            A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, ct))
-                .MustNotHaveHappened();
-
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
         }
