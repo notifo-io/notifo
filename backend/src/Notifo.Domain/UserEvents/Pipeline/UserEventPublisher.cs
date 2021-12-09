@@ -212,6 +212,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     yield return subscription;
                 }
+
                 if (IsUserTopic(topic, out var userId)) 
                 {
                     yield return new Subscription
