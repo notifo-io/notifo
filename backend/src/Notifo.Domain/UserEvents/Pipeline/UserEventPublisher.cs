@@ -206,21 +206,22 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     };
                 }
             }
-            else if (IsUserTopic(topic, out var userId))
-            {
-                yield return new Subscription
-                {
-                    AppId = @event.AppId,
-                    TopicPrefix = $"users/{userId}",
-                    TopicSettings = null,
-                    UserId = userId
-                };
-            }
             else
             {
                 await foreach (var subscription in subscriptionStore.QueryAsync(@event.AppId, @event.Topic, @event.CreatorId, ct))
                 {
                     yield return subscription;
+                }
+
+                if (IsUserTopic(topic, out var userId)) 
+                {
+                    yield return new Subscription
+                    {
+                        AppId = @event.AppId,
+                        TopicPrefix = $"users/{userId}",
+                        TopicSettings = null,
+                        UserId = userId
+                    };
                 }
             }
         }
