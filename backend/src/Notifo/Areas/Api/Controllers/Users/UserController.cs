@@ -67,6 +67,28 @@ namespace Notifo.Areas.Api.Controllers.Users
         }
 
         /// <summary>
+        /// Query the user subscriptions.
+        /// </summary>
+        /// <param name="q">The query object.</param>
+        /// <returns>
+        /// 200 => User subscriptions returned.
+        /// </returns>
+        [HttpGet("api/me/subscriptions")]
+        [AppPermission(NotifoRoles.AppUser)]
+        [Produces(typeof(ListResponseDto<SubscriptionDto>))]
+        public async Task<IActionResult> GetSubscriptions([FromQuery] QueryDto q)
+        {
+            var subscriptions = await subscriptionStore.QueryAsync(App.Id, ParseQuery(UserId, q), HttpContext.RequestAborted);
+
+            var response = new ListResponseDto<SubscriptionDto>();
+
+            response.Items.AddRange(subscriptions.Select(SubscriptionDto.FromDomainObject));
+            response.Total = subscriptions.Total;
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Gets a user subscription.
         /// </summary>
         /// <param name="topic">The topic path.</param>
@@ -135,6 +157,15 @@ namespace Notifo.Areas.Api.Controllers.Users
             await subscriptionStore.DeleteAsync(App.Id, UserIdOrSub, topic, HttpContext.RequestAborted);
 
             return NoContent();
+        }
+
+        private static SubscriptionQuery ParseQuery(string id, QueryDto query)
+        {
+            var queryObject = query.ToQuery<SubscriptionQuery>(true);
+
+            queryObject.UserId = id;
+
+            return queryObject;
         }
     }
 }
