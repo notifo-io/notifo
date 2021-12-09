@@ -22,7 +22,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             this.httpClientFactory = httpClientFactory;
         }
 
-        public MessageBirdClient GetServer(string accessKey, long phoneNumber)
+        public MessageBirdClient GetServer(string accessKey, long phoneNumber, Dictionary<string, string>? phoneNumbers)
         {
             var cacheKey = $"MessageBirdSmsSender_{accessKey}_{phoneNumber}";
 
@@ -32,7 +32,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 {
                     AccessKey = accessKey,
                     PhoneNumber = phoneNumber.ToString(CultureInfo.InvariantCulture),
-                    PhoneNumbers = null
+                    PhoneNumbers = phoneNumbers
                 });
 
                 var sender = new MessageBirdClient(httpClientFactory, options);

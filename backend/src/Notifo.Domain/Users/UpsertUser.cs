@@ -9,6 +9,7 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users
@@ -21,17 +22,13 @@ namespace Notifo.Domain.Users
 
         public string? PhoneNumber { get; set; }
 
-        public string? ThreemaId { get; set; }
-
-        public string? TelegramChatId { get; set; }
-
-        public string? TelegramUsername { get; set; }
-
         public string? PreferredLanguage { get; set; }
 
         public string? PreferredTimezone { get; set; }
 
         public bool? RequiresWhitelistedTopics { get; set; }
+
+        public ReadonlyDictionary<string, string>? Properties { get; set; }
 
         public NotificationSettings? Settings { get; set; }
 
@@ -79,27 +76,11 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (TelegramChatId != null && !string.Equals(TelegramChatId, user.TelegramChatId, StringComparison.Ordinal))
+            if (Properties != null && !Properties.Equals(user.Properties))
             {
                 newUser = newUser with
                 {
-                    TelegramChatId = TelegramChatId.Trim()
-                };
-            }
-
-            if (TelegramUsername != null && !string.Equals(TelegramUsername, user.TelegramUsername, StringComparison.Ordinal))
-            {
-                newUser = newUser with
-                {
-                    TelegramUsername = TelegramUsername.Trim()
-                };
-            }
-
-            if (ThreemaId != null && !string.Equals(ThreemaId, user.ThreemaId, StringComparison.Ordinal))
-            {
-                newUser = newUser with
-                {
-                    ThreemaId = ThreemaId.Trim()
+                    Properties = Properties
                 };
             }
 

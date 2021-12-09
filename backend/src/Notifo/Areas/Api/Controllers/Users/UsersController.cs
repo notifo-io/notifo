@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Validation;
@@ -21,11 +22,14 @@ namespace Notifo.Areas.Api.Controllers.Users
     {
         private readonly IUserStore userStore;
         private readonly ISubscriptionStore subscriptionStore;
+        private readonly IIntegrationManager integrationManager;
 
-        public UsersController(IUserStore userStore, ISubscriptionStore subscriptionStore)
+        public UsersController(IUserStore userStore, ISubscriptionStore subscriptionStore,
+            IIntegrationManager integrationManager)
         {
             this.userStore = userStore;
             this.subscriptionStore = subscriptionStore;
+            this.integrationManager = integrationManager;
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace Notifo.Areas.Api.Controllers.Users
 
             var response = new ListResponseDto<UserDto>();
 
-            response.Items.AddRange(users.Select(UserDto.FromDomainObject));
+            response.Items.AddRange(users.Select(x => UserDto.FromDomainObject(x, null)));
             response.Total = users.Total;
 
             return Ok(response);
@@ -73,7 +77,7 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            var response = UserDto.FromDomainObject(user);
+            var response = UserDto.FromDomainObject(user, GetUserProperties());
 
             return Ok(response);
         }
@@ -188,7 +192,7 @@ namespace Notifo.Areas.Api.Controllers.Users
 
                         var user = await userStore.UpsertAsync(appId, dto.Id, update, HttpContext.RequestAborted);
 
-                        response.Add(UserDto.FromDomainObject(user));
+                        response.Add(UserDto.FromDomainObject(user, null));
                     }
                 }
             }
@@ -208,7 +212,6 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/allowed-topics")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(List<UserDto>))]
         public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicDto request)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -237,7 +240,6 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}/allowed-topics/{*prefix}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(List<UserDto>))]
         public async Task<IActionResult> DeleteAllowedTopic(string appId, string id, string prefix)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -265,7 +267,6 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ListResponseDto<UserDto>))]
         public async Task<IActionResult> DeleteUser(string appId, string id)
         {
             await userStore.DeleteAsync(appId, id, HttpContext.RequestAborted);
@@ -280,6 +281,26 @@ namespace Notifo.Areas.Api.Controllers.Users
             queryObject.UserId = id;
 
             return queryObject;
+        }
+
+        private List<UserProperty> GetUserProperties()
+        {
+            var properties = new Dictionary<string, UserProperty>();
+
+            foreach (var (_, configured) in App.Integrations)
+            {
+                var integration = integrationManager.Definitions.FirstOrDefault(x => x.Type == configured.Type);
+
+                if (integration != null)
+                {
+                    foreach (var userProperty in integration.UserProperties)
+                    {
+                        properties[userProperty.Name] = userProperty;
+                    }
+                }
+            }
+
+            return properties.Values.OrderBy(x => x.Name).ToList();
         }
     }
 }

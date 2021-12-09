@@ -74,6 +74,7 @@ namespace Notifo.Domain.Integrations.Smtp
                     FromEmailProperty,
                     FromNameProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Email

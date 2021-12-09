@@ -9,14 +9,10 @@
 
 namespace Notifo.Domain.Integrations
 {
-    public sealed record IntegrationDefinition(
-        string Type,
-        string Title,
-        string LogoUrl,
-        IReadOnlyList<IntegrationProperty> Properties,
-        IReadOnlyList<UserProperty> UserProperties,
-        IReadOnlySet<string> Capabilities)
+    public sealed record UserProperty(string Name)
     {
-        public string? Description { get; init; }
+        public string? EditorDescription { get; init; }
+
+        public string? EditorLabel { get; init; }
     }
 }

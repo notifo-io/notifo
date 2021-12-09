@@ -57,6 +57,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
                     HttpMethodProperty,
                     SendConfirmProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Webhook

@@ -54,6 +54,7 @@ namespace Notifo.Domain.Integrations.Twilio
                     AuthTokenProperty,
                     PhoneNumberProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Sms

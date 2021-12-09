@@ -228,6 +228,12 @@
   <data name="MessageBird_PhoneNumberLabel" xml:space="preserve">
     <value>Phone Number</value>
   </data>
+  <data name="MessageBird_PhoneNumbersDescription" xml:space="preserve">
+    <value>Country specific phone numbers.</value>
+  </data>
+  <data name="MessageBird_PhoneNumbersLabel" xml:space="preserve">
+    <value>Phone Numbers</value>
+  </data>
   <data name="SMTP_Description" xml:space="preserve">
     <value>Send emails using a custom email server.</value>
   </data>
@@ -255,6 +261,12 @@
   <data name="Telegram_AccessKeyLabel" xml:space="preserve">
     <value>Access Key</value>
   </data>
+  <data name="Telegram_ChatIdDescription" xml:space="preserve">
+    <value>The ID to identity the user in the chat with the bot. Will be set automatically.</value>
+  </data>
+  <data name="Telegram_ChatIdLabel" xml:space="preserve">
+    <value>Telegram Chat ID</value>
+  </data>
   <data name="Telegram_Description" xml:space="preserve">
     <value>Send messages using Telegram.</value>
   </data>
@@ -263,6 +275,12 @@
   </data>
   <data name="Telegram_UserLinked" xml:space="preserve">
     <value>We have found your user. You will receive notifications now.</value>
+  </data>
+  <data name="Telegram_UsernameDescription" xml:space="preserve">
+    <value>The username in telegram.</value>
+  </data>
+  <data name="Telegram_UsernameLabel" xml:space="preserve">
+    <value>Telegram Username</value>
   </data>
   <data name="Telegram_UserNotFound" xml:space="preserve">
     <value>We cannot find your user. Please create a username and configure the username in your {0} account.

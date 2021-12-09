@@ -6,7 +6,9 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
@@ -43,21 +45,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public string? PhoneNumber { get; set; }
 
         /// <summary>
-        /// The threema id.
-        /// </summary>
-        public string? ThreemaId { get; set; }
-
-        /// <summary>
-        /// The telegram username.
-        /// </summary>
-        public string? TelegramUsername { get; set; }
-
-        /// <summary>
-        /// The telegram chat ID.
-        /// </summary>
-        public string? TelegramChatId { get; set; }
-
-        /// <summary>
         /// The preferred language of the user.
         /// </summary>
         public string? PreferredLanguage { get; set; }
@@ -86,6 +73,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public bool RequiresWhitelistedTopics { get; set; }
 
         /// <summary>
+        /// The user properties.
+        /// </summary>
+        public ReadonlyDictionary<string, string>? Properties { get; set; }
+
+        /// <summary>
         /// Notification settings per channel.
         /// </summary>
         [Required]
@@ -103,7 +95,12 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         [Required]
         public List<MobilePushTokenDto> MobilePushTokens { get; set; }
 
-        public static UserDto FromDomainObject(User source)
+        /// <summary>
+        /// The supported user properties.
+        /// </summary>
+        public List<UserPropertyDto>? UserProperties { get; set; }
+
+        public static UserDto FromDomainObject(User source, List<UserProperty>? userProperties)
         {
             var result = SimpleMapper.Map(source, new UserDto());
 
@@ -132,6 +129,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 {
                     result.MobilePushTokens.Add(MobilePushTokenDto.FromDomainObject(token));
                 }
+            }
+
+            if (userProperties != null)
+            {
+                result.UserProperties = userProperties.Select(UserPropertyDto.FromDomainObject).ToList();
             }
 
             result.Counters = source.Counters ?? EmptyCounters;

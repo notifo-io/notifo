@@ -31,6 +31,14 @@ namespace Notifo.Domain.Integrations.MessageBird
             Summary = true
         };
 
+        private static readonly IntegrationProperty PhoneNumbersProperty = new IntegrationProperty("phoneNumbers", IntegrationPropertyType.MultilineText)
+        {
+            EditorLabel = Texts.MessageBird_PhoneNumbersLabel,
+            EditorDescription = Texts.MessageBird_PhoneNumbersDescription,
+            IsRequired = false,
+            Summary = true
+        };
+
         public IntegrationDefinition Definition { get; } =
             new IntegrationDefinition(
                 "MessageBird",
@@ -41,6 +49,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                     AccessKeyProperty,
                     PhoneNumberProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Sms
@@ -77,7 +86,9 @@ namespace Notifo.Domain.Integrations.MessageBird
                     return null;
                 }
 
-                var client = clientPool.GetServer(accessKey, phoneNumber);
+                var phoneNumbers = PhoneNumbersProperty.GetString(configured);
+
+                var client = clientPool.GetServer(accessKey, phoneNumber, ParsePhoneNumbers(phoneNumbers));
 
                 return new MessageBirdSmsSender(
                     client,
@@ -87,6 +98,39 @@ namespace Notifo.Domain.Integrations.MessageBird
             }
 
             return null;
+        }
+
+        private static Dictionary<string, string>? ParsePhoneNumbers(string? source)
+        {
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                return null;
+            }
+
+            var result = new Dictionary<string, string>();
+
+            foreach (var line in source.Split('\n'))
+            {
+                if (line.Length > 5)
+                {
+                    var parts = line.Split(':');
+
+                    if (parts.Length == 2)
+                    {
+                        var countryCode = parts[0].Trim();
+
+                        result[countryCode] = parts[1].Trim();
+                    }
+                    else
+                    {
+                        var countryCode = line[..2].Trim();
+
+                        result[countryCode] = line;
+                    }
+                }
+            }
+
+            return result;
         }
     }
 }

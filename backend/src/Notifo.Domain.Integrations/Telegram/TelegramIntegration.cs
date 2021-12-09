@@ -20,6 +20,18 @@ namespace Notifo.Domain.Integrations.Telegram
         private readonly TelegramBotClientPool botClientPool;
         private readonly IMessagingUrl messagingUrl;
 
+        public static readonly UserProperty UserUsername = new UserProperty("telegramUserId")
+        {
+            EditorLabel = Texts.Telegram_UsernameLabel,
+            EditorDescription = Texts.Telegram_UsernameDescription,
+        };
+
+        public static readonly UserProperty UserChatId = new UserProperty("telegramChatId")
+        {
+            EditorLabel = Texts.Telegram_ChatIdLabel,
+            EditorDescription = Texts.Telegram_ChatIdDescription,
+        };
+
         private static readonly IntegrationProperty AccessToken = new IntegrationProperty("accessToken", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.Telegram_AccessKeyLabel,
@@ -35,6 +47,11 @@ namespace Notifo.Domain.Integrations.Telegram
                 new List<IntegrationProperty>
                 {
                     AccessToken
+                },
+                new List<UserProperty>
+                {
+                    UserUsername,
+                    UserChatId,
                 },
                 new HashSet<string>
                 {

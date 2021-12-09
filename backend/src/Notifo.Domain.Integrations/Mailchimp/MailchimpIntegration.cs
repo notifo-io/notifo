@@ -48,6 +48,7 @@ namespace Notifo.Domain.Integrations.Mailchimp
                     FromEmailProperty,
                     FromNameProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Email

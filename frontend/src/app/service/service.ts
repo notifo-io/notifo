@@ -488,7 +488,7 @@ export class UsersClient {
      * @param id The user id to delete.
      * @return User deleted.
      */
-    deleteUser(appId: string, id: string): Promise<ListResponseDtoOfUserDto> {
+    deleteUser(appId: string, id: string): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -501,7 +501,7 @@ export class UsersClient {
         let options_ = <RequestInit>{
             method: "DELETE",
             headers: {
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             }
         };
 
@@ -510,15 +510,14 @@ export class UsersClient {
         });
     }
 
-    protected processDeleteUser(response: Response): Promise<ListResponseDtoOfUserDto> {
+    protected processDeleteUser(response: Response): Promise<FileResponse> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <ListResponseDtoOfUserDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return result200;
-            });
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
             return throwException("App not found.", status, _responseText, _headers);
@@ -540,7 +539,7 @@ export class UsersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ListResponseDtoOfUserDto>(<any>null);
+        return Promise.resolve<FileResponse>(<any>null);
     }
 
     /**
@@ -4892,12 +4891,6 @@ export interface UserDto {
     emailAddress?: string | undefined;
     /** The phone number. */
     phoneNumber?: string | undefined;
-    /** The threema id. */
-    threemaId?: string | undefined;
-    /** The telegram username. */
-    telegramUsername?: string | undefined;
-    /** The telegram chat ID. */
-    telegramChatId?: string | undefined;
     /** The preferred language of the user. */
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
@@ -4908,12 +4901,16 @@ export interface UserDto {
     numberOfMobilePushTokens: number;
     /** True when only whitelisted topic are allowed. */
     requiresWhitelistedTopics: boolean;
+    /** The user properties. */
+    properties?: { [key: string]: string; } | undefined;
     /** Notification settings per channel. */
     settings: { [key: string]: NotificationSettingDto; };
     /** The statistics counters. */
     counters: { [key: string]: number; };
     /** The mobile push tokens. */
     mobilePushTokens: MobilePushTokenDto[];
+    /** The supported user properties. */
+    userProperties?: UserPropertyDto[] | undefined;
 }
 
 export interface MobilePushTokenDto {
@@ -4926,6 +4923,15 @@ export interface MobilePushTokenDto {
 }
 
 export type MobileDeviceType = "Unknown" | "Android" | "iOS";
+
+export interface UserPropertyDto {
+    /** The field name for the property. */
+    name: string;
+    /** The optional description. */
+    editorDescription?: string | undefined;
+    /** The optional label. */
+    editorLabel?: string | undefined;
+}
 
 export interface ListResponseDtoOfSubscriptionDto {
     /** The items. */
@@ -4948,18 +4954,14 @@ export interface UpsertUserDto {
     emailAddress?: string | undefined;
     /** The phone number. */
     phoneNumber?: string | undefined;
-    /** The threema id. */
-    threemaId?: string | undefined;
-    /** The telegram username. */
-    telegramUsername?: string | undefined;
-    /** The telegram chat ID. */
-    telegramChatId?: string | undefined;
     /** The preferred language of the user. */
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
     preferredTimezone?: string | undefined;
     /** True when only whitelisted topic are allowed. */
     requiresWhitelistedTopics?: boolean | undefined;
+    /** The user properties. */
+    properties?: { [key: string]: string; } | undefined;
     /** Notification settings per channel. */
     settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
@@ -5252,8 +5254,6 @@ export interface EventDto {
     settings: { [key: string]: NotificationSettingDto; };
     /** User defined properties. */
     properties: { [key: string]: string; };
-    /** The scheduling options. */
-    scheduling?: SchedulingDto | undefined;
     /** The statistics counters. */
     counters: { [key: string]: number; };
     /** True when silent. */
@@ -5261,22 +5261,6 @@ export interface EventDto {
     /** The time to live in seconds. */
     timeToLiveInSeconds?: number | undefined;
 }
-
-export interface SchedulingDto {
-    /** The scheduling type. */
-    type?: SchedulingType;
-    /** To schedule the event at the next day of the week. */
-    nextWeekDay?: IsoDayOfWeek | undefined;
-    /** The scheduling date. */
-    date?: Date | undefined;
-    /** The scheduling time. */
-    time?: string;
-}
-
-export type SchedulingType = "UTC" | "UserTime";
-
-/** Equates the days of the week with their numerical value according to ISO-8601. This corresponds with System.DayOfWeek except for Sunday, which is 7 in the ISO numbering and 0 in System.DayOfWeek. */
-export type IsoDayOfWeek = "None" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 
 export interface PublishManyDto {
     /** The publish requests. */
@@ -5310,6 +5294,22 @@ export interface PublishDto {
     timeToLiveInSeconds?: number | undefined;
 }
 
+export interface SchedulingDto {
+    /** The scheduling type. */
+    type?: SchedulingType;
+    /** To schedule the event at the next day of the week. */
+    nextWeekDay?: IsoDayOfWeek | undefined;
+    /** The scheduling date. */
+    date?: Date | undefined;
+    /** The scheduling time. */
+    time?: string;
+}
+
+export type SchedulingType = "UTC" | "UserTime";
+
+/** Equates the days of the week with their numerical value according to ISO-8601. This corresponds with System.DayOfWeek except for Sunday, which is 7 in the ISO numbering and 0 in System.DayOfWeek. */
+export type IsoDayOfWeek = "None" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+
 export interface EmailPreviewDto {
     /** The rendered preview. */
     result?: string | undefined;
@@ -5319,8 +5319,11 @@ export interface EmailPreviewDto {
 
 export interface EmailFormattingError {
     message?: string;
+    template?: EmailTemplateType;
     line?: number;
 }
+
+export type EmailTemplateType = "General" | "BodyHtml" | "BodyText" | "Subject";
 
 export interface EmailPreviewRequestDto {
     /** The preview to render. */

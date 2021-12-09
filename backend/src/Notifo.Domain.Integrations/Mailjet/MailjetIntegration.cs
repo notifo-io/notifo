@@ -57,6 +57,7 @@ namespace Notifo.Domain.Integrations.Mailjet
                     FromEmailProperty,
                     FromNameProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Email
