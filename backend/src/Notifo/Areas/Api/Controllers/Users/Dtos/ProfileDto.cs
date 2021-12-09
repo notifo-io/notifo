@@ -10,6 +10,7 @@ using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {
@@ -31,6 +32,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// The phone number.
         /// </summary>
         public string? PhoneNumber { get; set; }
+
+        /// <summary>
+        /// The allowed Topics.
+        /// </summary>
+        public ReadonlyList<string> AllowedTopics { get; set; }
 
         /// <summary>
         /// The preferred language of the user.
