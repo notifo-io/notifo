@@ -53,5 +53,5 @@ export const mediaReducer = createReducer(initialState, builder => list.initiali
         return initialState;
     })
     .addCase(deleteMedia.fulfilled, (state, action) => {
-        state.uploadingFiles.removeBy(x => x.name, action.meta.arg.fileName);
+        state.uploadingFiles.removeByValue(x => x.name, action.meta.arg.fileName);
     }));

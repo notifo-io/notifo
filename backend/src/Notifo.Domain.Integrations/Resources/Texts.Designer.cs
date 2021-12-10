@@ -19,7 +19,7 @@ namespace Notifo.Domain.Integrations.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Texts {
@@ -376,6 +376,24 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Country specific phone numbers..
+        /// </summary>
+        internal static string MessageBird_PhoneNumbersDescription {
+            get {
+                return ResourceManager.GetString("MessageBird_PhoneNumbersDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone Numbers.
+        /// </summary>
+        internal static string MessageBird_PhoneNumbersLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_PhoneNumbersLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Preconfigured Messagebird integration for SMS messages..
         /// </summary>
         internal static string MessageBirdIntegrated_Description {
@@ -475,6 +493,24 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The ID to identity the user in the chat with the bot. Will be set automatically..
+        /// </summary>
+        internal static string Telegram_ChatIdDescription {
+            get {
+                return ResourceManager.GetString("Telegram_ChatIdDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Telegram Chat ID.
+        /// </summary>
+        internal static string Telegram_ChatIdLabel {
+            get {
+                return ResourceManager.GetString("Telegram_ChatIdLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Send messages using Telegram..
         /// </summary>
         internal static string Telegram_Description {
@@ -498,6 +534,24 @@ namespace Notifo.Domain.Integrations.Resources {
         internal static string Telegram_UserLinked {
             get {
                 return ResourceManager.GetString("Telegram_UserLinked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The username in telegram..
+        /// </summary>
+        internal static string Telegram_UsernameDescription {
+            get {
+                return ResourceManager.GetString("Telegram_UsernameDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Telegram Username.
+        /// </summary>
+        internal static string Telegram_UsernameLabel {
+            get {
+                return ResourceManager.GetString("Telegram_UsernameLabel", resourceCulture);
             }
         }
         

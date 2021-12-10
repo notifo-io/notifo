@@ -63,6 +63,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
                     FromNameProperty,
                     AdditionalFromEmails
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Email

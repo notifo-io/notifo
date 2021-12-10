@@ -35,12 +35,12 @@ namespace Notifo.Domain.Integrations.Telegram
 
         public bool HasTarget(User user)
         {
-            return !string.IsNullOrWhiteSpace(user.TelegramChatId);
+            return !string.IsNullOrWhiteSpace(GetChatId(user));
         }
 
         public Task AddTargetsAsync(MessagingJob job, User user)
         {
-            var chatId = user.TelegramChatId;
+            var chatId = GetChatId(user);
 
             if (!string.IsNullOrWhiteSpace(chatId))
             {
@@ -94,7 +94,7 @@ namespace Notifo.Domain.Integrations.Telegram
                 return;
             }
 
-            var user = await userStore.GetByTelegramUsernameAsync(app.Id, username, ct);
+            var user = await userStore.GetByPropertyAsync(app.Id, TelegramIntegration.UserUsername.Name, username, ct);
 
             if (user == null)
             {
@@ -102,9 +102,10 @@ namespace Notifo.Domain.Integrations.Telegram
                 return;
             }
 
-            await userStore.UpsertAsync(app.Id, user.Id, new UpsertUser
+            await userStore.UpsertAsync(app.Id, user.Id, new SetUserProperty
             {
-                TelegramChatId = chatId
+                Property = TelegramIntegration.UserUsername.Name,
+                PropertyValue = chatId,
             }, ct);
 
             await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
@@ -161,6 +162,11 @@ namespace Notifo.Domain.Integrations.Telegram
         private static string GetUserNotFoundMessage(App app)
         {
             return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_UserNotFound, app.Name);
+        }
+
+        private static string? GetChatId(User user)
+        {
+            return user.Properties?.GetValueOrDefault(TelegramIntegration.UserChatId.Name);
         }
 
         private static bool IsUpdate(TelegramUpdate update)

@@ -6,7 +6,7 @@
  */
 
 import { FormError, Forms, Loader, Types } from '@app/framework';
-import { UpsertUserDto, UserDto } from '@app/service';
+import { Clients, UpsertUserDto, UserDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
 import { upsertUser, useApp, useCore, useUsers } from '@app/state';
@@ -25,7 +25,7 @@ export interface UserDialogProps {
 }
 
 export const UserDialog = (props: UserDialogProps) => {
-    const { onClose, user } = props;
+    const { onClose } = props;
 
     const dispatch = useDispatch();
     const app = useApp()!;
@@ -34,8 +34,25 @@ export const UserDialog = (props: UserDialogProps) => {
     const coreTimezones = useCore(x => x.timezones);
     const upserting = useUsers(x => x.upserting);
     const upsertingError = useUsers(x => x.upsertingError);
-    const [tab, setTab] = React.useState(0);
+    const [dialogUser, setDialogUser] = React.useState(props.user);
+    const [dialogTab, setDialogTab] = React.useState(0);
     const [wasUpserting, setWasUpserting] = React.useState(false);
+
+    React.useEffect(() => {
+        async function loadData() {
+            try {
+                const newUser = await Clients.Users.getUser(appId, dialogUser!.id);
+
+                setDialogUser(newUser);
+            } catch {
+                setDialogUser(dialogUser);
+            }
+        }
+
+        if (dialogUser) {
+            loadData();
+        }
+    }, [appId, dialogUser]);
 
     React.useEffect(() => {
         if (upserting) {
@@ -55,12 +72,26 @@ export const UserDialog = (props: UserDialogProps) => {
         }
     }, [dispatch, doCloseForm, upserting, upsertingError, wasUpserting]);
 
+    const allProperties = React.useMemo(() => {
+        const properties = dialogUser?.userProperties || [];
+
+        if (dialogUser?.properties) {
+            for (const name of Object.keys(dialogUser.properties)) {
+                if (!properties.find(x => x.name === name)) {
+                    properties.push({ name, editorLabel: name });
+                }
+            }
+        }
+
+        return properties.sortByString(x => x.name);
+    }, [dialogUser]);
+
     const doSave = React.useCallback((params: UpsertUserDto) => {
         dispatch(upsertUser({ appId, params }));
     }, [dispatch, appId]);
 
     const initialValues: any = React.useMemo(() => {
-        const result: Partial<UserDto> = Types.clone(user || {});
+        const result: Partial<UserDto> = Types.clone(dialogUser || {});
 
         result.settings ||= {};
 
@@ -69,7 +100,7 @@ export const UserDialog = (props: UserDialogProps) => {
         }
 
         return result;
-    }, [user]);
+    }, [dialogUser]);
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm}>
@@ -79,16 +110,16 @@ export const UserDialog = (props: UserDialogProps) => {
                         <ModalHeader toggle={doCloseForm}>
                             <Nav className='nav-tabs2'>
                                 <NavItem>
-                                    <NavLink onClick={() => setTab(0)} active={tab === 0}>{user ? texts.users.editHeader : texts.users.createHeader}</NavLink>
+                                    <NavLink onClick={() => setDialogTab(0)} active={dialogTab === 0}>{dialogUser ? texts.users.editHeader : texts.users.createHeader}</NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink onClick={() => setTab(1)} active={tab === 1}>{texts.common.channels}</NavLink>
+                                    <NavLink onClick={() => setDialogTab(1)} active={dialogTab === 1}>{texts.common.channels}</NavLink>
                                 </NavItem>
                             </Nav>
                         </ModalHeader>
 
                         <ModalBody>
-                            {tab === 0 ? (
+                            {dialogTab === 0 ? (
                                 <fieldset disabled={upserting}>
                                     <Forms.Text name='id'
                                         label={texts.common.id} />
@@ -102,20 +133,22 @@ export const UserDialog = (props: UserDialogProps) => {
                                     <Forms.Text name='phoneNumber'
                                         label={texts.common.phoneNumber} />
 
-                                    <Forms.Text name='threemaId'
-                                        label={texts.common.threemaId} />
-
-                                    <Forms.Text name='telegramUsername'
-                                        label={texts.common.telegramUsername} />
-
-                                    <Forms.Text name='telegramChatId'
-                                        label={texts.common.telegramChatId} />
-
                                     <Forms.Select name='preferredLanguage' options={coreLanguages}
                                         label={texts.common.language} />
 
                                     <Forms.Select name='preferredTimezone' options={coreTimezones}
                                         label={texts.common.timezone} />
+
+                                    {allProperties.length > 0 &&
+                                        <>
+                                            <hr />
+
+                                            {allProperties.map(x =>
+                                                <Forms.Text key={x.name} name={x.name} hints={x.editorDescription}
+                                                    label={x.editorLabel || x.name} />,
+                                            )}
+                                        </>
+                                    }
                                 </fieldset>
                             ) : (
                                 <NotificationsForm.Settings field='settings' disabled={upserting} />

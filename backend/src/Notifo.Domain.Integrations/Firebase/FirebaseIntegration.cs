@@ -56,6 +56,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     SilentISOProperty,
                     CredentialsProperty
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.MobilePush

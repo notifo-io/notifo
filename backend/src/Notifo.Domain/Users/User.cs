@@ -32,15 +32,11 @@ namespace Notifo.Domain.Users
 
         public string? PhoneNumber { get; init; }
 
-        public string? ThreemaId { get; init; }
-
-        public string? TelegramUsername { get; init; }
-
-        public string? TelegramChatId { get; init; }
-
         public bool RequiresWhitelistedTopics { get; init; }
 
         public ReadonlyList<string> AllowedTopics { get; init; } = ReadonlyList.Empty<string>();
+
+        public ReadonlyDictionary<string, string> Properties { get; init; } = ReadonlyDictionary.Empty<string, string>();
 
         public ReadonlyList<MobilePushToken> MobilePushTokens { get; init; } = ReadonlyList.Empty<MobilePushToken>();
 

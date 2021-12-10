@@ -21,6 +21,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 Texts.MessageBirdIntegrated_Name,
                 "./integrations/messagebird.svg",
                 new List<IntegrationProperty>(),
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Sms

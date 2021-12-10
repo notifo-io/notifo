@@ -105,12 +105,12 @@ namespace Notifo.Domain.Integrations.Threema
             // Read the API documentation: https://gateway.threema.ch/de/developer/api
             const string Url = "https://msgapi.threema.ch/send_simple";
 
-            var parameters = new Dictionary<string, string?>
+            var parameters = new[]
             {
-                ["secret"] = apiSecret,
-                ["from"] = apiIdentity,
-                ["text"] = text,
-                [toKey] = toValue
+                new KeyValuePair<string, string>("secret", apiSecret),
+                new KeyValuePair<string, string>("from", apiIdentity),
+                new KeyValuePair<string, string>("text", text),
+                new KeyValuePair<string, string>(toKey, toValue)
             };
 
             var form = new FormUrlEncodedContent(parameters!);
