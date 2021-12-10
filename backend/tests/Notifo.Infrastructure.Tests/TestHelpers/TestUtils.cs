@@ -8,9 +8,12 @@
 using System.Text.Json;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;
 using Notifo.Infrastructure.Collections.Json;
+using Notifo.Infrastructure.Json;
+using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Infrastructure.TestHelpers
 {
@@ -22,6 +25,13 @@ namespace Notifo.Infrastructure.TestHelpers
         {
             DefaultOptions.Converters.Add(new JsonReadonlyListConverterFactory());
             DefaultOptions.Converters.Add(new JsonReadonlyDictionaryConverterFactory());
+            DefaultOptions.Converters.Add(new JsonActivityContextConverter());
+            DefaultOptions.Converters.Add(new JsonActivitySpanIdConverter());
+            DefaultOptions.Converters.Add(new JsonActivityTraceIdConverter());
+
+            ActivityContextSerializer.Register();
+            ActivitySpanIdSerializer.Register();
+            ActivityTraceIdSerializer.Register();
 
             BsonSerializer.RegisterGenericSerializerDefinition(
                 typeof(ReadonlyList<>),
@@ -34,6 +44,7 @@ namespace Notifo.Infrastructure.TestHelpers
 
         public sealed class ObjectHolder<T>
         {
+            [BsonRequired]
             public T Value { get; set; }
         }
 

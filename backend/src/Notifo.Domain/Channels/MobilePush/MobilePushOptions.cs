@@ -13,6 +13,8 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public MobileDeviceType DeviceType { get; set; }
 
+        public bool IsConfirmed { get; set; }
+
         public bool Wakeup { get; set; }
     }
 }

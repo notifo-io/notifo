@@ -28,7 +28,7 @@ namespace Notifo.Domain.Integrations.Firebase
             this.sendSilentIOS = sendSilentIOS;
         }
 
-        public async Task SendAsync(UserNotification userNotification, MobilePushOptions options,
+        public async Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
             CancellationToken ct)
         {
             if (!ShouldSend(userNotification.Silent, options.DeviceType))
@@ -38,7 +38,7 @@ namespace Notifo.Domain.Integrations.Firebase
 
             try
             {
-                var message = userNotification.ToFirebaseMessage(options.DeviceToken, options.Wakeup);
+                var message = userNotification.ToFirebaseMessage(options.DeviceToken, options.Wakeup, options.IsConfirmed);
 
                 // Try a few attempts to get a non-disposed messaging service.
                 for (var i = 1; i <= Attempts; i++)

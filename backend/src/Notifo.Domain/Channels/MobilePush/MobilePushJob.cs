@@ -11,7 +11,7 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public sealed class MobilePushJob
     {
-        public UserNotification Notification { get; init; }
+        public BaseUserNotification Notification { get; init; }
 
         public string DeviceToken { get; init; }
 
@@ -20,6 +20,8 @@ namespace Notifo.Domain.Channels.MobilePush
         public bool IsImmediate { get; init; }
 
         public bool IsUpdate { get; init; }
+
+        public bool IsConfirmed { get; set; }
 
         public string ScheduleKey
         {

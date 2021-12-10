@@ -13,6 +13,8 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public class UserNotificationExtensionsTests
     {
+        private readonly string token = "token1";
+
         [Fact]
         public void Should_generate_firebase_message()
         {
@@ -27,7 +29,6 @@ namespace Notifo.Domain.Integrations.Firebase
             var linkText = "Go to link";
             var silent = false.ToString();
             var subject = "subject1";
-            var token = "token1";
             var trackDeliveredUrl = "https://track-delivered.notifo.com";
             var trackSeenUrl = "https://track-seen.notifo.com";
             var data = "data1";
@@ -54,7 +55,7 @@ namespace Notifo.Domain.Integrations.Firebase
                 Data = data
             };
 
-            var message = notification.ToFirebaseMessage(token, false);
+            var message = notification.ToFirebaseMessage(token, false, true);
 
             Assert.Equal(message.Token, token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
@@ -90,7 +91,6 @@ namespace Notifo.Domain.Integrations.Firebase
             var imageLarge = string.Empty;
             var imageSmall = (string?)null;
             var subject = "subject1";
-            var token = "token1";
             var trackingUrl = (string?)null;
 
             var notification = new UserNotification
@@ -109,7 +109,7 @@ namespace Notifo.Domain.Integrations.Firebase
                 TrackSeenUrl = trackingUrl
             };
 
-            var message = notification.ToFirebaseMessage(token, false);
+            var message = notification.ToFirebaseMessage(token, false, false);
 
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
             Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
@@ -123,14 +123,13 @@ namespace Notifo.Domain.Integrations.Firebase
         public void Should_create_silent_notification_when_flag_is_true()
         {
             var id = Guid.NewGuid();
-            var token = "token1";
 
             var notification = new UserNotification
             {
                 Id = id
             };
 
-            var message = notification.ToFirebaseMessage(token, true);
+            var message = notification.ToFirebaseMessage(token, true, false);
 
             Assert.Equal(token, message.Token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
@@ -140,7 +139,6 @@ namespace Notifo.Domain.Integrations.Firebase
         [Fact]
         public void Should_include_time_to_live_property_if_set()
         {
-            var token = "token1";
             var timeToLive = 1000;
 
             var notification = new UserNotification
@@ -149,7 +147,7 @@ namespace Notifo.Domain.Integrations.Firebase
                 TimeToLiveInSeconds = timeToLive
             };
 
-            var message = notification.ToFirebaseMessage(token, false);
+            var message = notification.ToFirebaseMessage(token, false, false);
 
             var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds();
 
@@ -158,25 +156,8 @@ namespace Notifo.Domain.Integrations.Firebase
         }
 
         [Fact]
-        public void Should_not_include_time_to_live_property_if_not_set()
-        {
-            var token = "token1";
-
-            var notification = new UserNotification
-            {
-                Formatting = new NotificationFormatting<string>()
-            };
-
-            var message = notification.ToFirebaseMessage(token, false);
-
-            Assert.False(message.Apns.Headers.ContainsKey("apns-expiration"));
-            Assert.Null(message.Android.TimeToLive);
-        }
-
-        [Fact]
         public void Should_set_time_to_live_to_zero_if_set_to_zero()
         {
-            var token = "token1";
             var timeToLive = 0;
 
             var notification = new UserNotification
@@ -185,10 +166,24 @@ namespace Notifo.Domain.Integrations.Firebase
                 TimeToLiveInSeconds = timeToLive
             };
 
-            var message = notification.ToFirebaseMessage(token, false);
+            var message = notification.ToFirebaseMessage(token, false, false);
 
             Assert.Equal(timeToLive, int.Parse(message.Apns.Headers["apns-expiration"], NumberStyles.Integer, CultureInfo.InvariantCulture));
             Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
+        }
+
+        [Fact]
+        public void Should_not_include_time_to_live_property_if_not_set()
+        {
+            var notification = new UserNotification
+            {
+                Formatting = new NotificationFormatting<string>()
+            };
+
+            var message = notification.ToFirebaseMessage(token, false, false);
+
+            Assert.False(message.Apns.Headers.ContainsKey("apns-expiration"));
+            Assert.Null(message.Android.TimeToLive);
         }
     }
 }

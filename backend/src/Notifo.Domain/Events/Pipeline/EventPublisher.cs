@@ -35,7 +35,7 @@ namespace Notifo.Domain.Events.Pipeline
         {
             Guard.NotNull(message, nameof(message));
 
-            using (Telemetry.Activities.StartActivity("PublishEvent"))
+            using (var activity = Telemetry.Activities.StartActivity("PublishEvent"))
             {
                 message.Validate();
 
@@ -61,11 +61,12 @@ namespace Notifo.Domain.Events.Pipeline
                     message.Id = Guid.NewGuid().ToString();
                 }
 
-#pragma warning disable CA2016 // Forward the 'CancellationToken' parameter to methods that take one
-#pragma warning disable MA0040 // Flow the cancellation token
-                await producer.ProduceAsync(message.AppId, message);
-#pragma warning restore MA0040 // Flow the cancellation token
-#pragma warning restore CA2016 // Forward the 'CancellationToken' parameter to methods that take one
+                if (activity != null)
+                {
+                    message.EventActivity = activity.Context;
+                }
+
+                await ProduceAsync(message);
 
                 log.LogInformation(message, (m, w) => w
                     .WriteProperty("action", "EventReceived")
@@ -74,6 +75,11 @@ namespace Notifo.Domain.Events.Pipeline
                     .WriteProperty("eventTopic", m.Topic)
                     .WriteProperty("eventType", m.ToString()));
             }
+        }
+
+        private async Task ProduceAsync(EventMessage message)
+        {
+            await producer.ProduceAsync(message.AppId, message);
         }
     }
 }

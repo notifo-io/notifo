@@ -85,7 +85,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The scheduling options.
         /// </summary>
-        // public SchedulingDto? Scheduling { get; set; }
+        public SchedulingDto? Scheduling { get; set; }
 
         /// <summary>
         /// The statistics counters.
@@ -129,7 +129,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
 
             if (source.Scheduling != null)
             {
-                // result.Scheduling = SchedulingDto.FromDomainObject(source.Scheduling);
+                result.Scheduling = SchedulingDto.FromDomainObject(source.Scheduling);
             }
 
             if (source.Settings?.Count > 0)

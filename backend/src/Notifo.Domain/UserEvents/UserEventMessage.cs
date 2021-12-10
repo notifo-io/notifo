@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using NodaTime;
 using Notifo.Infrastructure.Texts;
 
@@ -29,6 +30,10 @@ namespace Notifo.Domain.UserEvents
         public bool Test { get; set; }
 
         public int? TimeToLiveInSeconds { get; set; }
+
+        public ActivityContext UserEventActivity { get; set; }
+
+        public ActivityContext EventActivity { get; set; }
 
         public Instant Created { get; set; }
 

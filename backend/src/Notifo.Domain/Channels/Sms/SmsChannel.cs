@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using System.Globalization;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -68,18 +69,21 @@ namespace Notifo.Domain.Channels.Sms
         public async Task HandleCallbackAsync(string to, string token, SmsResult result,
             CancellationToken ct)
         {
-            if (Guid.TryParse(token, out var id))
+            using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
             {
-                var notification = await userNotificationStore.FindAsync(id, ct);
-
-                if (notification != null)
+                if (Guid.TryParse(token, out var id))
                 {
-                    await UpdateAsync(to, result, notification);
-                }
+                    var notification = await userNotificationStore.FindAsync(id, ct);
 
-                if (result == SmsResult.Delivered)
-                {
-                    userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
+                    if (notification != null)
+                    {
+                        await UpdateAsync(to, result, notification);
+                    }
+
+                    if (result == SmsResult.Delivered)
+                    {
+                        userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
+                    }
                 }
             }
         }
@@ -105,24 +109,27 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                return Task.CompletedTask;
+                if (options.IsUpdate)
+                {
+                    return;
+                }
+
+                var job = new SmsJob(notification, setting.Template, configuration)
+                {
+                    IsImmediate = setting.DelayDuration == Duration.Zero
+                };
+
+                await userNotificationQueue.ScheduleAsync(
+                    job.ScheduleKey,
+                    job,
+                    setting.DelayDuration,
+                    false, ct);
             }
-
-            var job = new SmsJob(notification, setting.Template, configuration)
-            {
-                IsImmediate = setting.DelayDuration == Duration.Zero
-            };
-
-            return userNotificationQueue.ScheduleAsync(
-                job.ScheduleKey,
-                job,
-                setting.DelayDuration,
-                false, ct);
         }
 
         public Task HandleExceptionAsync(SmsJob job, Exception ex)
@@ -133,23 +140,30 @@ namespace Notifo.Domain.Channels.Sms
         public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            // If the notification is not scheduled it is very unlikey it has been confirmed already.
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name, ct))
-            {
-                await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
-            }
-            else
-            {
-                await SendAsync(job, ct);
-            }
+            var links = job.Links();
 
-            return false;
+            var parentContext = Activity.Current?.Context ?? default;
+
+            using (Telemetry.Activities.StartActivity("SmsChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+            {
+                // If the notification is not scheduled it is very unlikey it has been confirmed already.
+                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name, ct))
+                {
+                    await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
+                }
+                else
+                {
+                    await SendJobAsync(job, ct);
+                }
+
+                return false;
+            }
         }
 
-        private async Task SendAsync(SmsJob job,
+        private async Task SendJobAsync(SmsJob job,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("SendSms"))
+            using (Telemetry.Activities.StartActivity("Send"))
             {
                 var app = await appStore.GetCachedAsync(job.AppId, ct);
 

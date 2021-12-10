@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using Notifo.Domain.UserEvents;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
@@ -23,7 +24,11 @@ namespace Notifo.Domain.Events.Pipeline
         public async Task HandleAsync(EventMessage message,
             CancellationToken ct = default)
         {
-            using (var trace = Telemetry.Activities.StartActivity("ConsumeEvent"))
+            var links = message.Links();
+
+            var parentContext = Activity.Current?.Context ?? default;
+
+            using (Telemetry.Activities.StartActivity("ConsumeEvent", ActivityKind.Internal, parentContext, links: links))
             {
                 await userEventPublisher.PublishAsync(message, ct);
             }

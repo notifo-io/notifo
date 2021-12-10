@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using System.Text;
 
 namespace Notifo.Domain.UserNotifications
@@ -36,6 +37,12 @@ namespace Notifo.Domain.UserNotifications
         public bool Test { get; set; }
 
         public int? TimeToLiveInSeconds { get; set; }
+
+        public ActivityContext UserEventActivity { get; set; }
+
+        public ActivityContext EventActivity { get; set; }
+
+        public ActivityContext NotificationActivity { get; set; }
 
         public NotificationProperties? Properties { get; set; }
 
