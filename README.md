@@ -25,6 +25,10 @@ Notifo is a multi-channel notification service for collaboration tools, e-commer
 * Tracking which notification has been read or confirmed.
 * Integrated plugin to add a notification overlay to your web application.
 
+## Integrations
+
+![Integrations](media/Integrations.png "Integrations")
+
 ## How it works
 
 * **Users** subscribe to topics that are defined by a path such as `clothes/shoes/nike`. It is your job to provide a good UI for that.
