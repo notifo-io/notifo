@@ -30,9 +30,9 @@ namespace Notifo.Infrastructure.MongoDb
 
         public override Instant Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         {
-            var value = context.Reader.ReadDateTime();
+            var text = context.Reader.ReadDateTime();
 
-            return Instant.FromUnixTimeMilliseconds(value);
+            return Instant.FromUnixTimeMilliseconds(text);
         }
 
         public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Instant value)

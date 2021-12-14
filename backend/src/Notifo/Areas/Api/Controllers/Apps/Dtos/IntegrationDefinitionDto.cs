@@ -46,7 +46,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         {
             var result = SimpleMapper.Map(source, new IntegrationDefinitionDto());
 
-            result.Properties = source.Properties.Select(IntegrationPropertyDto.FromProperty).ToList();
+            result.Properties = source.Properties.Select(IntegrationPropertyDto.FromDomainObject).ToList();
 
             return result;
         }

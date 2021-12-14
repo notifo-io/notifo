@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Integrations;
@@ -68,71 +69,78 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public async Task HandleSeenAsync(Guid id, TrackingDetails details)
         {
-            var token = details.DeviceIdentifier;
-
-            if (string.IsNullOrWhiteSpace(token))
+            using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
             {
-                return;
-            }
+                var token = details.DeviceIdentifier;
 
-            var notification = await userNotificationStore.FindAsync(id);
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return;
+                }
 
-            if (notification == null)
-            {
-                return;
-            }
+                var notification = await userNotificationStore.FindAsync(id);
 
-            var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
+                if (notification == null)
+                {
+                    return;
+                }
 
-            if (user == null)
-            {
-                return;
-            }
+                var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
 
-            var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == token && x.DeviceType == MobileDeviceType.iOS);
+                if (user == null)
+                {
+                    return;
+                }
 
-            if (userToken != null)
-            {
-                await TryWakeupAsync(notification, userToken, default);
+                var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == token && x.DeviceType == MobileDeviceType.iOS);
+
+                if (userToken != null)
+                {
+                    await TryWakeupAsync(notification, userToken, default);
+                }
             }
         }
 
         public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
+            using (Telemetry.Activities.StartActivity("MobilePushChannel/SendAsync"))
+            {
+                var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
 
-            if (token == null)
-            {
-                return;
-            }
+                if (token == null)
+                {
+                    return;
+                }
 
-            if (token.DeviceType == MobileDeviceType.iOS)
-            {
-                await TryWakeupAsync(notification, token, ct);
-            }
+                if (token.DeviceType == MobileDeviceType.iOS)
+                {
+                    await TryWakeupAsync(notification, token, ct);
+                }
 
-            var job = new MobilePushJob(notification, configuration, token.DeviceType)
-            {
-                IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero,
-                IsUpdate = options.IsUpdate
-            };
+                var job = new MobilePushJob(notification, configuration, token.DeviceType)
+                {
+                    IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero,
+                    IsUpdate = options.IsUpdate,
+                    IsConfirmed = notification.FirstConfirmed != null
+                };
 
-            if (options.IsUpdate)
-            {
-                await userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    default(Instant),
-                    false, ct);
-            }
-            else
-            {
-                await userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    setting.DelayDuration,
-                    false, ct);
+                if (options.IsUpdate)
+                {
+                    await userNotificationQueue.ScheduleAsync(
+                        job.ScheduleKey,
+                        job,
+                        default(Instant),
+                        false, ct);
+                }
+                else
+                {
+                    await userNotificationQueue.ScheduleAsync(
+                        job.ScheduleKey,
+                        job,
+                        setting.DelayDuration,
+                        false, ct);
+                }
             }
         }
 
@@ -154,7 +162,8 @@ namespace Notifo.Domain.Channels.MobilePush
             }, token.Token, token.DeviceType)
             {
                 IsImmediate = true,
-                IsUpdate = false
+                IsUpdate = false,
+                IsConfirmed = notification.FirstConfirmed != null
             };
 
             await userNotificationQueue.ScheduleAsync(
@@ -184,19 +193,26 @@ namespace Notifo.Domain.Channels.MobilePush
         public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            var id = job.Notification.Id;
+            var links = job.Notification.Links();
 
-            // If the notification is not scheduled it is very unlikey it has been confirmed already.
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, job.DeviceToken, Name, ct))
-            {
-                await UpdateAsync(job, ProcessStatus.Skipped);
-            }
-            else
-            {
-                await SendAsync(job, ct);
-            }
+            var parentContext = Activity.Current?.Context ?? default;
 
-            return true;
+            using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+            {
+                var id = job.Notification.Id;
+
+                // If the notification is not scheduled it is very unlikey it has been confirmed already.
+                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, job.DeviceToken, Name, ct))
+                {
+                    await UpdateAsync(job, ProcessStatus.Skipped);
+                }
+                else
+                {
+                    await SendAsync(job, ct);
+                }
+
+                return true;
+            }
         }
 
         public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
@@ -236,7 +252,7 @@ namespace Notifo.Domain.Channels.MobilePush
                         return;
                     }
 
-                    await SendCoreAsync(job, notification, app, senders, ct);
+                    await SendCoreAsync(job, app, senders, ct);
 
                     await UpdateAsync(job, ProcessStatus.Handled);
                 }
@@ -248,10 +264,12 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        private async Task SendCoreAsync(MobilePushJob job, UserNotification notification, App app, List<IMobilePushSender> senders,
+        private async Task SendCoreAsync(MobilePushJob job, App app, List<IMobilePushSender> senders,
             CancellationToken ct)
         {
             var lastSender = senders[^1];
+
+            var notification = job.Notification;
 
             foreach (var sender in senders)
             {
@@ -259,6 +277,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 {
                     var options = new MobilePushOptions
                     {
+                        IsConfirmed = job.IsConfirmed,
                         DeviceType = job.DeviceType,
                         DeviceToken = job.DeviceToken,
                         Wakeup = notification.Formatting == null

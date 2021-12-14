@@ -20,6 +20,10 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             InstantSerializer.Register();
 
+            ActivityContextSerializer.Register();
+            ActivitySpanIdSerializer.Register();
+            ActivityTraceIdSerializer.Register();
+
             LocalDateSerializer.Register();
             LocalTimeSerializer.Register();
 

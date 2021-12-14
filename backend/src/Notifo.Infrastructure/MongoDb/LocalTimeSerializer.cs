@@ -31,9 +31,9 @@ namespace Notifo.Infrastructure.MongoDb
 
         public override LocalTime Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         {
-            var value = context.Reader.ReadString();
+            var text = context.Reader.ReadString();
 
-            return LocalTimePattern.GeneralIso.Parse(value).Value;
+            return LocalTimePattern.GeneralIso.Parse(text).Value;
         }
 
         public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, LocalTime value)

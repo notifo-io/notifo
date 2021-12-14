@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Options;
 using NodaTime;
@@ -71,36 +72,39 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            var subscription = options.User.WebPushSubscriptions.FirstOrDefault(x => x.Endpoint == configuration);
-
-            if (subscription == null)
+            using (Telemetry.Activities.StartActivity("WebPushChannel/SendAsync"))
             {
-                return Task.CompletedTask;
-            }
+                var subscription = options.User.WebPushSubscriptions.FirstOrDefault(x => x.Endpoint == configuration);
 
-            var job = new WebPushJob(notification, subscription, serializer);
+                if (subscription == null)
+                {
+                    return;
+                }
 
-            // Do not use scheduling when the notification is an update.
-            if (options.IsUpdate || setting.DelayDuration == Duration.Zero)
-            {
-                job.IsImmediate = true;
+                var job = new WebPushJob(notification, subscription, serializer);
 
-                return userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    default(Instant),
-                    false, ct);
-            }
-            else
-            {
-                return userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    setting.DelayDuration,
-                    false, ct);
+                // Do not use scheduling when the notification is an update.
+                if (options.IsUpdate || setting.DelayDuration == Duration.Zero)
+                {
+                    job.IsImmediate = true;
+
+                    await userNotificationQueue.ScheduleAsync(
+                        job.ScheduleKey,
+                        job,
+                        default(Instant),
+                        false, ct);
+                }
+                else
+                {
+                    await userNotificationQueue.ScheduleAsync(
+                        job.ScheduleKey,
+                        job,
+                        setting.DelayDuration,
+                        false, ct);
+                }
             }
         }
 
@@ -112,25 +116,32 @@ namespace Notifo.Domain.Channels.WebPush
         public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
             CancellationToken ct)
         {
-            var config = job.Subscription.Endpoint;
+            var links = job.Links();
 
-            // If the notification is not scheduled it is very unlikey it has been confirmed already.
-            if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, config, Name, ct))
-            {
-                await UpdateAsync(job, ProcessStatus.Skipped);
-            }
-            else
-            {
-                await SendAsync(job, ct);
-            }
+            var parentContext = Activity.Current?.Context ?? default;
 
-            return true;
+            using (Telemetry.Activities.StartActivity("WebPushChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+            {
+                var config = job.Subscription.Endpoint;
+
+                // If the notification is not scheduled it is very unlikey it has been confirmed already.
+                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, config, Name, ct))
+                {
+                    await UpdateAsync(job, ProcessStatus.Skipped);
+                }
+                else
+                {
+                    await SendAsync(job, ct);
+                }
+
+                return true;
+            }
         }
 
         private async Task SendAsync(WebPushJob job,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("SendWebPush"))
+            using (Telemetry.Activities.StartActivity("Send"))
             {
                 try
                 {

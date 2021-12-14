@@ -15,7 +15,7 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public static class UserNotificationExtensions
     {
-        public static Message ToFirebaseMessage(this UserNotification notification, string token, bool wakeup)
+        public static Message ToFirebaseMessage(this BaseUserNotification notification, string token, bool wakeup, bool isConfirmed)
         {
             var message = new Message
             {
@@ -38,7 +38,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("id", notification.Id.ToString())
                     .WithNonEmpty("confirmText", formatting.ConfirmText)
                     .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("isConfirmed", (notification.FirstConfirmed != null).ToString())
+                    .WithNonEmpty("isConfirmed", isConfirmed.ToString())
                     .WithNonEmpty("imageLarge", formatting.ImageLarge)
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
                     .WithNonEmpty("linkText", formatting.LinkText)
@@ -46,11 +46,8 @@ namespace Notifo.Domain.Integrations.Firebase
                     .WithNonEmpty("silent", notification.Silent.ToString())
                     .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, token))
                     .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("data", notification.Data)
-                    // Obsolete, replaced with
-                    // * trackDeliveredUrl for delivery.
-                    // * trackSeenUrl
-                    .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token));
+                    .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("data", notification.Data);
 
             var androidData =
                 new Dictionary<string, string>()

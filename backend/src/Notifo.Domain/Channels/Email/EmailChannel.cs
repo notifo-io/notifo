@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using System.Globalization;
 using Notifo.Domain.Apps;
 using Notifo.Domain.ChannelTemplates;
@@ -70,46 +71,56 @@ namespace Notifo.Domain.Channels.Email
             yield return options.User.EmailAddress;
         }
 
-        public Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            using (Telemetry.Activities.StartActivity("EmailChannel/SendAsync"))
             {
-                return Task.CompletedTask;
+                if (options.IsUpdate)
+                {
+                    return;
+                }
+
+                var job = new EmailJob(notification, setting, configuration);
+
+                await userNotificationQueue.ScheduleGroupedAsync(
+                    job.ScheduleKey,
+                    job,
+                    setting.DelayDuration,
+                    false, ct);
             }
-
-            var job = new EmailJob(notification, setting, configuration);
-
-            return userNotificationQueue.ScheduleGroupedAsync(
-                job.ScheduleKey,
-                job,
-                setting.DelayDuration,
-                false, ct);
         }
 
         public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt,
             CancellationToken ct)
         {
-            var nonConfirmed = new List<EmailJob>();
+            var links = jobs.SelectMany(x => x.Notification.Links());
 
-            foreach (var job in jobs)
+            var parentContext = Activity.Current?.Context ?? default;
+
+            using (Telemetry.Activities.StartActivity("EmailChannel/Handle", ActivityKind.Internal, parentContext, links: links))
             {
-                if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name, ct))
-                {
-                    await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
-                }
-                else
-                {
-                    nonConfirmed.Add(job);
-                }
-            }
+                var nonConfirmed = new List<EmailJob>();
 
-            if (nonConfirmed.Any())
-            {
-                await SendAsync(nonConfirmed, ct);
-            }
+                foreach (var job in jobs)
+                {
+                    if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name, ct))
+                    {
+                        await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
+                    }
+                    else
+                    {
+                        nonConfirmed.Add(job);
+                    }
+                }
 
-            return true;
+                if (nonConfirmed.Any())
+                {
+                    await SendJobsAsync(nonConfirmed, ct);
+                }
+
+                return true;
+            }
         }
 
         public Task HandleExceptionAsync(List<EmailJob> jobs, Exception ex)
@@ -117,10 +128,10 @@ namespace Notifo.Domain.Channels.Email
             return UpdateAsync(jobs, jobs[0].EmailAddress, ProcessStatus.Failed);
         }
 
-        public async Task SendAsync(List<EmailJob> jobs,
+        public async Task SendJobsAsync(List<EmailJob> jobs,
             CancellationToken ct)
         {
-            using (Telemetry.Activities.StartActivity("SendEmail"))
+            using (Telemetry.Activities.StartActivity("Send"))
             {
                 var first = jobs[0];
 

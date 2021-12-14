@@ -14,6 +14,7 @@ namespace Notifo.Domain.Integrations
         string Title,
         string LogoUrl,
         IReadOnlyList<IntegrationProperty> Properties,
+        IReadOnlyList<UserProperty> UserProperties,
         IReadOnlySet<string> Capabilities)
     {
         public string? Description { get; init; }

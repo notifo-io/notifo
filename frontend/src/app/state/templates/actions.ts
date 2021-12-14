@@ -60,5 +60,5 @@ export const templatesReducer = createReducer(initialState, builder => list.init
         state.templates.items?.setOrPush(x => x.code, action.payload);
     })
     .addCase(deleteTemplate.fulfilled, (state, action) => {
-        state.templates.items?.removeBy(x => x.code, action.meta.arg.code);
+        state.templates.items?.removeByValue(x => x.code, action.meta.arg.code);
     }));

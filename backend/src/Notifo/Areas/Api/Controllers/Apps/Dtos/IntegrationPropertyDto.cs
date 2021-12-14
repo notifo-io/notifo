@@ -80,7 +80,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// </summary>
         public object? DefaultValue { get; set; }
 
-        public static IntegrationPropertyDto FromProperty(IntegrationProperty property)
+        public static IntegrationPropertyDto FromDomainObject(IntegrationProperty property)
         {
             var result = SimpleMapper.Map(property, new IntegrationPropertyDto());
 

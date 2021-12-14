@@ -39,6 +39,7 @@ namespace Notifo.Domain.Integrations.Threema
                     ApiIdentity,
                     ApiSecret
                 },
+                new List<UserProperty>(),
                 new HashSet<string>
                 {
                     Providers.Messaging

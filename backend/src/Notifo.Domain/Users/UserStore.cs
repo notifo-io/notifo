@@ -104,13 +104,13 @@ namespace Notifo.Domain.Users
             return user;
         }
 
-        public async Task<User?> GetByTelegramUsernameAsync(string appId, string username,
+        public async Task<User?> GetByPropertyAsync(string appId, string key, string value,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(username, nameof(username));
+            Guard.NotNullOrEmpty(key, nameof(key));
 
-            var (user, _) = await repository.GetByTelegramUsernameAsync(appId, username, ct);
+            var (user, _) = await repository.GetByPropertyAsync(appId, key, value, ct);
 
             await DeliverAsync(user);
 

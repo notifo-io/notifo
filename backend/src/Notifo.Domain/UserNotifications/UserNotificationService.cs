@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
@@ -92,7 +93,11 @@ namespace Notifo.Domain.UserNotifications
 
         public async Task DistributeScheduledAsync(UserEventMessage userEvent, bool isLastAttempt)
         {
-            using (Telemetry.Activities.StartActivity("DistributeUserEventScheduled"))
+            var links = userEvent.Links();
+
+            var parentContext = Activity.Current?.Context ?? default;
+
+            using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, parentContext, links: links))
             {
                 await userNotificationsStore.TrackAttemptAsync(userEvent);
 
@@ -115,6 +120,8 @@ namespace Notifo.Domain.UserNotifications
                     var options = new SendOptions { App = app, User = user };
 
                     var notification = await CreateUserNotificationAsync(userEvent, options);
+
+                    notification.NotificationActivity = activity?.Context ?? default;
 
                     try
                     {

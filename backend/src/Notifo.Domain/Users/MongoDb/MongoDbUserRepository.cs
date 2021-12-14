@@ -126,12 +126,12 @@ namespace Notifo.Domain.Users.MongoDb
             }
         }
 
-        public async Task<(User? User, string? Etag)> GetByTelegramUsernameAsync(string appId, string username,
+        public async Task<(User? User, string? Etag)> GetByPropertyAsync(string appId, string key, string value,
             CancellationToken ct = default)
         {
-            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByTelegramUsernameAsync"))
+            using (Telemetry.Activities.StartActivity("MongoDbUserRepository/GetByPropertyAsync"))
             {
-                var document = await Collection.Find(x => x.Doc.AppId == appId && x.Doc.TelegramUsername == username).FirstOrDefaultAsync(ct);
+                var document = await Collection.Find(Filter.And(Filter.Eq(x => x.Doc.AppId, appId), Filter.Eq($"d.properties.{key}",  value))).FirstOrDefaultAsync(ct);
 
                 return (document?.ToUser(), document?.Etag);
             }
