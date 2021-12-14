@@ -57,11 +57,7 @@ namespace Notifo.Domain.Integrations.Firebase
                     }
                 }
             }
-            catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.InvalidArgument)
-            {
-                throw new MobilePushTokenExpiredException();
-            }
-            catch (FirebaseMessagingException ex) when (ex.ErrorCode == ErrorCode.NotFound)
+            catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
             {
                 throw new MobilePushTokenExpiredException();
             }
