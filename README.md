@@ -53,7 +53,7 @@ docker images are available: https://hub.docker.com/r/squidex/notifo, you can tr
 
 ### How to configure it
 
-Have a look to the settings for all configuration options: [appSettings.json](backend/src/notifo/appSettings.json). Everything in the settings, can be configured using environment variables.
+Have a look to the settings for all configuration options: [appSettings.json](backend/src/notifo/appSettings.json). Everything in the settings can be configured using environment variables.
 
 The following setting
 
@@ -71,10 +71,10 @@ Notifo uses the following technologies.
 
 ### Server
 
-* ASP.NET Core 5 for Multi-Platform Support
+* ASP.NET Core 6 for Multi-Platform Support
 * SignalR for Sockets
 * MongoDB (support for more Databases is planned)
-* Identity Server
+* OpenID Connect
 
 ### Frontend
 
@@ -82,6 +82,7 @@ Notifo uses the following technologies.
 * React Router
 * Formik
 * Redux
+* Redux Toolkit
 * Typescript
 * Bootstrap with custom Sass and [Argon Design](https://www.creative-tim.com/product/argon-design-system) Theme.
 * ...many more libraries.
@@ -101,7 +102,6 @@ There is still a lot to do:
 * Other SMS providers.
 * Test application for mobile push (iOS and Android)
 * Hardening scheduling and message queues.
-* Support for clustering of SignalR.
 * More channels (e.g. WhatsApp or Voice).
 * Testing and tests
 * Automated API and UI tests and more tests in general.
