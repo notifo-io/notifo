@@ -24,6 +24,14 @@ jobs:
     
     - name: Set up buildx
       uses: docker/setup-buildx-action@v1
+
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
     
     - name: Login to Docker
       if: github.event_name != 'pull_request'
@@ -32,7 +40,7 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: BUILD AND PUSH
+    - name: BUILD
       id: docker_build
       uses: docker/build-push-action@v2
       with:
@@ -41,12 +49,6 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
         tags: notifo-temp
-
-    - name: Save Image to Cache
-      uses: actions/cache@v2
-      with:
-        path: squidex-tmp.tar.gz
-        key: squidex-dev-image-${{ github.sha }}
 
     - name: Move cache
       run: |
