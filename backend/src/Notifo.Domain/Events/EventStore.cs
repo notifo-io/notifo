@@ -8,6 +8,7 @@
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
+using Squidex.Log;
 
 namespace Notifo.Domain.Events
 {
@@ -16,16 +17,17 @@ namespace Notifo.Domain.Events
         private readonly CounterCollector<(string, string)> collector;
         private readonly IEventRepository eventRepository;
 
-        public EventStore(IEventRepository eventRepository)
+        public EventStore(IEventRepository eventRepository,
+            ISemanticLog log)
         {
             this.eventRepository = eventRepository;
 
-            collector = new CounterCollector<(string, string)>(eventRepository, 1000, 1000);
+            collector = new CounterCollector<(string, string)>(eventRepository, log, 5000);
         }
 
         public void Dispose()
         {
-            collector.StopAsync().Wait();
+            collector.DisposeAsync().AsTask().Wait();
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
@@ -33,7 +35,7 @@ namespace Notifo.Domain.Events
         {
             if (key.AppId != null && key.EventId != null)
             {
-                await collector.AddAsync((key.AppId, key.EventId), counters);
+                await collector.AddAsync((key.AppId, key.EventId), counters, ct);
             }
         }
 

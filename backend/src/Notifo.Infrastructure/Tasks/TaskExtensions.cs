@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Threading.Channels;
+
 namespace Notifo.Infrastructure.Tasks
 {
     public static class TaskExtensions
@@ -95,6 +97,49 @@ namespace Notifo.Infrastructure.Tasks
 
                 return await task;
             }
+        }
+
+        public static void Batch<TIn, TOut>(this Channel<object> source, Channel<TOut> target, Func<IReadOnlyList<TIn>, TOut> converter, int batchSize, int timeout,
+            CancellationToken ct = default)
+        {
+            Task.Run(async () =>
+            {
+                var batch = new List<TIn>(batchSize);
+
+                var force = new object();
+
+                await using var timer = new Timer(_ => source.Writer.TryWrite(force));
+
+                async Task TrySendAsync()
+                {
+                    if (batch.Count > 0)
+                    {
+                        await target.Writer.WriteAsync(converter(batch), ct);
+                        batch.Clear();
+                    }
+                }
+
+                await foreach (var item in source.Reader.ReadAllAsync(ct))
+                {
+                    if (ReferenceEquals(item, force))
+                    {
+                        await TrySendAsync();
+                    }
+                    else if (item is TIn typed)
+                    {
+                        timer.Change(timeout, Timeout.Infinite);
+
+                        batch.Add(typed);
+
+                        if (batch.Count >= batchSize)
+                        {
+                            await TrySendAsync();
+                        }
+                    }
+                }
+
+                await TrySendAsync();
+            }, ct).ContinueWith(x => target.Writer.TryComplete(x.Exception));
         }
     }
 }

@@ -7,6 +7,7 @@
 
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
+using Squidex.Log;
 
 namespace Notifo.Domain.Topics
 {
@@ -15,16 +16,17 @@ namespace Notifo.Domain.Topics
         private readonly ITopicRepository repository;
         private readonly CounterCollector<(string AppId, string Path)> collector;
 
-        public TopicStore(ITopicRepository repository)
+        public TopicStore(ITopicRepository repository,
+            ISemanticLog log)
         {
             this.repository = repository;
 
-            collector = new CounterCollector<(string AppId, string Path)>(repository, 5000);
+            collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
         }
 
         public void Dispose()
         {
-            collector.StopAsync().Wait();
+            collector.DisposeAsync().AsTask().Wait();
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
@@ -32,7 +34,7 @@ namespace Notifo.Domain.Topics
         {
             if (key.AppId != null && key.Topic != null)
             {
-                await collector.AddAsync((key.AppId, key.Topic), counters);
+                await collector.AddAsync((key.AppId, key.Topic), counters, ct);
             }
         }
 

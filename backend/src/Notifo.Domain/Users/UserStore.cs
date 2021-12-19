@@ -8,6 +8,7 @@
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Squidex.Caching;
+using Squidex.Log;
 
 namespace Notifo.Domain.Users
 {
@@ -15,23 +16,23 @@ namespace Notifo.Domain.Users
     {
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
         private readonly IUserRepository repository;
-        private readonly IServiceProvider serviceProvider;
+        private readonly IServiceProvider services;
         private readonly IReplicatedCache cache;
         private readonly CounterCollector<(string, string)> collector;
 
         public UserStore(IUserRepository repository,
-            IServiceProvider serviceProvider, IReplicatedCache cache)
+            IServiceProvider services, IReplicatedCache cache, ISemanticLog log)
         {
             this.repository = repository;
-            this.serviceProvider = serviceProvider;
+            this.services = services;
             this.cache = cache;
 
-            collector = new CounterCollector<(string, string)>(repository, 5000);
+            collector = new CounterCollector<(string, string)>(repository, log, 5000);
         }
 
         public void Dispose()
         {
-            collector.StopAsync().Dispose();
+            collector.DisposeAsync().AsTask().Wait();
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
@@ -39,7 +40,7 @@ namespace Notifo.Domain.Users
         {
             if (key.AppId != null && key.UserId != null)
             {
-                await collector.AddAsync((key.AppId, key.UserId), counters);
+                await collector.AddAsync((key.AppId, key.UserId), counters, ct);
             }
         }
 
@@ -142,7 +143,7 @@ namespace Notifo.Domain.Users
                     user = User.Create(appId, id);
                 }
 
-                var newUser = await command.ExecuteAsync(user, serviceProvider, ct);
+                var newUser = await command.ExecuteAsync(user, services, ct);
 
                 if (newUser == null || ReferenceEquals(newUser, user))
                 {

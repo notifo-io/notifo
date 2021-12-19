@@ -5,84 +5,117 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Concurrent;
-using Notifo.Infrastructure.Timers;
+using System.Threading.Channels;
+using Notifo.Infrastructure.Tasks;
+using Squidex.Log;
+
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
 
 namespace Notifo.Domain.Counters
 {
-    public sealed class CounterCollector<T> where T : notnull
+    public sealed class CounterCollector<T> : IAsyncDisposable where T : notnull
     {
-        private readonly CompletionTimer timer;
         private readonly ICounterStore<T> store;
-        private readonly int countersCapacity;
-        private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-        private readonly ConcurrentDictionary<T, CounterMap> counters;
+        private readonly ISemanticLog log;
+        private readonly Channel<object> inputQueue;
+        private readonly Channel<Job[]> writeQueue;
+        private readonly Task task;
 
-        public CounterCollector(ICounterStore<T> store, int updateInterval, int capacity = 20000)
+        sealed record Job(T Key, CounterMap Counters);
+
+        public CounterCollector(ICounterStore<T> store, ISemanticLog log, int capacity = 2000, int batchSize = 200, int batchDelay = 1000)
         {
             this.store = store;
 
-            countersCapacity = capacity;
-            counters = new ConcurrentDictionary<T, CounterMap>(Environment.ProcessorCount, capacity);
+            inputQueue = Channel.CreateBounded<object>(new BoundedChannelOptions(capacity)
+            {
+                AllowSynchronousContinuations = true,
+                SingleReader = true,
+                SingleWriter = false
+            });
 
-            timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
+            writeQueue = Channel.CreateBounded<Job[]>(new BoundedChannelOptions(batchSize)
+            {
+                AllowSynchronousContinuations = true,
+                SingleReader = true,
+                SingleWriter = true
+            });
+
+            inputQueue.Batch<Job, Job[]>(writeQueue, x => x.ToArray(), batchSize, batchDelay);
+
+            task = Task.Run(Process);
+
+            this.log = log;
         }
 
-        public ValueTask AddAsync(T group, CounterMap newCounters)
+        public ValueTask AddAsync(T key, CounterMap counters,
+            CancellationToken ct = default)
         {
-            readerWriterLock.EnterReadLock();
+            return inputQueue.Writer.WriteAsync(new Job(key, counters), ct);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            inputQueue.Writer.TryComplete();
+
+            await task;
+        }
+
+        private async Task Process()
+        {
             try
             {
-                counters.AddOrUpdate(group, newCounters, (k, c) => c.IncrementWithLock(newCounters));
+
+                await foreach (var batch in writeQueue.Reader.ReadAllAsync())
+                {
+                    if (batch.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        var commands = new List<(T, CounterMap)>();
+
+                        foreach (var group in batch.GroupBy(x => x.Key))
+                        {
+                            if (group.Count() == 1)
+                            {
+                                commands.Add((group.Key, group.First().Counters));
+                            }
+                            else
+                            {
+                                var merged = new CounterMap();
+
+                                foreach (var item in group)
+                                {
+                                    foreach (var (key, value) in item.Counters)
+                                    {
+                                        merged.Increment(key, value);
+                                    }
+                                }
+
+                                commands.Add((group.Key, merged));
+                            }
+                        }
+
+                        if (commands.Count > 0)
+                        {
+                            await store.BatchWriteAsync(commands, default);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        log.LogError(ex, w => w
+                            .WriteProperty("action", "WriteCounters")
+                            .WriteProperty("status", "Failed"));
+                    }
+                }
             }
-            finally
-            {
-                readerWriterLock.ExitReadLock();
-            }
-
-            if (counters.Count >= countersCapacity)
-            {
-                timer.SkipCurrentDelay();
-            }
-
-            return default;
-        }
-
-        public Task StopAsync()
-        {
-            return timer.StopAsync();
-        }
-
-        private async Task StoreAsync(
-            CancellationToken ct)
-        {
-            if (counters.IsEmpty)
+            catch (OperationCanceledException)
             {
                 return;
-            }
-
-            List<(T, CounterMap)> commands;
-
-            readerWriterLock.EnterWriteLock();
-            try
-            {
-                if (counters.IsEmpty)
-                {
-                    return;
-                }
-
-                commands = counters.Select(x => (x.Key, x.Value)).Where(x => x.Value.Any()).ToList();
-            }
-            finally
-            {
-                counters.Clear();
-
-                readerWriterLock.ExitWriteLock();
-            }
-
-            if (commands.Count > 0)
-            {
-                await store.BatchWriteAsync(commands, ct);
             }
         }
     }

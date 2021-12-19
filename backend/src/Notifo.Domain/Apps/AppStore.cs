@@ -8,6 +8,7 @@
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Squidex.Caching;
+using Squidex.Log;
 
 namespace Notifo.Domain.Apps
 {
@@ -16,22 +17,22 @@ namespace Notifo.Domain.Apps
         private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
         private readonly CounterCollector<string> collector;
         private readonly IAppRepository repository;
-        private readonly IServiceProvider serviceProvider;
+        private readonly IServiceProvider services;
         private readonly IReplicatedCache cache;
 
         public AppStore(IAppRepository repository,
-            IServiceProvider serviceProvider, IReplicatedCache cache)
+            IServiceProvider services, IReplicatedCache cache, ISemanticLog log)
         {
             this.repository = repository;
-            this.serviceProvider = serviceProvider;
+            this.services = services;
             this.cache = cache;
 
-            collector = new CounterCollector<string>(repository, 5000);
+            collector = new CounterCollector<string>(repository, log, 5000);
         }
 
         public void Dispose()
         {
-            collector.StopAsync().Wait();
+            collector.DisposeAsync().AsTask().Wait();
         }
 
         public async Task CollectAsync(CounterKey key, CounterMap counters,
@@ -39,7 +40,7 @@ namespace Notifo.Domain.Apps
         {
             if (key.AppId != null)
             {
-                await collector.AddAsync(key.AppId, counters);
+                await collector.AddAsync(key.AppId, counters, ct);
             }
         }
 
@@ -132,7 +133,7 @@ namespace Notifo.Domain.Apps
                     app = App.Create(id);
                 }
 
-                var newApp = await command.ExecuteAsync(app, serviceProvider, ct);
+                var newApp = await command.ExecuteAsync(app, services, ct);
 
                 if (newApp == null || ReferenceEquals(app, newApp))
                 {

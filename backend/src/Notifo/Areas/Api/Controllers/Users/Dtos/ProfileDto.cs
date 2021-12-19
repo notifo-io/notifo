@@ -9,8 +9,8 @@ using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
-using Notifo.Infrastructure.Reflection;
 using Notifo.Infrastructure.Collections;
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {

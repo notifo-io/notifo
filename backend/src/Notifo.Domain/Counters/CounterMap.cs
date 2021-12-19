@@ -120,28 +120,5 @@ namespace Notifo.Domain.Counters
 
             return this;
         }
-
-        public CounterMap IncrementWithLock(CounterMap counters)
-        {
-            var taken = false;
-
-            slimLock.Enter(ref taken);
-            try
-            {
-                foreach (var (key, value) in counters)
-                {
-                    Increment(key, value);
-                }
-            }
-            finally
-            {
-                if (taken)
-                {
-                    slimLock.Exit();
-                }
-            }
-
-            return this;
-        }
     }
 }
