@@ -41,30 +41,37 @@ namespace Notifo.Domain.Media
             Guard.NotNullOrEmpty(appId, nameof(appId));
             Guard.NotNull(file, nameof(file));
 
-            var media = new Media
+            var request = new MetadataRequest
             {
-                AppId = appId,
-                FileName = file.FileName,
-                FileSize = file.FileSize,
-                MimeType = file.MimeType,
-                Metadata = new MediaMetadata()
+                File = file
             };
 
             foreach (var metadataSource in mediaMetadataSources)
             {
-                await metadataSource.EnhanceAsync(media, file);
+                await metadataSource.EnhanceAsync(request);
             }
 
             var infos = new List<string>();
 
             foreach (var metadataSource in mediaMetadataSources)
             {
-                infos.AddRange(metadataSource.Format(media));
+                infos.AddRange(metadataSource.Format(request));
             }
 
-            media.FileInfo = string.Join(", ", infos);
+            var fileInfo = string.Join(", ", infos);
 
-            await using (var stream = file.OpenRead())
+            var media = new Media
+            {
+                AppId = appId,
+                FileInfo = fileInfo,
+                FileName = file.FileName,
+                FileSize = file.FileSize,
+                Metadata = request.Metadata,
+                MimeType = file.MimeType,
+                Type = request.Type
+            };
+
+            await using (var stream = request.File.OpenRead())
             {
                 await mediaFileStore.UploadAsync(appId, media, stream, ct);
             }

@@ -21,31 +21,66 @@ namespace Notifo.Domain.Media
             this.assetThumbnailGenerator = assetThumbnailGenerator;
         }
 
-        public async Task EnhanceAsync(Media media, AssetFile file)
+        public async Task EnhanceAsync(MetadataRequest request)
         {
-            if (media.Type == MediaType.Unknown)
+            var file = request.File;
+
+            if (request.Type != MediaType.Unknown)
             {
-                await using (var uploadStream = file.OpenRead())
+                return;
+            }
+
+            var mimeType = file.MimeType;
+
+            ImageInfo? imageInfo = null;
+
+            await using (var uploadStream = file.OpenRead())
+            {
+                imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(uploadStream, mimeType);
+            }
+
+            if (imageInfo != null)
+            {
+                var isSwapped = imageInfo.Orientation > ImageOrientation.TopLeft;
+
+                if (isSwapped)
                 {
-                    var imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(uploadStream);
+                    var tempFile = new TempAssetFile(file);
 
-                    if (imageInfo != null)
+                    await using (var uploadStream = file.OpenRead())
                     {
-                        media.Type = MediaType.Image;
-
-                        media.Metadata.SetPixelWidth(imageInfo.PixelWidth);
-                        media.Metadata.SetPixelHeight(imageInfo.PixelHeight);
+                        await using (var tempStream = tempFile.OpenWrite())
+                        {
+                            await assetThumbnailGenerator.FixOrientationAsync(uploadStream, mimeType, tempStream);
+                        }
                     }
+
+                    await using (var tempStream = tempFile.OpenRead())
+                    {
+                        imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(tempStream, mimeType) ?? imageInfo;
+                    }
+
+                    await file.DisposeAsync();
+
+                    request.File = tempFile;
                 }
+            }
+
+            if (imageInfo != null)
+            {
+                request.Type = MediaType.Image;
+
+                request.Metadata.SetPixelWidth(imageInfo.PixelWidth);
+                request.Metadata.SetPixelHeight(imageInfo.PixelHeight);
             }
         }
 
-        public IEnumerable<string> Format(Media media)
+        public IEnumerable<string> Format(MetadataRequest request)
         {
-            if (media.Type == MediaType.Image)
+            if (request.Type == MediaType.Image)
             {
-                var w = media.Metadata.GetPixelWidth();
-                var h = media.Metadata.GetPixelHeight();
+                var w = request.Metadata.GetPixelWidth();
+                var h = request.Metadata.GetPixelHeight();
 
                 if (w != null && h != null)
                 {

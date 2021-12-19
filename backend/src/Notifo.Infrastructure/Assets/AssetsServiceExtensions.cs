@@ -11,7 +11,9 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Squidex.Assets;
+using Squidex.Assets.ImageMagick;
 using Squidex.Assets.ImageSharp;
+using Squidex.Assets.Remote;
 using Squidex.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -20,8 +22,30 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyAssets(this IServiceCollection services, IConfiguration config)
         {
-            services.AddSingletonAs<ImageSharpAssetThumbnailGenerator>()
-                .As<IAssetThumbnailGenerator>();
+            var thumbnailGenerator = new CompositeThumbnailGenerator(
+                new IAssetThumbnailGenerator[]
+                {
+                    new ImageSharpThumbnailGenerator(),
+                    new ImageMagickThumbnailGenerator()
+                });
+
+            var resizerUrl = config.GetValue<string>("assets:resizerUrl");
+
+            if (!string.IsNullOrWhiteSpace(resizerUrl))
+            {
+                services.AddHttpClient("Resize", options =>
+                {
+                    options.BaseAddress = new Uri(resizerUrl);
+                });
+
+                services.AddSingletonAs(c => new RemoteThumbnailGenerator(c.GetRequiredService<IHttpClientFactory>(), thumbnailGenerator))
+                    .As<IAssetThumbnailGenerator>();
+            }
+            else
+            {
+                services.AddSingletonAs(c => thumbnailGenerator)
+                    .As<IAssetThumbnailGenerator>();
+            }
 
             config.ConfigureByOption("assetStore:type", new Alternatives
             {
@@ -99,9 +123,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     .As<IAssetStore>();
                 }
             });
-
-            services.AddSingletonAs<ImageSharpAssetThumbnailGenerator>()
-                .As<IAssetThumbnailGenerator>();
 
             services.AddSingletonAs(c => new DelegateInitializer(
                     c.GetRequiredService<IAssetStore>().GetType().Name!,

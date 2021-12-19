@@ -5,12 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Squidex.Assets;
+
 namespace Notifo.Domain.Media
 {
-    public interface IMediaMetadataSource
+    public sealed class MetadataRequest
     {
-        Task EnhanceAsync(MetadataRequest request);
+        public AssetFile File { get; set; }
 
-        IEnumerable<string> Format(MetadataRequest request);
+        public MediaMetadata Metadata { get; } = new MediaMetadata();
+         
+        public MediaType Type { get; set; }
     }
 }

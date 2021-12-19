@@ -9,12 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="3.7.4.5" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.4.7" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.5.6" />
     <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
-    <PackageReference Include="FluentValidation" Version="10.3.4" />
+    <PackageReference Include="FluentValidation" Version="10.3.6" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.7.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.676">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.681">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -23,30 +22,30 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="6.0.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.14.1" />
     <PackageReference Include="NodaTime" Version="3.0.9" />
     <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
-    <PackageReference Include="Squidex.Assets" Version="1.10.0" />
-    <PackageReference Include="Squidex.Assets.Azure" Version="1.10.0" />
-    <PackageReference Include="Squidex.Assets.FTP" Version="1.10.0" />
-    <PackageReference Include="Squidex.Assets.GoogleCloud" Version="1.10.0" />
-    <PackageReference Include="Squidex.Assets.Mongo" Version="1.10.0" />
-    <PackageReference Include="Squidex.Assets.S3" Version="1.10.0" />
+    <PackageReference Include="Squidex.Assets" Version="2.5.0" />
+    <PackageReference Include="Squidex.Assets.Azure" Version="2.5.0" />
+    <PackageReference Include="Squidex.Assets.FTP" Version="2.5.0" />
+    <PackageReference Include="Squidex.Assets.GoogleCloud" Version="2.5.0" />
+    <PackageReference Include="Squidex.Assets.Mongo" Version="2.5.0" />
+    <PackageReference Include="Squidex.Assets.S3" Version="2.5.0" />
     <PackageReference Include="Squidex.Caching" Version="1.8.0" />
-    <PackageReference Include="Squidex.Hosting" Version="2.3.0" />
-    <PackageReference Include="Squidex.Hosting.Abstractions" Version="2.3.0" />
+    <PackageReference Include="Squidex.Hosting" Version="2.4.0" />
+    <PackageReference Include="Squidex.Hosting.Abstractions" Version="2.4.0" />
     <PackageReference Include="Squidex.Log" Version="1.6.0" />
     <PackageReference Include="Squidex.Text" Version="1.7.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Grpc.Tools" Version="2.41.1">
+    <PackageReference Include="Grpc.Tools" Version="2.42.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

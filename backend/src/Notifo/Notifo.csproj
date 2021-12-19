@@ -9,19 +9,19 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.100" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.107" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.3" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.3.1" />
     <PackageReference Include="Google.Cloud.Trace.V2" Version="2.3.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.676">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.681">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
-    <PackageReference Include="NSwag.AspNetCore" Version="13.14.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="6.0.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.1" />
+    <PackageReference Include="NSwag.AspNetCore" Version="13.15.5" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.2.0-beta1" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.2.0-beta1" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc8" />
@@ -31,7 +31,7 @@
     <PackageReference Include="Squidex.Caching.Redis" Version="1.8.0" />
     <PackageReference Include="Squidex.OpenTelemetry.Exporter.Stackdriver" Version="0.0.0-alpha.0.97" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
-    <PackageReference Include="System.Text.Json" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>

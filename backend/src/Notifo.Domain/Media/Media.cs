@@ -9,18 +9,18 @@ namespace Notifo.Domain.Media
 {
     public sealed class Media
     {
-        public string AppId { get; set; }
+        public string AppId { get; init; }
 
-        public string MimeType { get; set; }
+        public string MimeType { get; init; }
 
-        public string FileName { get; set; }
+        public string FileName { get; init; }
 
-        public string FileInfo { get; set; }
+        public string FileInfo { get; init; }
 
-        public long FileSize { get; set; }
+        public long FileSize { get; init; }
 
-        public MediaType Type { get; set; }
+        public MediaType Type { get; init; }
 
-        public MediaMetadata Metadata { get; set; }
+        public MediaMetadata Metadata { get; init; }
     }
 }

@@ -137,18 +137,17 @@ namespace Notifo.Areas.Api.Controllers.Media
 
             var resizeOptions = query.ToResizeOptions();
 
-            FileCallback callback;
-
             if (query.CacheDuration > 0)
             {
                 Response.Headers[HeaderNames.CacheControl] = $"public,max-age={query.CacheDuration}";
             }
 
             var contentLength = (long?)null;
+            var contentCallback = (FileCallback?)null;
 
             if (media.Type == MediaType.Image && resizeOptions.IsValid)
             {
-                callback = async (bodyStream, range, ct) =>
+                contentCallback = async (bodyStream, range, ct) =>
                 {
                     var resizedAsset = $"{appId}_{media.FileName}_{resizeOptions}";
 
@@ -173,13 +172,13 @@ namespace Notifo.Areas.Api.Controllers.Media
             {
                 contentLength = media.FileSize;
 
-                callback = async (bodyStream, range, ct) =>
+                contentCallback = async (bodyStream, range, ct) =>
                 {
                     await mediaFileStore.DownloadAsync(appId, media, bodyStream, range, ct);
                 };
             }
 
-            return new FileCallbackResult(media.MimeType, callback)
+            return new FileCallbackResult(media.MimeType, contentCallback)
             {
                 EnableRangeProcessing = contentLength > 0,
                 ErrorAs404 = true,
@@ -189,53 +188,70 @@ namespace Notifo.Areas.Api.Controllers.Media
             };
         }
 
-        private async Task ResizeAsync(string appId, MediaItem media, Stream bodyStream, string fileName, ResizeOptions resizeOptions, bool overwrite,
+        private async Task ResizeAsync(string appId, MediaItem media, Stream target, string fileName, ResizeOptions resizeOptions, bool overwrite,
             CancellationToken ct)
         {
+#pragma warning disable MA0040 // Flow the cancellation token
+            using var activity = Telemetry.Activities.StartActivity("Resize");
+
+            await using var assetOriginal = new TempAssetFile(media.FileName, media.MimeType, 0);
+            await using var assetResized = new TempAssetFile(media.FileName, media.MimeType, 0);
+
+            using (Telemetry.Activities.StartActivity("Read"))
+            {
+                await using (var originalStream = assetOriginal.OpenWrite())
+                {
+                    await mediaFileStore.DownloadAsync(appId, media, originalStream, default, ct);
+                }
+            }
+
             using (Telemetry.Activities.StartActivity("Resize"))
             {
-                await using (var sourceStream = GetTempStream())
+                try
                 {
-                    await using (var destinationStream = GetTempStream())
+                    await using (var originalStream = assetOriginal.OpenRead())
                     {
-                        using (Telemetry.Activities.StartActivity("ResizeDownload"))
+                        await using (var resizeStream = assetResized.OpenWrite())
                         {
-                            await mediaFileStore.DownloadAsync(appId, media, sourceStream, default, ct);
-                            sourceStream.Position = 0;
+                            await assetThumbnailGenerator.CreateThumbnailAsync(originalStream, media.MimeType, resizeStream, resizeOptions);
                         }
-
-                        using (Telemetry.Activities.StartActivity("ResizeImage"))
+                    }
+                }
+                catch
+                {
+                    await using (var originalStream = assetOriginal.OpenRead())
+                    {
+                        await using (var resizeStream = assetResized.OpenWrite())
                         {
-                            await assetThumbnailGenerator.CreateThumbnailAsync(sourceStream, destinationStream, resizeOptions);
-                            destinationStream.Position = 0;
+                            await originalStream.CopyToAsync(resizeStream);
                         }
-
-                        using (Telemetry.Activities.StartActivity("ResizeUpload"))
-                        {
-                            await assetStore.UploadAsync(fileName, destinationStream, overwrite, ct);
-                            destinationStream.Position = 0;
-                        }
-
-                        await destinationStream.CopyToAsync(bodyStream, ct);
                     }
                 }
             }
-        }
 
-        private static FileStream GetTempStream()
-        {
-            var tempFileName = Path.GetTempFileName();
+            using (Telemetry.Activities.StartActivity("Save"))
+            {
+                try
+                {
+                    await using (var resizeStream = assetResized.OpenRead())
+                    {
+                        await assetStore.UploadAsync(fileName, resizeStream, overwrite);
+                    }
+                }
+                catch (AssetAlreadyExistsException)
+                {
+                    return;
+                }
+            }
 
-            const int bufferSize = 16 * 1024;
-
-            return new FileStream(tempFileName,
-                FileMode.Create,
-                FileAccess.ReadWrite,
-                FileShare.Delete,
-                bufferSize,
-                FileOptions.Asynchronous |
-                FileOptions.DeleteOnClose |
-                FileOptions.SequentialScan);
+            using (Telemetry.Activities.StartActivity("Write"))
+            {
+                await using (var resizeStream = assetResized.OpenRead())
+                {
+                    await resizeStream.CopyToAsync(target, ct);
+                }
+            }
+#pragma warning restore MA0040 // Flow the cancellation token
         }
 
         private static AssetFile CreateFile(IFormFile file)

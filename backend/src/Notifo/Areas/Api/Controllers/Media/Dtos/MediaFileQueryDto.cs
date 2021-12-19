@@ -15,10 +15,30 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
     {
         private static readonly Dictionary<string, ResizeOptions> Presets = new Dictionary<string, ResizeOptions>(StringComparer.OrdinalIgnoreCase)
         {
-            ["WebSmall"] = new ResizeOptions { Width = 192, Height = 192, Mode = ResizeMode.BoxPad },
-            ["WebLarge"] = new ResizeOptions { Width = 360, Height = 180, Mode = ResizeMode.Crop },
-            ["WebPushSmall"] = new ResizeOptions { Width = 192, Height = 192, Mode = ResizeMode.BoxPad },
-            ["WebPushLarge"] = new ResizeOptions { Width = 360, Height = 180, Mode = ResizeMode.Crop }
+            ["WebSmall"] = new ResizeOptions
+            {
+                TargetWidth = 192,
+                TargetHeight = 192,
+                Mode = ResizeMode.BoxPad
+            },
+            ["WebLarge"] = new ResizeOptions
+            {
+                TargetWidth = 360,
+                TargetHeight = 180,
+                Mode = ResizeMode.Crop
+            },
+            ["WebPushSmall"] = new ResizeOptions
+            {
+                TargetWidth = 192,
+                TargetHeight = 192,
+                Mode = ResizeMode.BoxPad
+            },
+            ["WebPushLarge"] = new ResizeOptions
+            {
+                TargetWidth = 360,
+                TargetHeight = 180,
+                Mode = ResizeMode.Crop
+            }
         };
 
         /// <summary>
@@ -89,6 +109,9 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
             }
 
             result = SimpleMapper.Map(this, new ResizeOptions());
+
+            result.TargetWidth = Width;
+            result.TargetHeight = Height;
 
             return result;
         }
