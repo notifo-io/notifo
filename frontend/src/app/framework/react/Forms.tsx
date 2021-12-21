@@ -6,6 +6,7 @@
  */
 
 import { isErrorVisible, Types } from '@app/framework/utils';
+import classNames from 'classnames';
 import { FieldHelperProps, FieldMetaProps, FieldInputProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
@@ -149,20 +150,16 @@ export module Forms {
     };
 
     export const LocalizedText = ({ className, ...other }: LocalizedFormProps) => {
-        const clazz = `localized-value ${className}`;
-
         return (
-            <Forms.Row className={clazz} {...other} hideError>
+            <Forms.Row className={classNames(className, 'localized-value')} {...other} hideError>
                 <InputLocalizedText {...other} />
             </Forms.Row>
         );
     };
 
     export const LocalizedTextArea = ({ className, ...other }: LocalizedFormProps) => {
-        const clazz = `localized-value ${className}`;
-
         return (
-            <Forms.Row className={clazz} {...other} hideError>
+            <Forms.Row className={classNames(className, 'localized-value')} {...other} hideError>
                 <InputLocalizedTextArea {...other} />
             </Forms.Row>
         );

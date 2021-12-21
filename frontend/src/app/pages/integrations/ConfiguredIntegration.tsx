@@ -8,6 +8,7 @@
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
 import { getSummaryProperties } from '@app/state';
 import { texts } from '@app/texts';
+import classNames from 'classnames';
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
 import { StatusLabel } from './StatusLabel';
@@ -42,8 +43,6 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
         return getSummaryProperties(definition, configured);
     }, [definition, configured]);
 
-    const clazz = !configured.enabled ? 'text-muted' : '';
-
     return (
         <Card className='integration-card' onClick={doEdit}>
             <CardBody>
@@ -53,7 +52,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                     </Col>
 
                     <Col className='no-overflow'>
-                        <h4 className={clazz}>{definition.title}</h4>
+                        <h4 className={classNames({ 'text-muted': !configured.enabled })}>{definition.title}</h4>
 
                         <div>
                             {definition.capabilities.map(capability => (

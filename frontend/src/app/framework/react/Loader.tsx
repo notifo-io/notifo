@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import * as React from 'react';
 import ExternalLoader from 'react-loader-spinner';
 
@@ -48,24 +49,15 @@ export const Loader = React.memo((props: LoaderProps) => {
         return null;
     }
 
-    let clazz = 'loader';
-
-    if (className) {
-        clazz += ' ';
-        clazz += className;
-    }
-
-    const size = small ? 16 : 26;
-
     const color = light ? '#fff' : '#444';
 
     return small ? (
-        <small className={clazz}>
-            <ExternalLoader width={size} height={size} type='ThreeDots' color={color} /> {text}
+        <small className={classNames(className, 'loader')}>
+            <ExternalLoader width={16} height={16} type='ThreeDots' color={color} /> {text}
         </small>
     ) : (
-        <span className={clazz}>
-            <ExternalLoader width={size} height={size} type='ThreeDots' color={color} /> {text}
+        <span className={classNames(className, 'loader')}>
+            <ExternalLoader width={26} height={26} type='ThreeDots' color={color} /> {text}
         </span>
     );
 });

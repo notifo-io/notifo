@@ -9,6 +9,7 @@ import { FormControlError, Forms, Icon, Loader, useDialog, useFieldNew } from '@
 import { EmailTemplateDto } from '@app/service';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
+import classNames from 'classnames';
 import { Formik, useFormikContext } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -223,10 +224,8 @@ function useFieldContext(name: string, visible: boolean) {
         helpers.setTouched(true);
     }, [helpers]);
 
-    const clazz = !visible ? 'email-body hidden' : 'email-body';
-
     return {
-        className: clazz,
+        className: classNames('email-body', { hidden: !visible }),
         meta,
         onBlur: doTouch,
         onChange: helpers.setValue,

@@ -8,6 +8,7 @@
 import { ApiValue, ClickOutside, FormatDate, Icon } from '@app/framework';
 import { UserDto } from '@app/service';
 import { texts } from '@app/texts';
+import classNames from 'classnames';
 import * as React from 'react';
 import { Button, Popover, PopoverBody, Table } from 'reactstrap';
 
@@ -36,7 +37,7 @@ export const ButtonSms = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='none' id='buttonSms' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonSms' className={getButtonClass(hasValue)} block onClick={open}>
                 <Icon type='sms' />
             </Button>
 
@@ -58,7 +59,7 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='none' id='buttonEmail' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonEmail' className={getButtonClass(hasValue)} block onClick={open}>
                 <Icon type='mail_outline' />
             </Button>
 
@@ -80,7 +81,7 @@ export const ButtonWebPush = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='none' id='buttonWebPush' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonWebPush' className={getButtonClass(hasValue)} block onClick={open}>
                 <Icon type='browser' /> {user.numberOfWebPushTokens}
             </Button>
 
@@ -102,7 +103,7 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
 
     return (
         <>
-            <Button color='none' id='buttonMobilePush' className={clazz(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonMobilePush' className={getButtonClass(hasValue)} block onClick={open}>
                 <Icon type='mobile' /> {user.numberOfMobilePushTokens}
             </Button>
 
@@ -149,14 +150,6 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
     );
 };
 
-function clazz(hasValue: boolean) {
-    let result = 'btn-flat pl-0 pr-0';
-
-    if (hasValue) {
-        result += ' text-primary';
-    } else {
-        result += ' text-muted';
-    }
-
-    return result;
+function getButtonClass(hasValue: boolean) {
+    return classNames('btn-flat', 'pl-0', 'pr-0', { 'text-primary': hasValue, 'text-muted': !hasValue });
 }

@@ -6,6 +6,7 @@
  */
 
 import { ErrorDetails, ErrorDto, formatError, isError, Types } from '@app/framework/utils';
+import classNames from 'classnames';
 import * as React from 'react';
 import { Alert } from 'reactstrap';
 
@@ -41,20 +42,8 @@ export const FormError = (props: FormErrorProps) => {
         return null;
     }
 
-    let clazz = 'fade';
-
-    if (size) {
-        clazz += ' ';
-        clazz += `alert-${size}`;
-    }
-
-    if (className) {
-        clazz += ' ';
-        clazz += className;
-    }
-
     return (
-        <Alert className={clazz} color='danger'>
+        <Alert className={classNames(className, 'fade', { [`alert-${size}`]: !!size })} color='danger'>
             <>
                 {errorString}
 

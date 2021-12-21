@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import * as React from 'react';
 
 export type IconType =
@@ -59,18 +60,7 @@ export interface IconProps {
 export const Icon = (props: IconProps) => {
     const { className, spin, type } = props;
 
-    let clazz = `icon-${type}`;
-
-    if (spin) {
-        clazz += ' spin2';
-    }
-
-    if (className) {
-        clazz += ' ';
-        clazz += className;
-    }
-
     return (
-        <i className={clazz} />
+        <i className={classNames(className, { spin2: spin, [`icon-${type}`]: !!type })} />
     );
 };

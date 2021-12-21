@@ -8,6 +8,7 @@
 import { Confirm, Icon } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { texts } from '@app/texts';
+import classNames from 'classnames';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
@@ -54,15 +55,9 @@ export const TemplateRow = React.memo((props: TemplateRowProps) => {
         onPublish && onPublish(template);
     }, [onPublish, template]);
 
-    let clazz = 'list-item-summary';
-
-    if (selected) {
-        clazz += ' selected';
-    }
-
     return (
         <>
-            <tr className={clazz}>
+            <tr className={classNames('list-item-summary', { selected })}>
                 <td onClick={doEdit}>
                     <span className='truncate mono'>{template.code}</span>
                 </td>

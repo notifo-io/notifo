@@ -6,6 +6,7 @@
  */
 
 import { ErrorDto, isErrorVisible } from '@app/framework/utils';
+import classNames from 'classnames';
 import * as React from 'react';
 
 export interface FormControlErrorProps {
@@ -29,15 +30,9 @@ export const FormControlError = (props: FormControlErrorProps) => {
         return null;
     }
 
-    let clazz = 'errors';
-
-    if (alignment) {
-        clazz += ` errors-${alignment}`;
-    }
-
     return (
         <div className='errors-container'>
-            <div className={clazz}>
+            <div className={classNames('errors', { [`errors-${alignment}`]: !!alignment })}>
                 {error}
             </div>
         </div>
