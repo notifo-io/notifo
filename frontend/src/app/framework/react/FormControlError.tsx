@@ -32,7 +32,7 @@ export const FormControlError = (props: FormControlErrorProps) => {
 
     return (
         <div className='errors-container'>
-            <div className={classNames('errors', { [`errors-${alignment}`]: !!alignment })}>
+            <div className={classNames('errors', alignment ? `errors-${alignment}` : false)}>
                 {error}
             </div>
         </div>

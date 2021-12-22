@@ -43,7 +43,7 @@ export const FormError = (props: FormErrorProps) => {
     }
 
     return (
-        <Alert className={classNames(className, 'fade', { [`alert-${size}`]: !!size })} color='danger'>
+        <Alert className={classNames(className, 'fade', size ? `alert-${size}` : false)} color='danger'>
             <>
                 {errorString}
 

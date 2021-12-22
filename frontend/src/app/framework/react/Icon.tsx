@@ -61,6 +61,6 @@ export const Icon = (props: IconProps) => {
     const { className, spin, type } = props;
 
     return (
-        <i className={classNames(className, { spin2: spin, [`icon-${type}`]: !!type })} />
+        <i className={classNames(className, `icon-${type}`, { spin2: spin })} />
     );
 };
