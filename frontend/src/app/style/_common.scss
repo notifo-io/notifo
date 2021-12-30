@@ -270,8 +270,10 @@ $small-gutters: 4px;
         }
 
         .card-header {
+            align-items: center;
             background: $color-white;
             border: 0;
+            display: flex;
             font-size: 85%;
             font-weight: normal;
             padding: .5rem 0 0 1rem;
@@ -296,7 +298,7 @@ $small-gutters: 4px;
         &-detail {
             line-height: 1.1rem;
             margin-top: .5rem;
-            text-align: center;
+            text-align: left;
             text-decoration: none;
 
             small {
@@ -307,6 +309,7 @@ $small-gutters: 4px;
         &-icon {
             font-size: 1rem;
             font-weight: lighter;
+            margin-right: .25rem;
         }
 
         table {
@@ -821,6 +824,11 @@ textarea {
                 transform: translateX(.8125rem);
             }
         }
+    }
+
+    &.disabled {
+        opacity: .5;
+        pointer-events: none;
     }
 }
 

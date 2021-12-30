@@ -30,7 +30,7 @@ export interface ToggleProps {
 }
 
 export const Toggle = (props: ToggleProps) => {
-    const { asString, indeterminate, label, onChange } = props;
+    const { asString, disabled, indeterminate, label, onChange } = props;
 
     let value = props.value;
 
@@ -66,7 +66,7 @@ export const Toggle = (props: ToggleProps) => {
     };
 
     return (
-        <label className='custom-toggle' onClick={doToggle}>
+        <label className={classNames('custom-toggle', { disabled })} onClick={doToggle}>
             <span className={classNames('custom-toggle-slider', getToggleClass(internalValue))} />
 
             {label &&

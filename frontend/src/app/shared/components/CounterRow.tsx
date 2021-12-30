@@ -46,7 +46,6 @@ export const CounterRow = React.memo((props: CounterRowProps) => {
                                     totalAttempt={counters[Counters.NotificationsAttempt]} />
                             </Col>
                             <Col x={6}>
-
                                 <Table borderless size='sm' className='table-sm-text'>
                                     <tbody>
                                         {CHANNELS.map(channel =>

@@ -42,10 +42,19 @@
     "lint": "eslint src/**/*.ts[x]",
     "build": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production",
     "build:clean": "rimraf wwwroot/build",
-    "build:analyze": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production --env analyze"
+    "build:analyze": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production --env analyze",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",
+    "@storybook/addon-actions": "^6.4.9",
+    "@storybook/addon-essentials": "^6.4.9",
+    "@storybook/addon-links": "^6.4.9",
+    "@storybook/builder-webpack5": "^6.4.9",
+    "@storybook/manager-webpack5": "^6.4.9",
+    "@storybook/preset-scss": "^1.0.3",
+    "@storybook/react": "^6.4.9",
     "@types/codemirror": "5.60.0",
     "@types/core-js": "2.5.4",
     "@types/date-fns": "2.6.0",

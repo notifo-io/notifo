@@ -11,11 +11,14 @@ export interface IFrameProps {
     html?: string | null;
 
     // The scrolling
-    scrolling?: string;
+    scrolling?: 'auto' | 'yes' | 'no';
+
+    // The style.
+    style?: React.CSSProperties;
 }
 
 export const IFrame = (props: IFrameProps) => {
-    const { html, scrolling } = props;
+    const { html, scrolling, style } = props;
 
     const [iframe, setIframe] = React.useState<HTMLIFrameElement | null>(null);
 
@@ -32,6 +35,6 @@ export const IFrame = (props: IFrameProps) => {
     }, [iframe, html]);
 
     return (
-        <iframe scrolling={scrolling} ref={setIframe} />
+        <iframe style={style} scrolling={scrolling} ref={setIframe} />
     );
 };

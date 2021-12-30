@@ -12,7 +12,7 @@ import { ClearInput } from './ClearInput';
 
 export interface ListSearchProps extends Pick<InputProps, Exclude<keyof InputProps, 'list'>> {
     // The bootstrap size.
-    bsSize?: 'lg' | 'sm';
+    bsSize?: 'lg' | 'sm' | undefined;
 
     // The placeholder
     placeholder?: string;
