@@ -259,6 +259,12 @@ $small-gutters: 4px;
     }
 }
 
+.table-footer {
+    label {
+        font-weight: normal;
+    }
+}
+
 .statistics {
     &-card {
         height: 100%;

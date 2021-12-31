@@ -8,6 +8,7 @@
 import { Confirm, Icon } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { texts } from '@app/texts';
+import classNames from 'classnames';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, CardFooter } from 'reactstrap';
@@ -34,9 +35,19 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
         selected,
     } = props;
 
+    const [visible, setVisible] = React.useState(false);
+
+    React.useEffect(() => {
+        setVisible(true);
+    }, [media.url]);
+
     React.useEffect(() => {
         ReactTooltip.rebuild();
     });
+
+    const doHide = React.useCallback(() => {
+        setVisible(false);
+    }, []);
 
     const doDelete = React.useCallback(() => {
         onDelete && onDelete(media);
@@ -51,7 +62,7 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
     return (
         <Card className='media-card' onClick={doClick} color={selected ? 'primary' : undefined}>
             <CardBody>
-                <img src={image} />
+                <img className={classNames({ hidden: !visible })} src={image} onError={doHide} />
             </CardBody>
             <CardFooter>
                 <div className='truncate'>{media.fileName}</div>
