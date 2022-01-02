@@ -1,4 +1,4 @@
-@import '_overrides';
+@import 'overrides';
 
 // Load bootstrap first to overload vars.
 @import 'argon/argon-design-system';
@@ -8,18 +8,18 @@
 @import 'codemirror/addon/lint/lint.css';
 @import 'codemirror/theme/material';
 
-@import '_common';
-@import '_apps';
-@import '_dashboard';
-@import '_emails';
-@import '_events';
-@import '_integrations';
-@import '_media';
-@import '_messaging';
-@import '_settings';
-@import '_sms';
-@import '_templates';
-@import '_users';
+@import 'common';
+@import 'apps';
+@import 'dashboard';
+@import 'emails';
+@import 'events';
+@import 'integrations';
+@import 'media';
+@import 'messaging';
+@import 'settings';
+@import 'sms';
+@import 'templates';
+@import 'users';
 
 // Import Push Preview
 @import 'react-push-preview/dist/react-push-preview.cjs.production.min.css';

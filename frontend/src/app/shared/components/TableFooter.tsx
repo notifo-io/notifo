@@ -29,7 +29,7 @@ export const TableFooter = (props: TableFooterProps) => {
     }, [onShowDetails]);
 
     return (
-        <Row className='align-items-center'>
+        <Row className='align-items-center table-footer'>
             {!noDetailButton &&
                 <Col xs='auto'>
                     <CustomInput type='checkbox' id='showCounters' checked={showDetails} onChange={doshowCounters}

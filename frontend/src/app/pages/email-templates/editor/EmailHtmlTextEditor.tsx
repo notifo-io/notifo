@@ -46,9 +46,9 @@ export interface EmailHtmlTextEditorProps {
 }
 
 export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProps> {
-    private editor: CodeMirror.Editor;
+    private editor!: CodeMirror.Editor;
     private editorRef = React.createRef<HTMLTextAreaElement>();
-    private value: string;
+    private value = '';
 
     public componentDidUpdate(prevProps: EmailHtmlTextEditorProps) {
         if (this.props.value !== this.value) {

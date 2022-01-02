@@ -10,10 +10,10 @@ import { Button, ButtonGroup, DropdownItem, DropdownMenu, DropdownToggle, Uncont
 
 export interface LanguageSelectorProps {
     // The color.
-    color?: string;
+    color?: 'primary' | 'secondary' | 'danger' | 'warning' | 'info' | 'simple';
 
     // The size.
-    size?: string;
+    size?: 'lg' | 'sm' | 'md';
 
     // The available languages.
     languages: ReadonlyArray<string>;

@@ -24,7 +24,7 @@ export const ChannelCounterRow = (props: ChannelCounterRowProps) => {
     } = props;
 
     const counterHandled = counters[`${channel}_handled`];
-    const counterAttempt = counters[`${channel}_failed`];
+    const counterAttempt = counters[`${channel}_attempt`];
     const counterFailed = counters[`${channel}_failed`];
 
     return (
@@ -36,14 +36,14 @@ export const ChannelCounterRow = (props: ChannelCounterRowProps) => {
                 {Numbers.formatNumber(counterHandled || 0)}
             </td>
             <td>
-                {Types.isNumber(counterFailed) &&
+                {Types.isNumber(counterFailed) && counterFailed > 0 &&
                     <div className='statistics-failed'>
                         <Icon type='error_outline' /> {Numbers.formatNumber(counterFailed)}
                     </div>
                 }
             </td>
             <td>
-                {Types.isNumber(counterAttempt) &&
+                {Types.isNumber(counterAttempt) && counterFailed > 0 &&
                     <div className='statistics-attempt'>
                         <Icon type='hourglass_empty' /> {Numbers.formatNumber(counterAttempt)}
                     </div>

@@ -12,11 +12,8 @@ export interface ApiValueProps {
     // The api value.
     value: any;
 
-    // The optional label.
-    label?: string;
-
     // The bootstrap size.
-    size?: string;
+    size?: 'sm' | 'lg';
 }
 
 export const ApiValue = (props: ApiValueProps) => {

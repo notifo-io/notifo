@@ -116,7 +116,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
                 const result = await loader(request);
 
                 dispatch(actionFulfilled(result));
-            } catch (err) {
+            } catch (err: any) {
                 const error = buildError(err.status, err.message, err.details);
 
                 dispatch(actionRejected({ error }));

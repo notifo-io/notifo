@@ -29,6 +29,7 @@ export const CounterCards = React.memo((props: CounterCardsProps) => {
                 <Col className='mb-4' xs={6}>
                     <StatisticsCard icon='message'
                         attempt={counters[Counters.NotificationsAttempt]}
+                        failed={counters[Counters.NotificationsFailed]}
                         summary={counters[Counters.NotificationsHandled]}
                         summaryLabel={texts.common.created}
                         title={texts.common.notifications}

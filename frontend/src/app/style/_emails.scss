@@ -1,5 +1,5 @@
-@import '_vars';
-@import '_mixins';
+@import 'vars';
+@import 'mixins';
 
 /* stylelint-disable selector-class-pattern */
 
@@ -7,7 +7,6 @@ $color: #263238;
 $color-border2: darken($color-border, 5%);
 $color-active: #ff5370;
 $color-background: #efefef;
-
 $size-email-header: 5rem;
 
 .CodeMirror {

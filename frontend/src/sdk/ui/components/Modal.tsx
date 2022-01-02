@@ -50,7 +50,7 @@ export const Modal = (props: ModalProps) => {
 
     return (
         <div class={buildRootClass(position)}>
-            <div class='notifo-modal-panel' ref={modal}>
+            <div class='notifo-modal-panel' ref={modal as any}>
                 <div class='notifo-modal-inner'>
                     {children}
 

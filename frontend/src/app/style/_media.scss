@@ -1,5 +1,7 @@
-@import '_vars';
-@import '_mixins';
+@import 'vars';
+@import 'mixins';
+
+$size-image: 150px;
 
 .media-card {
     & {
@@ -10,14 +12,27 @@
     }
 
     .card-body {
+        align-items: center;
         background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAIAAAC1nk4lAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjEuMWMqnEsAAACbSURBVGhD7c6hDQAxAMPA33+m7vYlJh7AoFKOBMbfyfyZRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4E3o9kA7YFFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgUUbD4FFGw+BRRsPgQejz7nPYYKl8IqSfgAAAABJRU5ErkJggg==');
-        max-height: 150px;
-        min-height: 150px;
+        display: flex;
+        justify-content: center;
+        max-height: $size-image;
+        min-height: $size-image;
         padding: 0;
+
+        img {
+            max-height: $size-image;
+            max-width: 100%;
+
+            &.hidden {
+                display: none;
+            }
+        }
     }
 
     .card-footer {
         padding: 1rem;
+        padding-top: .75rem;
         position: relative;
     }
 
@@ -43,6 +58,7 @@
 .file-drop {
     & {
         border: 2px dashed darken($color-border, 5%);
+        border-radius: 2px;
         margin-bottom: 2rem;
         padding: 1.5rem;
         text-align: center;

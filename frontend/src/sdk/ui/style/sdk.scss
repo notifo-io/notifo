@@ -1,4 +1,6 @@
-@import '_mixins';
+@import 'mixins';
+
+/* stylelint-disable */
 
 $color-background:  #fff;
 $color-border:      #eee;
@@ -14,12 +16,14 @@ $color-scrollbar:   #b3bbbf;
 $color-shadow:      rgba(0, 0, 0, .2);
 $color-success:     #2dce89;
 $color-text:        #222;
-
 $size-toggle: 20px;
+
+/* stylelint-enable */
 
 .notifo {
     @import '~reset-scss/reset';
 
+/* stylelint-disable */
     & {
         color: $color-text;
         display: inline-block;
@@ -27,6 +31,7 @@ $size-toggle: 20px;
         font-weight: normal;
         position: relative;
     }
+/* stylelint-enable */
 
     * {
         @include scrollbars(8px, $color-scrollbar, transparent);
@@ -345,7 +350,7 @@ $size-toggle: 20px;
             &-label {
                 font-size: 80%;
                 font-weight: bolder;
-                opacity: 75%;
+                opacity: .75;
             }
 
             &-control,

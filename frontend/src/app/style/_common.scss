@@ -1,5 +1,5 @@
-@import '_vars';
-@import '_mixins';
+@import 'vars';
+@import 'mixins';
 
 /* stylelint-disable no-descending-specificity */
 
@@ -35,7 +35,7 @@ label {
 }
 
 legend {
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    border-bottom: 1px solid rgba(0, 0, 0, 10%);
     font-size: .9rem;
     font-weight: normal;
     margin-bottom: 1.5rem;
@@ -259,6 +259,12 @@ $small-gutters: 4px;
     }
 }
 
+.table-footer {
+    label {
+        font-weight: normal;
+    }
+}
+
 .statistics {
     &-card {
         height: 100%;
@@ -270,8 +276,10 @@ $small-gutters: 4px;
         }
 
         .card-header {
+            align-items: center;
             background: $color-white;
             border: 0;
+            display: flex;
             font-size: 85%;
             font-weight: normal;
             padding: .5rem 0 0 1rem;
@@ -296,7 +304,7 @@ $small-gutters: 4px;
         &-detail {
             line-height: 1.1rem;
             margin-top: .5rem;
-            text-align: center;
+            text-align: left;
             text-decoration: none;
 
             small {
@@ -307,6 +315,7 @@ $small-gutters: 4px;
         &-icon {
             font-size: 1rem;
             font-weight: lighter;
+            margin-right: .25rem;
         }
 
         table {
@@ -821,6 +830,11 @@ textarea {
                 transform: translateX(.8125rem);
             }
         }
+    }
+
+    &.disabled {
+        opacity: .5;
+        pointer-events: none;
     }
 }
 

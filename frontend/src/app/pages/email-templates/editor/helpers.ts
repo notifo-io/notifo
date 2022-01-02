@@ -33,7 +33,7 @@ export function usePreview(appId: string, type: EmailPreviewType): [MarkupRespon
                 if (status.current.code === code) {
                     setEmailPreview({ rendering, emailMarkup });
                 }
-            } catch (ex) {
+            } catch (ex: any) {
                 if (status.current.code === code) {
                     const rendering: EmailPreviewDto = {
                         errors: [{
