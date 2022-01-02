@@ -31,13 +31,13 @@ async function loadPage() {
     return text;
 }
 
-Default.loaders = [
+Default['loaders'] = [
     async () => ({
         html: await loadPage(),
     }),
 ];
 
-Default.argTypes = {
+Default['argTypes'] = {
     html: {
         table: {
             disable: true,

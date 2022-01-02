@@ -34,12 +34,12 @@ export const Default = Template.bind({});
 
 export const Disabled = Template.bind({});
 
-Disabled.args = {
+Disabled['args'] = {
     disabled: true,
 };
 
 export const Labelled = Template.bind({});
 
-Labelled.args = {
+Labelled['args'] = {
     label: 'My Label',
 };

@@ -33,12 +33,12 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     small: false,
 };
 
 export const Small = Template.bind({});
 
-Small.args = {
+Small['args'] = {
     small: true,
 };

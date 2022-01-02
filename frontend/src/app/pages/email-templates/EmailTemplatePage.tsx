@@ -50,7 +50,7 @@ export const EmailTemplatePage = () => {
         }
     }, [updatingError]);
 
-    const doUpdatePrimary = React.useCallback((primary: boolean) => {
+    const doUpdatePrimary = React.useCallback((primary: any) => {
         dispatch(updateEmailTemplate({ appId, id: templateId, update: { primary } }));
     }, [dispatch, appId, templateId]);
 

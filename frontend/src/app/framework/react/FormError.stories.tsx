@@ -26,6 +26,6 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     error: 'Error',
 };

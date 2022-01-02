@@ -41,7 +41,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     counters: {
         notifications_attempt: 400,
         notifications_failed: 20,

@@ -46,7 +46,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     languages: [
         'de',
         'it',

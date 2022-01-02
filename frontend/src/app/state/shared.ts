@@ -16,7 +16,7 @@ export function createApiThunk<Returned, ThunkArg = void>(typePrefix: string, pa
             const result = await payloadCreator(arg, thunkApi);
 
             return result;
-        } catch (err) {
+        } catch (err: any) {
             const error = buildError(err.status, err.message, err.details);
 
             return thunkApi.rejectWithValue(error);

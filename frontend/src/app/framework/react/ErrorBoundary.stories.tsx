@@ -38,12 +38,12 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     withError: false,
 };
 
 export const WithError = Template.bind({});
 
-WithError.args = {
+WithError['args'] = {
     withError: true,
 };

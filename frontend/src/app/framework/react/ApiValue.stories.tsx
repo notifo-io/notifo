@@ -21,6 +21,6 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     value: 'API Key',
 };

@@ -23,7 +23,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     icon: 'email',
     name: 'Emails',
     total: 10,
@@ -33,7 +33,7 @@ Default.args = {
 
 export const SummaryOnly = Template.bind({});
 
-SummaryOnly.args = {
+SummaryOnly['args'] = {
     icon: 'email',
     name: 'Emails',
     total: 10,
@@ -41,7 +41,7 @@ SummaryOnly.args = {
 
 export const NoIcon = Template.bind({});
 
-NoIcon.args = {
+NoIcon['args'] = {
     name: 'Emails',
     total: 10,
     totalAttempt: 100,

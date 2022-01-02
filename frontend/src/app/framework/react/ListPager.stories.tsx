@@ -28,7 +28,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     list: {
         items: buildItems(5),
         total: 100,
@@ -39,7 +39,7 @@ Default.args = {
 
 export const First = Template.bind({});
 
-First.args = {
+First['args'] = {
     list: {
         items: buildItems(5),
         total: 100,
@@ -50,7 +50,7 @@ First.args = {
 
 export const Last = Template.bind({});
 
-Last.args = {
+Last['args'] = {
     list: {
         items: buildItems(5),
         total: 100,
@@ -61,7 +61,7 @@ Last.args = {
 
 export const NoTotal = Template.bind({});
 
-NoTotal.args = {
+NoTotal['args'] = {
     list: {
         items: buildItems(20),
         total: 0,

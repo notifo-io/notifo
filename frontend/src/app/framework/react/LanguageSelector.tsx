@@ -10,7 +10,7 @@ import { Button, ButtonGroup, DropdownItem, DropdownMenu, DropdownToggle, Uncont
 
 export interface LanguageSelectorProps {
     // The color.
-    color?: 'primary' | 'secondary' | 'danger' | 'warning' | 'info';
+    color?: 'primary' | 'secondary' | 'danger' | 'warning' | 'info' | 'simple';
 
     // The size.
     size?: 'lg' | 'sm' | 'md';

@@ -35,7 +35,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     channel: 'email',
     counters: {
         email_handled: 100,
@@ -46,7 +46,7 @@ Default.args = {
 
 export const NoFailed = Template.bind({});
 
-NoFailed.args = {
+NoFailed['args'] = {
     channel: 'email',
     counters: {
         email_handled: 100,
@@ -56,7 +56,7 @@ NoFailed.args = {
 
 export const NoAttempt = Template.bind({});
 
-NoAttempt.args = {
+NoAttempt['args'] = {
     channel: 'email',
     counters: {
         email_handled: 100,
@@ -66,7 +66,7 @@ NoAttempt.args = {
 
 export const LargeValues = Template.bind({});
 
-LargeValues.args = {
+LargeValues['args'] = {
     channel: 'email',
     counters: {
         email_handled: 100000,

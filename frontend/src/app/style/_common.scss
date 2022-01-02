@@ -1,5 +1,5 @@
-@import '_vars';
-@import '_mixins';
+@import 'vars';
+@import 'mixins';
 
 /* stylelint-disable no-descending-specificity */
 
@@ -35,7 +35,7 @@ label {
 }
 
 legend {
-    border-bottom: 1px solid rgba(0, 0, 0, .1);
+    border-bottom: 1px solid rgba(0, 0, 0, 10%);
     font-size: .9rem;
     font-weight: normal;
     margin-bottom: 1.5rem;

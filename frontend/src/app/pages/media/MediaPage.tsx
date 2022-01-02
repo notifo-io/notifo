@@ -37,7 +37,7 @@ export const MediaPage = () => {
         dispatch(deleteMedia({ appId, fileName: media.fileName }));
     }, [dispatch, appId]);
 
-    const doUpload = React.useCallback((files: File[]) => {
+    const doUpload = React.useCallback((files: ReadonlyArray<File>) => {
         for (const file of files) {
             dispatch(uploadMedia({ appId, file }));
         }

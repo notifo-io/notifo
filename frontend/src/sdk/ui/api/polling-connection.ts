@@ -26,7 +26,7 @@ export class PollingConnection implements Connection {
     private pendingConfirmed: string[] = [];
     private isUpdatePoll = false;
     private connectionStatus: 'Pending' | 'Connected' | 'Disconnected' = 'Pending';
-    private connectPromise: Promise<any>;
+    private connectPromise: Promise<any> | null = null;
     private connectPromiseResolver?: (connect: boolean) => void;
     private continuationToken?: string | null;
 

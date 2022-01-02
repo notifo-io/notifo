@@ -21,6 +21,6 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     id: '07c756be819ba30f83a27775cdd78dc2',
 };

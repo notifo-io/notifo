@@ -28,7 +28,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     languages: [
         'de',
         'en',
@@ -39,7 +39,7 @@ Default.args = {
 
 export const Single = Template.bind({});
 
-Single.args = {
+Single['args'] = {
     languages: [
         'en',
     ],
@@ -48,7 +48,7 @@ Single.args = {
 
 export const Many = Template.bind({});
 
-Many.args = {
+Many['args'] = {
     languages: [
         'de',
         'en',

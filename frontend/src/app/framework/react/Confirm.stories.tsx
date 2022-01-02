@@ -26,13 +26,13 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     title: 'Delete item',
 };
 
 export const WithText = Template.bind({});
 
-WithText.args = {
+WithText['args'] = {
     text: 'Do you want to delete the item?',
-    ...Default.args,
+    ...Default['args'],
 };

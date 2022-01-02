@@ -28,7 +28,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     attempt: 100,
     failed: 10,
     icon: 'email',
@@ -39,20 +39,20 @@ Default.args = {
 
 export const SummaryOnly = Template.bind({});
 
-SummaryOnly.args = {
+SummaryOnly['args'] = {
     summary: 10,
 };
 
 export const SummaryLabelOnly = Template.bind({});
 
-SummaryLabelOnly.args = {
+SummaryLabelOnly['args'] = {
     summary: 10,
     summaryLabel: 'Sent',
 };
 
 export const NoDetails = Template.bind({});
 
-NoDetails.args = {
+NoDetails['args'] = {
     icon: 'email',
     summary: 10,
     summaryLabel: 'Sent',

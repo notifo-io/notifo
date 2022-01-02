@@ -29,7 +29,7 @@ const Template = (args: any) => {
 
 export const Default = Template.bind({});
 
-Default.args = {
+Default['args'] = {
     media: {
         mimeType: 'image/png',
         fileName: 'Image.png',
@@ -42,7 +42,7 @@ Default.args = {
 
 export const SmallerImage = Template.bind({});
 
-SmallerImage.args = {
+SmallerImage['args'] = {
     media: {
         mimeType: 'image/png',
         fileName: 'Image.png',
@@ -55,7 +55,7 @@ SmallerImage.args = {
 
 export const NoImage = Template.bind({});
 
-NoImage.args = {
+NoImage['args'] = {
     media: {
         mimeType: 'image/png',
         fileName: 'Image.png',
