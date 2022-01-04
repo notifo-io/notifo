@@ -24,7 +24,7 @@ const plugins = {
     // https://webpack.js.org/plugins/terser-webpack-plugin/
     TerserPlugin: require('terser-webpack-plugin'),
     // https://github.com/NMFR/optimize-css-assets-webpack-plugin
-    OptimizeCSSAssetsPlugin: require("optimize-css-assets-webpack-plugin"),
+    CssMinimizerPlugin: require('css-minimizer-webpack-plugin'),
     // https://webpack.js.org/plugins/eslint-webpack-plugin/
     ESLintPlugin: require('eslint-webpack-plugin'),
     // https://github.com/webpack-contrib/stylelint-webpack-plugin
@@ -311,7 +311,7 @@ module.exports = function (env) {
                     extractComments: true
                 }),
 
-                new plugins.OptimizeCSSAssetsPlugin({})
+                new plugins.CssMinimizerPlugin({})
             ]
         };
 
