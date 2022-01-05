@@ -1,17 +1,5 @@
-/* eslint-disable */
-
-const webpack = require('webpack'),
-         path = require('path'),
-           fs = require('fs');
-
-const appRoot = path.resolve(__dirname, '..');
-
-function root() {
-    var newArgs = Array.prototype.slice.call(arguments, 0);
-
-    return path.join.apply(path, [appRoot].concat(newArgs));
-};
-
+const webpack = require('webpack');
+const helpers = require('./helpers.js');
 const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
@@ -36,7 +24,7 @@ const plugins = {
 };
 
 module.exports = function (env) {
-    const isDevServer = path.basename(require.main.filename) === 'webpack-dev-server.js';
+    const isDevServer = helpers.isDevServer();
     const isProduction = env && env.production;
     const isTests = env && env.target === 'tests';
     const isTestCoverage = env && env.coverage;
@@ -61,7 +49,7 @@ module.exports = function (env) {
              *
              * See: https://webpack.js.org/configuration/output/#output-path
              */
-            path: root('/build/'),
+            path: helpers.root('/build/'),
 
             /**
              * The filename of non-entry chunks as relative path inside the output.path directory.
@@ -89,18 +77,18 @@ module.exports = function (env) {
              */
             extensions: ['.ts', '.tsx', '.js', '.mjs', '.css', '.scss'],
             modules: [
-                root('src'),
-                root('src', 'app'),
-                root('src', 'app', 'style'),
-                root('src', 'sdk'),
-                root('node_modules')
+                helpers.root('src'),
+                helpers.root('src', 'app'),
+                helpers.root('src', 'app', 'style'),
+                helpers.root('src', 'sdk'),
+                helpers.root('node_modules'),
             ],
 
             plugins: [
                 new plugins.TsconfigPathsPlugin({
-                    configFile: 'tsconfig.json'
-                })
-            ]
+                    configFile: 'tsconfig.json',
+                }),
+            ],
         },
 
         /**
@@ -117,35 +105,35 @@ module.exports = function (env) {
             rules: [{
                 test: /\.d\.ts?$/,
                 use: [{
-                    loader: 'ignore-loader'
+                    loader: 'ignore-loader',
                 }],
-                include: [/node_modules/]
+                include: [/node_modules/],
             }, {
                 test: /\.css$/,
                 use: [{
-                    loader: plugins.MiniCssExtractPlugin.loader
+                    loader: plugins.MiniCssExtractPlugin.loader,
                 }, {
-                    loader: 'css-loader'
+                    loader: 'css-loader',
                 }, {
-                    loader: 'postcss-loader'
-                }]
+                    loader: 'postcss-loader',
+                }],
             }, {
                 test: /\.scss$/,
                 use: [{
-                    loader: plugins.MiniCssExtractPlugin.loader
+                    loader: plugins.MiniCssExtractPlugin.loader,
                 }, {
-                    loader: 'css-loader'
+                    loader: 'css-loader',
                 }, {
-                    loader: 'postcss-loader'
+                    loader: 'postcss-loader',
                 }, {
                     loader: 'sass-loader',
                     options: {
                         sassOptions: {
-                            quiet: true
-                        }
-                    }
-                }]
-            }]
+                            quiet: true,
+                        },
+                    },
+                }],
+            }],
         },
 
         plugins: [
@@ -155,7 +143,7 @@ module.exports = function (env) {
              * See: https://github.com/webpack-contrib/mini-css-extract-plugin
              */
             new plugins.MiniCssExtractPlugin({
-                filename: '[name].css'
+                filename: '[name].css',
             }),
 
             new webpack.LoaderOptionsPlugin({
@@ -166,10 +154,10 @@ module.exports = function (env) {
                          * 
                          * See: https://github.com/webpack/html-loader#Advanced_Options
                          */
-                        root: root('app', 'images')
+                        root: helpers.root('app', 'images'),
                     },
-                    context: '/'
-                }
+                    context: '/',
+                },
             }),
 
             new plugins.FaviconsWebpackPlugin({
@@ -184,11 +172,11 @@ module.exports = function (env) {
                     developerUrl: 'https://notifo.io',
                     start_url: '/',
                     theme_color: '#8c84fa',
-                }
+                },
             }),
 
             new plugins.StylelintPlugin({
-                files: '**/*.scss'
+                files: '**/*.scss',
             }),
 
             /**
@@ -199,16 +187,16 @@ module.exports = function (env) {
             new plugins.CircularDependencyPlugin({
                 exclude: /([\\\/]node_modules[\\\/])/,
                 // Add errors to webpack instead of warnings
-                failOnError: true
+                failOnError: true,
             }),
         ],
 
         devServer: {
             headers: {
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
             },
-            historyApiFallback: true
-        }
+            historyApiFallback: true,
+        },
     };
 
     if (!isTests) {
@@ -220,7 +208,7 @@ module.exports = function (env) {
         config.entry = {
             'app': './src/app/index.tsx',
             'notifo-sdk': './src/sdk/sdk.ts',
-            'notifo-sdk-worker': './src/sdk/sdk-worker.ts'
+            'notifo-sdk-worker': './src/sdk/sdk-worker.ts',
         };
 
         config.plugins.push(
@@ -228,8 +216,8 @@ module.exports = function (env) {
                 hash: true,
                 chunks: ['app'],
                 chunksSortMode: 'manual',
-                template: 'src/app/index.html'
-            })
+                template: 'src/app/index.html',
+            }),
         );
 
         config.plugins.push(
@@ -238,8 +226,8 @@ module.exports = function (env) {
                 hash: true,
                 chunks: ['notifo-sdk', 'app'],
                 chunksSortMode: 'manual',
-                template: 'src/sdk/demo.html'
-            })
+                template: 'src/sdk/demo.html',
+            }),
         );
 
 
@@ -257,9 +245,9 @@ module.exports = function (env) {
                         './sdk/**/*.ts',
                         './sdk/**/*.tsx',
                         './src/**/*.ts',
-                        './src/**/*.tsx'
-                    ]
-                })
+                        './src/**/*.tsx',
+                    ],
+                }),
             );
         }
     }
@@ -273,19 +261,19 @@ module.exports = function (env) {
                         ecma: 5,
                         mangle: true,
                         output: {
-                            comments: false
+                            comments: false,
                         },
-                        safari10: true
+                        safari10: true,
                     },
-                    extractComments: true
+                    extractComments: true,
                 }),
 
-                new plugins.CssMinimizerPlugin({})
-            ]
+                new plugins.CssMinimizerPlugin({}),
+            ],
         };
 
         config.performance = {
-            hints: false
+            hints: false,
         };
     }
 
@@ -294,7 +282,7 @@ module.exports = function (env) {
         config.module.rules.push({
             test: /\.ts[x]?$/,
             use: [{
-                loader: 'ts-loader'
+                loader: 'ts-loader',
             }],
             include: [/\.(e2e|spec)\.ts$/],
         });
@@ -303,19 +291,19 @@ module.exports = function (env) {
         config.module.rules.push({
             test: /\.ts[x]?$/,
             use: [{
-                loader: '@jsdevtools/coverage-istanbul-loader?esModules=true'
+                loader: '@jsdevtools/coverage-istanbul-loader?esModules=true',
             }, {
-                loader: 'ts-loader'
+                loader: 'ts-loader',
             }],
-            exclude: [/\.(e2e|spec)\.ts$/]
+            exclude: [/\.(e2e|spec)\.ts$/],
         });
     } else {
         config.module.rules.push({
             test: /\.ts[x]?$/,
             use: [{
-                loader: 'ts-loader'
-            }]
-        })
+                loader: 'ts-loader',
+            }],
+        });
     }
 
     if (isAnalyzing) {

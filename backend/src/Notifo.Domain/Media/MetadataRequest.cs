@@ -14,7 +14,7 @@ namespace Notifo.Domain.Media
         public AssetFile File { get; set; }
 
         public MediaMetadata Metadata { get; } = new MediaMetadata();
-         
+
         public MediaType Type { get; set; }
     }
 }

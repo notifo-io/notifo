@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -26,7 +26,7 @@ namespace Notifo
                 {
                     builder.ConfigureKestrel((context, serverOptions) =>
                     {
-                        if (context.HostingEnvironment.IsDevelopment())
+                        if (true || context.HostingEnvironment.IsDevelopment())
                         {
                             serverOptions.Listen(
                                 IPAddress.Any,

@@ -66,7 +66,6 @@ namespace Notifo.Domain.Counters
         {
             try
             {
-
                 await foreach (var batch in writeQueue.Reader.ReadAllAsync())
                 {
                     if (batch.Length == 0)

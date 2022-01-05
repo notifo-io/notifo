@@ -17,41 +17,40 @@ namespace Notifo.Areas.Frontend
         {
             var environment = app.ApplicationServices.GetRequiredService<IWebHostEnvironment>();
 
-            app.UseMiddleware<NotifoMiddleware>();
-            app.UseHtmlTransform();
-
             var fileProvider = environment.WebRootFileProvider;
 
             if (environment.IsProduction())
             {
                 fileProvider = new CompositeFileProvider(fileProvider,
                     new PhysicalFileProvider(Path.Combine(environment.WebRootPath, "build")));
+
+                app.Use((context, next) =>
+                {
+                    if (!Path.HasExtension(context.Request.Path.Value))
+                    {
+                        context.Request.Path = new PathString("/index.html");
+                    }
+
+                    return next();
+                });
             }
+
+            app.UseMiddleware<NotifoMiddleware>();
+            app.UseHtmlTransform();
 
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = context =>
                 {
-                    var request = context.Context.Request;
-
-                    var hasQuery = !string.IsNullOrWhiteSpace(request.QueryString.ToString());
-
                     var response = context.Context.Response;
-                    var responseHeaders = response.GetTypedHeaders();
 
-                    if (hasQuery)
+                    if (!string.IsNullOrWhiteSpace(context.Context.Request.QueryString.ToString()))
                     {
-                        responseHeaders.CacheControl = new CacheControlHeaderValue
-                        {
-                            MaxAge = TimeSpan.FromDays(60)
-                        };
+                        response.Headers[HeaderNames.CacheControl] = "max-age=5184000";
                     }
                     else if (string.Equals(response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
                     {
-                        responseHeaders.CacheControl = new CacheControlHeaderValue
-                        {
-                            NoCache = true
-                        };
+                        response.Headers[HeaderNames.CacheControl] = "no-cache";
                     }
                 },
                 FileProvider = fileProvider

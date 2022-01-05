@@ -6,7 +6,6 @@
 // ==========================================================================
 
 #pragma warning disable CS0162
-#pragma warning disable RECS0092 // Convert field to readonly
 #pragma warning disable RECS0065 // Expression is always 'true' or always 'false'
 
 namespace Notifo.Domain.Counters
@@ -14,8 +13,6 @@ namespace Notifo.Domain.Counters
     public sealed class CounterMap : Dictionary<string, long>
     {
         private const bool SupportPending = false;
-
-        private SpinLock slimLock = new SpinLock(false);
 
         public const string NotificationsHandled = "notifications_handled";
 

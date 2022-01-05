@@ -180,7 +180,7 @@ namespace Notifo.Domain.Integrations.Telegram
             {
                 var json = await streamReader.ReadToEndAsync();
 
-                return JsonConvert.DeserializeObject<TelegramUpdate>(json);
+                return JsonConvert.DeserializeObject<TelegramUpdate>(json)!;
             }
         }
     }

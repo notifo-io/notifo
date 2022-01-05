@@ -20,12 +20,11 @@ namespace Notifo.Pipeline
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase) ||
-                context.Request.Path.Equals("/build/notifo-sw.js", StringComparison.OrdinalIgnoreCase))
+            if (context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase))
             {
                 context.Response.Headers[HeaderNames.ContentType] = "text/javascript";
 
-                var script = "importScripts('https://app.notifo.io/build/notifo-sdk-worker.js')";
+                var script = "importScripts('https://app.notifo.io/notifo-sdk-worker.js')";
 
                 await context.Response.WriteAsync(script, context.RequestAborted);
             }

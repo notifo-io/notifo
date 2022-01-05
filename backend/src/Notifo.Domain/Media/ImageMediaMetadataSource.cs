@@ -45,7 +45,7 @@ namespace Notifo.Domain.Media
 
                 if (isSwapped)
                 {
-                    var tempFile = new TempAssetFile(file);
+                    var tempFile = TempAssetFile.Create(file);
 
                     await using (var uploadStream = file.OpenRead())
                     {
