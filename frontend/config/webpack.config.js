@@ -97,26 +97,6 @@ module.exports = function (env) {
                 }],
                 include: [/node_modules/]
             }, {
-                test: /\.(woff|woff2|ttf|eot)(\?.*$|$)/,
-                use: [{
-                    loader: 'file-loader?name=[name].[hash].[ext]',
-                    options: {
-                        outputPath: 'assets',
-                        /*
-                        * Use custom public path as ./ is not supported by fonts.
-                        */
-                        publicPath: isDevServer ? undefined : 'assets'
-                    }
-                }]
-            }, {
-                test: /\.(png|jpe?g|gif|svg|ico)(\?.*$|$)/,
-                use: [{
-                    loader: 'file-loader?name=[name].[hash].[ext]',
-                    options: {
-                        outputPath: 'assets'
-                    }
-                }]
-            }, {
                 test: /\.css$/,
                 use: [{
                     loader: plugins.MiniCssExtractPlugin.loader
@@ -242,7 +222,12 @@ module.exports = function (env) {
                  *
                  * See: https://webpack.js.org/configuration/output/#output-chunkfilename
                  */
-                chunkFilename: '[id].[hash].chunk.js'
+                chunkFilename: '[id].[hash].chunk.js',
+
+                /* 
+                 * The filename for assets.
+                 */
+                assetModuleFilename: 'assets/[hash][ext][query]',
             };
         } else {
             config.output = {
