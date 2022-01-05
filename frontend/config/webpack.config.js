@@ -42,6 +42,9 @@ module.exports = function (env) {
     const isTestCoverage = env && env.coverage;
     const isAnalyzing = isProduction && env.analyze;
 
+    // eslint-disable-next-line no-console
+    console.log(`Production: ${!!isProduction}, DevServer: ${!!isDevServer}`);
+
     const config = {
         mode: isProduction ? 'production' : 'development',
 
@@ -59,13 +62,6 @@ module.exports = function (env) {
              * See: https://webpack.js.org/configuration/output/#output-path
              */
             path: root('/build/'),
-
-            /**
-             * Specifies the name of each output file on disk.
-             *
-             * See: https://webpack.js.org/configuration/output/#output-filename
-             */
-            filename: '[name].js',
 
             /**
              * The filename of non-entry chunks as relative path inside the output.path directory.
@@ -245,6 +241,14 @@ module.exports = function (env) {
                 template: 'src/sdk/demo.html'
             })
         );
+
+
+        /**
+         * Specifies the name of each output file on disk.
+         *
+         * See: https://webpack.js.org/configuration/output/#output-filename
+         */
+        config.output.filename = '[name].js';
 
         if (isProduction) {
             config.plugins.push(

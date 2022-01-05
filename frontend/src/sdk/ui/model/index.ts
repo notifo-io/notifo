@@ -239,7 +239,7 @@ export function useStore<T>(selector: (state: NotifoState) => T) {
         return () => {
             store.unsubscribe(listener);
         };
-    }, []);
+    }, [selector]);
 
     return state;
 }
