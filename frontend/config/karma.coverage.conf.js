@@ -1,9 +1,7 @@
-﻿/* eslint-disable */
-
-const webpackConfig = require('./webpack.config');
+﻿const webpackConfig = require('./webpack.config');
 
 module.exports = function (config) {
-    var _config = {
+    var newConfig = {
         /** 
          * Base path that will be used to resolve all patterns (e.g. files, exclude).
          */
@@ -15,11 +13,11 @@ module.exports = function (config) {
          * Load additional test shim to setup angular for testing.
          */
         files: [
-            { pattern: './config/karma-test-shim.js', watched: false }
+            { pattern: './config/karma-test-shim.js', watched: false },
         ],
 
         preprocessors: {
-            './config/karma-test-shim.js': ['webpack', 'sourcemap']
+            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
         },
 
         /**
@@ -28,11 +26,11 @@ module.exports = function (config) {
         webpack: webpackConfig({ target: 'tests', coverage: true, jit: true }),
 
         webpackMiddleware: {
-            stats: 'errors-only'
+            stats: 'errors-only',
         },
 
         webpackServer: {
-            noInfo: true
+            noInfo: true,
         },
 
         /**
@@ -50,19 +48,19 @@ module.exports = function (config) {
             /**
              * Group the output by test suite (describe), equivalent to mocha reporter.
              */
-            groupSuites: true
+            groupSuites: true,
         },
 
         coverageIstanbulReporter: {
             dir: require('path').join(__dirname, '../_test-output/coverage'),
 
             reports: [
-              'html',
-              'lcovonly'
+                'html',
+                'lcovonly',
             ],
 
-            fixWebpackSourcePaths: true
-          },
+            fixWebpackSourcePaths: true,
+        },
 
         /**
          * Disable continuous Integration mode, run only one time.
@@ -75,8 +73,8 @@ module.exports = function (config) {
                 /**
                  * We must disable the Chrome sandbox (Chrome's sandbox needs more permissions than Docker allows by default).
                  */
-                flags: ['--no-sandbox']
-            }
+                flags: ['--no-sandbox'],
+            },
         },
 
         /**
@@ -84,8 +82,8 @@ module.exports = function (config) {
          * 
          * Available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
          */
-        browsers: ['ChromeCustom']
+        browsers: ['ChromeCustom'],
     };
 
-    config.set(_config);
+    config.set(newConfig);
 };

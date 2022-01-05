@@ -1,9 +1,7 @@
-﻿/* eslint-disable */
-
-const webpackConfig = require('./webpack.config');
+﻿const webpackConfig = require('./webpack.config');
 
 module.exports = function (config) {
-    var _config = {
+    var newConfig = {
         /** 
          * Base path that will be used to resolve all patterns (e.g. files, exclude).
          */
@@ -15,11 +13,11 @@ module.exports = function (config) {
          * Load additional test shim to setup angular for testing.
          */
         files: [
-            { pattern: './config/karma-test-shim.js', watched: false }
+            { pattern: './config/karma-test-shim.js', watched: false },
         ],
 
         preprocessors: {
-            './config/karma-test-shim.js': ['webpack', 'sourcemap']
+            './config/karma-test-shim.js': ['webpack', 'sourcemap'],
         },
 
         /**
@@ -28,18 +26,18 @@ module.exports = function (config) {
         webpack: webpackConfig({ target: 'tests', jit: true }),
 
         webpackMiddleware: {
-            stats: 'errors-only'
+            stats: 'errors-only',
         },
         
         webpackServer: {
-            noInfo: true
+            noInfo: true,
         },
 
         /**
          * Leave Jasmine Spec Runner output visible in browser.
          */
         client: {
-            clearContext: false
+            clearContext: false,
         },
 
         /**
@@ -53,8 +51,8 @@ module.exports = function (config) {
          * 
          * available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
          */
-        browsers: ['Chrome']
+        browsers: ['Chrome'],
     };
 
-    config.set(_config);
+    config.set(newConfig);
 };

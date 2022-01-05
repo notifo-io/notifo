@@ -1,6 +1,4 @@
-﻿/* eslint-disable */
-
-Error.stackTraceLimit = Infinity;
+﻿Error.stackTraceLimit = Infinity;
 
 var testContext = require.context('../src', true, /\.spec\.ts/);
 
@@ -16,4 +14,5 @@ function requireAll(requireContext) {
 /**
  * Requires and returns all modules that match.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 var modules = requireAll(testContext);

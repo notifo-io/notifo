@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const helpers = require('./helpers.js');
+const helpers = require('./helpers');
 const plugins = {
     // https://github.com/webpack-contrib/mini-css-extract-plugin
     MiniCssExtractPlugin: require('mini-css-extract-plugin'),
