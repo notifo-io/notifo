@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
-using Notifo.Areas.Frontend.Middlewares;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Frontend
@@ -18,36 +18,14 @@ namespace Notifo.Areas.Frontend
             var environment = app.ApplicationServices.GetRequiredService<IWebHostEnvironment>();
 
             app.UseMiddleware<NotifoMiddleware>();
+            app.UseHtmlTransform();
 
-            app.Use((context, next) =>
+            var fileProvider = environment.WebRootFileProvider;
+
+            if (environment.IsProduction())
             {
-                if (!Path.HasExtension(context.Request.Path.Value))
-                {
-                    if (environment.IsDevelopment())
-                    {
-                        context.Request.Path = new PathString("/index.html");
-                    }
-                    else
-                    {
-                        context.Request.Path = new PathString("/build/index.html");
-                    }
-                }
-
-                if (environment.IsProduction() && context.Request.Path.Equals("/demo.html", StringComparison.OrdinalIgnoreCase))
-                {
-                    context.Request.Path = new PathString("/build/demo.html");
-                }
-
-                return next();
-            });
-
-            if (environment.IsDevelopment())
-            {
-                app.UseMiddleware<WebpackMiddleware>();
-            }
-            else
-            {
-                app.UseMiddleware<IndexMiddleware>();
+                fileProvider = new CompositeFileProvider(fileProvider,
+                    new PhysicalFileProvider(Path.Combine(environment.WebRootPath, "build")));
             }
 
             app.UseStaticFiles(new StaticFileOptions
@@ -75,8 +53,17 @@ namespace Notifo.Areas.Frontend
                             NoCache = true
                         };
                     }
-                }
+                },
+                FileProvider = fileProvider
             });
+
+            if (environment.IsDevelopment())
+            {
+                app.UseSpa(builder =>
+                {
+                    builder.UseProxyToSpaDevelopmentServer("https://localhost:3002");
+                });
+            }
         }
     }
 }

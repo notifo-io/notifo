@@ -52,6 +52,34 @@ module.exports = function (env) {
          */
         devtool: isProduction ? false : 'inline-source-map',
 
+        output: {
+            /**
+             * The output directory as absolute path (required).
+             *
+             * See: https://webpack.js.org/configuration/output/#output-path
+             */
+            path: root('/build/'),
+
+            /**
+             * Specifies the name of each output file on disk.
+             *
+             * See: https://webpack.js.org/configuration/output/#output-filename
+             */
+            filename: '[name].js',
+
+            /**
+             * The filename of non-entry chunks as relative path inside the output.path directory.
+             *
+             * See: https://webpack.js.org/configuration/output/#output-chunkfilename
+             */
+            chunkFilename: '[id].[hash].chunk.js',
+
+            /* 
+             * The filename for assets.
+             */
+            assetModuleFilename: 'assets/[hash][ext][query]',
+        },
+
         /**
          * Options affecting the resolving of modules.
          *
@@ -198,54 +226,6 @@ module.exports = function (env) {
             'notifo-sdk': './src/sdk/sdk.ts',
             'notifo-sdk-worker': './src/sdk/sdk-worker.ts'
         };
-
-        if (isProduction) {
-            config.output = {
-                /**
-                 * The output directory as absolute path (required).
-                 *
-                 * See: https://webpack.js.org/configuration/output/#output-path
-                 */
-                path: root('/build/'),
-
-                publicPath: '/build/',
-
-                /**
-                 * Specifies the name of each output file on disk.
-                 *
-                 * See: https://webpack.js.org/configuration/output/#output-filename
-                 */
-                filename: '[name].js',
-
-                /**
-                 * The filename of non-entry chunks as relative path inside the output.path directory.
-                 *
-                 * See: https://webpack.js.org/configuration/output/#output-chunkfilename
-                 */
-                chunkFilename: '[id].[hash].chunk.js',
-
-                /* 
-                 * The filename for assets.
-                 */
-                assetModuleFilename: 'assets/[hash][ext][query]',
-            };
-        } else {
-            config.output = {
-                filename: '[name].js',
-
-                /**
-                 * Set the public path, because we are running the website from another port (5000).
-                 */
-                publicPath: 'https://localhost:3002/',
-
-                /*
-                 * Fix a bug with webpack dev server.
-                 *
-                 * See: https://github.com/webpack-contrib/worker-loader/issues/174
-                 */
-                globalObject: 'this'
-            };
-        }
 
         config.plugins.push(
             new plugins.HtmlWebpackPlugin({
