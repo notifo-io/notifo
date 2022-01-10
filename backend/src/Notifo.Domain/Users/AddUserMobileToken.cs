@@ -31,7 +31,7 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            var newMobilePushTokens = new List<MobilePushToken>();
+            var newMobilePushTokens = user.MobilePushTokens.ToList();
 
             newMobilePushTokens.RemoveAll(x => x.Token == Token.Token);
             newMobilePushTokens.Add(Token);
