@@ -20,6 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:confirms").Get<ConfirmPipelineOptions>() ?? new ConfirmPipelineOptions();
 
+            services.ConfigureAndValidate<UserNotificationsOptions>(config, "notifications");
+
             services.AddMessaging<ConfirmMessage>(options.ChannelName);
 
             services.AddSingletonAs<UserNotificationStore>()

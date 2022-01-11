@@ -20,6 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:events").Get<EventPipelineOptions>() ?? new EventPipelineOptions();
 
+            services.ConfigureAndValidate<EventsOptions>(config, "events");
+
             services.AddMessaging<EventMessage>(options.ChannelName);
 
             services.AddSingletonAs<EventStore>()

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -17,6 +18,8 @@ namespace Notifo.Domain.Events.MongoDb
 {
     public sealed class MongoDbEventRepository : MongoDbStore<MongoDbEvent>, IEventRepository
     {
+        private readonly TimeSpan retentionTime;
+
         static MongoDbEventRepository()
         {
             BsonClassMap.RegisterClassMap<MongoDbEvent>(cm =>
@@ -29,9 +32,10 @@ namespace Notifo.Domain.Events.MongoDb
             });
         }
 
-        public MongoDbEventRepository(IMongoDatabase database)
+        public MongoDbEventRepository(IMongoDatabase database, IOptions<EventsOptions> options)
             : base(database)
         {
+            retentionTime = options.Value.RetentionTime;
         }
 
         protected override string CollectionName()
@@ -55,7 +59,10 @@ namespace Notifo.Domain.Events.MongoDb
                 new CreateIndexModel<MongoDbEvent>(
                     IndexKeys
                         .Descending(x => x.Doc.Created),
-                    new CreateIndexOptions { ExpireAfter = TimeSpan.FromDays(10) }),
+                    new CreateIndexOptions
+                    {
+                        ExpireAfter = retentionTime
+                    }),
                 null, ct);
         }
 

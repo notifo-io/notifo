@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -17,6 +18,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 {
     public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNotification>, IUserNotificationRepository
     {
+        private readonly TimeSpan retentionTime;
+
         static MongoDbUserNotificationRepository()
         {
             BsonClassMap.RegisterClassMap<UserNotification>(cm =>
@@ -63,9 +66,10 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             });
         }
 
-        public MongoDbUserNotificationRepository(IMongoDatabase database)
+        public MongoDbUserNotificationRepository(IMongoDatabase database, IOptions<UserNotificationsOptions> options)
             : base(database)
         {
+            retentionTime = options.Value.RetentionTime;
         }
 
         protected override string CollectionName()
@@ -82,7 +86,18 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                         .Ascending(x => x.AppId)
                         .Ascending(x => x.UserId)
                         .Ascending(x => x.Updated)
-                        .Ascending(x => x.IsDeleted)),
+                        .Ascending(x => x.IsDeleted)
+                        .Descending(x => x.Created)),
+                null, ct);
+
+            await Collection.Indexes.CreateOneAsync(
+                new CreateIndexModel<UserNotification>(
+                    IndexKeys
+                        .Descending(x => x.Created),
+                    new CreateIndexOptions
+                    {
+                        ExpireAfter = retentionTime
+                    }),
                 null, ct);
         }
 
@@ -121,19 +136,16 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 switch (query.Scope)
                 {
                     case UserNotificationQueryScope.Deleted:
-                        {
-                            filters.Add(Filter.Eq(x => x.IsDeleted, true));
-                            break;
-                        }
+                        filters.Add(Filter.Eq(x => x.IsDeleted, true));
+                        break;
 
                     case UserNotificationQueryScope.NonDeleted:
-                        {
-                            filters.Add(
-                                Filter.Or(
-                                    Filter.Exists(x => x.IsDeleted, false),
-                                    Filter.Eq(x => x.IsDeleted, false)));
-                            break;
-                        }
+                        filters.Add(Filter.Eq(x => x.IsDeleted, false));
+                        break;
+
+                    case UserNotificationQueryScope.All:
+                        filters.Add(Filter.Ne(nameof(UserNotification.IsDeleted), 0));
+                        break;
                 }
 
                 if (!string.IsNullOrWhiteSpace(query.Query))
