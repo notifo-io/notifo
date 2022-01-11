@@ -26,7 +26,7 @@ namespace Notifo
                 {
                     builder.ConfigureKestrel((context, serverOptions) =>
                     {
-                        if (true || context.HostingEnvironment.IsDevelopment())
+                        if (context.HostingEnvironment.IsDevelopment())
                         {
                             serverOptions.Listen(
                                 IPAddress.Any,
