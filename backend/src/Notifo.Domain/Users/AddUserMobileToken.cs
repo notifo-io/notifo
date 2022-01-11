@@ -31,10 +31,15 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            var newMobilePushTokens = user.MobilePushTokens.ToList();
+            if (user.MobilePushTokens.Any(x => x.Token == Token.Token))
+            {
+                return default;
+            }
 
-            newMobilePushTokens.RemoveAll(x => x.Token == Token.Token);
-            newMobilePushTokens.Add(Token);
+            var newMobilePushTokens = new List<MobilePushToken>(user.MobilePushTokens)
+            {
+                Token
+            };
 
             var newUser = user with
             {

@@ -19,24 +19,57 @@ namespace Notifo.Domain.Users
         {
             var sut = new AddUserMobileToken();
 
-            string token1 = "test token 1";
-            string token2 = "test token 2";
-            string token3 = "test token 3";
+            var token1 = "test token 1";
+            var token2 = "test token 2";
+            var token3 = "test token 3";
 
             sut.Token = new MobilePushToken { Token = token1 };
 
             var user = new User
             {
-                MobilePushTokens = new List<string> { token2, token3 }
-                        .Select(t => new MobilePushToken { Token = t })
-                        .ToReadonlyList(),
+                MobilePushTokens = new List<string>
+                    {
+                        token2,
+                        token3
+                    }
+                    .Select(t => new MobilePushToken { Token = t })
+                    .ToReadonlyList(),
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), CancellationToken.None);
 
-            Assert.Contains(updatedUser?.MobilePushTokens, t => t.Token == token1);
-            Assert.Contains(updatedUser?.MobilePushTokens, t => t.Token == token2);
-            Assert.Contains(updatedUser?.MobilePushTokens, t => t.Token == token3);
+            Assert.Equal(new[]
+            {
+                token1,
+                token2,
+                token3
+            }, updatedUser!.MobilePushTokens.Select(x => x.Token).OrderBy(x => x).ToArray());
+        }
+
+        [Fact]
+        public async Task Should_not_change_existing_token_if_token_added_again()
+        {
+            var sut = new AddUserMobileToken();
+
+            var token1 = "test token 1";
+            var token2 = "test token 2";
+
+            sut.Token = new MobilePushToken { Token = token1 };
+
+            var user = new User
+            {
+                MobilePushTokens = new List<string>
+                    {
+                        token1,
+                        token2
+                    }
+                    .Select(t => new MobilePushToken { Token = t })
+                    .ToReadonlyList(),
+            };
+
+            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), CancellationToken.None);
+
+            Assert.Null(updatedUser);
         }
     }
 }

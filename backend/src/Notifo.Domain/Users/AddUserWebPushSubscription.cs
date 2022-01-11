@@ -31,10 +31,15 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            var newWebPushSubscriptions = new List<WebPushSubscription>();
+            if (user.WebPushSubscriptions.Any(x => x.Endpoint == Subscription.Endpoint))
+            {
+                return default;
+            }
 
-            newWebPushSubscriptions.RemoveAll(x => x.Endpoint == Subscription.Endpoint);
-            newWebPushSubscriptions.Add(Subscription);
+            var newWebPushSubscriptions = new List<WebPushSubscription>(user.WebPushSubscriptions)
+            {
+                Subscription
+            };
 
             var newUser = user with
             {
