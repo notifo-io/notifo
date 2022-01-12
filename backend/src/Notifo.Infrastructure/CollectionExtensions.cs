@@ -6,30 +6,45 @@
 // ==========================================================================
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Notifo.Infrastructure
 {
     public static class CollectionExtensions
     {
-        public static Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source)
+        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source,
+            CancellationToken ct = default)
         {
-            if (source == null)
+            var list = new List<T>();
+
+            await foreach (var element in source.WithCancellation(ct))
             {
-                throw new ArgumentNullException(nameof(source));
+                list.Add(element);
             }
 
-            return ExecuteAsync();
+            return list;
+        }
 
-            async Task<List<T>> ExecuteAsync()
+        public static async IAsyncEnumerable<List<T>> Chunk<T>(this IAsyncEnumerable<T> source, int size,
+            [EnumeratorCancellation] CancellationToken ct = default)
+        {
+            List<T>? current = null;
+
+            await foreach (var element in source.WithCancellation(ct))
             {
-                var list = new List<T>();
+                current ??= new List<T>(size);
+                current.Add(element);
 
-                await foreach (var element in source)
+                if (current.Count == size)
                 {
-                    list.Add(element);
+                    yield return current;
+                    current = null;
                 }
+            }
 
-                return list;
+            if (current != null)
+            {
+                yield return current;
             }
         }
 

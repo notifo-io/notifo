@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -64,6 +65,38 @@ namespace Notifo.Infrastructure.MongoDb
             Expression<Func<TDocument, object?>> exclude3)
         {
             return find.Project<TDocument>(Builders<TDocument>.Projection.Exclude(exclude1).Exclude(exclude2).Exclude(exclude3));
+        }
+
+        public static async IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IFindFluent<T, T> find,
+            [EnumeratorCancellation] CancellationToken ct = default)
+        {
+            var cursor = await find.ToCursorAsync(ct);
+
+            while (await cursor.MoveNextAsync(ct))
+            {
+                foreach (var item in cursor.Current)
+                {
+                    ct.ThrowIfCancellationRequested();
+
+                    yield return item;
+                }
+            }
+        }
+
+        public static async IAsyncEnumerable<TProjection> ToAsyncEnumerable<TDocument, TProjection>(this IFindFluent<TDocument, TProjection> find,
+            [EnumeratorCancellation] CancellationToken ct = default)
+        {
+            var cursor = await find.ToCursorAsync(ct);
+
+            while (await cursor.MoveNextAsync(ct))
+            {
+                foreach (var item in cursor.Current)
+                {
+                    ct.ThrowIfCancellationRequested();
+
+                    yield return item;
+                }
+            }
         }
     }
 }
