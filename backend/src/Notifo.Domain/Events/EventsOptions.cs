@@ -11,7 +11,7 @@ namespace Notifo.Domain.Events
 {
     public sealed class EventsOptions : IValidatableOptions
     {
-        public TimeSpan RetentionTime { get; set; } = TimeSpan.FromDays(28);
+        public TimeSpan RetentionTime { get; set; } = TimeSpan.FromDays(10);
 
         public IEnumerable<ConfigurationError> Validate()
         {
