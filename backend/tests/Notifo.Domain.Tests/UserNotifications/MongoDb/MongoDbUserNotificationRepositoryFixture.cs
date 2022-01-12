@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
 
@@ -21,7 +22,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             var mongoClient = new MongoClient("mongodb://localhost");
             var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
 
-            Repository = new MongoDbUserNotificationRepository(mongoDatabase);
+            Repository = new MongoDbUserNotificationRepository(mongoDatabase, Options.Create(new UserNotificationsOptions()));
             Repository.InitializeAsync(default).Wait();
         }
 
