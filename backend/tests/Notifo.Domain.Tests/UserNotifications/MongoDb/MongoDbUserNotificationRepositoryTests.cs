@@ -47,6 +47,23 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         }
 
         [Fact]
+        public async Task Should_cleanup_old_notifications()
+        {
+            var now = SystemClock.Instance.GetCurrentInstant();
+
+            for (var i = 0; i < 200; i++)
+            {
+                await _.Repository.InsertAsync(CreateNotification(userId1, now), default);
+
+                now = now.Plus(Duration.FromSeconds(1));
+            }
+
+            var notifications = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery { TotalNeeded = true }, default);
+
+            Assert.Equal(100, notifications.Total);
+        }
+
+        [Fact]
         public async Task Should_update_notifications()
         {
             var notification1 = CreateNotification(userId1);
@@ -83,7 +100,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             notifications2.ToArray().Should().BeEquivalentTo(new[] { notification2 });
         }
 
-        private UserNotification CreateNotification(string userId)
+        private UserNotification CreateNotification(string userId, Instant created = default)
         {
             return new UserNotification
             {
@@ -106,7 +123,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 },
                 Formatting = new NotificationFormatting<string>(),
                 UserId = userId,
-                UserLanguage = "en"
+                UserLanguage = "en",
+                Created = created
             };
         }
     }
