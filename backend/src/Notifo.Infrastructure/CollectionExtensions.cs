@@ -12,19 +12,6 @@ namespace Notifo.Infrastructure
 {
     public static class CollectionExtensions
     {
-        public static async Task<List<T>> ToListAsync<T>(this IAsyncEnumerable<T> source,
-            CancellationToken ct = default)
-        {
-            var list = new List<T>();
-
-            await foreach (var element in source.WithCancellation(ct))
-            {
-                list.Add(element);
-            }
-
-            return list;
-        }
-
         public static async IAsyncEnumerable<List<T>> Chunk<T>(this IAsyncEnumerable<T> source, int size,
             [EnumeratorCancellation] CancellationToken ct = default)
         {
