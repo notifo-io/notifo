@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useDispatch } from 'react-redux';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Col, Row } from 'reactstrap';
 import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';

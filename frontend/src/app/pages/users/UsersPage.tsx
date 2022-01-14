@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import ReactTooltip from 'react-tooltip';
-import * as React from 'react';
 import { Button, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';

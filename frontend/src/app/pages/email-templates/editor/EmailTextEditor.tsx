@@ -7,8 +7,8 @@
 
 // tslint:disable: quotemark
 
-import Split from 'react-split';
 import * as React from 'react';
+import Split from 'react-split';
 import { Alert, Input } from 'reactstrap';
 import { usePreview } from './helpers';
 

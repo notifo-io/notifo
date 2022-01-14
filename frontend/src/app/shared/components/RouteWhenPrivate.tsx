@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, RouteProps } from 'react-router';
-import * as React from 'react';
 import { loginStart } from '@app/state';
 
 export interface RouteWhenPrivateProps {

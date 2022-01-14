@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useDispatch } from 'react-redux';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { loadDetails, useApp, useApps } from '@app/state';
 import { AppSettings } from './AppSettings';
 import { Contributors } from './Contributors';

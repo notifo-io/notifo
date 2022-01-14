@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import ReactTooltip from 'react-tooltip';
 import * as React from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Icon, IconType, Numbers, Types } from '@app/framework';
 import { texts } from '@app/texts';
 

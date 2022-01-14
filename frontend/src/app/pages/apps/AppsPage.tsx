@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
-import * as React from 'react';
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
 import { FormError, Icon, Loader, useDialog } from '@app/framework';
 import { selectApp, useApps } from '@app/state';

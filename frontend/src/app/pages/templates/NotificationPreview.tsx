@@ -1,5 +1,5 @@
-import { PushPreview, PushPreviewProps, PushPreviewTarget } from 'react-push-preview';
 import * as React from 'react';
+import { PushPreview, PushPreviewProps, PushPreviewTarget } from 'react-push-preview';
 import { NotificationFormattingDto } from '@app/service';
 import { texts } from '@app/texts';
 

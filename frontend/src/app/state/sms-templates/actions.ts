@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { ErrorDto, listThunk, Query } from '@app/framework';
 import { ChannelTemplateDto, Clients, UpdateChannelTemplateDtoOfSmsTemplateDto } from '@app/service';
-import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from '../shared';
 import { SmsTemplatesState } from './state';
 

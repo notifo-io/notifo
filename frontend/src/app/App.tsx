@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import * as React from 'react';
 import { ErrorBoundary } from '@app/framework';
 import { InternalPage } from '@app/pages/InternalPage';
 import { RouteWhenPrivate } from '@app/shared/components';

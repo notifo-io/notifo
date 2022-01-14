@@ -6,8 +6,8 @@
  */
 
 import classNames from 'classnames';
-import ReactTooltip from 'react-tooltip';
 import * as React from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, CardFooter } from 'reactstrap';
 import { Confirm, Icon } from '@app/framework';
 import { MediaDto } from '@app/service';

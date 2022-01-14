@@ -7,8 +7,8 @@
 
 // tslint:disable: no-parameter-reassignment
 
-import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, UpdateProfile } from '@sdk/shared';
 import { useEffect, useState } from 'preact/hooks';
+import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, UpdateProfile } from '@sdk/shared';
 import { Dispatch, set, Store } from './store';
 
 export type Status = 'InProgress' | 'Failed' | 'Success';

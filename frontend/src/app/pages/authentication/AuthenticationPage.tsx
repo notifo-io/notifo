@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, Switch, useRouteMatch } from 'react-router';
-import * as React from 'react';
 import { loginDone, logoutDone } from '@app/state';
 
 export const LoginCallbackPage = () => {

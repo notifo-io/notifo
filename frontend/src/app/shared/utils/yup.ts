@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as Yup from 'yup';
 import { Types } from '@app/framework';
 import { texts } from '@app/texts';
-import * as Yup from 'yup';
 
 function emailI18n(this: Yup.StringSchema) {
     return this.email(texts.validation.emailFn);

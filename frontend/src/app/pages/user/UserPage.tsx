@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import * as React from 'react';
 import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
 import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
 import { CounterCards } from '@app/shared/components';

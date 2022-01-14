@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useDispatch } from 'react-redux';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
 import { loadIntegrations, useApp, useIntegrations } from '@app/state';
 

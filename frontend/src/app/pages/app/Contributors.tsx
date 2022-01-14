@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useDispatch } from 'react-redux';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, CardFooter, Col, Input, Row } from 'reactstrap';
 import { FormError, Icon } from '@app/framework';
 import { AppDetailsDto } from '@app/service';

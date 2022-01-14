@@ -6,8 +6,8 @@
  */
 
 import classNames from 'classnames';
-import ExternalLoader from 'react-loader-spinner';
 import * as React from 'react';
+import ExternalLoader from 'react-loader-spinner';
 
 export interface LoaderProps {
     // Optional class name.

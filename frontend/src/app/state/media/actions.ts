@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { listThunk, Query } from '@app/framework';
-import { Clients, MediaDto } from '@app/service';
 import { createReducer } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
+import { listThunk, Query } from '@app/framework';
+import { Clients, MediaDto } from '@app/service';
 import { createApiThunk, selectApp } from '../shared';
 import { MediaState } from './state';
 

@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useDispatch } from 'react-redux';
-import { match, NavLink } from 'react-router-dom';
-import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
+import { match, NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
 import { combineUrl, Icon } from '@app/framework';
 import { selectApp, togglePublishDialog, useApp, useApps } from '@app/state';

@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
-import * as React from 'react';
 import { Button, Col, Label, Row } from 'reactstrap';
 import { FormError, Icon, Loader } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';

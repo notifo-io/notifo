@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import ReactTooltip from 'react-tooltip';
 import * as React from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
 import { Confirm, Icon } from '@app/framework';
 import { SubscriptionDto } from '@app/service';

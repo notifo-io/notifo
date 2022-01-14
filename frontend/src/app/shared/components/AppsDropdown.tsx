@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Link, useRouteMatch } from 'react-router-dom';
 import * as React from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { useApp, useApps } from '@app/state';
 

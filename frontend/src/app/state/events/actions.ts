@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { createReducer } from '@reduxjs/toolkit';
 import { listThunk, Query } from '@app/framework';
 import { Clients, EventDto } from '@app/service';
-import { createReducer } from '@reduxjs/toolkit';
 import { selectApp } from '../shared';
 import { EventsState } from './state';
 

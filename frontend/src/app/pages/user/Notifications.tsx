@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import * as React from 'react';
 import { Button, ButtonGroup, Card, CardBody, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
 import { loadNotifications, useApp, useNotifications } from '@app/state';

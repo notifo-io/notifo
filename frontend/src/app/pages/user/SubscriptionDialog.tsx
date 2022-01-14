@@ -6,8 +6,8 @@
  */
 
 import { Formik } from 'formik';
-import { useDispatch } from 'react-redux';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
 import { FormError, Forms, Loader, Types } from '@app/framework';

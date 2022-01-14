@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Redirect, Route, RouteProps } from 'react-router';
 import * as React from 'react';
+import { Redirect, Route, RouteProps } from 'react-router';
 
 export interface RouteWhenPublicProps {
     // The current auth state.
