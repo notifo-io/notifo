@@ -6,11 +6,10 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-
-import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { useState } from 'preact/hooks';
+import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { Modal } from './Modal';
 import { Notifications } from './Notifications';
 import { NotificationsArchive } from './NotificationsArchive';

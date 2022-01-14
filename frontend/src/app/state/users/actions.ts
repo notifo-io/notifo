@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, listThunk, Query } from '@app/framework';
-import { Clients, UpsertUserDto, UserDto } from '@app/service';
 import { createReducer } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
+import { ErrorDto, listThunk, Query } from '@app/framework';
+import { Clients, UpsertUserDto, UserDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { UsersState } from './state';
 

@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { buildError } from '@app/framework';
 import { AsyncThunkPayloadCreator, createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { buildError } from '@app/framework';
 
 export const selectApp = createAction<{ appId: string | undefined }>('apps/select');
 

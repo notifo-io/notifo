@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { loginStart } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, RouteProps } from 'react-router';
+import { loginStart } from '@app/state';
 
 export interface RouteWhenPrivateProps {
     // The current auth state.

@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { combineUrl, Confirm, Icon } from '@app/framework';
-import { UserDto } from '@app/service';
-import { CounterRow } from '@app/shared/components';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { match } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
+import { combineUrl, Confirm, Icon } from '@app/framework';
+import { UserDto } from '@app/service';
+import { CounterRow } from '@app/shared/components';
+import { texts } from '@app/texts';
 
 export interface UserRowProps {
     // The user.

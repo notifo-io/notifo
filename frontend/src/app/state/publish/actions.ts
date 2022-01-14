@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ErrorDto } from '@app/framework';
 import { Clients, PublishDto } from '@app/service';
-import { createAction, createReducer } from '@reduxjs/toolkit';
 import { createApiThunk } from '../shared';
 import { PublishState } from './state';
 

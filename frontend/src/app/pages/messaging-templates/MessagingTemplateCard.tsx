@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { match, NavLink } from 'react-router-dom';
+import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { Confirm, FormatDate, Icon } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { texts } from '@app/texts';
 import { combineUrl } from '@sdk/shared';
-import * as React from 'react';
-import { match, NavLink } from 'react-router-dom';
-import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 
 export interface MessagingTemplateCardProps {
     // The match.

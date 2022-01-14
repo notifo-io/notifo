@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Confirm, FormError, Forms, Icon, Loader } from '@app/framework';
-import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationPropertyDto, UpdateIntegrationDto } from '@app/service';
-import { createIntegration, deleteIntegration, updateIntegration, useIntegrations } from '@app/state';
-import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Badge, Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import * as Yup from 'yup';
+import { Confirm, FormError, Forms, Icon, Loader } from '@app/framework';
+import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationPropertyDto, UpdateIntegrationDto } from '@app/service';
+import { createIntegration, deleteIntegration, updateIntegration, useIntegrations } from '@app/state';
+import { texts } from '@app/texts';
 import { StatusLabel } from './StatusLabel';
 
 export interface IntegrationDialogProps {

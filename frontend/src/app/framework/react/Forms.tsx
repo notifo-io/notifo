@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { isErrorVisible, Types } from '@app/framework/utils';
 import classNames from 'classnames';
 import { FieldHelperProps, FieldMetaProps, FieldInputProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
+import { isErrorVisible, Types } from '@app/framework/utils';
 import { FormControlError } from './FormControlError';
 import { Icon } from './Icon';
 import { LanguageSelector } from './LanguageSelector';

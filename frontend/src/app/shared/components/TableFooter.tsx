@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ListPager, ListPagerProps } from '@app/framework';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Col, CustomInput, Row } from 'reactstrap';
+import { ListPager, ListPagerProps } from '@app/framework';
+import { texts } from '@app/texts';
 
 export interface TableFooterProps extends ListPagerProps {
     // True to show all details.

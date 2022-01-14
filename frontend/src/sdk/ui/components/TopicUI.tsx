@@ -6,12 +6,11 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
 import { loadSubscription, useDispatch, useStore } from '@sdk/ui/model';
-import { useCallback, useEffect, useState } from 'preact/hooks';
 import { TopicButton } from './TopicButton';
 import { TopicModal } from './TopicModal';
 

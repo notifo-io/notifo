@@ -14,5 +14,5 @@ function requireAll(requireContext) {
 /**
  * Requires and returns all modules that match.
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 var modules = requireAll(testContext);

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ApiValue, ClickOutside, FormatDate, Icon } from '@app/framework';
-import { UserDto } from '@app/service';
-import { texts } from '@app/texts';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Button, Popover, PopoverBody, Table } from 'reactstrap';
+import { ApiValue, ClickOutside, FormatDate, Icon } from '@app/framework';
+import { UserDto } from '@app/service';
+import { texts } from '@app/texts';
 
 function usePopover(): [boolean, () => void, () => void, () => void] {
     const [isOpen, setIsOpen] = React.useState(false);

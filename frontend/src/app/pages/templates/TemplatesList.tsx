@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Col, Row, Table } from 'reactstrap';
 import { Icon, Loader } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { deleteTemplate, loadTemplates, selectTemplate, togglePublishDialog, useApp, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Col, Row, Table } from 'reactstrap';
 import { TemplateRow } from './TemplateRow';
 
 export interface TemplateListProps {

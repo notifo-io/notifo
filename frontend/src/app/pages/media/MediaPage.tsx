@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Col, Row } from 'reactstrap';
 import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { MediaCard } from '@app/shared/components/MediaCard';
 import { deleteMedia, loadMedia, uploadMedia, useApp, useMedia } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Col, Row } from 'reactstrap';
 
 export const MediaPage = () => {
     const dispatch = useDispatch();

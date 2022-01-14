@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Clients } from '@app/service';
 import { createReducer } from '@reduxjs/toolkit';
+import { Clients } from '@app/service';
 import { createApiThunk } from '../shared';
 import { CoreState } from './state';
 

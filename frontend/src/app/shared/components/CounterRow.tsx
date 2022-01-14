@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Counters } from '@app/shared/utils';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Col, Row, Table } from 'reactstrap';
+import { Counters } from '@app/shared/utils';
+import { texts } from '@app/texts';
 import { CHANNELS } from './../utils/model';
 import { ChannelCounterRow } from './ChannelCounterRow';
 import { StatisticsLabel } from './StatisticsLabel';

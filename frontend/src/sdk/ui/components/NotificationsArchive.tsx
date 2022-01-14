@@ -6,12 +6,11 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
-
+import { useCallback, useEffect } from 'preact/hooks';
 import { NotificationsOptions, SDKConfig } from '@sdk/shared';
 import { loadArchive, useDispatch, useStore } from '@sdk/ui/model';
-import { useCallback, useEffect } from 'preact/hooks';
 import { Icon } from './Icon';
 import { Loader } from './Loader';
 import { NotificationItem } from './NotificationItem';

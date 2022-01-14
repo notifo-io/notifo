@@ -6,9 +6,8 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-
 import { useEffect, useState } from 'preact/hooks';
 import { Icon } from './Icon';
 

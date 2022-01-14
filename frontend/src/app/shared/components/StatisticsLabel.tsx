@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Icon, IconType, Numbers, Types } from '@app/framework';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
+import { Icon, IconType, Numbers, Types } from '@app/framework';
+import { texts } from '@app/texts';
 
 export interface StatisticsLabelProps {
     // The icon.

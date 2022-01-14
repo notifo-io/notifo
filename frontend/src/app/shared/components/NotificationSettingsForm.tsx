@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { Forms } from '@app/framework';
 import { texts } from '@app/texts';
-import * as React from 'react';
 import { CHANNELS, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { EmailTemplateInput } from './EmailTemplateInput';
 import { MediaInput } from './MediaInput';

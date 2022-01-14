@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { match, NavLink } from 'react-router-dom';
+import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 import { Confirm, FormatDate, Icon, IFrame } from '@app/framework';
 import { Clients, ChannelTemplateDto } from '@app/service';
 import { texts } from '@app/texts';
 import { combineUrl } from '@sdk/shared';
-import * as React from 'react';
-import { match, NavLink } from 'react-router-dom';
-import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
 
 export interface EmailTemplateCardProps {
     // The app id.

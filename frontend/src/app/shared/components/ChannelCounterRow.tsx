@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { Icon, Numbers, Types } from '@app/framework';
 import { texts } from '@app/texts';
-import * as React from 'react';
 
 export interface ChannelCounterRowProps {
     // The name of the channel.

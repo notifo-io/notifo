@@ -5,18 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader, Types } from '@app/framework';
-import { TemplateDto } from '@app/service';
-import { NotificationsForm } from '@app/shared/components';
-import { CHANNELS } from '@app/shared/utils/model';
-import { upsertTemplate, useApp, useTemplates } from '@app/state';
-import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { PushPreviewTarget } from 'react-push-preview';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Row, UncontrolledButtonDropdown } from 'reactstrap';
 import * as Yup from 'yup';
+import { FormError, Forms, Loader, Types } from '@app/framework';
+import { TemplateDto } from '@app/service';
+import { NotificationsForm } from '@app/shared/components';
+import { CHANNELS } from '@app/shared/utils/model';
+import { upsertTemplate, useApp, useTemplates } from '@app/state';
+import { texts } from '@app/texts';
 import { NotificationPreview } from './NotificationPreview';
 
 const FormSchema = Yup.object({

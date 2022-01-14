@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormatDate, Icon, JsonDetails } from '@app/framework';
-import { UserNotificationDetailsDto } from '@app/service';
 import * as React from 'react';
 import { Button } from 'reactstrap';
+import { FormatDate, Icon, JsonDetails } from '@app/framework';
+import { UserNotificationDetailsDto } from '@app/service';
 
 export interface NotificationRowProps {
     // The notification.

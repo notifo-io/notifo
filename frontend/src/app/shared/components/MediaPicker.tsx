@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { loadMedia, useApp, useMedia } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { MediaCard } from './MediaCard';
 import { TableFooter } from './TableFooter';
 

@@ -238,18 +238,16 @@ module.exports = function (env) {
          */
         config.output.filename = '[name].js';
 
-        if (isProduction) {
-            config.plugins.push(
-                new plugins.ESLintPlugin({
-                    files: [
-                        './sdk/**/*.ts',
-                        './sdk/**/*.tsx',
-                        './src/**/*.ts',
-                        './src/**/*.tsx',
-                    ],
-                }),
-            );
-        }
+        config.plugins.push(
+            new plugins.ESLintPlugin({
+                files: [
+                    './sdk/**/*.ts',
+                    './sdk/**/*.tsx',
+                    './src/**/*.ts',
+                    './src/**/*.tsx',
+                ],
+            }),
+        );
     }
 
     if (isProduction) {

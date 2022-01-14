@@ -7,7 +7,6 @@
 
 // tslint:disable: quotemark
 
-import { EmailFormattingError } from '@app/service';
 import * as CodeMirror from 'codemirror';
 import 'codemirror/addon/dialog/dialog';
 import 'codemirror/addon/edit/closetag';
@@ -26,6 +25,7 @@ import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
 import * as React from 'react';
+import { EmailFormattingError } from '@app/service';
 import { completeAfter, completeIfAfterLt, completeIfInTag, tags } from './helpers';
 
 type OnChange = (value: string) => void;

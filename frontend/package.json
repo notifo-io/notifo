@@ -40,6 +40,7 @@
     "test:coverage": "karma start karma.coverage.conf.js",
     "test:clean": "rimraf _test-output",
     "lint": "eslint src/**/*.ts[x]",
+    "lint:fix": "eslint src/**/*.ts[x] --fix",
     "build": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production",
     "build:clean": "rimraf wwwroot/build",
     "build:analyze": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production --env analyze",

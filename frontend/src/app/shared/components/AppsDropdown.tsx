@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useApp, useApps } from '@app/state';
 import * as React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
+import { useApp, useApps } from '@app/state';
 
 export const AppsDropdown = () => {
     const app = useApp();

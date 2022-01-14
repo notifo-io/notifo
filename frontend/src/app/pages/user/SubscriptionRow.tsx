@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Confirm, Icon } from '@app/framework';
-import { SubscriptionDto } from '@app/service';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
+import { Confirm, Icon } from '@app/framework';
+import { SubscriptionDto } from '@app/service';
+import { texts } from '@app/texts';
 
 export interface SubscriptionRowProps {
     // The subscription.

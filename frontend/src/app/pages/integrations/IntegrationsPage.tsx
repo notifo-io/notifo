@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Col, Row } from 'reactstrap';
 import { FormError, Icon, Loader } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
 import { getSortedIntegrations, loadIntegrations, useApp, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Col, Row } from 'reactstrap';
 import { ConfiguredIntegration } from './ConfiguredIntegration';
 import { IntegrationDialog } from './IntegrationDialog';
 import { SupportedIntegration } from './SupportedIntegration';
