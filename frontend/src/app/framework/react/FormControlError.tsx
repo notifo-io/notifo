@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, isErrorVisible } from '@app/framework/utils';
 import classNames from 'classnames';
 import * as React from 'react';
+import { ErrorDto, isErrorVisible } from '@app/framework/utils';
 
 export interface FormControlErrorProps {
     // The list of errors.

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { useDispatch } from 'react-redux';
+import * as React from 'react';
+import { Button, Form, FormGroup, Input } from 'reactstrap';
 import { ChannelTemplateDetailsDtoOfEmailTemplateDto } from '@app/service';
 import { updateEmailTemplate } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Form, FormGroup, Input } from 'reactstrap';
 
 export interface EmailTemplateNameProps {
     // The app id.

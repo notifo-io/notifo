@@ -6,11 +6,10 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-
-import { Subscription, TopicOptions } from '@sdk/shared';
 import { useCallback } from 'preact/hooks';
+import { Subscription, TopicOptions } from '@sdk/shared';
 import { Icon } from './Icon';
 
 export interface TopicButtonProps {

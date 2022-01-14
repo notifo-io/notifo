@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Button, Input } from 'reactstrap';
+import { texts } from '@app/texts';
 import { Types } from './../utils';
 
 export interface DropZoneFiles {

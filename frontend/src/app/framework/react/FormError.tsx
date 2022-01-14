@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDetails, ErrorDto, formatError, isError, Types } from '@app/framework/utils';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Alert } from 'reactstrap';
+import { ErrorDetails, ErrorDto, formatError, isError, Types } from '@app/framework/utils';
 
 export interface FormErrorProps {
     // The error.

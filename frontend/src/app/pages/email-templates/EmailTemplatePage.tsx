@@ -5,16 +5,16 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { useDispatch } from 'react-redux';
+import { NavLink } from 'react-router-dom';
+import { useRouteMatch } from 'react-router';
+import { toast } from 'react-toastify';
+import * as React from 'react';
+import { Col, Label, Row } from 'reactstrap';
 import { Icon, Loader, Toggle } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { loadEmailTemplate, updateEmailTemplate, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
-import { NavLink } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { Col, Label, Row } from 'reactstrap';
 import { EmailTemplate } from './EmailTemplate';
 import { EmailTemplateName } from './EmailTemplateName';
 

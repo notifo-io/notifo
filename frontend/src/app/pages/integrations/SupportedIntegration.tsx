@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { IntegrationDefinitionDto } from '@app/service';
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
+import { IntegrationDefinitionDto } from '@app/service';
 
 export interface SupportedIntegrationProps {
     // The type code ofthe integration.

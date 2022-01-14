@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { Formik } from 'formik';
+import { useDispatch } from 'react-redux';
+import * as React from 'react';
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import * as Yup from 'yup';
 import { FormError, Forms, Loader } from '@app/framework';
 import { createApp, CreateAppParams, createAppReset, useApps } from '@app/state';
 import { texts } from '@app/texts';
-import { Formik } from 'formik';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import * as Yup from 'yup';
 
 const FormSchema = Yup.object().shape({
     // Required app name

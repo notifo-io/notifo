@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { ComponentMeta } from '@storybook/react';
+import * as React from 'react';
 import { Loader } from './Loader';
 
 export default {

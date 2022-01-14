@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Icon, IconType, Numbers, Types } from '@app/framework';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
+import { Icon, IconType, Numbers, Types } from '@app/framework';
+import { texts } from '@app/texts';
 
 export interface StatisticsCardProps {
     icon: IconType;

@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Col, Pagination, PaginationItem, PaginationLink, Row } from 'reactstrap';
+import { texts } from '@app/texts';
 import { ListState, Query } from './../model';
 
 export interface ListPagerProps {

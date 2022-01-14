@@ -6,12 +6,11 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { h } from 'preact';
-
-import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
+import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { Icon } from './Icon';
 import { Image } from './Image';
 import { Loader } from './Loader';

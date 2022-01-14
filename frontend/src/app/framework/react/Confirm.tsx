@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import { texts } from '@app/texts';
 import { Types } from '../utils';
 import { useDialog } from './hooks';
 

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { Card, CardBody, FormGroup, Label } from 'reactstrap';
 import { ApiValue, Gist } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
 import { useApp } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { Card, CardBody, FormGroup, Label } from 'reactstrap';
 
 export const AppDashboardPage = () => {
     const app = useApp()!;

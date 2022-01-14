@@ -6,11 +6,10 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-
-import { isBoolean, isUndefined } from '@sdk/shared';
 import { useEffect, useState } from 'preact/hooks';
+import { isBoolean, isUndefined } from '@sdk/shared';
 
 export interface ToggleProps {
     // The current value.

@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Forms } from '@app/framework';
-import { EmailTemplateDto } from '@app/service';
-import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Forms } from '@app/framework';
+import { EmailTemplateDto } from '@app/service';
+import { texts } from '@app/texts';
 
 export interface EmailTemplateMoreDialogProps {
     // The template to edit.

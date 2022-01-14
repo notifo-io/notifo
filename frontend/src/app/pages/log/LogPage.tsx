@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { useDispatch } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import * as React from 'react';
+import { Button, Card, CardBody, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
 import { loadLog, useApp, useLog } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { Button, Card, CardBody, Col, Row, Table } from 'reactstrap';
 import { LogEntryRow } from './LogEntryRow';
 
 export const LogPage = () => {

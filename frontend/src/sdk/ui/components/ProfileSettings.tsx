@@ -7,10 +7,9 @@
 
 /** @jsx h */
 import { Fragment, h } from 'preact';
-
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { booleanToSend, NotificationsOptions, SDKConfig, sendToBoolean, UpdateProfile } from '@sdk/shared';
 import { loadProfile, saveProfile, useDispatch, useStore } from '@sdk/ui/model';
-import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Icon } from './Icon';
 import { Loader } from './Loader';
 import { Toggle } from './Toggle';

@@ -1,7 +1,7 @@
+import { PushPreview, PushPreviewProps, PushPreviewTarget } from 'react-push-preview';
+import * as React from 'react';
 import { NotificationFormattingDto } from '@app/service';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { PushPreview, PushPreviewProps, PushPreviewTarget } from 'react-push-preview';
 
 export interface TemplatePreviewProps {
     // The formatting.
