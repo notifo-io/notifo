@@ -15,7 +15,6 @@ using Notifo.Infrastructure;
 using PhoneNumbers;
 
 #pragma warning disable CA1822 // Mark members as static
-#pragma warning disable MA0038 // Mark members as static
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {

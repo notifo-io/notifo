@@ -15,11 +15,15 @@ namespace Notifo.Identity
 {
     public class DefaultUserResolverTests
     {
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationToken ct;
         private readonly IUserService userService = A.Fake<IUserService>();
         private readonly DefaultUserResolver sut;
 
         public DefaultUserResolverTests()
         {
+            ct = cts.Token;
+
             var serviceProvider = A.Fake<IServiceProvider>();
 
             var scope = A.Fake<IServiceScope>();
@@ -48,13 +52,13 @@ namespace Notifo.Identity
 
             var user = A.Fake<IUser>();
 
-            A.CallTo(() => userService.CreateAsync(email, A<UserValues>.That.Matches(x => x.Invited == true), false))
+            A.CallTo(() => userService.CreateAsync(email, A<UserValues>.That.Matches(x => x.Invited == true), false, ct))
                 .Returns(user);
 
-            A.CallTo(() => userService.FindByEmailAsync(email))
+            A.CallTo(() => userService.FindByEmailAsync(email, ct))
                 .Returns((IUser?)null);
 
-            var result = await sut.CreateUserIfNotExistsAsync(email, true);
+            var result = await sut.CreateUserIfNotExistsAsync(email, true, ct);
 
             Assert.Equal((user, true), result);
         }
@@ -66,13 +70,13 @@ namespace Notifo.Identity
 
             var user = A.Fake<IUser>();
 
-            A.CallTo(() => userService.CreateAsync(email, A<UserValues>._, false))
+            A.CallTo(() => userService.CreateAsync(email, A<UserValues>._, false, ct))
                 .Throws(new InvalidOperationException());
 
-            A.CallTo(() => userService.FindByEmailAsync(email))
+            A.CallTo(() => userService.FindByEmailAsync(email, ct))
                 .Returns(user);
 
-            var result = await sut.CreateUserIfNotExistsAsync(email, true);
+            var result = await sut.CreateUserIfNotExistsAsync(email, true, ct);
 
             Assert.Equal((user, false), result);
         }
@@ -84,10 +88,10 @@ namespace Notifo.Identity
 
             var user = A.Fake<IUser>();
 
-            A.CallTo(() => userService.FindByEmailAsync(id))
+            A.CallTo(() => userService.FindByEmailAsync(id, ct))
                 .Returns(user);
 
-            var result = await sut.FindByIdOrEmailAsync(id);
+            var result = await sut.FindByIdOrEmailAsync(id, ct);
 
             Assert.Equal(user, result);
         }
@@ -99,10 +103,10 @@ namespace Notifo.Identity
 
             var user = A.Fake<IUser>();
 
-            A.CallTo(() => userService.FindByIdAsync(id))
+            A.CallTo(() => userService.FindByIdAsync(id, ct))
                 .Returns(user);
 
-            var result = await sut.FindByIdOrEmailAsync(id);
+            var result = await sut.FindByIdOrEmailAsync(id, ct);
 
             Assert.Equal(user, result);
         }
@@ -114,10 +118,10 @@ namespace Notifo.Identity
 
             var user = A.Fake<IUser>();
 
-            A.CallTo(() => userService.FindByIdAsync(id))
+            A.CallTo(() => userService.FindByIdAsync(id, ct))
                 .Returns(user);
 
-            var result = await sut.FindByIdOrEmailAsync(id);
+            var result = await sut.FindByIdOrEmailAsync(id, ct);
 
             Assert.Equal(user, result);
         }
@@ -129,10 +133,10 @@ namespace Notifo.Identity
 
             var users = ResultList.CreateFrom(0, A.Fake<IUser>());
 
-            A.CallTo(() => userService.QueryAsync(email, 10, 0))
+            A.CallTo(() => userService.QueryAsync(email, 10, 0, ct))
                 .Returns(users);
 
-            var result = await sut.QueryByEmailAsync(email);
+            var result = await sut.QueryByEmailAsync(email, ct);
 
             Assert.Single(result);
         }
@@ -144,10 +148,10 @@ namespace Notifo.Identity
 
             var users = ResultList.CreateFrom(0, A.Fake<IUser>());
 
-            A.CallTo(() => userService.QueryAsync(ids))
+            A.CallTo(() => userService.QueryAsync(ids, ct))
                 .Returns(users);
 
-            var result = await sut.QueryManyAsync(ids);
+            var result = await sut.QueryManyAsync(ids, ct);
 
             Assert.Single(result);
         }
@@ -157,10 +161,10 @@ namespace Notifo.Identity
         {
             var users = ResultList.CreateFrom(0, A.Fake<IUser>());
 
-            A.CallTo(() => userService.QueryAsync(null, int.MaxValue, 0))
+            A.CallTo(() => userService.QueryAsync(null, int.MaxValue, 0, ct))
                 .Returns(users);
 
-            var result = await sut.QueryAllAsync();
+            var result = await sut.QueryAllAsync(ct);
 
             Assert.Single(result);
         }

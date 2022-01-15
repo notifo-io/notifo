@@ -22,7 +22,8 @@ namespace Notifo.Identity
             this.serviceProvider = serviceProvider;
         }
 
-        public async Task<(IUser? User, bool Created)> CreateUserIfNotExistsAsync(string emailOrId, bool invited = false)
+        public async Task<(IUser? User, bool Created)> CreateUserIfNotExistsAsync(string emailOrId, bool invited = false,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(emailOrId, nameof(emailOrId));
 
@@ -30,7 +31,7 @@ namespace Notifo.Identity
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                var found = await FindByIdOrEmailAsync(emailOrId);
+                var found = await FindByIdOrEmailAsync(emailOrId, ct);
 
                 if (found != null)
                 {
@@ -47,7 +48,7 @@ namespace Notifo.Identity
                     var user = await userService.CreateAsync(emailOrId, new UserValues
                     {
                         Invited = true
-                    });
+                    }, ct: ct);
 
                     return (user, true);
                 }
@@ -55,13 +56,14 @@ namespace Notifo.Identity
                 {
                 }
 
-                found = await FindByIdOrEmailAsync(emailOrId);
+                found = await FindByIdOrEmailAsync(emailOrId, ct);
 
                 return (found, false);
             }
         }
 
-        public async Task<IUser?> FindByIdAsync(string id)
+        public async Task<IUser?> FindByIdAsync(string id,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
@@ -69,11 +71,12 @@ namespace Notifo.Identity
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                return await userService.FindByIdAsync(id);
+                return await userService.FindByIdAsync(id, ct);
             }
         }
 
-        public async Task<IUser?> FindByIdOrEmailAsync(string idOrEmail)
+        public async Task<IUser?> FindByIdOrEmailAsync(string idOrEmail,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(idOrEmail, nameof(idOrEmail));
 
@@ -83,28 +86,30 @@ namespace Notifo.Identity
 
                 if (idOrEmail.Contains('@', StringComparison.OrdinalIgnoreCase))
                 {
-                    return await userService.FindByEmailAsync(idOrEmail);
+                    return await userService.FindByEmailAsync(idOrEmail, ct);
                 }
                 else
                 {
-                    return await userService.FindByIdAsync(idOrEmail);
+                    return await userService.FindByIdAsync(idOrEmail, ct);
                 }
             }
         }
 
-        public async Task<List<IUser>> QueryAllAsync()
+        public async Task<List<IUser>> QueryAllAsync(
+            CancellationToken ct = default)
         {
             await using (var scope = serviceProvider.CreateAsyncScope())
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                var result = await userService.QueryAsync(take: int.MaxValue);
+                var result = await userService.QueryAsync(take: int.MaxValue, ct: ct);
 
                 return result.ToList();
             }
         }
 
-        public async Task<List<IUser>> QueryByEmailAsync(string email)
+        public async Task<List<IUser>> QueryByEmailAsync(string email,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(email, nameof(email));
 
@@ -112,13 +117,14 @@ namespace Notifo.Identity
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                var result = await userService.QueryAsync(email);
+                var result = await userService.QueryAsync(email, ct: ct);
 
                 return result.ToList();
             }
         }
 
-        public async Task<Dictionary<string, IUser>> QueryManyAsync(string[] ids)
+        public async Task<Dictionary<string, IUser>> QueryManyAsync(string[] ids,
+            CancellationToken ct = default)
         {
             Guard.NotNull(ids, nameof(ids));
 
@@ -126,7 +132,7 @@ namespace Notifo.Identity
             {
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-                var result = await userService.QueryAsync(ids);
+                var result = await userService.QueryAsync(ids, ct);
 
                 return result.ToDictionary(x => x.Id);
             }
