@@ -1,0 +1,53 @@
+version: "3.5"
+services:
+  notifo_mongo:
+    image: mongo:5.0.5
+    volumes:
+      - /etc/notifo/mongo/db:/data/db
+    networks:
+      - internal
+    restart: unless-stopped
+
+  notifo_notifo:
+    image: "notifo/notifo:1"
+    environment:
+      - URLS__BASEURL=https://YOUR_DOMAIN
+      - STORE__MONGODB__CONFIGURATION=mongodb://notifo_mongo
+      - IDENTITY__GOOGLECLIENT=
+      - IDENTITY__GOOGLESECRET=
+      - IDENTITY__GITHUBCLIENT=
+      - IDENTITY__GITHUBSECRET=
+      - IDENTITY__MICROSOFTCLIENT=
+      - IDENTITY__MICROSOFTSECRET=
+      - ASPNETCORE_URLS=http://+:5000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
+      start_period: 60s
+    depends_on:
+      - notifo_mongo
+    volumes:
+      - /etc/notifo/assets:/app/Assets
+    networks:
+      - internal
+    restart: unless-stopped
+
+  notifo_proxy:
+    image: notifo/caddy-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - SITE_ADDRESS=${notifo_DOMAIN}
+      - SITE_SERVER="notifo_notifo:5000"
+    volumes:
+      - /etc/notifo/caddy/data:/data
+      - /etc/notifo/caddy/config:/config
+    depends_on:
+      - notifo_notifo
+    networks:
+      - internal
+    restart: unless-stopped
+    
+networks:
+  internal:
+    driver: bridge

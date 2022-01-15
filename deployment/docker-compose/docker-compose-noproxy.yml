@@ -1,0 +1,37 @@
+version: '2.3'
+services:
+  NOTIFO_mongo:
+    image: mongo:5.0.5
+    volumes:
+      - /etc/notifo/mongo/db:/data/db
+    networks:
+      - internal
+    restart: unless-stopped
+
+  NOTIFO_notifo:
+    image: "notifo/notifo:1"
+    ports:
+      - "80:80"
+    environment:
+      - URLS__BASEURL=https://YOUR_DOMAIN
+      - STORE__MONGODB__CONFIGURATION=mongodb://notifo_mongo
+      - IDENTITY__GOOGLECLIENT=
+      - IDENTITY__GOOGLESECRET=
+      - IDENTITY__GITHUBCLIENT=
+      - IDENTITY__GITHUBSECRET=
+      - IDENTITY__MICROSOFTCLIENT=
+      - IDENTITY__MICROSOFTSECRET=
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
+      start_period: 60s
+    depends_on:
+      - NOTIFO_mongo
+    volumes:
+      - /etc/notifo/assets:/app/Assets
+    networks:
+      - internal
+    restart: unless-stopped
+    
+networks:
+  internal:
+    driver: bridge
