@@ -7,7 +7,7 @@ Try it out at https://app.notifo.io!
 
 Notifo is a multi-channel notification service for collaboration tools, e-commerce, news, magazines and everybody who wants to notify their users.
 
-![Notifo Tour](media/tour/Notifo.gif "Notifo Tour")
+![Notifo Tour](https://github.com/notifo-io/notifo/raw/main/media/tour/Notifo.gif "Notifo Tour")
 
 ## Features
 
@@ -27,7 +27,7 @@ Notifo is a multi-channel notification service for collaboration tools, e-commer
 
 ## Integrations
 
-![Integrations](media/Integrations.png "Integrations")
+![Integrations](https://github.com/notifo-io/notifo/raw/main/media/Integrations.png "Integrations")
 
 ## How it works
 
@@ -41,7 +41,7 @@ This allows a wide range of scenarios:
 
 * Notifications can have a confirmation preference (None, Explicit, Seen). Only unconfirmed notifications are sent through a channel and you can configure a delay when sending notifications. This means that a user does not receive a confirmation when he or she has already explicitly confirmed it (**Explicit** Mode) or has seen it (**Seen** mode). This avoids to spam your users which notifications he does not need anymore and you can also track who has seen or confirmed urgent and important notifications.
 
-Have a look to the [presentation](media/notifo!.pdf) to understand how it works.
+Have a look to the [presentation](https://raw.githubusercontent.com/notifo-io/notifo/blob/main/media/notifo!.pdf) to understand how it works.
 
 ## How to run it
 
@@ -55,7 +55,7 @@ Read more about the intallation in the [wiki](https://github.com/notifo-io/notif
 
 ### How to configure it
 
-Have a look to the settings for all configuration options: [appSettings.json](backend/src/notifo/appSettings.json). Everything in the settings can be configured using environment variables.
+Have a look to the settings for all configuration options: [appSettings.json](https://github.com/notifo-io/notifo/backend/src/notifo/appSettings.json). Everything in the settings can be configured using environment variables.
 
 The following setting
 
@@ -109,21 +109,3 @@ There is still a lot to do:
 * More channels (e.g. WhatsApp or Voice).
 * Testing and tests
 * Automated API and UI tests and more tests in general.
-
-## More Screenshots
-
-User Management:
-
-![User Management](media/Screenshot_Users.png "User Management")
-
-Event Templates:
-
-![Event Templates](media/Screenshot_Templates.png "Event Templates")
-
-Media Gallery:
-
-![Media Gallery](media/Screenshot_Media.png "Media Gallery")
-
-Debug Log:
-
-![Debug Log](media/Screenshot_Log.png "Debug Log")
