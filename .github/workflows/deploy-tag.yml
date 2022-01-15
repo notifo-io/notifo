@@ -1,4 +1,4 @@
-name: Build and Push to Dockerhub
+name: Release
 concurrency: release
 
 on:
