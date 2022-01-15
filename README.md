@@ -49,7 +49,9 @@ Before you install it, try it out at https://app.notifo.io
 
 ### Install it using the docker image
 
-docker images are available: https://hub.docker.com/r/squidex/notifo, you can try the [docker-compose](dependencies/docker-compose.yml) file
+docker images are available: https://hub.docker.com/r/squidex/notifo, you can try the [docker-compose](deployment/docker-compose.yml) file.
+
+Read more about the intallation in the [wiki](https://github.com/notifo-io/notifo/wiki/Installation).
 
 ### How to configure it
 
@@ -64,6 +66,8 @@ The following setting
 ```
 
 is mapped to the enviornment variable `MONGODB__CONNECTIONSTRING` (note the double underscore).
+
+Read more about configuration in the [wiki](https://github.com/notifo-io/notifo/wiki/configuration).
 
 ## Tech Stack
 
