@@ -6,42 +6,48 @@
     ViewData["Title"] = T["LoginTitle"];
 }
 
-<section>
-    <form method="post">
-        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+@if (Model!.HasPasswordAuth)
+{
+    <section>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-        <div class="form-group">
-            <label asp-for="Input.Email">@T["EmailLabel"]</label>
-            <input asp-for="Input.Email" class="form-control" />
-            <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="Input.Password">@T["PasswordLabel"]</label>
-            <input asp-for="Input.Password" type="password" class="form-control" />
-            <span asp-validation-for="Input.Password" class="invalid-feedback"></span>
-        </div>
-
-        <div class="form-group">
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" asp-for="Input.RememberMe">
-
-                <label class="custom-control-label" asp-for="Input.RememberMe">@T["RememberMe"]</label>
+            <div class="form-group">
+                <label asp-for="Input.Email">@T["EmailLabel"]</label>
+                <input asp-for="Input.Email" class="form-control" />
+                <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
             </div>
-        </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn btn-block btn-primary">@T["LoginButton"]</button>
-        </div>
-    </form>
-</section>
+            <div class="form-group">
+                <label asp-for="Input.Password">@T["PasswordLabel"]</label>
+                <input asp-for="Input.Password" type="password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="invalid-feedback"></span>
+            </div>
 
-@if (Model?.ExternalLogins?.Count > 0)
+            <div class="form-group">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" asp-for="Input.RememberMe">
+
+                    <label class="custom-control-label" asp-for="Input.RememberMe">@T["RememberMe"]</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-block btn-primary">@T["LoginButton"]</button>
+            </div>
+        </form>
+    </section>
+}
+
+@if (Model!.HasPasswordAuth && Model?.ExternalLogins?.Count > 0)
 {
     <div class="login-separator">
         <span>@T["ExternalSeperator"]</span>
     </div>
+}
 
+@if (Model?.ExternalLogins?.Count > 0)
+{
     <section>
         <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
             <div>

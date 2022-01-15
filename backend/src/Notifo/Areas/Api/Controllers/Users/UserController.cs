@@ -15,7 +15,7 @@ using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Users
 {
-    [OpenApiTag("user")]
+    [OpenApiTag("User")]
     public class UserController : BaseController
     {
         private readonly ISubscriptionStore subscriptionStore;

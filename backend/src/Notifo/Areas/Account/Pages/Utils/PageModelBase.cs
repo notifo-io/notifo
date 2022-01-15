@@ -11,13 +11,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
+using Squidex.Hosting;
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Pages.Utils
 {
     public abstract class PageModelBase<TDerived> : PageModel
     {
         private readonly Lazy<SignInManager<IdentityUser>> signInManager;
         private readonly Lazy<IUserService> userService;
+        private readonly Lazy<IUrlGenerator> urlGenerator;
         private readonly Lazy<ILogger<TDerived>> logger;
         private readonly Lazy<IStringLocalizer<AppResources>> localizer;
 
@@ -29,6 +31,11 @@ namespace Notifo.Areas.Account.Pages
         public IUserService UserService
         {
             get => userService.Value;
+        }
+
+        public IUrlGenerator UrlGenerator
+        {
+            get => urlGenerator.Value;
         }
 
         public ILogger<TDerived> Logger
@@ -53,6 +60,7 @@ namespace Notifo.Areas.Account.Pages
             SetupService(ref localizer!);
             SetupService(ref signInManager!);
             SetupService(ref userService!);
+            SetupService(ref urlGenerator!);
         }
 
         private void SetupService<TService>(ref Lazy<TService>? value) where TService : notnull
@@ -74,12 +82,14 @@ namespace Notifo.Areas.Account.Pages
 
         protected async Task<IUser> GetUserAsync()
         {
-            var user = await UserService.GetAsync(User);
+            var user = await UserService.GetAsync(User, HttpContext.RequestAborted);
 
             if (user == null)
             {
+                var userId = UserService.GetUserId(User, HttpContext.RequestAborted);
+
 #pragma warning disable MA0014 // Do not raise System.ApplicationException type
-                throw new ApplicationException($"Unable to load user with ID '{UserService.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
 #pragma warning restore MA0014 // Do not raise System.ApplicationException type
             }
 

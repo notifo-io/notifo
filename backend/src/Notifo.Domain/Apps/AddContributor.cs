@@ -40,7 +40,7 @@ namespace Notifo.Domain.Apps
 
             var userResolver = serviceProvider.GetRequiredService<IUserResolver>();
 
-            var (user, _) = await userResolver.CreateUserIfNotExistsAsync(Email);
+            var (user, _) = await userResolver.CreateUserIfNotExistsAsync(Email, ct: ct);
 
             if (user == null)
             {

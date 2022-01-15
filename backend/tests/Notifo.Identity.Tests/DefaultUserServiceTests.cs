@@ -18,6 +18,8 @@ namespace Notifo.Identity
 {
     public class DefaultUserServiceTests
     {
+        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationToken ct;
         private readonly UserManager<IdentityUser> userManager = A.Fake<UserManager<IdentityUser>>();
         private readonly IUserFactory userFactory = A.Fake<IUserFactory>();
         private readonly IUserEvents userEvents = A.Fake<IUserEvents>();
@@ -25,6 +27,8 @@ namespace Notifo.Identity
 
         public DefaultUserServiceTests()
         {
+            ct = cts.Token;
+
             A.CallTo(() => userFactory.IsId(A<string>._))
                 .Returns(true);
 
@@ -42,7 +46,7 @@ namespace Notifo.Identity
             A.CallTo(() => userFactory.IsId(invalidId))
                 .Returns(false);
 
-            var result = await sut.FindByIdAsync(invalidId);
+            var result = await sut.FindByIdAsync(invalidId, ct);
 
             Assert.Null(result);
 
@@ -55,7 +59,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: true);
 
-            var result = await sut.FindByIdAsync(identity.Id);
+            var result = await sut.FindByIdAsync(identity.Id, ct);
 
             Assert.Same(identity, result?.Identity);
         }
@@ -65,7 +69,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: false);
 
-            var result = await sut.FindByIdAsync(identity.Id);
+            var result = await sut.FindByIdAsync(identity.Id, ct);
 
             Assert.Null(result);
         }
@@ -75,7 +79,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: true);
 
-            var result = await sut.FindByEmailAsync(identity.Email);
+            var result = await sut.FindByEmailAsync(identity.Email, ct);
 
             Assert.Same(identity, result?.Identity);
         }
@@ -85,7 +89,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: false);
 
-            var result = await sut.FindByEmailAsync(identity.Email);
+            var result = await sut.FindByEmailAsync(identity.Email, ct);
 
             Assert.Null(result);
         }
@@ -101,7 +105,7 @@ namespace Notifo.Identity
             A.CallTo(() => userManager.FindByLoginAsync(provider, providerKey))
                 .Returns(identity);
 
-            var result = await sut.FindByLoginAsync(provider, providerKey);
+            var result = await sut.FindByLoginAsync(provider, providerKey, ct);
 
             Assert.Same(identity, result?.Identity);
         }
@@ -117,7 +121,7 @@ namespace Notifo.Identity
             A.CallTo(() => userManager.FindByLoginAsync(provider, providerKey))
                 .Returns(Task.FromResult<IdentityUser>(null!));
 
-            var result = await sut.FindByLoginAsync(provider, providerKey);
+            var result = await sut.FindByLoginAsync(provider, providerKey, ct);
 
             Assert.Null(result);
         }
@@ -135,7 +139,7 @@ namespace Notifo.Identity
             A.CallTo(() => userManager.HasPasswordAsync(identity))
                 .Returns(true);
 
-            var result = await sut.HasPasswordAsync(user);
+            var result = await sut.HasPasswordAsync(user, ct);
 
             Assert.True(result);
         }
@@ -155,7 +159,7 @@ namespace Notifo.Identity
             A.CallTo(() => userManager.GetLoginsAsync(identity))
                 .Returns(logins);
 
-            var result = await sut.GetLoginsAsync(user);
+            var result = await sut.GetLoginsAsync(user, ct);
 
             Assert.Same(logins, result);
         }
@@ -172,12 +176,12 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 1);
 
-            await sut.CreateAsync(values.Email, values);
+            await sut.CreateAsync(values.Email, values, ct: ct);
 
-            A.CallTo(() => userEvents.OnUserRegistered(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnUserRegisteredAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
                 .MustHaveHappened();
 
-            A.CallTo(() => userEvents.OnConsentGiven(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
                 .MustNotHaveHappened();
 
             A.CallTo(() => userManager.AddToRoleAsync(identity, A<string>._))
@@ -202,9 +206,9 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 1);
 
-            await sut.CreateAsync(identity.Email, values);
+            await sut.CreateAsync(identity.Email, values, ct: ct);
 
-            A.CallTo(() => userEvents.OnConsentGiven(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
                 .MustHaveHappened();
         }
 
@@ -220,7 +224,7 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 0);
 
-            await sut.CreateAsync(identity.Email, values);
+            await sut.CreateAsync(identity.Email, values, ct: ct);
 
             A.CallTo(() => userManager.AddToRoleAsync(identity, NotifoRoles.AppAdmin))
                 .MustHaveHappened();
@@ -238,7 +242,7 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 0);
 
-            await sut.CreateAsync(identity.Email, values, true);
+            await sut.CreateAsync(identity.Email, values, true, ct);
 
             A.CallTo(() => userManager.SetLockoutEndDateAsync(identity, A<DateTimeOffset>._))
                 .MustNotHaveHappened();
@@ -256,7 +260,7 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 1);
 
-            await sut.CreateAsync(identity.Email, values, true);
+            await sut.CreateAsync(identity.Email, values, true, ct);
 
             A.CallTo(() => userManager.SetLockoutEndDateAsync(identity, InFuture()))
                 .MustHaveHappened();
@@ -274,7 +278,7 @@ namespace Notifo.Identity
 
             SetupCreation(identity, 1);
 
-            await sut.CreateAsync(identity.Email, values);
+            await sut.CreateAsync(identity.Email, values, ct: ct);
 
             A.CallTo(() => userManager.AddPasswordAsync(identity, values.Password))
                 .MustHaveHappened();
@@ -290,7 +294,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.UpdateAsync(identity.Id, update));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.UpdateAsync(identity.Id, update, ct: ct));
         }
 
         [Fact]
@@ -300,9 +304,9 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.UpdateAsync(identity.Id, update);
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
 
-            A.CallTo(() => userEvents.OnUserUpdated(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnUserUpdatedAsync(A<IUser>.That.Matches(x => x.Identity == identity), A<IUser>._))
                 .MustHaveHappened();
         }
 
@@ -316,7 +320,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.UpdateAsync(identity.Id, update);
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
 
             A.CallTo(() => userManager.AddToRoleAsync(identity, "admin"))
                 .MustHaveHappened();
@@ -335,7 +339,7 @@ namespace Notifo.Identity
             A.CallTo(() => userManager.HasPasswordAsync(identity))
                 .Returns(true);
 
-            await sut.UpdateAsync(identity.Id, update);
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
 
             A.CallTo(() => userManager.RemovePasswordAsync(identity))
                 .MustHaveHappened();
@@ -354,7 +358,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.UpdateAsync(identity.Id, update);
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
 
             A.CallTo(() => userManager.SetEmailAsync(identity, update.Email))
                 .MustHaveHappened();
@@ -373,12 +377,12 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.UpdateAsync(identity.Id, update);
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
 
             A.CallTo<Task<IdentityResult>>(() => userManager.AddClaimsAsync(identity, HasClaim(NotifoClaimTypes.Consent)))
                 .MustHaveHappened();
 
-            A.CallTo(() => userEvents.OnConsentGiven(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
                 .MustHaveHappened();
         }
 
@@ -392,12 +396,12 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.UpdateAsync(identity.Id, update);
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
 
             A.CallTo<Task<IdentityResult>>(() => userManager.AddClaimsAsync(identity, HasClaim(NotifoClaimTypes.ConsentForEmails)))
                 .MustHaveHappened();
 
-            A.CallTo(() => userEvents.OnConsentGiven(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
                 .MustHaveHappened();
         }
 
@@ -408,7 +412,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.SetPasswordAsync(identity.Id, password, null));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.SetPasswordAsync(identity.Id, password, null, ct));
         }
 
         [Fact]
@@ -418,7 +422,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.SetPasswordAsync(identity.Id, password, null);
+            await sut.SetPasswordAsync(identity.Id, password, null, ct);
 
             A.CallTo(() => userManager.AddPasswordAsync(identity, password))
                 .MustHaveHappened();
@@ -434,7 +438,7 @@ namespace Notifo.Identity
             A.CallTo(() => userManager.HasPasswordAsync(identity))
                 .Returns(true);
 
-            await sut.SetPasswordAsync(identity.Id, password, "old");
+            await sut.SetPasswordAsync(identity.Id, password, "old", ct);
 
             A.CallTo(() => userManager.ChangePasswordAsync(identity, "old", password))
                 .MustHaveHappened();
@@ -447,7 +451,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.AddLoginAsync(identity.Id, login));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.AddLoginAsync(identity.Id, login, ct));
         }
 
         [Fact]
@@ -457,7 +461,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.AddLoginAsync(identity.Id, login);
+            await sut.AddLoginAsync(identity.Id, login, ct);
 
             A.CallTo(() => userManager.AddLoginAsync(identity, login))
                 .MustHaveHappened();
@@ -471,7 +475,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.RemoveLoginAsync(identity.Id, provider, providerKey));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.RemoveLoginAsync(identity.Id, provider, providerKey, ct));
         }
 
         [Fact]
@@ -482,7 +486,7 @@ namespace Notifo.Identity
 
             var identity = CreateIdentity(found: true);
 
-            await sut.RemoveLoginAsync(identity.Id, provider, providerKey);
+            await sut.RemoveLoginAsync(identity.Id, provider, providerKey, ct);
 
             A.CallTo(() => userManager.RemoveLoginAsync(identity, provider, providerKey))
                 .MustHaveHappened();
@@ -493,7 +497,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.LockAsync(identity.Id));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.LockAsync(identity.Id, ct));
         }
 
         [Fact]
@@ -501,7 +505,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: true);
 
-            await sut.LockAsync(identity.Id);
+            await sut.LockAsync(identity.Id, ct);
 
             A.CallTo<Task<IdentityResult>>(() => userManager.SetLockoutEndDateAsync(identity, InFuture()))
                 .MustHaveHappened();
@@ -512,7 +516,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.UnlockAsync(identity.Id));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.UnlockAsync(identity.Id, ct));
         }
 
         [Fact]
@@ -520,7 +524,7 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: true);
 
-            await sut.UnlockAsync(identity.Id);
+            await sut.UnlockAsync(identity.Id, ct);
 
             A.CallTo(() => userManager.SetLockoutEndDateAsync(identity, null))
                 .MustHaveHappened();
@@ -531,9 +535,9 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: false);
 
-            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.DeleteAsync(identity.Id));
+            await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.DeleteAsync(identity.Id, ct));
 
-            A.CallTo(() => userEvents.OnUserDeleted(A<IUser>._))
+            A.CallTo(() => userEvents.OnUserDeletedAsync(A<IUser>._))
                 .MustNotHaveHappened();
         }
 
@@ -542,12 +546,12 @@ namespace Notifo.Identity
         {
             var identity = CreateIdentity(found: true);
 
-            await sut.DeleteAsync(identity.Id);
+            await sut.DeleteAsync(identity.Id, ct);
 
             A.CallTo(() => userManager.DeleteAsync(identity))
                 .MustHaveHappened();
 
-            A.CallTo(() => userEvents.OnUserDeleted(A<IUser>.That.Matches(x => x.Identity == identity)))
+            A.CallTo(() => userEvents.OnUserDeletedAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
                 .MustHaveHappened();
         }
 

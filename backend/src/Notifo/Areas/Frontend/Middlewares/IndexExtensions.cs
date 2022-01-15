@@ -14,6 +14,14 @@ namespace Notifo.Areas.Frontend.Middlewares
             return context.Request.Path.Value?.EndsWith(".html", StringComparison.OrdinalIgnoreCase) == true;
         }
 
+        public static bool IsIndex(this HttpContext context)
+        {
+            return
+                context.Request.Path == "/" ||
+                context.Request.Path == string.Empty ||
+                context.Request.Path.StartsWithSegments("/index.html", StringComparison.OrdinalIgnoreCase);
+        }
+
         public static string AdjustHtml(this string html, HttpContext httpContext)
         {
             var result = html;

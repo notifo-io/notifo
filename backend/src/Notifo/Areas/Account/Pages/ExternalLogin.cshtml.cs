@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Areas.Account.Pages.Utils;
 using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 namespace Notifo.Areas.Account.Pages
@@ -31,7 +32,7 @@ namespace Notifo.Areas.Account.Pages
         [BindProperty(SupportsGet = true)]
         public string? ReturnUrl { get; set; }
 
-        public IActionResult OnGetAsync()
+        public IActionResult OnGet()
         {
             return RedirectToPage("./Login");
         }
@@ -117,12 +118,12 @@ namespace Notifo.Areas.Account.Pages
                     throw new InvalidOperationException(T["GithubEmailPrivateError"]);
                 }
 
-                var user = await UserService.FindByEmailAsync(email);
+                var user = await UserService.FindByEmailAsync(email, HttpContext.RequestAborted);
                 try
                 {
-                    user ??= await UserService.CreateAsync(email);
+                    user ??= await UserService.CreateAsync(email, ct: HttpContext.RequestAborted);
 
-                    await UserService.AddLoginAsync(user.Id, loginInfo);
+                    await UserService.AddLoginAsync(user.Id, loginInfo, HttpContext.RequestAborted);
                 }
                 catch (NotifoValidationException ex)
                 {

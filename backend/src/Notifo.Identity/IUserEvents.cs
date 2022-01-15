@@ -11,20 +11,24 @@ namespace Notifo.Identity
 {
     public interface IUserEvents
     {
-        void OnUserRegistered(IUser user)
+        Task OnUserRegisteredAsync(IUser user)
         {
+            return Task.CompletedTask;
         }
 
-        void OnUserUpdated(IUser user)
+        Task OnUserUpdatedAsync(IUser user, IUser previous)
         {
+            return Task.CompletedTask;
         }
 
-        void OnUserDeleted(IUser user)
+        Task OnUserDeletedAsync(IUser user)
         {
+            return Task.CompletedTask;
         }
 
-        void OnConsentGiven(IUser user)
+        Task OnConsentGivenAsync(IUser user)
         {
+            return Task.CompletedTask;
         }
     }
 }

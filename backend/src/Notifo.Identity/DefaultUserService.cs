@@ -20,37 +20,6 @@ namespace Notifo.Identity
         private readonly IEnumerable<IUserEvents> userEvents;
         private readonly ISemanticLog log;
 
-        internal sealed class UserWithClaims : IUser
-        {
-            public IdentityUser Identity { get; }
-
-            public string Id
-            {
-                get => Identity.Id;
-            }
-
-            public string Email
-            {
-                get => Identity.Email;
-            }
-
-            public bool IsLocked
-            {
-                get => Identity.LockoutEnd > DateTime.UtcNow;
-            }
-
-            public IReadOnlyList<Claim> Claims { get; }
-
-            object IUser.Identity => Identity;
-
-            public UserWithClaims(IdentityUser user, IReadOnlyList<Claim> claims)
-            {
-                Identity = user;
-
-                Claims = claims;
-            }
-        }
-
         public DefaultUserService(UserManager<IdentityUser> userManager, IUserFactory userFactory,
             IEnumerable<IUserEvents> userEvents, ISemanticLog log)
         {
@@ -61,21 +30,24 @@ namespace Notifo.Identity
             this.log = log;
         }
 
-        public async Task<bool> IsEmptyAsync()
+        public async Task<bool> IsEmptyAsync(
+            CancellationToken ct = default)
         {
-            var result = await QueryAsync(null, 1, 0);
+            var result = await QueryAsync(null, 1, 0, ct);
 
             return result.Total == 0;
         }
 
-        public string GetUserId(ClaimsPrincipal user)
+        public string GetUserId(ClaimsPrincipal user,
+            CancellationToken ct = default)
         {
             Guard.NotNull(user, nameof(user));
 
             return userManager.GetUserId(user);
         }
 
-        public async Task<IResultList<IUser>> QueryAsync(IEnumerable<string> ids)
+        public async Task<IResultList<IUser>> QueryAsync(IEnumerable<string> ids,
+            CancellationToken ct = default)
         {
             Guard.NotNull(ids, nameof(ids));
 
@@ -93,7 +65,8 @@ namespace Notifo.Identity
             return ResultList.Create(users.Count, resolved);
         }
 
-        public async Task<IResultList<IUser>> QueryAsync(string? query = null, int take = 10, int skip = 0)
+        public async Task<IResultList<IUser>> QueryAsync(string? query = null, int take = 10, int skip = 0,
+            CancellationToken ct = default)
         {
             Guard.GreaterThan(take, 0, nameof(take));
             Guard.GreaterEquals(skip, 0, nameof(skip));
@@ -112,7 +85,7 @@ namespace Notifo.Identity
                 return result;
             }
 
-            var userItems = QueryUsers(query).Take(take).Skip(skip).ToList();
+            var userItems = QueryUsers(query).Skip(skip).Take(take).ToList();
             var userTotal = QueryUsers(query).LongCount();
 
             var resolved = await ResolveAsync(userItems);
@@ -120,21 +93,24 @@ namespace Notifo.Identity
             return ResultList.Create(userTotal, resolved);
         }
 
-        public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user)
+        public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user,
+            CancellationToken ct = default)
         {
             Guard.NotNull(user, nameof(user));
 
             return userManager.GetLoginsAsync((IdentityUser)user.Identity);
         }
 
-        public Task<bool> HasPasswordAsync(IUser user)
+        public Task<bool> HasPasswordAsync(IUser user,
+            CancellationToken ct = default)
         {
             Guard.NotNull(user, nameof(user));
 
             return userManager.HasPasswordAsync((IdentityUser)user.Identity);
         }
 
-        public async Task<IUser?> FindByLoginAsync(string provider, string key)
+        public async Task<IUser?> FindByLoginAsync(string provider, string key,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(provider, nameof(provider));
 
@@ -143,7 +119,8 @@ namespace Notifo.Identity
             return await ResolveOptionalAsync(user);
         }
 
-        public async Task<IUser?> FindByEmailAsync(string email)
+        public async Task<IUser?> FindByEmailAsync(string email,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(email, nameof(email));
 
@@ -152,7 +129,8 @@ namespace Notifo.Identity
             return await ResolveOptionalAsync(user);
         }
 
-        public async Task<IUser?> GetAsync(ClaimsPrincipal principal)
+        public async Task<IUser?> GetAsync(ClaimsPrincipal principal,
+            CancellationToken ct = default)
         {
             Guard.NotNull(principal, nameof(principal));
 
@@ -161,7 +139,8 @@ namespace Notifo.Identity
             return await ResolveOptionalAsync(user);
         }
 
-        public async Task<IUser?> FindByIdAsync(string id)
+        public async Task<IUser?> FindByIdAsync(string id,
+            CancellationToken ct = default)
         {
             if (!userFactory.IsId(id))
             {
@@ -173,7 +152,8 @@ namespace Notifo.Identity
             return await ResolveOptionalAsync(user);
         }
 
-        public async Task<IUser> CreateAsync(string email, UserValues? values = null, bool lockAutomatically = false)
+        public async Task<IUser> CreateAsync(string email, UserValues? values = null, bool lockAutomatically = false,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(email, nameof(email));
 
@@ -186,6 +166,11 @@ namespace Notifo.Identity
                 await userManager.CreateAsync(user).Throw(log);
 
                 values ??= new UserValues();
+
+                if (string.IsNullOrWhiteSpace(values.DisplayName))
+                {
+                    values.DisplayName = email;
+                }
 
                 if (isFirst)
                 {
@@ -230,23 +215,24 @@ namespace Notifo.Identity
 
             var resolved = await ResolveAsync(user);
 
-            foreach (var events in userEvents)
+            foreach (var @events in userEvents)
             {
-                events.OnUserRegistered(resolved);
+                await @events.OnUserRegisteredAsync(resolved);
             }
 
             if (HasConsentGiven(values, null!))
             {
-                foreach (var events in userEvents)
+                foreach (var @events in userEvents)
                 {
-                    events.OnConsentGiven(resolved);
+                    await @events.OnConsentGivenAsync(resolved);
                 }
             }
 
             return resolved;
         }
 
-        public Task<IUser> SetPasswordAsync(string id, string password, string? oldPassword = null)
+        public Task<IUser> SetPasswordAsync(string id, string password, string? oldPassword = null,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
@@ -263,7 +249,8 @@ namespace Notifo.Identity
             });
         }
 
-        public async Task<IUser> UpdateAsync(string id, UserValues values)
+        public async Task<IUser> UpdateAsync(string id, UserValues values, bool silent = false,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
             Guard.NotNull(values, nameof(values));
@@ -297,51 +284,59 @@ namespace Notifo.Identity
 
             var resolved = await ResolveAsync(user);
 
-            foreach (var events in userEvents)
+            if (!silent)
             {
-                events.OnUserUpdated(resolved);
-            }
-
-            if (HasConsentGiven(values, oldUser))
-            {
-                foreach (var events in userEvents)
+                foreach (var @events in userEvents)
                 {
-                    events.OnConsentGiven(resolved);
+                    await @events.OnUserUpdatedAsync(resolved, oldUser);
+                }
+
+                if (HasConsentGiven(values, oldUser))
+                {
+                    foreach (var @events in userEvents)
+                    {
+                        await @events.OnConsentGivenAsync(resolved);
+                    }
                 }
             }
 
             return resolved;
         }
 
-        public Task<IUser> LockAsync(string id)
+        public Task<IUser> LockAsync(string id,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
             return ForUserAsync(id, user => userManager.SetLockoutEndDateAsync(user, LockoutDate()).Throw(log));
         }
 
-        public Task<IUser> UnlockAsync(string id)
+        public Task<IUser> UnlockAsync(string id,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
             return ForUserAsync(id, user => userManager.SetLockoutEndDateAsync(user, null).Throw(log));
         }
 
-        public Task<IUser> AddLoginAsync(string id, ExternalLoginInfo externalLogin)
+        public Task<IUser> AddLoginAsync(string id, ExternalLoginInfo externalLogin,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
             return ForUserAsync(id, user => userManager.AddLoginAsync(user, externalLogin).Throw(log));
         }
 
-        public Task<IUser> RemoveLoginAsync(string id, string loginProvider, string providerKey)
+        public Task<IUser> RemoveLoginAsync(string id, string loginProvider, string providerKey,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
             return ForUserAsync(id, user => userManager.RemoveLoginAsync(user, loginProvider, providerKey).Throw(log));
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(id, nameof(id));
 
@@ -351,9 +346,9 @@ namespace Notifo.Identity
 
             await userManager.DeleteAsync(user).Throw(log);
 
-            foreach (var events in userEvents)
+            foreach (var @events in userEvents)
             {
-                events.OnUserDeleted(resolved);
+                await @events.OnUserDeletedAsync(resolved);
             }
         }
 

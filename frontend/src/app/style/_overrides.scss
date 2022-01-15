@@ -1,15 +1,25 @@
 @import 'vars';
 
+/* stylelint-disable */
+
 // Custom primary color.
-$primary: $color-primary;
+$primary:           $color-primary;
+
+// Customize font sizes.
+$font-size-base:    1rem;
+$h1-font-size:      $font-size-base * 1.5;
+$h2-font-size:      $font-size-base * 1.25;
+$h3-font-size:      $font-size-base * 1.15;
+$h4-font-size:      $font-size-base * 1.1;
+$h5-font-size:      $font-size-base * 1.05;
+$h6-font-size:      $font-size-base !default;
 
 // Custom secondary color.
-$secondary: darken(#f4f5f7, 7%);
+$secondary:         darken(#f4f5f7, 7%);
 
 // Override cards
-$card-shadow: 0 .25rem .5rem rgba(18, 38, 63, 3%);
+$card-shadow:       0 .25rem .5rem rgba(18, 38, 63, 3%);
 
-/* stylelint-disable-next-line selector-class-pattern */
 .__react_component_tooltip {
     z-index: 10000 !important;
 }
