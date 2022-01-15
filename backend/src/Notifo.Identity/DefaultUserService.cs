@@ -184,6 +184,11 @@ namespace Notifo.Identity
                     await userManager.AddPasswordAsync(user, values.Password).Throw(log);
                 }
 
+                if (!string.IsNullOrWhiteSpace(values.Role) && !await userManager.IsInRoleAsync(user, values.Role))
+                {
+                    await userManager.AddToRoleAsync(user, values.Role).Throw(log);
+                }
+
                 if (!isFirst && lockAutomatically)
                 {
                     await userManager.SetLockoutEndDateAsync(user, LockoutDate()).Throw(log);
@@ -270,6 +275,11 @@ namespace Notifo.Identity
                 }
 
                 await userManager.AddPasswordAsync(user, values.Password).Throw(log);
+            }
+
+            if (!string.IsNullOrWhiteSpace(values.Role) && !await userManager.IsInRoleAsync(user, values.Role))
+            {
+                await userManager.AddToRoleAsync(user, values.Role).Throw(log);
             }
 
             var resolved = await ResolveAsync(user);
