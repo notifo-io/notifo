@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { loadTemplates, useApp, useTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { loadTemplates, useApp, useTemplates } from '@app/state';
 import { TemplateForm } from './TemplateForm';
 import { TemplatesList } from './TemplatesList';
 

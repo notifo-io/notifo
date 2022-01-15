@@ -5,17 +5,17 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { Formik } from 'formik';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import * as Yup from 'yup';
 import { FormError, Forms, Loader, Types } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
 import { upsertSubscription, useApp, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
-import { Formik } from 'formik';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import * as Yup from 'yup';
 
 const FormSchema = Yup.object().shape({
     // Required topic name.

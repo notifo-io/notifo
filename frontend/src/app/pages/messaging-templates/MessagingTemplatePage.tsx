@@ -5,9 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
-import { loadMessagingTemplate, updateMessagingTemplate, useApp, useMessagingTemplates } from '@app/state';
-import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -15,6 +12,9 @@ import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Row } from 'reactstrap';
+import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
+import { loadMessagingTemplate, updateMessagingTemplate, useApp, useMessagingTemplates } from '@app/state';
+import { texts } from '@app/texts';
 
 type FormValues = { name?: string; primary: boolean; languages: { [key: string]: string } };
 

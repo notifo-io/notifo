@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Forms, Icon, isErrorVisible, LocalizedFormProps, useFieldNew } from '@app/framework';
-import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { useFormikContext } from 'formik';
 import * as React from 'react';
 import { Button, Input } from 'reactstrap';
+import { Forms, Icon, isErrorVisible, LocalizedFormProps, useFieldNew } from '@app/framework';
+import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { MediaPicker } from './MediaPicker';
 
 export const MediaInput = (props: LocalizedFormProps) => {

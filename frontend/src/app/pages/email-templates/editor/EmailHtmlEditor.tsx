@@ -7,10 +7,10 @@
 
 // tslint:disable: quotemark
 
-import { IFrame } from '@app/framework';
 import * as React from 'react';
 import Split from 'react-split';
 import { Alert } from 'reactstrap';
+import { IFrame } from '@app/framework';
 import { EmailHtmlTextEditor } from './EmailHtmlTextEditor';
 import { usePreview } from './helpers';
 

@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { texts } from '@app/texts';
 import * as React from 'react';
+import { texts } from '@app/texts';
 
 export interface ErrorBoundaryProps {
     // The children.

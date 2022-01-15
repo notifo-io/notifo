@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { AuthService } from '@app/service';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { routerActions } from 'react-router-redux';
 import { Dispatch, Middleware } from 'redux';
+import { AuthService } from '@app/service';
 import { LoginState, User } from './state';
 
 const loginStarted = createAction('login/started');

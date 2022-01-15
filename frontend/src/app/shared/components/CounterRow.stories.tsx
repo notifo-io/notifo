@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { ComponentMeta } from '@storybook/react';
+import * as React from 'react';
 import { Table } from 'reactstrap';
 import { CounterRow } from './CounterRow';
 

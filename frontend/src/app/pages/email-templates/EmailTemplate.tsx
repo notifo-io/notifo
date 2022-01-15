@@ -5,10 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormControlError, Forms, Icon, Loader, useDialog, useFieldNew } from '@app/framework';
-import { EmailTemplateDto } from '@app/service';
-import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
-import { texts } from '@app/texts';
 import classNames from 'classnames';
 import { Formik, useFormikContext } from 'formik';
 import * as React from 'react';
@@ -16,9 +12,13 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, ButtonGroup, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
+import { FormControlError, Forms, Icon, Loader, useDialog, useFieldNew } from '@app/framework';
+import { EmailTemplateDto } from '@app/service';
+import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
+import { texts } from '@app/texts';
+import { EmailTemplateMoreDialog } from './EmailTemplateMoreDialog';
 import { EmailHtmlEditor } from './editor/EmailHtmlEditor';
 import { EmailTextEditor } from './editor/EmailTextEditor';
-import { EmailTemplateMoreDialog } from './EmailTemplateMoreDialog';
 
 const FormSchema = Yup.object().shape({
     // Required html body

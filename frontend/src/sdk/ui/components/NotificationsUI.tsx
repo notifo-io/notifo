@@ -6,16 +6,15 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { isFunction } from 'lodash';
 import { h } from 'preact';
-
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
 import { addNotifications, deleteNotification, setConnected, useDispatch } from '@sdk/ui/model';
-import { isFunction } from 'lodash';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { buildConnection } from './../api';
 import { NotificationsButton } from './NotificationsButton';
 import { NotificationsModal } from './NotificationsModal';
-import { buildConnection } from './../api';
 
 export interface NotificationsUIProps {
     // The main config.

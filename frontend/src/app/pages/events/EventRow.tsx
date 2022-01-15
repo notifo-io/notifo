@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { Button } from 'reactstrap';
 import { FormatDate, Icon, JsonDetails } from '@app/framework';
 import { EventDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
-import * as React from 'react';
-import { Button } from 'reactstrap';
 
 export interface EventRowProps {
     // The event.

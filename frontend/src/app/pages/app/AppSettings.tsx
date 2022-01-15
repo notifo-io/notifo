@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Forms, Loader } from '@app/framework';
-import { AppDetailsDto, UpsertAppDto } from '@app/service';
-import { upsertApp, useApps, useCore } from '@app/state';
-import { texts } from '@app/texts';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, Form } from 'reactstrap';
 import * as Yup from 'yup';
+import { FormError, Forms, Loader } from '@app/framework';
+import { AppDetailsDto, UpsertAppDto } from '@app/service';
+import { upsertApp, useApps, useCore } from '@app/state';
+import { texts } from '@app/texts';
 
 const FormSchema = Yup.object().shape({
     // Required name

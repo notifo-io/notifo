@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { ComponentMeta } from '@storybook/react';
 import { Formik } from 'formik';
+import * as React from 'react';
 import { Form } from 'reactstrap';
 import { NotificationsForm } from './NotificationSettingsForm';
 

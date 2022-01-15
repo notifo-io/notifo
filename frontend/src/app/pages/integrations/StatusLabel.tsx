@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { IntegrationStatus } from '@app/service';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Badge } from 'reactstrap';
+import { IntegrationStatus } from '@app/service';
+import { texts } from '@app/texts';
 
 export const StatusLabel = (props: { status: IntegrationStatus }) => {
     const [color, text] = getStatusText(props.status);

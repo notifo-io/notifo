@@ -6,12 +6,11 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
-
+import { useCallback, useEffect, useState } from 'preact/hooks';
 import { booleanToSend, SDKConfig, sendToBoolean, Subscription, TopicOptions } from '@sdk/shared';
 import { subscribe, Status, unsubscribe, useDispatch } from '@sdk/ui/model';
-import { useCallback, useEffect, useState } from 'preact/hooks';
 import { Loader } from './Loader';
 import { Modal } from './Modal';
 import { Toggle } from './Toggle';

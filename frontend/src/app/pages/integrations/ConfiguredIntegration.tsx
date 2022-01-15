@@ -5,12 +5,12 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
-import { getSummaryProperties } from '@app/state';
-import { texts } from '@app/texts';
 import classNames from 'classnames';
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
+import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
+import { getSummaryProperties } from '@app/state';
+import { texts } from '@app/texts';
 import { StatusLabel } from './StatusLabel';
 
 export interface ConfiguredIntegrationProps {

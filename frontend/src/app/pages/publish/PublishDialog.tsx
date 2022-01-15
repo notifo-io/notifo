@@ -5,17 +5,17 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { Formik } from 'formik';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
+import * as Yup from 'yup';
 import { FormError, Forms, Loader, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { NotificationsForm, TemplateInput } from '@app/shared/components';
 import { publish, togglePublishDialog, useApp, usePublish } from '@app/state';
 import { texts } from '@app/texts';
-import { Formik } from 'formik';
-import * as React from 'react';
-import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
-import * as Yup from 'yup';
 
 const FormSchema = Yup.object({
     // Required topic name

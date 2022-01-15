@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { InternalPage } from '@app/pages/InternalPage';
-import { RouteWhenPrivate } from '@app/shared/components';
-import { useLogin } from '@app/state';
 import * as React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { ErrorBoundary } from '@app/framework';
+import { InternalPage } from '@app/pages/InternalPage';
+import { RouteWhenPrivate } from '@app/shared/components';
+import { useLogin } from '@app/state';
 import { AuthenticationPage } from './pages/authentication/AuthenticationPage';
 
 export const App = () => {

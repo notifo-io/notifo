@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Confirm, Icon } from '@app/framework';
-import { MediaDto } from '@app/service';
-import { texts } from '@app/texts';
 import classNames from 'classnames';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, CardFooter } from 'reactstrap';
+import { Confirm, Icon } from '@app/framework';
+import { MediaDto } from '@app/service';
+import { texts } from '@app/texts';
 
 export interface MediaCardProps {
     // The media.

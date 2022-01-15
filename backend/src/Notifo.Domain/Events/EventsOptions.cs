@@ -15,7 +15,10 @@ namespace Notifo.Domain.Events
 
         public IEnumerable<ConfigurationError> Validate()
         {
-            yield break;
+            if (RetentionTime <= TimeSpan.Zero)
+            {
+                yield return new ConfigurationError("Retention time must be greater than zero.", nameof(RetentionTime));
+            }
         }
     }
 }

@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { loadSmsTemplates, useApp, useSmsTemplates } from '@app/state';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
+import { loadSmsTemplates, useApp, useSmsTemplates } from '@app/state';
 
 export const SmsTemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();

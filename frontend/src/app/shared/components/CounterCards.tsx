@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import { texts } from '@app/texts';
 import { Counters } from './../utils';
 import { CHANNELS } from './../utils/model';
 import { ChannelCounterRow } from './ChannelCounterRow';

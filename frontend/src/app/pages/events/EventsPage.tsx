@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
-import { TableFooter } from '@app/shared/components';
-import { loadEvents, useApp, useEvents } from '@app/state';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
+import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
+import { TableFooter } from '@app/shared/components';
+import { loadEvents, useApp, useEvents } from '@app/state';
+import { texts } from '@app/texts';
 import { EventRow } from './EventRow';
 
 export const EventsPage = () => {

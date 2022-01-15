@@ -5,18 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
-import { CounterCards } from '@app/shared/components';
-import { loadUser, togglePublishDialog, useApp, useUsers } from '@app/state';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
+import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
+import { CounterCards } from '@app/shared/components';
+import { loadUser, togglePublishDialog, useApp, useUsers } from '@app/state';
+import { texts } from '@app/texts';
 import { UserDialog } from './../users/UserDialog';
-import { Subscriptions } from './Subscriptions';
-import { Notifications } from './Notifications';
 import { ButtonEmail, ButtonMobilePush, ButtonSms, ButtonWebPush } from './Buttons';
+import { Notifications } from './Notifications';
+import { Subscriptions } from './Subscriptions';
 
 export const UserPage = () => {
     const dispatch = useDispatch();

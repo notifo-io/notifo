@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NumberSchema, ObjectSchema, StringSchema } from 'yup';
 
 declare module 'yup' {

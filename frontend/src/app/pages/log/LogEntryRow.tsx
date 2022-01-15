@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
 import { FormatDate, Numbers } from '@app/framework';
 import { LogEntryDto } from '@app/service';
-import * as React from 'react';
 
 export interface LogEntryRowProps {
     // The log entry.

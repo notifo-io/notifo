@@ -6,8 +6,8 @@
  */
 
 import { render } from 'preact';
-
 import { buildNotificationsOptions, buildTopicOptions, isString, loadStyle, logError, NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
+
 import { renderNotificationsUI, renderTopicUI, renderWebPushUI } from './components';
 
 export interface UIOptions {

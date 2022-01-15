@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { ErrorDto } from '@app/framework';
 import { Clients, CreateIntegrationDto, UpdateIntegrationDto } from '@app/service';
-import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from '../shared';
 import { IntegrationsState } from './state';
 

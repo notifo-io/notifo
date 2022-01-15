@@ -5,16 +5,16 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { Formik } from 'formik';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
 import { FormError, Forms, Loader, Types } from '@app/framework';
 import { Clients, UpsertUserDto, UserDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
 import { upsertUser, useApp, useCore, useUsers } from '@app/state';
 import { texts } from '@app/texts';
-import { Formik } from 'formik';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
 
 export interface UserDialogProps {
     // The user to edit.

@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { FormError, Icon, Loader } from '@app/framework';
-import { ChannelTemplateDto } from '@app/service';
-import { createEmailTemplate, deleteEmailTemplate, loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { Button, Col, Label, Row } from 'reactstrap';
+import { FormError, Icon, Loader } from '@app/framework';
+import { ChannelTemplateDto } from '@app/service';
+import { createEmailTemplate, deleteEmailTemplate, loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
+import { texts } from '@app/texts';
 import { EmailTemplateCard } from './EmailTemplateCard';
 
 export const EmailTemplatesPage = () => {

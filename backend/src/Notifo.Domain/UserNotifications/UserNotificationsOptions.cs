@@ -13,9 +13,14 @@ namespace Notifo.Domain.UserNotifications
     {
         public TimeSpan RetentionTime { get; set; } = TimeSpan.FromDays(20);
 
+        public int MaxItemsPerUser { get; set; } = 5000;
+
         public IEnumerable<ConfigurationError> Validate()
         {
-            yield break;
+            if (RetentionTime <= TimeSpan.Zero)
+            {
+                yield return new ConfigurationError("Retention time must be greater than zero.", nameof(RetentionTime));
+            }
         }
     }
 }

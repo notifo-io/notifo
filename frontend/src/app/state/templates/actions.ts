@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ErrorDto, listThunk } from '@app/framework';
 import { Clients, TemplateDto } from '@app/service';
-import { createAction, createReducer } from '@reduxjs/toolkit';
 import { createApiThunk, selectApp } from './../shared';
 import { TemplatesState } from './state';
 

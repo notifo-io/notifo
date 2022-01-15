@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorBoundary } from '@app/framework';
-import { AppsDropdown, Logo } from '@app/shared/components';
-import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
-import { texts } from '@app/texts';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route, Switch, useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar, UncontrolledDropdown } from 'reactstrap';
+import { ErrorBoundary } from '@app/framework';
+import { AppsDropdown, Logo } from '@app/shared/components';
+import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
+import { texts } from '@app/texts';
 import { AppPage } from './app/AppPage';
 import { AppsPage } from './apps/AppsPage';
 

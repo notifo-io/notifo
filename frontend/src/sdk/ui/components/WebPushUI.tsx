@@ -6,9 +6,8 @@
  */
 
 /** @jsx h */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-
 import { SDKConfig } from '@sdk/shared';
 import { Modal } from './Modal';
 

@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { EventDto } from '@app/service';
 import * as React from 'react';
 import AceEditor from 'react-ace';
+import { EventDto } from '@app/service';
 
 import 'ace-builds/src-noconflict/mode-javascript';
 import 'ace-builds/src-noconflict/theme-github';

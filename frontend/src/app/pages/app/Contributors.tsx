@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
+import { Button, Card, CardBody, CardFooter, Col, Input, Row } from 'reactstrap';
 import { FormError, Icon } from '@app/framework';
 import { AppDetailsDto } from '@app/service';
 import { addContributor, removeContributor, useApps, useLogin } from '@app/state';
 import { texts } from '@app/texts';
-import * as React from 'react';
-import { useDispatch } from 'react-redux';
-import { Button, Card, CardBody, CardFooter, Col, Input, Row } from 'reactstrap';
 
 export interface ContributorsProps {
     // The app details.
