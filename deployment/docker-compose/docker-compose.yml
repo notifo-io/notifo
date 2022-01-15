@@ -11,14 +11,14 @@ services:
   notifo_notifo:
     image: "notifo/notifo:1"
     environment:
-      - URLS__BASEURL=https://YOUR_DOMAIN
+      - URLS__BASEURL=https://${NOTIFO_DOMAIN}
       - STORE__MONGODB__CONFIGURATION=mongodb://notifo_mongo
-      - IDENTITY__GOOGLECLIENT=
-      - IDENTITY__GOOGLESECRET=
-      - IDENTITY__GITHUBCLIENT=
-      - IDENTITY__GITHUBSECRET=
-      - IDENTITY__MICROSOFTCLIENT=
-      - IDENTITY__MICROSOFTSECRET=
+      - IDENTITY__GOOGLECLIENT=${NOTIFO_GOOGLECLIENT}
+      - IDENTITY__GOOGLESECRET=${NOTIFO_GOOGLESECRET}
+      - IDENTITY__GITHUBCLIENT=${NOTIFO_GITHUBCLIENT}
+      - IDENTITY__GITHUBSECRET=${NOTIFO_GITHUBSECRET}
+      - IDENTITY__MICROSOFTCLIENT=${NOTIFO_MICROSOFTCLIENT}
+      - IDENTITY__MICROSOFTSECRET=${NOTIFO_MICROSOFTSECRET}
       - ASPNETCORE_URLS=http://+:5000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
@@ -37,7 +37,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
-      - SITE_ADDRESS=${notifo_DOMAIN}
+      - SITE_ADDRESS=${NOTIFO_DOMAIN}
       - SITE_SERVER="notifo_notifo:5000"
     volumes:
       - /etc/notifo/caddy/data:/data
