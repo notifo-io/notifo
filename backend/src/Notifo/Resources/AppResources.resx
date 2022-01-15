@@ -144,6 +144,12 @@
   <data name="ChangePasswordTitle" xml:space="preserve">
     <value>Change password</value>
   </data>
+  <data name="CommonCritical" xml:space="preserve">
+    <value>Critical</value>
+  </data>
+  <data name="CommonWarning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
   <data name="ConfirmEmailText" xml:space="preserve">
     <value>Thank you for confirming your email address.</value>
   </data>
@@ -383,6 +389,69 @@
   </data>
   <data name="SetPasswordTitle" xml:space="preserve">
     <value>Set Password</value>
+  </data>
+  <data name="SetupRuleFtpWarning" xml:space="preserve">
+    <value>You are using the &lt;strong&gt;FTP asset store&lt;/strong&gt;. It is not recommended to use this storage type because of bad performance.</value>
+  </data>
+  <data name="SetupRuleHttpsFailure" xml:space="preserve">
+    <value>You are not accessing the site over https. If this warning is not correct then Squidex cannot detect https mode, because your instance is behind a reverse proxy such as nginx. Ensure that http headers are forwarded properly, via the &lt;code&gt;X-Forwarded-*&lt;/code&gt; headers.</value>
+  </data>
+  <data name="SetupRuleHttpsSuccess" xml:space="preserve">
+    <value>Congratulations, you are accessing your Squidex installation over a secure connection (https).</value>
+  </data>
+  <data name="SetupRuleUrlFailure" xml:space="preserve">
+    <value>You should access Squidex only over one canonical URL and configure this URL with the &lt;code&gt;URLS__BASEURL&lt;/code&gt; environment variable. The current base URL &lt;code&gt;{actual}&lt;/code&gt; does not match to the base url &lt;code&gt;{configured}&lt;/code&gt;.</value>
+  </data>
+  <data name="SetupRuleUrlSuccess" xml:space="preserve">
+    <value>Congratulations, the &lt;code&gt;URLS__BASEURL&lt;/code&gt; environment variable is configured properly.</value>
+  </data>
+  <data name="SetupCreateUserButton" xml:space="preserve">
+    <value>Create User</value>
+  </data>
+  <data name="SetupCreateUserConfirmPassword" xml:space="preserve">
+    <value>Confirm Password</value>
+  </data>
+  <data name="SetupCreateUserFailure" xml:space="preserve">
+    <value>Neither password authentication nor an external authentication provider such as Google is configured. Please check your settings and logs.</value>
+  </data>
+  <data name="SetupCreateUserHeadline" xml:space="preserve">
+    <value>Admin User</value>
+  </data>
+  <data name="SetupCreateUserHeadlineCreate" xml:space="preserve">
+    <value>Create Admin User</value>
+  </data>
+  <data name="SetupCreateUserLoginHint" xml:space="preserve">
+    <value>You have configured at least one external authentication provider such as Google. Just go to the login page and login to become administrator.</value>
+  </data>
+  <data name="SetupCreateUserLoginLink" xml:space="preserve">
+    <value>Go to Login Page.</value>
+  </data>
+  <data name="SetupCreateUserSeparator" xml:space="preserve">
+    <value>OR</value>
+  </data>
+  <data name="SetupError" xml:space="preserve">
+    <value>An unexpected exception occurred.</value>
+  </data>
+  <data name="SetupHeadline" xml:space="preserve">
+    <value>Installation</value>
+  </data>
+  <data name="SetupHint" xml:space="preserve">
+    <value>You are seeing this screen because no user exists yet. After a user is created, you are not able to use this screen again.</value>
+  </data>
+  <data name="SetupMadeBy" xml:space="preserve">
+    <value>Proudly made by</value>
+  </data>
+  <data name="SetupMadeByCopyright" xml:space="preserve">
+    <value>Sebastian Stehle and Contributors, 2020-2022</value>
+  </data>
+  <data name="SetupRuleFolderWarning" xml:space="preserve">
+    <value>You are using the &lt;strong&gt;folder asset store&lt;/strong&gt; where all assets are stored in the file system. Please remember to include the asset folder into your backup strategy and map it to a volume, if you are using Docker.</value>
+  </data>
+  <data name="SetupRulesHeadline" xml:space="preserve">
+    <value>System Checklist</value>
+  </data>
+  <data name="SetupTitle" xml:space="preserve">
+    <value>Installation</value>
   </data>
   <data name="SignedOutText" xml:space="preserve">
     <value>You have been signed out</value>

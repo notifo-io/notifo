@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
+using Notifo.Areas.Frontend.Middlewares;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Frontend
@@ -37,6 +38,11 @@ namespace Notifo.Areas.Frontend
 
             app.UseMiddleware<NotifoMiddleware>();
             app.UseHtmlTransform();
+
+            app.UseWhen(x => x.IsIndex(), builder =>
+            {
+                builder.UseMiddleware<SetupMiddleware>();
+            });
 
             app.UseStaticFiles(new StaticFileOptions
             {

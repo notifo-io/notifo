@@ -18,6 +18,12 @@ main {
     padding-left: 2rem + $size-sidebar;
 }
 
+.form-text {
+    font-size: .85rem;
+    font-weight: normal;
+    line-height: 1.75;
+}
+
 label {
     font-size: .85rem;
     font-weight: 600;
@@ -86,6 +92,43 @@ fieldset {
 
 .no-padding {
     padding: 0 !important;
+}
+
+//
+// Status Icon
+//
+.status-icon {
+    & {
+        @include circle-icon(2rem);
+        background: $color-border;
+        border: 0;
+        color: $color-white;
+        display: inline-block;
+    }
+
+    &-sm {
+        @include circle-icon(1.6rem);
+    }
+
+    &-lg {
+        @include circle-icon(2.8rem);
+    }
+
+    &-pending {
+        color: inherit;
+    }
+
+    &-warning {
+        background: $color-warning;
+    }
+
+    &-failed {
+        background: $color-error;
+    }
+
+    &-success {
+        background: $color-success;
+    }
 }
 
 .navbar {

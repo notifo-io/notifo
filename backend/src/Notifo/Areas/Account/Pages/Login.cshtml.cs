@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -9,12 +9,15 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Notifo.Areas.Account.Pages.Utils;
 
 namespace Notifo.Areas.Account.Pages
 {
     public sealed class LoginModel : PageModelBase<LoginModel>
     {
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+        public bool HasPasswordAuth { get; set; } = true;
 
         [BindProperty]
         public LoginInputModel Input { get; set; }
@@ -33,7 +36,7 @@ namespace Notifo.Areas.Account.Pages
         {
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPost()
         {
             if (ModelState.IsValid)
             {
