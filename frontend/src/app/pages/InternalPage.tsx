@@ -57,6 +57,12 @@ export const InternalPage = () => {
 
                             <DropdownItem divider />
 
+                            <DropdownItem href='/account/profile' target='_blank'>
+                                {texts.common.profileSettings}
+                            </DropdownItem>
+
+                            <DropdownItem divider />
+
                             <DropdownItem onClick={doLogout}>
                                 {texts.common.logout}
                             </DropdownItem>

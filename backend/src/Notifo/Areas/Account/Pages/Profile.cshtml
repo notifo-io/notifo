@@ -1,0 +1,176 @@
+﻿@page
+@inject IHtmlLocalizer<AppResources> T
+@model ProfileModel
+
+
+@{
+    ViewBag.Title = T["UsersProfileTitle"];
+
+    void RenderValidation(string field)
+    {
+        @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+        {
+            <div class="errors-container">
+                <span class="errors">@Html.ValidationMessage(field)</span>
+            </div>
+        }
+    }
+}
+
+<h1>@T["UsersProfileHeadline"]</h1>
+
+<h2>@T["UsersProfilePii"]</h2>
+
+@if (!string.IsNullOrWhiteSpace(Model!.StatusMessage))
+{
+    <div class="alert alert-success" id="success">
+        @Model!.StatusMessage
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model!.ErrorMessage
+    </div>
+}
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="Model.Email" for="email">@T["EmailLabel"]</label>
+
+        @{ RenderValidation("Model.Email"); }
+
+        <input asp-for="Model.Email" type="email" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">@T["CommonSave"]</button>
+</form>
+
+@if (Model!.ExternalProviders.Any())
+{
+    <hr />
+
+    <div>
+        <h2>@T["UsersProfileLoginsTitle"]</h2>
+
+        <table class="table table-fixed table-lesspadding">
+            <colgroup>
+                <col style="width: 100px;" />
+                <col style="width: 100%;" />
+                <col style="width: 100px;" />
+            </colgroup>
+            @foreach (var login in Model!.ExternalLogins)
+            {
+                <tr>
+                    <td>
+                        <span>@login.LoginProvider</span>
+                    </td>
+                    <td>
+                        <span class="truncate">@login.ProviderDisplayName</span>
+                    </td>
+                    <td class="text-right">
+                        @if (Model!.ExternalLogins.Count > 1 || Model!.HasPassword)
+                        {
+                            <form asp-page-handler="RemoveLogin" method="post">
+                                <input asp-for="RemoveLoginModel.LoginProvider" type="hidden" value="@login.LoginProvider"/>
+                                <input asp-for="RemoveLoginModel.ProviderKey" type="hidden" value="@login.ProviderKey" />
+
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    @T["CommonRemove"]
+                                </button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+
+        <form asp-page-handler="AddLogin" method="post">
+            @foreach (var provider in Model!.ExternalProviders.Where(x => Model!.ExternalLogins.All(y => x.Name != y.LoginProvider)))
+            {
+                var lowerName = provider.Name.ToLowerInvariant();
+
+                <button type="submit"  class="btn btn-social btn-dark btn-@lowerName"name="provider" value="@provider.Name">
+                    @provider.DisplayName
+                </button>
+            }
+        </form>
+    </div>
+}
+
+@if (Model!.HasPasswordAuth)
+{
+    <hr />
+
+    <div>
+        <h2>@T["UsersProfilePasswordTitle"]</h2>
+
+        @if (Model!.HasPassword)
+        {
+            <form class="profile-form" asp-page-handler="ChangePassword" method="post">
+                <div class="form-group">
+                    <label asp-for="ChangePasswordModel.OldPassword" for="oldPassword">@T["OldPasswordLabel"]</label>
+
+                    @{ RenderValidation("ChangePasswordModel.OldPassword"); }
+
+                    <input asp-for="ChangePasswordModel.OldPassword" type="password" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ChangePasswordModel.Password" for="password">@T["PasswordLabel"]</label>
+
+                    @{ RenderValidation("ChangePasswordModel.Password"); }
+
+                    <input asp-for="ChangePasswordModel.Password" type="password" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ChangePasswordModel.PasswordConfirm" for="passwordConfirm">@T["PasswordConfirmLabel"]</label>
+
+                    @{ RenderValidation("ChangePasswordModel.PasswordConfirm"); }
+
+                    <input asp-for="ChangePasswordModel.PasswordConfirm" type="password" class="form-control" />
+                </div>
+
+                <div class="form-group mb-0">
+                    <button type="submit" class="btn btn-primary">@T["UsersProfileChangePassword"]</button>
+                </div>
+            </form>
+        }
+        else
+        {
+            <form class="profile-form" asp-page-handler="SetPassword" method="post">
+                <div class="form-group">
+                    <label asp-for="SetPasswordModel.Password" for="password">@T["PasswordLabel"]</label>
+
+                    @{ RenderValidation("SetPasswordModel.Password"); }
+
+                    <input asp-for="SetPasswordModel.Password" type="password" class="form-control"  />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="SetPasswordModel.PasswordConfirm" for="passwordConfirm">@T["ConfirmPasswordLabel"]</label>
+
+                    @{ RenderValidation("SetPassword.PasswordConfirm"); }
+
+                    <input asp-for="SetPasswordModel.PasswordConfirm" type="password" class="form-control" />
+                </div>
+
+                <div class="form-group mb-0">
+                    <button type="submit" class="btn btn-primary">@T["UsersProfileSetPassword"]</button>
+                </div>
+            </form>
+        }
+    </div>
+}
+
+<script>
+    var successMessage = document.getElementById('success');
+
+    if (successMessage) {
+        setTimeout(function () {
+            successMessage.remove();
+        }, 5000);
+    }
+</script>

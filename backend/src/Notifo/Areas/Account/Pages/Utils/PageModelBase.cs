@@ -48,10 +48,13 @@ namespace Notifo.Areas.Account.Pages.Utils
             get => localizer.Value;
         }
 
-        [TempData]
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
+
+        [BindProperty(SupportsGet = true)]
         public string? StatusMessage { get; set; }
 
-        [TempData]
+        [BindProperty(SupportsGet = true)]
         public string? ErrorMessage { get; set; }
 
         protected PageModelBase()

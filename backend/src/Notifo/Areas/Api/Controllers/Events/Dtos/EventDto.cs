@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Events;

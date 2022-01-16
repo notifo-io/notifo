@@ -471,4 +471,58 @@
   <data name="VerificationEmailSent" xml:space="preserve">
     <value>Email has been sent.</value>
   </data>
+  <data name="CommonRemove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="CommonSave" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="GeneralError" xml:space="preserve">
+    <value>Something failed.</value>
+  </data>
+  <data name="PasswordConfirmLabel" xml:space="preserve">
+    <value>Confirm password</value>
+  </data>
+  <data name="UsersProfileAddLoginDone" xml:space="preserve">
+    <value>Login added successfully.</value>
+  </data>
+  <data name="UsersProfileChangePassword" xml:space="preserve">
+    <value>Change Password</value>
+  </data>
+  <data name="UsersProfileChangePasswordDone" xml:space="preserve">
+    <value>Password changed successfully..</value>
+  </data>
+  <data name="UsersProfileHeadline" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="UsersProfileLoginsTitle" xml:space="preserve">
+    <value>External Logins</value>
+  </data>
+  <data name="UsersProfilePasswordTitle" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="UsersProfilePii" xml:space="preserve">
+    <value>Personal Information</value>
+  </data>
+  <data name="UsersProfileRemoveLoginDone" xml:space="preserve">
+    <value>Login removed successfully.</value>
+  </data>
+  <data name="UsersProfileSetPassword" xml:space="preserve">
+    <value>Set Password</value>
+  </data>
+  <data name="UsersProfileSetPasswordDone" xml:space="preserve">
+    <value>Password set successfully.</value>
+  </data>
+  <data name="UsersProfileTitle" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="UsersProfileUpdateProfileDone" xml:space="preserve">
+    <value>Profile updated succesfully.</value>
+  </data>
+  <data name="ExternalLoginEmailUsed" xml:space="preserve">
+    <value>An user with this email address already exist. Go to your profile page to add another external login.</value>
+  </data>
+  <data name="PasswordConfirm" xml:space="preserve">
+    <value>password confirm</value>
+  </data>
 </root>

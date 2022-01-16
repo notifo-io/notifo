@@ -18,12 +18,11 @@
     {
         <div class="form-group">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" asp-for="Input.AcceptTermsOfService">
-
-                <label class="custom-control-label" asp-for="Input.AcceptTermsOfService">@T["AgreeToTermsOfService", Model.TermsOfServiceUrl]</label>
+                <input asp-for="Model.AcceptTermsOfService" type="checkbox" class="custom-control-input">
+                <label asp-for="Model.AcceptTermsOfService" class="custom-control-label">@T["AgreeToTermsOfService", Model.TermsOfServiceUrl]</label>
             </div>
 
-            <span asp-validation-for="Input.AcceptTermsOfService" class="invalid-feedback"></span>
+            <span asp-validation-for="Model.AcceptTermsOfService" class="invalid-feedback"></span>
         </div>
     }
 
@@ -31,12 +30,11 @@
     {
         <div class="form-group">
             <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" asp-for="Input.AcceptPrivacyPolicy">
-
-                <label class="custom-control-label" asp-for="Input.AcceptPrivacyPolicy">@T["AgreeToPrivacyPolicy", Model.PrivacyPolicyUrl]</label>
+                <input asp-for="Model.AcceptPrivacyPolicy" type="checkbox" class="custom-control-input">
+                <label asp-for="Model.AcceptPrivacyPolicy" class="custom-control-label">@T["AgreeToPrivacyPolicy", Model.PrivacyPolicyUrl]</label>
             </div>
 
-            <span asp-validation-for="Input.AcceptPrivacyPolicy" class="invalid-feedback"></span>
+            <span asp-validation-for="Model.AcceptPrivacyPolicy" class="invalid-feedback"></span>
         </div>
     }
 
