@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using Notifo.Domain.Channels.Sms;
 
 namespace Notifo.Domain.Channels.Sms
 {

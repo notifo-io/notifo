@@ -19,6 +19,8 @@ namespace Notifo.Domain.Identity
 
         public static readonly string ConsentForEmails = "consent:emails";
 
+        public static readonly string DisplayName = "display_name";
+
         public static readonly string Invited = "invited";
 
         public static readonly string UserId = "user_id";

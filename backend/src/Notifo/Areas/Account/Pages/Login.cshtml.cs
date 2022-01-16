@@ -19,11 +19,10 @@ namespace Notifo.Areas.Account.Pages
 
         public bool HasPasswordAuth { get; set; } = true;
 
-        [BindProperty]
-        public LoginInputModel Input { get; set; }
+        public bool RememberMe { get; set; }
 
-        [BindProperty(SupportsGet = true)]
-        public string? ReturnUrl { get; set; }
+        [BindProperty]
+        public LoginInputModel Model { get; set; } = new LoginInputModel();
 
         public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
@@ -36,24 +35,26 @@ namespace Notifo.Areas.Account.Pages
         {
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPost(LoginInputModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, true);
-
-                if (result.Succeeded)
-                {
-                    return RedirectTo(ReturnUrl);
-                }
-
-                if (result.IsLockedOut)
-                {
-                    return RedirectToPage("./Lockout");
-                }
-
-                ModelState.AddModelError(string.Empty, T["InvalidLoginAttempt"]!);
+                return Page();
             }
+
+            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+
+            if (result.Succeeded)
+            {
+                return RedirectTo(ReturnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                return RedirectToPage("./Lockout");
+            }
+
+            ModelState.AddModelError(string.Empty, T["InvalidLoginAttempt"]!);
 
             return Page();
         }

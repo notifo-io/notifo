@@ -116,12 +116,16 @@ namespace Notifo.Areas.Account.Pages
     public sealed class CreateUserModel
     {
         [Required]
+        [EmailAddress]
+        [Display(Name = nameof(Email))]
         public string Email { get; set; }
 
         [Required]
+        [Display(Name = nameof(Password))]
         public string Password { get; set; }
 
         [Required]
+        [Display(Name = nameof(PasswordConfirm))]
         public string PasswordConfirm { get; set; }
     }
 }

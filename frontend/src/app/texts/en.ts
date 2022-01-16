@@ -109,6 +109,7 @@ export const EN = {
         primary: 'Primary',
         prio: 'Prio',
         profile: 'Profile',
+        profileSettings: 'Your Settings',
         publish: 'Publish',
         refresh: 'Refresh',
         sampleSubject: '-- No Subject yet --',

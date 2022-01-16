@@ -34,6 +34,7 @@ namespace Microsoft.AspNetCore.Authentication
                 {
                     options.ClientId = identityOptions.GithubClient;
                     options.ClientSecret = identityOptions.GithubSecret;
+                    options.Scope.Add("user:email");
                 });
             }
 

@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.UserNotifications;

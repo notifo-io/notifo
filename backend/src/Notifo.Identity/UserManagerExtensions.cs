@@ -60,6 +60,19 @@ namespace Notifo.Identity
                 claimsToAdd.Add(new Claim(type, value));
             }
 
+            void SyncString(string type, string? value)
+            {
+                if (value != null)
+                {
+                    RemoveClaims(x => x.Type == type);
+
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        AddClaim(type, value);
+                    }
+                }
+            }
+
             void SyncBoolean(string type, bool? value)
             {
                 if (value != null)
@@ -72,6 +85,8 @@ namespace Notifo.Identity
                     }
                 }
             }
+
+            SyncString(NotifoClaimTypes.DisplayName, values.DisplayName);
 
             SyncBoolean(NotifoClaimTypes.Consent, values.Consent);
             SyncBoolean(NotifoClaimTypes.ConsentForEmails, values.ConsentForEmails);

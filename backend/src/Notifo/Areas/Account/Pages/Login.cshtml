@@ -4,6 +4,23 @@
 
 @{
     ViewData["Title"] = T["LoginTitle"];
+
+    void RenderValidation(string field)
+    {
+        @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
+        {
+            <div class="errors-container">
+                <span class="errors">@Html.ValidationMessage(field)</span>
+            </div>
+        }
+    }
+}
+
+@if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
+{
+    <div class="alert alert-danger">
+        @Model!.ErrorMessage
+    </div>
 }
 
 @if (Model!.HasPasswordAuth)
@@ -13,22 +30,25 @@
             <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
             <div class="form-group">
-                <label asp-for="Input.Email">@T["EmailLabel"]</label>
-                <input asp-for="Input.Email" class="form-control" />
-                <span asp-validation-for="Input.Email" class="invalid-feedback"></span>
+                <label asp-for="Model.Email">@T["EmailLabel"]</label>
+
+                @{ RenderValidation("Model.Email"); }
+
+                <input asp-for="Model.Email" class="form-control" />
             </div>
 
             <div class="form-group">
-                <label asp-for="Input.Password">@T["PasswordLabel"]</label>
-                <input asp-for="Input.Password" type="password" class="form-control" />
-                <span asp-validation-for="Input.Password" class="invalid-feedback"></span>
+                <label asp-for="Model.Password">@T["PasswordLabel"]</label>
+
+                @{ RenderValidation("Model.Password"); }
+
+                <input asp-for="Model.Password" type="password" class="form-control" />
             </div>
 
             <div class="form-group">
                 <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" asp-for="Input.RememberMe">
-
-                    <label class="custom-control-label" asp-for="Input.RememberMe">@T["RememberMe"]</label>
+                    <input asp-for="Model.RememberMe" type="checkbox" class="custom-control-input">
+                    <label asp-for="Model.RememberMe" class="custom-control-label">@T["RememberMe"]</label>
                 </div>
             </div>
 
@@ -57,7 +77,7 @@
                         var lowerName = provider.DisplayName!.ToLowerInvariant();
 
                         <button type="submit" class="btn btn-block btn-social btn-dark btn-@lowerName" name="provider" value="@provider.Name">
-                            <i class="fab fa-@lowerName"></i> @T[$"LoginWith{provider.DisplayName}"]
+                            @T[$"LoginWith{provider.DisplayName}"]
                         </button>
                     }
                 </p>

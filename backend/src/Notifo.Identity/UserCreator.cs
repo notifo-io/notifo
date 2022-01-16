@@ -44,22 +44,22 @@ namespace Notifo.Identity
                         {
                             try
                             {
-                                var existing = await userService.FindByEmailAsync(user.Email);
+                                var existing = await userService.FindByEmailAsync(user.Email, ct);
 
                                 var passwordValues = new UserValues { Password = user.Password };
 
                                 if (existing == null)
                                 {
-                                    existing = await userService.CreateAsync(user.Email, passwordValues);
+                                    existing = await userService.CreateAsync(user.Email, passwordValues, ct: ct);
                                 }
                                 else if (user.PasswordReset)
                                 {
-                                    await userService.UpdateAsync(existing.Id, passwordValues);
+                                    await userService.UpdateAsync(existing.Id, passwordValues, ct: ct);
                                 }
 
                                 if (!string.IsNullOrWhiteSpace(user.Role))
                                 {
-                                    await userService.UpdateAsync(existing.Id, new UserValues { Role = user.Role });
+                                    await userService.UpdateAsync(existing.Id, new UserValues { Role = user.Role }, ct: ct);
                                 }
                             }
                             catch (Exception ex)
