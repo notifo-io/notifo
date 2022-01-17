@@ -59,12 +59,15 @@ namespace Notifo.Identity
 
                                 if (!string.IsNullOrWhiteSpace(user.Role))
                                 {
-                                    var roles = new HashSet<string>
+                                    var values = new UserValues
                                     {
-                                        user.Role
+                                        Roles = new HashSet<string>
+                                        {
+                                            user.Role
+                                        }
                                     };
 
-                                    await userService.UpdateAsync(existing.Id, new UserValues { Roles = roles }, ct: ct);
+                                    await userService.UpdateAsync(existing.Id, values, ct: ct);
                                 }
                             }
                             catch (Exception ex)
