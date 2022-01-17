@@ -226,7 +226,7 @@ namespace Notifo.Identity
 
             await sut.CreateAsync(identity.Email, values, ct: ct);
 
-            A.CallTo(() => userManager.AddToRoleAsync(identity, NotifoRoles.AppAdmin))
+            A.CallTo(() => userManager.AddToRoleAsync(identity, NotifoRoles.HostAdmin))
                 .MustHaveHappened();
         }
 
@@ -315,7 +315,10 @@ namespace Notifo.Identity
         {
             var update = new UserValues
             {
-                Role = "admin"
+                Roles = new HashSet<string>
+                {
+                    "admin"
+                }
             };
 
             var identity = CreateIdentity(found: true);
@@ -323,6 +326,25 @@ namespace Notifo.Identity
             await sut.UpdateAsync(identity.Id, update, ct: ct);
 
             A.CallTo(() => userManager.AddToRoleAsync(identity, "admin"))
+                .MustHaveHappened();
+        }
+
+        [Fact]
+        public async Task Update_should_remove_from_role()
+        {
+            var update = new UserValues
+            {
+                Roles = new HashSet<string>()
+            };
+
+            var identity = CreateIdentity(found: true);
+
+            A.CallTo(() => userManager.GetRolesAsync(identity))
+                .Returns(new List<string> { "admin" });
+
+            await sut.UpdateAsync(identity.Id, update, ct: ct);
+
+            A.CallTo(() => userManager.RemoveFromRoleAsync(identity, "admin"))
                 .MustHaveHappened();
         }
 

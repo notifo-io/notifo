@@ -16,6 +16,7 @@ import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@
 import { texts } from '@app/texts';
 import { AppPage } from './app/AppPage';
 import { AppsPage } from './apps/AppsPage';
+import { SystemUsersPage } from './system-users/SystemUsersPage';
 
 export const InternalPage = () => {
     const dispatch = useDispatch();
@@ -61,6 +62,12 @@ export const InternalPage = () => {
                                 {texts.common.profileSettings}
                             </DropdownItem>
 
+                            {user.role?.toLowerCase() === 'admin' &&
+                                <NavLink to={`${match.path}/system-users`} className='dropdown-item'>
+                                    {texts.systemUsers.header}
+                                </NavLink>
+                            }
+
                             <DropdownItem divider />
 
                             <DropdownItem onClick={doLogout}>
@@ -71,19 +78,21 @@ export const InternalPage = () => {
                 </Nav>
             </Navbar>
 
-            <main>
-                <ErrorBoundary>
-                    <Switch>
-                        <Route path={`${match.path}/:appId`}>
-                            <AppPage />
-                        </Route>
+            <ErrorBoundary>
+                <Switch>
+                    <Route path={`${match.path}/system-users`}>
+                        <SystemUsersPage />
+                    </Route>
 
-                        <Route path={match.path} exact>
-                            <AppsPage />
-                        </Route>
-                    </Switch>
-                </ErrorBoundary>
-            </main>
+                    <Route path={`${match.path}/:appId`}>
+                        <AppPage />
+                    </Route>
+
+                    <Route path={match.path} exact>
+                        <AppsPage />
+                    </Route>
+                </Switch>
+            </ErrorBoundary>
         </>
     );
 };

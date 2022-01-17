@@ -27,6 +27,7 @@ messagingTemplates: Reducers.messagingTemplatesReducer,
            publish: Reducers.publishReducer,
       smsTemplates: Reducers.smsTemplatesReducer,
      subscriptions: Reducers.subscriptionsReducer,
+       systemUsers: Reducers.systemUsersReducer,
          templates: Reducers.templatesReducer,
              users: Reducers.usersReducer,
 };
@@ -44,6 +45,7 @@ export const createAppStore = (history: History) =>
                 Reducers.messagingTemplatesMiddleware,
                 Reducers.smsTemplatesMiddleware,
                 Reducers.subscriptionsMiddleware,
+                Reducers.systemUsersMiddleware,
                 Reducers.usersMiddleware,
             ),
     });

@@ -87,46 +87,48 @@ export const PublishDialog = () => {
                         </ModalHeader>
 
                         <ModalBody>
-                            {tab === 0 ? (
-                                <fieldset disabled={publishing}>
-                                    <Forms.Text name='topic'
-                                        label={texts.common.topic} />
+                            <fieldset className='mt-3' disabled={publishing}>
+                                {tab === 0 ? (
+                                    <>
+                                        <Forms.Text name='topic'
+                                            label={texts.common.topic} />
 
-                                    <Forms.Boolean name='templated'
-                                        label={texts.common.templateMode} />
+                                        <Forms.Boolean name='templated'
+                                            label={texts.common.templateMode} />
 
-                                    {values['templated'] &&
-                                        <TemplateInput name='templateCode'
-                                            label={texts.common.templateCode} />
-                                    }
+                                        {values['templated'] &&
+                                            <TemplateInput name='templateCode'
+                                                label={texts.common.templateCode} />
+                                        }
 
-                                    <NotificationsForm.Formatting
-                                        onLanguageSelect={setLanguage}
-                                        language={language}
-                                        languages={appLanguages}
-                                        field='preformatted' disabled={publishing} />
+                                        <NotificationsForm.Formatting
+                                            onLanguageSelect={setLanguage}
+                                            language={language}
+                                            languages={appLanguages}
+                                            field='preformatted' disabled={publishing} />
 
-                                    <hr />
+                                        <hr />
 
-                                    <Forms.Boolean name='test'
-                                        label={texts.integrations.test} />
+                                        <Forms.Boolean name='test'
+                                            label={texts.integrations.test} />
 
-                                    <hr />
+                                        <hr />
 
-                                    <Forms.Boolean name='silent'
-                                        label={texts.common.silent} />
+                                        <Forms.Boolean name='silent'
+                                            label={texts.common.silent} />
 
-                                    <Forms.Textarea name='data'
-                                        label={texts.common.data} />
+                                        <Forms.Textarea name='data'
+                                            label={texts.common.data} />
 
-                                    <hr />
+                                        <hr />
 
-                                    <Forms.Number name='timeToLiveInSeconds'
-                                        label={texts.common.timeToLive} min={0} max={2419200} />
-                                </fieldset>
-                            ) : (
-                                <NotificationsForm.Settings field='settings' disabled={publishing} />
-                            )}
+                                        <Forms.Number name='timeToLiveInSeconds'
+                                            label={texts.common.timeToLive} min={0} max={2419200} />
+                                    </>
+                                ) : (
+                                    <NotificationsForm.Settings field='settings' disabled={publishing} />
+                                )}
+                            </fieldset>
 
                             <FormError error={publishingError} />
                         </ModalBody>

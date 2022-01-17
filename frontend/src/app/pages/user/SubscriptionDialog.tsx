@@ -88,7 +88,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
                         </ModalHeader>
 
                         <ModalBody>
-                            <fieldset disabled={upserting}>
+                            <fieldset className='mt-3' disabled={upserting}>
                                 <Forms.Text name='topicPrefix'
                                     label={texts.common.topic} />
                             </fieldset>

@@ -13,8 +13,11 @@ export interface LoginState {
     // The current user.
     user?: User;
 
+    // True, when authenticating.
+    isAuthenticating?: boolean;
+
     // True, when authenticated.
-    isAuthenticating: boolean;
+    isAuthenticated?: boolean;
 }
 
 export interface User {
@@ -26,4 +29,7 @@ export interface User {
 
     // The token of the user.
     token: string;
+
+    // The role.
+    role?: string;
 }

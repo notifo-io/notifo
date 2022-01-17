@@ -148,7 +148,7 @@ export const AppPage = () => {
     }
 
     return (
-        <>
+        <main>
             <Nav vertical className='sidebar'>
                 <NavItem>
                     <NavLink activeClassName='active' className='nav-link' to={match.url} exact>
@@ -242,6 +242,6 @@ export const AppPage = () => {
             </Switch>
 
             <PublishDialog />
-        </>
+        </main>
     );
 };

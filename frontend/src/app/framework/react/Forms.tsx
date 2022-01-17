@@ -399,11 +399,11 @@ const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.O
     const [field] = useFieldNew(name);
 
     return (
-        <>
+        <div style={{ paddingTop: '.625rem' }}>
             {options.map(option =>
                 <InputCheckboxOption key={option.value} field={field} form={form} option={option} />,
             )}
-        </>
+        </div>
     );
 };
 
@@ -412,16 +412,16 @@ const EMPTY_ARRAY: any[] = [];
 const InputCheckboxOption = (props: { field: FieldInputProps<string[]>; form: FormikContextType<unknown>; option: Forms.Option<string> }) => {
     const { field, form, option } = props;
 
-    const value: string[] = field.value || EMPTY_ARRAY;
-    const valueExist = value && value.indexOf(option.value!) >= 0;
+    const valueArray: string[] = field.value || EMPTY_ARRAY;
+    const valueExist = valueArray && valueArray.indexOf(option.value!) >= 0;
 
     const doChange = React.useCallback(() => {
         if (valueExist) {
-            form.setFieldValue(field.name, value.filter(x => x !== option.value));
+            form.setFieldValue(field.name, valueArray.filter(x => x !== option.value));
         } else {
-            form.setFieldValue(field.name, [...value, option.value]);
+            form.setFieldValue(field.name, [...valueArray, option.value]);
         }
-    }, [valueExist, form, field.name, value, option.value]);
+    }, [valueExist, form, field.name, valueArray, option.value]);
 
     return (
         <CustomInput type='checkbox' name={option.value} id={option.value || 'none'} checked={valueExist}

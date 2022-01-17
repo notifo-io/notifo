@@ -26,7 +26,7 @@ export function isErrorVisible(error: string | ErrorDto | undefined | null, touc
 }
 
 export function isError(error: any): error is ErrorDto {
-    return error && Types.isNumber(error.statusCode) && error.response && Types.isBoolean(error.wellFormed);
+    return error && Types.isNumber(error.statusCode) && Types.isBoolean(error.wellFormed);
 }
 
 export function buildErrorWithFallback(error: any, message: string): ErrorDto {

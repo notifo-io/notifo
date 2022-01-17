@@ -9,12 +9,13 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Notifo.Domain.Identity;
 
+#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Identity
 {
-    internal sealed class UserWithClaims : IUser
+    internal sealed record UserWithClaims(IdentityUser Identity, IReadOnlyList<Claim> Claims, IReadOnlySet<string> Roles) : IUser
     {
-        public IdentityUser Identity { get; }
-
         public string Id
         {
             get => Identity.Id;
@@ -30,15 +31,6 @@ namespace Notifo.Identity
             get => Identity.LockoutEnd > DateTime.UtcNow;
         }
 
-        public IReadOnlyList<Claim> Claims { get; }
-
         object IUser.Identity => Identity;
-
-        public UserWithClaims(IdentityUser user, IReadOnlyList<Claim> claims)
-        {
-            Identity = user;
-
-            Claims = claims;
-        }
     }
 }

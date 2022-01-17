@@ -36,7 +36,14 @@ export interface UserRowProps {
 }
 
 export const UserRow = React.memo((props: UserRowProps) => {
-    const { showCounters, match, onDelete, onEdit, onPublish, user } = props;
+    const { 
+        showCounters, 
+        match, 
+        onDelete,
+        onEdit,
+        onPublish,
+        user,
+    } = props;
 
     React.useEffect(() => {
         ReactTooltip.rebuild();

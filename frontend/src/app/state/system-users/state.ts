@@ -6,24 +6,18 @@
  */
 
 import { ErrorDto, ListState } from '@app/framework';
-import { UserDto } from '@app/service';
+import { SystemUserDto } from '@app/service';
 
-export interface UsersStateInStore {
-    users: UsersState;
+export interface SystemUsersStateInStore {
+    systemUsers: SystemUsersState;
 }
 
-export interface UsersState {
+export interface SystemUsersState {
     // All users.
-    users: ListState<UserDto>;
+    systemUsers: ListState<SystemUserDto>;
 
     // The current user.
-    user?: UserDto;
-
-    // True if loading user.
-    loadingUser?: boolean;
-
-    // The user loading error.
-    loadingUsersError?: any;
+    systemUser?: SystemUserDto;
 
     // True if upserting.
     upserting?: boolean;

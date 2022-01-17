@@ -29,6 +29,8 @@ export type IconType =
     'keyboard_arrow_left' |
     'keyboard_arrow_right' |
     'keyboard_arrow_up' |
+    'lock_open' |
+    'lock_outline' |
     'mail_outline' |
     'message' |
     'messaging' |

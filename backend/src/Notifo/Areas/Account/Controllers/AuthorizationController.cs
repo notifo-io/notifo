@@ -126,10 +126,11 @@ namespace Notifo.Areas.Account.Controllers
 
             var principal = await SignInManager.CreateUserPrincipalAsync((IdentityUser)user.Identity);
 
-            var scopes = request.GetScopes();
+            var requestedScopes = request.GetScopes();
+            var resources = await scopeManager.ListResourcesAsync(requestedScopes, HttpContext.RequestAborted).ToListAsync(HttpContext.RequestAborted);
 
             principal.SetScopes(request.GetScopes());
-            principal.SetResources(await scopeManager.ListResourcesAsync(scopes, HttpContext.RequestAborted).ToListAsync(HttpContext.RequestAborted));
+            principal.SetResources(resources);
 
             foreach (var claim in principal.Claims)
             {

@@ -103,29 +103,31 @@ export const loginMiddleware: Middleware = (state) => next => action => {
     return result;
 };
 
-const initialState: LoginState = {
-    isAuthenticating: true,
-};
+const initialState: LoginState = {};
 
 export const loginReducer = createReducer(initialState, builder => builder
     .addCase(loginStarted, (state) => {
         state.isAuthenticating = true;
+        state.isAuthenticated = false;
     })
     .addCase(loginDoneSilent, (state, action) => {
         state.isAuthenticating = false;
+        state.isAuthenticated = true;
         state.user = action.payload.user;
     })
     .addCase(loginDoneRedirect, (state, action) => {
         state.isAuthenticating = false;
+        state.isAuthenticated = true;
         state.user = action.payload.user;
     })
     .addCase(loginFailed, (state) => {
         state.isAuthenticating = false;
+        state.isAuthenticated = true;
         state.user = undefined;
     }));
 
 function getUser(user: Oidc.User): User {
-    const { sub, name } = user.profile;
+    const { sub, name, role } = user.profile!;
 
-    return { sub, name: name!, token: user.access_token };
+    return { sub, name, role, token: user.access_token } as any;
 }

@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Tasks;
 using Squidex.Log;
 
 namespace Notifo.Identity
@@ -157,15 +158,16 @@ namespace Notifo.Identity
         {
             Guard.NotNullOrEmpty(email, nameof(email));
 
-            var isFirst = !userManager.Users.Any();
-
             var user = userFactory.Create(email);
 
             try
             {
+                var isFirst = !userManager.Users.Any();
+
                 await userManager.CreateAsync(user).Throw(log);
 
                 values ??= new UserValues();
+                values.Roles ??= new HashSet<string>();
 
                 if (string.IsNullOrWhiteSpace(values.DisplayName))
                 {
@@ -174,7 +176,7 @@ namespace Notifo.Identity
 
                 if (isFirst)
                 {
-                    values.Role = NotifoRoles.AppAdmin;
+                    values.Roles.Add(NotifoRoles.HostAdmin);
                 }
 
                 await userManager.SyncClaims(user, values).Throw(log);
@@ -184,9 +186,9 @@ namespace Notifo.Identity
                     await userManager.AddPasswordAsync(user, values.Password).Throw(log);
                 }
 
-                if (!string.IsNullOrWhiteSpace(values.Role) && !await userManager.IsInRoleAsync(user, values.Role))
+                foreach (var role in values.Roles)
                 {
-                    await userManager.AddToRoleAsync(user, values.Role).Throw(log);
+                    await userManager.AddToRoleAsync(user, role).Throw(log);
                 }
 
                 if (!isFirst && lockAutomatically)
@@ -257,8 +259,6 @@ namespace Notifo.Identity
 
             var user = await GetUserAsync(id);
 
-            var oldUser = await ResolveAsync(user);
-
             if (!string.IsNullOrWhiteSpace(values.Email) && values.Email != user.Email)
             {
                 await userManager.SetEmailAsync(user, values.Email).Throw(log);
@@ -277,9 +277,19 @@ namespace Notifo.Identity
                 await userManager.AddPasswordAsync(user, values.Password).Throw(log);
             }
 
-            if (!string.IsNullOrWhiteSpace(values.Role) && !await userManager.IsInRoleAsync(user, values.Role))
+            var oldUser = await ResolveAsync(user);
+
+            if (values.Roles != null)
             {
-                await userManager.AddToRoleAsync(user, values.Role).Throw(log);
+                foreach (var role in values.Roles.Where(x => !oldUser.Roles.Contains(x)))
+                {
+                    await userManager.AddToRoleAsync(user, role).Throw(log);
+                }
+
+                foreach (var role in oldUser.Roles.Where(x => !values.Roles.Contains(x)))
+                {
+                    await userManager.RemoveFromRoleAsync(user, role).Throw(log);
+                }
             }
 
             var resolved = await ResolveAsync(user);
@@ -388,9 +398,11 @@ namespace Notifo.Identity
 
         private async Task<IUser> ResolveAsync(IdentityUser user)
         {
-            var claims = await userManager.GetClaimsAsync(user);
+            var (claims, roles) = await AsyncHelper.WhenAll(
+                userManager.GetClaimsAsync(user),
+                userManager.GetRolesAsync(user));
 
-            return new UserWithClaims(user, claims.ToList());
+            return new UserWithClaims(user, claims.ToList(), roles.ToHashSet());
         }
 
         private async Task<IUser?> ResolveOptionalAsync(IdentityUser? user)
