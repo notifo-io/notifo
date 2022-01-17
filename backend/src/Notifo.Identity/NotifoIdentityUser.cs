@@ -13,7 +13,7 @@ namespace Notifo.Identity
 
         public string Password { get; set; }
 
-        public string? Role { get; set; } = "HostAdmin";
+        public string? Role { get; set; }
 
         public bool PasswordReset { get; set; }
 
