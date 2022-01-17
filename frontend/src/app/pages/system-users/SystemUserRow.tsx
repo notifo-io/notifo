@@ -74,13 +74,13 @@ export const SystemUserRow = React.memo((props: SystemUserRowProps) => {
                     {user.canUpdate &&
                         <>
                             {!user.isLocked &&
-                                <Button className='ml-1' size='sm' color='dark' onClick={doLock} data-tip={texts.users.lock}>
+                                <Button className='ml-1' size='sm' color='light' onClick={doLock} data-tip={texts.users.lock}>
                                     <Icon type='lock_outline' />
                                 </Button>
                             }
 
                             {user.isLocked &&
-                                <Button className='ml-1' size='sm' color='light' onClick={doUnlock} data-tip={texts.users.unlock}>
+                                <Button className='ml-1' size='sm' color='dark' onClick={doUnlock} data-tip={texts.users.unlock}>
                                     <Icon type='lock_open' />
                                 </Button>
                             }
