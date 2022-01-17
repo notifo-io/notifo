@@ -43,7 +43,7 @@ export const EmailTemplateMoreDialog = (props: EmailTemplateMoreDialogProps) => 
                         </ModalHeader>
 
                         <ModalBody>
-                            <fieldset>
+                            <fieldset className='mt-3'>
                                 <Forms.Text name='fromEmail' vertical
                                     label={texts.common.fromEmail} />
 

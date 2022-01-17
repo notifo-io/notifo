@@ -119,40 +119,42 @@ export const UserDialog = (props: UserDialogProps) => {
                         </ModalHeader>
 
                         <ModalBody>
-                            {dialogTab === 0 ? (
-                                <fieldset disabled={upserting}>
-                                    <Forms.Text name='id'
-                                        label={texts.common.id} />
+                            <fieldset className='mt-3' disabled={upserting}>
+                                {dialogTab === 0 ? (
+                                    <>
+                                        <Forms.Text name='id'
+                                            label={texts.common.id} />
 
-                                    <Forms.Text name='fullName'
-                                        label={texts.common.name} />
+                                        <Forms.Text name='fullName'
+                                            label={texts.common.name} />
 
-                                    <Forms.Text name='emailAddress'
-                                        label={texts.common.emailAddress} />
+                                        <Forms.Text name='emailAddress'
+                                            label={texts.common.emailAddress} />
 
-                                    <Forms.Text name='phoneNumber'
-                                        label={texts.common.phoneNumber} />
+                                        <Forms.Text name='phoneNumber'
+                                            label={texts.common.phoneNumber} />
 
-                                    <Forms.Select name='preferredLanguage' options={coreLanguages}
-                                        label={texts.common.language} />
+                                        <Forms.Select name='preferredLanguage' options={coreLanguages}
+                                            label={texts.common.language} />
 
-                                    <Forms.Select name='preferredTimezone' options={coreTimezones}
-                                        label={texts.common.timezone} />
+                                        <Forms.Select name='preferredTimezone' options={coreTimezones}
+                                            label={texts.common.timezone} />
 
-                                    {allProperties.length > 0 &&
-                                        <>
-                                            <hr />
+                                        {allProperties.length > 0 &&
+                                            <>
+                                                <hr />
 
-                                            {allProperties.map(x =>
-                                                <Forms.Text key={x.name} name={x.name} hints={x.editorDescription}
-                                                    label={x.editorLabel || x.name} />,
-                                            )}
-                                        </>
-                                    }
-                                </fieldset>
-                            ) : (
-                                <NotificationsForm.Settings field='settings' disabled={upserting} />
-                            )}
+                                                {allProperties.map(x =>
+                                                    <Forms.Text key={x.name} name={x.name} hints={x.editorDescription}
+                                                        label={x.editorLabel || x.name} />,
+                                                )}
+                                            </>
+                                        }
+                                    </>
+                                ) : (
+                                    <NotificationsForm.Settings field='settings' disabled={upserting} />
+                                )}
+                            </fieldset>
 
                             <FormError error={upsertingError} />
                         </ModalBody>

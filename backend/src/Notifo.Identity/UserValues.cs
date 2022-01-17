@@ -15,12 +15,12 @@ namespace Notifo.Identity
 
         public string DisplayName { get; set; }
 
-        public string? Role { get; set; }
-
         public bool? Consent { get; set; }
 
         public bool? ConsentForEmails { get; set; }
 
         public bool? Invited { get; set; }
+
+        public HashSet<string>? Roles { get; set; }
     }
 }

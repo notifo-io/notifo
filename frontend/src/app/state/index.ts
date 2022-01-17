@@ -20,5 +20,6 @@ export * from './publish';
 export * from './shared';
 export * from './sms-templates';
 export * from './subscriptions';
+export * from './system-users';
 export * from './templates';
 export * from './users';

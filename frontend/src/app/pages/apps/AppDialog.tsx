@@ -69,7 +69,7 @@ export const AppDialog = (props: AppDialogProps) => {
                         </ModalHeader>
 
                         <ModalBody>
-                            <fieldset disabled={creating}>
+                            <fieldset className='mt-3' disabled={creating}>
                                 <Forms.Text name='name' vertical
                                     label={texts.common.name} />
                             </fieldset>

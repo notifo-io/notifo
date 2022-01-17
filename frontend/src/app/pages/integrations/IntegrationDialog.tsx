@@ -164,7 +164,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                         </ModalHeader>
 
                         <ModalBody>
-                            <fieldset disabled={upserting}>
+                            <fieldset className='mt-3' disabled={upserting}>
                                 {configured &&
                                     <Row className='mb-4'>
                                         <Col sm={4}>

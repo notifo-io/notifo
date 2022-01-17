@@ -6,7 +6,7 @@
  */
 
 import { Log, User, UserManager, WebStorageStateStore } from 'oidc-client';
-import { AppsClient, ConfigsClient, EmailTemplatesClient, EventsClient, LogsClient, MediaClient, MessagingTemplatesClient, NotificationsClient, SmsTemplatesClient, TemplatesClient, UsersClient } from './service';
+import { AppsClient, ConfigsClient, EmailTemplatesClient, EventsClient, LogsClient, MediaClient, MessagingTemplatesClient, NotificationsClient, SmsTemplatesClient, SystemUsersClient, TemplatesClient, UsersClient } from './service';
 
 export * from './service';
 
@@ -58,7 +58,7 @@ export module AuthService {
                 post_logout_redirect_uri: `${authority}/authentication/logout-callback`,
                 redirect_uri: `${authority}/authentication/login-callback`,
                 response_type: 'code',
-                scope: 'openid profile NotifoAPI',
+                scope: 'openid profile roles NotifoAPI',
                 silentRequestTimeout: 10000,
                 silent_redirect_uri: `${authority}/authentication/login-silent-callback.html`,
                 userStore: new WebStorageStateStore({ store: window.localStorage || window.sessionStorage }),
@@ -135,6 +135,8 @@ export module Clients {
     export const Notifications = new NotificationsClient(getApiUrl(), http);
 
     export const SmsTemplates = new SmsTemplatesClient(getApiUrl(), http);
+
+    export const SystemUsers = new SystemUsersClient(getApiUrl(), http);
 
     export const Users = new UsersClient(getApiUrl(), http);
 

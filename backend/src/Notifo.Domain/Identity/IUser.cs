@@ -19,6 +19,8 @@ namespace Notifo.Domain.Identity
 
         object Identity { get; }
 
+        IReadOnlySet<string> Roles { get; }
+
         IReadOnlyList<Claim> Claims { get; }
     }
 }

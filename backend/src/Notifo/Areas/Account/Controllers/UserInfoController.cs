@@ -22,7 +22,7 @@ namespace Notifo.Areas.Account.Controllers
         [Produces("application/json")]
         public async Task<IActionResult> Userinfo()
         {
-            var user = await UserService.GetAsync(User);
+            var user = await UserService.GetAsync(User, HttpContext.RequestAborted);
 
             if (user == null)
             {
@@ -48,7 +48,7 @@ namespace Notifo.Areas.Account.Controllers
 
             if (User.HasScope(Scopes.Roles))
             {
-                claims[Claims.Role] = Array.Empty<string>();
+                claims[Claims.Role] = (object?)user.Roles?.FirstOrDefault() ?? Array.Empty<string>();
             }
 
             return Ok(claims);

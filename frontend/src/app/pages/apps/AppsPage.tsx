@@ -25,7 +25,7 @@ export const AppsPage = () => {
     }, [dispatch]);
 
     return (
-        <>
+        <main className='pl-4'>
             <Row className='align-items-center header'>
                 <Col xs='auto'>
                     <h1>{texts.common.apps}</h1>
@@ -59,6 +59,6 @@ export const AppsPage = () => {
                     ))}
                 </div>
             }
-        </>
+        </main>
     );
 };

@@ -9,7 +9,7 @@ namespace Notifo.Domain.Identity
 {
     public static class NotifoRoles
     {
-        public const string HostAdmin = "HostAdmin";
+        public const string HostAdmin = "ADMIN";
 
         public const string AppUser = "User";
 

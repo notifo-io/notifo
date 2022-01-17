@@ -88,16 +88,4 @@ export const usersReducer = createReducer(initialState, builder => list.initiali
         if (!state.user || state.user.id === action.payload.id) {
             state.user = action.payload;
         }
-    })
-    .addCase(deleteUser.pending, (state) => {
-        state.deleting = true;
-        state.deletingError = undefined;
-    })
-    .addCase(deleteUser.rejected, (state, action) => {
-        state.deleting = false;
-        state.deletingError = action.payload as ErrorDto;
-    })
-    .addCase(deleteUser.fulfilled, (state) => {
-        state.deleting = false;
-        state.deletingError = undefined;
     }));
