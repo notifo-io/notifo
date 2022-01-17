@@ -8,6 +8,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { routerActions } from 'react-router-redux';
 import { Dispatch, Middleware } from 'redux';
+import { Types } from '@app/framework';
 import { AuthService } from '@app/service';
 import { LoginState, User } from './state';
 
@@ -113,12 +114,12 @@ export const loginReducer = createReducer(initialState, builder => builder
     .addCase(loginDoneSilent, (state, action) => {
         state.isAuthenticating = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        state.user = action.payload.user as any;
     })
     .addCase(loginDoneRedirect, (state, action) => {
         state.isAuthenticating = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        state.user = action.payload.user as any;
     })
     .addCase(loginFailed, (state) => {
         state.isAuthenticating = false;
@@ -129,5 +130,13 @@ export const loginReducer = createReducer(initialState, builder => builder
 function getUser(user: Oidc.User): User {
     const { sub, name, role } = user.profile!;
 
-    return { sub, name, role, token: user.access_token } as any;
+    let roles: string[];
+
+    if (Types.isArray(role)) {
+        roles = role;
+    } else {
+        roles = [role];
+    }
+
+    return { sub, name, roles, token: user.access_token } as any;
 }

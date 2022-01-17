@@ -48,7 +48,7 @@ namespace Notifo.Areas.Account.Controllers
 
             if (User.HasScope(Scopes.Roles))
             {
-                claims[Claims.Role] = (object?)user.Roles?.FirstOrDefault() ?? Array.Empty<string>();
+                claims[Claims.Role] = user.Roles;
             }
 
             return Ok(claims);

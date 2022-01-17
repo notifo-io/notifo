@@ -31,5 +31,5 @@ export interface User {
     token: string;
 
     // The role.
-    role?: string;
+    roles: ReadonlyArray<string>;
 }

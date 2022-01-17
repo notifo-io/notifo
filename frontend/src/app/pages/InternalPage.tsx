@@ -62,7 +62,7 @@ export const InternalPage = () => {
                                 {texts.common.profileSettings}
                             </DropdownItem>
 
-                            {user.role?.toLowerCase() === 'admin' &&
+                            {user.roles.find(x => x.toUpperCase() === 'ADMIN') &&
                                 <NavLink to={`${match.path}/system-users`} className='dropdown-item'>
                                     {texts.systemUsers.header}
                                 </NavLink>
