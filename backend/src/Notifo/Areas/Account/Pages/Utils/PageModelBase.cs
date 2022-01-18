@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Squidex.Hosting;
@@ -22,6 +23,7 @@ namespace Notifo.Areas.Account.Pages.Utils
         private readonly Lazy<IUrlGenerator> urlGenerator;
         private readonly Lazy<ILogger<TDerived>> logger;
         private readonly Lazy<IStringLocalizer<AppResources>> localizer;
+        private readonly Lazy<IOptions<NotifoIdentityOptions>> options;
 
         public SignInManager<IdentityUser> SignInManager
         {
@@ -57,6 +59,8 @@ namespace Notifo.Areas.Account.Pages.Utils
         [BindProperty(SupportsGet = true)]
         public string? ErrorMessage { get; set; }
 
+        public bool HasPasswordAuth => options.Value.Value.AllowPasswordAuth;
+
         protected PageModelBase()
         {
             SetupService(ref logger!);
@@ -64,6 +68,7 @@ namespace Notifo.Areas.Account.Pages.Utils
             SetupService(ref signInManager!);
             SetupService(ref userService!);
             SetupService(ref urlGenerator!);
+            SetupService(ref options!);
         }
 
         private void SetupService<TService>(ref Lazy<TService>? value) where TService : notnull

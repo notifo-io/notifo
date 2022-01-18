@@ -34,8 +34,6 @@ namespace Notifo.Areas.Account.Pages
 
         public bool HasExternalLogin { get; set; }
 
-        public bool HasPasswordAuth { get; set; } = true;
-
         public SetupModel(IAssetStore assetStore)
         {
             this.assetStore = assetStore;

@@ -16,6 +16,8 @@
     }
 }
 
+<h1>@ViewData["Title"]</h1>
+
 @if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
 {
     <div class="alert alert-danger">
@@ -84,4 +86,8 @@
             </div>
         </form>
     </section>
+
+    <div class="text-muted mt-4">
+        <small>@T["LoginNoAccount"]</small>
+    </div>
 }

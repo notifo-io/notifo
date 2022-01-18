@@ -21,8 +21,6 @@ namespace Notifo.Areas.Account.Pages
     {
         public bool HasPassword { get; set; }
 
-        public bool HasPasswordAuth { get; set; } = true;
-
         public IList<UserLoginInfo> ExternalLogins { get; set; }
 
         public IList<AuthenticationScheme> ExternalProviders { get; set; }
@@ -58,7 +56,6 @@ namespace Notifo.Areas.Account.Pages
             ExternalLogins = logins;
             ExternalProviders = providers.ToList();
             HasPassword = hasPassword;
-            HasPasswordAuth = true;
 
             await next();
         }

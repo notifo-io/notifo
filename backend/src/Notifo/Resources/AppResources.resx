@@ -525,4 +525,7 @@
   <data name="PasswordConfirm" xml:space="preserve">
     <value>password confirm</value>
   </data>
+  <data name="LoginNoAccount" xml:space="preserve">
+    <value>No account create yet?&lt;br /&gt;Just login with an social login provider to get an account.</value>
+  </data>
 </root>

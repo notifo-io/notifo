@@ -17,8 +17,6 @@ namespace Notifo.Areas.Account.Pages
     {
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        public bool HasPasswordAuth { get; set; } = true;
-
         public bool RememberMe { get; set; }
 
         [BindProperty]

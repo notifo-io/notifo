@@ -9,6 +9,8 @@ namespace Notifo.Identity
 {
     public sealed class NotifoIdentityOptions
     {
+        public bool AllowPasswordAuth { get; set; }
+
         public string GithubClient { get; set; }
 
         public string GithubSecret { get; set; }
