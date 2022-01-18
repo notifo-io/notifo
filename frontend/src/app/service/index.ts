@@ -30,7 +30,7 @@ export function getApiUrl() {
     }
 
     while (apiUrl.endsWith('/')) {
-        apiUrl = apiUrl.substr(0, apiUrl.length - 1);
+        apiUrl = apiUrl.substring(0, apiUrl.length - 1);
     }
 
     return apiUrl;

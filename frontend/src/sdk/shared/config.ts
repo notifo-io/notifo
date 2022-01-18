@@ -107,7 +107,7 @@ export function buildSDKConfig(opts: SDKConfig) {
     }
 
     while (options.apiUrl && options.apiUrl.endsWith('/')) {
-        options.apiUrl = options.apiUrl.substr(0, options.apiUrl.length - 1);
+        options.apiUrl = options.apiUrl.substring(0, options.apiUrl.length - 1);
     }
 
     if (!isStringOption(options.styleUrl)) {

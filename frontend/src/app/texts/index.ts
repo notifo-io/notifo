@@ -13,7 +13,7 @@ let userLanguage: string =
     navigator['userLanguage'];
 
 if (userLanguage) {
-    userLanguage = userLanguage.substr(0, 2);
+    userLanguage = userLanguage.substring(0, 2);
 }
 
 export const texts = EN;
