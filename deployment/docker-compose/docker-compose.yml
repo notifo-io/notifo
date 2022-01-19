@@ -1,7 +1,7 @@
 version: "3.5"
 services:
   notifo_mongo:
-    image: mongo:5.0.5
+    image: mongo:5
     volumes:
       - /etc/notifo/mongo/db:/data/db
     networks:
@@ -9,10 +9,10 @@ services:
     restart: unless-stopped
 
   notifo_notifo:
-    image: "notifo/notifo:1"
+    image: "squidex/notifo:1"
     environment:
       - URLS__BASEURL=https://${NOTIFO_DOMAIN}
-      - STORE__MONGODB__CONFIGURATION=mongodb://notifo_mongo
+      - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://notifo_mongo
       - IDENTITY__GOOGLECLIENT=${NOTIFO_GOOGLECLIENT}
       - IDENTITY__GOOGLESECRET=${NOTIFO_GOOGLESECRET}
       - IDENTITY__GITHUBCLIENT=${NOTIFO_GITHUBCLIENT}
@@ -32,7 +32,7 @@ services:
     restart: unless-stopped
 
   notifo_proxy:
-    image: notifo/caddy-proxy
+    image: squidex/caddy-proxy
     ports:
       - "80:80"
       - "443:443"
