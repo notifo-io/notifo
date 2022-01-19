@@ -72,7 +72,7 @@ export const TopNav = () => {
                             {texts.common.profileSettings}
                         </DropdownItem>
 
-                        {user.roles.find(x => x.toUpperCase() === 'ADMIN') &&
+                        {user.roles.find(x => x?.toUpperCase() === 'ADMIN') &&
                             <NavLink onClick={doClose} to={`${match.path}/system-users`} className='dropdown-item'>
                                 {texts.systemUsers.header}
                             </NavLink>

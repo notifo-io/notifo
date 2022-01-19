@@ -134,8 +134,10 @@ function getUser(user: Oidc.User): User {
 
     if (Types.isArray(role)) {
         roles = role;
-    } else {
+    } else if (Types.isString(role)) {
         roles = [role];
+    } else {
+        roles = [];
     }
 
     return { sub, name, roles, token: user.access_token } as any;

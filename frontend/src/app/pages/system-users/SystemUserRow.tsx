@@ -68,7 +68,7 @@ export const SystemUserRow = React.memo((props: SystemUserRowProps) => {
                     <span className='truncate'>{user.email}</span>
                 </td>
                 <td>
-                    {user.roles.find(x => x.toUpperCase() === 'ADMIN') ? texts.common.yes : '-'}
+                    {user.roles.find(x => x?.toUpperCase() === 'ADMIN') ? texts.common.yes : '-'}
                 </td>
                 <td className='text-right'>
                     {user.canUpdate &&
