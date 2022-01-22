@@ -13,11 +13,13 @@ import './ui/style/sdk.scss';
 
 type Init = { config?: SDKConfig };
 
+const scriptLocation = (document.currentScript as any)?.src as string;
+
 const queueJobs = new JobQueue();
 const queueInit: Init = {};
 
 async function init(value: any) {
-    const options = buildSDKConfig(value);
+    const options = buildSDKConfig(value, scriptLocation);
 
     if (options) {
         await apiConnect(options);

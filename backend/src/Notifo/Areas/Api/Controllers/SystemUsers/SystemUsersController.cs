@@ -33,8 +33,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// <returns>
         /// 200 => Users returned.
         /// </returns>
-        [HttpGet]
-        [Route("system-users/")]
+        [HttpGet("api/system-users/")]
         [ProducesResponseType(typeof(ListResponseDto<SystemUserDto>), StatusCodes.Status200OK)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> GetUsers([FromQuery] QueryDto q)
@@ -57,8 +56,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// 200 => User returned.
         /// 404 => User not found.
         /// </returns>
-        [HttpGet]
-        [Route("system-users/{id}/")]
+        [HttpGet("api/system-users/{id}/")]
         [ProducesResponseType(typeof(SystemUserDto), 201)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> GetUser(string id)
@@ -82,8 +80,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// <returns>
         /// 201 => User created.
         /// </returns>
-        [HttpPost]
-        [Route("system-users/")]
+        [HttpPost("api/system-users/")]
         [ProducesResponseType(typeof(SystemUserDto), 201)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> PostUser([FromBody] CreateSystemUserDto request)
@@ -104,8 +101,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// 200 => User updated.
         /// 403 => User cannot be updated.
         /// </returns>
-        [HttpPut]
-        [Route("system-users/{id}/")]
+        [HttpPut("api/system-users/{id}/")]
         [ProducesResponseType(typeof(SystemUserDto), 200)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> PutUser(string id, [FromBody] UpdateSystemUserDto request)
@@ -130,8 +126,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// 200 => User locked.
         /// 403 => User cannot be locked.
         /// </returns>
-        [HttpPut]
-        [Route("system-users/{id}/lock/")]
+        [HttpPut("api/system-users/{id}/lock/")]
         [ProducesResponseType(typeof(SystemUserDto), 200)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> LockUser(string id)
@@ -156,8 +151,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// 200 => User unlocked.
         /// 403 => User cannot be unlocked.
         /// </returns>
-        [HttpPut]
-        [Route("system-users/{id}/unlock/")]
+        [HttpPut("api/system-users/{id}/unlock/")]
         [ProducesResponseType(typeof(SystemUserDto), 200)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> UnlockUser(string id)
@@ -182,8 +176,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
         /// 204 => User deleted.
         /// 403 => User cannot be deleted.
         /// </returns>
-        [HttpDelete]
-        [Route("system-users/{id}/")]
+        [HttpDelete("api/system-users/{id}/")]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> DeleteUser(string id)
         {

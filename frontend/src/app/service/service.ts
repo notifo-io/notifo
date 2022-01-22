@@ -1220,7 +1220,7 @@ export class SystemUsersClient {
      * @return Users returned.
      */
     getUsers(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSystemUserDto> {
-        let url_ = this.baseUrl + "/system-users?";
+        let url_ = this.baseUrl + "/api/system-users?";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -1280,7 +1280,7 @@ export class SystemUsersClient {
      * @return User created.
      */
     postUser(request: CreateSystemUserDto): Promise<SystemUserDto> {
-        let url_ = this.baseUrl + "/system-users";
+        let url_ = this.baseUrl + "/api/system-users";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -1334,7 +1334,7 @@ export class SystemUsersClient {
      * @return User returned.
      */
     getUser(id: string): Promise<void> {
-        let url_ = this.baseUrl + "/system-users/{id}";
+        let url_ = this.baseUrl + "/api/system-users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1389,7 +1389,7 @@ export class SystemUsersClient {
      * @return User updated.
      */
     putUser(id: string, request: UpdateSystemUserDto): Promise<SystemUserDto> {
-        let url_ = this.baseUrl + "/system-users/{id}";
+        let url_ = this.baseUrl + "/api/system-users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1452,7 +1452,7 @@ export class SystemUsersClient {
      * @return User deleted.
      */
     deleteUser(id: string): Promise<void> {
-        let url_ = this.baseUrl + "/system-users/{id}";
+        let url_ = this.baseUrl + "/api/system-users/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1508,7 +1508,7 @@ export class SystemUsersClient {
      * @return User locked.
      */
     lockUser(id: string): Promise<SystemUserDto> {
-        let url_ = this.baseUrl + "/system-users/{id}/lock";
+        let url_ = this.baseUrl + "/api/system-users/{id}/lock";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1567,7 +1567,7 @@ export class SystemUsersClient {
      * @return User unlocked.
      */
     unlockUser(id: string): Promise<SystemUserDto> {
-        let url_ = this.baseUrl + "/system-users/{id}/unlock";
+        let url_ = this.baseUrl + "/api/system-users/{id}/unlock";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));

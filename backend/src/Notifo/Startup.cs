@@ -155,8 +155,8 @@ namespace Notifo
                     builder.UseExceptionHandler("/account/error");
                 });
 
-            app.ConfigureApi(signalROptions);
-            app.ConfigureFrontend();
+            app.UseApi(signalROptions);
+            app.UseFrontend();
         }
     }
 }

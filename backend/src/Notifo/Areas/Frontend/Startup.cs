@@ -7,14 +7,13 @@
 
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
-using Notifo.Areas.Frontend.Middlewares;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Frontend
 {
     public static class Startup
     {
-        public static void ConfigureFrontend(this IApplicationBuilder app)
+        public static void UseFrontend(this IApplicationBuilder app)
         {
             var environment = app.ApplicationServices.GetRequiredService<IWebHostEnvironment>();
 
@@ -24,26 +23,41 @@ namespace Notifo.Areas.Frontend
             {
                 fileProvider = new CompositeFileProvider(fileProvider,
                     new PhysicalFileProvider(Path.Combine(environment.WebRootPath, "build")));
-
-                app.Use((context, next) =>
-                {
-                    if (!Path.HasExtension(context.Request.Path.Value))
-                    {
-                        context.Request.Path = new PathString("/index.html");
-                    }
-
-                    return next();
-                });
             }
 
             app.UseMiddleware<NotifoMiddleware>();
-            app.UseHtmlTransform();
 
-            app.UseWhen(x => x.IsIndex(), builder =>
+            app.UseWhen(x => !Path.HasExtension(x.Request.Path), builder =>
             {
                 builder.UseMiddleware<SetupMiddleware>();
             });
 
+            app.UseHtmlTransform();
+            app.UseNotifoStaticFiles(fileProvider);
+
+            // Try static files again and serve index.html.
+            if (environment.IsProduction())
+            {
+                app.Use((context, next) =>
+                {
+                    context.Request.Path = new PathString("/index.html");
+                    return next();
+                });
+
+                app.UseNotifoStaticFiles(fileProvider);
+            }
+
+            if (environment.IsDevelopment())
+            {
+                app.UseSpa(builder =>
+                {
+                    builder.UseProxyToSpaDevelopmentServer("https://localhost:3002");
+                });
+            }
+        }
+
+        private static void UseNotifoStaticFiles(this IApplicationBuilder app, IFileProvider fileProvider)
+        {
             app.UseStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = context =>
@@ -61,14 +75,6 @@ namespace Notifo.Areas.Frontend
                 },
                 FileProvider = fileProvider
             });
-
-            if (environment.IsDevelopment())
-            {
-                app.UseSpa(builder =>
-                {
-                    builder.UseProxyToSpaDevelopmentServer("https://localhost:3002");
-                });
-            }
         }
     }
 }

@@ -16,7 +16,7 @@ using NSwag.Annotations;
 namespace Notifo.Areas.Api.Controllers.Callbacks
 {
     [OpenApiIgnore]
-    public sealed class CallbacksController : Controller
+    public sealed class CallbacksController : BaseController
     {
         private readonly IAppStore appStore;
 
@@ -28,7 +28,7 @@ namespace Notifo.Areas.Api.Controllers.Callbacks
         [AllowSynchronousIO]
         [HttpGet]
         [HttpPost]
-        [Route("/api/callback/sms")]
+        [Route("api/callback/sms")]
         public async Task<IActionResult> SmsCallback([FromQuery] string appId, [FromQuery] string integrationId)
         {
             var (app, sender) = await GetIntegrationAsync<ISmsSender>(appId, integrationId);
@@ -46,7 +46,7 @@ namespace Notifo.Areas.Api.Controllers.Callbacks
         [AllowSynchronousIO]
         [HttpGet]
         [HttpPost]
-        [Route("/api/callback/messaging")]
+        [Route("api/callback/messaging")]
         public async Task<IActionResult> MessagingCallback([FromQuery] string appId, [FromQuery] string integrationId)
         {
             var (app, sender) = await GetIntegrationAsync<IMessagingSender>(appId, integrationId);

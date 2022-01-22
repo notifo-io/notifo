@@ -32,7 +32,7 @@ namespace Notifo.Areas.Api.Controllers.Web
             this.signalROptions = signalROptions.Value;
         }
 
-        [HttpPost("/api/me/web/connect")]
+        [HttpPost("api/me/web/connect")]
         [AppPermission(NotifoRoles.AppUser)]
         public IActionResult GetMyConnection()
         {
@@ -57,7 +57,7 @@ namespace Notifo.Areas.Api.Controllers.Web
             return Ok(response);
         }
 
-        [HttpPost("/api/me/web/poll")]
+        [HttpPost("api/me/web/poll")]
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> GetMyPolling([FromBody] PollRequest request)
         {

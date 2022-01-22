@@ -12,7 +12,7 @@ namespace Notifo.Areas.Api
 {
     public static class Startup
     {
-        public static void ConfigureApi(this IApplicationBuilder app, SignalROptions signalROptions)
+        public static void UseApi(this IApplicationBuilder app, SignalROptions signalROptions)
         {
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
@@ -27,7 +27,8 @@ namespace Notifo.Areas.Api
             app.UseReDoc(settings =>
             {
                 settings.Path = "/api/docs";
-
+                settings.CustomJavaScriptPath = null;
+                settings.CustomInlineStyles = null;
                 settings.DocumentPath = "/api/openapi.json";
             });
 
@@ -50,6 +51,16 @@ namespace Notifo.Areas.Api
 
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
+            });
+
+            // Return a 404 for all unresolved api requests.
+            app.Map("/api", builder =>
+            {
+                builder.Use(new Func<HttpContext, Func<Task>, Task>((context, next) =>
+                {
+                    context.Response.StatusCode = 404;
+                    return Task.CompletedTask;
+                }));
             });
         }
     }

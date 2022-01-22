@@ -19,6 +19,9 @@ namespace Notifo.Areas.Account.Pages
 
         public bool RememberMe { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public bool Signup { get; set; }
+
         [BindProperty]
         public LoginInputModel Model { get; set; } = new LoginInputModel();
 

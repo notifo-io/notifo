@@ -61,7 +61,8 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// <returns>
         /// 200 => Notifications returned.
         /// </returns>
-        [HttpGet("/api/me/notifications")]
+        [HttpGet]
+        [Route("api/me/notifications")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ListResponseDto<UserNotificationDto>))]
         public async Task<IActionResult> GetMyNotifications([FromQuery] QueryDto q)
@@ -82,7 +83,8 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// <returns>
         /// 200 => Notifications returned.
         /// </returns>
-        [HttpGet("/api/me/notifications/archive")]
+        [HttpGet]
+        [Route("api/me/notifications/archive")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ListResponseDto<UserNotificationDto>))]
         public async Task<IActionResult> GetMyArchive()
@@ -104,7 +106,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// <returns>
         /// 204 => Notifications updated.
         /// </returns>
-        [HttpPost("/api/me/notifications/handled")]
+        [HttpPost("api/me/notifications/handled")]
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
         {

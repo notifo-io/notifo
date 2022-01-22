@@ -288,14 +288,8 @@
   <data name="LoginWithGitHub" xml:space="preserve">
     <value>Login with Github</value>
   </data>
-  <data name="LoginWithGoogle" xml:space="preserve">
-    <value>Login with Google</value>
-  </data>
-  <data name="LoginWithMicrosoft" xml:space="preserve">
-    <value>Login with Microsoft</value>
-  </data>
-  <data name="LoginWithTwitter" xml:space="preserve">
-    <value>Login with Twitter</value>
+  <data name="LoginWith" xml:space="preserve">
+    <value>Login with {0}</value>
   </data>
   <data name="Logout" xml:space="preserve">
     <value>Logout</value>
@@ -527,5 +521,17 @@
   </data>
   <data name="LoginNoAccount" xml:space="preserve">
     <value>No account create yet?&lt;br /&gt;Just login with an social login provider to get an account.</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="NoAccount" xml:space="preserve">
+    <value>Please ask your system administrator to create an account for you.</value>
+  </data>
+  <data name="Signup" xml:space="preserve">
+    <value>Signup</value>
+  </data>
+  <data name="SignupWith" xml:space="preserve">
+    <value>Signup with {0}</value>
   </data>
 </root>

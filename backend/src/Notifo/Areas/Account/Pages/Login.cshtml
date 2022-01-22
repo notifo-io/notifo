@@ -14,9 +14,9 @@
             </div>
         }
     }
-}
 
-<h1>@ViewData["Title"]</h1>
+    var loginText = Model.Signup ? "SignupWith" : "LoginWith";
+}
 
 @if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
 {
@@ -25,40 +25,71 @@
     </div>
 }
 
+<div class="text-center mb-6">
+    <div class="btn-group">
+        @if (Model!.Signup)
+        {
+            <a class="btn btn-toggle" asp-page="Login" asp-route-returnurl="@Model.ReturnUrl">@T["Login"]</a>
+        }
+        else
+        {
+            <a class="btn btn-toggle btn-primary">@T["Login"]</a>
+        }
+
+        @if (!Model!.Signup)
+        {
+            <a class="btn btn-toggle" asp-page="Login" asp-route-returnurl="@Model.ReturnUrl" asp-route-signup="true">@T["Signup"]</a>
+        }
+        else
+        {
+            <a class="btn btn-toggle btn-primary">@T["Signup"]</a>
+        }
+    </div>
+</div>
+
 @if (Model!.HasPasswordAuth)
 {
-    <section>
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+    if (Model.Signup)
+    {
+        <div class="text-muted mt-5">
+            <small>@T["NoAccount"]</small>
+        </div>
+    }
+    else
+    {
+        <section>
+            <form method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-            <div class="form-group">
-                <label asp-for="Model.Email">@T["EmailLabel"]</label>
+                <div class="form-group">
+                    <label asp-for="Model.Email">@T["EmailLabel"]</label>
 
-                @{ RenderValidation("Model.Email"); }
+                    @{ RenderValidation("Model.Email"); }
 
-                <input asp-for="Model.Email" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Model.Password">@T["PasswordLabel"]</label>
-
-                @{ RenderValidation("Model.Password"); }
-
-                <input asp-for="Model.Password" type="password" class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <div class="custom-control custom-checkbox">
-                    <input asp-for="Model.RememberMe" type="checkbox" class="custom-control-input">
-                    <label asp-for="Model.RememberMe" class="custom-control-label">@T["RememberMe"]</label>
+                    <input asp-for="Model.Email" class="form-control" />
                 </div>
-            </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-block btn-primary">@T["LoginButton"]</button>
-            </div>
-        </form>
-    </section>
+                <div class="form-group">
+                    <label asp-for="Model.Password">@T["PasswordLabel"]</label>
+
+                    @{ RenderValidation("Model.Password"); }
+
+                    <input asp-for="Model.Password" type="password" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input asp-for="Model.RememberMe" type="checkbox" class="custom-control-input">
+                        <label asp-for="Model.RememberMe" class="custom-control-label">@T["RememberMe"]</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-block btn-primary">@T["LoginButton"]</button>
+                </div>
+            </form>
+        </section>
+    }
 }
 
 @if (Model!.HasPasswordAuth && Model?.ExternalLogins?.Count > 0)
@@ -79,15 +110,11 @@
                         var lowerName = provider.DisplayName!.ToLowerInvariant();
 
                         <button type="submit" class="btn btn-block btn-social btn-dark btn-@lowerName" name="provider" value="@provider.Name">
-                            @T[$"LoginWith{provider.DisplayName}"]
+                            @T[loginText, provider.DisplayName]
                         </button>
                     }
                 </p>
             </div>
         </form>
     </section>
-
-    <div class="text-muted mt-4">
-        <small>@T["LoginNoAccount"]</small>
-    </div>
 }

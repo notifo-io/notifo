@@ -94,12 +94,16 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
 
 const IS_DEV = global['window'] && (window.location.host.indexOf('localhost:3002') >= 0 || window.location.host.indexOf('localhost:5002') >= 0);
 
-export function buildSDKConfig(opts: SDKConfig) {
+export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | undefined) {
     const options: SDKConfig = <any>{ ...opts || {} };
 
     if (!isStringOption(options.apiUrl)) {
         logWarn('init.apiURL must be a string if defined, fallback to default.');
         options.apiUrl = undefined!;
+    }
+
+    if (!isString(options.apiUrl)) {
+        options.apiUrl = buildBaseUrl(scriptLocation)!;
     }
 
     if (!isString(options.apiUrl)) {
@@ -182,6 +186,22 @@ export function buildSDKConfig(opts: SDKConfig) {
     }
 
     return options;
+}
+
+function buildBaseUrl(url: string | null | undefined) {
+    if (!isString(url)) {
+        return null;
+    }
+
+    url = url.trim();
+
+    let indexOfHash = url.indexOf('/', 'https://'.length);
+
+    if (indexOfHash > 0) {
+        url = url.substring(0, indexOfHash);
+    }
+
+    return url;
 }
 
 export function buildNotificationsOptions(opts: NotificationsOptions) {

@@ -9,11 +9,11 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.107" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.117" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.3" />
-    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.3.1" />
+    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.4.0" />
     <PackageReference Include="Google.Cloud.Trace.V2" Version="2.3.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.681">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.688">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -32,7 +32,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpGet]
         [HttpPut]
         [HttpPost]
-        [Route("/api/tracking/notifications/{id}/seen")]
+        [Route("api/tracking/notifications/{id}/seen")]
         public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
@@ -45,7 +45,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpGet]
         [HttpPut]
         [HttpPost]
-        [Route("/api/tracking/notifications/{id}/delivered")]
+        [Route("api/tracking/notifications/{id}/delivered")]
         public async Task<IActionResult> Delivered(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
@@ -55,7 +55,8 @@ namespace Notifo.Areas.Api.Controllers.Tracking
             return TrackingPixel();
         }
 
-        [HttpGet("/api/tracking/notifications/{id}/confirm")]
+        [HttpGet]
+        [Route("api/tracking/notifications/{id}/confirm")]
         public async Task<IActionResult> Confirm(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
@@ -90,7 +91,8 @@ namespace Notifo.Areas.Api.Controllers.Tracking
             return View();
         }
 
-        [HttpPost("/api/tracking/notifications/{id}/confirm")]
+        [HttpPost]
+        [Route("api/tracking/notifications/{id}/confirm")]
         public async Task<IActionResult> ConfirmPost(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var details = new TrackingDetails(channel, deviceIdentifier);
