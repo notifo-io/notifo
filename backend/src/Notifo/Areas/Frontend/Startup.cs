@@ -32,7 +32,12 @@ namespace Notifo.Areas.Frontend
                 builder.UseMiddleware<SetupMiddleware>();
             });
 
-            app.UseHtmlTransform();
+            app.UseWhen(x => x.IsIndex(), builder =>
+            {
+                builder.UseMiddleware<SetupMiddleware>();
+                builder.UseHtmlTransform();
+            });
+
             app.UseNotifoStaticFiles(fileProvider);
 
             // Try static files again and serve index.html.

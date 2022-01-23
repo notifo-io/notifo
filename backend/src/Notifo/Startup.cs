@@ -9,7 +9,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Notifo.Areas.Api;
+using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Areas.Frontend;
 using Notifo.Pipeline;
 
@@ -131,6 +131,9 @@ namespace Notifo
         {
             var signalROptions = app.ApplicationServices.GetRequiredService<IOptions<SignalROptions>>().Value;
 
+            app.UseCookiePolicy();
+
+            app.UseDefaultPathBase();
             app.UseDefaultForwardRules();
 
             var cultures = new[]
@@ -148,14 +151,57 @@ namespace Notifo
 
             app.UseMyHealthChecks();
 
-            app.UseWhen(
-                context => context.Request.Path.StartsWithSegments("/account", StringComparison.OrdinalIgnoreCase),
-                builder =>
-                {
-                    builder.UseExceptionHandler("/account/error");
-                });
+            app.UseCors(builder => builder
+                .SetIsOriginAllowed(x => true)
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
-            app.UseApi(signalROptions);
+            app.UseOpenApi(settings =>
+            {
+                settings.Path = "/api/openapi.json";
+            });
+
+            app.UseReDoc(settings =>
+            {
+                settings.Path = "/api/docs";
+                settings.CustomJavaScriptPath = null;
+                settings.CustomInlineStyles = null;
+                settings.DocumentPath = "/api/openapi.json";
+            });
+
+            app.UseWhen(c => c.Request.Path.StartsWithSegments("/account", StringComparison.OrdinalIgnoreCase), builder =>
+            {
+                builder.UseExceptionHandler("/account/error");
+            });
+
+            app.UseWhen(c => c.Request.Path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase), builder =>
+            {
+                builder.UseMiddleware<RequestExceptionMiddleware>();
+            });
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                if (signalROptions.Enabled)
+                {
+                    endpoints.MapHub<NotificationHub>("/hub");
+                }
+
+                endpoints.MapControllers();
+                endpoints.MapRazorPages();
+            });
+
+            app.Map("/api", builder =>
+            {
+                // Return a 404 for all unresolved api requests.
+                builder.Use404();
+            });
+
             app.UseFrontend();
         }
     }
