@@ -27,11 +27,6 @@ namespace Notifo.Areas.Frontend
 
             app.UseMiddleware<NotifoMiddleware>();
 
-            app.UseWhen(x => !Path.HasExtension(x.Request.Path), builder =>
-            {
-                builder.UseMiddleware<SetupMiddleware>();
-            });
-
             app.UseWhen(x => x.IsIndex(), builder =>
             {
                 builder.UseMiddleware<SetupMiddleware>();
@@ -40,20 +35,15 @@ namespace Notifo.Areas.Frontend
 
             app.UseNotifoStaticFiles(fileProvider);
 
-            // Try static files again and serve index.html.
             if (environment.IsProduction())
             {
-                app.Use((context, next) =>
-                {
-                    context.Request.Path = new PathString("/index.html");
-                    return next();
-                });
-
+                // Try static files again tó serve index.html.
+                app.UsePathOverride("/index.html");
                 app.UseNotifoStaticFiles(fileProvider);
             }
-
-            if (environment.IsDevelopment())
+            else
             {
+                // Forward requests to SPA development server.
                 app.UseSpa(builder =>
                 {
                     builder.UseProxyToSpaDevelopmentServer("https://localhost:3002");
