@@ -61,9 +61,9 @@ $width: 500px;
             }
 
             &-image {
-                @include box-shadow-outer(0, 0, 20px, .8);
+                @include box-shadow-outer(0, 0, 40px, .7);
                 border: 0;
-                border-radius: 2px;
+                border-radius: 6px;
                 display: none;
                 max-height: 100%;
                 max-width: 100%;
@@ -109,12 +109,10 @@ $width: 500px;
     }
 
     &-right-circle1 {
-        border: none;
-        border-radius: 10000px;
+        @include circle(2000px);
         background-color: #5249d1;
-        width: 180%;
-        height: 200vh;
-        margin-left: -100%;
+        margin-top: 50px;
+        margin-left: -1000px;
     }
 
     &-right-circle2 {
