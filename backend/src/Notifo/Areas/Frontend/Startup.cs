@@ -32,9 +32,9 @@ namespace Notifo.Areas.Frontend
                 builder.UseMiddleware<SetupMiddleware>();
             });
 
-            app.UseWhen(c => c.IsHtmlPath(), builder =>
+            app.UseWhen(c => c.IsSpaFile() || c.IsHtmlPath(), builder =>
             {
-                builder.UseMiddleware<SetupMiddleware>();
+                builder.UseHtmlTransform();
             });
 
             app.UseNotifoStaticFiles(fileProvider);
@@ -78,12 +78,17 @@ namespace Notifo.Areas.Frontend
 
         private static bool IsSpaFile(this HttpContext context)
         {
-            return context.IsIndex() || !Path.HasExtension(context.Request.Path);
+            return (context.IsIndex() || !Path.HasExtension(context.Request.Path)) && !context.IsDevServer();
+        }
+
+        private static bool IsDevServer(this HttpContext context)
+        {
+            return context.Request.Path.StartsWithSegments("/ws", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsHtmlPath(this HttpContext context)
         {
-            return context.IsSpaFile() || context.Request.Path.Value?.Contains(".html", StringComparison.OrdinalIgnoreCase) == true;
+            return context.Request.Path.Value?.Contains(".html", StringComparison.OrdinalIgnoreCase) == true;
         }
     }
 }
