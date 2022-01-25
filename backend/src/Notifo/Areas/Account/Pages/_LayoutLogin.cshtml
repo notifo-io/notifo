@@ -73,67 +73,70 @@
             }
         </div>
     </div>
+    
+    @if (galleryEnabled)
+    {
+        <script type="text/javascript">
+            var stepImages = document.getElementsByClassName('gallery-image');
+            var stepLabels = document.getElementsByClassName('gallery-label');
+            var stepLinks = document.getElementsByClassName('gallery-step');
+            var step = 0;
+            var timer;
 
-    <script type="text/javascript">
-        var stepImages = document.getElementsByClassName('gallery-image');
-        var stepLabels = document.getElementsByClassName('gallery-label');
-        var stepLinks = document.getElementsByClassName('gallery-step');
-        var step = 0;
-        var timer;
+            function setStep(index) {
+                clearInterval(timer);
 
-        function setStep(index) {
-            clearInterval(timer);
+                timer = setInterval(function () {
+                    goNext();
+                }, 10000);
 
-            timer = setInterval(function () {
-                goNext();
-            }, 10000);
+                for (var i = 0; i < stepImages.length; i++) {
+                    var stepImage = stepImages[i];
+                    var stepLabel = stepLabels[i];
+                    var stepLink = stepLinks[i];
 
-            for (var i = 0; i < stepImages.length; i++) {
-                var stepImage = stepImages[i];
-                var stepLabel = stepLabels[i];
-                var stepLink = stepLinks[i];
+                    stepImage.classList.remove('active');
+                    stepLabel.classList.remove('active');
+                    stepLink.classList.remove('active');
 
-                stepImage.classList.remove('active');
-                stepLabel.classList.remove('active');
-                stepLink.classList.remove('active');
+                    if (i + 1 === index) {
+                        stepImage.classList.add('active');
+                        stepLabel.classList.add('active');
+                        stepLink.classList.add('active');
+                    }
+                }
 
-                if (i + 1 === index) {
-                    stepImage.classList.add('active');
-                    stepLabel.classList.add('active');
-                    stepLink.classList.add('active');
+                step = index;
+            }
+
+            function goPrev() {
+                if (step === 1) {
+                    setStep(7);
+                } else {
+                    setStep(step - 1);
                 }
             }
 
-            step = index;
-        }
-
-        function goPrev() {
-            if (step === 1) {
-                setStep(7);
-            } else {
-                setStep(step - 1);
+            function goNext() {
+                if (step === 7) {
+                    setStep(1);
+                } else {
+                    setStep(step + 1);
+                }
             }
-        }
 
-        function goNext() {
-            if (step === 7) {
-                setStep(1);
-            } else {
-                setStep(step + 1);
+            function subscribe(element, index) {
+                element.addEventListener('click', function () {
+                    setStep(index);
+                });
             }
-        }
 
-        function subscribe(element, index) {
-            element.addEventListener('click', function () {
-                setStep(index);
-            });
-        }
+            for (var i = 0; i < stepLinks.length; i++) {
+                subscribe(stepLinks[i], i + 1);
+            }
 
-        for (var i = 0; i < stepLinks.length; i++) {
-            subscribe(stepLinks[i], i + 1);
-        }
-
-        setStep(1);
-    </script>
+            setStep(1);
+        </script>
+    }
 </body>
 </html>
