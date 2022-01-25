@@ -5,6 +5,8 @@
 @{
     ViewData["Title"] = T["LoginTitle"];
 
+    Layout = "_LayoutLogin";
+
     void RenderValidation(string field)
     {
         @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)

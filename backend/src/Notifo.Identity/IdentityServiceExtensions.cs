@@ -86,7 +86,11 @@ namespace Microsoft.Extensions.DependencyInjection
                         .SetTokenEndpointUris("/connect/token")
                         .SetUserinfoEndpointUris("/connect/userinfo");
 
-                    builder.RegisterScopes(Scopes.Email, Scopes.Profile, Scopes.Roles, Constants.ApiScope);
+                    builder.RegisterScopes(
+                        Scopes.Email,
+                        Scopes.Profile,
+                        Scopes.Roles,
+                        Constants.ApiScope);
 
                     builder.AllowImplicitFlow();
                     builder.AllowAuthorizationCodeFlow();

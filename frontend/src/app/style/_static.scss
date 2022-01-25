@@ -1,0 +1,173 @@
+@import 'vars';
+@import 'mixins';
+
+$width: 500px;
+
+.login {
+    &-left {
+        @include fixed(0, null, 0, 0);
+        background-color: $color-white;
+        padding: 4rem;
+        padding-top: 0;
+        overflow-y: auto;
+        width: $width;
+
+        @media (max-width: 1000px) {
+            width: 100%;
+        }
+
+        .logo {
+            display: block;
+            margin: 4rem auto;
+            margin-top: 2rem;
+            width: 200px;
+        }
+
+        &-inner {
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    &-right {
+        @include fixed(0, 0, 0, 500px);
+        background-color: #372f66;
+        overflow-x: hidden;
+        overflow-y: hidden;
+
+        @media (max-width: 1000px) {
+            display: none;
+        }
+
+        .gallery {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: center;
+            max-width: 70%;
+            max-height: 60%;
+
+            &-images {
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 0;
+                flex-shrink: 1;
+                justify-content: end;
+                max-height: 100%;
+            }
+
+            &-image {
+                @include box-shadow-outer(0, 0, 20px, .8);
+                border: 0;
+                border-radius: 2px;
+                display: none;
+                max-height: 100%;
+                max-width: 100%;
+
+                &.active {
+                    display: block;
+                }
+            }
+
+            &-step {
+                @include circle(14px);
+                background-color: $color-white;
+                cursor: pointer;
+                margin-left: .25rem;
+                margin-right: .25rem;
+                opacity: .4;
+                transition: opacity .5s ease-in;
+
+                &:hover {
+                    opacity: 1;
+                }
+
+                &.active {
+                    opacity: 1;
+                }
+            }
+
+            &-labels {
+                margin: 1rem 0;
+            }
+
+            &-label {
+                color: $color-white;
+                display: none;
+                font-size: 1.4rem;
+                font-weight: 400;
+
+                &.active {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    &-right-circle1 {
+        border: none;
+        border-radius: 10000px;
+        background-color: #5249d1;
+        width: 180%;
+        height: 200vh;
+        margin-left: -100%;
+    }
+
+    &-right-circle2 {
+        @include fixed(50px, 50px);
+        @include circle(50px);
+        background: #ef3f5d;
+    }
+
+    &-right-content {
+        @include absolute(0, 0, 0, 0);
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
+    }
+}
+
+.profile {
+    margin: 0 auto;
+    margin-bottom: 4rem;
+    max-width: 600px;
+    padding-left: 3rem;
+    padding-right: 3rem;
+
+    p {
+        font-weight: 400;
+        font-size: 90%;
+    }
+
+    &-logo {
+        margin-bottom: 1rem;
+        margin-top: 5rem;
+        max-height: 50px;
+    }
+}
+
+.login-separator {
+    border-top: 1px solid #ddd;
+    color: #ddd;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    text-transform: uppercase;
+
+    span {
+        background: #fff;
+        display: inline-block;
+        padding: 5px;
+        padding-bottom: 0;
+        transform: translateY(-20px);
+    }
+}
+
+.copyright {
+    font-size: 70%;
+}

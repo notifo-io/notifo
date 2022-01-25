@@ -534,4 +534,25 @@
   <data name="SignupWith" xml:space="preserve">
     <value>Signup with {0}</value>
   </data>
+  <data name="Gallery1" xml:space="preserve">
+    <value>Define your notifications.</value>
+  </data>
+  <data name="Gallery2" xml:space="preserve">
+    <value>Use your preferred integrations.</value>
+  </data>
+  <data name="Gallery3" xml:space="preserve">
+    <value>Design emails using MJML.</value>
+  </data>
+  <data name="Gallery4" xml:space="preserve">
+    <value>Upload images to the media gallery.</value>
+  </data>
+  <data name="Gallery5" xml:space="preserve">
+    <value>Manage users and their setings.</value>
+  </data>
+  <data name="Gallery6" xml:space="preserve">
+    <value>Add the Javascript SDK to your site.</value>
+  </data>
+  <data name="Gallery7" xml:space="preserve">
+    <value>Leverage the REST API.</value>
+  </data>
 </root>

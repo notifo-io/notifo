@@ -15,48 +15,6 @@
     {
         @await RenderSectionAsync("header")
     }
-
-    <style>
-        .profile {
-            margin: 0 auto;
-            margin-bottom: 4rem;
-            max-width: 600px;
-            padding-left: 3rem;
-            padding-right: 3rem;
-        }
-
-        .profile p {
-            font-weight: 400;
-            font-size: 90%;
-        }
-
-        .profile-logo {
-            margin-bottom: 1rem;
-            margin-top: 5rem;
-            max-height: 50px;
-        }
-
-        .login-separator {
-            border-top: 1px solid #ddd;
-            color: #ddd;
-            margin-top: 3rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            text-transform: uppercase;
-        }
-
-        .login-separator span {
-            background: #fff;
-            display: inline-block;
-            padding: 5px;
-            padding-bottom: 0;
-            transform: translateY(-20px)
-        }
-
-        .copyright {
-            font-size: 70%;
-        }
-    </style>
 </head>
 <body>
     <div class="profile @ViewBag.Class">
