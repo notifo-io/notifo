@@ -85,10 +85,5 @@ namespace Notifo.Areas.Frontend
         {
             return context.Request.Path.StartsWithSegments("/ws", StringComparison.OrdinalIgnoreCase);
         }
-
-        private static bool IsHtmlPath(this HttpContext context)
-        {
-            return context.Request.Path.Value?.Contains(".html", StringComparison.OrdinalIgnoreCase) == true;
-        }
     }
 }
