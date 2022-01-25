@@ -111,7 +111,7 @@ $width: 500px;
     &-right-circle1 {
         @include circle(2000px);
         background-color: #5249d1;
-        margin-top: 50px;
+        margin-top: 0;
         margin-left: -1000px;
     }
 
