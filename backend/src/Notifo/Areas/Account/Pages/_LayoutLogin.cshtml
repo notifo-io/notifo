@@ -22,6 +22,10 @@
     {
         @await RenderSectionAsync("header")
     }
+
+    <environment include="Development">
+        <script type="text/javascript" src="@Url.Content("~/app.js")"></script>
+    </environment>    
 </head>
 <body>
     <div class="login-left">
