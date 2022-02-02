@@ -19,7 +19,7 @@ namespace Notifo.Infrastructure.MongoDb
         protected async Task<T?> GetDocumentAsync(string id,
             CancellationToken ct)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             var existing =
                 await Collection.Find(x => x.DocId == id)
@@ -31,8 +31,8 @@ namespace Notifo.Infrastructure.MongoDb
         protected async Task UpsertDocumentAsync(string id, T value, string? oldEtag,
             CancellationToken ct)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
-            Guard.NotNull(value, nameof(value));
+            Guard.NotNullOrEmpty(id);
+            Guard.NotNull(value);
 
             try
             {
@@ -73,7 +73,7 @@ namespace Notifo.Infrastructure.MongoDb
         public Task DeleteAsync(string id,
             CancellationToken ct)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             return Collection.DeleteOneAsync(x => x.DocId == id, ct);
         }

@@ -34,7 +34,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message,
             CancellationToken ct)
         {
-            Guard.NotNull(message, nameof(message));
+            Guard.NotNull(message);
             Guard.NotNullOrEmpty(message.Body, nameof(message.Body));
             Guard.NotNullOrEmpty(message.To, nameof(message.To));
 

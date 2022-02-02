@@ -42,8 +42,8 @@ namespace Notifo.Domain.Events
         public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(query);
 
             var events = await eventRepository.QueryAsync(appId, query, ct);
 
@@ -55,7 +55,7 @@ namespace Notifo.Domain.Events
         public Task InsertAsync(EventMessage request,
             CancellationToken ct = default)
         {
-            Guard.NotNull(request, nameof(request));
+            Guard.NotNull(request);
 
             var @event = SimpleMapper.Map(request, new Event());
 

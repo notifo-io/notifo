@@ -50,8 +50,8 @@ namespace Notifo.Domain.Channels.Messaging
 
         public string Format(MessagingTemplate? template, BaseUserNotification notification)
         {
-            Guard.NotNull(template, nameof(template));
-            Guard.NotNull(notification, nameof(notification));
+            Guard.NotNull(template);
+            Guard.NotNull(notification);
 
             if (template == null)
             {

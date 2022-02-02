@@ -28,8 +28,8 @@ namespace Notifo.Domain.ChannelTemplates
         public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(query);
 
             var templates = await repository.QueryAsync(appId, query, ct);
 
@@ -39,8 +39,8 @@ namespace Notifo.Domain.ChannelTemplates
         public async Task<ChannelTemplate<T>?> GetAsync(string appId, string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(id);
 
             var (template, _) = await repository.GetAsync(appId, id, ct);
 
@@ -50,8 +50,8 @@ namespace Notifo.Domain.ChannelTemplates
         public async Task<(TemplateResolveStatus, T?)> GetBestAsync(string appId, string? name, string language,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(language, nameof(language));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(language);
 
             var template = await repository.GetBestAsync(appId, name, ct);
 
@@ -78,8 +78,8 @@ namespace Notifo.Domain.ChannelTemplates
         public Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> command,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(command, nameof(command));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(command);
 
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -121,8 +121,8 @@ namespace Notifo.Domain.ChannelTemplates
         public Task DeleteAsync(string appId, string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(id);
 
             return repository.DeleteAsync(appId, id, ct);
         }

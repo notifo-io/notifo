@@ -47,7 +47,7 @@ namespace Notifo.Domain.Apps
         public Task<App?> GetCachedAsync(string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             if (cache.TryGetValue(id, out var temp) && temp is App app)
             {
@@ -73,7 +73,7 @@ namespace Notifo.Domain.Apps
         public async Task<List<App>> QueryAsync(string contributorId,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(contributorId, nameof(contributorId));
+            Guard.NotNullOrEmpty(contributorId);
 
             var apps = await repository.QueryAsync(contributorId, ct);
 
@@ -88,7 +88,7 @@ namespace Notifo.Domain.Apps
         public async Task<App?> GetAsync(string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             var (app, _) = await repository.GetAsync(id, ct);
 
@@ -100,7 +100,7 @@ namespace Notifo.Domain.Apps
         public async Task<App?> GetByApiKeyAsync(string apiKey,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(apiKey, nameof(apiKey));
+            Guard.NotNullOrEmpty(apiKey);
 
             var (app, _) = await repository.GetByApiKeyAsync(apiKey, ct);
 
@@ -112,7 +112,7 @@ namespace Notifo.Domain.Apps
         public Task<App> UpsertAsync(string? id, ICommand<App> command,
             CancellationToken ct = default)
         {
-            Guard.NotNull(command, nameof(command));
+            Guard.NotNull(command);
 
             if (string.IsNullOrWhiteSpace(id))
             {

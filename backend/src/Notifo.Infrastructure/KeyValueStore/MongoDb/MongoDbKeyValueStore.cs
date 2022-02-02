@@ -25,7 +25,7 @@ namespace Notifo.Infrastructure.KeyValueStore.MongoDb
         public async Task<string?> GetAsync(string key,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(key, nameof(key));
+            Guard.NotNullOrEmpty(key);
 
             var result = await Collection.Find(ByKey(key)).FirstOrDefaultAsync(ct);
 
@@ -35,7 +35,7 @@ namespace Notifo.Infrastructure.KeyValueStore.MongoDb
         public async Task<bool> RemvoveAsync(string key,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(key, nameof(key));
+            Guard.NotNullOrEmpty(key);
 
             var result = await Collection.DeleteOneAsync(ByKey(key), ct);
 
@@ -45,7 +45,7 @@ namespace Notifo.Infrastructure.KeyValueStore.MongoDb
         public async Task<bool> SetAsync(string key, string? value,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(key, nameof(key));
+            Guard.NotNullOrEmpty(key);
 
             var result = await Collection.UpdateOneAsync(ByKey(key), Update.Set(x => x.Value, value), Upsert, ct);
 
@@ -54,7 +54,7 @@ namespace Notifo.Infrastructure.KeyValueStore.MongoDb
 
         public async Task<string?> SetIfNotExistsAsync(string key, string? value, CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(key, nameof(key));
+            Guard.NotNullOrEmpty(key);
 
             try
             {

@@ -181,7 +181,7 @@ namespace Notifo.Identity.MongoDb
 
         public IdentityUser Create(string email)
         {
-            Guard.NotNullOrEmpty(email, nameof(email));
+            Guard.NotNullOrEmpty(email);
 
             return new MongoDbUser { Email = email, UserName = email, Id = null };
         }

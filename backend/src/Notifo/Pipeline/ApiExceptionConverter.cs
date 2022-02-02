@@ -44,7 +44,7 @@ namespace Notifo.Pipeline
 
         public static (ErrorDto Error, bool WellKnown) ToErrorDto(this ProblemDetails problem, HttpContext? httpContext)
         {
-            Guard.NotNull(problem, nameof(problem));
+            Guard.NotNull(problem);
 
             var error = CreateError(problem.Status ?? 500, problem.Title);
 
@@ -55,7 +55,7 @@ namespace Notifo.Pipeline
 
         public static (ErrorDto Error, bool WellKnown) ToErrorDto(this Exception exception, IStringLocalizer<AppResources> localizer, HttpContext? httpContext)
         {
-            Guard.NotNull(exception, nameof(exception));
+            Guard.NotNull(exception);
 
             var result = CreateError(exception, localizer);
 

@@ -17,7 +17,7 @@ namespace Notifo.Infrastructure
         public DomainObjectException(string message, string id, Exception? inner = null)
             : base(message, inner)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             Id = id;
         }

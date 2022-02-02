@@ -46,7 +46,7 @@ namespace Notifo.Infrastructure.Validation
 
         private static string FormatMessage(IReadOnlyList<ValidationError> errors)
         {
-            Guard.NotNull(errors, nameof(errors));
+            Guard.NotNull(errors);
 
             var sb = new StringBuilder();
 

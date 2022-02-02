@@ -53,7 +53,7 @@ namespace Notifo.Domain.Counters
 
         public static CounterKey ForNotification(IUserNotification notification)
         {
-            Guard.NotNull(notification, nameof(notification));
+            Guard.NotNull(notification);
 
             var result = default(CounterKey);
 

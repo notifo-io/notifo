@@ -42,7 +42,7 @@ namespace Notifo.Identity
         public string GetUserId(ClaimsPrincipal user,
             CancellationToken ct = default)
         {
-            Guard.NotNull(user, nameof(user));
+            Guard.NotNull(user);
 
             return userManager.GetUserId(user);
         }
@@ -50,7 +50,7 @@ namespace Notifo.Identity
         public async Task<IResultList<IUser>> QueryAsync(IEnumerable<string> ids,
             CancellationToken ct = default)
         {
-            Guard.NotNull(ids, nameof(ids));
+            Guard.NotNull(ids);
 
             ids = ids.Where(userFactory.IsId);
 
@@ -69,8 +69,8 @@ namespace Notifo.Identity
         public async Task<IResultList<IUser>> QueryAsync(string? query = null, int take = 10, int skip = 0,
             CancellationToken ct = default)
         {
-            Guard.GreaterThan(take, 0, nameof(take));
-            Guard.GreaterEquals(skip, 0, nameof(skip));
+            Guard.GreaterThan(take, 0);
+            Guard.GreaterEquals(skip, 0);
 
             IQueryable<IdentityUser> QueryUsers(string? email = null)
             {
@@ -97,7 +97,7 @@ namespace Notifo.Identity
         public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user,
             CancellationToken ct = default)
         {
-            Guard.NotNull(user, nameof(user));
+            Guard.NotNull(user);
 
             return userManager.GetLoginsAsync((IdentityUser)user.Identity);
         }
@@ -105,7 +105,7 @@ namespace Notifo.Identity
         public Task<bool> HasPasswordAsync(IUser user,
             CancellationToken ct = default)
         {
-            Guard.NotNull(user, nameof(user));
+            Guard.NotNull(user);
 
             return userManager.HasPasswordAsync((IdentityUser)user.Identity);
         }
@@ -113,7 +113,7 @@ namespace Notifo.Identity
         public async Task<IUser?> FindByLoginAsync(string provider, string key,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(provider, nameof(provider));
+            Guard.NotNullOrEmpty(provider);
 
             var user = await userManager.FindByLoginAsync(provider, key);
 
@@ -123,7 +123,7 @@ namespace Notifo.Identity
         public async Task<IUser?> FindByEmailAsync(string email,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(email, nameof(email));
+            Guard.NotNullOrEmpty(email);
 
             var user = await userManager.FindByEmailAsync(email);
 
@@ -133,7 +133,7 @@ namespace Notifo.Identity
         public async Task<IUser?> GetAsync(ClaimsPrincipal principal,
             CancellationToken ct = default)
         {
-            Guard.NotNull(principal, nameof(principal));
+            Guard.NotNull(principal);
 
             var user = await userManager.GetUserAsync(principal);
 
@@ -156,7 +156,7 @@ namespace Notifo.Identity
         public async Task<IUser> CreateAsync(string email, UserValues? values = null, bool lockAutomatically = false,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(email, nameof(email));
+            Guard.NotNullOrEmpty(email);
 
             var user = userFactory.Create(email);
 
@@ -236,7 +236,7 @@ namespace Notifo.Identity
         public Task<IUser> SetPasswordAsync(string id, string password, string? oldPassword = null,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             return ForUserAsync(id, async user =>
             {
@@ -254,8 +254,8 @@ namespace Notifo.Identity
         public async Task<IUser> UpdateAsync(string id, UserValues values, bool silent = false,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
-            Guard.NotNull(values, nameof(values));
+            Guard.NotNullOrEmpty(id);
+            Guard.NotNull(values);
 
             var user = await GetUserAsync(id);
 
@@ -316,7 +316,7 @@ namespace Notifo.Identity
         public Task<IUser> LockAsync(string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             return ForUserAsync(id, user => userManager.SetLockoutEndDateAsync(user, LockoutDate()).Throw(log));
         }
@@ -324,7 +324,7 @@ namespace Notifo.Identity
         public Task<IUser> UnlockAsync(string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             return ForUserAsync(id, user => userManager.SetLockoutEndDateAsync(user, null).Throw(log));
         }
@@ -332,7 +332,7 @@ namespace Notifo.Identity
         public Task<IUser> AddLoginAsync(string id, ExternalLoginInfo externalLogin,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             return ForUserAsync(id, user => userManager.AddLoginAsync(user, externalLogin).Throw(log));
         }
@@ -340,7 +340,7 @@ namespace Notifo.Identity
         public Task<IUser> RemoveLoginAsync(string id, string loginProvider, string providerKey,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             return ForUserAsync(id, user => userManager.RemoveLoginAsync(user, loginProvider, providerKey).Throw(log));
         }
@@ -348,7 +348,7 @@ namespace Notifo.Identity
         public async Task DeleteAsync(string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             var user = await GetUserAsync(id);
 

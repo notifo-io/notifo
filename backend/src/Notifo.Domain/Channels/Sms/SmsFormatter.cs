@@ -42,8 +42,8 @@ namespace Notifo.Domain.Channels.Sms
 
         public string Format(SmsTemplate? template, string text)
         {
-            Guard.NotNull(template, nameof(template));
-            Guard.NotNullOrEmpty(text, nameof(text));
+            Guard.NotNull(template);
+            Guard.NotNullOrEmpty(text);
 
             if (template == null)
             {

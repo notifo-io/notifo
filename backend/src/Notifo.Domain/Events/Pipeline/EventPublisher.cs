@@ -33,7 +33,7 @@ namespace Notifo.Domain.Events.Pipeline
         public async Task PublishAsync(EventMessage message,
             CancellationToken ct = default)
         {
-            Guard.NotNull(message, nameof(message));
+            Guard.NotNull(message);
 
             using (var activity = Telemetry.Activities.StartActivity("PublishEvent"))
             {

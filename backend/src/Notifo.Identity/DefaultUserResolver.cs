@@ -25,7 +25,7 @@ namespace Notifo.Identity
         public async Task<(IUser? User, bool Created)> CreateUserIfNotExistsAsync(string emailOrId, bool invited = false,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(emailOrId, nameof(emailOrId));
+            Guard.NotNullOrEmpty(emailOrId);
 
             await using (var scope = serviceProvider.CreateAsyncScope())
             {
@@ -65,7 +65,7 @@ namespace Notifo.Identity
         public async Task<IUser?> FindByIdAsync(string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(id);
 
             await using (var scope = serviceProvider.CreateAsyncScope())
             {
@@ -78,7 +78,7 @@ namespace Notifo.Identity
         public async Task<IUser?> FindByIdOrEmailAsync(string idOrEmail,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(idOrEmail, nameof(idOrEmail));
+            Guard.NotNullOrEmpty(idOrEmail);
 
             await using (var scope = serviceProvider.CreateAsyncScope())
             {
@@ -111,7 +111,7 @@ namespace Notifo.Identity
         public async Task<List<IUser>> QueryByEmailAsync(string email,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(email, nameof(email));
+            Guard.NotNullOrEmpty(email);
 
             await using (var scope = serviceProvider.CreateAsyncScope())
             {
@@ -126,7 +126,7 @@ namespace Notifo.Identity
         public async Task<Dictionary<string, IUser>> QueryManyAsync(string[] ids,
             CancellationToken ct = default)
         {
-            Guard.NotNull(ids, nameof(ids));
+            Guard.NotNull(ids);
 
             await using (var scope = serviceProvider.CreateAsyncScope())
             {

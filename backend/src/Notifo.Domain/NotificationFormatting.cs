@@ -103,7 +103,7 @@ namespace Notifo.Domain
 
         public static NotificationFormatting<TOut> Transform<TIn, TOut>(this NotificationFormatting<TIn> formatting, Func<TIn?, TOut> transform) where TIn : class where TOut : class
         {
-            Guard.NotNull(transform, nameof(transform));
+            Guard.NotNull(transform);
 
             var result = new NotificationFormatting<TOut>
             {

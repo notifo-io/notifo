@@ -16,7 +16,7 @@ namespace Notifo.Infrastructure
 
         public static Language GetLanguage(string iso2Code)
         {
-            Guard.NotNullOrEmpty(iso2Code, nameof(iso2Code));
+            Guard.NotNullOrEmpty(iso2Code);
 
             try
             {
@@ -47,14 +47,14 @@ namespace Notifo.Infrastructure
 
         public static bool IsValidLanguage(string iso2Code)
         {
-            Guard.NotNull(iso2Code, nameof(iso2Code));
+            Guard.NotNull(iso2Code);
 
             return AllLanguagesField.ContainsKey(iso2Code);
         }
 
         public static bool TryGetLanguage(string iso2Code, [MaybeNullWhen(false)] out Language language)
         {
-            Guard.NotNull(iso2Code, nameof(iso2Code));
+            Guard.NotNull(iso2Code);
 
             return AllLanguagesField.TryGetValue(iso2Code, out language!);
         }

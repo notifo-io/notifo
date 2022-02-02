@@ -53,8 +53,8 @@ namespace Notifo.Domain.Users
         public Task<User?> GetCachedAsync(string appId, string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(id);
 
             if (cache.TryGetValue($"{appId}_{id}", out var temp) && temp is User user)
             {
@@ -67,8 +67,8 @@ namespace Notifo.Domain.Users
         public async Task<IResultList<User>> QueryAsync(string appId, UserQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(query);
 
             var users = await repository.QueryAsync(appId, query, ct);
 
@@ -83,7 +83,7 @@ namespace Notifo.Domain.Users
         public async Task<User?> GetByApiKeyAsync(string apiKey,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(apiKey, nameof(apiKey));
+            Guard.NotNullOrEmpty(apiKey);
 
             var (user, _) = await repository.GetByApiKeyAsync(apiKey, ct);
 
@@ -95,8 +95,8 @@ namespace Notifo.Domain.Users
         public async Task<User?> GetAsync(string appId, string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(id);
 
             var (user, _) = await repository.GetAsync(appId, id, ct);
 
@@ -108,8 +108,8 @@ namespace Notifo.Domain.Users
         public async Task<User?> GetByPropertyAsync(string appId, string key, string value,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(key, nameof(key));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(key);
 
             var (user, _) = await repository.GetByPropertyAsync(appId, key, value, ct);
 
@@ -121,8 +121,8 @@ namespace Notifo.Domain.Users
         public Task<User> UpsertAsync(string appId, string? id, ICommand<User> command,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(command, nameof(command));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(command);
 
             if (string.IsNullOrWhiteSpace(id))
             {
@@ -161,8 +161,8 @@ namespace Notifo.Domain.Users
         public async Task DeleteAsync(string appId, string id,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(id, nameof(id));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(id);
 
             await repository.DeleteAsync(appId, id, ct);
 

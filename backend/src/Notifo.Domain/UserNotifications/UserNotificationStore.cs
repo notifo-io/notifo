@@ -37,9 +37,9 @@ namespace Notifo.Domain.UserNotifications
         public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(userId, nameof(userId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(userId);
+            Guard.NotNull(query);
 
             return repository.QueryAsync(appId, userId, query, ct);
         }
@@ -65,7 +65,7 @@ namespace Notifo.Domain.UserNotifications
         public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details = default,
             CancellationToken ct = default)
         {
-            Guard.NotDefault(id, nameof(id));
+            Guard.NotDefault(id);
 
             var handle = CreateHandle(details);
 
@@ -75,7 +75,7 @@ namespace Notifo.Domain.UserNotifications
         public Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
             CancellationToken ct = default)
         {
-            Guard.NotNull(ids, nameof(ids));
+            Guard.NotNull(ids);
 
             var handle = CreateHandle(details);
 
@@ -85,7 +85,7 @@ namespace Notifo.Domain.UserNotifications
         public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
             CancellationToken ct = default)
         {
-            Guard.NotNull(ids, nameof(ids));
+            Guard.NotNull(ids);
 
             var handle = CreateHandle(details);
 
@@ -95,7 +95,7 @@ namespace Notifo.Domain.UserNotifications
         public Task TrackAttemptAsync(UserEventMessage userEvent,
             CancellationToken ct = default)
         {
-            Guard.NotNull(userEvent, nameof(userEvent));
+            Guard.NotNull(userEvent);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt);
             var counterKey = CounterKey.ForUserEvent(userEvent);
@@ -106,7 +106,7 @@ namespace Notifo.Domain.UserNotifications
         public Task TrackFailedAsync(UserEventMessage userEvent,
             CancellationToken ct = default)
         {
-            Guard.NotNull(userEvent, nameof(userEvent));
+            Guard.NotNull(userEvent);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Failed);
             var counterKey = CounterKey.ForUserEvent(userEvent);
@@ -117,7 +117,7 @@ namespace Notifo.Domain.UserNotifications
         public Task InsertAsync(UserNotification notification,
             CancellationToken ct = default)
         {
-            Guard.NotNull(notification, nameof(notification));
+            Guard.NotNull(notification);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Handled);
             var counterKey = CounterKey.ForNotification(notification);
@@ -130,8 +130,8 @@ namespace Notifo.Domain.UserNotifications
         public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail = null,
             CancellationToken ct = default)
         {
-            Guard.NotNull(notification, nameof(notification));
-            Guard.NotNullOrEmpty(channel, nameof(channel));
+            Guard.NotNull(notification);
+            Guard.NotNullOrEmpty(channel);
 
             var counterMap = CounterMap.ForChannel(channel, status);
             var counterKey = CounterKey.ForNotification(notification);
@@ -144,8 +144,8 @@ namespace Notifo.Domain.UserNotifications
         public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,
             CancellationToken ct = default)
         {
-            Guard.NotNull(notification, nameof(notification));
-            Guard.NotNullOrEmpty(channel, nameof(channel));
+            Guard.NotNull(notification);
+            Guard.NotNullOrEmpty(channel);
 
             var counterMap = CounterMap.ForChannel(channel, status);
             var counterKey = CounterKey.ForNotification(notification);

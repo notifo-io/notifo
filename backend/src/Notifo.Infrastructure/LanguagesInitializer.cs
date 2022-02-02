@@ -16,7 +16,7 @@ namespace Notifo.Infrastructure
 
         public LanguagesInitializer(IOptions<LanguagesOptions> options)
         {
-            Guard.NotNull(options, nameof(options));
+            Guard.NotNull(options);
 
             this.options = options.Value;
         }

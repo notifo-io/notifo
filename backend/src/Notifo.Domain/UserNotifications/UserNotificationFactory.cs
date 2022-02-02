@@ -33,8 +33,8 @@ namespace Notifo.Domain.UserNotifications
 
         public UserNotification? Create(App app, User user, UserEventMessage userEvent)
         {
-            Guard.NotNull(user, nameof(user));
-            Guard.NotNull(userEvent, nameof(userEvent));
+            Guard.NotNull(user);
+            Guard.NotNull(userEvent);
 
             if (userEvent.Formatting == null ||
                 string.IsNullOrWhiteSpace(userEvent.AppId) ||

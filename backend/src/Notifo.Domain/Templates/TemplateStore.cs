@@ -21,8 +21,8 @@ namespace Notifo.Domain.Templates
         public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(query);
 
             var templates = await repository.QueryAsync(appId, query, ct);
 
@@ -32,8 +32,8 @@ namespace Notifo.Domain.Templates
         public async Task<Template?> GetAsync(string appId, string code,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(code, nameof(code));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(code);
 
             var (template, _) = await repository.GetAsync(appId, code, ct);
 
@@ -58,9 +58,9 @@ namespace Notifo.Domain.Templates
         public Task<Template> UpsertAsync(string appId, string code, TemplateUpdate update,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(code, nameof(code));
-            Guard.NotNull(update, nameof(update));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(code);
+            Guard.NotNull(update);
 
             return Updater.UpdateRetriedAsync(5, async () =>
             {
@@ -78,8 +78,8 @@ namespace Notifo.Domain.Templates
         public Task DeleteAsync(string appId, string code,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(code, nameof(code));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(code);
 
             return repository.DeleteAsync(appId, code, ct);
         }

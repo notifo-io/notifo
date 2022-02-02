@@ -27,7 +27,7 @@ namespace Notifo.Domain.Subscriptions
         public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
+            Guard.NotNullOrEmpty(appId);
 
             return repository.QueryAsync(appId, topic, userId, ct);
         }
@@ -35,7 +35,7 @@ namespace Notifo.Domain.Subscriptions
         public Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
+            Guard.NotNullOrEmpty(appId);
 
             return repository.QueryAsync(appId, query, ct);
         }
@@ -43,7 +43,7 @@ namespace Notifo.Domain.Subscriptions
         public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
+            Guard.NotNullOrEmpty(appId);
 
             var (subscription, _) = await repository.GetAsync(appId, userId, prefix, ct);
 
@@ -53,7 +53,7 @@ namespace Notifo.Domain.Subscriptions
         public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command,
             CancellationToken ct = default)
         {
-            Guard.NotNull(command, nameof(command));
+            Guard.NotNull(command);
 
             return Updater.UpdateRetriedAsync(5, async () =>
             {

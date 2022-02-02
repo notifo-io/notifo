@@ -29,8 +29,8 @@ namespace Notifo.Domain.Media
         public Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(query);
 
             return mediaRepository.QueryAsync(appId, query, ct);
         }
@@ -38,8 +38,8 @@ namespace Notifo.Domain.Media
         public async Task<Media> UploadAsync(string appId, AssetFile file,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(file, nameof(file));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(file);
 
             var request = new MetadataRequest
             {
@@ -84,8 +84,8 @@ namespace Notifo.Domain.Media
         public Task<Media?> GetAsync(string appId, string fileName,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(fileName, nameof(fileName));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(fileName);
 
             return mediaRepository.GetAsync(appId, fileName, ct);
         }
@@ -93,8 +93,8 @@ namespace Notifo.Domain.Media
         public Task DeleteAsync(string appId, string fileName,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(fileName, nameof(fileName));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(fileName);
 
             return mediaRepository.DeleteAsync(appId, fileName, ct);
         }

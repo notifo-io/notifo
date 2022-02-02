@@ -41,8 +41,8 @@ namespace Notifo.Domain.Topics
         public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
             CancellationToken ct = default)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNull(query, nameof(query));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(query);
 
             var topics = await repository.QueryAsync(appId, query, ct);
 

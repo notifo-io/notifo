@@ -16,7 +16,7 @@ namespace Notifo.Domain.Media
 
         public ImageMediaMetadataSource(IAssetThumbnailGenerator assetThumbnailGenerator)
         {
-            Guard.NotNull(assetThumbnailGenerator, nameof(assetThumbnailGenerator));
+            Guard.NotNull(assetThumbnailGenerator);
 
             this.assetThumbnailGenerator = assetThumbnailGenerator;
         }

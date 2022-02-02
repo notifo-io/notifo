@@ -34,8 +34,8 @@ namespace Notifo.Domain.Log
 
         public Task LogAsync(string appId, string system, string message)
         {
-            Guard.NotNullOrEmpty(system, nameof(system));
-            Guard.NotNullOrEmpty(message, nameof(message));
+            Guard.NotNullOrEmpty(system);
+            Guard.NotNullOrEmpty(message);
 
             log.LogInformation(w => w
                 .WriteProperty("action", "UserLog")
@@ -48,8 +48,8 @@ namespace Notifo.Domain.Log
 
         public Task LogAsync(string appId, string message)
         {
-            Guard.NotNullOrEmpty(appId, nameof(appId));
-            Guard.NotNullOrEmpty(message, nameof(message));
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNullOrEmpty(message);
 
             log.LogInformation(w => w
                 .WriteProperty("action", "UserLog")

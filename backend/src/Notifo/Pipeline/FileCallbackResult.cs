@@ -27,7 +27,7 @@ namespace Notifo.Pipeline
         public FileCallbackResult(string contentType, FileCallback callback)
             : base(contentType)
         {
-            Guard.NotNull(callback, nameof(callback));
+            Guard.NotNull(callback);
 
             Callback = callback;
         }

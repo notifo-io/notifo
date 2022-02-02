@@ -189,7 +189,7 @@ namespace Notifo.Infrastructure
 
         public static int OrderedHashCode<T>(this IEnumerable<T> collection, IEqualityComparer<T> comparer) where T : notnull
         {
-            Guard.NotNull(comparer, nameof(comparer));
+            Guard.NotNull(comparer);
 
             var hashCodes = collection.Where(x => !Equals(x, null)).Select(x => x.GetHashCode()).OrderBy(x => x).ToArray();
 
