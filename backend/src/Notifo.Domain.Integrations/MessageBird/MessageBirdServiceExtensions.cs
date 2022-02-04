@@ -25,7 +25,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.ConfigureAndValidate<MessageBirdOptions>(config, key);
 
                 services.AddSingletonAs<MessageBirdClient>()
-                    .AsSelf();
+                    .As<IMessageBirdClient>();
 
                 services.AddSingletonAs<IntegratedMessageBirdIntegration>()
                     .As<IIntegration>();

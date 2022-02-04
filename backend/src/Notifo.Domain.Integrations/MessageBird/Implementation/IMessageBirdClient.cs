@@ -5,16 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Http;
 
-#pragma warning disable MA0048 // File name must match type name
-
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public class LockoutModel : PageModel
+    public interface IMessageBirdClient
     {
-        public void OnGet()
-        {
-        }
+        Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext);
+
+        Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message, CancellationToken ct);
     }
 }

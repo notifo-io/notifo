@@ -17,13 +17,13 @@ namespace Notifo.Domain.Integrations.MessageBird
 {
     public sealed class MessageBirdSmsSender : ISmsSender
     {
-        private readonly MessageBirdClient messageBirdClient;
+        private readonly IMessageBirdClient messageBirdClient;
         private readonly ISmsCallback smsCallback;
         private readonly ISmsUrl smsUrl;
         private readonly string integrationId;
 
         public MessageBirdSmsSender(
-            MessageBirdClient messageBirdClient,
+            IMessageBirdClient messageBirdClient,
             ISmsCallback smsCallback,
             ISmsUrl smsUrl,
             string integrationId)

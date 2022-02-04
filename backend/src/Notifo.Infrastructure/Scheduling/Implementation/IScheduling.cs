@@ -7,6 +7,8 @@
 
 using Squidex.Hosting;
 
+#pragma warning disable MA0048 // File name must match type name
+
 namespace Notifo.Infrastructure.Scheduling.Implementation
 {
     public delegate Task<bool> ScheduleSuccessCallback<T>(List<T> jobs, bool isLastAttempt,

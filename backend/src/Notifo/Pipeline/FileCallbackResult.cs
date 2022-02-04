@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Infrastructure;
 using Squidex.Assets;
 
+#pragma warning disable MA0048 // File name must match type name
+
 namespace Notifo.Pipeline
 {
     public delegate Task FileCallback(Stream body, BytesRange range,

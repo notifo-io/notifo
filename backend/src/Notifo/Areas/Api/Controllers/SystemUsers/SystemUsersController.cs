@@ -17,11 +17,11 @@ using NSwag.Annotations;
 namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
 {
     [OpenApiTags("SystemUsers")]
-    public sealed class UserManagementController : BaseController
+    public sealed class SystemUsersController : BaseController
     {
         private readonly IUserService userService;
 
-        public UserManagementController(IUserService userService)
+        public SystemUsersController(IUserService userService)
         {
             this.userService = userService;
         }

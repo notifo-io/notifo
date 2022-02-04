@@ -14,11 +14,9 @@ using Microsoft.Extensions.Options;
 using Notifo.Infrastructure;
 using PhoneNumbers;
 
-#pragma warning disable CA1822 // Mark members as static
-
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class MessageBirdClient
+    public sealed class MessageBirdClient : IMessageBirdClient
     {
         private static readonly char[] TrimChars = { ' ', '+', '0' };
         private readonly MessageBirdOptions options;

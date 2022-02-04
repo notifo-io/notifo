@@ -12,7 +12,7 @@ using Notifo.Domain.Integrations.MessageBird.Implementation;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
-    public sealed class MessageBirdClientPool : CachePool<MessageBirdClient>
+    public sealed class MessageBirdClientPool : CachePool<IMessageBirdClient>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -22,7 +22,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             this.httpClientFactory = httpClientFactory;
         }
 
-        public MessageBirdClient GetServer(string accessKey, long phoneNumber, Dictionary<string, string>? phoneNumbers)
+        public IMessageBirdClient GetServer(string accessKey, long phoneNumber, Dictionary<string, string>? phoneNumbers)
         {
             var cacheKey = $"MessageBirdSmsSender_{accessKey}_{phoneNumber}";
 

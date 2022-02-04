@@ -10,7 +10,7 @@
 
   <ItemGroup>
 	<PackageReference Include="AspNet.Security.OAuth.GitHub" Version="6.0.3" />
-	<PackageReference Include="Meziantou.Analyzer" Version="1.0.689">
+	<PackageReference Include="Meziantou.Analyzer" Version="1.0.694">
 	  <PrivateAssets>all</PrivateAssets>
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>

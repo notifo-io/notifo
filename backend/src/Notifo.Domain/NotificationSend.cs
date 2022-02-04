@@ -8,6 +8,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+#pragma warning disable MA0048 // File name must match type name
+
 namespace Notifo.Domain
 {
     [JsonConverter(typeof(NotificationSendConverter))]

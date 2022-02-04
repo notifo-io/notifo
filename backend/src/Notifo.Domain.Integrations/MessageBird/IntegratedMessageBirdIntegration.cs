@@ -40,7 +40,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             if (CanCreate(serviceType, id, configured))
             {
                 return new MessageBirdSmsSender(
-                    serviceProvider.GetRequiredService<MessageBirdClient>(),
+                    serviceProvider.GetRequiredService<IMessageBirdClient>(),
                     serviceProvider.GetRequiredService<ISmsCallback>(),
                     serviceProvider.GetRequiredService<ISmsUrl>(),
                     id);

@@ -7,6 +7,8 @@
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
+#pragma warning disable MA0048 // File name must match type name
+
 namespace Notifo.Areas.Account.Pages
 {
     public sealed class AccessDeniedModel : PageModel

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Notifo.Domain.Users
 {
-    public class AddUserWebPdushSubscriptionTests
+    public class AddUserWebPushSubscriptionTests
     {
         [Fact]
         public async Task Should_not_remove_existing_subscriptions_when_new_subscription_added()
