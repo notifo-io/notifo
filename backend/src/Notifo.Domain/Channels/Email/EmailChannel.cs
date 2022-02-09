@@ -7,6 +7,7 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
@@ -16,7 +17,6 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Log;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Email.EmailJob>;
 
@@ -25,18 +25,18 @@ namespace Notifo.Domain.Channels.Email
     public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<EmailJob>
     {
         private readonly IAppStore appStore;
-        private readonly IIntegrationManager integrationManager;
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;
+        private readonly IIntegrationManager integrationManager;
+        private readonly ILogger<EmailChannel> log;
         private readonly ILogStore logStore;
-        private readonly ISemanticLog log;
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserStore userStore;
 
         public string Name => Providers.Email;
 
-        public EmailChannel(ISemanticLog log, ILogStore logStore,
+        public EmailChannel(ILogger<EmailChannel> log, ILogStore logStore,
             IAppStore appStore,
             IIntegrationManager integrationManager,
             IEmailFormatter emailFormatter,
@@ -145,11 +145,9 @@ namespace Notifo.Domain.Channels.Email
 
                 if (app == null)
                 {
-                    log.LogWarning(w => w
-                        .WriteProperty("action", "SendEmail")
-                        .WriteProperty("status", "Failed")
-                        .WriteProperty("reason", "App not found"));
+                    log.LogWarning("Cannot send email: App not found.");
 
+                    await UpdateAsync(jobs, commonEmail, ProcessStatus.Handled);
                     return;
                 }
 

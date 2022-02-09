@@ -20,7 +20,8 @@ namespace Notifo.Domain.UserNotifications
         private readonly ICounterService counters;
         private readonly IClock clock;
 
-        public UserNotificationStore(IUserNotificationRepository repository, ICounterService counters, IClock clock)
+        public UserNotificationStore(IUserNotificationRepository repository, ICounterService counters,
+            IClock clock)
         {
             this.repository = repository;
             this.counters = counters;

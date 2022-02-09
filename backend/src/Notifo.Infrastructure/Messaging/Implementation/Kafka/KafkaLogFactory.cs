@@ -6,13 +6,13 @@
 // ==========================================================================
 
 using Confluent.Kafka;
-using Squidex.Log;
+using Microsoft.Extensions.Logging;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
 {
     public static class KafkaLogFactory<TKey, TValue>
     {
-        public static Action<IConsumer<TKey, TValue>, string> ConsumerStats(ISemanticLog log)
+        public static Action<IConsumer<TKey, TValue>, string> ConsumerStats(ILogger log)
         {
             return (producer, message) =>
             {
@@ -20,7 +20,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             };
         }
 
-        public static Action<IConsumer<TKey, TValue>, Error> ConsumerError(ISemanticLog log)
+        public static Action<IConsumer<TKey, TValue>, Error> ConsumerError(ILogger log)
         {
             return (producer, message) =>
             {
@@ -28,7 +28,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             };
         }
 
-        public static Action<IConsumer<TKey, TValue>, LogMessage> ConsumerLog(ISemanticLog log)
+        public static Action<IConsumer<TKey, TValue>, LogMessage> ConsumerLog(ILogger log)
         {
             return (producer, message) =>
             {
@@ -36,7 +36,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             };
         }
 
-        public static Action<IProducer<TKey, TValue>, string> ProducerStats(ISemanticLog log)
+        public static Action<IProducer<TKey, TValue>, string> ProducerStats(ILogger log)
         {
             return (producer, message) =>
             {
@@ -44,7 +44,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             };
         }
 
-        public static Action<IProducer<TKey, TValue>, Error> ProducerError(ISemanticLog log)
+        public static Action<IProducer<TKey, TValue>, Error> ProducerError(ILogger log)
         {
             return (producer, message) =>
             {
@@ -52,7 +52,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             };
         }
 
-        public static Action<IProducer<TKey, TValue>, LogMessage> ProducerLog(ISemanticLog log)
+        public static Action<IProducer<TKey, TValue>, LogMessage> ProducerLog(ILogger log)
         {
             return (producer, message) =>
             {
@@ -60,55 +60,50 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             };
         }
 
-        private static void Log(ISemanticLog log, string stats)
+        private static void Log(ILogger log, string stats)
         {
-            log.LogInformation(w => w
-                .WriteProperty("system", "Kafka")
-                .WriteProperty("statistics", stats));
+            log.LogInformation("Kafka stastics received: {stats}.", stats);
         }
 
-        private static void Log(ISemanticLog log, Error error)
+        private static void Log(ILogger log, Error error)
         {
-            log.LogInformation(w => w
-                .WriteProperty("system", "Kafka")
-                .WriteProperty("action", "Failed")
-                .WriteProperty("errorCode", (int)error.Code)
-                .WriteProperty("errorCodeText", error.Code.ToString())
-                .WriteProperty("errorReason", error.Reason));
+            log.LogInformation("Kafka error with code {code} happened: {details}.", error.Code, error.Reason);
         }
 
-        private static void Log(ISemanticLog log, LogMessage message)
+        private static void Log(ILogger log, LogMessage message)
         {
             var level = GetLogLevel(message.Level);
 
-            log.Log(level, null, w => w
-                .WriteProperty("system", "Kafka")
-                .WriteProperty("name", message.Name)
-                .WriteProperty("message", message.Message));
+            if (log.IsEnabled(level))
+            {
+                return;
+            }
+
+            log.Log(level, "Kafka log recieved from system {system}: {message}.", message.Name, message.Message);
         }
 
-        private static SemanticLogLevel GetLogLevel(SyslogLevel level)
+        private static LogLevel GetLogLevel(SyslogLevel level)
         {
             switch (level)
             {
                 case SyslogLevel.Emergency:
-                    return SemanticLogLevel.Fatal;
+                    return LogLevel.Critical;
                 case SyslogLevel.Alert:
-                    return SemanticLogLevel.Fatal;
+                    return LogLevel.Critical;
                 case SyslogLevel.Critical:
-                    return SemanticLogLevel.Fatal;
+                    return LogLevel.Critical;
                 case SyslogLevel.Error:
-                    return SemanticLogLevel.Error;
+                    return LogLevel.Error;
                 case SyslogLevel.Warning:
-                    return SemanticLogLevel.Warning;
+                    return LogLevel.Warning;
                 case SyslogLevel.Notice:
-                    return SemanticLogLevel.Information;
+                    return LogLevel.Information;
                 case SyslogLevel.Info:
-                    return SemanticLogLevel.Information;
+                    return LogLevel.Information;
                 case SyslogLevel.Debug:
-                    return SemanticLogLevel.Debug;
+                    return LogLevel.Debug;
                 default:
-                    return SemanticLogLevel.Debug;
+                    return LogLevel.Debug;
             }
         }
     }

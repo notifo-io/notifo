@@ -24,7 +24,8 @@ namespace Notifo.Domain.UserNotifications
         private readonly IClock clock;
         private readonly ILogStore logstore;
 
-        public UserNotificationFactory(IClock clock, ILogStore logstore, IUserNotificationUrl url)
+        public UserNotificationFactory(ILogStore logstore, IUserNotificationUrl url,
+            IClock clock)
         {
             this.clock = clock;
             this.logstore = logstore;

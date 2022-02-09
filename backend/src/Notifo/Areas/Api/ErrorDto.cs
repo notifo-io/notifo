@@ -15,6 +15,11 @@ namespace Notifo.Areas.Api
         public string? Message { get; set; }
 
         /// <summary>
+        /// The error code.
+        /// </summary>
+        public string? ErrorCode { get; set; }
+
+        /// <summary>
         /// The optional trace id.
         /// </summary>
         public string? TraceId { get; set; }

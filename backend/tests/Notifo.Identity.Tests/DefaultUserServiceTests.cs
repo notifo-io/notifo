@@ -9,9 +9,9 @@ using System.Globalization;
 using System.Security.Claims;
 using FakeItEasy;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
-using Squidex.Log;
 using Xunit;
 
 namespace Notifo.Identity
@@ -35,7 +35,9 @@ namespace Notifo.Identity
             A.CallTo(userManager).WithReturnType<Task<IdentityResult>>()
                 .Returns(IdentityResult.Success);
 
-            sut = new DefaultUserService(userManager, userFactory, Enumerable.Repeat(userEvents, 1), A.Fake<ISemanticLog>());
+            var log = A.Fake<ILogger<DefaultUserService>>();
+
+            sut = new DefaultUserService(userManager, userFactory, Enumerable.Repeat(userEvents, 1), log);
         }
 
         [Fact]

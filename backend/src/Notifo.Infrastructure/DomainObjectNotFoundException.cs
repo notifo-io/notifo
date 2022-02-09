@@ -1,4 +1,4 @@
-// ==========================================================================
+﻿// ==========================================================================
 //  Notifo.io
 // ==========================================================================
 //  Copyright (c) Sebastian Stehle
@@ -12,8 +12,10 @@ namespace Notifo.Infrastructure
     [Serializable]
     public class DomainObjectNotFoundException : DomainObjectException
     {
+        private const string ValidationError = "OBJECT_NOTFOUND";
+
         public DomainObjectNotFoundException(string id, Exception? inner = null)
-            : base(FormatMessage(id), id, inner)
+            : base(FormatMessage(id), id, ValidationError, inner)
         {
         }
 

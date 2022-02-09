@@ -6,15 +6,15 @@
 // ==========================================================================
 
 using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using Notifo.Infrastructure.Json;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
 {
     public sealed class KafkaMessaging<T> : IMessaging<T>
     {
         private readonly KafkaMessagingProvider provider;
-        private readonly ISemanticLog log;
+        private readonly ILogger<KafkaMessaging<T>> log;
         private readonly string topicName;
         private readonly KafkaJsonSerializer<Envelope<T>> serializer;
         private IProducer<string, Envelope<T>>? producer;
@@ -25,7 +25,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
         public string Name => $"KafkaMessaging({topicName})";
 
         public KafkaMessaging(KafkaMessagingProvider provider, string topicName,
-            IJsonSerializer serializer, ISemanticLog log)
+            IJsonSerializer serializer, ILogger<KafkaMessaging<T>> log)
         {
             this.provider = provider;
             this.serializer = new KafkaJsonSerializer<Envelope<T>>(serializer);

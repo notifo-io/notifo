@@ -7,9 +7,9 @@
 
 using System.Diagnostics;
 using System.Threading.Tasks.Dataflow;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Infrastructure.Timers;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
 {
@@ -21,14 +21,14 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         private readonly ScheduleErrorCallback<T> onError;
         private readonly ActionBlock<SchedulerBatch<T>> actionBlock;
         private readonly IClock clock;
-        private readonly ISemanticLog log;
+        private readonly ILogger log;
         private readonly string activity;
         private CompletionTimer? timer;
 
         public TimerConsumer(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
             ScheduleSuccessCallback<T> onSuccess,
             ScheduleErrorCallback<T> onError,
-            IClock clock, ISemanticLog log)
+            ILogger log, IClock clock)
         {
             this.schedulerStore = schedulerStore;
             this.schedulerOptions = schedulerOptions;
@@ -88,9 +88,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             }
             catch (Exception ex)
             {
-                log.LogError(ex, w => w
-                    .WriteProperty("action", "HandleJob")
-                    .WriteProperty("status", "Failed"));
+                log.LogError(ex, "Failed to handle job.");
 
                 var nextTime = clock.GetCurrentInstant().Plus(Duration.FromMinutes(5));
 
@@ -131,9 +129,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
             }
             catch (Exception ex)
             {
-                log.LogError(ex, w => w
-                    .WriteProperty("action", "HandleJob")
-                    .WriteProperty("status", "Failed"));
+                log.LogError(ex, "Failed to handle job.");
 
                 if (canRetry)
                 {
@@ -151,9 +147,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
                     }
                     catch (Exception ex2)
                     {
-                        log.LogFatal(ex2, w => w
-                            .WriteProperty("action", "HandleJobException")
-                            .WriteProperty("status", "Failed"));
+                        log.LogError(ex2, "Failed to handle job.");
                     }
                 }
             }
@@ -187,9 +181,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
                     }
                     catch (Exception ex)
                     {
-                        log.LogError(ex, w => w
-                            .WriteProperty("action", "DequeueJobs")
-                            .WriteProperty("status", "Failed"));
+                        log.LogError(ex, "Failed to dequeue job.");
                     }
                 }
             }

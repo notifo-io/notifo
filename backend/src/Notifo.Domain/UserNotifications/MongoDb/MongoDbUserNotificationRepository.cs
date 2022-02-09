@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -13,14 +14,13 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
-using Squidex.Log;
 
 namespace Notifo.Domain.UserNotifications.MongoDb
 {
     public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNotification>, IUserNotificationRepository
     {
         private readonly UserNotificationsOptions options;
-        private readonly ISemanticLog log;
+        private readonly ILogger<MongoDbUserNotificationRepository> log;
 
         static MongoDbUserNotificationRepository()
         {
@@ -68,7 +68,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             });
         }
 
-        public MongoDbUserNotificationRepository(IMongoDatabase database, ISemanticLog log, IOptions<UserNotificationsOptions> options)
+        public MongoDbUserNotificationRepository(IMongoDatabase database, IOptions<UserNotificationsOptions> options,
+            ILogger<MongoDbUserNotificationRepository> log)
             : base(database)
         {
             this.options = options.Value;
@@ -316,9 +317,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 }
                 catch (Exception ex)
                 {
-                    log.LogError(ex, w => w
-                        .WriteProperty("action", "CleanupNotifications")
-                        .WriteProperty("status", "Failed"));
+                    log.LogError(ex, "Failed to cleanup notifications.");
                 }
             }
         }

@@ -6,8 +6,8 @@
 // ==========================================================================
 
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 using Notifo.Infrastructure.Tasks;
-using Squidex.Log;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 #pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
@@ -17,14 +17,17 @@ namespace Notifo.Domain.Counters
     public sealed class CounterCollector<T> : IAsyncDisposable where T : notnull
     {
         private readonly ICounterStore<T> store;
-        private readonly ISemanticLog log;
+        private readonly ILogger log;
         private readonly Channel<object> inputQueue;
         private readonly Channel<Job[]> writeQueue;
         private readonly Task task;
 
         sealed record Job(T Key, CounterMap Counters);
 
-        public CounterCollector(ICounterStore<T> store, ISemanticLog log, int capacity = 2000, int batchSize = 200, int batchDelay = 1000)
+        public CounterCollector(ICounterStore<T> store, ILogger log,
+            int capacity = 2000,
+            int batchSize = 200,
+            int batchDelay = 1000)
         {
             this.store = store;
 
@@ -106,9 +109,7 @@ namespace Notifo.Domain.Counters
                     }
                     catch (Exception ex)
                     {
-                        log.LogError(ex, w => w
-                            .WriteProperty("action", "WriteCounters")
-                            .WriteProperty("status", "Failed"));
+                        log.LogError(ex, "Failed to writer counters.");
                     }
                 }
             }

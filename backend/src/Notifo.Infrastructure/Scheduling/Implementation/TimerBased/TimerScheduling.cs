@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Infrastructure.Tasks;
 using Squidex.Hosting;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
 {
@@ -17,7 +17,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         private readonly ISchedulerStore<T> schedulerStore;
         private readonly SchedulerOptions schedulerOptions;
         private readonly IClock clock;
-        private readonly ISemanticLog log;
+        private readonly ILogger<TimerScheduling<T>> log;
         private TimerConsumer<T>? consumer;
 
         public int Order => 1000;
@@ -25,7 +25,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         public string Name => $"TimerScheduler({schedulerOptions.QueueName})";
 
         public TimerScheduling(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
-            IClock clock, ISemanticLog log)
+            ILogger<TimerScheduling<T>> log, IClock clock)
         {
             this.schedulerStore = schedulerStore;
             this.schedulerOptions = schedulerOptions;
@@ -117,7 +117,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
         public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError,
             CancellationToken ct = default)
         {
-            consumer = new TimerConsumer<T>(schedulerStore, schedulerOptions, onSuccess, onError, clock, log);
+            consumer = new TimerConsumer<T>(schedulerStore, schedulerOptions, onSuccess, onError, log, clock);
             consumer.Subscribe();
 
             return Task.CompletedTask;

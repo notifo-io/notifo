@@ -7,6 +7,7 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.ChannelTemplates;
@@ -16,7 +17,6 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Log;
 using IMessagingTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Messaging.MessagingTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Messaging.MessagingJob>;
 
@@ -27,16 +27,16 @@ namespace Notifo.Domain.Channels.Messaging
         private const string DefaultToken = "Default";
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
+        private readonly ILogger<MessagingChannel> log;
+        private readonly ILogStore logStore;
         private readonly IMessagingFormatter messagingFormatter;
         private readonly IMessagingTemplateStore messagingTemplateStore;
-        private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserNotificationQueue userNotificationQueue;
-        private readonly ILogStore logStore;
-        private readonly ISemanticLog log;
+        private readonly IUserNotificationStore userNotificationStore;
 
         public string Name => Providers.Messaging;
 
-        public MessagingChannel(ISemanticLog log, ILogStore logStore,
+        public MessagingChannel(ILogger<MessagingChannel> log, ILogStore logStore,
             IAppStore appStore,
             IIntegrationManager integrationManager,
             IMessagingFormatter messagingFormatter,
@@ -140,10 +140,7 @@ namespace Notifo.Domain.Channels.Messaging
 
                 if (app == null)
                 {
-                    log.LogWarning(w => w
-                        .WriteProperty("action", "SendMobilePush")
-                        .WriteProperty("status", "Failed")
-                        .WriteProperty("reason", "App not found"));
+                    log.LogWarning("Cannot send message: App not found.");
 
                     await UpdateAsync(job.Notification, ProcessStatus.Handled);
                     return;

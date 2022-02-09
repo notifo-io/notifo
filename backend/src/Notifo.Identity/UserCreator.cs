@@ -6,27 +6,24 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Squidex.Hosting;
-using Squidex.Log;
 
 namespace Notifo.Identity
 {
     public sealed class UserCreator : IInitializable
     {
         private readonly IServiceProvider serviceProvider;
-        private readonly ISemanticLog log;
         private readonly NotifoIdentityUser[]? users;
 
         public int Order => 1000;
 
-        public UserCreator(IServiceProvider serviceProvider, IOptions<NotifoIdentityOptions> options, ISemanticLog log)
+        public UserCreator(IServiceProvider serviceProvider, IOptions<NotifoIdentityOptions> options)
         {
             this.serviceProvider = serviceProvider;
 
             users = options.Value.Users;
-
-            this.log = log;
         }
 
         public async Task InitializeAsync(
@@ -72,10 +69,9 @@ namespace Notifo.Identity
                             }
                             catch (Exception ex)
                             {
-                                log.LogError(ex, w => w
-                                    .WriteProperty("action", "CreateUser")
-                                    .WriteProperty("status", "Failed")
-                                    .WriteProperty("email", user.Email));
+                                var log = serviceProvider.GetRequiredService<ILogger<UserCreator>>();
+
+                                log.LogError(ex, "Failed to create initial user with email {email}.", user.Email);
                             }
                         }
                     }

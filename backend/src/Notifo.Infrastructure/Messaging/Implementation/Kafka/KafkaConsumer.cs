@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using Confluent.Kafka;
-using Squidex.Log;
+using Microsoft.Extensions.Logging;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
 {
@@ -16,12 +16,12 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
         private readonly string topicName;
         private readonly MessageCallback<T> onMessage;
         private readonly KafkaJsonSerializer<Envelope<T>> serializer;
-        private readonly ISemanticLog log;
+        private readonly ILogger log;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private Thread consumerThread;
 
         public KafkaConsumer(KafkaMessagingProvider provider, string topicName, MessageCallback<T> onMessage,
-            KafkaJsonSerializer<Envelope<T>> serializer, ISemanticLog log)
+            KafkaJsonSerializer<Envelope<T>> serializer, ILogger log)
         {
             this.provider = provider;
             this.topicName = topicName;
@@ -86,10 +86,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
             }
             catch (Exception ex)
             {
-                log.LogError(ex, w => w
-                    .WriteProperty("action", "Shutdown")
-                    .WriteProperty("system", "Kafka")
-                    .WriteProperty("status", "Failed"));
+                log.LogError(ex, "Kafka shutdown failed.");
             }
         }
     }

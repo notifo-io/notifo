@@ -6,8 +6,8 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Squidex.Hosting;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Implementation
 {
@@ -15,14 +15,15 @@ namespace Notifo.Infrastructure.Messaging.Implementation
     {
         private readonly IMessaging<T> messaging;
         private readonly IEnumerable<IMessageHandler<T>> messageHandlers;
-        private readonly ISemanticLog log;
+        private readonly ILogger<DelegatingConsumer<T>> log;
         private readonly string activity = $"Messaging.Consume({typeof(T).Name})";
 
         public string Name => $"MessagingConsumer({typeof(T).Name})";
 
         public int Order => int.MaxValue;
 
-        public DelegatingConsumer(IMessaging<T> messaging, IEnumerable<IMessageHandler<T>> messageHandlers, ISemanticLog log)
+        public DelegatingConsumer(IMessaging<T> messaging, IEnumerable<IMessageHandler<T>> messageHandlers,
+            ILogger<DelegatingConsumer<T>> log)
         {
             this.messaging = messaging;
             this.messageHandlers = messageHandlers;
@@ -76,10 +77,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation
                     }
                     catch (Exception ex)
                     {
-                        log.LogError(ex, w => w
-                            .WriteProperty("action", "ConsumeMessage")
-                            .WriteProperty("system", messaging.ToString())
-                            .WriteProperty("status", "Failed"));
+                        log.LogError(ex, "Failed to consume message for system {system}.", messaging);
                     }
                 }
             }

@@ -7,6 +7,7 @@
 
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Log;
@@ -16,7 +17,6 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Texts;
-using Squidex.Log;
 using Xunit;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -42,7 +42,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
             A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._, A<CancellationToken>._))
                 .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
 
-            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, A.Fake<ISemanticLog>());
+            var log = A.Fake<ILogger<UserEventPublisher>>();
+
+            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, log);
         }
 
         [Fact]

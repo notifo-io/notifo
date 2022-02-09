@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
@@ -16,23 +17,22 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Log;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserNotifications
 {
     public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
     {
-        private readonly IEnumerable<ICommunicationChannel> channels;
         private readonly IAppStore appStore;
-        private readonly IUserStore userStore;
-        private readonly IUserNotificationStore userNotificationsStore;
-        private readonly IUserNotificationFactory userNotificationFactory;
-        private readonly IUserEventQueue userEventQueue;
+        private readonly IClock clock;
+        private readonly IEnumerable<ICommunicationChannel> channels;
+        private readonly ILogger<UserNotificationService> log;
         private readonly ILogStore logStore;
         private readonly IMessageProducer<ConfirmMessage> confirmProducer;
-        private readonly IClock clock;
-        private readonly ISemanticLog log;
+        private readonly IUserEventQueue userEventQueue;
+        private readonly IUserNotificationFactory userNotificationFactory;
+        private readonly IUserNotificationStore userNotificationsStore;
+        private readonly IUserStore userStore;
 
         public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
             IAppStore appStore,
@@ -42,8 +42,8 @@ namespace Notifo.Domain.UserNotifications
             IUserNotificationFactory userNotificationFactory,
             IUserNotificationStore userNotificationsStore,
             IUserStore userStore,
-            IClock clock,
-            ISemanticLog log)
+            ILogger<UserNotificationService> log,
+            IClock clock)
         {
             this.appStore = appStore;
             this.channels = channels;
@@ -143,13 +143,10 @@ namespace Notifo.Domain.UserNotifications
                         }
                     }
 
-                    log.LogInformation(userEvent, (m, w) => w
-                        .WriteProperty("action", "HandleUserEvent")
-                        .WriteProperty("status", "Success")
-                        .WriteProperty("appId", m.AppId)
-                        .WriteProperty("eventId", m.EventId)
-                        .WriteProperty("eventTopic", m.Topic)
-                        .WriteProperty("eventType", m.ToString()));
+                    log.LogInformation("Processed user event for app {appId} with ID {id} to topic {topic}.",
+                        userEvent.AppId,
+                        userEvent.EventId,
+                        userEvent.Topic);
                 }
                 catch (Exception ex)
                 {
@@ -164,12 +161,10 @@ namespace Notifo.Domain.UserNotifications
                     }
                     else
                     {
-                        log.LogError(ex, userEvent, (m, w) => w
-                            .WriteProperty("action", "HandleUserEvent")
-                            .WriteProperty("status", "Failed")
-                            .WriteProperty("appId", m.AppId)
-                            .WriteProperty("eventId", m.EventId)
-                            .WriteProperty("eventTopic", m.Topic));
+                        log.LogError(ex, "Failed to process user event for app {appId} with ID {id} to topic {topic}.",
+                            userEvent.AppId,
+                            userEvent.EventId,
+                            userEvent.Topic);
                         throw;
                     }
                 }

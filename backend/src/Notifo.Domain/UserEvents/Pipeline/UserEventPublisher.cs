@@ -8,6 +8,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Log;
@@ -17,7 +18,6 @@ using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
-using Squidex.Log;
 using IUserEventProducer = Notifo.Infrastructure.Messaging.IMessageProducer<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -38,8 +38,8 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
         private readonly ICounterService counters;
         private readonly IEventStore eventStore;
+        private readonly ILogger<UserEventPublisher> log;
         private readonly ILogStore logStore;
-        private readonly ISemanticLog log;
         private readonly ISubscriptionStore subscriptionStore;
         private readonly ITemplateStore templateStore;
         private readonly IUserEventProducer userEventProducer;
@@ -51,7 +51,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ITemplateStore templateStore,
             IUserStore userStore,
             IUserEventProducer userEventProducer,
-            ISemanticLog log)
+            ILogger<UserEventPublisher> log)
         {
             this.counters = counters;
             this.eventStore = eventStore;
@@ -68,24 +68,16 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             using (var activity = Telemetry.Activities.StartActivity("HandleUserEvent"))
             {
-                log.LogInformation(@event, (m, w) => w
-                    .WriteProperty("action", "HandleEvent")
-                    .WriteProperty("status", "Started")
-                    .WriteProperty("appId", m.AppId)
-                    .WriteProperty("eventId", m.Id)
-                    .WriteProperty("eventTopic", m.Topic)
-                    .WriteProperty("eventType", m.ToString()));
+                log.LogInformation("Received event for app {appId} with ID {id} to topic {topic}.",
+                    @event.AppId,
+                    @event.Id,
+                    @event.Topic);
 
                 if (string.IsNullOrWhiteSpace(@event.AppId))
                 {
-                    log.LogWarning(@event, (m, w) => w
-                        .WriteProperty("action", "HandleEvent")
-                        .WriteProperty("status", "Failed")
-                        .WriteProperty("reason", "NoAppId")
-                        .WriteProperty("appId", m.AppId)
-                        .WriteProperty("eventId", m.Id)
-                        .WriteProperty("eventTopic", m.Topic)
-                        .WriteProperty("eventType", m.ToString()));
+                    log.LogInformation("Received invalid event with ID {id} to topic {topic}: No app id found.",
+                        @event.Id,
+                        @event.Topic);
                     return;
                 }
 
@@ -178,13 +170,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     await logStore.LogAsync(@event.AppId, Texts.Events_NoSubscriber);
                 }
 
-                log.LogInformation(@event, (m, w) => w
-                    .WriteProperty("action", "HandleEvent")
-                    .WriteProperty("status", "Success")
-                    .WriteProperty("appId", m.AppId)
-                    .WriteProperty("eventId", m.Id)
-                    .WriteProperty("eventTopic", m.Topic)
-                    .WriteProperty("eventType", m.ToString()));
+                log.LogInformation("Processed event for app {appId} with ID {id} to topic {topic}.",
+                    @event.AppId,
+                    @event.Id,
+                    @event.Topic);
             }
         }
 

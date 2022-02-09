@@ -6,9 +6,9 @@
 // ==========================================================================
 
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Squidex.Hosting;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
 {
@@ -17,11 +17,12 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
         private readonly ConcurrentDictionary<ulong, (string Queue, byte[] Message)> outstandingConfirms = new ConcurrentDictionary<ulong, (string Queue, byte[] Message)>();
         private readonly BlockingCollection<(string Queue, byte[] Message)> retryQueue = new BlockingCollection<(string Queue, byte[] Message)>(5000);
         private readonly RabbitMqMessagingProvider provider;
-        private readonly ISemanticLog log;
+        private readonly ILogger<RabbitMqProducer> log;
         private readonly Thread retryThread;
         private IModel channel;
 
-        public RabbitMqProducer(RabbitMqMessagingProvider provider, ISemanticLog log)
+        public RabbitMqProducer(RabbitMqMessagingProvider provider,
+            ILogger<RabbitMqProducer> log)
         {
             this.provider = provider;
 
@@ -45,10 +46,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
             }
             catch (Exception ex)
             {
-                log.LogError(ex, w => w
-                    .WriteProperty("action", "Shutdown")
-                    .WriteProperty("system", "RabbitMq")
-                    .WriteProperty("status", "Failed"));
+                log.LogError(ex, "RabbitMq shutdown failed.");
             }
         }
 
@@ -70,11 +68,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.RabbitMq
                     if (!retryQueue.TryAdd(found, 2000))
 #pragma warning restore MA0040 // Flow the cancellation token
                     {
-                        log.LogError(w => w
-                            .WriteProperty("action", "Shutdown")
-                            .WriteProperty("system", "Kafka")
-                            .WriteProperty("status", "Failed")
-                            .WriteProperty("reason", "Queue full."));
+                        log.LogError("RabbitMq shutdown failed: Queue full.");
                     }
                 });
             };

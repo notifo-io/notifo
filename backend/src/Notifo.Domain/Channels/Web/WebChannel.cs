@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
-using Squidex.Log;
 
 namespace Notifo.Domain.Channels.Web
 {
@@ -15,7 +15,7 @@ namespace Notifo.Domain.Channels.Web
     {
         private readonly IStreamClient streamClient;
         private readonly IUserNotificationStore userNotificationStore;
-        private readonly ISemanticLog log;
+        private readonly ILogger<WebChannel> log;
 
         public string Name => Providers.Web;
 
@@ -24,7 +24,7 @@ namespace Notifo.Domain.Channels.Web
         public WebChannel(
             IUserNotificationStore userNotificationStore,
             IStreamClient streamClient,
-            ISemanticLog log)
+            ILogger<WebChannel> log)
         {
             this.streamClient = streamClient;
             this.userNotificationStore = userNotificationStore;
@@ -52,9 +52,7 @@ namespace Notifo.Domain.Channels.Web
                 {
                     await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Failed, ct: ct);
 
-                    log.LogError(ex, w => w
-                        .WriteProperty("action", "SendWeb")
-                        .WriteProperty("status", "Failed"));
+                    log.LogError(ex, "Failed to send web message.");
                 }
             }
         }
