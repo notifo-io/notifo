@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
-using Squidex.Log;
 
 namespace Notifo.Domain.Events
 {
@@ -18,7 +18,7 @@ namespace Notifo.Domain.Events
         private readonly IEventRepository eventRepository;
 
         public EventStore(IEventRepository eventRepository,
-            ISemanticLog log)
+            ILogger<EventStore> log)
         {
             this.eventRepository = eventRepository;
 

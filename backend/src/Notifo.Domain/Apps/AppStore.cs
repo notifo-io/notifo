@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Squidex.Caching;
-using Squidex.Log;
 
 namespace Notifo.Domain.Apps
 {
@@ -21,7 +21,7 @@ namespace Notifo.Domain.Apps
         private readonly IReplicatedCache cache;
 
         public AppStore(IAppRepository repository,
-            IServiceProvider services, IReplicatedCache cache, ISemanticLog log)
+            IServiceProvider services, IReplicatedCache cache, ILogger<AppStore> log)
         {
             this.repository = repository;
             this.services = services;

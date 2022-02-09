@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Integrations;
@@ -15,7 +16,6 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Log;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.MobilePush.MobilePushJob>;
 
 namespace Notifo.Domain.Channels.MobilePush
@@ -23,17 +23,17 @@ namespace Notifo.Domain.Channels.MobilePush
     public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>
     {
         private readonly IAppStore appStore;
+        private readonly IClock clock;
         private readonly IIntegrationManager integrationManager;
+        private readonly ILogger<MobilePushChannel> log;
         private readonly ILogStore logStore;
-        private readonly ISemanticLog log;
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserStore userStore;
-        private readonly IClock clock;
 
         public string Name => Providers.MobilePush;
 
-        public MobilePushChannel(ISemanticLog log, ILogStore logStore,
+        public MobilePushChannel(ILogger<MobilePushChannel> log, ILogStore logStore,
             IAppStore appStore,
             IIntegrationManager integrationManager,
             IUserNotificationQueue userNotificationQueue,
@@ -184,9 +184,7 @@ namespace Notifo.Domain.Channels.MobilePush
             }
             catch (Exception ex)
             {
-                log.LogWarning(ex, w => w
-                    .WriteProperty("action", "UpdateMobileWakeupTime")
-                    .WriteProperty("status", "Failed"));
+                log.LogWarning(ex, "Failed to wakeup device.");
             }
         }
 
@@ -231,10 +229,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
                 if (app == null)
                 {
-                    log.LogWarning(w => w
-                        .WriteProperty("action", "SendMobilePush")
-                        .WriteProperty("status", "Failed")
-                        .WriteProperty("reason", "App not found"));
+                    log.LogWarning("Cannot send email: App not found.");
 
                     await UpdateAsync(job, ProcessStatus.Handled);
                     return;

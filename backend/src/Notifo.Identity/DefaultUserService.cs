@@ -7,10 +7,10 @@
 
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Tasks;
-using Squidex.Log;
 
 namespace Notifo.Identity
 {
@@ -19,10 +19,10 @@ namespace Notifo.Identity
         private readonly UserManager<IdentityUser> userManager;
         private readonly IUserFactory userFactory;
         private readonly IEnumerable<IUserEvents> userEvents;
-        private readonly ISemanticLog log;
+        private readonly ILogger<DefaultUserService> log;
 
         public DefaultUserService(UserManager<IdentityUser> userManager, IUserFactory userFactory,
-            IEnumerable<IUserEvents> userEvents, ISemanticLog log)
+            IEnumerable<IUserEvents> userEvents, ILogger<DefaultUserService> log)
         {
             this.userManager = userManager;
             this.userFactory = userFactory;
@@ -207,9 +207,7 @@ namespace Notifo.Identity
                 }
                 catch (Exception ex2)
                 {
-                    log.LogError(ex2, w => w
-                        .WriteProperty("action", "CleanupUser")
-                        .WriteProperty("status", "Failed"));
+                    log.LogError(ex2, "Failed to cleanup user after creation failed.");
                 }
 
                 throw;

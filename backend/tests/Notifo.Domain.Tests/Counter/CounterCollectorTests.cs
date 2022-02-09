@@ -7,8 +7,8 @@
 
 using System.Globalization;
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
-using Squidex.Log;
 using Xunit;
 
 namespace Notifo.Domain.Counter
@@ -20,13 +20,17 @@ namespace Notifo.Domain.Counter
 
         public CounterCollectorTests()
         {
-            sut = new CounterCollector<string>(store, A.Fake<ISemanticLog>(), 100, 10, 100);
+            var log = A.Fake<ILogger>();
+
+            sut = new CounterCollector<string>(store, log, 100, 10, 100);
         }
 
         [Fact]
         public async Task Should_batch_writes()
         {
-            var longDelay = new CounterCollector<string>(store, A.Fake<ISemanticLog>(), 100, 10, 10000);
+            var log = A.Fake<ILogger>();
+
+            var longDelay = new CounterCollector<string>(store, log, 100, 10, 10000);
 
             for (var i = 0; i < 100; i++)
             {

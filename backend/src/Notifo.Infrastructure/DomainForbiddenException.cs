@@ -12,13 +12,10 @@ namespace Notifo.Infrastructure
     [Serializable]
     public class DomainForbiddenException : DomainException
     {
-        public DomainForbiddenException(string message)
-            : base(message)
-        {
-        }
+        private const string ValidationError = "FORBIDDEN";
 
-        public DomainForbiddenException(string message, Exception inner)
-            : base(message, inner)
+        public DomainForbiddenException(string message, Exception? inner = null)
+            : base(message, ValidationError, inner)
         {
         }
 

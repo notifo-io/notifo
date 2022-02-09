@@ -7,8 +7,8 @@
 
 using Confluent.Kafka;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
 {
@@ -20,7 +20,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
 
         public KafkaOptions Options { get; }
 
-        public KafkaMessagingProvider(IOptions<KafkaOptions> options, ISemanticLog log)
+        public KafkaMessagingProvider(IOptions<KafkaOptions> options, ILogger log)
         {
             Options = options.Value;
 

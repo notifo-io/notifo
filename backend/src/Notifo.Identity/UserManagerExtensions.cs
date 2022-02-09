@@ -8,15 +8,15 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Validation;
-using Squidex.Log;
 
 namespace Notifo.Identity
 {
     internal static class UserManagerExtensions
     {
-        public static async Task Throw(this Task<IdentityResult> task, ISemanticLog log)
+        public static async Task Throw(this Task<IdentityResult> task, ILogger log)
         {
             var result = await task;
 
@@ -33,10 +33,7 @@ namespace Notifo.Identity
 
                 var errorMessage = errorMessageBuilder.ToString();
 
-                log.LogError(errorMessage, (ctx, w) => w
-                    .WriteProperty("action", "IdentityOperation")
-                    .WriteProperty("status", "Failed")
-                    .WriteProperty("message", ctx));
+                log.LogError("Identity operation failed: {errorMessage}.", errorMessage);
 
                 throw new ValidationException(result.Errors.Select(x => new ValidationError(x.Description)).ToList());
             }

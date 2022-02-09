@@ -7,10 +7,10 @@
 
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Tasks;
-using Squidex.Log;
 
 namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
 {
@@ -19,7 +19,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
         private readonly GooglePubSubOptions options;
         private readonly string topicId;
         private readonly IJsonSerializer serializer;
-        private readonly ISemanticLog log;
+        private readonly ILogger<GooglePubSubMessaging<T>> log;
         private PublisherClient? publisherClient;
         private SubscriberClient? subscriberClient;
 
@@ -28,7 +28,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
         public string Name => $"GooglePubSubMessaging({topicId})";
 
         public GooglePubSubMessaging(IOptions<GooglePubSubOptions> options, string topicId,
-            IJsonSerializer serializer, ISemanticLog log)
+            IJsonSerializer serializer, ILogger<GooglePubSubMessaging<T>> log)
         {
             this.options = options.Value;
             this.topicId = topicId;
@@ -98,10 +98,7 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
 
                 if (exception != null && exception is not OperationCanceledException)
                 {
-                    log.LogError(exception, w => w
-                        .WriteProperty("action", "ConsumeMessage")
-                        .WriteProperty("system", "GooglePubSub")
-                        .WriteProperty("status", "Failed"));
+                    log.LogError(exception, "Failed to consume message.");
                 }
             }, CancellationToken.None).Forget();
         }

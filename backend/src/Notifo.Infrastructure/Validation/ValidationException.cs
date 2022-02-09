@@ -13,6 +13,8 @@ namespace Notifo.Infrastructure.Validation
     [Serializable]
     public class ValidationException : DomainException
     {
+        private const string ValidationError = "VALIDATION_ERROR";
+
         public IReadOnlyList<ValidationError> Errors { get; }
 
         public ValidationException(string error, Exception? inner = null)
@@ -26,7 +28,7 @@ namespace Notifo.Infrastructure.Validation
         }
 
         public ValidationException(IReadOnlyList<ValidationError> errors, Exception? inner = null)
-            : base(FormatMessage(errors), inner)
+            : base(FormatMessage(errors), ValidationError, inner)
         {
             Errors = errors;
         }

@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
 using Notifo.Areas.Api;
-using Squidex.Log;
 
 namespace Notifo.Pipeline
 {
@@ -26,7 +25,8 @@ namespace Notifo.Pipeline
             this.next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IActionResultExecutor<ObjectResult> writer, ISemanticLog log)
+        public async Task InvokeAsync(HttpContext context, IActionResultExecutor<ObjectResult> writer,
+            ILogger<RequestExceptionMiddleware> log)
         {
             if (context.Request.Query.TryGetValue("error", out var header) && int.TryParse(header, NumberStyles.Integer, CultureInfo.InvariantCulture, out var statusCode) && IsErrorStatusCode(statusCode))
             {
@@ -42,7 +42,7 @@ namespace Notifo.Pipeline
             }
             catch (Exception ex)
             {
-                log.LogError(ex, w => w.WriteProperty("message", "An unexpected exception has occurred."));
+                log.LogError(ex, "An unexpected exception has occurred.");
 
                 if (!context.Response.HasStarted)
                 {

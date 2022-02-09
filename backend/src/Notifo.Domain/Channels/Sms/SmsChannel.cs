@@ -7,6 +7,7 @@
 
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.ChannelTemplates;
@@ -16,7 +17,6 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Squidex.Log;
 using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Sms.SmsTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Sms.SmsJob>;
 
@@ -26,16 +26,16 @@ namespace Notifo.Domain.Channels.Sms
     {
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
+        private readonly ILogger<SmsChannel> log;
         private readonly ILogStore logStore;
         private readonly ISmsFormatter smsFormatter;
         private readonly ISmsTemplateStore smsTemplateStore;
         private readonly IUserNotificationQueue userNotificationQueue;
         private readonly IUserNotificationStore userNotificationStore;
-        private readonly ISemanticLog log;
 
         public string Name => Providers.Sms;
 
-        public SmsChannel(ISemanticLog log, ILogStore logStore,
+        public SmsChannel(ILogger<SmsChannel> log, ILogStore logStore,
             IAppStore appStore,
             IIntegrationManager integrationManager,
             ISmsFormatter smsFormatter,
@@ -169,10 +169,7 @@ namespace Notifo.Domain.Channels.Sms
 
                 if (app == null)
                 {
-                    log.LogWarning(w => w
-                        .WriteProperty("action", "SendMobilePush")
-                        .WriteProperty("status", "Failed")
-                        .WriteProperty("reason", "App not found"));
+                    log.LogWarning("Cannot send email: App not found.");
 
                     await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
                     return;

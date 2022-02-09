@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Log.Internal;
 using Notifo.Infrastructure;
-using Squidex.Log;
 
 namespace Notifo.Domain.Log
 {
@@ -16,9 +16,10 @@ namespace Notifo.Domain.Log
     {
         private readonly LogCollector collector;
         private readonly ILogRepository repository;
-        private readonly ISemanticLog log;
+        private readonly ILogger<LogStore> log;
 
-        public LogStore(ILogRepository repository, ISemanticLog log, IClock clock)
+        public LogStore(ILogRepository repository,
+            ILogger<LogStore> log, IClock clock)
         {
             this.repository = repository;
 
@@ -37,11 +38,7 @@ namespace Notifo.Domain.Log
             Guard.NotNullOrEmpty(system);
             Guard.NotNullOrEmpty(message);
 
-            log.LogInformation(w => w
-                .WriteProperty("action", "UserLog")
-                .WriteProperty("appId", appId)
-                .WriteProperty("system", system)
-                .WriteProperty("message", message));
+            log.LogInformation("User log for app {appId} from system {system}: {message}.", appId, system, message);
 
             return collector.AddAsync(appId, $"{system.ToUpperInvariant()}: {message}");
         }
@@ -51,11 +48,7 @@ namespace Notifo.Domain.Log
             Guard.NotNullOrEmpty(appId);
             Guard.NotNullOrEmpty(message);
 
-            log.LogInformation(w => w
-                .WriteProperty("action", "UserLog")
-                .WriteProperty("appId", appId)
-                .WriteProperty("system", string.Empty)
-                .WriteProperty("message", message));
+            log.LogInformation("User log for app {appId}: {message}.", appId, message);
 
             return collector.AddAsync(appId, message);
         }

@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
-using Squidex.Log;
 
 namespace Notifo.Domain.Topics
 {
@@ -17,7 +17,7 @@ namespace Notifo.Domain.Topics
         private readonly CounterCollector<(string AppId, string Path)> collector;
 
         public TopicStore(ITopicRepository repository,
-            ISemanticLog log)
+            ILogger<TopicStore> log)
         {
             this.repository = repository;
 

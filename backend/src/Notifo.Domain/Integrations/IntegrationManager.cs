@@ -6,12 +6,12 @@
 // ==========================================================================
 
 using System.Globalization;
+using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure.Timers;
 using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
-using Squidex.Log;
 
 namespace Notifo.Domain.Integrations
 {
@@ -20,7 +20,7 @@ namespace Notifo.Domain.Integrations
         private readonly IEnumerable<IIntegration> appIntegrations;
         private readonly IAppStore appStore;
         private readonly IServiceProvider serviceProvider;
-        private readonly ISemanticLog log;
+        private readonly ILogger<IntegrationManager> log;
         private CompletionTimer timer;
 
         public IEnumerable<IntegrationDefinition> Definitions
@@ -29,7 +29,7 @@ namespace Notifo.Domain.Integrations
         }
 
         public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore, IServiceProvider serviceProvider,
-            ISemanticLog log)
+            ILogger<IntegrationManager> log)
         {
             this.appIntegrations = appIntegrations;
             this.appStore = appStore;
@@ -226,9 +226,7 @@ namespace Notifo.Domain.Integrations
                         }
                         catch (Exception ex)
                         {
-                            log.LogError(ex, w => w
-                                .WriteProperty("action", "CheckIntegrations")
-                                .WriteProperty("status", "Failed"));
+                            log.LogError(ex, "Check integrations failed.");
                         }
 
                         if (status != configured.Status)
@@ -250,9 +248,7 @@ namespace Notifo.Domain.Integrations
             }
             catch (Exception ex)
             {
-                log.LogError(ex, w => w
-                    .WriteProperty("action", "CheckIntegrations")
-                    .WriteProperty("status", "Failed"));
+                log.LogError(ex, "Check integrations failed.");
             }
         }
     }

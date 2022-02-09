@@ -31,14 +31,13 @@ namespace Notifo.Pipeline
         {
             var localizer = context.HttpContext.RequestServices.GetRequiredService<IStringLocalizer<AppResources>>();
 
-            var (error, wellKnown) = context.Exception.ToErrorDto(localizer, context.HttpContext);
+            var (error, unhandled) = context.Exception.ToErrorDto(localizer, context.HttpContext);
 
-            if (!wellKnown)
+            if (unhandled != null)
             {
-                var log = context.HttpContext.RequestServices.GetRequiredService<ISemanticLog>();
+                var log = context.HttpContext.RequestServices.GetRequiredService<ILogger<ApiExceptionFilterAttribute>>();
 
-                log.LogError(context.Exception, w => w
-                    .WriteProperty("message", "An unexpected exception has occurred."));
+                log.LogError(unhandled, "An unexpected exception has occurred.");
             }
 
             context.Result = GetResult(error);

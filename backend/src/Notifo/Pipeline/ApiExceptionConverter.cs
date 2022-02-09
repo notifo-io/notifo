@@ -53,7 +53,7 @@ namespace Notifo.Pipeline
             return (error, true);
         }
 
-        public static (ErrorDto Error, bool WellKnown) ToErrorDto(this Exception exception, IStringLocalizer<AppResources> localizer, HttpContext? httpContext)
+        public static (ErrorDto Error, Exception? Unhandled) ToErrorDto(this Exception exception, IStringLocalizer<AppResources> localizer, HttpContext? httpContext)
         {
             Guard.NotNull(exception);
 
@@ -76,42 +76,69 @@ namespace Notifo.Pipeline
             error.Type = Links.GetOrDefault(error.StatusCode);
         }
 
-        private static (ErrorDto Error, bool WellKnown) CreateError(Exception exception, IStringLocalizer<AppResources> localizer)
+        private static (ErrorDto Error, Exception? Unhandled) CreateError(Exception exception, IStringLocalizer<AppResources> localizer)
         {
             switch (exception)
             {
                 case ValidationException ex:
-                    return (CreateError(400, localizer["ValidationError"].ToString(), ToErrors(ex.Errors).ToArray()), true);
+                    return (CreateError(400, localizer["ValidationError"].ToString(), ex.ErrorCode, ToErrors(ex.Errors).ToArray()), GetInner(exception));
 
-                case DomainObjectNotFoundException:
-                    return (CreateError(404), true);
+                case DomainObjectNotFoundException ex:
+                    return (CreateError(404, ex.ErrorCode), GetInner(exception));
 
-                case DomainObjectConflictException:
-                    return (CreateError(409, exception.Message), true);
+                case DomainObjectDeletedException ex:
+                    return (CreateError(410, ex.Message, ex.ErrorCode), GetInner(exception));
 
-                case DomainForbiddenException:
-                    return (CreateError(403, exception.Message), true);
+                case DomainObjectConflictException ex:
+                    return (CreateError(409, ex.Message, ex.ErrorCode), GetInner(exception));
 
-                case DomainException:
-                    return (CreateError(400, exception.Message), true);
+                case DomainForbiddenException ex:
+                    return (CreateError(403, ex.Message, ex.ErrorCode), GetInner(exception));
+
+                case DomainException ex:
+                    return (CreateError(400, ex.Message, ex.ErrorCode), GetInner(exception));
 
                 case SecurityException:
-                    return (CreateError(403), false);
+                    return (CreateError(403), exception);
 
-                case DecoderFallbackException:
-                    return (CreateError(400, exception.Message), true);
+                case DecoderFallbackException ex:
+                    return (CreateError(400, ex.Message), null);
 
                 case BadHttpRequestException ex:
-                    return (CreateError(ex.StatusCode, ex.Message), true);
+                    return (CreateError(ex.StatusCode, ex.Message), null);
 
                 default:
-                    return (CreateError(500), false);
+                    return (CreateError(500), exception);
             }
         }
 
-        private static ErrorDto CreateError(int status, string? message = null, string[]? details = null)
+        private static Exception? GetInner(Exception exception)
         {
-            var error = new ErrorDto { StatusCode = status, Message = message, Details = details };
+            var current = exception;
+
+            while (current != null)
+            {
+                if (current is not DomainException)
+                {
+                    return current;
+                }
+
+                current = current.InnerException;
+            }
+
+            return null;
+        }
+
+        private static ErrorDto CreateError(int status, string? message = null, string? errorCode = null, IEnumerable<string>? details = null)
+        {
+            var error = new ErrorDto { StatusCode = status, Message = message };
+
+            if (!string.IsNullOrWhiteSpace(errorCode))
+            {
+                error.ErrorCode = errorCode;
+            }
+
+            error.Details = details?.ToArray();
 
             return error;
         }

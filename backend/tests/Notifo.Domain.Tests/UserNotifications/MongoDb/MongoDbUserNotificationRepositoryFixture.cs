@@ -6,10 +6,10 @@
 // ==========================================================================
 
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
-using Squidex.Log;
 
 namespace Notifo.Domain.UserNotifications.MongoDb
 {
@@ -33,7 +33,9 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 MaxItemsPerUser = 100
             };
 
-            Repository = new MongoDbUserNotificationRepository(mongoDatabase, A.Fake<ISemanticLog>(), Options.Create(options));
+            var log = A.Fake<ILogger<MongoDbUserNotificationRepository>>();
+
+            Repository = new MongoDbUserNotificationRepository(mongoDatabase, Options.Create(options), log);
             Repository.InitializeAsync(default).Wait();
         }
 

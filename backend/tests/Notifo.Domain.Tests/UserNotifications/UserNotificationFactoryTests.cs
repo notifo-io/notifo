@@ -49,7 +49,7 @@ namespace Notifo.Domain.UserNotifications
             A.CallTo(() => notificationUrl.TrackDelivered(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"delivered/{id}/?lang={lang}"));
 
-            sut = new UserNotificationFactory(clock, logStore, notificationUrl);
+            sut = new UserNotificationFactory(logStore, notificationUrl, clock);
         }
 
         [Fact]
