@@ -13,7 +13,7 @@ namespace Notifo.Domain.Integrations
     {
         IEnumerable<IntegrationDefinition> Definitions { get; }
 
-        bool IsConfigured<T>(App app, bool? test = null);
+        bool IsConfigured<T>(App app, IIntegrationTarget? target = null);
 
         Task ValidateAsync(ConfiguredIntegration configured,
             CancellationToken ct = default);
@@ -24,8 +24,8 @@ namespace Notifo.Domain.Integrations
         Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
             CancellationToken ct = default);
 
-        T? Resolve<T>(string id, App app, bool? test = null) where T : class;
+        T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class;
 
-        IEnumerable<(string Id, T Target)> Resolve<T>(App app, bool? test = null) where T : class;
+        IEnumerable<(string Id, T Target)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class;
     }
 }

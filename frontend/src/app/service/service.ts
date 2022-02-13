@@ -6061,6 +6061,8 @@ export interface ConfiguredIntegrationDto {
     enabled?: boolean;
     /** True or false when only used for test or production mode. */
     test?: boolean | undefined;
+    /** The javascript condition. */
+    condition?: string | undefined;
     /** The priority in which order the integrations must run. */
     priority?: number;
     /** The status of the integration. */
@@ -6147,6 +6149,8 @@ export interface UpdateIntegrationDto {
 export interface ErrorDto {
     /** The error message. */
     message?: string | undefined;
+    /** The error code. */
+    errorCode?: string | undefined;
     /** The optional trace id. */
     traceId?: string | undefined;
     /** The error type, usually a link. */

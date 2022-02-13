@@ -7,10 +7,11 @@
 
 using System.Diagnostics;
 using System.Text;
+using Notifo.Domain.Integrations;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public class BaseUserNotification : IUserNotification
+    public class BaseUserNotification : IUserNotification, IIntegrationTarget
     {
         public Guid Id { get; set; }
 
@@ -47,6 +48,17 @@ namespace Notifo.Domain.UserNotifications
         public NotificationProperties? Properties { get; set; }
 
         public NotificationFormatting<string> Formatting { get; set; }
+
+        IEnumerable<KeyValuePair<string, object>> IIntegrationTarget.Properties
+        {
+            get
+            {
+                if (Properties != null)
+                {
+                    yield return new KeyValuePair<string, object>("properties", Properties);
+                }
+            }
+        }
 
         public string? ComputeTrackDeliveredUrl(string channel, string? deviceIdentifier)
         {

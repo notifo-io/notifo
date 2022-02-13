@@ -53,7 +53,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            if (!integrationManager.IsConfigured<IMobilePushSender>(options.App, notification.Test))
+            if (!integrationManager.IsConfigured<IMobilePushSender>(options.App, notification))
             {
                 yield break;
             }
@@ -239,7 +239,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 {
                     await UpdateAsync(job, ProcessStatus.Attempt);
 
-                    var senders = integrationManager.Resolve<IMobilePushSender>(app, notification.Test).Select(x => x.Target).ToList();
+                    var senders = integrationManager.Resolve<IMobilePushSender>(app, notification).Select(x => x.Target).ToList();
 
                     if (senders.Count == 0)
                     {

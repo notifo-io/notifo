@@ -181,35 +181,35 @@ export module Forms {
         );
     };
 
-    export const Text = (props: FormEditorProps) => {
+    export const Text = ({ placeholder, ...other }: FormEditorProps) => {
         return (
-            <Forms.Row {...props}>
-                <InputText name={props.name} />
+            <Forms.Row {...other}>
+                <InputText name={other.name} placeholder={placeholder} />
             </Forms.Row>
         );
     };
 
-    export const Url = (props: FormEditorProps) => {
+    export const Url = ({ placeholder, ...other }: FormEditorProps) => {
         return (
-            <Forms.Row {...props}>
-                <InputUrl name={props.name} />
+            <Forms.Row {...other}>
+                <InputUrl name={other.name} placeholder={placeholder} />
             </Forms.Row>
         );
     };
 
-    export const Textarea = (props: FormEditorProps) => {
+    export const Textarea = ({ placeholder, ...other }: FormEditorProps) => {
         return (
-            <Forms.Row {...props}>
-                <InputTextarea name={props.name} />
+            <Forms.Row {...other}>
+                <InputTextarea name={other.name} placeholder={placeholder} />
             </Forms.Row>
         );
     };
 
-    export const Number = ({ max, min, step, unit, ...other }: FormEditorProps & { unit?: string; min?: number; max?: number; step?: number }) => {
+    export const Number = ({ max, min, placeholder, step, unit, ...other }: FormEditorProps & { unit?: string; min?: number; max?: number; step?: number }) => {
         return (
             <Forms.Row {...other}>
                 <InputGroup>
-                    <InputNumber name={other.name} max={max} min={min} step={step} />
+                    <InputNumber name={other.name} placeholder={placeholder} max={max} min={min} step={step} />
 
                     {unit &&
                         <InputGroupAddon addonType='prepend'>
@@ -221,10 +221,10 @@ export module Forms {
         );
     };
 
-    export const Email = (props: FormEditorProps) => {
+    export const Email = ({ placeholder, ...other }: FormEditorProps) => {
         return (
-            <Forms.Row {...props}>
-                <InputEmail name={props.name} />
+            <Forms.Row {...other}>
+                <InputEmail name={other.name} placeholder={placeholder} />
             </Forms.Row>
         );
     };
@@ -232,15 +232,15 @@ export module Forms {
     export const Password = (props: FormEditorProps) => {
         return (
             <Forms.Row {...props}>
-                <InputPassword name={props.name} />
+                <InputPassword name={props.name} placeholder={props.placeholder} />
             </Forms.Row>
         );
     };
 
-    export const Select = ({ options, ...other }: FormEditorProps & { options: Option<string | number>[] }) => {
+    export const Select = ({ options, placeholder, ...other }: FormEditorProps & { options: Option<string | number>[] }) => {
         return (
             <Forms.Row {...other}>
-                <InputSelect name={other.name} options={options} />
+                <InputSelect name={other.name} placeholder={placeholder} options={options} />
             </Forms.Row>
         );
     };
@@ -270,7 +270,7 @@ const FormDescription = ({ hints }: { hints?: string }) => {
     );
 };
 
-const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
+const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
     const { submitCount } = useFormikContext();
     const [field, meta, helper] = useFieldNew(name);
 
@@ -286,12 +286,13 @@ const InputNumber = ({ name, max, min, step }: FormEditorProps & { min?: number;
                 step={step}
                 onChange={doChange}
                 onBlur={field.onBlur}
+                placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputText = ({ name }: FormEditorProps) => {
+const InputText = ({ name, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useFieldNew(name);
 
@@ -300,12 +301,13 @@ const InputText = ({ name }: FormEditorProps) => {
             <Input type='text' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputUrl = ({ name }: FormEditorProps) => {
+const InputUrl = ({ name, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useFieldNew(name);
 
@@ -314,12 +316,13 @@ const InputUrl = ({ name }: FormEditorProps) => {
             <Input type='url' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputTextarea = ({ name }: FormEditorProps) => {
+const InputTextarea = ({ name, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useFieldNew(name);
 
@@ -328,12 +331,13 @@ const InputTextarea = ({ name }: FormEditorProps) => {
             <Input type='textarea' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputEmail = ({ name }: FormEditorProps) => {
+const InputEmail = ({ name, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useFieldNew(name);
 
@@ -342,12 +346,13 @@ const InputEmail = ({ name }: FormEditorProps) => {
             <Input type='email' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputPassword = ({ name }: FormEditorProps) => {
+const InputPassword = ({ name, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta] = useFieldNew(name);
 
@@ -356,6 +361,7 @@ const InputPassword = ({ name }: FormEditorProps) => {
             <PasswordInput name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
+                placeholder={placeholder}
             />
         </>
     );

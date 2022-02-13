@@ -19,6 +19,8 @@ namespace Notifo.Domain.Integrations
 
         public int Priority { get; set; }
 
+        public string? Condition { get; set; }
+
         public IntegrationStatus Status { get; set; }
     }
 }

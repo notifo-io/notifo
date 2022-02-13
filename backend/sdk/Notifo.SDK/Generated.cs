@@ -13444,6 +13444,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("test", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Test { get; set; }
     
+        /// <summary>The javascript condition.</summary>
+        [Newtonsoft.Json.JsonProperty("condition", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Condition { get; set; }
+    
         /// <summary>The priority in which order the integrations must run.</summary>
         [Newtonsoft.Json.JsonProperty("priority", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Priority { get; set; }
@@ -13655,6 +13659,10 @@ namespace Notifo.SDK
         /// <summary>The error message.</summary>
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Message { get; set; }
+    
+        /// <summary>The error code.</summary>
+        [Newtonsoft.Json.JsonProperty("errorCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ErrorCode { get; set; }
     
         /// <summary>The optional trace id.</summary>
         [Newtonsoft.Json.JsonProperty("traceId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
