@@ -44,7 +44,7 @@ namespace Notifo.Domain.Channels.Webhook
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting setting, SendOptions options)
         {
-            var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification.Test);
+            var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification);
 
             foreach (var (id, _) in webhooks)
             {
@@ -62,7 +62,7 @@ namespace Notifo.Domain.Channels.Webhook
         {
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App, notification.Test);
+                var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App);
 
                 // The webhook must match the name or the conditions.
                 if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))

@@ -177,6 +177,9 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                                     </Row>
                                 }
 
+                                <Forms.Text name='condition'
+                                    label={texts.integrations.condition} hints={texts.integrations.testHints} indeterminate />
+
                                 <Forms.Boolean name='test'
                                     label={texts.integrations.test} hints={texts.integrations.testHints} indeterminate />
 

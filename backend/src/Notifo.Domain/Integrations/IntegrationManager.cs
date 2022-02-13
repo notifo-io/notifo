@@ -6,9 +6,11 @@
 // ==========================================================================
 
 using System.Globalization;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Timers;
 using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
@@ -21,6 +23,7 @@ namespace Notifo.Domain.Integrations
         private readonly IAppStore appStore;
         private readonly IServiceProvider serviceProvider;
         private readonly ILogger<IntegrationManager> log;
+        private readonly ConditionEvaluator conditionEvaluator;
         private CompletionTimer timer;
 
         public IEnumerable<IntegrationDefinition> Definitions
@@ -28,13 +31,15 @@ namespace Notifo.Domain.Integrations
             get => appIntegrations.Select(x => x.Definition);
         }
 
-        public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore, IServiceProvider serviceProvider,
-            ILogger<IntegrationManager> log)
+        public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore,
+            IServiceProvider serviceProvider, ILogger<IntegrationManager> log)
         {
             this.appIntegrations = appIntegrations;
             this.appStore = appStore;
             this.serviceProvider = serviceProvider;
             this.log = log;
+
+            conditionEvaluator = new ConditionEvaluator(log);
         }
 
         public Task InitializeAsync(
@@ -54,6 +59,8 @@ namespace Notifo.Domain.Integrations
         public Task ValidateAsync(ConfiguredIntegration configured,
             CancellationToken ct = default)
         {
+            Guard.NotNull(configured);
+
             var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration == null)
@@ -86,6 +93,10 @@ namespace Notifo.Domain.Integrations
         public Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
             CancellationToken ct = default)
         {
+            Guard.NotNullOrEmpty(id);
+            Guard.NotNull(app);
+            Guard.NotNull(configured);
+
             var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration == null)
@@ -101,6 +112,10 @@ namespace Notifo.Domain.Integrations
         public Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
             CancellationToken ct = default)
         {
+            Guard.NotNullOrEmpty(id);
+            Guard.NotNull(app);
+            Guard.NotNull(configured);
+
             var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration == null)
@@ -113,9 +128,11 @@ namespace Notifo.Domain.Integrations
             return integration.OnRemovedAsync(app, id, configured, ct);
         }
 
-        public bool IsConfigured<T>(App app, bool? test = null)
+        public bool IsConfigured<T>(App app, IIntegrationTarget? target = null)
         {
-            foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
+            Guard.NotNull(app);
+
+            foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
             {
                 if (integration.CanCreate(typeof(T), actualId, configured))
                 {
@@ -126,9 +143,13 @@ namespace Notifo.Domain.Integrations
             return false;
         }
 
-        public T? Resolve<T>(string id, App app, bool? test = null) where T : class
+        public T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class
         {
-            foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
+            Guard.NotNullOrEmpty(id);
+            Guard.NotNull(app);
+            Guard.NotNull(target);
+
+            foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
             {
                 if (IsMatch(id, actualId) && integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
                 {
@@ -139,9 +160,11 @@ namespace Notifo.Domain.Integrations
             return default;
         }
 
-        public IEnumerable<(string, T)> Resolve<T>(App app, bool? test = null) where T : class
+        public IEnumerable<(string, T)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class
         {
-            foreach (var (actualId, configured, integration) in GetIntegrations(app, test))
+            Guard.NotNull(app);
+
+            foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
             {
                 if (integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
                 {
@@ -152,13 +175,18 @@ namespace Notifo.Domain.Integrations
             yield break;
         }
 
-        private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, bool? test)
+        private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, IIntegrationTarget? target)
         {
             var configureds = app.Integrations;
 
             foreach (var (actualId, configured) in configureds)
             {
-                if (!IsReady(configured) || !IsMatchingTest(configured, test))
+                if (!IsReady(configured))
+                {
+                    continue;
+                }
+
+                if (target != null && (!IsMatchingTest(configured, target) || !IsMatchingCondition(configured, target)))
                 {
                     continue;
                 }
@@ -177,9 +205,14 @@ namespace Notifo.Domain.Integrations
             return configured.Enabled && configured.Status == IntegrationStatus.Verified;
         }
 
-        private static bool IsMatchingTest(ConfiguredIntegration configured, bool? test)
+        private static bool IsMatchingTest(ConfiguredIntegration configured, IIntegrationTarget target)
         {
-            return test == null || configured.Test == null || configured.Test.Value == test;
+            return configured.Test == null || configured.Test.Value == target.Test;
+        }
+
+        private bool IsMatchingCondition(ConfiguredIntegration configured, IIntegrationTarget target)
+        {
+            return conditionEvaluator.Evaluate(configured.Condition, target);
         }
 
         private static bool IsMatch(string id, string actualId)

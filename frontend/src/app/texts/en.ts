@@ -179,6 +179,8 @@ export const EN = {
         searchPlaceholder: 'Search',
     },
     integrations: {
+        condition: 'Condition',
+        conditionHints: 'The condition, when the integration should be used.',
         configured: 'Configured',
         confirmDelete: 'Do you really want to delete the Integration?',
         enabledHints: 'Disable the ingration without deleting it.',
