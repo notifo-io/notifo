@@ -75,6 +75,10 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                                 <Badge color='danger' pill>{texts.common.disabled}</Badge>
                             }
 
+                            {!!configured.condition &&
+                                <Badge pill>{texts.integrations.condition}</Badge>
+                            }
+
                             {!!configured.priority &&
                                 <Badge pill>{texts.common.prio} {configured.priority}</Badge>
                             }

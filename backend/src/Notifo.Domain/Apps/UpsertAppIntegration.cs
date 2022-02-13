@@ -20,6 +20,8 @@ namespace Notifo.Domain.Apps
 
         public string Type { get; set; }
 
+        public string? Condition { get; set; }
+
         public bool Enabled { get; set; }
 
         public bool? Test { get; set; }
@@ -67,9 +69,24 @@ namespace Notifo.Domain.Apps
                 configured = new ConfiguredIntegration(Type, Properties);
             }
 
-            if (Test != configured.Test || Enabled != configured.Enabled || Priority != configured.Priority)
+            if (Test != configured.Test)
             {
-                configured = configured with { Test = Test, Enabled = Enabled, Priority = Priority };
+                configured = configured with { Test = Test };
+            }
+
+            if (Enabled != configured.Enabled)
+            {
+                configured = configured with { Enabled = Enabled };
+            }
+
+            if (Priority != configured.Priority)
+            {
+                configured = configured with { Priority = Priority };
+            }
+
+            if (Condition != configured.Condition)
+            {
+                configured = configured with { Condition = Condition };
             }
 
             await integrationManager.ValidateAsync(configured, ct);
