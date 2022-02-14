@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Globalization;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
