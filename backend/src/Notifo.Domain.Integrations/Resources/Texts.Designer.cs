@@ -421,6 +421,15 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to send email using SMTP: {0}.
+        /// </summary>
+        internal static string SMTP_Exception {
+            get {
+                return ResourceManager.GetString("SMTP_Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Host.
         /// </summary>
         internal static string SMTP_HostLabel {

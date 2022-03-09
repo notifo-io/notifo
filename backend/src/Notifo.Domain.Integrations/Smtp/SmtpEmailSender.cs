@@ -5,7 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Globalization;
 using Notifo.Domain.Channels.Email;
+using Notifo.Domain.Integrations.Resources;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Smtp
 {
@@ -53,6 +56,12 @@ namespace Notifo.Domain.Integrations.Smtp
                     {
                         throw;
                     }
+                }
+                catch (Exception ex)
+                {
+                    var error = string.Format(CultureInfo.InvariantCulture, Texts.SMTP_Exception, ex.Message);
+
+                    throw new DomainException(error, ex);
                 }
             }
         }

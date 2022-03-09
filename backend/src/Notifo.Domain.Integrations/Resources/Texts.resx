@@ -237,6 +237,9 @@
   <data name="SMTP_Description" xml:space="preserve">
     <value>Send emails using a custom email server.</value>
   </data>
+  <data name="SMTP_Exception" xml:space="preserve">
+    <value>Failed to send email using SMTP: {0}</value>
+  </data>
   <data name="SMTP_HostLabel" xml:space="preserve">
     <value>Host</value>
   </data>

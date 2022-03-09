@@ -104,7 +104,7 @@ namespace Notifo.Domain.Integrations.Smtp
                     return null;
                 }
 
-                var port = HostProperty.GetNumber(configured);
+                var port = HostPortProperty.GetNumber(configured);
 
                 if (port == 0)
                 {

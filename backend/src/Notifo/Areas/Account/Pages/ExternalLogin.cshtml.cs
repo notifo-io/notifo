@@ -75,7 +75,9 @@ namespace Notifo.Areas.Account.Pages
 
             loginInfo.ProviderDisplayName = email;
 
-            if ((await UserService.FindByEmailAsync(email, HttpContext.RequestAborted)) != null)
+            var existingUser = await UserService.FindByEmailAsync(email, HttpContext.RequestAborted);
+
+            if (existingUser != null && await HasLoginAsync(existingUser))
             {
                 var errorMessage = T["ExternalLoginEmailUsed"];
 
@@ -148,6 +150,18 @@ namespace Notifo.Areas.Account.Pages
             await SignInManager.SignInAsync((IdentityUser)user.Identity, false);
 
             return RedirectTo(ReturnUrl);
+        }
+
+        private async Task<bool> HasLoginAsync(IUser user)
+        {
+            if (await UserService.HasPasswordAsync(user, HttpContext.RequestAborted))
+            {
+                return true;
+            }
+
+            var logins = await UserService.GetLoginsAsync(user, HttpContext.RequestAborted);
+
+            return logins.Count > 0;
         }
     }
 
