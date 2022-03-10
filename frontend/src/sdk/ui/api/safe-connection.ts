@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { HandleConnect, Connection, HandleDeletion, HandleNotifications } from './connection';
+import { Connection, HandleConnect, HandleDeletion, HandleNotifications } from './connection';
 
 export class SafeConnection implements Connection {
     private readonly deletions: { [id: string]: true } = {};

@@ -6,7 +6,7 @@
  */
 
 import { NotifoNotification, SDKConfig } from '@sdk/shared';
-import { HandleConnect, Connection, HandleDeletion, HandleNotifications } from './connection';
+import { Connection, HandleConnect, HandleDeletion, HandleNotifications } from './connection';
 
 type Update = {
     continuationToken: string;

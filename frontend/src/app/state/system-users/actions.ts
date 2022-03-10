@@ -8,7 +8,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { ErrorDto, listThunk, Query } from '@app/framework';
-import { Clients, UpdateSystemUserDto, SystemUserDto } from '@app/service';
+import { Clients, SystemUserDto, UpdateSystemUserDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { SystemUsersState } from './state';
 

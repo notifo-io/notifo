@@ -7,7 +7,7 @@
 
 import * as signalR from '@microsoft/signalr';
 import { SDKConfig } from '@sdk/shared';
-import { HandleConnect, Connection, HandleDeletion, HandleNotifications } from './connection';
+import { Connection, HandleConnect, HandleDeletion, HandleNotifications } from './connection';
 
 class Retry implements signalR.IRetryPolicy {
     private readonly timeouts = [1000, 5000, 10000, 30000];
