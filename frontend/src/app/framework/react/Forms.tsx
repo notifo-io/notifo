@@ -6,7 +6,7 @@
  */
 
 import classNames from 'classnames';
-import { FieldHelperProps, FieldMetaProps, FieldInputProps, FormikContextType, useField, useFormikContext } from 'formik';
+import { FieldHelperProps, FieldInputProps, FieldMetaProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import { isErrorVisible, Types } from '@app/framework/utils';

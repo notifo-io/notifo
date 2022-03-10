@@ -10,7 +10,7 @@
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { booleanToSend, SDKConfig, sendToBoolean, Subscription, TopicOptions } from '@sdk/shared';
-import { subscribe, Status, unsubscribe, useDispatch } from '@sdk/ui/model';
+import { Status, subscribe, unsubscribe, useDispatch } from '@sdk/ui/model';
 import { Loader } from './Loader';
 import { Modal } from './Modal';
 import { Toggle } from './Toggle';

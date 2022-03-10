@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
 import { FormError, Forms, Loader, Types } from '@app/framework';
-import { UpdateSystemUserDto, SystemUserDto } from '@app/service';
+import { SystemUserDto, UpdateSystemUserDto } from '@app/service';
 import { upsertSystemUser, useSystemUsers } from '@app/state';
 import { texts } from '@app/texts';
 
