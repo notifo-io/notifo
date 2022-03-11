@@ -109,3 +109,9 @@ There is still a lot to do:
 * More channels (e.g. WhatsApp or Voice).
 * Testing and tests
 * Automated API and UI tests and more tests in general.
+
+## Sponsors
+
+Notifo is sponsored and used by the following companies.
+
+[![Squidex](media/logos/squidex.png)](https://squidex.io/) [![Squidex](media/logos/easierlife.png)](https://easierlife.de/)
