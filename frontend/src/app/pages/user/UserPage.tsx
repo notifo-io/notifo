@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
-import { ApiValue, Icon, Loader, useDialog } from '@app/framework';
+import { ApiValue, FormatDate, Icon, Loader, useDialog } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
 import { loadUser, togglePublishDialog, useApp, useUsers } from '@app/state';
 import { texts } from '@app/texts';
@@ -98,6 +98,26 @@ export const UserPage = () => {
                                             <ButtonSms user={user} />
                                         </Col>
                                     </Row>
+
+                                    <hr />
+
+                                    <FormGroup row>
+                                        <Col xs={5}>
+                                            <Label>{texts.common.created}</Label>
+                                        </Col>
+                                        <Col xs={7} className='text-right'>
+                                            <FormatDate date={user.created} />
+                                        </Col>
+                                    </FormGroup>
+
+                                    <FormGroup row>
+                                        <Col xs={5}>
+                                            <Label>{texts.common.lastUpdate}</Label>
+                                        </Col>
+                                        <Col xs={7} className='text-right'>
+                                            <FormatDate date={user.lastUpdate} />
+                                        </Col>
+                                    </FormGroup>
 
                                     <hr />
 

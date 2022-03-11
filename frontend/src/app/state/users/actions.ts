@@ -13,7 +13,7 @@ import { createApiThunk, selectApp } from './../shared';
 import { UsersState } from './state';
 
 const list = listThunk<UsersState, UserDto>('users', 'users', async params => {
-    const { items, total } = await Clients.Users.getUsers(params.appId, params.search, params.take, params.skip);
+    const { items, total } = await Clients.Users.getUsers(params.appId, params.search, params.take, params.skip, true);
 
     return { items, total };
 });
@@ -24,7 +24,7 @@ export const loadUsers = (appId: string, query?: Partial<Query>, reset = false) 
 
 export const loadUser = createApiThunk('users/load',
     (arg: { appId: string; userId: string }) => {
-        return Clients.Users.getUser(arg.appId, arg.userId);
+        return Clients.Users.getUser(arg.appId, arg.userId, true);
     });
 
 export const upsertUser = createApiThunk('users/upsert',

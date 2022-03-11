@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Infrastructure;
 using Squidex.Assets;
 
@@ -15,15 +16,18 @@ namespace Notifo.Domain.Media
         private readonly IMediaFileStore mediaFileStore;
         private readonly IMediaRepository mediaRepository;
         private readonly IEnumerable<IMediaMetadataSource> mediaMetadataSources;
+        private readonly IClock clock;
 
         public MediaStore(
             IMediaFileStore mediaFileStore,
             IMediaRepository mediaRepository,
-            IEnumerable<IMediaMetadataSource> mediaMetadataSources)
+            IEnumerable<IMediaMetadataSource> mediaMetadataSources,
+            IClock clock)
         {
             this.mediaFileStore = mediaFileStore;
             this.mediaMetadataSources = mediaMetadataSources;
             this.mediaRepository = mediaRepository;
+            this.clock = clock;
         }
 
         public Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
@@ -40,6 +44,8 @@ namespace Notifo.Domain.Media
         {
             Guard.NotNullOrEmpty(appId);
             Guard.NotNull(file);
+
+            var now = clock.GetCurrentInstant();
 
             var request = new MetadataRequest
             {
@@ -63,9 +69,11 @@ namespace Notifo.Domain.Media
             var media = new Media
             {
                 AppId = appId,
+                Created = now,
                 FileInfo = fileInfo,
                 FileName = file.FileName,
                 FileSize = file.FileSize,
+                LastUpdate = now,
                 Metadata = request.Metadata,
                 MimeType = file.MimeType,
                 Type = request.Type

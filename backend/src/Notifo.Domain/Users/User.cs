@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Counters;
@@ -14,11 +15,11 @@ namespace Notifo.Domain.Users
 {
     public sealed record User
     {
+        public string UniqueId => $"{AppId}_{Id}";
+
         public string Id { get; private init; }
 
         public string AppId { get; private init; }
-
-        public string UniqueId => $"{AppId}_{Id}";
 
         public string ApiKey { get; init; }
 
@@ -34,6 +35,10 @@ namespace Notifo.Domain.Users
 
         public bool RequiresWhitelistedTopics { get; init; }
 
+        public Instant Created { get; init; }
+
+        public Instant LastUpdate { get; init; }
+
         public ReadonlyList<string> AllowedTopics { get; init; } = ReadonlyList.Empty<string>();
 
         public ReadonlyDictionary<string, string> Properties { get; init; } = ReadonlyDictionary.Empty<string, string>();
@@ -46,9 +51,9 @@ namespace Notifo.Domain.Users
 
         public CounterMap Counters { get; init; } = new CounterMap();
 
-        public static User Create(string appId, string userId)
+        public static User Create(string appId, string userId, Instant now)
         {
-            return new User { Id = userId, AppId = appId };
+            return new User { Id = userId, AppId = appId, Created = now };
         }
     }
 }

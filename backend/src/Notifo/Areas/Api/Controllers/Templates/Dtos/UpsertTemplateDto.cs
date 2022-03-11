@@ -32,9 +32,9 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         /// </summary>
         public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
 
-        public TemplateUpdate ToUpdate()
+        public UpdateTemplate ToUpdate()
         {
-            var result = SimpleMapper.Map(this, new TemplateUpdate());
+            var result = SimpleMapper.Map(this, new UpdateTemplate());
 
             if (Formatting != null)
             {

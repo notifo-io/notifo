@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Notifo.Domain.Media;
 using Notifo.Infrastructure.Reflection;
 using Squidex.Hosting;
@@ -34,16 +35,28 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
         public string FileInfo { get; set; }
 
         /// <summary>
+        /// The url to the media item.
+        /// </summary>
+        [Required]
+        public string Url { get; set; }
+
+        /// <summary>
         /// The size of the media file.
         /// </summary>
         [Required]
         public long FileSize { get; set; }
 
         /// <summary>
-        /// The url to the media item.
+        /// The date time (ISO 8601) when the media has been created.
         /// </summary>
         [Required]
-        public string Url { get; set; }
+        public Instant Created { get; set; }
+
+        /// <summary>
+        /// The date time (ISO 8601) when the media has been updated.
+        /// </summary>
+        [Required]
+        public Instant LastUpdate { get; set; }
 
         /// <summary>
         /// The type of the media.

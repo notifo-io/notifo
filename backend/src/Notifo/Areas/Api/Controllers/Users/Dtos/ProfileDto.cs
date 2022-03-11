@@ -64,7 +64,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; } = new Dictionary<string, NotificationSettingDto>();
 
         public static ProfileDto FromDomainObject(User source, App app)
         {
@@ -72,8 +72,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
 
             result.SupportedTimezones = DateTimeZoneProviders.Tzdb.Ids.ToArray();
             result.SupportedLanguages = app.Languages.ToArray();
-
-            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
 
             if (source.Settings != null)
             {

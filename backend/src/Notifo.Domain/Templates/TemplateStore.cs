@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Templates
@@ -12,10 +13,15 @@ namespace Notifo.Domain.Templates
     public sealed class TemplateStore : ITemplateStore
     {
         private readonly ITemplateRepository repository;
+        private readonly IServiceProvider services;
+        private readonly IClock clock;
 
-        public TemplateStore(ITemplateRepository repository)
+        public TemplateStore(ITemplateRepository repository,
+            IServiceProvider services, IClock clock)
         {
             this.repository = repository;
+            this.services = services;
+            this.clock = clock;
         }
 
         public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
@@ -39,8 +45,11 @@ namespace Notifo.Domain.Templates
 
             if (template == null)
             {
-                template = Template.Create(appId, code);
-                template.IsAutoCreated = true;
+                template = Template.Create(appId, code, clock.GetCurrentInstant());
+                template = template with
+                {
+                    IsAutoCreated = true
+                };
 
                 try
                 {
@@ -55,21 +64,40 @@ namespace Notifo.Domain.Templates
             return template;
         }
 
-        public Task<Template> UpsertAsync(string appId, string code, TemplateUpdate update,
+        public Task<Template> UpsertAsync(string appId, string code, ICommand<Template> command,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId);
             Guard.NotNullOrEmpty(code);
-            Guard.NotNull(update);
+            Guard.NotNull(command);
 
             return Updater.UpdateRetriedAsync(5, async () =>
             {
                 var (template, etag) = await repository.GetAsync(appId, code, ct);
 
-                template ??= Template.Create(appId, code);
-                template.Update(update);
+                if (template == null)
+                {
+                    if (!command.CanCreate)
+                    {
+                        throw new DomainObjectNotFoundException(code);
+                    }
 
-                await repository.UpsertAsync(template, etag, ct);
+                    template = Template.Create(appId, code, clock.GetCurrentInstant());
+                }
+
+                var newTemplate = await command.ExecuteAsync(template, services, ct);
+
+                if (newTemplate == null || ReferenceEquals(newTemplate, template))
+                {
+                    return template;
+                }
+
+                newTemplate = newTemplate with
+                {
+                    LastUpdate = clock.GetCurrentInstant()
+                };
+
+                await repository.UpsertAsync(newTemplate, etag, ct);
 
                 return template;
             });

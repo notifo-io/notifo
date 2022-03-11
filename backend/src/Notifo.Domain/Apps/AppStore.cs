@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Squidex.Caching;
@@ -19,13 +20,15 @@ namespace Notifo.Domain.Apps
         private readonly IAppRepository repository;
         private readonly IServiceProvider services;
         private readonly IReplicatedCache cache;
+        private readonly IClock clock;
 
         public AppStore(IAppRepository repository,
-            IServiceProvider services, IReplicatedCache cache, ILogger<AppStore> log)
+            IServiceProvider services, IReplicatedCache cache, IClock clock, ILogger<AppStore> log)
         {
             this.repository = repository;
             this.services = services;
             this.cache = cache;
+            this.clock = clock;
 
             collector = new CounterCollector<string>(repository, log, 5000);
         }
@@ -130,7 +133,7 @@ namespace Notifo.Domain.Apps
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    app = App.Create(id);
+                    app = App.Create(id, clock.GetCurrentInstant());
                 }
 
                 var newApp = await command.ExecuteAsync(app, services, ct);
@@ -139,6 +142,11 @@ namespace Notifo.Domain.Apps
                 {
                     return app;
                 }
+
+                newApp = newApp with
+                {
+                    LastUpdate = clock.GetCurrentInstant()
+                };
 
                 await repository.UpsertAsync(newApp, etag, ct);
 

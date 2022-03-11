@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Domain.UserEvents;
 using Notifo.Infrastructure;
 
@@ -16,6 +17,9 @@ namespace Notifo.Domain.UserNotifications
             CancellationToken ct = default);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
+            CancellationToken ct = default);
+
+        Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
             CancellationToken ct = default);
 
         Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details = default,

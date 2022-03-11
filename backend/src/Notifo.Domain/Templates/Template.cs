@@ -5,50 +5,70 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Domain.Templates
 {
-    public sealed class Template
+    public sealed record Template
     {
-        public string AppId { get; set; }
+        public string AppId { get; init; }
 
-        public string Code { get; set; }
+        public string Code { get; init; }
 
-        public bool IsAutoCreated { get; set; }
+        public bool IsAutoCreated { get; init; }
 
-        public NotificationFormatting<LocalizedText> Formatting { get; set; }
+        public Instant Created { get; init; }
 
-        public NotificationSettings Settings { get; set; }
+        public Instant LastUpdate { get; init; }
 
-        public static Template Create(string appId, string code)
+        public NotificationFormatting<LocalizedText> Formatting { get; init; }
+
+        public NotificationSettings Settings { get; init; }
+
+        public static Template Create(string appId, string code, Instant now)
         {
-            var user = new Template { AppId = appId, Code = code };
-
-            return user;
+            return new Template { AppId = appId, Code = code, Created = now };
         }
 
-        public void Update(TemplateUpdate update)
+        public Template Update(UpdateTemplate update)
         {
-            IsAutoCreated = false;
+            var newTemplate = this with
+            {
+                IsAutoCreated = false
+            };
 
             if (update.Formatting != null)
             {
-                Formatting = update.Formatting;
+                newTemplate = newTemplate with
+                {
+                    Formatting = update.Formatting
+                };
             }
-            else
+            else if (newTemplate.Formatting == null)
             {
-                Formatting ??= new NotificationFormatting<LocalizedText>();
+                newTemplate = newTemplate with
+                {
+                    Formatting = new NotificationFormatting<LocalizedText>()
+                };
             }
 
             if (update.Settings != null)
             {
-                Settings = update.Settings;
+                newTemplate = newTemplate with
+                {
+                    Settings = update.Settings
+                };
             }
-            else
+            else if (newTemplate.Settings == null)
             {
-                Settings ??= new NotificationSettings();
+                newTemplate = newTemplate with
+                {
+                    Settings = new NotificationSettings()
+                };
             }
+
+            return newTemplate;
         }
     }
 }

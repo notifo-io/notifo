@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Collections;
@@ -23,6 +24,10 @@ namespace Notifo.Domain.Apps
 
         public string? ConfirmUrl { get; init; }
 
+        public Instant Created { get; init; }
+
+        public Instant LastUpdate { get; init; }
+
         public ReadonlyList<string> Languages { get; init; } = DefaultLanguages;
 
         public ReadonlyDictionary<string, string> ApiKeys { get; init; } = ReadonlyDictionary.Empty<string, string>();
@@ -33,9 +38,9 @@ namespace Notifo.Domain.Apps
 
         public CounterMap? Counters { get; init; } = new CounterMap();
 
-        public static App Create(string appId)
+        public static App Create(string appId, Instant now)
         {
-            return new App { Id = appId };
+            return new App { Id = appId, Created = now };
         }
     }
 }

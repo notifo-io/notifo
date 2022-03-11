@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Collections;
@@ -55,6 +56,23 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public string? PreferredTimezone { get; set; }
 
         /// <summary>
+        /// The date time (ISO 8601) when the user has been created.
+        /// </summary>
+        [Required]
+        public Instant Created { get; set; }
+
+        /// <summary>
+        /// The date time (ISO 8601) when the user has been updated.
+        /// </summary>
+        [Required]
+        public Instant LastUpdate { get; set; }
+
+        /// <summary>
+        /// The date time (ISO 8601) when the user has been received the last notification.
+        /// </summary>
+        public Instant? LastNotification { get; set; }
+
+        /// <summary>
         /// The number of web hook tokens.
         /// </summary>
         [Required]
@@ -81,7 +99,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; } = new Dictionary<string, NotificationSettingDto>();
 
         /// <summary>
         /// The statistics counters.
@@ -93,18 +111,18 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// The mobile push tokens.
         /// </summary>
         [Required]
-        public List<MobilePushTokenDto> MobilePushTokens { get; set; }
+        public List<MobilePushTokenDto> MobilePushTokens { get; set; } = new List<MobilePushTokenDto>();
 
         /// <summary>
         /// The supported user properties.
         /// </summary>
         public List<UserPropertyDto>? UserProperties { get; set; }
 
-        public static UserDto FromDomainObject(User source, List<UserProperty>? userProperties)
+        public static UserDto FromDomainObject(User source, List<UserProperty>? properties, IReadOnlyDictionary<string, Instant>? lastNotifications)
         {
             var result = SimpleMapper.Map(source, new UserDto());
 
-            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
+            result.NumberOfWebPushTokens = source.WebPushSubscriptions?.Count ?? 0;
 
             if (source.Settings != null)
             {
@@ -117,10 +135,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 }
             }
 
-            result.NumberOfWebPushTokens = source.WebPushSubscriptions?.Count ?? 0;
-
-            result.MobilePushTokens ??= new List<MobilePushTokenDto>();
-
             if (source.MobilePushTokens != null)
             {
                 result.NumberOfMobilePushTokens = source.MobilePushTokens.Count;
@@ -131,12 +145,17 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 }
             }
 
-            if (userProperties != null)
+            if (properties != null)
             {
-                result.UserProperties = userProperties.Select(UserPropertyDto.FromDomainObject).ToList();
+                result.UserProperties = properties.Select(UserPropertyDto.FromDomainObject).ToList();
             }
 
             result.Counters = source.Counters ?? EmptyCounters;
+
+            if (lastNotifications != null && lastNotifications.TryGetValue(source.Id, out var lastNotification))
+            {
+                result.LastNotification = lastNotification;
+            }
 
             return result;
         }

@@ -99,6 +99,8 @@ export const UsersPage = () => {
                     <col />
                     <col />
                     <col />
+                    <col />
+                    <col />
                     <col style={{ width: 170 }} />
                 </colgroup>
 
@@ -112,6 +114,12 @@ export const UsersPage = () => {
                         </th>
                         <th>
                             <span className='truncate'>{texts.common.email}</span>
+                        </th>
+                        <th className='text-right'>
+                            <span className='truncate'>{texts.common.lastNotification}</span>
+                        </th>
+                        <th className='text-right'>
+                            <span className='truncate'>{texts.common.lastUpdate}</span>
                         </th>
                         <th className='text-right'>
                             <span className='truncate'>{texts.common.actions}</span>

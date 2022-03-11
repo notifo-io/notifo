@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using NodaTime;
 using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
 
@@ -20,6 +21,18 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         public string Code { get; set; }
 
         /// <summary>
+        /// The date time (ISO 8601) when the template has been created.
+        /// </summary>
+        [Required]
+        public Instant Created { get; set; }
+
+        /// <summary>
+        /// The date time (ISO 8601) when the template has been updated.
+        /// </summary>
+        [Required]
+        public Instant LastUpdate { get; set; }
+
+        /// <summary>
         /// The formatting.
         /// </summary>
         [Required]
@@ -29,7 +42,7 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
+        public Dictionary<string, NotificationSettingDto> Settings { get; set; } = new Dictionary<string, NotificationSettingDto>();
 
         public static TemplateDto FromDomainObject(Template source)
         {
@@ -43,8 +56,6 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
             {
                 result.Formatting = new NotificationFormattingDto();
             }
-
-            result.Settings ??= new Dictionary<string, NotificationSettingDto>();
 
             if (source.Settings != null)
             {

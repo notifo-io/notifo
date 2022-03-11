@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Squidex.Caching;
@@ -18,14 +19,16 @@ namespace Notifo.Domain.Users
         private readonly IUserRepository repository;
         private readonly IServiceProvider services;
         private readonly IReplicatedCache cache;
+        private readonly IClock clock;
         private readonly CounterCollector<(string, string)> collector;
 
         public UserStore(IUserRepository repository,
-            IServiceProvider services, IReplicatedCache cache, ILogger<UserStore> log)
+            IServiceProvider services, IReplicatedCache cache, IClock clock, ILogger<UserStore> log)
         {
             this.repository = repository;
             this.services = services;
             this.cache = cache;
+            this.clock = clock;
 
             collector = new CounterCollector<(string, string)>(repository, log, 5000);
         }
@@ -140,7 +143,7 @@ namespace Notifo.Domain.Users
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    user = User.Create(appId, id);
+                    user = User.Create(appId, id, clock.GetCurrentInstant());
                 }
 
                 var newUser = await command.ExecuteAsync(user, services, ct);
@@ -149,6 +152,11 @@ namespace Notifo.Domain.Users
                 {
                     return user;
                 }
+
+                newUser = newUser with
+                {
+                    LastUpdate = clock.GetCurrentInstant()
+                };
 
                 await repository.UpsertAsync(newUser, etag, ct);
 

@@ -45,6 +45,15 @@ namespace Notifo.Domain.UserNotifications
             return repository.QueryAsync(appId, userId, query, ct);
         }
 
+        public Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
+            CancellationToken ct = default)
+        {
+            Guard.NotNullOrEmpty(appId);
+            Guard.NotNull(userIds);
+
+            return repository.QueryLastNotificationsAsync(appId, userIds, ct);
+        }
+
         public Task<UserNotification?> FindAsync(Guid id,
             CancellationToken ct = default)
         {

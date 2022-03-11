@@ -443,9 +443,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             @event.TemplateCode = "TEMPL";
             @event.Formatting = null;
 
-            var template = CreateMinimumTemplate();
-
-            template.IsAutoCreated = true;
+            var template = CreateMinimumTemplate(true);
 
             A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
                 .Returns(template);
@@ -502,20 +500,20 @@ namespace Notifo.Domain.UserEvents.Pipeline
             }
         }
 
-        private static Template CreateMinimumTemplate()
+        private static Template CreateMinimumTemplate(bool isAutoCreated = false)
         {
             var template = new Template
             {
+                IsAutoCreated = isAutoCreated,
                 Formatting = new NotificationFormatting<LocalizedText>
                 {
                     Subject = new LocalizedText
                     {
                         ["de"] = "Test"
                     }
-                }
+                },
+                AppId = "app"
             };
-
-            template.AppId = "app";
 
             return template;
         }

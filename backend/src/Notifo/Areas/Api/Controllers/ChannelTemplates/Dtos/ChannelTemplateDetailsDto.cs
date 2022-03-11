@@ -32,7 +32,13 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         public bool Primary { get; set; }
 
         /// <summary>
-        /// The last time the template has been updated.
+        /// The date time (ISO 8601) when the template has been created.
+        /// </summary>
+        [Required]
+        public Instant Created { get; set; }
+
+        /// <summary>
+        /// The date time (ISO 8601) when the template has been updated.
         /// </summary>
         [Required]
         public Instant LastUpdate { get; set; }

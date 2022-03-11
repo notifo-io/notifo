@@ -6,10 +6,12 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using NodaTime;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Subscriptions;
+using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
@@ -20,16 +22,21 @@ namespace Notifo.Areas.Api.Controllers.Users
     [OpenApiTag("Users")]
     public sealed class UsersController : BaseController
     {
-        private readonly IUserStore userStore;
-        private readonly ISubscriptionStore subscriptionStore;
         private readonly IIntegrationManager integrationManager;
+        private readonly IUserStore userStore;
+        private readonly IUserNotificationStore userNotificationStore;
+        private readonly ISubscriptionStore subscriptionStore;
 
-        public UsersController(IUserStore userStore, ISubscriptionStore subscriptionStore,
-            IIntegrationManager integrationManager)
+        public UsersController(
+            IIntegrationManager integrationManager,
+            IUserStore userStore,
+            IUserNotificationStore userNotificationStore,
+            ISubscriptionStore subscriptionStore)
         {
-            this.userStore = userStore;
-            this.subscriptionStore = subscriptionStore;
             this.integrationManager = integrationManager;
+            this.userStore = userStore;
+            this.userNotificationStore = userNotificationStore;
+            this.subscriptionStore = subscriptionStore;
         }
 
         /// <summary>
@@ -37,6 +44,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </summary>
         /// <param name="appId">The app where the users belongs to.</param>
         /// <param name="q">The query object.</param>
+        /// <param name="withDetails">Provide extra details, might be expensive.</param>
         /// <returns>
         /// 200 => Users returned.
         /// 404 => App not found.
@@ -44,13 +52,20 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpGet("api/apps/{appId}/users/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserDto>))]
-        public async Task<IActionResult> GetUsers(string appId, [FromQuery] QueryDto q)
+        public async Task<IActionResult> GetUsers(string appId, [FromQuery] QueryDto q, [FromQuery] bool withDetails = false)
         {
             var users = await userStore.QueryAsync(appId, q.ToQuery<UserQuery>(true), HttpContext.RequestAborted);
 
+            IReadOnlyDictionary<string, Instant>? lastUpdates = null;
+
+            if (withDetails)
+            {
+                lastUpdates = await QueryLastNotificationsAsync(appId, users.Select(x => x.Id));
+            }
+
             var response = new ListResponseDto<UserDto>();
 
-            response.Items.AddRange(users.Select(x => UserDto.FromDomainObject(x, null)));
+            response.Items.AddRange(users.Select(x => UserDto.FromDomainObject(x, null, lastUpdates)));
             response.Total = users.Total;
 
             return Ok(response);
@@ -61,6 +76,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
+        /// <param name="withDetails">Provide extra details, might be expensive.</param>
         /// <returns>
         /// 200 => User returned.
         /// 404 => User or app not found.
@@ -68,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpGet("api/apps/{appId}/users/{id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(UserDto))]
-        public async Task<IActionResult> GetUser(string appId, string id)
+        public async Task<IActionResult> GetUser(string appId, string id, [FromQuery] bool withDetails = false)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
 
@@ -77,7 +93,14 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            var response = UserDto.FromDomainObject(user, GetUserProperties());
+            IReadOnlyDictionary<string, Instant>? lastUpdates = null;
+
+            if (withDetails)
+            {
+                lastUpdates = await QueryLastNotificationsAsync(appId, Enumerable.Repeat(user.Id, 1));
+            }
+
+            var response = UserDto.FromDomainObject(user, GetUserProperties(), lastUpdates);
 
             return Ok(response);
         }
@@ -192,7 +215,7 @@ namespace Notifo.Areas.Api.Controllers.Users
 
                         var user = await userStore.UpsertAsync(appId, dto.Id, update, HttpContext.RequestAborted);
 
-                        response.Add(UserDto.FromDomainObject(user, null));
+                        response.Add(UserDto.FromDomainObject(user, null, null));
                     }
                 }
             }
@@ -272,6 +295,11 @@ namespace Notifo.Areas.Api.Controllers.Users
             await userStore.DeleteAsync(appId, id, HttpContext.RequestAborted);
 
             return NoContent();
+        }
+
+        private Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds)
+        {
+            return userNotificationStore.QueryLastNotificationsAsync(appId, userIds, HttpContext.RequestAborted);
         }
 
         private static SubscriptionQuery ParseQuery(string id, QueryDto query)

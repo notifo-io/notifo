@@ -20,15 +20,15 @@ namespace Notifo.Domain.ChannelTemplates
 
         public bool Primary { get; init; }
 
+        public Instant Created { get; init; }
+
         public Instant LastUpdate { get; init; }
 
         public ReadonlyDictionary<string, T> Languages { get; init; } = ReadonlyDictionary.Empty<string, T>();
 
-        public static ChannelTemplate<T> Create(string appId, string id)
+        public static ChannelTemplate<T> Create(string appId, string id, Instant now)
         {
-            var user = new ChannelTemplate<T> { AppId = appId, Id = id };
-
-            return user;
+            return new ChannelTemplate<T> { AppId = appId, Id = id, Created = now };
         }
     }
 }

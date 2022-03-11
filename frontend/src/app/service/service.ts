@@ -357,9 +357,10 @@ export class UsersClient {
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
+     * @param withDetails (optional) Provide extra details, might be expensive.
      * @return Users returned.
      */
-    getUsers(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserDto> {
+    getUsers(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, withDetails?: boolean | undefined): Promise<ListResponseDtoOfUserDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -374,6 +375,10 @@ export class UsersClient {
             throw new Error("The parameter 'skip' cannot be null.");
         else if (skip !== undefined)
             url_ += "skip=" + encodeURIComponent("" + skip) + "&";
+        if (withDetails === null)
+            throw new Error("The parameter 'withDetails' cannot be null.");
+        else if (withDetails !== undefined)
+            url_ += "withDetails=" + encodeURIComponent("" + withDetails) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -487,16 +492,21 @@ export class UsersClient {
      * Get a user.
      * @param appId The app where the user belongs to.
      * @param id The user ID.
+     * @param withDetails (optional) Provide extra details, might be expensive.
      * @return User returned.
      */
-    getUser(appId: string, id: string): Promise<UserDto> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}";
+    getUser(appId: string, id: string, withDetails?: boolean | undefined): Promise<UserDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (withDetails === null)
+            throw new Error("The parameter 'withDetails' cannot be null.");
+        else if (withDetails !== undefined)
+            url_ += "withDetails=" + encodeURIComponent("" + withDetails) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
@@ -5360,7 +5370,7 @@ export interface SubscriptionDto {
     /** The topic to add. */
     topicPrefix: string;
     /** Notification settings per channel. */
-    topicSettings?: { [key: string]: NotificationSettingDto; } | undefined;
+    topicSettings?: { [key: string]: NotificationSettingDto; };
 }
 
 export interface ListResponseDtoOfUserDto {
@@ -5385,6 +5395,12 @@ export interface UserDto {
     preferredLanguage?: string | undefined;
     /** The timezone of the user. */
     preferredTimezone?: string | undefined;
+    /** The date time (ISO 8601) when the user has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the user has been updated. */
+    lastUpdate: string;
+    /** The date time (ISO 8601) when the user has been received the last notification. */
+    lastNotification?: string | undefined;
     /** The number of web hook tokens. */
     numberOfWebPushTokens: number;
     /** The number of web hook tokens. */
@@ -5409,7 +5425,7 @@ export interface MobilePushTokenDto {
     /** The device type. */
     deviceType: MobileDeviceType;
     /** The last time the device was woken up. */
-    lastWakeup?: Date | undefined;
+    lastWakeup?: string | undefined;
 }
 
 export type MobileDeviceType = "Unknown" | "Android" | "iOS";
@@ -5465,7 +5481,7 @@ export interface TopicDto {
     /** The topic path. */
     path: string;
     /** THe last update to the topic. */
-    lastUpdate: Date;
+    lastUpdate: string;
     /** The statistics counters. */
     counters: { [key: string]: number; };
 }
@@ -5480,6 +5496,10 @@ export interface ListResponseDtoOfTemplateDto {
 export interface TemplateDto {
     /** The code of the template. */
     code: string;
+    /** The date time (ISO 8601) when the template has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the template has been updated. */
+    lastUpdate: string;
     /** The formatting. */
     formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
@@ -5579,9 +5599,9 @@ export interface UserNotificationBaseDto {
     /** True when the notification is silent. */
     silent: boolean;
     /** The timestamp when the notification has been created. */
-    created: Date;
+    created: string;
     /** The timestamp when the notification has been updated. */
-    updated: Date;
+    updated: string;
     /** The optional body text. */
     body?: string | undefined;
     /** The optional link to the small image. */
@@ -5623,18 +5643,18 @@ export interface UserNotificationChannelDto {
     /** The status per token or configuration. */
     status: { [key: string]: ChannelSendInfoDto; };
     /** The first time the notification has been marked as delivered for this channel. */
-    firstDelivered?: Date | undefined;
+    firstDelivered?: string | undefined;
     /** The first time the notification has been marked as seen for this channel. */
-    firstSeen?: Date | undefined;
+    firstSeen?: string | undefined;
     /** The first time the notification has been marked as confirmed for this channel. */
-    firstConfirmed?: Date | undefined;
+    firstConfirmed?: string | undefined;
 }
 
 export interface ChannelSendInfoDto {
     /** The send status. */
     status?: ProcessStatus;
     /** The last update. */
-    lastUpdate?: Date;
+    lastUpdate?: string;
     /** The details. */
     detail?: string | undefined;
 }
@@ -5643,7 +5663,7 @@ export type ProcessStatus = "None" | "Attempt" | "Handled" | "Failed" | "Skipped
 
 export interface HandledInfoDto {
     /** The timestamp. */
-    timestamp?: Date;
+    timestamp?: string;
     /** The channel over which the notification was marked as seen or confirmed. */
     channel?: string | undefined;
 }
@@ -5708,10 +5728,14 @@ export interface MediaDto {
     fileName: string;
     /** Generated information about the file. */
     fileInfo: string;
-    /** The size of the media file. */
-    fileSize: number;
     /** The url to the media item. */
     url: string;
+    /** The size of the media file. */
+    fileSize: number;
+    /** The date time (ISO 8601) when the media has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the media has been updated. */
+    lastUpdate: string;
     /** The type of the media. */
     type: MediaType;
     /** Metadata about the media. */
@@ -5738,9 +5762,9 @@ export interface LogEntryDto {
     /** The log message. */
     message: string;
     /** The first time this message has been seen. */
-    firstSeen: Date;
+    firstSeen: string;
     /** The last time this message has been seen. */
-    lastSeen: Date;
+    lastSeen: string;
     /** The number of items the message has been seen. */
     count: number;
 }
@@ -5768,7 +5792,7 @@ export interface EventDto {
     /** The optional name of the SMS template. */
     smsTemplate?: string | undefined;
     /** The time when the event has been created. */
-    created: Date;
+    created: string;
     /** The final formatting infos. */
     formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
@@ -5791,7 +5815,7 @@ export interface SchedulingDto {
     /** To schedule the event at the next day of the week. */
     nextWeekDay?: IsoDayOfWeek | undefined;
     /** The scheduling date. */
-    date?: Date | undefined;
+    date?: string | undefined;
     /** The scheduling time. */
     time?: string;
 }
@@ -5816,7 +5840,7 @@ export interface PublishDto {
     /** Additional user defined data. */
     data?: string | undefined;
     /** A custom timestamp. */
-    timestamp?: Date;
+    timestamp?: string;
     /** Preformatting when no template is used. */
     preformatted?: NotificationFormattingDto | undefined;
     /** The notification settings. */
@@ -5872,7 +5896,7 @@ export interface ChannelTemplateDto {
     /** True, when the template is the primary template. */
     primary: boolean;
     /** The last time the template has been updated. */
-    lastUpdate: Date;
+    lastUpdate: string;
 }
 
 export interface ChannelTemplateDetailsDtoOfEmailTemplateDto {
@@ -5882,8 +5906,10 @@ export interface ChannelTemplateDetailsDtoOfEmailTemplateDto {
     name?: string | undefined;
     /** True, when the template is the primary template. */
     primary: boolean;
-    /** The last time the template has been updated. */
-    lastUpdate: Date;
+    /** The date time (ISO 8601) when the template has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the template has been updated. */
+    lastUpdate: string;
     /** The language specific templates. */
     languages: { [key: string]: EmailTemplateDto; };
 }
@@ -5925,8 +5951,10 @@ export interface ChannelTemplateDetailsDtoOfMessagingTemplateDto {
     name?: string | undefined;
     /** True, when the template is the primary template. */
     primary: boolean;
-    /** The last time the template has been updated. */
-    lastUpdate: Date;
+    /** The date time (ISO 8601) when the template has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the template has been updated. */
+    lastUpdate: string;
     /** The language specific templates. */
     languages: { [key: string]: MessagingTemplateDto; };
 }
@@ -5952,8 +5980,10 @@ export interface ChannelTemplateDetailsDtoOfSmsTemplateDto {
     name?: string | undefined;
     /** True, when the template is the primary template. */
     primary: boolean;
-    /** The last time the template has been updated. */
-    lastUpdate: Date;
+    /** The date time (ISO 8601) when the template has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the template has been updated. */
+    lastUpdate: string;
     /** The language specific templates. */
     languages: { [key: string]: SmsTemplateDto; };
 }
@@ -5979,6 +6009,10 @@ export interface AppDto {
     name: string;
     /** The current role. */
     role: string;
+    /** The date time (ISO 8601) when the app has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the app has been updated. */
+    lastUpdate: string;
     /** The supported languages. */
     languages: string[];
     /** The api keys. */
@@ -5994,6 +6028,10 @@ export interface AppDetailsDto {
     name: string;
     /** The current role. */
     role: string;
+    /** The date time (ISO 8601) when the app has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the app has been updated. */
+    lastUpdate: string;
     /** The confirm URL. */
     confirmUrl?: string | undefined;
     /** The supported languages. */
@@ -6142,6 +6180,8 @@ export interface UpdateIntegrationDto {
     enabled?: boolean;
     /** True when used for test events. */
     test?: boolean | undefined;
+    /** The javascript condition. */
+    condition?: string | undefined;
     /** The priority in which order the integrations must run. */
     priority?: number;
 }

@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using NodaTime;
+
 namespace Notifo.Domain.Media
 {
     public sealed class Media
@@ -18,6 +20,10 @@ namespace Notifo.Domain.Media
         public string FileInfo { get; init; }
 
         public long FileSize { get; init; }
+
+        public Instant Created { get; init; }
+
+        public Instant LastUpdate { get; init; }
 
         public MediaType Type { get; init; }
 

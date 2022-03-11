@@ -10,7 +10,7 @@ import { match } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
-import { combineUrl, Confirm, Icon } from '@app/framework';
+import { combineUrl, Confirm, FormatDate, Icon } from '@app/framework';
 import { UserDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 import { texts } from '@app/texts';
@@ -80,6 +80,12 @@ export const UserRow = React.memo((props: UserRowProps) => {
                     <NavLink to={url}>
                         <span className='truncate'>{user.emailAddress}</span>
                     </NavLink>
+                </td>
+                <td className='text-right'>
+                    <FormatDate date={user.lastNotification} />
+                </td>
+                <td className='text-right'>
+                    <FormatDate date={user.lastUpdate} />
                 </td>
                 <td className='text-right'>
                     <Button className='ml-1' size='sm' color='info' onClick={doPublish} data-tip={texts.common.publish}>

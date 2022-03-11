@@ -758,9 +758,10 @@ namespace Notifo.SDK
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
+        /// <param name="withDetails">Provide extra details, might be expensive.</param>
         /// <returns>Users returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserDto> GetUsersAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserDto> GetUsersAsync(string appId, string query = null, int? take = null, int? skip = null, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Upsert users.</summary>
@@ -774,9 +775,10 @@ namespace Notifo.SDK
         /// <summary>Get a user.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
+        /// <param name="withDetails">Provide extra details, might be expensive.</param>
         /// <returns>User returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Delete a user.</summary>
@@ -874,9 +876,10 @@ namespace Notifo.SDK
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
+        /// <param name="withDetails">Provide extra details, might be expensive.</param>
         /// <returns>Users returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfUserDto> GetUsersAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfUserDto> GetUsersAsync(string appId, string query = null, int? take = null, int? skip = null, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -895,6 +898,10 @@ namespace Notifo.SDK
             if (skip != null) 
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("skip") + "=").Append(System.Uri.EscapeDataString(ConvertToString(skip, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (withDetails != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("withDetails") + "=").Append(System.Uri.EscapeDataString(ConvertToString(withDetails, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
     
@@ -1089,9 +1096,10 @@ namespace Notifo.SDK
         /// <summary>Get a user.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
+        /// <param name="withDetails">Provide extra details, might be expensive.</param>
         /// <returns>User returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -1100,9 +1108,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("id");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            if (withDetails != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("withDetails") + "=").Append(System.Uri.EscapeDataString(ConvertToString(withDetails, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -11805,7 +11818,7 @@ namespace Notifo.SDK
         public string TopicPrefix { get; set; }
     
         /// <summary>Notification settings per channel.</summary>
-        [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.IDictionary<string, NotificationSettingDto> TopicSettings { get; set; }
     
     
@@ -11858,6 +11871,20 @@ namespace Notifo.SDK
         /// <summary>The timezone of the user.</summary>
         [Newtonsoft.Json.JsonProperty("preferredTimezone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string PreferredTimezone { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the user has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the user has been updated.</summary>
+        [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset LastUpdate { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the user has been received the last notification.</summary>
+        [Newtonsoft.Json.JsonProperty("lastNotification", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? LastNotification { get; set; }
     
         /// <summary>The number of web hook tokens.</summary>
         [Newtonsoft.Json.JsonProperty("numberOfWebPushTokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12073,6 +12100,16 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public string Code { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the template has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the template has been updated.</summary>
+        [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset LastUpdate { get; set; }
     
         /// <summary>The formatting.</summary>
         [Newtonsoft.Json.JsonProperty("formatting", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12587,14 +12624,24 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public string FileInfo { get; set; }
     
-        /// <summary>The size of the media file.</summary>
-        [Newtonsoft.Json.JsonProperty("fileSize", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public long FileSize { get; set; }
-    
         /// <summary>The url to the media item.</summary>
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public string Url { get; set; }
+    
+        /// <summary>The size of the media file.</summary>
+        [Newtonsoft.Json.JsonProperty("fileSize", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long FileSize { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the media has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the media has been updated.</summary>
+        [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset LastUpdate { get; set; }
     
         /// <summary>The type of the media.</summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -13051,7 +13098,12 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("primary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Primary { get; set; }
     
-        /// <summary>The last time the template has been updated.</summary>
+        /// <summary>The date time (ISO 8601) when the template has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the template has been updated.</summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastUpdate { get; set; }
@@ -13143,7 +13195,12 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("primary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Primary { get; set; }
     
-        /// <summary>The last time the template has been updated.</summary>
+        /// <summary>The date time (ISO 8601) when the template has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the template has been updated.</summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastUpdate { get; set; }
@@ -13201,7 +13258,12 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("primary", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Primary { get; set; }
     
-        /// <summary>The last time the template has been updated.</summary>
+        /// <summary>The date time (ISO 8601) when the template has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the template has been updated.</summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastUpdate { get; set; }
@@ -13261,6 +13323,16 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
     
+        /// <summary>The date time (ISO 8601) when the app has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the app has been updated.</summary>
+        [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset LastUpdate { get; set; }
+    
         /// <summary>The supported languages.</summary>
         [Newtonsoft.Json.JsonProperty("languages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
@@ -13296,6 +13368,16 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public string Role { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the app has been created.</summary>
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset Created { get; set; }
+    
+        /// <summary>The date time (ISO 8601) when the app has been updated.</summary>
+        [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.DateTimeOffset LastUpdate { get; set; }
     
         /// <summary>The confirm URL.</summary>
         [Newtonsoft.Json.JsonProperty("confirmUrl", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -13645,6 +13727,10 @@ namespace Notifo.SDK
         /// <summary>True when used for test events.</summary>
         [Newtonsoft.Json.JsonProperty("test", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Test { get; set; }
+    
+        /// <summary>The javascript condition.</summary>
+        [Newtonsoft.Json.JsonProperty("condition", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Condition { get; set; }
     
         /// <summary>The priority in which order the integrations must run.</summary>
         [Newtonsoft.Json.JsonProperty("priority", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

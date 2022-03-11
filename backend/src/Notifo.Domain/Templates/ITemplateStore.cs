@@ -17,7 +17,7 @@ namespace Notifo.Domain.Templates
         Task<Template?> GetAsync(string appId, string code,
             CancellationToken ct = default);
 
-        Task<Template> UpsertAsync(string appId, string code, TemplateUpdate update,
+        Task<Template> UpsertAsync(string appId, string code, ICommand<Template> command,
             CancellationToken ct = default);
 
         Task DeleteAsync(string appId, string code,

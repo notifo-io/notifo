@@ -84,6 +84,7 @@ export const EN = {
         inviteByEmail: 'Enter email-address to add contributor.',
         language: 'Language',
         languages: 'Languages',
+        lastNotification: 'Last Notification',
         lastSeen: 'Last seen',
         lastUpdate: 'Last Update',
         lastWakeup: 'Last Wakeup',
