@@ -9,18 +9,18 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Input } from 'reactstrap';
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { loadSmsTemplates, useApp, useSmsTemplates } from '@app/state';
+import { loadMessagingTemplates, useApp, useMessagingTemplates } from '@app/state';
 import { texts } from '@app/texts';
 
-export const SmsTemplateInput = (props: FormEditorProps) => {
+export const MessagingTemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
-    const templates = useSmsTemplates(x => x.templates);
+    const templates = useMessagingTemplates(x => x.templates);
 
     React.useEffect(() => {
         if (!templates.isLoaded) {
-            dispatch(loadSmsTemplates(appId));
+            dispatch(loadMessagingTemplates(appId));
         }
     }, [dispatch, appId, templates.isLoaded]);
 

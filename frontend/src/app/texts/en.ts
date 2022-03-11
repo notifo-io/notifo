@@ -106,6 +106,7 @@ export const EN = {
         name: 'Name',
         no: 'No',
         noName: '- Unnamed -',
+        noTemplate: 'No named template found.',
         notStarted: 'Not started',
         notYet: 'Not yet',
         notificationSettings: 'Notification Settings',
@@ -221,7 +222,7 @@ export const EN = {
     },
     notificationSettings: {
         delayInSeconds: 'Delay in seconds',
-        delayInSecondsHints: 'Other notifications are send within ths time window, are send together.',
+        delayInSecondsHints: 'All notifications that are created within this time window are send together.',
         email: {
             name: 'Email',
             send: 'Send as Email',

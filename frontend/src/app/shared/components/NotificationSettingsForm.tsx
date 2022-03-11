@@ -11,6 +11,7 @@ import { texts } from '@app/texts';
 import { CHANNELS, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { EmailTemplateInput } from './EmailTemplateInput';
 import { MediaInput } from './MediaInput';
+import { MessagingTemplateInput } from './MessagingTemplateInput';
 import { SmsTemplateInput } from './SmsTemplateInput';
 import { WebhookInput } from './WebhookInput';
 
@@ -104,6 +105,13 @@ export module NotificationsForm {
                 {channel === 'sms' &&
                     <>
                         <SmsTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
+                            label={texts.common.template} hints={texts.notificationSettings.templateHints} />
+                    </>
+                }
+
+                {channel === 'messaging' &&
+                    <>
+                        <MessagingTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
                             label={texts.common.template} hints={texts.notificationSettings.templateHints} />
                     </>
                 }

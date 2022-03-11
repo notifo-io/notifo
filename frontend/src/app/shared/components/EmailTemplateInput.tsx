@@ -7,8 +7,10 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { Input } from 'reactstrap';
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
 import { loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
+import { texts } from '@app/texts';
 
 export const EmailTemplateInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();
@@ -38,8 +40,16 @@ export const EmailTemplateInput = (props: FormEditorProps) => {
         return result;
     }, [templates.items]);
 
-    if (options.length <= 1) {
+    if (!templates.isLoaded) {
         return null;
+    }
+
+    if (options.length <= 1) {
+        return (
+            <Forms.Row {...props}>
+                <Input value={texts.common.noTemplate} disabled />
+            </Forms.Row>
+        );
     }
 
     return (

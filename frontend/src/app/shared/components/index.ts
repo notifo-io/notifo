@@ -13,6 +13,7 @@ export * from './Logo';
 export * from './MediaCard';
 export * from './MediaInput';
 export * from './MediaPicker';
+export * from './MessagingTemplateInput';
 export * from './NotificationSettingsForm';
 export * from './RouteWhenPrivate';
 export * from './RouteWhenPublic';
