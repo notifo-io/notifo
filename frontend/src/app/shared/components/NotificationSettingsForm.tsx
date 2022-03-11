@@ -53,16 +53,16 @@ export module NotificationsForm {
                     label={texts.common.imageLarge} />
 
                 <Forms.LocalizedText name={`${field}.linkUrl`} {...props}
-                    label={texts.common.linkUrl} />
+                    label={texts.common.linkUrl} hints={texts.common.linkUrlHints}  />
 
                 <Forms.LocalizedText name={`${field}.linkText`} {...props}
-                    label={texts.common.linkText} />
+                    label={texts.common.linkText} hints={texts.common.linkTextHints}  />
 
                 <Forms.LocalizedText name={`${field}.confirmText`} {...props}
-                    label={texts.common.confirmText} />
+                    label={texts.common.confirmText} hints={texts.common.confirmTextHints} />
 
                 <Forms.Select name={`${field}.confirmMode`} {...props} options={CONFIRM_MODES}
-                    label={texts.common.confirmMode} />
+                    label={texts.common.confirmMode} hints={texts.common.confirmModeHints} />
             </fieldset>
         );
     };
@@ -99,32 +99,32 @@ export module NotificationsForm {
                 }
 
                 <Forms.Number name={`${field}.${channel}.delayInSeconds`} vertical={vertical} min={0} max={6000}
-                    label={texts.notificationSettings.delayInSeconds} />
+                    label={texts.notificationSettings.delayInSeconds} hints={texts.notificationSettings.delayInSecondsHints} />
 
                 {channel === 'sms' &&
                     <>
                         <SmsTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
-                            label={texts.common.template} />
+                            label={texts.common.template} hints={texts.notificationSettings.templateHints} />
                     </>
                 }
 
                 {channel === 'email' &&
                     <>
                         <EmailTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
-                            label={texts.common.template} />
+                            label={texts.common.template} hints={texts.notificationSettings.templateHints} />
 
                         <Forms.Email name={`${field}.${channel}.properties.fromEmail`} vertical={vertical}
-                            label={texts.common.fromEmail} />
+                            label={texts.common.fromEmail} hints={texts.notificationSettings.fromEmailHints} />
 
                         <Forms.Text name={`${field}.${channel}.properties.fromName`} vertical={vertical}
-                            label={texts.common.fromName} />
+                            label={texts.common.fromName} hints={texts.notificationSettings.fromNameHints} />
                     </>
                 }
 
                 {channel === 'webhook' &&
                     <>
                         <WebhookInput name={`${field}.${channel}.template`} vertical={vertical}
-                            label={texts.common.template} />
+                            label={texts.common.template} hints={texts.notificationSettings.templateHints} />
                     </>
                 }
             </fieldset>

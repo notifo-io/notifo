@@ -37,7 +37,11 @@ export const SmsTemplateCard = (props: SmsTemplateCardProps) => {
         <NavLink className='card-link' to={url}>
             <Card className='sms-template'>
                 <CardBody>
-                    <h4>{template.name || texts.common.noName}</h4>
+                    {template.name ? (
+                        <h4 className='truncate'>{template.name}</h4> 
+                    ) : ( 
+                        <h4 className='truncate text-muted'>{texts.common.noName}</h4>
+                    )}
 
                     {template.primary &&
                         <Badge color='primary' pill>{texts.common.primary}</Badge>

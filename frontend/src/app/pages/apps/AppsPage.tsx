@@ -52,7 +52,12 @@ export const AppsPage = () => {
                         <Link key={app.id} to={`${match.path}/${app.id}`} className='card-link'>
                             <Card className='app-card'>
                                 <CardBody>
-                                    <h4 className='truncate'>{app.name || texts.common.unnamed}</h4>
+                                    {app.name ? (
+                                        <h4 className='truncate'>{app.name}</h4> 
+
+                                    ) : ( 
+                                        <h4 className='truncate text-muted'>{texts.common.noName}</h4>
+                                    )}
                                 </CardBody>
                             </Card>
                         </Link>

@@ -98,7 +98,7 @@ export const PublishDialog = () => {
 
                                         {values['templated'] &&
                                             <TemplateInput name='templateCode'
-                                                label={texts.common.templateCode} />
+                                                label={texts.common.templateCode} hints={texts.common.templateCodeHints} />
                                         }
 
                                         <NotificationsForm.Formatting
@@ -118,7 +118,7 @@ export const PublishDialog = () => {
                                             label={texts.common.silent} />
 
                                         <Forms.Textarea name='data'
-                                            label={texts.common.data} />
+                                            label={texts.common.data} hints={texts.common.dataHints} />
 
                                         <hr />
 
