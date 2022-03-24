@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
-using Mjml.AspNetCore;
+using Mjml.Net;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Utils;
@@ -42,15 +42,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 Directory.CreateDirectory("_out");
 
-                var serviceCollection = new ServiceCollection();
-
-                serviceCollection.AddMjmlServices();
-
-                var mjmlServices =
-                    serviceCollection.BuildServiceProvider()
-                         .GetRequiredService<IMjmlServices>();
-
-                EmailFormatter = new EmailFormatter(ImageFormatter, mjmlServices);
+                EmailFormatter = new EmailFormatter(ImageFormatter, new MjmlRenderer());
                 EmailTemplate = await EmailFormatter.CreateInitialAsync();
             }).Wait();
         }

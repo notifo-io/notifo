@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Mjml.AspNetCore;
+using Mjml.Net;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
@@ -19,7 +19,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddMyEmailChannel(this IServiceCollection services)
         {
             services.AddHttpClient("notifo-mjml");
-            services.AddMjmlServices();
+
+            services.AddSingletonAs<MjmlRenderer>()
+                .As<IMjmlRenderer>();
 
             services.AddSingletonAs<EmailChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();

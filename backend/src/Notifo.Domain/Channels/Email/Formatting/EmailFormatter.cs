@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Mjml.AspNetCore;
+using Mjml.Net;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
 using Notifo.Domain.Users;
@@ -16,11 +16,15 @@ namespace Notifo.Domain.Channels.Email.Formatting
 {
     public sealed class EmailFormatter : IEmailFormatter
     {
+        private static readonly MjmlOptions DefaultOptions = new MjmlOptions
+        {
+            KeepComments = true
+        };
         private static readonly string DefaultBodyHtml;
         private static readonly string DefaultBodyText;
         private static readonly string DefaultSubject;
         private readonly IImageFormatter imageFormatter;
-        private readonly IMjmlServices mjmlServices;
+        private readonly IMjmlRenderer mjmlRenderer;
 
         static EmailFormatter()
         {
@@ -30,11 +34,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
             DefaultSubject = ReadResource("DefaultSubject.text");
         }
 
-        public EmailFormatter(IImageFormatter imageFormatter, IMjmlServices mjmlServices)
+        public EmailFormatter(IImageFormatter imageFormatter, IMjmlRenderer mjmlRenderer)
         {
             this.imageFormatter = imageFormatter;
 
-            this.mjmlServices = mjmlServices;
+            this.mjmlRenderer = mjmlRenderer;
         }
 
         private static string ReadResource(string name)
@@ -78,11 +82,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return template;
         }
 
-        private async ValueTask ParseCoreAsync(EmailTemplate template, List<EmailFormattingError> errors)
+        private ValueTask ParseCoreAsync(EmailTemplate template, List<EmailFormattingError> errors)
         {
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
             {
-                var html = await MjmlToHtmlAsync(template.BodyHtml, errors);
+                var html = MjmlToHtml(template.BodyHtml, errors);
 
                 var (body, error) = ParsedTemplate.Create(html);
 
@@ -110,6 +114,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 errors.Add(new EmailFormattingError(Texts.Email_TemplateUndefined, EmailTemplateType.General));
             }
+
+            return default;
         }
 
         public async ValueTask<EmailPreview> FormatPreviewAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user,
@@ -256,19 +262,19 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return formattingProperties;
         }
 
-        private async Task<string> MjmlToHtmlAsync(string mjml,
+        private string MjmlToHtml(string mjml,
             List<EmailFormattingError> errors)
         {
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/MjmlToHtmlAsync"))
             {
-                var result = await mjmlServices.Render(mjml);
+                var (html, mjmlErrors) = mjmlRenderer.Render(mjml, DefaultOptions);
 
-                if (result?.Errors.Length > 0)
+                if (mjmlErrors.Count > 0)
                 {
-                    errors.AddRange(result.Errors.Select(x => new EmailFormattingError(x.Message, EmailTemplateType.BodyHtml, x.Line)));
+                    errors.AddRange(mjmlErrors.Select(x => new EmailFormattingError(x.Error, EmailTemplateType.BodyHtml, x.Line ?? 0)));
                 }
 
-                return result!.Html;
+                return html;
             }
         }
     }

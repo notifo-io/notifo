@@ -12,10 +12,12 @@ COPY backend/*.sln ./
 
 # Copy the main source project files
 COPY backend/src/*/*.csproj ./
+
 RUN for file in $(ls *.csproj); do mkdir -p src/${file%.*}/ && mv $file src/${file%.*}/; done
 
 # Copy the test project files
 COPY backend/tests/*/*.csproj ./
+
 RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
 
 RUN dotnet restore
@@ -58,10 +60,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0.0-bullseye-slim
 
 RUN apt-get update \
  && apt-get install -y curl
- 
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
- && apt-get update \
- && apt-get install -y nodejs libc-dev
 
 # Default AspNetCore directory
 WORKDIR /app
