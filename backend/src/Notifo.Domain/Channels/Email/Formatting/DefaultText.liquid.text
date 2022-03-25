@@ -1,0 +1,25 @@
+﻿Your Notifications,
+
+Hello {{ user.displayName | default: 'User' }}
+
+We have some notifications from {{ app.name }} for you.
+
+{% for notification in notifications %} 
+{{ notification.subject }}
+{% if notification.body %}
+{{ notification.body }}
+{% endif %}
+{% if notification.confirmUrl and notification.confirmText  -%}
+...
+Click this link to confirm this notification: {{ notification.confirmUrl }}
+{% endif -%}
+{% if notification.linkText  and notification.linkUrl  -%}
+...
+{{ notification.linkUrl }} | {{ notification.linkText }}
+{% endif -%}
+--
+{% endfor -%}
+
+Best regards,
+
+Your {{ app.name }} team.

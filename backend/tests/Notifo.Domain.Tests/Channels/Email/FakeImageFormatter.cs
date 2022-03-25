@@ -5,12 +5,20 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Utils;
+
 namespace Notifo.Domain.Channels.Email
 {
-    public sealed class EmailPreview
+    internal sealed class FakeImageFormatter : IImageFormatter
     {
-        public EmailMessage? Message { get; set; }
+        public string Format(string? url, string preset)
+        {
+            return url ?? string.Empty;
+        }
 
-        public List<EmailFormattingError>? Errors { get; set; }
+        public string? FormatWhenSet(string? url, string preset)
+        {
+            return url;
+        }
     }
 }
