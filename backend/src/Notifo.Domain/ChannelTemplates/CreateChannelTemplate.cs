@@ -17,10 +17,20 @@ namespace Notifo.Domain.ChannelTemplates
 
         public string? Language { get; set; }
 
+        public string? Kind { get; set; }
+
         public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)
         {
             var newTemplate = template;
+
+            if (Kind != null && !string.Equals(Kind, template.Name, StringComparison.Ordinal))
+            {
+                newTemplate = newTemplate with
+                {
+                    Kind = Kind.Trim()
+                };
+            }
 
             if (Language != null)
             {
@@ -30,7 +40,7 @@ namespace Notifo.Domain.ChannelTemplates
                 {
                     Languages = new Dictionary<string, T>(template.Languages)
                     {
-                        [Language] = await factory.CreateInitialAsync()
+                        [Language] = await factory.CreateInitialAsync(newTemplate.Kind, ct)
                     }.ToReadonlyDictionary()
                 };
             }

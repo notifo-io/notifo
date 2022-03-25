@@ -5877,6 +5877,8 @@ export interface EmailPreviewRequestDto {
     template: string;
     /** The template type. */
     type?: EmailPreviewType;
+    /** The kind of the template. */
+    kind?: string | undefined;
 }
 
 export type EmailPreviewType = "Html" | "Text";
@@ -5893,6 +5895,8 @@ export interface ChannelTemplateDto {
     id: string;
     /** The optional name of the template. */
     name?: string | undefined;
+    /** The kind of the template. */
+    kind?: string | undefined;
     /** True, when the template is the primary template. */
     primary: boolean;
     /** The last time the template has been updated. */
@@ -5925,9 +5929,13 @@ export interface EmailTemplateDto {
     fromEmail?: string | undefined;
     /** The optional from name. */
     fromName?: string | undefined;
+    /** The type of the template. */
+    kind?: string | undefined;
 }
 
 export interface CreateChannelTemplateDto {
+    /** The kind of the template. */
+    kind?: string | undefined;
 }
 
 export interface CreateChannelTemplateLanguageDto {

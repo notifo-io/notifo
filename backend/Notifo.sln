@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29911.84
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo", "src\Notifo\Notifo.csproj", "{DF395EC8-346D-4ED6-A24A-2C1B298C4143}"
 EndProject
@@ -20,6 +20,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Identity.Tests", "tests\Notifo.Identity.Tests\Notifo.Identity.Tests.csproj", "{E7C401D3-02CC-4AB6-A916-C1BAC35693AA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Domain.Integrations", "src\Notifo.Domain.Integrations\Notifo.Domain.Integrations.csproj", "{8E099EF7-6D26-49A6-B5E5-BB4ADA06FBB7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmarks", "tests\Benchmarks\Benchmarks.csproj", "{281E0369-640F-415C-B6A8-4B51F954C801}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{8E099EF7-6D26-49A6-B5E5-BB4ADA06FBB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E099EF7-6D26-49A6-B5E5-BB4ADA06FBB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8E099EF7-6D26-49A6-B5E5-BB4ADA06FBB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281E0369-640F-415C-B6A8-4B51F954C801}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281E0369-640F-415C-B6A8-4B51F954C801}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281E0369-640F-415C-B6A8-4B51F954C801}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281E0369-640F-415C-B6A8-4B51F954C801}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

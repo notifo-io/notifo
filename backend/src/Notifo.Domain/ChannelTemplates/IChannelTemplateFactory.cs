@@ -9,8 +9,10 @@ namespace Notifo.Domain.ChannelTemplates
 {
     public interface IChannelTemplateFactory<T>
     {
-        ValueTask<T> CreateInitialAsync();
+        ValueTask<T> CreateInitialAsync(string? kind = null,
+            CancellationToken ct = default);
 
-        ValueTask<T> ParseAsync(T input);
+        ValueTask<T> ParseAsync(T input,
+            CancellationToken ct = default);
     }
 }

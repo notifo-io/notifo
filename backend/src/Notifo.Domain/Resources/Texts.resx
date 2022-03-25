@@ -141,10 +141,13 @@
   <data name="Email_ConfigReset" xml:space="preserve">
     <value>Integration has been removed.</value>
   </data>
-  <data name="Email_TemplateInvalid" xml:space="preserve">
+  <data name="Email_TemplateLiquidInvalid" xml:space="preserve">
+    <value>Email template does not render notification subject, loop over notification and use '{{ notification.subject }}'.</value>
+  </data>
+  <data name="Email_TemplateNormalInvalid" xml:space="preserve">
     <value>Email template does not render notification subject, add '{{ notification.subject }}' to each template.</value>
   </data>
-  <data name="Email_TemplateNoItem" xml:space="preserve">
+  <data name="Email_TemplateNormalNoItem" xml:space="preserve">
     <value>Template must have a default template for notifcations, add '&lt;!-- START: NOTIFICATION --&gt;'.</value>
   </data>
   <data name="Email_TemplateUndefined" xml:space="preserve">

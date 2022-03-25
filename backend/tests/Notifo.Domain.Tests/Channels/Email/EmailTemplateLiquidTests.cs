@@ -12,15 +12,15 @@ using Notifo.Domain.Channels.Email.Formatting;
 
 namespace Notifo.Domain.Channels.Email
 {
-    public class EmailTemplateTests : EmailTemplateTestsBase
+    public class EmailTemplateLiquidTests : EmailTemplateTestsBase
     {
         protected override EmailTemplate EmailTemplate { get; }
 
-        protected override IEmailFormatter EmailFormatter { get; } = new EmailFormatterNormal(new FakeImageFormatter(), new MjmlRenderer());
+        protected override IEmailFormatter EmailFormatter { get; } = new EmailFormatterLiquid(new FakeImageFormatter(), new MjmlRenderer());
 
-        public EmailTemplateTests()
+        public EmailTemplateLiquidTests()
         {
-            EmailTemplate = EmailFormatter.CreateInitialAsync().AsTask().Result;
+            EmailTemplate = EmailFormatter.CreateInitialAsync("Liquid").AsTask().Result;
         }
     }
 }

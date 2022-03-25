@@ -18,6 +18,8 @@ namespace Notifo.Domain.ChannelTemplates
 
         public string? Name { get; init; }
 
+        public string? Kind { get; init; }
+
         public bool Primary { get; init; }
 
         public Instant Created { get; init; }

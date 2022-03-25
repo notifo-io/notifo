@@ -26,6 +26,11 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         public string? Name { get; set; }
 
         /// <summary>
+        /// The kind of the template.
+        /// </summary>
+        public string? Kind { get; set; }
+
+        /// <summary>
         /// True, when the template is the primary template.
         /// </summary>
         [Required]

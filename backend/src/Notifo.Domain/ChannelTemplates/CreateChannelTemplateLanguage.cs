@@ -39,7 +39,7 @@ namespace Notifo.Domain.ChannelTemplates
 
             var newLanguages = new Dictionary<string, T>(template.Languages)
             {
-                [Language] = await factory.CreateInitialAsync()
+                [Language] = await factory.CreateInitialAsync(template.Kind, ct)
             };
 
             var newTemplate = template with

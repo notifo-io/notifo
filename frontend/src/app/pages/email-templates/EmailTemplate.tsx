@@ -117,6 +117,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
             ...params,
             fromEmail: templateCopy?.fromEmail,
             fromName: templateCopy?.fromName,
+            kind: templateCopy?.kind,
         };
 
         dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
@@ -162,8 +163,8 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                                 <Forms.Text name='subject' label={texts.common.subject} vertical />
                             </div>
 
-                            <BodyHtml appId={appId} visible={showHtml} />
-                            <BodyText appId={appId} visible={!showHtml} />
+                            <BodyHtml appId={appId} kind={template?.kind} visible={showHtml} />
+                            <BodyText appId={appId} kind={template?.kind} visible={!showHtml} />
                         </div>
                     </Form>
                 )}
@@ -184,7 +185,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     );
 };
 
-const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
+const BodyText = ({ visible, ...other }: { appId: string; kind: string | undefined; visible: boolean }) => {
     const field = useFieldContext('bodyText', visible);
 
     return (
@@ -192,7 +193,7 @@ const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
             <FormControlError error={field.meta.error} touched={field.meta.touched} submitCount={field.submitCount} />
 
             <div className={field.className}>
-                <EmailTextEditor initialValue={field.value} appId={appId}
+                <EmailTextEditor initialValue={field.value} {...other}
                     onChange={field.onChange}
                     onBlur={field.onBlur} />
             </div>
@@ -200,7 +201,7 @@ const BodyText = ({ appId, visible }: { appId: string; visible: boolean }) => {
     );
 };
 
-const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }) => {
+const BodyHtml = ({ visible, ...other }: { appId: string; kind: string | undefined; visible: boolean }) => {
     const field = useFieldContext('bodyHtml', visible);
 
     return (
@@ -208,7 +209,7 @@ const BodyHtml = ({ appId, visible }: { appId: string; visible: boolean }) => {
             <FormControlError error={field.meta.error} touched={field.meta.touched} submitCount={field.submitCount} />
 
             <div className={field.className}>
-                <EmailHtmlEditor initialValue={field.value} appId={appId}
+                <EmailHtmlEditor initialValue={field.value} {...other}
                     onChange={field.onChange}
                     onBlur={field.onBlur} />
             </div>

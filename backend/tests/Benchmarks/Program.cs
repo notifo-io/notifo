@@ -5,10 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+using BenchmarkDotNet.Running;
 
-namespace Notifo.Domain.Channels.Email
+namespace Benchmarks
 {
-    [Serializable]
-    public sealed record EmailFormattingError(string Message, EmailTemplateType Template, int Line = -1, int Column = -1);
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+        }
+    }
 }

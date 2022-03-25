@@ -12,51 +12,71 @@ namespace Notifo.Domain.Channels.Email.Formatting
 {
     public sealed class EmailNotification
     {
-        public string Subject { get; set; }
+        private readonly BaseUserNotification notification;
+        private readonly string? emailAddress;
+        private readonly IImageFormatter imageFormatter;
+        private string? confirmUrl;
+        private string? imageLarge;
+        private string? imageSmall;
+        private string? trackDeliveredUrl;
+        private string? trackSeenUrl;
 
-        public string? Body { get; set; }
+        public string Subject => notification.Formatting.Subject;
 
-        public string? ConfirmText { get; set; }
+        public string? Body => OrNull(notification.Formatting.Body);
 
-        public string? ImageSmall { get; set; }
+        public string? LinkUrl => OrNull(notification.Formatting.LinkUrl);
 
-        public string? ImageLarge { get; set; }
+        public string? LinkText => OrNull(notification.Formatting.LinkText);
 
-        public string? LinkUrl { get; set; }
+        public string? ConfirmText => OrNull(notification.Formatting.ConfirmText);
 
-        public string? LinkText { get; set; }
-
-        public string? TrackSeenUrl { get; set; }
-
-        public string? TrackDeliveredUrl { get; set; }
-
-        public string? ConfirmUrl { get; set; }
-
-        public static EmailNotification Create(BaseUserNotification notification, string? emailAddress, IImageFormatter imageFormatter)
+        public string? TrackSeenUrl
         {
-            var result = new EmailNotification
-            {
-                Body = OrNull(notification.Formatting.Body),
-                ConfirmText = OrNull(notification.Formatting.ConfirmText),
-                ConfirmUrl = notification.ComputeConfirmUrl(Providers.Email, emailAddress),
-                LinkText = OrNull(notification.Formatting.LinkText),
-                LinkUrl = OrNull(notification.Formatting.LinkUrl),
-                TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.Email, emailAddress),
-                TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.Email, emailAddress),
-                Subject = notification.Formatting.Subject
-            };
+            get => trackSeenUrl ??= notification.ComputeTrackSeenUrl(Providers.Email, emailAddress);
+        }
 
-            if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageLarge))
+        public string? TrackDeliveredUrl
+        {
+            get => trackDeliveredUrl ??= notification.ComputeTrackDeliveredUrl(Providers.Email, emailAddress);
+        }
+
+        public string? ConfirmUrl
+        {
+            get => confirmUrl ??= notification.ComputeConfirmUrl(Providers.Email, emailAddress);
+        }
+
+        public string? ImageSmall
+        {
+            get
             {
-                result.ImageLarge = imageFormatter.Format(notification.Formatting.ImageLarge, "EmailLarge");
+                if (string.IsNullOrWhiteSpace(notification.Formatting.ImageSmall))
+                {
+                    return null;
+                }
+
+                return imageSmall ??= imageFormatter.Format(notification.Formatting.ImageSmall, "EmailSmall");
             }
+        }
 
-            if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageSmall))
+        public string? ImageLarge
+        {
+            get
             {
-                result.ImageSmall = imageFormatter.Format(notification.Formatting.ImageSmall, "EmailLarge");
-            }
+                if (string.IsNullOrWhiteSpace(notification.Formatting.ImageLarge))
+                {
+                    return null;
+                }
 
-            return result;
+                return imageLarge ??= imageFormatter.Format(notification.Formatting.ImageLarge, "EmailLarge");
+            }
+        }
+
+        public EmailNotification(BaseUserNotification notification, string? emailAddress, IImageFormatter imageFormatter)
+        {
+            this.notification = notification;
+            this.emailAddress = emailAddress;
+            this.imageFormatter = imageFormatter;
         }
 
         private static string? OrNull(string? value)

@@ -27,8 +27,8 @@ export const loadEmailTemplate = createApiThunk('emailTemplates/load',
     });
 
 export const createEmailTemplate = createApiThunk('emailTemplates/create',
-    (arg: { appId: string }) => {
-        return Clients.EmailTemplates.postTemplate(arg.appId, { });
+    (arg: { appId: string; kind?: string }) => {
+        return Clients.EmailTemplates.postTemplate(arg.appId, { kind: arg.kind });
     });
 
 export const createEmailTemplateLanguage = createApiThunk('emailTemplates/createLanguage',

@@ -12,9 +12,11 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 
+#pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
+
 namespace Notifo.Domain.Channels.Email.Formatting
 {
-    public sealed class ParsedTemplate
+    public sealed class ParsedEmailTemplate
     {
         private const string NotificationsPlaceholder = "<<<<Notifications>>>>";
         private const string ItemDefault = "NOTIFICATION";
@@ -27,7 +29,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public Dictionary<string, string> ItemTemplates { get; set; } = new Dictionary<string, string>();
 
-        public string Format(List<EmailJob> jobs, Dictionary<string, string?> properties, bool asHtml, IImageFormatter imageFormatter)
+        public string Format(List<EmailJob> jobs, Dictionary<string, string?> properties, string emailAddress, bool asHtml, IImageFormatter imageFormatter)
         {
             var notificationProperties = new Dictionary<string, string?>();
 
@@ -81,7 +83,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                     if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
                     {
-                        var trackingLink = $"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{notification.TrackSeenUrl}\" />";
+                        var trackingLink = Helpers.BuildTrackingLink(notification, emailAddress);
 
                         stringBuilder.Append(trackingLink);
                     }
@@ -95,20 +97,20 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        public static (ParsedTemplate? Template, string? Error) Create(string? body)
+        public static (ParsedEmailTemplate? Template, string? Error) Create(string? body)
         {
             if (string.IsNullOrWhiteSpace(body))
             {
                 return default;
             }
 
-            var result = new ParsedTemplate();
+            var result = new ParsedEmailTemplate();
 
             result.Prepare(body);
 
             if (!result.ItemTemplates.ContainsKey(ItemDefault))
             {
-                return (null, Texts.Email_TemplateNoItem);
+                return (null, Texts.Email_TemplateNormalNoItem);
             }
 
             return (result, null);
@@ -149,9 +151,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             var startOuter = start.Index;
             var startInner = startOuter + start.Length;
 
-#pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
             var end = new Regex($"<!--[\\s]*END:[\\s]*{type}[\\s]*-->[\r\n]*", RegexOptions.IgnoreCase).Match(template, startOuter);
-#pragma warning restore MA0023 // Add RegexOptions.ExplicitCapture
 
             if (!end.Success)
             {

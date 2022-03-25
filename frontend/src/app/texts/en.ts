@@ -173,6 +173,8 @@ export const EN = {
         bodyTextValid: 'Text Body is required and must be a valid template',
         confirmDelete: 'Do you really want to delete the Template?',
         create: 'Create',
+        createWithInterpolation: 'MJML (Legacy)',
+        createWithLiquid: 'MJML + Liquid',
         header: 'Email Templates',
         name: 'Template Name',
         notFound: 'No email template found',

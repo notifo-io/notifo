@@ -37,5 +37,10 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         /// The optional from name.
         /// </summary>
         public string? FromName { get; set; }
+
+        /// <summary>
+        /// The type of the template.
+        /// </summary>
+        public string? Kind { get; set; }
     }
 }

@@ -23,7 +23,8 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public ValueTask<SmsTemplate> CreateInitialAsync()
+        public ValueTask<SmsTemplate> CreateInitialAsync(string? kind = null,
+            CancellationToken ct = default)
         {
             var template = new SmsTemplate
             {
@@ -33,7 +34,8 @@ namespace Notifo.Domain.Channels.Sms
             return new ValueTask<SmsTemplate>(template);
         }
 
-        public ValueTask<SmsTemplate> ParseAsync(SmsTemplate input)
+        public ValueTask<SmsTemplate> ParseAsync(SmsTemplate input,
+            CancellationToken ct = default)
         {
             Validate<Validator>.It(input);
 

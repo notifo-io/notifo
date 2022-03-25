@@ -21,8 +21,10 @@ namespace Notifo.Domain.Channels.Email
 
         public string? FromName { get; set; }
 
-        public ParsedTemplate? ParsedBodyText { get; set; }
+        public string? Kind { get; set; }
 
-        public ParsedTemplate? ParsedBodyHtml { get; set; }
+        public ParsedEmailTemplate? ParsedBodyText { get; set; }
+
+        public ParsedEmailTemplate? ParsedBodyHtml { get; set; }
     }
 }
