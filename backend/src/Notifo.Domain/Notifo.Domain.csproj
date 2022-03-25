@@ -2,20 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<LangVersion>10.0</LangVersion>
 	<NeutralLanguage>en</NeutralLanguage>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Channels\Email\DefaultHtml.mjml" />
     <None Remove="Channels\Email\DefaultSubject.text" />
     <None Remove="Channels\Email\DefaultText.text" />
+    <None Remove="Channels\Email\Formatting\DefaultHtml.liquid.mjml" />
+    <None Remove="Channels\Email\Formatting\DefaultText.liquid.text" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="10.3.6" />
+    <PackageReference Include="Fluid.Core" Version="2.2.14" />
     <PackageReference Include="Jint" Version="3.0.0-beta-2037" />
     <PackageReference Include="libphonenumber-csharp" Version="8.12.38" />
     <PackageReference Include="Meziantou.Analyzer" Version="1.0.694">
@@ -45,8 +48,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Channels\Email\Formatting\DefaultHtml.liquid.mjml" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultHtml.mjml" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultSubject.text" />
+    <EmbeddedResource Include="Channels\Email\Formatting\DefaultText.liquid.text" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultText.text" />
   </ItemGroup>
 

@@ -5,74 +5,66 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Linq;
+using System.Globalization;
 using Fluid;
-using Notifo.Domain.Apps;
-using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Squidex.Caching;
 
+#pragma warning disable MA0048 // File name must match type name
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Utils
 {
+    public record struct CachedTemplate(IFluidTemplate? Template, TemplateError? Error);
+
     public static class TemplateCache
     {
-        private static readonly LRUCache<string, (FluidTemplate? Template, string[]? Error)> Cache = new LRUCache<string, (FluidTemplate?, string[]?)>(5000);
+        private static readonly LRUCache<string, CachedTemplate> Cache = new LRUCache<string, CachedTemplate>(1000);
+        private static readonly FluidParser Parser = new FluidParser();
+        private static readonly ReaderWriterLockSlim LockObject = new ReaderWriterLockSlim();
 
-        static TemplateCache()
+        public static CachedTemplate Parse(string input, bool bypass = false)
         {
-            TemplateContext.GlobalMemberAccessStrategy.MemberNameStrategy = MemberNameStrategies.CamelCase;
+            Guard.NotNull(input);
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<User>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<App>();
-        }
-
-        public static FluidTemplate Parse(string input, bool bypass = false)
-        {
-            Guard.NotNull(input, nameof(input));
+            CachedTemplate result;
 
             if (!bypass)
             {
-                lock (Cache)
+                LockObject.EnterWriteLock();
+                try
                 {
-                    if (Cache.TryGetValue(input, out var temp))
+                    if (Cache.TryGetValue(input, out result))
                     {
-                        if (temp.Error != null)
-                        {
-                            throw new TemplateParseException(input, temp.Error);
-                        }
-
-                        if (temp.Template != null)
-                        {
-                            return temp.Template;
-                        }
+                        return result;
                     }
+                }
+                finally
+                {
+                    LockObject.ExitWriteLock();
                 }
             }
 
-            if (FluidTemplate.TryParse(input, out var result, out var errors))
+            Parser.TryParse(input, out var template, out var errorMessage);
+
+            var error = TemplateError.Parse(errorMessage);
+
+            result = new CachedTemplate(template, error);
+
+            if (!bypass)
             {
-                if (!bypass)
+                LockObject.EnterWriteLock();
+                try
                 {
-                    lock (Cache)
-                    {
-                        Cache.Set(input, (result, null));
-                    }
+                    Cache.Set(input, result);
                 }
-
-                return result;
-            }
-            else
-            {
-                if (!bypass)
+                finally
                 {
-                    lock (Cache)
-                    {
-                        Cache.Set(input, (null, errors.ToArray()));
-                    }
+                    LockObject.ExitWriteLock();
                 }
-
-                throw new TemplateParseException(input, errors);
             }
+
+            return result;
         }
     }
 }

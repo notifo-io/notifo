@@ -10,5 +10,5 @@
 namespace Notifo.Domain.Channels.Email
 {
     [Serializable]
-    public sealed record EmailFormattingError(string Message, EmailTemplateType Template, int Line = -1);
+    public sealed record EmailFormattingError(string Message, EmailTemplateType Template, int Line = -1, int Column = -1);
 }

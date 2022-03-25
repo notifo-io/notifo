@@ -133,20 +133,29 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email template does not render notification subject, loop over notification and use &apos;{{ notification.subject }}&apos;..
+        /// </summary>
+        internal static string Email_TemplateLiquidInvalid {
+            get {
+                return ResourceManager.GetString("Email_TemplateLiquidInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Email template does not render notification subject, add &apos;{{ notification.subject }}&apos; to each template..
         /// </summary>
-        internal static string Email_TemplateInvalid {
+        internal static string Email_TemplateNormalInvalid {
             get {
-                return ResourceManager.GetString("Email_TemplateInvalid", resourceCulture);
+                return ResourceManager.GetString("Email_TemplateNormalInvalid", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Template must have a default template for notifcations, add &apos;&lt;!-- START: NOTIFICATION --&gt;&apos;..
         /// </summary>
-        internal static string Email_TemplateNoItem {
+        internal static string Email_TemplateNormalNoItem {
             get {
-                return ResourceManager.GetString("Email_TemplateNoItem", resourceCulture);
+                return ResourceManager.GetString("Email_TemplateNormalNoItem", resourceCulture);
             }
         }
         

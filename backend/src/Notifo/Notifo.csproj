@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>10.0</LangVersion>
-    <Nullable>enable</Nullable>
-    <NoWarn>1701;1702;8618;1591;CS1591</NoWarn>
-    <ImplicitUsings>enable</ImplicitUsings>
+	<ImplicitUsings>enable</ImplicitUsings>
+	<LangVersion>10.0</LangVersion>
+	<NoWarn>1701;1702;8618;1591;CS1591</NoWarn>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
   
   <ItemGroup>

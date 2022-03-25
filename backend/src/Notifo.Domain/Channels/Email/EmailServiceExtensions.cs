@@ -26,8 +26,20 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingletonAs<EmailChannel>()
                 .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();
 
-            services.AddSingletonAs<EmailFormatter>()
-                .As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
+            services.AddSingletonAs<EmailFormatterNormal>()
+                .AsSelf();
+
+            services.AddSingletonAs<EmailFormatterLiquid>()
+                .AsSelf();
+
+            services.AddSingletonAs(c =>
+            {
+                return new CompositeEmailFormatter(new IEmailFormatter[]
+                {
+                    c.GetRequiredService<EmailFormatterNormal>(),
+                    c.GetRequiredService<EmailFormatterLiquid>(),
+                });
+            }).As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
 
             services.AddChannelTemplates<EmailTemplate>();
 

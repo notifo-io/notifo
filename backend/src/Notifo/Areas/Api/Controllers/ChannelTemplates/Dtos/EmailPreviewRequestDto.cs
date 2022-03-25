@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
 {
@@ -21,5 +22,29 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
         /// The template type.
         /// </summary>
         public EmailPreviewType Type { get; set; }
+
+        /// <summary>
+        /// The kind of the template.
+        /// </summary>
+        public string? Kind { get; set; }
+
+        public EmailTemplate ToEmailTemplate()
+        {
+            var emailTemplate = new EmailTemplate
+            {
+                Kind = Kind
+            };
+
+            if (Type == EmailPreviewType.Html)
+            {
+                emailTemplate.BodyHtml = Template;
+            }
+            else
+            {
+                emailTemplate.BodyText = Template;
+            }
+
+            return emailTemplate;
+        }
     }
 }

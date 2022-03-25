@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
-import { Button, Col, Label, Row } from 'reactstrap';
+import { Button, Col, DropdownItem, DropdownMenu, DropdownToggle, Label, Row, UncontrolledButtonDropdown } from 'reactstrap';
 import { FormError, Icon, Loader } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { createEmailTemplate, deleteEmailTemplate, loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
@@ -46,6 +46,10 @@ export const EmailTemplatesPage = () => {
         dispatch(createEmailTemplate({ appId }));
     }, [dispatch, appId]);
 
+    const doCreateWithLiquid = React.useCallback(() => {
+        dispatch(createEmailTemplate({ appId, kind: 'Liquid' }));
+    }, [dispatch, appId]);
+
     const doDelete = React.useCallback((template: ChannelTemplateDto) => {
         dispatch(deleteEmailTemplate({ appId, id: template.id }));
     }, [dispatch, appId]);
@@ -61,9 +65,19 @@ export const EmailTemplatesPage = () => {
                         <Loader visible={emailTemplates.isLoading} />
                     </Col>
                     <Col xs='auto'>
-                        <Button color='success' onClick={doCreate}>
-                            <Loader light small visible={creating} /> <Icon type='add' /> {texts.emailTemplates.create}
-                        </Button>
+                        <UncontrolledButtonDropdown>
+                            <DropdownToggle color='success' caret>
+                                <Icon type='add' /> {texts.emailTemplates.create}
+                            </DropdownToggle>
+                            <DropdownMenu right>
+                                <DropdownItem onClick={doCreateWithLiquid}>
+                                    {texts.emailTemplates.createWithLiquid}
+                                </DropdownItem>
+                                <DropdownItem onClick={doCreate}>
+                                    {texts.emailTemplates.createWithInterpolation}
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </UncontrolledButtonDropdown>
                     </Col>
                 </Row>
             </div>

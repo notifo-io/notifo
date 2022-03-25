@@ -31,7 +31,8 @@ namespace Notifo.Domain.Channels.Messaging
             this.imageFormatter = imageFormatter;
         }
 
-        public ValueTask<MessagingTemplate> CreateInitialAsync()
+        public ValueTask<MessagingTemplate> CreateInitialAsync(string? kind = null,
+            CancellationToken ct = default)
         {
             var template = new MessagingTemplate
             {
@@ -41,7 +42,8 @@ namespace Notifo.Domain.Channels.Messaging
             return new ValueTask<MessagingTemplate>(template);
         }
 
-        public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input)
+        public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input,
+            CancellationToken ct = default)
         {
             Validate<Validator>.It(input);
 

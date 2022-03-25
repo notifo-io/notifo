@@ -66,6 +66,8 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
                         <Badge color='primary' pill>{texts.common.primary}</Badge>
                     }
 
+                    <Badge color='secondary' pill>{template.kind || 'Interpolation'}</Badge>
+
                     <div className='updated'>
                         <small><FormatDate date={template.lastUpdate} /></small>
                     </div>
