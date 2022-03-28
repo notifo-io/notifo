@@ -33,7 +33,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                 </td>
                 <td>
                     <span className='truncate'>
-                        <FormatDate date={notification.created} />
+                        <FormatDate format='Ppp' date={notification.created} />
                     </span>
                 </td>
             </tr>

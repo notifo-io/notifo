@@ -42,7 +42,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
                         </td>
                         <td>
                             <span className='truncate'>
-                                <FormatDate date={event.created} />
+                                <FormatDate format='Ppp' date={event.created} />
                             </span>
                         </td>
                     </tr>

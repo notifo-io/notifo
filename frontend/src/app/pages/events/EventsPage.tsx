@@ -69,7 +69,7 @@ export const EventsPage = () => {
                     <col style={{ width: 50 }} />
                     <col />
                     <col />
-                    <col style={{ width: 250 }} />
+                    <col style={{ width: 200 }} />
                 </colgroup>
 
                 <thead>

@@ -85,7 +85,7 @@ export const Notifications = (props: NotificationsProps) => {
                         <colgroup>
                             <col style={{ width: 50 }} />
                             <col />
-                            <col style={{ width: 170 }} />
+                            <col style={{ width: 200 }} />
                         </colgroup>
 
                         <thead>
