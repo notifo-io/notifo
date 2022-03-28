@@ -33,15 +33,13 @@ namespace Notifo.Domain.Integrations.Smtp
         private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", IntegrationPropertyType.Text)
         {
             EditorLabel = Texts.SMTP_UsernameLabel,
-            EditorDescription = Texts.SMTP_UsernameHints,
-            IsRequired = true
+            EditorDescription = Texts.SMTP_UsernameHints
         };
 
         private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", IntegrationPropertyType.Password)
         {
             EditorLabel = Texts.SMTP_PasswordLabel,
-            EditorDescription = Texts.SMTP_PasswordHints,
-            IsRequired = true
+            EditorDescription = Texts.SMTP_PasswordHints
         };
 
         private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
@@ -111,20 +109,6 @@ namespace Notifo.Domain.Integrations.Smtp
                     return null;
                 }
 
-                var username = UsernameProperty.GetString(configured);
-
-                if (string.IsNullOrWhiteSpace(username))
-                {
-                    return null;
-                }
-
-                var password = PasswordProperty.GetString(configured);
-
-                if (string.IsNullOrWhiteSpace(password))
-                {
-                    return null;
-                }
-
                 var fromEmail = FromEmailProperty.GetString(configured);
 
                 if (string.IsNullOrWhiteSpace(fromEmail))
@@ -141,10 +125,10 @@ namespace Notifo.Domain.Integrations.Smtp
 
                 var options = new SmtpOptions
                 {
-                    Username = username,
+                    Username = UsernameProperty.GetString(configured),
                     Host = host,
                     HostPort = (int)port,
-                    Password = password
+                    Password = PasswordProperty.GetString(configured)
                 };
 
                 return new SmtpEmailSender(

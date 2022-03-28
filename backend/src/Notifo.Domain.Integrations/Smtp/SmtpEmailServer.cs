@@ -107,6 +107,12 @@ namespace Notifo.Domain.Integrations.Smtp
                 await smtpClient.ConnectAsync(options.Host, options.HostPort);
             }
 
+            if (string.IsNullOrWhiteSpace(options.Username) ||
+                string.IsNullOrWhiteSpace(options.Password))
+            {
+                return;
+            }
+
             if (!smtpClient.IsAuthenticated)
             {
                 await smtpClient.AuthenticateAsync(options.Username, options.Password);
