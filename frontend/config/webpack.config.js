@@ -192,6 +192,7 @@ module.exports = function (env) {
         ],
 
         devServer: {
+            compress: false,
             headers: {
                 'Access-Control-Allow-Origin': '*',
             },
