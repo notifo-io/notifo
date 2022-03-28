@@ -13,9 +13,9 @@ namespace Notifo.Domain.Integrations.Smtp
     {
         public string Host { get; set; }
 
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         public int HostPort { get; set; } = 587;
 
@@ -29,16 +29,6 @@ namespace Notifo.Domain.Integrations.Smtp
             if (string.IsNullOrWhiteSpace(Host))
             {
                 yield return new ConfigurationError("Value is required.", nameof(Host));
-            }
-
-            if (string.IsNullOrWhiteSpace(Username))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(Username));
-            }
-
-            if (string.IsNullOrWhiteSpace(Password))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(Password));
             }
 
             if (HostPort == 0)
