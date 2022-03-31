@@ -14,7 +14,7 @@ namespace Notifo.Domain.Channels.Email
 {
     public abstract class EmailTemplateTestsBase
     {
-        private readonly App app = new App();
+        private readonly App app = new App("1", default);
 
         protected abstract EmailTemplate EmailTemplate { get; }
 
@@ -271,7 +271,7 @@ namespace Notifo.Domain.Channels.Email
 
         private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs)
         {
-            var formatted = await EmailFormatter.FormatAsync(jobs, EmailTemplate, app, new User());
+            var formatted = await EmailFormatter.FormatAsync(jobs, EmailTemplate, app, new User("1", "1", default));
 
             return (formatted.Message?.BodyHtml, formatted.Message?.BodyText);
         }

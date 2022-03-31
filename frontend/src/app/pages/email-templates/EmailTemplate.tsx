@@ -127,7 +127,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
 
     return templateCopy ? (
         <>
-            <Formik<EmailTemplateDto> initialValues={templateCopy} onSubmit={doUpdate} validationSchema={FormSchema} enableReinitialize>
+            <Formik<EmailTemplateDto> initialValues={templateCopy} enableReinitialize onSubmit={doUpdate} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <div className='email-container'>

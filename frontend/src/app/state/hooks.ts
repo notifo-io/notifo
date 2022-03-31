@@ -21,6 +21,7 @@ import { SmsTemplatesState, SmsTemplatesStateInStore } from './sms-templates';
 import { SubscriptionsState, SubscriptionsStateInStore } from './subscriptions';
 import { SystemUsersState, SystemUsersStateInStore } from './system-users';
 import { TemplatesState, TemplatesStateInStore } from './templates';
+import { TopicsState, TopicsStateInStore } from './topics';
 import { UsersState, UsersStateInStore } from './users';
 
 type State =
@@ -39,6 +40,7 @@ type State =
     SubscriptionsStateInStore &
     SystemUsersStateInStore &
     TemplatesStateInStore &
+    TopicsStateInStore &
     UsersStateInStore;
 
 export function useStore<T>(mapping: (state: State) => T) {
@@ -107,6 +109,10 @@ export function useSystemUsers<T>(mapping: (state: SystemUsersState) => T) {
 
 export function useTemplates<T>(mapping: (state: TemplatesState) => T) {
     return useStore<T>(x => mapping(x.templates));
+}
+
+export function useTopics<T>(mapping: (state: TopicsState) => T) {
+    return useStore<T>(x => mapping(x.topics));
 }
 
 export function useUsers<T>(mapping: (state: UsersState) => T) {

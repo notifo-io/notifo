@@ -12,5 +12,7 @@ namespace Notifo.Domain.Topics
     public sealed class TopicQuery : QueryBase
     {
         public string? Query { get; set; }
+
+        public TopicQueryScope Scope { get; set; }
     }
 }

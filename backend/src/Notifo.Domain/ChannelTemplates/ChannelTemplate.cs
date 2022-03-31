@@ -8,29 +8,20 @@
 using NodaTime;
 using Notifo.Infrastructure.Collections;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.ChannelTemplates
 {
-    public sealed record ChannelTemplate<T>
+    public sealed record ChannelTemplate<T>(string AppId, string Id, Instant Created)
     {
-        public string Id { get; private init; }
-
-        public string AppId { get; private init; }
-
         public string? Name { get; init; }
 
         public string? Kind { get; init; }
 
         public bool Primary { get; init; }
 
-        public Instant Created { get; init; }
-
         public Instant LastUpdate { get; init; }
 
         public ReadonlyDictionary<string, T> Languages { get; init; } = ReadonlyDictionary.Empty<string, T>();
-
-        public static ChannelTemplate<T> Create(string appId, string id, Instant now)
-        {
-            return new ChannelTemplate<T> { AppId = appId, Id = id, Created = now };
-        }
     }
 }

@@ -79,7 +79,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private async ValueTask ParseCoreAsync(EmailTemplate template, List<EmailFormattingError> errors)
         {
-            await FormatAsync(EmailJob.ForPreview, template, new App(), new User());
+            await FormatAsync(EmailJob.ForPreview, template, new App("1", default), new User("1", "1", default));
 
             if (string.IsNullOrWhiteSpace(template.BodyHtml) && string.IsNullOrWhiteSpace(template.BodyText))
             {

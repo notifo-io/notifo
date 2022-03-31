@@ -143,7 +143,7 @@ namespace Notifo.Domain.Users
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    user = User.Create(appId, id, clock.GetCurrentInstant());
+                    user = new User(appId, id, clock.GetCurrentInstant());
                 }
 
                 var newUser = await command.ExecuteAsync(user, services, ct);

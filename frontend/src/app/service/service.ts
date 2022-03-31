@@ -952,16 +952,21 @@ export class TopicsClient {
     /**
      * Query topics.
      * @param appId The app where the topics belongs to.
+     * @param scope (optional) The scope of the query.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return Topics returned.
      */
-    getTopics(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTopicDto> {
+    getTopics(appId: string, scope?: TopicQueryScope | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTopicDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/topics?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (scope === null)
+            throw new Error("The parameter 'scope' cannot be null.");
+        else if (scope !== undefined)
+            url_ += "Scope=" + encodeURIComponent("" + scope) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -1017,6 +1022,118 @@ export class TopicsClient {
             });
         }
         return Promise.resolve<ListResponseDtoOfTopicDto>(<any>null);
+    }
+
+    /**
+     * Upsert topics.
+     * @param appId The app where the topics belong to.
+     * @param request The upsert request.
+     * @return Named topics upserted.
+     */
+    postTopics(appId: string, request: UpsertTopicsDto): Promise<TopicDto[]> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/topics";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ = <RequestInit>{
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processPostTopics(_response);
+        });
+    }
+
+    protected processPostTopics(response: Response): Promise<TopicDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <TopicDto[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<TopicDto[]>(<any>null);
+    }
+
+    /**
+     * Delete a topic.
+     * @param appId The app where the topics belong to.
+     * @param id The ID of the topic to delete.
+     * @return Topic deleted.
+     */
+    deleteTopic(appId: string, id: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/topics/{id}";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteTopic(_response);
+        });
+    }
+
+    protected processDeleteTopic(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(<any>null);
     }
 }
 
@@ -1160,7 +1277,7 @@ export class TemplatesClient {
      * @param code The template code to delete.
      * @return Template deleted.
      */
-    deleteTemplate(appId: string, code: string): Promise<ListResponseDtoOfTemplateDto> {
+    deleteTemplate(appId: string, code: string): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1173,7 +1290,6 @@ export class TemplatesClient {
         let options_ = <RequestInit>{
             method: "DELETE",
             headers: {
-                "Accept": "application/json"
             }
         };
 
@@ -1182,14 +1298,12 @@ export class TemplatesClient {
         });
     }
 
-    protected processDeleteTemplate(response: Response): Promise<ListResponseDtoOfTemplateDto> {
+    protected processDeleteTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
+        if (status === 204) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : <ListResponseDtoOfTemplateDto>JSON.parse(_responseText, this.jsonParseReviver);
-            return result200;
+            return;
             });
         } else if (status === 500) {
             return response.text().then((_responseText) => {
@@ -1208,7 +1322,7 @@ export class TemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ListResponseDtoOfTemplateDto>(<any>null);
+        return Promise.resolve<void>(<any>null);
     }
 }
 
@@ -5480,10 +5594,45 @@ export interface ListResponseDtoOfTopicDto {
 export interface TopicDto {
     /** The topic path. */
     path: string;
-    /** THe last update to the topic. */
+    /** The date time (ISO 8601) when the topic has been created. */
+    created: string;
+    /** The date time (ISO 8601) when the topic has been updated. */
     lastUpdate: string;
+    /** True when the topic is explicit. */
+    isExplicit?: boolean;
+    /** The name. */
+    name?: LocalizedText | undefined;
+    /** The description. */
+    description?: LocalizedText | undefined;
+    /** The channel settings. */
+    channels?: { [key: string]: TopicChannel; } | undefined;
     /** The statistics counters. */
     counters: { [key: string]: number; };
+}
+
+export interface LocalizedText {
+
+    [key: string]: string | any; 
+}
+
+export type TopicChannel = "Allowed" | "NotAllowed";
+
+export type TopicQueryScope = "All" | "Explicit" | "Implicit";
+
+export interface UpsertTopicsDto {
+    /** The topics to update. */
+    requests: UpsertTopicDto[];
+}
+
+export interface UpsertTopicDto {
+    /** The path of the topic. */
+    path?: string | undefined;
+    /** The name. */
+    name?: LocalizedText | undefined;
+    /** The description. */
+    description?: LocalizedText | undefined;
+    /** Settings per channel. */
+    channels?: { [key: string]: TopicChannel; } | undefined;
 }
 
 export interface ListResponseDtoOfTemplateDto {
@@ -5523,11 +5672,6 @@ export interface NotificationFormattingDto {
     linkText?: LocalizedText | undefined;
     /** The confirmation mode. */
     confirmMode: ConfirmMode;
-}
-
-export interface LocalizedText {
-
-    [key: string]: string | any; 
 }
 
 export type ConfirmMode = "None" | "Explicit" | "Seen";
@@ -5868,6 +6012,7 @@ export interface EmailFormattingError {
     message?: string;
     template?: EmailTemplateType;
     line?: number;
+    column?: number;
 }
 
 export type EmailTemplateType = "General" | "BodyHtml" | "BodyText" | "Subject";

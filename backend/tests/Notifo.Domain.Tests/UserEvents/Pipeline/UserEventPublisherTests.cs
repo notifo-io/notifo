@@ -502,7 +502,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
         private static Template CreateMinimumTemplate(bool isAutoCreated = false)
         {
-            var template = new Template
+            var template = new Template("1", "1", default)
             {
                 IsAutoCreated = isAutoCreated,
                 Formatting = new NotificationFormatting<LocalizedText>

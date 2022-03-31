@@ -66,12 +66,9 @@ namespace Notifo.Domain.Media
 
             var fileInfo = string.Join(", ", infos);
 
-            var media = new Media
+            var media = new Media(appId, file.FileName, now)
             {
-                AppId = appId,
-                Created = now,
                 FileInfo = fileInfo,
-                FileName = file.FileName,
                 FileSize = file.FileSize,
                 LastUpdate = now,
                 Metadata = request.Metadata,

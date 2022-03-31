@@ -84,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.Templates
         /// <param name="appId">The app where the templates belong to.</param>
         /// <param name="code">The template code to delete.</param>
         /// <returns>
-        /// 200 => Template deleted.
+        /// 204 => Template deleted.
         /// </returns>
         [HttpDelete("api/apps/{appId}/templates/{code}")]
         [AppPermission(NotifoRoles.AppAdmin)]

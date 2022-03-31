@@ -61,7 +61,7 @@ export const AppDialog = (props: AppDialogProps) => {
 
     return (
         <Modal isOpen={true} toggle={doCloseForm}>
-            <Formik<CreateAppParams> initialValues={initialValues} onSubmit={doSave} enableReinitialize validationSchema={FormSchema}>
+            <Formik<CreateAppParams> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

@@ -11,15 +11,13 @@ using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure.Collections;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Users
 {
-    public sealed record User
+    public sealed record User(string AppId, string Id, Instant Created)
     {
         public string UniqueId => $"{AppId}_{Id}";
-
-        public string Id { get; private init; }
-
-        public string AppId { get; private init; }
 
         public string ApiKey { get; init; }
 
@@ -35,8 +33,6 @@ namespace Notifo.Domain.Users
 
         public bool RequiresWhitelistedTopics { get; init; }
 
-        public Instant Created { get; init; }
-
         public Instant LastUpdate { get; init; }
 
         public ReadonlyList<string> AllowedTopics { get; init; } = ReadonlyList.Empty<string>();
@@ -50,10 +46,5 @@ namespace Notifo.Domain.Users
         public NotificationSettings Settings { get; init; } = new NotificationSettings();
 
         public CounterMap Counters { get; init; } = new CounterMap();
-
-        public static User Create(string appId, string userId, Instant now)
-        {
-            return new User { Id = userId, AppId = appId, Created = now };
-        }
     }
 }

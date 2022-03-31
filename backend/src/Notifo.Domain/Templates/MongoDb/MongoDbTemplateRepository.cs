@@ -41,19 +41,7 @@ namespace Notifo.Domain.Templates.MongoDb
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbTemplateRepository/QueryAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbTemplate>>
-                {
-                    Filter.Eq(x => x.Doc.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(Filter.Regex(x => x.Doc.Code, regex));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -103,6 +91,23 @@ namespace Notifo.Domain.Templates.MongoDb
 
                 await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
+        }
+
+        private static FilterDefinition<MongoDbTemplate> BuildFilter(string appId, TemplateQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbTemplate>>
+            {
+                Filter.Eq(x => x.Doc.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(Filter.Regex(x => x.Doc.Code, regex));
+            }
+
+            return Filter.And(filters);
         }
     }
 }

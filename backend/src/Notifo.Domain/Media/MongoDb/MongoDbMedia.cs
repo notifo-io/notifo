@@ -18,11 +18,9 @@ namespace Notifo.Domain.Media.MongoDb
 
         public static MongoDbMedia FromMedia(Media media)
         {
-            var id = CreateId(media.AppId, media.FileName);
-
             var result = new MongoDbMedia
             {
-                DocId = id,
+                DocId = CreateId(media.AppId, media.FileName),
                 Doc = media,
                 Etag = GenerateEtag()
             };

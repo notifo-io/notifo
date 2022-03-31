@@ -21,7 +21,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
     [OpenApiTag("EmailTemplates")]
     public class EmailTemplatePreviewController : BaseController
     {
-        private static readonly User EmailUser = new User();
+        private static readonly User EmailUser = new User("1", "1", default);
 
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;

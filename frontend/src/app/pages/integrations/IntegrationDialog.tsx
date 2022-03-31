@@ -142,7 +142,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
     return (
         <Modal isOpen={true} size='lg' className='integration-dialog' backdrop={false} toggle={onClose}>
-            <Formik<UpdateIntegrationDto> initialValues={initialValues} onSubmit={doUpsert} enableReinitialize validationSchema={schema}>
+            <Formik<UpdateIntegrationDto> initialValues={initialValues} enableReinitialize onSubmit={doUpsert} validationSchema={schema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={onClose}>

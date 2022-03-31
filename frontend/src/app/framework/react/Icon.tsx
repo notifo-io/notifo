@@ -46,7 +46,8 @@ export type IconType =
     'send' |
     'settings' |
     'sms' |
-    'spinner';
+    'spinner' |
+    'topic';
 
 export interface IconProps {
     // The optional classname.

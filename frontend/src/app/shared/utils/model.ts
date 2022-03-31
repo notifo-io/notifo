@@ -37,3 +37,11 @@ export const SEND_MODES = [{
     value: 'NotAllowed',
     label: texts.common.sendModes.doNotAllow,
 }];
+
+export const ALLOWED_MODES = [{
+    value: 'Allowed',
+    label: texts.common.allowed,
+}, {
+    value: 'NotAllowed',
+    label: texts.common.notAllowed,
+}];

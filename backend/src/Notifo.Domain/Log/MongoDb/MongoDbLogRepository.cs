@@ -43,19 +43,7 @@ namespace Notifo.Domain.Log.MongoDb
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbLogRepository/DeleteAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbLogEntry>>
-                {
-                    Filter.Eq(x => x.Entry.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(Filter.Regex(x => x.Entry.Message, regex));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).SortByDescending(x => x.Entry.LastSeen).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -102,6 +90,23 @@ namespace Notifo.Domain.Log.MongoDb
 
                 await Collection.BulkWriteAsync(writes, cancellationToken: ct);
             }
+        }
+
+        private static FilterDefinition<MongoDbLogEntry> BuildFilter(string appId, LogQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbLogEntry>>
+            {
+                Filter.Eq(x => x.Entry.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(Filter.Regex(x => x.Entry.Message, regex));
+            }
+
+            return Filter.And(filters);
         }
     }
 }

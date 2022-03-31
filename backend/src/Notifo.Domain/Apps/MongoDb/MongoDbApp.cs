@@ -25,11 +25,9 @@ namespace Notifo.Domain.Apps.MongoDb
 
         public static MongoDbApp FromApp(App app)
         {
-            var id = app.Id;
-
             var result = new MongoDbApp
             {
-                DocId = id,
+                DocId = app.Id,
                 Doc = app,
                 Etag = GenerateEtag()
             };

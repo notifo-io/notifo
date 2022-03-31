@@ -25,7 +25,7 @@ namespace Notifo.Domain.Users
 
             sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
 
-            var user = new User
+            var user = new User("1", "1", default)
             {
                 WebPushSubscriptions = new List<string>
                     {
@@ -56,7 +56,7 @@ namespace Notifo.Domain.Users
 
             sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
 
-            var user = new User
+            var user = new User("1", "1", default)
             {
                 WebPushSubscriptions = new List<string>
                     {

@@ -142,7 +142,7 @@ export const UsersPage = () => {
 
                     {!users.isLoading && users.items && users.items.length === 0 &&
                         <tr className='list-item-empty'>
-                            <td colSpan={4}>{texts.users.usersNotFound}</td>
+                            <td colSpan={6}>{texts.users.usersNotFound}</td>
                         </tr>
                     }
                 </tbody>

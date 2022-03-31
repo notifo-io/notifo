@@ -10,21 +10,19 @@ using Notifo.Domain.Counters;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Collections;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Apps
 {
-    public sealed record App
+    public sealed record App(string Id, Instant Created)
     {
         private static readonly ReadonlyList<string> DefaultLanguages = ReadonlyList.Create("en");
-
-        public string Id { get; private init; }
 
         public string Name { get; init; }
 
         public string Language => Languages[0];
 
         public string? ConfirmUrl { get; init; }
-
-        public Instant Created { get; init; }
 
         public Instant LastUpdate { get; init; }
 
@@ -37,10 +35,5 @@ namespace Notifo.Domain.Apps
         public ReadonlyDictionary<string, ConfiguredIntegration> Integrations { get; init; } = ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
 
         public CounterMap? Counters { get; init; } = new CounterMap();
-
-        public static App Create(string appId, Instant now)
-        {
-            return new App { Id = appId, Created = now };
-        }
     }
 }

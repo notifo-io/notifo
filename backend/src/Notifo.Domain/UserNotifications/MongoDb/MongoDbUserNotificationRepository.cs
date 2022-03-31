@@ -13,7 +13,6 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using NodaTime;
-using NodaTime.Text;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
 
@@ -167,11 +166,11 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
                 foreach (var userId in userIds)
                 {
-                    var filter = BuildFilter(appId, userId);
+                    var filter = BuildFilter(appId, userId, new UserNotificationQuery());
 
                     var item = await Collection.Find(filter).Limit(1).SortByDescending(x => x.Created).Only(x => x.Created).FirstOrDefaultAsync(ct);
 
-                    if (item.TryGetElement("Created", out var created))
+                    if (item != null && item.TryGetElement("Created", out var created))
                     {
                         result[userId] = Instant.FromDateTimeUtc(created.Value.ToUniversalTime());
                     }
@@ -409,29 +408,29 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return Filter.And(filters);
         }
 
-        private static FilterDefinition<UserNotification> BuildFilter(string appId, string userId, UserNotificationQuery? query = null)
+        private static FilterDefinition<UserNotification> BuildFilter(string appId, string userId, UserNotificationQuery query)
         {
             var filters = new List<FilterDefinition<UserNotification>>
             {
                 Filter.Eq(x => x.AppId, appId),
                 Filter.Eq(x => x.UserId, userId),
-                Filter.Gte(x => x.Updated, query?.After ?? default)
+                Filter.Gte(x => x.Updated, query.After)
             };
 
-            switch (query?.Scope)
+            switch (query.Scope)
             {
                 case UserNotificationQueryScope.Deleted:
                     filters.Add(Filter.Eq(x => x.IsDeleted, true));
                     break;
-                case UserNotificationQueryScope.All:
-                    filters.Add(Filter.Ne(nameof(UserNotification.IsDeleted), 0));
+                case UserNotificationQueryScope.NonDeleted:
+                    filters.Add(Filter.Ne(x => x.IsDeleted, true));
                     break;
                 default:
-                    filters.Add(Filter.Eq(x => x.IsDeleted, false));
+                    filters.Add(Filter.Ne(nameof(UserNotification.IsDeleted), 0));
                     break;
             }
 
-            if (!string.IsNullOrWhiteSpace(query?.Query))
+            if (!string.IsNullOrWhiteSpace(query.Query))
             {
                 var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 

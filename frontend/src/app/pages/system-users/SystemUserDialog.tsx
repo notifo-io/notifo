@@ -76,7 +76,7 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm}>
-            <Formik<UpdateSystemUserDto> initialValues={initialValues} validationSchema={FormSchema} enableReinitialize onSubmit={doSave}>
+            <Formik<UpdateSystemUserDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

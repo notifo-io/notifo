@@ -16,6 +16,20 @@ namespace Notifo.Domain.Topics.MongoDb
             return $"{appId}_{path}";
         }
 
+        public static MongoDbTopic FromTopic(Topic topic)
+        {
+            var docId = CreateId(topic.AppId, topic.Path);
+
+            var result = new MongoDbTopic
+            {
+                DocId = docId,
+                Doc = topic,
+                Etag = GenerateEtag()
+            };
+
+            return result;
+        }
+
         public Topic ToTopic()
         {
             return Doc;

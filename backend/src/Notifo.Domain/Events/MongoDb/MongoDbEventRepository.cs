@@ -71,22 +71,7 @@ namespace Notifo.Domain.Events.MongoDb
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbEventRepository/QueryAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbEvent>>
-                {
-                    Filter.Eq(x => x.Doc.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(
-                        Filter.Or(
-                            Filter.Regex(x => x.Doc.Topic, regex),
-                            Filter.Regex(x => x.SearchText, regex)));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).SortByDescending(x => x.Doc.Created).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -155,6 +140,26 @@ namespace Notifo.Domain.Events.MongoDb
                     await Collection.BulkWriteAsync(writes, cancellationToken: ct);
                 }
             }
+        }
+
+        private static FilterDefinition<MongoDbEvent> BuildFilter(string appId, EventQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbEvent>>
+            {
+                Filter.Eq(x => x.Doc.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(
+                    Filter.Or(
+                        Filter.Regex(x => x.Doc.Topic, regex),
+                        Filter.Regex(x => x.SearchText, regex)));
+            }
+
+            return Filter.And(filters);
         }
     }
 }

@@ -41,19 +41,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/QueryAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbChannelTemplate<T>>>
-                {
-                    Filter.Eq(x => x.Doc.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(Filter.Regex(x => x.Doc.Name, regex));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -144,6 +132,23 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
 
                 await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
+        }
+
+        private static FilterDefinition<MongoDbChannelTemplate<T>> BuildFilter(string appId, ChannelTemplateQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbChannelTemplate<T>>>
+            {
+                Filter.Eq(x => x.Doc.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(Filter.Regex(x => x.Doc.Name, regex));
+            }
+
+            return Filter.And(filters);
         }
     }
 }
