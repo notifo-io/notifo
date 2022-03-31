@@ -23,7 +23,7 @@ export const loadTopics = (appId: string, scope: TopicQueryScope, query?: Partia
 
 export const upsertTopic = createApiThunk('users/upsert',
     async (arg: { appId: string; scope: TopicQueryScope; params: UpsertTopicDto }) => {
-        const response = await Clients.Topics.postTopic(arg.appId, { requests: [arg.params] });
+        const response = await Clients.Topics.postTopics(arg.appId, { requests: [arg.params] });
 
         return response[0];
     });
