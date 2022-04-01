@@ -32,10 +32,10 @@ export const WebPushUI = (props: WebPushUIProps) => {
     return (
         <div class='notifo'>
             <Modal position='top-global'>
-                <h4>{config.texts.webPushConfirmTitle}</h4>
+                <h4>{config.texts.webpushConfirmTitle}</h4>
 
                 <div class='notifo-form-group'>
-                    <small>{config.texts.webPushConfirmText}</small>
+                    <small>{config.texts.webpushConfirmText}</small>
                 </div>
 
                 <div class='notifo-form-group'>

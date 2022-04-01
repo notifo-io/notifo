@@ -10,6 +10,11 @@
 import { ConnectionMode, SDKConfig } from './config';
 import { combineUrl, isString } from './utils';
 
+export type NotificationSend = 'Inherit' | 'Send' | 'DoNotSend';
+export type NotificationChannel = { send: NotificationSend };
+export type NotificationSettings = { [channel: string]: NotificationChannel };
+export type TopicChannel = 'Allowed' | 'NotAllowed';
+
 export interface NotifoNotification {
     // The optional id.
     id: string;
@@ -60,49 +65,6 @@ export interface NotifoNotification {
     updated?: string;
 }
 
-export function parseShortNotification(value: any): NotifoNotification {
-    return {
-        id: value.id,
-        body: value.nb,
-        confirmText: value.ct,
-        confirmUrl: value.cu,
-        imageLarge: value.il,
-        imageSmall: value.is,
-        isConfirmed: value.ci,
-        linkText: value.lt,
-        linkUrl: value.lu,
-        subject: value.ns,
-        trackDeliveredUrl: value.td,
-        trackSeenUrl: value.ts,
-    };
-}
-
-export type NotificationSend = 'Inherit' | 'Send' | 'DoNotSend';
-export type NotificationChannel = { send: NotificationSend };
-export type NotificationSettings = { [channel: string]: NotificationChannel };
-
-export function booleanToSend(send: boolean | undefined) {
-    switch (send) {
-        case true:
-            return 'Send';
-        case false:
-            return 'DoNotSend';
-        default:
-            return 'Inherit';
-    }
-}
-
-export function sendToBoolean(send: NotificationSend | undefined) {
-    switch (send) {
-        case 'Send':
-            return true;
-        case 'DoNotSend':
-            return false;
-        default:
-            return undefined;
-    }
-}
-
 export interface ConnectDto {
     // The supported connection mode.
     connectionMode: ConnectionMode;
@@ -111,6 +73,23 @@ export interface ConnectDto {
 export interface Subscription {
     // The notification settings.
     topicSettings?: NotificationSettings;
+}
+
+export interface Topic {
+    // The path.
+    path: string;
+
+    // The required name.
+    name: string;
+
+    // The optional description.
+    description?: string;
+
+    // The  channel settings.
+    channels: { [name: string]: TopicChannel };
+
+    // The notification settings.
+    subscription?: NotificationSettings;
 }
 
 export interface Profile extends UpdateProfile {
@@ -136,6 +115,45 @@ export interface UpdateProfile {
 
     // The notification settings.
     settings?: NotificationSettings;
+}
+
+export function parseShortNotification(value: any): NotifoNotification {
+    return {
+        id: value.id,
+        body: value.nb,
+        confirmText: value.ct,
+        confirmUrl: value.cu,
+        imageLarge: value.il,
+        imageSmall: value.is,
+        isConfirmed: value.ci,
+        linkText: value.lt,
+        linkUrl: value.lu,
+        subject: value.ns,
+        trackDeliveredUrl: value.td,
+        trackSeenUrl: value.ts,
+    };
+}
+
+export function booleanToSend(send: boolean | undefined) {
+    switch (send) {
+        case true:
+            return 'Send';
+        case false:
+            return 'DoNotSend';
+        default:
+            return 'Inherit';
+    }
+}
+
+export function sendToBoolean(send: NotificationSend | undefined) {
+    switch (send) {
+        case 'Send':
+            return true;
+        case 'DoNotSend':
+            return false;
+        default:
+            return undefined;
+    }
 }
 
 export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topicPrefix: string }): Promise<Subscription | null> {
@@ -193,6 +211,25 @@ export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<No
         return [];
     } else if (response.ok) {
         return (await response.json()).items;
+    } else {
+        throw new Error(`Request failed with ${response.status}`);
+    }
+}
+
+export async function apiGetTopics(config: SDKConfig): Promise<ReadonlyArray<Topic>> {
+    const url = combineUrl(config.apiUrl, 'api/me/topics');
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            ...getAuthHeader(config),
+        },
+    });
+
+    if (response.status === 404) {
+        return [];
+    } else if (response.ok) {
+        return await response.json();
     } else {
         throw new Error(`Request failed with ${response.status}`);
     }

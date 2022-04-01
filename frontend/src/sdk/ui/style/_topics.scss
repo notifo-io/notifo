@@ -1,0 +1,38 @@
+.notifo {
+    &-topic {
+        border-bottom: 1px solid $color-border;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        padding-top: 0;
+
+        &:last-child {
+            border: 0;
+        }
+
+        &-toggle {
+            padding-right: 1.5rem;
+        }
+
+        &-details {
+            font-size: $font-size-sm;
+            font-weight: normal;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            width: 100%;
+        }
+
+        h3 {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        label {
+            font-weight: normal;
+            margin-top: .25rem;
+            margin-right: 1rem;
+        }
+    }
+}

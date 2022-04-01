@@ -28,7 +28,6 @@ namespace Notifo.Areas.Api.Controllers.Web
             IOptions<SignalROptions> signalROptions)
         {
             this.userNotificationStore = userNotificationStore;
-
             this.signalROptions = signalROptions.Value;
         }
 

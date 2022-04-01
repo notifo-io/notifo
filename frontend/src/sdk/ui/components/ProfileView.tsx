@@ -10,30 +10,23 @@ import { Fragment, h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { booleanToSend, NotificationsOptions, SDKConfig, sendToBoolean, UpdateProfile } from '@sdk/shared';
 import { loadProfile, saveProfile, useDispatch, useStore } from '@sdk/ui/model';
-import { Icon } from './Icon';
 import { Loader } from './Loader';
 import { Toggle } from './Toggle';
 
-export interface ProfileSettingsProps {
+export interface ProfileViewProps {
     // The main config.
     config: SDKConfig;
 
     // The options.
     options: NotificationsOptions;
-
-    // To close this view.
-    onClose?: () => void;
 }
 
-export const ProfileSettings = (props: ProfileSettingsProps) => {
-    const {
-        config,
-        onClose,
-    } = props;
+export const ProfileView = (props: ProfileViewProps) => {
+    const { config } = props;
 
     const dispatch = useDispatch();
     const profile = useStore(x => x.profile)!;
-    const profileState = useStore(x => x.profileStatus);
+    const profileStatus = useStore(x => x.profileStatus);
     const [profileToEdit, setProfileToEdit] = useState<UpdateProfile | null>(null);
 
     useEffect(() => {
@@ -72,14 +65,6 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
         }
     }, [profileToEdit]);
 
-    const doClose = useCallback((event: Event) => {
-        onClose && onClose();
-
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-    }, [onClose]);
-
     const doChange = useCallback((event: h.JSX.TargetedEvent<HTMLInputElement> | h.JSX.TargetedEvent<HTMLSelectElement>) => {
         if (profileToEdit) {
             profileToEdit[event.currentTarget.id] = event.currentTarget.value;
@@ -88,21 +73,13 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
 
     return (
         <Fragment>
-            <div class='notifo-header'>
-                <button type='button' onClick={doClose}>
-                    <Icon type='back' size={20} />
-                </button>
-
-                {config.texts.profile}
-            </div>
-
             {!profileToEdit ? (
-                <div class='notifo-loading'>
+                <div class='notifo-list-loading'>
                     <Loader size={18} visible={true} />
                 </div>
             ) : (
                 <form onSubmit={doSave}>
-                    {config.allowEmails &&
+                    {config.allowedChannels['email'] &&
                         <div class='notifo-form-group'>
                             <Toggle indeterminate value={sendToBoolean(profileToEdit.settings?.email?.send)}
                                 onChange={doSetEmail} />
@@ -129,7 +106,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                             </div>
 
                             <div class='notifo-form-group'>
-                                <label class='notifo-form-label' for='emailAddress'>{config.texts.email}</label>
+                                <label class='notifo-form-label' for='emailAddress'>{config.texts.emailAddress}</label>
 
                                 <input class='notifo-form-control' type='email' id='emailAddress' value={profileToEdit.emailAddress} onChange={doChange} />
                             </div>
@@ -163,11 +140,7 @@ export const ProfileSettings = (props: ProfileSettingsProps) => {
                             {config.texts.save}
                         </button>
 
-                        <button class='notifo-form-button' type='submit' onClick={doClose}>
-                            {config.texts.cancel}
-                        </button>
-
-                        <Loader size={16} visible={profileState === 'InProgress'} />
+                        <Loader size={16} visible={profileStatus === 'InProgress'} />
                     </div>
                 </form>
             )}

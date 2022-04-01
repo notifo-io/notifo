@@ -10,10 +10,11 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
+import { ArchiveView } from './ArchiveView';
 import { Modal } from './Modal';
-import { Notifications } from './Notifications';
-import { NotificationsArchive } from './NotificationsArchive';
-import { ProfileSettings } from './ProfileSettings';
+import { NotificationsView } from './NotificationsView';
+import { ProfileView } from './ProfileView';
+import { TopicsView } from './TopicsView';
 
 export interface NotificationsModalProps {
     // The main config.
@@ -35,7 +36,7 @@ export interface NotificationsModalProps {
     onDelete: (notification: NotifoNotification) => Promise<any>;
 }
 
-type View = 'Notifications' | 'Archive' | 'Profile';
+type View = 'Notifications' | 'Archive' | 'Profile' | 'Topics';
 
 export const NotificationsModal = (props: NotificationsModalProps) => {
     const {
@@ -53,24 +54,45 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>
             <div ref={setRef}>
-                {view === 'Profile' ? (
-                    <ProfileSettings config={config} options={options}
-                        onClose={() => setView('Notifications')} />
+                <ul class='notifo-tabs'>
+                    <li class={makeActive(view, 'Notifications')} onClick={() => setView('Notifications')}>
+                        {config.texts.notifications}
+                    </li>
+                    <li class={makeActive(view, 'Archive')} onClick={() => setView('Archive')}>
+                        {config.texts.archive}
+                    </li>
+                    <li class={makeActive(view, 'Topics')} onClick={() => setView('Topics')}>
+                        {config.texts.topics}
+                    </li>
 
-                ) : (view === 'Archive') ? (
-                    <NotificationsArchive config={config} options={options}
-                        onClose={() => setView('Notifications')} />
-                ) : (
-                    <Notifications config={config} options={options}
-                        onConfirm={onConfirm}
-                        onDelete={onDelete}
-                        onSeen={onSeen}
-                        onShowArchive={() => setView('Archive')}
-                        onShowProfile={() => setView('Profile')}
-                        parent={ref?.parentNode as any}
-                    />
-                )}
+                    {config.allowProfile &&
+                        <li class={makeActive(view, 'Profile')} onClick={() => setView('Profile')}>
+                            {config.texts.profile}
+                        </li>
+                    }
+                </ul>
+
+                <div class='notifo-tabs-content'>
+                    {view === 'Profile' ? (
+                        <ProfileView config={config} options={options} />
+                    ) : (view === 'Archive') ? (
+                        <ArchiveView config={config} options={options} />
+                    ) : (view === 'Topics') ? (
+                        <TopicsView config={config} options={options} />
+                    ) : (view === 'Notifications') ? (
+                        <NotificationsView config={config} options={options}
+                            onConfirm={onConfirm}
+                            onDelete={onDelete}
+                            onSeen={onSeen}
+                            parent={ref?.parentNode as any}
+                        />
+                    ) : null}
+                </div>
             </div>
         </Modal>
     );
 };
+
+function makeActive(view: View, currentView: View) {
+    return view === currentView ? 'active' : undefined;
+}

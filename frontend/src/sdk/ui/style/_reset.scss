@@ -1,0 +1,41 @@
+@import 'vars';
+@import '~reset-scss/reset';
+
+& {
+    color: $color-text;
+    display: inline-block;
+    font-family: $font-family;
+    font-weight: normal;
+    position: relative;
+}
+
+* {
+    @include scrollbars(8px, $color-scrollbar, transparent);
+}
+
+label {
+    margin: 0;
+}
+
+h3 {
+    font-size: 1.1rem;
+}
+
+h4 {
+    font-size: 1.1rem;
+}
+
+small {
+    font-size: 90%;
+}
+
+svg {
+    width: auto;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid $color-border;
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+}

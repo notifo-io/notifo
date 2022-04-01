@@ -5,10 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
+using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -19,11 +21,13 @@ namespace Notifo.Areas.Api.Controllers.Users
     public class UserController : BaseController
     {
         private readonly ISubscriptionStore subscriptionStore;
+        private readonly ITopicStore topicStore;
         private readonly IUserStore userStore;
 
-        public UserController(ISubscriptionStore subscriptionStore, IUserStore userStore)
+        public UserController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IUserStore userStore)
         {
             this.subscriptionStore = subscriptionStore;
+            this.topicStore = topicStore;
             this.userStore = userStore;
         }
 
@@ -62,6 +66,32 @@ namespace Notifo.Areas.Api.Controllers.Users
             var user = await userStore.UpsertAsync(App.Id, UserIdOrSub, update, HttpContext.RequestAborted);
 
             var response = ProfileDto.FromDomainObject(user!, App);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Query the user topics.
+        /// </summary>
+        /// <param name="language">The optional language.</param>
+        /// <returns>
+        /// 200 => User subscriptions returned.
+        /// </returns>
+        [HttpGet("api/me/topics")]
+        [AppPermission(NotifoRoles.AppUser)]
+        [Produces(typeof(UserTopicDto[]))]
+        public async Task<IActionResult> GetTopics(string? language = null)
+        {
+            var topics = await topicStore.QueryAsync(App.Id, new TopicQuery { Scope = TopicQueryScope.Explicit }, HttpContext.RequestAborted);
+
+            var response = new ConcurrentBag<UserTopicDto>();
+
+            await Parallel.ForEachAsync(topics, async (topic, ct) =>
+            {
+                var subscription = await subscriptionStore.GetAsync(App.Id, UserId, topic.Path, ct);
+
+                response.Add(UserTopicDto.FromDomainObject(topic, subscription, language, App.Language));
+            });
 
             return Ok(response);
         }

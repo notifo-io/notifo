@@ -72,7 +72,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
                     {
                         var update = dto.ToUpdate();
 
-                        var topic = await topicStore.UpsertAsync(appId, new TopicId(dto.Path), update, HttpContext.RequestAborted);
+                        var topic = await topicStore.UpsertAsync(appId, new TopicId(dto.Path!), update, HttpContext.RequestAborted);
 
                         response.Add(TopicDto.FromDomainObject(topic));
                     }

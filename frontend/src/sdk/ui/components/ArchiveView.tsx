@@ -8,66 +8,42 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
-import { useCallback, useEffect } from 'preact/hooks';
+import { useEffect } from 'preact/hooks';
 import { NotificationsOptions, SDKConfig } from '@sdk/shared';
 import { loadArchive, useDispatch, useStore } from '@sdk/ui/model';
-import { Icon } from './Icon';
 import { Loader } from './Loader';
 import { NotificationItem } from './NotificationItem';
 
-export interface NotificationsArchiveProps {
+export interface ArchiveViewProps {
     // The main config.
     config: SDKConfig;
 
     // The options.
     options: NotificationsOptions;
-
-    // To close this view.
-    onClose?: () => void;
 }
 
-export const NotificationsArchive = (props: NotificationsArchiveProps) => {
-    const {
-        config,
-        onClose,
-        options,
-    } = props;
+export const ArchiveView = (props: ArchiveViewProps) => {
+    const { config, options } = props;
 
     const dispatch = useDispatch();
-    const notifications = useStore(x => x.archive);
-    const isLoading = useStore(x => x.archiveStatus === 'InProgress');
     const isLoaded = useStore(x => x.archiveStatus !== 'InProgress');
+    const isLoading = useStore(x => x.archiveStatus === 'InProgress');
+    const notifications = useStore(x => x.archive);
 
     useEffect(() => {
         loadArchive(config, dispatch);
     }, [dispatch, config]);
 
-    const doClose = useCallback((event: Event) => {
-        onClose && onClose();
-
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-    }, [onClose]);
-
     return (
-        <div class='notifo-notifications-archive'>
-            <div class='notifo-header'>
-                <button type='button' onClick={doClose}>
-                    <Icon type='back' size={20} />
-                </button>
-
-                {config.texts.archive}
-            </div>
-
+        <Fragment>
             {isLoading && notifications.length === 0 &&
-                <div class='notifo-loading'>
+                <div class='notifo-list-loading'>
                     <Loader size={18} visible={true} />
                 </div>
             }
 
             {isLoaded && notifications.length === 0 &&
-                <div class='notifo-empty'>{config.texts.notificationsEmpty}</div>
+                <div class='notifo-list-empty'>{config.texts.notificationsEmpty}</div>
             }
 
             {isLoaded && notifications.length > 0 &&
@@ -82,6 +58,6 @@ export const NotificationsArchive = (props: NotificationsArchiveProps) => {
                     ))}
                 </Fragment>
             }
-        </div>
+        </Fragment>
     );
 };

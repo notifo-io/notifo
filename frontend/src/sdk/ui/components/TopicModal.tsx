@@ -78,7 +78,7 @@ export const TopicModal = (props: TopicModalProps) => {
         <Modal onClickOutside={onClickOutside} position={options.position}>
             {subscriptionToEdit &&
                 <Fragment>
-                    {config.allowEmails &&
+                    {config.allowedChannels['email'] &&
                         <div class='notifo-form-group'>
                             <Toggle indeterminate value={sendToBoolean(subscriptionToEdit.topicSettings?.email?.send)}
                                 onChange={doSetEmail} />
@@ -93,7 +93,7 @@ export const TopicModal = (props: TopicModalProps) => {
 
                         <label class='notifo-form-toggle-label'>{config.texts.notifyBeWebPush}</label>
                     </div>
-
+                    
                     <hr />
 
                     <div class='notifo-form-group'>

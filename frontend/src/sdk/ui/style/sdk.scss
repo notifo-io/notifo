@@ -1,68 +1,11 @@
 @import 'mixins';
-
-/* stylelint-disable */
-
-$color-background:  #fff;
-$color-border:      #eee;
-$color-button:      #666;
-$color-control:     #ccc;
-$color-empty:       #888;
-$color-error:       #f5365c;
-$color-input:       #ddd;
-$color-label-text:  #fff;
-$color-label:       #f00;
-$color-link:        #675df8;
-$color-scrollbar:   #b3bbbf;
-$color-shadow:      rgba(0, 0, 0, .2);
-$color-success:     #2dce89;
-$color-text:        #222;
-$size-toggle: 20px;
-
-/* stylelint-enable */
+@import 'vars';
 
 .notifo {
-    @import '~reset-scss/reset';
-
-/* stylelint-disable */
-    & {
-        color: $color-text;
-        display: inline-block;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-        font-weight: normal;
-        position: relative;
-    }
-/* stylelint-enable */
-
-    * {
-        @include scrollbars(8px, $color-scrollbar, transparent);
-    }
-
-    label {
-        margin: 0;
-    }
-
-    h3 {
-        font-size: 1.1rem;
-    }
-
-    h4 {
-        font-size: 1.1rem;
-    }
-
-    small {
-        font-size: 90%;
-    }
-
-    svg {
-        width: auto;
-    }
-
-    hr {
-        border: 0;
-        border-top: 1px solid $color-border;
-        margin-bottom: 1.5rem;
-        margin-top: 1.5rem;
-    }
+    @import 'reset';
+    @import 'components';
+    @import 'notifications';
+    @import 'topics';
 
     .notifo {
         &-button {
@@ -98,20 +41,20 @@ $size-toggle: 20px;
             }
         }
 
-        &-link {
-            color: $color-link;
-
-            &:hover {
-                color: darken($color-link, 5%);
-                text-decoration: underline;
-                text-transform: none;
-            }
-        }
-
         &-modal {
             & {
                 position: absolute;
                 z-index: 10000;
+
+                @media (max-width: 600px) {
+                    @include fixed(20px, 20px, 20px, 20px);
+
+                    .notifo-modal-panel {
+                        margin: 0 auto;
+                        max-width: 100%;
+                        max-height: 100%;
+                    }
+                }
             }
 
             &-panel {
@@ -121,10 +64,11 @@ $size-toggle: 20px;
                 border-radius: 2px;
                 box-shadow: 0 4px 4px $color-shadow;
                 margin-top: 5px;
+                max-width: 100%;
                 max-height: 450px;
                 overflow-x: hidden;
                 overflow-y: auto;
-                padding: 1.5rem 1.25rem;
+                padding: .75rem 1.25rem 1.5rem;
                 text-align: left;
                 text-decoration: none;
                 width: 450px;
@@ -149,311 +93,6 @@ $size-toggle: 20px;
 
             &-inner {
                 position: relative;
-            }
-        }
-
-        &-header {
-            margin-bottom: 1rem;
-
-            button {
-                margin-right: .5rem;
-            }
-        }
-
-        &-notifications-list {
-            min-height: 8rem;
-            padding-bottom: 1.5rem;
-            padding-top: .75rem;
-        }
-
-        &-notifications-archive {
-            min-height: 8rem;
-        }
-
-        &-notifications-archive-link {
-            @include absolute(null, null, -1.25rem, -1rem);
-            color: $color-button;
-            cursor: pointer;
-            font-size: 80%;
-            font-weight: normal;
-
-            &:hover {
-                color: darken($color-link, 5%);
-                text-decoration: underline;
-                text-transform: none;
-            }
-        }
-
-        &-loader {
-            @include middle;
-
-            img {
-                display: inline-block;
-            }
-        }
-
-        &-notification {
-            & {
-                border-bottom: 1px solid $color-border;
-                border-top: 0;
-                margin-bottom: 1rem;
-                padding-bottom: 1rem;
-                position: relative;
-            }
-
-            &-delete {
-                @include absolute(0, 0, null, null);
-                color: $color-error;
-                cursor: pointer;
-                display: none;
-
-                svg {
-                    fill: $color-error;
-                }
-            }
-
-            &:hover {
-                .notifo-notification-delete {
-                    display: block;
-                }
-            }
-
-            &:last-child {
-                border-bottom: 0;
-                border-top: 0;
-                margin-bottom: 0;
-                padding: 0;
-            }
-
-            &-row2 {
-                display: flex;
-                flex-direction: row;
-                flex-grow: 0;
-                position: relative;
-            }
-
-            &-right {
-                flex-grow: 1;
-            }
-
-            &-left {
-                max-width: 40px;
-                min-width: 40px;
-            }
-
-            &-new {
-                @include absolute(5px, null, null, -14px);
-                @include size(10px, 10px);
-                animation: fade-out 2s;
-                background: $color-label;
-                border: 0;
-                border-radius: 20px;
-                display: inline-block;
-                opacity: 0;
-            }
-
-            &-image-large {
-                margin-bottom: 10px;
-
-                img {
-                    width: 100%;
-                }
-            }
-
-            &-image-small {
-                margin-right: 10px;
-                margin-top: 5px;
-
-                img {
-                    width: 100%;
-                }
-            }
-
-            &-subject {
-                font-weight: bold;
-                padding: 0;
-                padding-right: 40px;
-                position: relative;
-                word-spacing: normal;
-                word-wrap: break-word;
-            }
-
-            &-body {
-                font-weight: normal;
-                position: relative;
-                word-spacing: normal;
-                word-wrap: break-word;
-            }
-
-            &-link {
-                font-size: 90%;
-                font-weight: normal;
-                margin: .25rem 0;
-            }
-
-            &-time {
-                color: $color-empty;
-                font-size: 80%;
-                font-weight: normal;
-                margin-top: .25rem;
-            }
-
-            &-confirm {
-                border: 1px solid darken($color-border, 10%);
-                border-radius: 4px;
-                font-size: 90%;
-                font-weight: normal;
-                margin-top: .25rem;
-                padding: .5rem;
-
-                &:hover {
-                    background: $color-border;
-                }
-
-                &:disabled {
-                    opacity: .5;
-                }
-
-                .notifo-loader {
-                    img {
-                        margin-right: .25rem;
-                    }
-                }
-            }
-        }
-
-        &-profile-button {
-            @include absolute(-1.25rem, -1rem);
-            line-height: 1px;
-
-            svg {
-                fill: $color-button;
-            }
-        }
-
-        &-empty,
-        &-loading {
-            @include absolute(50%, 0, null, 0);
-            color: $color-empty;
-            font-size: 80%;
-            font-weight: normal;
-            margin-top: -.5rem;
-            text-align: center;
-            text-decoration: none;
-        }
-
-        &-form {
-            &-group {
-                margin-top: .75rem;
-            }
-
-            &-label {
-                font-size: 80%;
-                font-weight: bolder;
-                opacity: .75;
-            }
-
-            &-control,
-            &-button {
-                background: $color-background;
-                border: 1px solid $color-input;
-                border-radius: 3px;
-                font-size: 90%;
-                font-weight: normal;
-                padding: .5rem .75rem;
-            }
-
-            &-control {
-                transition: border-color .5s ease;
-                width: 100%;
-
-                &:hover {
-                    border-color: $color-link;
-                }
-
-                &:focus {
-                    border-color: $color-link;
-                }
-            }
-
-            &-button {
-                margin: 0;
-                margin-right: .5rem;
-                transition: background-color .5s ease;
-
-                &:hover {
-                    background: $color-border;
-                }
-
-                &:focus {
-                    background: darken($color-border, 5%);
-                }
-
-                &.primary {
-                    background: $color-link;
-                    border-color: $color-link;
-                    color: $color-background;
-
-                    &:hover {
-                        background: darken($color-link, 5%);
-                    }
-
-                    &:focus {
-                        background: darken($color-link, 10%);
-                    }
-                }
-            }
-
-            &-toggle {
-                @include size($size-toggle * 2, $size-toggle);
-                @include middle;
-                background: $color-border;
-                border: $color-border;
-                border-radius: $size-toggle;
-                box-shadow: inset 0 .5px 1px $color-shadow;
-                padding-left: 2px;
-                padding-top: 2px;
-                position: relative;
-                transition: background-color .3s ease;
-
-                &-slider {
-                    @include size($size-toggle - 4px, $size-toggle - 4px);
-                    @include absolute(2px, null, null, 2px);
-                    background: $color-background;
-                    border: 0;
-                    border-radius: $size-toggle;
-                    box-shadow: 0 2px 2px $color-shadow;
-                    transition: transform .3s ease;
-                }
-
-                &-label {
-                    @include middle;
-                    font-size: 90%;
-                    font-weight: normal;
-                    margin-left: .5rem;
-                }
-
-                &.checked {
-                    background: $color-success;
-
-                    .notifo-form-toggle-slider {
-                        transform: translateX($size-toggle);
-                    }
-                }
-
-                &.unchecked {
-                    background: $color-error;
-
-                    .notifo-form-toggle-slider {
-                        transform: translateX(0);
-                    }
-                }
-
-                &.indeterminate {
-                    .notifo-form-toggle-slider {
-                        transform: translateX($size-toggle * .5);
-                    }
-                }
             }
         }
 
