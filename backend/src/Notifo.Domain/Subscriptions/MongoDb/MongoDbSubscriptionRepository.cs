@@ -181,7 +181,11 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 filters.Add(Filter.Eq(x => x.UserId, query.UserId));
             }
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
+            if (query.Topics != null)
+            {
+                filters.Add(Filter.In(x => x.TopicPrefix, query.Topics));
+            }
+            else if (!string.IsNullOrWhiteSpace(query.Query))
             {
                 var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 

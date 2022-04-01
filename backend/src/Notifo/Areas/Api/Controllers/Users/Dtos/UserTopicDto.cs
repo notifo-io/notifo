@@ -39,12 +39,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         [Required]
         public ReadonlyDictionary<string, TopicChannel> Channels { get; set; }
 
-        /// <summary>
-        /// Subscription settings per channel.
-        /// </summary>
-        public Dictionary<string, NotificationSettingDto>? Subscription { get; set; }
-
-        public static UserTopicDto FromDomainObject(Topic topic, Subscription? subscription, string? language, string masterLanguage)
+        public static UserTopicDto FromDomainObject(Topic topic, string? language, string masterLanguage)
         {
             var result = SimpleMapper.Map(topic, new UserTopicDto());
 
@@ -67,17 +62,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
             if (topic.Description != null)
             {
                 result.Description = GetText(topic.Description, language, masterLanguage);
-            }
-
-            if (subscription?.TopicSettings != null)
-            {
-                foreach (var (key, value) in subscription.TopicSettings)
-                {
-                    if (value != null)
-                    {
-                        result.Subscription[key] = NotificationSettingDto.FromDomainObject(value);
-                    }
-                }
             }
 
             return result;

@@ -10,7 +10,7 @@
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
-import { loadSubscription, useDispatch, useStore } from '@sdk/ui/model';
+import { loadSubscriptions, useDispatch, useStore } from '@sdk/ui/model';
 import { TopicButton } from './TopicButton';
 import { TopicModal } from './TopicModal';
 
@@ -39,7 +39,7 @@ export const TopicUI = (props: TopicUIProps) => {
 
     useEffect(() => {
         if (isUndefined(subscription)) {
-            loadSubscription(config, topicPrefix, dispatch);
+            loadSubscriptions(config, [topicPrefix], dispatch);
         }
     }, [dispatch, config, subscription, topicPrefix]);
 

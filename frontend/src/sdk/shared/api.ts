@@ -71,9 +71,14 @@ export interface ConnectDto {
 }
 
 export interface Subscription {
+    // The prefix to the topic.
+    topicPrefix?: string;
+
     // The notification settings.
-    topicSettings?: NotificationSettings;
+    topicSettings: NotificationSettings;
 }
+
+export type Subscriptions = { [path: string]: Subscription | null };
 
 export interface Topic {
     // The path.
@@ -235,8 +240,8 @@ export async function apiGetTopics(config: SDKConfig): Promise<ReadonlyArray<Top
     }
 }
 
-export async function apiGetSubscription(config: SDKConfig, topicPrefix: string): Promise<Subscription | null> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
+export async function apiGetSubscriptions(config: SDKConfig, topics: string[]): Promise<Subscription[]> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/?topics=${topics.join(',')}`);
 
     const response = await fetch(url, {
         method: 'GET',
@@ -245,10 +250,8 @@ export async function apiGetSubscription(config: SDKConfig, topicPrefix: string)
         },
     });
 
-    if (response.status === 404) {
-        return null;
-    } else if (response.ok) {
-        return await response.json();
+    if (response.ok) {
+        return (await response.json()).items;
     } else {
         throw new Error(`Request failed with ${response.status}`);
     }

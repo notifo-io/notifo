@@ -14,5 +14,7 @@ namespace Notifo.Domain.Subscriptions
         public string? UserId { get; set; }
 
         public string? Query { get; set; }
+
+        public string[]? Topics { get; set; }
     }
 }

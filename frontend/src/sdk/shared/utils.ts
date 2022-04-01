@@ -5,7 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+
 /* eslint-disable no-console */
+import { useMemo, useRef, useState } from 'preact/hooks';
 
 type QueueItem = () => Promise<any>;
 
@@ -140,4 +142,33 @@ export function loadStyle(url: string) {
     styles[url] = promise;
 
     return promise;
+}
+
+export function useMutable<T>(initialValue: T) {
+    const ref = useRef<T>(initialValue);
+
+    // Just used to force an update.
+    const [, setUpdater] = useState(0);
+
+    const result = useMemo(() => {
+        return {
+            set: (value: T | ((value: T) => void)) => {
+                if (isFunction(value)) {
+                    value(ref.current);
+                } else {
+                    ref.current = value;
+                }
+        
+                setUpdater(x => x + 1);
+            },
+            refresh: () => {
+                setUpdater(x => x + 1);
+            },
+            get: () => {
+                return ref.current;
+            },
+        };
+    }, []);
+
+    return result;
 }

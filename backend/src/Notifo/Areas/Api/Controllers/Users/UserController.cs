@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
@@ -84,14 +83,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         {
             var topics = await topicStore.QueryAsync(App.Id, new TopicQuery { Scope = TopicQueryScope.Explicit }, HttpContext.RequestAborted);
 
-            var response = new ConcurrentBag<UserTopicDto>();
-
-            await Parallel.ForEachAsync(topics, async (topic, ct) =>
-            {
-                var subscription = await subscriptionStore.GetAsync(App.Id, UserId, topic.Path, ct);
-
-                response.Add(UserTopicDto.FromDomainObject(topic, subscription, language, App.Language));
-            });
+            var response = topics.Select(x => UserTopicDto.FromDomainObject(x, language, App.Language));
 
             return Ok(response);
         }
@@ -106,9 +98,9 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpGet("api/me/subscriptions")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ListResponseDto<SubscriptionDto>))]
-        public async Task<IActionResult> GetSubscriptions([FromQuery] QueryDto q)
+        public async Task<IActionResult> GetMySubscriptions([FromQuery] SubscriptionQueryDto q)
         {
-            var subscriptions = await subscriptionStore.QueryAsync(App.Id, ParseQuery(UserId, q), HttpContext.RequestAborted);
+            var subscriptions = await subscriptionStore.QueryAsync(App.Id, q.ToQuery(false, UserId), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<SubscriptionDto>();
 
@@ -187,15 +179,6 @@ namespace Notifo.Areas.Api.Controllers.Users
             await subscriptionStore.DeleteAsync(App.Id, UserIdOrSub, topic, HttpContext.RequestAborted);
 
             return NoContent();
-        }
-
-        private static SubscriptionQuery ParseQuery(string id, QueryDto query)
-        {
-            var queryObject = query.ToQuery<SubscriptionQuery>(true);
-
-            queryObject.UserId = id;
-
-            return queryObject;
         }
     }
 }

@@ -8,8 +8,9 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
+import { loadTopics, useDispatch } from '@sdk/ui/model';
 import { ArchiveView } from './ArchiveView';
 import { Modal } from './Modal';
 import { NotificationsView } from './NotificationsView';
@@ -48,43 +49,48 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
         options,
     } = props;
 
-    const [ref, setRef] = useState<HTMLDivElement | null>(null);
-    const [view, setView] = useState<View>('Notifications');
+    const dispatch = useDispatch();
+    const [viewRoot, setViewRoot] = useState<HTMLDivElement | null>(null);
+    const [viewMode, setViewMode] = useState<View>('Notifications');
+
+    useEffect(() => {
+        loadTopics(config, dispatch);
+    }, [dispatch, config]);
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>
-            <div ref={setRef}>
+            <div ref={setViewRoot}>
                 <ul class='notifo-tabs'>
-                    <li class={makeActive(view, 'Notifications')} onClick={() => setView('Notifications')}>
+                    <li class={makeActive(viewMode, 'Notifications')} onClick={() => setViewMode('Notifications')}>
                         {config.texts.notifications}
                     </li>
-                    <li class={makeActive(view, 'Archive')} onClick={() => setView('Archive')}>
+                    <li class={makeActive(viewMode, 'Archive')} onClick={() => setViewMode('Archive')}>
                         {config.texts.archive}
                     </li>
-                    <li class={makeActive(view, 'Topics')} onClick={() => setView('Topics')}>
+                    <li class={makeActive(viewMode, 'Topics')} onClick={() => setViewMode('Topics')}>
                         {config.texts.topics}
                     </li>
 
                     {config.allowProfile &&
-                        <li class={makeActive(view, 'Profile')} onClick={() => setView('Profile')}>
+                        <li class={makeActive(viewMode, 'Profile')} onClick={() => setViewMode('Profile')}>
                             {config.texts.profile}
                         </li>
                     }
                 </ul>
 
                 <div class='notifo-tabs-content'>
-                    {view === 'Profile' ? (
+                    {viewMode === 'Profile' ? (
                         <ProfileView config={config} options={options} />
-                    ) : (view === 'Archive') ? (
+                    ) : (viewMode === 'Archive') ? (
                         <ArchiveView config={config} options={options} />
-                    ) : (view === 'Topics') ? (
+                    ) : (viewMode === 'Topics') ? (
                         <TopicsView config={config} options={options} />
-                    ) : (view === 'Notifications') ? (
+                    ) : (viewMode === 'Notifications') ? (
                         <NotificationsView config={config} options={options}
                             onConfirm={onConfirm}
                             onDelete={onDelete}
                             onSeen={onSeen}
-                            parent={ref?.parentNode as any}
+                            parent={viewRoot?.parentNode as any}
                         />
                     ) : null}
                 </div>

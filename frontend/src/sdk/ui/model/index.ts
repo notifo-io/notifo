@@ -8,8 +8,8 @@
 // tslint:disable: no-parameter-reassignment
 
 import { useEffect, useState } from 'preact/hooks';
-import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscription, apiGetTopics, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, Topic, UpdateProfile } from '@sdk/shared';
-import { Dispatch, set, Store } from './store';
+import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscriptions, apiGetTopics, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, Subscriptions, Topic, UpdateProfile } from '@sdk/shared';
+import { Dispatch, Store } from './store';
 
 export type Status = 'InProgress' | 'Failed' | 'Success';
 
@@ -52,7 +52,7 @@ export interface NotifoState {
     topicsStatus?: Status;
 
     // The loaded topics.
-    topics: { [path: string]: Topic };
+    topics: Topic[];
 }
 
 type NotifoDispatch = Dispatch<NotifoAction>;
@@ -64,9 +64,9 @@ type NotifoActionType =
     'LoadProfileFailed' |
     'LoadProfileStarted' |
     'LoadProfileSuccess' |
-    'LoadSubscriptionFailed' |
-    'LoadSubscriptionStarted' |
-    'LoadSubscriptionSuccess' |
+    'LoadSubscriptionsFailed' |
+    'LoadSubscriptionsStarted' |
+    'LoadSubscriptionsSuccess' |
     'LoadTopicsFailed' |
     'LoadTopicsStarted' |
     'LoadTopicsSuccess' |
@@ -81,10 +81,7 @@ type NotifoActionType =
     'SetConnected' |
     'SubscribeFailed' |
     'SubscribeStarted' |
-    'SubscribeSuccess' |
-    'UnsubscribeFailed' |
-    'UnsubscribeStarted' |
-    'UnsubscribeSuccess';
+    'SubscribeSuccess';
 
 function reducer(state: NotifoState, action: NotifoAction): NotifoState {
     switch (action.type) {
@@ -112,95 +109,61 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
             return { ...state, topicsStatus: 'InProgress' };
         case 'LoadTopicsFailed':
             return { ...state, topicsStatus: 'Failed' };
-        case 'LoadTopicsSuccess': {
-            const topics: { [path: string]: Topic } = {};
+        case 'LoadTopicsSuccess':
+            return { ...state, topicsStatus: 'Success', topics: action.topics };
+        case 'LoadSubscriptionsStarted': {
+            const subscriptions = { ...state.subscriptions };
 
-            let subscriptions = state.subscriptions;
+            for (const topic of action.topics) {
+                const existing = subscriptions[topic] || {};
 
-            for (const topic of action.topics as Topic[]) {
-                topics[topic.path] = topic;
-
-                if (!topic.subscription) {
-                    continue;
-                }
-
-                subscriptions =
-                    set(subscriptions, topic.path,
-                        { status: 'Success', subscription: topic.subscription });
+                subscriptions[topic] = { ...existing, status: 'InProgress' };
             }
 
-            return { ...state, subscriptions, topicsStatus: 'Success', topics };
+            return { ...state, subscriptions };
         }
-        case 'LoadSubscriptionStarted': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
+        case 'LoadSubscriptionsFailed': {
+            const subscriptions = { ...state.subscriptions };
+
+            for (const topic of action.topics) {
+                const existing = subscriptions[topic] || {};
+
+                subscriptions[topic] = { ...existing, status: 'Failed' };
+            }
 
             return { ...state, subscriptions };
         }
-        case 'LoadSubscriptionFailed': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
+        case 'LoadSubscriptionsSuccess': {
+            const subscriptions = { ...state.subscriptions };
 
-            return { ...state, subscriptions };
-        }
-        case 'LoadSubscriptionSuccess': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    { status: 'Success', subscription: action.subscription });
+            for (const topic of action.topics) {
+                const subscription = action.subscriptions.find((x: any) => x.topicPrefix === topic) || null;
+
+                subscriptions[topic] = { status: 'Success', subscription };
+            }
 
             return { ...state, subscriptions };
         }
         case 'SubscribeStarted': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
+            const subscriptions = { ...state.subscriptions };
+
+            subscriptions[action.topic] = { ...subscriptions[action.topic] || {}, status: 'InProgress' };
 
             return { ...state, subscriptions };
         }
         case 'SubscribeFailed': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
+            const subscriptions = { ...state.subscriptions };
+
+            subscriptions[action.topic] = { ...subscriptions[action.topic] || {}, status: 'Failed' };
 
             return { ...state, subscriptions };
         }
         case 'SubscribeSuccess': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    { status: 'Success', subscription: action.subscription });
+            const subscriptions = { ...state.subscriptions };
 
-            const topics =
-                set(state.topics, action.topixPrefix, 
-                    t => ({ ...t, subscroption: action.subscription.topicSettings }));
-
-            return { ...state, subscriptions, topics };
-        }
-        case 'UnsubscribeStarted': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
+            subscriptions[action.topic] = { status: 'Success', subscription: action.subscription };
 
             return { ...state, subscriptions };
-        }
-        case 'UnsubscribeFailed': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
-
-            return { ...state, subscriptions };
-        }
-        case 'UnsubscribeSuccess': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    { status: 'Success', subscription: null });
-
-            const topics =
-                set(state.topics, action.topixPrefix, 
-                    t => ({ ...t, subscription: undefined }));
-
-            return { ...state, subscriptions, topics };
         }
         case 'NotificationRemove': {
             const notifications = state.notifications.filter(x => x.id !== action.id);
@@ -251,7 +214,7 @@ const initialState: NotifoState = {
     profile: undefined,
     profileStatus: undefined,
     subscriptions: {},
-    topics: {},
+    topics: [],
 };
 
 const store = new Store<NotifoState, NotifoAction>(initialState, reducer);
@@ -290,39 +253,15 @@ export function getUnseen(state: NotifoState) {
     return count;
 }
 
-export async function loadSubscription(config: SDKConfig, topicPrefix: string, dispatch: NotifoDispatch) {
+export async function loadSubscriptions(config: SDKConfig, topics: string[], dispatch: NotifoDispatch) {
     try {
-        dispatch({ type: 'LoadSubscriptionStarted', topicPrefix });
+        dispatch({ type: 'LoadSubscriptionsStarted', topics });
 
-        const subscription = await apiGetSubscription(config, topicPrefix);
+        const subscriptions = await apiGetSubscriptions(config, topics);
 
-        dispatch({ type: 'LoadSubscriptionSuccess', topicPrefix, subscription });
+        dispatch({ type: 'LoadSubscriptionsSuccess', topics, subscriptions });
     } catch (ex) {
-        dispatch({ type: 'LoadSubscriptionFailed', ex, topicPrefix });
-    }
-}
-
-export async function subscribe(config: SDKConfig, topicPrefix: string, subscription: Subscription, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'SubscribeStarted', topicPrefix });
-
-        const newSubscription = await apiPostSubscription(config, { topicPrefix, ...subscription });
-
-        dispatch({ type: 'SubscribeSuccess', topicPrefix, subscription: newSubscription });
-    } catch (ex) {
-        dispatch({ type: 'SubscribeFailed', ex, topicPrefix });
-    }
-}
-
-export async function unsubscribe(config: SDKConfig, topicPrefix: string, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'UnsubscribeStarted', topicPrefix });
-
-        await apiDeleteSubscription(config, topicPrefix);
-
-        dispatch({ type: 'UnsubscribeSuccess', topicPrefix });
-    } catch (ex) {
-        dispatch({ type: 'UnsubscribeFailed', ex, topicPrefix });
+        dispatch({ type: 'LoadSubscriptionsFailed', ex, topics });
     }
 }
 
@@ -371,6 +310,24 @@ export async function saveProfile(config: SDKConfig, update: UpdateProfile, disp
         dispatch({ type: 'SaveProfileSuccess', profile });
     } catch (ex) {
         dispatch({ type: 'SaveProfileFailed', ex });
+    }
+}
+
+export async function subscribe(config: SDKConfig, subscriptions: Subscriptions, dispatch: NotifoDispatch) {
+    for (let [topic, subscription] of Object.entries(subscriptions)) {
+        dispatch({ type: 'SubscribeStarted', topic });
+
+        try {
+            if (subscription) {
+                subscription = await apiPostSubscription(config, { topicPrefix: topic, ...subscription });
+            } else {
+                await apiDeleteSubscription(config, topic);
+            }
+
+            dispatch({ type: 'SubscribeSuccess', topic, subscription });
+        } catch (ex) {
+            dispatch({ type: 'SubscribeFailed', ex, topic });
+        }
     }
 }
 
