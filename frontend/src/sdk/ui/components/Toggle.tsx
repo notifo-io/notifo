@@ -18,15 +18,18 @@ export interface ToggleProps {
     // Set to allow three states.
     indeterminate?: boolean;
 
+    // The field name.
+    name: string;
+
     // True if disabled.
     disabled?: boolean;
 
     // Triggered when the value is changed.
-    onChange?: (value: boolean | undefined) => void;
+    onChange?: (value: boolean | undefined, name: string) => void;
 }
 
 export const Toggle = (props: ToggleProps) => {
-    const { indeterminate, onChange } = props;
+    const { indeterminate, name, onChange } = props;
 
     let value = props.value;
 
@@ -51,7 +54,7 @@ export const Toggle = (props: ToggleProps) => {
             newValue = true;
         }
 
-        onChange && onChange(newValue);
+        onChange && onChange(newValue, name);
 
         setInternalValue(newValue);
     };

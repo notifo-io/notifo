@@ -8,8 +8,10 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
+import { useCallback } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
-import { useStore } from '@sdk/ui/model';
+import { Connection } from '@sdk/ui/api';
+import { addNotifications, useDispatch, useStore } from '@sdk/ui/model';
 import { Loader } from './Loader';
 import { NotificationItem } from './NotificationItem';
 
@@ -17,35 +19,44 @@ export interface NotificationsViewProps {
     // The main config.
     config: SDKConfig;
 
+    // The connection.
+    connection: Connection;
+
     // The options.
     options: NotificationsOptions;
 
     // The html parent.
     parent?: HTMLElement;
-
-    // Clicked when a notification is confirmed.
-    onConfirm: (notification: NotifoNotification) => Promise<any>;
-
-    // Clicked when a notification is seen.
-    onSeen: (notification: NotifoNotification) => Promise<any>;
-
-    // Clicked when a notification is deleted.
-    onDelete: (notification: NotifoNotification) => Promise<any>;
 }
 
 export const NotificationsView = (props: NotificationsViewProps) => {
     const {
         config,
-        onConfirm,
-        onDelete,
-        onSeen,
+        connection,
         options,
         parent,
     } = props;
 
+    const dispatch = useDispatch();
     const notifications = useStore(x => x.notifications);
     const isLoaded = useStore(x => x.notificationsStatus !== 'InProgress');
     const isConnected = useStore(x => x.isConnected);
+
+    const doConfirm = useCallback(async (notification: NotifoNotification) => {
+        await connection.confirmMany([], notification.id);
+
+        dispatch(addNotifications([{ ...notification, isConfirmed: true }]));
+    }, [dispatch, connection]);
+
+    const doSee = useCallback(async (notification: NotifoNotification) => {
+        await connection.confirmMany([notification.id]);
+
+        dispatch(addNotifications([{ ...notification, isSeen: true }]));
+    }, [dispatch, connection]);
+
+    const doDelete = useCallback(async (notification: NotifoNotification) => {
+        await connection.delete(notification.id);
+    }, [connection]);
 
     return (
         <Fragment>
@@ -66,9 +77,9 @@ export const NotificationsView = (props: NotificationsViewProps) => {
                             config={config}
                             notification={x}
                             options={options}
-                            onConfirm={onConfirm}
-                            onDelete={onDelete}
-                            onSeen={onSeen}
+                            onConfirm={doConfirm}
+                            onDelete={doDelete}
+                            onSeen={doSee}
                             modal={parent}
                         />
                     ))}

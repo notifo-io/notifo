@@ -30,6 +30,11 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         public LocalizedText? Description { get; set; }
 
         /// <summary>
+        /// True to show the topic automatically to new users, e.g. when he accepts push notifications.
+        /// </summary>
+        public bool ShowAutomatically { get; set; }
+
+        /// <summary>
         /// Settings per channel.
         /// </summary>
         public Dictionary<string, TopicChannel>? Channels { get; set; }

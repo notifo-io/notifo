@@ -171,6 +171,8 @@ export class PollingConnection implements Connection {
         for (const callback of this.handlersDeletion) {
             callback(payload);
         }
+
+        return Promise.resolve(true);
     }
 
     public confirmMany(seen: string[], confirmed: string | null | undefined = null) {
@@ -181,6 +183,8 @@ export class PollingConnection implements Connection {
         if (confirmed) {
             this.pendingConfirmed.push(confirmed);
         }
+
+        return Promise.resolve(true);
     }
 }
 

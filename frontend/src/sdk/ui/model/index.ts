@@ -51,8 +51,8 @@ export interface NotifoState {
     // Indicates whether the profile has been loaded once.
     profileLoaded: boolean;
 
-    // The saving status of the profile.
-    profileSaving?: Status;
+    // The updating status of the profile.
+    profileUpdating?: Status;
 
     // True when connected.
     isConnected?: boolean;
@@ -108,11 +108,11 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
         case 'LoadProfileSuccess':
             return { ...state, profileLoading: 'Success', profileLoaded: true, profile: action.profile };
         case 'SaveProfileStarted':
-            return { ...state, profileSaving: 'InProgress' };
+            return { ...state, profileUpdating: 'InProgress' };
         case 'SaveProfileFailed':
-            return { ...state, profileSaving: 'Failed' };
+            return { ...state, profileUpdating: 'Failed' };
         case 'SaveProfileSuccess':
-            return { ...state, profileSaving: 'Success', profile: action.profile };
+            return { ...state, profileUpdating: 'Success', profile: action.profile };
         case 'LoadArchiveStarted':
             return { ...state, archiveLoading: 'InProgress' };
         case 'LoadArchiveFailed':
@@ -269,6 +269,28 @@ export function getUnseen(state: NotifoState) {
     }
 
     return count;
+}
+
+function mapStatus(statuses: (Status | undefined)[]) {
+    if (statuses.indexOf('InProgress') >= 0) {
+        return 'InProgress';
+    } else if (statuses.indexOf('Failed') >= 0) {
+        return 'Failed';
+    } else {
+        return 'Success';
+    }
+}
+
+export function getTopicsLoadingStatus(state: NotifoState): Status {
+    const statuses = [state.topicsLoading, ...state.topics.map(x => state.subscriptions[x.path]?.loadingStatus)];
+
+    return mapStatus(statuses);
+}
+
+export function getTopicsUpdateStatus(state: NotifoState): Status {
+    const statuses = state.topics.map(x => state.subscriptions[x.path]?.updateStatus);
+
+    return mapStatus(statuses);
 }
 
 export function loadProfile(config: SDKConfig) {

@@ -139,6 +139,30 @@ export function parseShortNotification(value: any): NotifoNotification {
     };
 }
 
+export function setUserChannel(target: UpdateProfile, channel: string, value?: boolean) {
+    target.settings ||= {};
+
+    const send = booleanToSend(value);
+
+    if (!target.settings[channel]) {
+        target.settings[channel] = { send };
+    } else {
+        target.settings[channel].send = send;
+    }
+}
+
+export function setSubscriptionChannel(target: Subscription, channel: string, value?: boolean) {
+    target.topicSettings ||= {};
+
+    const send = booleanToSend(value);
+
+    if (!target.topicSettings[channel]) {
+        target.topicSettings[channel] = { send };
+    } else {
+        target.topicSettings[channel].send = send;
+    }
+}
+
 export function booleanToSend(send: boolean | undefined) {
     switch (send) {
         case true:

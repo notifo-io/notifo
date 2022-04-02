@@ -55,11 +55,11 @@ export class SafeConnection implements Connection {
     }
 
     public delete(id: string) {
-        this.inner.delete(id);
+        return this.inner.delete(id);
     }
 
     public confirmMany(seen: string[], confirmed: string | null | undefined = null) {
-        this.inner.confirmMany(seen, confirmed);
+        return this.inner.confirmMany(seen, confirmed);
     }
 
     private isValid(id: string, update: string) {
