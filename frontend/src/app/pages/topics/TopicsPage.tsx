@@ -79,7 +79,7 @@ export const TopicsPage = () => {
                                 </NavItem>
                             </Nav>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {topics.isLoading ? (
                                 <Loader visible={topics.isLoading} />
                             ) : (

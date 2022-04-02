@@ -46,7 +46,7 @@ export const EventsPage = () => {
                         <Col>
                             <h2>{texts.events.header}</h2>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {events.isLoading ? (
                                 <Loader visible={events.isLoading} />
                             ) : (

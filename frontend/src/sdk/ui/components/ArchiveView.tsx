@@ -26,29 +26,31 @@ export const ArchiveView = (props: ArchiveViewProps) => {
     const { config, options } = props;
 
     const dispatch = useDispatch();
-    const isLoaded = useStore(x => x.archiveStatus !== 'InProgress');
-    const isLoading = useStore(x => x.archiveStatus === 'InProgress');
-    const notifications = useStore(x => x.archive);
+    const archive = useStore(x => x.archive);
+    const loaded = useStore(x => x.archiveLoaded);
+    const loading = useStore(x => x.archiveLoading);
 
     useEffect(() => {
-        loadArchive(config, dispatch);
+        dispatch(loadArchive(config));
     }, [dispatch, config]);
 
     return (
         <Fragment>
-            {isLoading && notifications.length === 0 &&
-                <div class='notifo-list-loading'>
-                    <Loader size={18} visible={true} />
-                </div>
-            }
-
-            {isLoaded && notifications.length === 0 &&
+            {loaded && loading !== 'Failed' && archive.length === 0 &&
                 <div class='notifo-list-empty'>{config.texts.notificationsEmpty}</div>
             }
 
-            {isLoaded && notifications.length > 0 &&
+            {loading === 'Failed' &&
+                <div class='notifo-error'>{config.texts.loadingFailed}</div>
+            }
+
+            <div class='notifo-list-loading'>
+                <Loader size={18} visible={loading === 'InProgress'} />
+            </div>
+
+            {archive.length > 0 &&
                 <Fragment>
-                    {notifications.map(x => (
+                    {archive.map(x => (
                         <NotificationItem key={x.id}
                             config={config}
                             notification={x}

@@ -20,6 +20,8 @@ namespace Notifo.Domain.Topics
 
         public bool IsExplicit { get; init; }
 
+        public bool ShowAutomatically { get; init; }
+
         public LocalizedText Name { get; init; } = new LocalizedText();
 
         public LocalizedText Description { get; init; } = new LocalizedText();

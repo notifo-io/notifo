@@ -90,12 +90,12 @@ namespace Notifo.Areas.Api.Controllers.Topics
         /// <returns>
         /// 204 => Topic deleted.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/topics/{id}")]
+        [HttpDelete("api/apps/{appId}/topics/{*id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<TopicDto>))]
         public async Task<IActionResult> DeleteTopic(string appId, string id)
         {
-            await topicStore.DeleteAsync(appId, id, HttpContext.RequestAborted);
+            await topicStore.DeleteAsync(appId, Uri.UnescapeDataString(id), HttpContext.RequestAborted);
 
             return NoContent();
         }

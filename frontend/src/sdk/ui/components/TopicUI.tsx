@@ -21,27 +21,24 @@ export interface TopicUIProps {
     options: TopicOptions;
 
     // The topic to watch.
-    topicPrefix: string;
+    topic: string;
 }
 
 export const TopicUI = (props: TopicUIProps) => {
     const {
         config,
         options,
-        topicPrefix,
+        topic,
     } = props;
 
     const dispatch = useDispatch();
-    const subscriptionState = useStore(x => x.subscriptions[topicPrefix]);
-    const subscription = subscriptionState?.subscription;
-    const subscriptionStatus = subscriptionState?.status;
+    const subscriptionState = useStore(x => x.subscriptions[topic]);
+    const subscriptionStatus = subscriptionState?.updateStatus;
     const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
-        if (isUndefined(subscription)) {
-            loadSubscriptions(config, [topicPrefix], dispatch);
-        }
-    }, [dispatch, config, subscription, topicPrefix]);
+        dispatch(loadSubscriptions(config, [topic]));
+    }, [dispatch, config, topic]);
 
     const doShow = useCallback(() => {
         setIsOpen(true);
@@ -51,19 +48,19 @@ export const TopicUI = (props: TopicUIProps) => {
         setIsOpen(false);
     }, []);
 
-    if (isUndefined(subscription)) {
+    if (isUndefined(subscriptionState?.subscription)) {
         return null;
     }
 
     return (
         <div class='notifo'>
-            <TopicButton options={options} subscription={subscription} onClick={doShow} />
+            <TopicButton options={options} subscription={subscriptionState?.subscription} onClick={doShow} />
 
             {isOpen &&
                 <TopicModal config={config} options={options}
-                    subscription={subscription}
-                    subscriptionState={subscriptionStatus}
-                    topicPrefix={topicPrefix}
+                    subscription={subscriptionState?.subscription}
+                    subscriptionStatus={subscriptionStatus}
+                    topic={topic}
                     onClickOutside={doHide} />
             }
         </div>

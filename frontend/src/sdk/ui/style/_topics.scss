@@ -13,7 +13,7 @@
         }
 
         &-toggle {
-            padding-right: 1.5rem;
+            width: 5.5rem;
         }
 
         &-details {
@@ -25,8 +25,8 @@
         }
 
         h3 {
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: $font-size-sm;
+            font-weight: 500;
         }
 
         label {

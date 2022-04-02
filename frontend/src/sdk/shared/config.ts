@@ -50,6 +50,10 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         de: 'Sprache',
         en: 'Language',
     },
+    loadingFailed: {
+        de: 'Laden ist fehlgeschlagen',
+        en: 'Loading has failed',
+    },
     mobilepush: {
         de: 'Mobile Push',
         en: 'Mobile Push',
@@ -81,6 +85,10 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
     save: {
         de: 'Speichern',
         en: 'Save',
+    },
+    savingFailed: {
+        de: 'Speichern ist fehlgeschlagen',
+        en: 'Saving has failed',
     },
     settings: {
         de: 'Einstellungen',
@@ -391,6 +399,7 @@ type Texts<T> = {
     emailAddress: T;
     fullName: T;
     language: T;
+    loadingFailed: T;
     mobilepush: T;
     messaging: T;
     notifications: T;
@@ -399,6 +408,7 @@ type Texts<T> = {
     notifyBeWebPush: T;
     profile: T;
     save: T;
+    savingFailed: T;
     settings: T;
     sms: T;
     subscribe: T;
@@ -420,6 +430,7 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'emailAddress',
     'fullName',
     'language',
+    'loadingFailed',
     'mobilepush',
     'messaging',
     'notifications',
@@ -428,6 +439,7 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'notifyBeWebPush',
     'profile',
     'save',
+    'savingFailed',
     'settings',
     'sms',
     'subscribe',

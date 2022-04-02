@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using FluentValidation;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
@@ -21,6 +22,8 @@ namespace Notifo.Domain.Topics
 
         public ReadonlyDictionary<string, TopicChannel>? Channels { get; set; }
 
+        public bool? ShowAutomatically { get; set; }
+
         public bool CanCreate => true;
 
         private sealed class Validator : AbstractValidator<UpsertTopic>
@@ -31,28 +34,36 @@ namespace Notifo.Domain.Topics
             }
         }
 
-        public ValueTask<Topic?> ExecuteAsync(Topic target, IServiceProvider serviceProvider, CancellationToken ct)
+        public ValueTask<Topic?> ExecuteAsync(Topic topic, IServiceProvider serviceProvider, CancellationToken ct)
         {
             Validate<Validator>.It(this);
 
-            var newTopic = target with
+            var newTopic = topic with
             {
                 IsExplicit = true
             };
 
-            if (Name != null)
+            if (Is.IsChanged(Name, topic.Name))
             {
                 newTopic = newTopic with
                 {
-                    Name = Name
+                    Name = Name.Trim()
                 };
             }
 
-            if (Description != null)
+            if (Is.IsChanged(Description, topic.Description))
             {
                 newTopic = newTopic with
                 {
-                    Description = Description
+                    Description = Description.Trim()
+                };
+            }
+
+            if (Is.IsChanged(ShowAutomatically, topic.ShowAutomatically))
+            {
+                newTopic = newTopic with
+                {
+                    ShowAutomatically = ShowAutomatically.Value
                 };
             }
 

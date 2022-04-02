@@ -26,10 +26,10 @@ export interface TopicModalProps {
     subscription: Subscription | null;
 
     // The subscription.
-    subscriptionState: Status;
+    subscriptionStatus?: Status;
 
     // The topic to watch.
-    topicPrefix: string;
+    topic: string;
 
     // Triggered when clicked outside.
     onClickOutside?: () => void;
@@ -41,14 +41,14 @@ export const TopicModal = (props: TopicModalProps) => {
         onClickOutside,
         options,
         subscription,
-        subscriptionState,
-        topicPrefix,
+        subscriptionStatus,
+        topic,
     } = props;
 
     const dispatch = useDispatch();
     const subscriptionForm = useMutable<Subscription>({ topicSettings: {} });
     const subscriptionValue = subscriptionForm.get();
-    const inProgress = subscriptionState === 'InProgress';
+    const inProgress = subscriptionStatus === 'InProgress';
 
     useEffect(() => {
         subscriptionForm.set(subscription || { topicSettings: {} });
@@ -63,12 +63,12 @@ export const TopicModal = (props: TopicModalProps) => {
     }, [subscriptionForm]);
 
     const doSubscribe = useCallback(() => {
-        subscribe(config, { [topicPrefix]: subscriptionValue }, dispatch);
-    }, [dispatch, config, subscriptionValue, topicPrefix]);
+        dispatch(subscribe(config, { [topic]: subscriptionValue }));
+    }, [dispatch, config, subscriptionValue, topic]);
 
     const doUnsubscribe = useCallback(() => {
-        subscribe(config, { [topicPrefix]: null }, dispatch);
-    }, [dispatch, config, topicPrefix]);
+        dispatch(subscribe(config, { [topic]: null }));
+    }, [dispatch, config, topic]);
 
     return (
         <Modal onClickOutside={onClickOutside} position={options.position}>
@@ -106,7 +106,7 @@ export const TopicModal = (props: TopicModalProps) => {
                         </button>
                     }
 
-                    <Loader size={16} visible={subscriptionState === 'InProgress'} />
+                    <Loader size={16} visible={subscriptionStatus === 'InProgress'} />
                 </div>
             </Fragment>
         </Modal>

@@ -95,13 +95,13 @@ namespace Notifo.Domain.Topics
             });
         }
 
-        public Task DeleteAsync(string appId, TopicId code,
+        public Task DeleteAsync(string appId, TopicId path,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(appId);
-            Guard.NotNullOrEmpty(code);
+            Guard.NotNullOrEmpty(path);
 
-            return repository.DeleteAsync(appId, code, ct);
+            return repository.DeleteAsync(appId, path, ct);
         }
     }
 }

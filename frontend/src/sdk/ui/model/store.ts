@@ -5,11 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { isFunction } from '@sdk/shared';
+
 export type Dispatch<TAction> = (action: TAction) => void;
 export type StoreRecucer<TState, TAction> = (state: TState, action: TAction) => TState;
 export type StoreListener<TState> = (state: TState) => void;
 
-export class Store<TState, TAction extends { type: string }> {
+export class Store<TState, TAction extends { type: string } = { type: string } & any> {
     private readonly listeners: StoreListener<TState>[] = [];
     private devTools: any;
 
@@ -28,6 +30,12 @@ export class Store<TState, TAction extends { type: string }> {
                 name: window['title'] ? `${window['title']} Notifo SDK` : 'Notifo SDK',
             });
 
+            this.devTools.subscribe((message: any) => {
+                if (message.type === 'DISPATCH' && message.payload.type === 'JUMP_TO_ACTION') {
+                    this.setState(JSON.parse(message.state));
+                }
+            });
+
             this.devTools.init(state);
         }
     }
@@ -44,7 +52,12 @@ export class Store<TState, TAction extends { type: string }> {
         this.listeners.splice(this.listeners.indexOf(callback), 1);
     }
 
-    public dispatch = (action: TAction) => {
+    public dispatch = (action: TAction | Function) => {
+        if (isFunction(action)) {
+            action(this);
+            return;
+        }
+
         const newState = this.reducer(this.state, action);
 
         if (this.devTools) {

@@ -36,7 +36,7 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
 
     useEffect(() => {
         connection.onNotifications((notifications, isUpdate) => {
-            addNotifications(notifications, dispatch);
+            dispatch(addNotifications(notifications));
 
             if (isUpdate && isFunction(config.onNotification)) {
                 for (const notification of notifications) {
@@ -51,32 +51,32 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
         });
 
         connection.onDelete(({ id }) => {
-            deleteNotification(id, dispatch);
+            dispatch(deleteNotification(id));
         });
 
         connection.onReconnected(() => {
-            setConnected(true, dispatch);
+            dispatch(setConnected(true));
         });
 
         connection.onDisconnected(() => {
-            setConnected(false, dispatch);
+            dispatch(setConnected(false));
         });
 
         connection.start().then(() => {
-            setConnected(true, dispatch);
+            dispatch(setConnected(true));
         });
     }, [dispatch, config, connection]);
 
     const doConfirm = useCallback(async (notification: NotifoNotification) => {
         await connection.confirmMany([], notification.id);
 
-        addNotifications([{ ...notification, isConfirmed: true }], dispatch);
+        dispatch(addNotifications([{ ...notification, isConfirmed: true }]));
     }, [dispatch, connection]);
 
     const doSee = useCallback(async (notification: NotifoNotification) => {
         await connection.confirmMany([notification.id]);
 
-        addNotifications([{ ...notification, isSeen: true }], dispatch);
+        dispatch(addNotifications([{ ...notification, isSeen: true }]));
     }, [dispatch, connection]);
 
     const doDelete = useCallback(async (notification: NotifoNotification) => {

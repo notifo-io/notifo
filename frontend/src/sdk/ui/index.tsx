@@ -31,7 +31,7 @@ export module UI {
         renderNotificationsUI(element, options, config);
     }
 
-    export async function setupTopic(elementOrId: string | HTMLElement, topicPrefix: string, opts: TopicOptions, config: SDKConfig) {
+    export async function setupTopic(elementOrId: string | HTMLElement, topic: string, opts: TopicOptions, config: SDKConfig) {
         const options = buildTopicOptions(opts);
 
         const element = findElement(elementOrId);
@@ -44,7 +44,7 @@ export module UI {
             await loadStyle(config.styleUrl);
         }
 
-        renderTopicUI(element, topicPrefix, options, config);
+        renderTopicUI(element, topic, options, config);
     }
 
     export async function askForWebPush(config: SDKConfig): Promise<boolean> {

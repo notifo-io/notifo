@@ -8,8 +8,8 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
-import { useCallback, useEffect, useMemo } from 'preact/hooks';
-import { NotificationsOptions, SDKConfig, sendToBoolean, Subscription, Topic, useMutable } from '@sdk/shared';
+import { useCallback, useEffect, useMemo, useRef } from 'preact/hooks';
+import { isUndefined, NotificationsOptions, SDKConfig, sendToBoolean, Subscription, Topic, useMutable } from '@sdk/shared';
 import { loadSubscriptions, subscribe, useDispatch, useStore } from '@sdk/ui/model';
 import { Loader } from './Loader';
 import { Toggle } from './Toggle';
@@ -28,16 +28,17 @@ export const TopicsView = (props: TopicsViewProps) => {
     const { config } = props;
 
     const dispatch = useDispatch();
-    const isLoaded = useStore(x => x.topicsStatus !== 'InProgress');
-    const isLoading = useStore(x => x.topicsStatus === 'InProgress');
+    const loaded = useStore(x => x.topicsLoaded);
+    const loading = useStore(x => x.topicsLoading);
     const subscriptions = useStore(x => x.subscriptions);
     const subscriptionsForm = useMutable<Subscriptions>({});
     const subscriptionsValue = subscriptionsForm.get();
-    const topics = useStore(x => x.topics)!;
+    const topics = useStore(x => x.topics);
+    const topicsRef = useRef(topics);
 
     useEffect(() => {
-        loadSubscriptions(config, topics.map(x => x.path), dispatch);
-    }, [dispatch, config, topics]);
+        dispatch(loadSubscriptions(config, topicsRef.current.map(x => x.path)));
+    }, [dispatch, config]);
 
     useEffect(() => {
         const newValue: Subscriptions = {};
@@ -49,8 +50,20 @@ export const TopicsView = (props: TopicsViewProps) => {
         subscriptionsForm.set(newValue);
     }, [subscriptionsForm, subscriptions, topics]);
 
-    const isSaving = useMemo(() => {
-        return topics.filter(x => subscriptions[x.path]?.status === 'InProgress').length > 0;
+    const loadSubscriptionsInProgress = useMemo(() => {
+        return topics.filter(x => subscriptions[x.path]?.loadingStatus === 'InProgress').length > 0;
+    }, [subscriptions, topics]);
+
+    const loadSubscriptionsFailed = useMemo(() => {
+        return topics.filter(x => subscriptions[x.path]?.loadingStatus === 'Failed').length > 0;
+    }, [subscriptions, topics]);
+
+    const saveSubscriptionsInProgress = useMemo(() => {
+        return topics.filter(x => subscriptions[x.path]?.updateStatus === 'InProgress').length > 0;
+    }, [subscriptions, topics]);
+
+    const saveSubscriptionsFailed = useMemo(() => {
+        return topics.filter(x => subscriptions[x.path]?.updateStatus === 'Failed').length > 0;
     }, [subscriptions, topics]);
 
     const doToggleTopic = useCallback((path: string) => {
@@ -74,27 +87,31 @@ export const TopicsView = (props: TopicsViewProps) => {
     }, [subscriptionsForm]);
 
     const doSave = useCallback(() => {
-        subscribe(config, subscriptionsValue as any, dispatch);
+        dispatch(subscribe(config, subscriptionsValue as any));
     }, [config, dispatch, subscriptionsValue]);
+
+    const disabled = loading === 'InProgress' || loadSubscriptionsInProgress || saveSubscriptionsInProgress;
 
     return (
         <Fragment>
-            {isLoading && Object.keys(topics).length === 0 &&
-                <div class='notifo-list-loading'>
-                    <Loader size={18} visible={true} />
-                </div>
-            }
-
-            {isLoaded && Object.keys(topics).length === 0 &&
+            {loaded && Object.keys(topics).length === 0 &&
                 <div class='notifo-list-empty'>{config.texts.notificationsEmpty}</div>
             }
 
-            {isLoaded && Object.keys(topics).length > 0 &&
+            <div class='notifo-list-loading'>
+                <Loader size={18} visible={loading === 'InProgress' || loadSubscriptionsInProgress} />
+            </div>
+
+            {loadSubscriptionsFailed &&
+                <div class='notifo-error'>{config.texts.loadingFailed}</div>
+            }
+
+            {topics.length > 0 &&
                 <Fragment>
                     {Object.values(topics).map(topic => 
                         <TopicRow key={topic}
                             config={config}
-                            disabled={isSaving}
+                            disabled={disabled}
                             onToggleChannel={doToggleChannel}
                             onToggleTopic={doToggleTopic}
                             subscription={subscriptionsValue[topic.path]}
@@ -103,11 +120,15 @@ export const TopicsView = (props: TopicsViewProps) => {
                     )}
 
                     <div class='notifo-form-group'>
-                        <button class='notifo-form-button primary' type='submit' onClick={doSave} disabled={isSaving}>
+                        {saveSubscriptionsFailed &&
+                            <div class='notifo-error'>{config.texts.savingFailed}</div>
+                        }
+
+                        <button class='notifo-form-button primary' type='submit' onClick={doSave} disabled={disabled}>
                             {config.texts.save}
                         </button>
 
-                        <Loader size={16} visible={isSaving} />
+                        <Loader size={16} visible={saveSubscriptionsInProgress} />
                     </div>
                 </Fragment>
             }
@@ -126,8 +147,10 @@ const TopicRow = ({ config, disabled, onToggleChannel, onToggleTopic, subscripti
     return (
         <div key={topic} class='notifo-topic'>
             <div class='notifo-topic-toggle'>
-                <Toggle value={!!subscription} disabled={disabled}
-                    onChange={() => onToggleTopic(topic.path)} />
+                {!isUndefined(subscription) &&
+                    <Toggle value={!!subscription} disabled={disabled} 
+                        onChange={() => onToggleTopic(topic.path)} />
+                }                
             </div>
             <div class='notifo-topic-details'>
                 <h3>{topic.name}</h3>

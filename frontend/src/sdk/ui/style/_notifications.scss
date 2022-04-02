@@ -77,7 +77,8 @@
         }
 
         &-subject {
-            font-weight: bold;
+            font-size: $font-size-md;
+            font-weight: 500;
             padding: 0;
             padding-right: 40px;
             position: relative;

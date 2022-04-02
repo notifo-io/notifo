@@ -18,14 +18,13 @@
     }
 
     &-tabs {
+        border-bottom: 1px solid $color-border;
         display: flex;
         flex-direction: row;
         flex-grow: 1;
         margin-bottom: 1.5rem;
 
         &-content {
-            position: relative;
-            max-height: none;
             min-height: 8rem;
         }
 
@@ -54,7 +53,7 @@
 
         &-label {
             font-size: $font-size-ssm;
-            font-weight: bolder;
+            font-weight: 500;
             opacity: .75;
         }
 
@@ -163,15 +162,30 @@
     }
 
     &-list {
-        &-empty,
-        &-loading {
-            @include absolute(50%, 0, null, 0);
+        &-empty {
+            @include absolute(7rem, 0, null, 0);
             color: $color-empty;
             font-size: $font-size-ssm;
             font-weight: normal;
-            margin-top: -.5rem;
             text-align: center;
-            text-decoration: none;
         }
+
+        &-loading {
+            @include absolute(.5rem, .5rem, null, null);
+            color: $color-empty;
+            font-size: $font-size-ssm;
+            font-weight: normal;
+        }
+    }
+
+    &-error {
+        background-color: $color-error;
+        border: 0;
+        border-radius: 5px;
+        color: white;
+        font-size: $font-size-sm;
+        font-weight: normal;
+        margin-bottom: 1rem;
+        padding: .5rem 1rem;
     }
 }

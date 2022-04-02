@@ -15,6 +15,9 @@ export interface LoaderProps {
     // True if visible.
     visible: boolean;
 
+    // The class.
+    class?: string;
+
     // The size in pixels.
     size: number;
 }

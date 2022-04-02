@@ -10,7 +10,7 @@
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
-import { loadTopics, useDispatch } from '@sdk/ui/model';
+import { loadTopics, useDispatch, useStore } from '@sdk/ui/model';
 import { ArchiveView } from './ArchiveView';
 import { Modal } from './Modal';
 import { NotificationsView } from './NotificationsView';
@@ -50,11 +50,12 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
     } = props;
 
     const dispatch = useDispatch();
+    const topics = useStore(x => x.topics);
     const [viewRoot, setViewRoot] = useState<HTMLDivElement | null>(null);
     const [viewMode, setViewMode] = useState<View>('Notifications');
 
     useEffect(() => {
-        loadTopics(config, dispatch);
+        dispatch(loadTopics(config));
     }, [dispatch, config]);
 
     return (
@@ -67,9 +68,12 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
                     <li class={makeActive(viewMode, 'Archive')} onClick={() => setViewMode('Archive')}>
                         {config.texts.archive}
                     </li>
-                    <li class={makeActive(viewMode, 'Topics')} onClick={() => setViewMode('Topics')}>
-                        {config.texts.topics}
-                    </li>
+
+                    {topics.length > 0 &&
+                        <li class={makeActive(viewMode, 'Topics')} onClick={() => setViewMode('Topics')}>
+                            {config.texts.topics}
+                        </li>
+                    }
 
                     {config.allowProfile &&
                         <li class={makeActive(viewMode, 'Profile')} onClick={() => setViewMode('Profile')}>

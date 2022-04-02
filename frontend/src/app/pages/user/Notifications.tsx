@@ -65,7 +65,7 @@ export const Notifications = (props: NotificationsProps) => {
                                 </NavItem>
                             </Nav>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {notifications.isLoading ? (
                                 <Loader visible={notifications.isLoading} />
                             ) : (

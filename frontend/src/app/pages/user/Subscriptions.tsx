@@ -84,7 +84,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                                 </NavItem>
                             </Nav>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {subscriptions.isLoading ? (
                                 <Loader visible={subscriptions.isLoading} />
                             ) : (

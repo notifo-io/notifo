@@ -30,7 +30,7 @@ export const upsertTopic = createApiThunk('users/upsert',
 
 export const deleteTopic = createApiThunk('users/delete',
     (arg: { appId: string; path: string; scope: TopicQueryScope }) => {
-        return Clients.Users.deleteUser(arg.appId, arg.path);
+        return Clients.Topics.deleteTopic(arg.appId, arg.path);
     });
 
 export const topicsMiddleware: Middleware = store => next => action => {

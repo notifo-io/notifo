@@ -32,6 +32,8 @@ namespace Notifo.Domain.Users
 
         public NotificationSettings? Settings { get; set; }
 
+        public bool MergeSettings { get; set; }
+
         public bool CanCreate => true;
 
         private sealed class Validator : AbstractValidator<UpsertUser>
@@ -52,7 +54,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user;
 
-            if (FullName != null && !string.Equals(FullName, user.FullName, StringComparison.Ordinal))
+            if (Is.IsChanged(FullName, user.FullName))
             {
                 newUser = newUser with
                 {
@@ -60,7 +62,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (EmailAddress != null && !string.Equals(EmailAddress, user.EmailAddress, StringComparison.OrdinalIgnoreCase))
+            if (Is.IsChanged(EmailAddress, user.EmailAddress))
             {
                 newUser = newUser with
                 {
@@ -68,7 +70,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (PhoneNumber != null && !string.Equals(PhoneNumber, user.PhoneNumber, StringComparison.OrdinalIgnoreCase))
+            if (Is.IsChanged(PhoneNumber, user.PhoneNumber))
             {
                 newUser = newUser with
                 {
@@ -76,7 +78,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Properties != null && !Properties.Equals(user.Properties))
+            if (Is.IsChanged(Properties, user.Properties))
             {
                 newUser = newUser with
                 {
@@ -84,7 +86,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (PreferredLanguage != null && !string.Equals(PreferredLanguage, user.PreferredLanguage, StringComparison.Ordinal))
+            if (Is.IsChanged(PreferredLanguage, user.PreferredLanguage))
             {
                 newUser = newUser with
                 {
@@ -92,7 +94,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (PreferredTimezone != null && !string.Equals(PreferredTimezone, user.PreferredTimezone, StringComparison.Ordinal))
+            if (Is.IsChanged(PreferredTimezone, user.PreferredTimezone))
             {
                 newUser = newUser with
                 {
@@ -100,7 +102,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (RequiresWhitelistedTopics != null && RequiresWhitelistedTopics != user.RequiresWhitelistedTopics)
+            if (Is.IsChanged(RequiresWhitelistedTopics, user.RequiresWhitelistedTopics))
             {
                 newUser = newUser with
                 {
@@ -110,9 +112,16 @@ namespace Notifo.Domain.Users
 
             if (Settings != null)
             {
+                var newSettings = Settings;
+
+                if (MergeSettings)
+                {
+                    newSettings = NotificationSettings.Merged(user.Settings, Settings);
+                }
+
                 newUser = newUser with
                 {
-                    Settings = new NotificationSettings(Settings)
+                    Settings = newSettings
                 };
             }
 

@@ -70,7 +70,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
                             <Col>
                                 {texts.media.header}
                             </Col>
-                            <Col xs='auto'>
+                            <Col xs='auto' className='col-refresh'>
                                 {medias.isLoading ? (
                                     <Loader visible={medias.isLoading} />
                                 ) : (

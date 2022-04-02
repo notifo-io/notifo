@@ -52,6 +52,11 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         public LocalizedText? Description { get; set; }
 
         /// <summary>
+        /// True to show it automatically.
+        /// </summary>
+        public bool ShowAutomatically { get; set; }
+
+        /// <summary>
         /// The channel settings.
         /// </summary>
         public ReadonlyDictionary<string, TopicChannel>? Channels { get; set; }

@@ -51,7 +51,7 @@ export const MediaPage = () => {
                         <Col>
                             <h2>{texts.media.header}</h2>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {media.isLoading ? (
                                 <Loader visible={media.isLoading} />
                             ) : (

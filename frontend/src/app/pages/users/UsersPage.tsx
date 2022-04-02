@@ -67,7 +67,7 @@ export const UsersPage = () => {
                         <Col>
                             <h2 className='truncate'>{texts.users.header}</h2>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {users.isLoading ? (
                                 <Loader visible={users.isLoading} />
                             ) : (
