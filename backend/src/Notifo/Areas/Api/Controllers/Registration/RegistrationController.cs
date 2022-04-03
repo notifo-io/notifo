@@ -14,6 +14,7 @@ using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -69,11 +70,9 @@ namespace Notifo.Areas.Api.Controllers.Registration
                         };
                     }
 
-                    foreach (var topic in request.Topics)
+                    foreach (var topic in request.Topics.OrEmpty())
                     {
-                        var topicId = new TopicId(topic);
-
-                        await subscriptionStore.UpsertAsync(App.Id, userId, topicId, command, HttpContext.RequestAborted);
+                        await subscriptionStore.UpsertAsync(App.Id, userId, topic, command, HttpContext.RequestAborted);
                     }
                 }
 

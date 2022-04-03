@@ -9,7 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
+using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -19,11 +21,13 @@ namespace Notifo.Areas.Api.Controllers.Users
     public class UserController : BaseController
     {
         private readonly ISubscriptionStore subscriptionStore;
+        private readonly ITopicStore topicStore;
         private readonly IUserStore userStore;
 
-        public UserController(ISubscriptionStore subscriptionStore, IUserStore userStore)
+        public UserController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IUserStore userStore)
         {
             this.subscriptionStore = subscriptionStore;
+            this.topicStore = topicStore;
             this.userStore = userStore;
         }
 
@@ -67,6 +71,25 @@ namespace Notifo.Areas.Api.Controllers.Users
         }
 
         /// <summary>
+        /// Query the user topics.
+        /// </summary>
+        /// <param name="language">The optional language.</param>
+        /// <returns>
+        /// 200 => User subscriptions returned.
+        /// </returns>
+        [HttpGet("api/me/topics")]
+        [AppPermission(NotifoRoles.AppUser)]
+        [Produces(typeof(UserTopicDto[]))]
+        public async Task<IActionResult> GetTopics(string? language = null)
+        {
+            var topics = await topicStore.QueryAsync(App.Id, new TopicQuery { Scope = TopicQueryScope.Explicit }, HttpContext.RequestAborted);
+
+            var response = topics.Select(x => UserTopicDto.FromDomainObject(x, language, App.Language));
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Query the user subscriptions.
         /// </summary>
         /// <param name="q">The query object.</param>
@@ -76,9 +99,9 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpGet("api/me/subscriptions")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ListResponseDto<SubscriptionDto>))]
-        public async Task<IActionResult> GetSubscriptions([FromQuery] QueryDto q)
+        public async Task<IActionResult> GetMySubscriptions([FromQuery] SubscriptionQueryDto q)
         {
-            var subscriptions = await subscriptionStore.QueryAsync(App.Id, ParseQuery(UserId, q), HttpContext.RequestAborted);
+            var subscriptions = await subscriptionStore.QueryAsync(App.Id, q.ToQuery(false, UserId), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<SubscriptionDto>();
 
@@ -117,11 +140,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         }
 
         /// <summary>
-        /// Creates a user subscription.
+        /// Upserts or deletes my subscriptions.
         /// </summary>
         /// <param name="request">The subscription settings.</param>
         /// <returns>
-        /// 204 => Topic created.
+        /// 204 => User subscribed.
         /// </returns>
         /// <remarks>
         /// User Id and App Id are resolved using the API token.
@@ -129,43 +152,40 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpPost("api/me/subscriptions")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(SubscriptionDto))]
-        public async Task<IActionResult> PostMySubscription([FromBody] SubscriptionDto request)
+        public async Task<IActionResult> PostMySubscriptions([FromBody] SubscribeManyDto request)
         {
-            var update = request.ToUpdate();
+            foreach (var dto in request.Subscribe.OrEmpty())
+            {
+                var update = dto.ToUpdate();
 
-            var subscription = await subscriptionStore.UpsertAsync(App.Id, UserId, request.TopicPrefix, update, HttpContext.RequestAborted);
+                await subscriptionStore.UpsertAsync(App.Id, UserId, dto.TopicPrefix, update, HttpContext.RequestAborted);
+            }
 
-            var response = SubscriptionDto.FromDomainObject(subscription);
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Deletes a user subscription.
-        /// </summary>
-        /// <param name="topic">The topic path.</param>
-        /// <returns>
-        /// 204 => Topic deleted.
-        /// </returns>
-        /// <remarks>
-        /// User Id and App Id are resolved using the API token.
-        /// </remarks>
-        [HttpDelete("api/me/subscriptions/{*topic}")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteMySubscription(string topic)
-        {
-            await subscriptionStore.DeleteAsync(App.Id, UserIdOrSub, topic, HttpContext.RequestAborted);
+            foreach (var topic in request.Unsubscribe.OrEmpty())
+            {
+                await subscriptionStore.DeleteAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
+            }
 
             return NoContent();
         }
 
-        private static SubscriptionQuery ParseQuery(string id, QueryDto query)
+        /// <summary>
+        /// Remove my subscription.
+        /// </summary>
+        /// <param name="prefix">The topic prefix.</param>
+        /// <returns>
+        /// 204 => User unsubscribed.
+        /// </returns>
+        /// <remarks>
+        /// User Id and App Id are resolved using the API token.
+        /// </remarks>
+        [HttpPost("api/me/subscriptions/{*prefix}")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> DeleteSubscription(string prefix)
         {
-            var queryObject = query.ToQuery<SubscriptionQuery>(true);
+            await subscriptionStore.DeleteAsync(App.Id, UserId, Uri.UnescapeDataString(prefix), HttpContext.RequestAborted);
 
-            queryObject.UserId = id;
-
-            return queryObject;
+            return NoContent();
         }
     }
 }

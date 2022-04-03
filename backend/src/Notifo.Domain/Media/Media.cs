@@ -7,21 +7,17 @@
 
 using NodaTime;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Media
 {
-    public sealed class Media
+    public sealed record Media(string AppId, string FileName, Instant Created)
     {
-        public string AppId { get; init; }
-
         public string MimeType { get; init; }
-
-        public string FileName { get; init; }
 
         public string FileInfo { get; init; }
 
         public long FileSize { get; init; }
-
-        public Instant Created { get; init; }
 
         public Instant LastUpdate { get; init; }
 

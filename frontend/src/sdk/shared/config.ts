@@ -35,6 +35,10 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         en: 'Deny',
     },
     email: {
+        de: 'E-Mail',
+        en: 'E-Mail',
+    },
+    emailAddress: {
         de: 'E-Mail Adresse',
         en: 'E-Mail Address',
     },
@@ -45,6 +49,22 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
     language: {
         de: 'Sprache',
         en: 'Language',
+    },
+    loadingFailed: {
+        de: 'Laden ist fehlgeschlagen',
+        en: 'Loading has failed',
+    },
+    mobilepush: {
+        de: 'Mobile Push',
+        en: 'Mobile Push',
+    },
+    messaging: {
+        de: 'Messaging',
+        en: 'Messaging',
+    },
+    notifications: {
+        de: 'Nachrichten',
+        en: 'Notifications',
     },
     notifyBeEmail: {
         de: 'Benachrichtige mich per Email',
@@ -66,9 +86,17 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         de: 'Speichern',
         en: 'Save',
     },
+    savingFailed: {
+        de: 'Speichern ist fehlgeschlagen',
+        en: 'Saving has failed',
+    },
     settings: {
         de: 'Einstellungen',
         en: 'Settings',
+    },
+    sms: {
+        de: 'SMS',
+        en: 'SMS',
     },
     subscribe: {
         de: 'Abbonnieren',
@@ -78,17 +106,29 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         de: 'Zeitzone',
         en: 'Timezone',
     },
+    topics: {
+        de: 'Themen',
+        en: 'Topics',
+    },
     unsubscribe: {
         de: 'Deabbonieren',
         en: 'Unsubscribe',
     },
-    webPushConfirmText: {
+    webpush: {
+        de: 'Web Push',
+        en: 'Web Push',
+    },
+    webpushConfirmText: {
         de: 'Notifications können jederzeit in den Browser Einstellungen deaktiviert werden.',
         en: 'Notifications can be turned off anytime from browser settings.',
     },
-    webPushConfirmTitle: {
+    webpushConfirmTitle: {
         de: 'Wir wollen dir Push Benachrichtigungen schenken',
         en: 'We want to send you push notifications.',
+    },
+    webpushTopics: {
+        de: 'Abonniere die folgenden Themen um auf dem neuesten Stand zu sein. Du kannst dich jederzeit von diesen Themen abmelden oder auch später anmelden.',
+        en: 'Subscribe to the following topics to be always up to date. You can unsubscribe any time you want or subscribe to these topics later.',
     },
 };
 
@@ -161,8 +201,8 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
         options.locale = 'en';
     }
 
-    if (isUndefined(options.allowEmails)) {
-        options.allowEmails = true;
+    if (!isObject(options.allowedChannels)) {
+        options.allowedChannels = { email: true, webpush: true };
     }
 
     if (isUndefined(options.allowProfile)) {
@@ -301,8 +341,8 @@ export interface SDKConfig {
     // The url to the styles.
     styleUrl: string;
 
-    // True when emails are allowed.
-    allowEmails: boolean;
+    // An object of allowed channels.
+    allowedChannels: {};
 
     // True when profile can be edited.
     allowProfile: boolean;
@@ -360,19 +400,29 @@ type Texts<T> = {
     cancel: T;
     deny: T;
     email: T;
+    emailAddress: T;
     fullName: T;
     language: T;
+    loadingFailed: T;
+    mobilepush: T;
+    messaging: T;
+    notifications: T;
     notificationsEmpty: T;
     notifyBeEmail: T;
     notifyBeWebPush: T;
     profile: T;
     save: T;
+    savingFailed: T;
     settings: T;
+    sms: T;
     subscribe: T;
     timezone: T;
+    topics: T;
     unsubscribe: T;
-    webPushConfirmText: T;
-    webPushConfirmTitle: T;
+    webpush: T;
+    webpushConfirmText: T;
+    webpushConfirmTitle: T;
+    webpushTopics: T;
 };
 
 const TextKeys: ReadonlyArray<keyof Texts<any>> = [
@@ -382,17 +432,27 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'cancel',
     'deny',
     'email',
+    'emailAddress',
     'fullName',
     'language',
+    'loadingFailed',
+    'mobilepush',
+    'messaging',
+    'notifications',
     'notificationsEmpty',
     'notifyBeEmail',
     'notifyBeWebPush',
     'profile',
     'save',
+    'savingFailed',
     'settings',
+    'sms',
     'subscribe',
     'timezone',
+    'topics',
     'unsubscribe',
-    'webPushConfirmText',
-    'webPushConfirmTitle',
+    'webpush',
+    'webpushConfirmText',
+    'webpushConfirmTitle',
+    'webpushTopics',
 ];

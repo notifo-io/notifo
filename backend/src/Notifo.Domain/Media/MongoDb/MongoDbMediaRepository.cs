@@ -41,19 +41,7 @@ namespace Notifo.Domain.Media.MongoDb
         {
             using (Telemetry.Activities.StartActivity("MongoDbMediaRepository/QueryAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbMedia>>
-                {
-                    Filter.Eq(x => x.Doc.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(Filter.Regex(x => x.Doc.FileName, regex));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -100,6 +88,23 @@ namespace Notifo.Domain.Media.MongoDb
 
                 await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
             }
+        }
+
+        private static FilterDefinition<MongoDbMedia> BuildFilter(string appId, MediaQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbMedia>>
+            {
+                Filter.Eq(x => x.Doc.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(Filter.Regex(x => x.Doc.FileName, regex));
+            }
+
+            return Filter.And(filters);
         }
     }
 }

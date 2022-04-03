@@ -8,12 +8,12 @@
 /* eslint-disable no-restricted-globals */
 
 import { SWMessage } from '@sdk/push/shared';
-import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseShortNotification, SDKConfig, withPreset } from '@sdk/shared';
+import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotificationDto, parseShortNotification, SDKConfig, withPreset } from '@sdk/shared';
 
 // eslint-disable-next-line func-names
 (function (self: ServiceWorkerGlobalScope) {
     self.addEventListener('notificationclick', event => {
-        const notification: NotifoNotification = event.notification.data.notification;
+        const notification: NotifoNotificationDto = event.notification.data.notification;
 
         if (notification.trackSeenUrl && !event.notification.data.tracked) {
             event.notification.data.tracked = true;
@@ -38,7 +38,7 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
     });
 
     self.addEventListener('notificationclose', event => {
-        const notification: NotifoNotification = event.notification.data.notification;
+        const notification: NotifoNotificationDto = event.notification.data.notification;
 
         if (notification.trackSeenUrl && !event.notification.data.manualClose) {
             const promise = fetch(notification.trackSeenUrl);
@@ -68,7 +68,7 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotification, parseSho
 
     self.addEventListener('push', event => {
         if (event.data) {
-            const notification: NotifoNotification = parseShortNotification(event.data.json());
+            const notification: NotifoNotificationDto = parseShortNotification(event.data.json());
 
             const promise = showNotification(self, notification);
 
@@ -110,7 +110,7 @@ async function unsubscribeFromWebPush(sw: ServiceWorkerRegistration, config: SDK
     await apiDeleteWebPush(config, subscription);
 }
 
-async function showNotification(self: ServiceWorkerGlobalScope, notification: NotifoNotification) {
+async function showNotification(self: ServiceWorkerGlobalScope, notification: NotifoNotificationDto) {
     const query = { tag: notification.id };
 
     const oldNotifications = await self.registration.getNotifications(query);

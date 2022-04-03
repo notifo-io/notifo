@@ -72,7 +72,7 @@ export const PublishDialog = () => {
 
     return (
         <Modal isOpen={dialogOpen} size='lg' backdrop={false} toggle={doCloseForm}>
-            <Formik<PublishDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>
+            <Formik<PublishDto> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
                 {({ handleSubmit, values }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

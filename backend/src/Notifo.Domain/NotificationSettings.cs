@@ -19,7 +19,27 @@ namespace Notifo.Domain
         {
         }
 
-        public void OverrideBy(NotificationSettings? source)
+        public static NotificationSettings Merged(params NotificationSettings?[] sources)
+        {
+            var result = new NotificationSettings();
+
+            foreach (var source in sources)
+            {
+                if (source == null)
+                {
+                    continue;
+                }
+
+                foreach (var (key, value) in source)
+                {
+                    result[key] = value;
+                }
+            }
+
+            return result;
+        }
+
+        public NotificationSettings OverrideBy(NotificationSettings? source)
         {
             if (source != null)
             {
@@ -43,6 +63,8 @@ namespace Notifo.Domain
                     }
                 }
             }
+
+            return this;
         }
     }
 }

@@ -17,6 +17,7 @@ import { MessagingTemplatePage } from '../messaging-templates/MessagingTemplateP
 import { MessagingTemplatesPage } from '../messaging-templates/MessagingTemplatesPage';
 import { SmsTemplatePage } from '../sms-templates/SmsTemplatePage';
 import { SmsTemplatesPage } from '../sms-templates/SmsTemplatesPage';
+import { TopicsPage } from '../topics/TopicsPage';
 import { EmailTemplatePage } from './../email-templates/EmailTemplatePage';
 import { EmailTemplatesPage } from './../email-templates/EmailTemplatesPage';
 import { EventsPage } from './../events/EventsPage';
@@ -94,11 +95,13 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
     const urlToLog = combineUrl(match.url, 'log');
     const urlToIntegrations = combineUrl(match.url, 'integrations');
     const urlToSettings = combineUrl(match.url, 'settings');
+    const urlToTopics = combineUrl(match.url, 'topics');
 
     const isActive =
         path.startsWith(urlToLog) ||
         path.startsWith(urlToIntegrations) ||
-        path.startsWith(urlToSettings);
+        path.startsWith(urlToSettings) ||
+        path.startsWith(urlToTopics);
 
     return (
         <Dropdown nav direction='right' isOpen={isOpen} toggle={doToggle} active={isActive}>
@@ -108,6 +111,9 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
             <DropdownMenu>
                 <NavLink activeClassName='active' className='dropdown-item' to={urlToIntegrations} onClick={doClose}>
                     <Icon type='extension' /> <span>{texts.integrations.header}</span>
+                </NavLink>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToTopics} onClick={doClose}>
+                    <Icon type='topic' /> <span>{texts.topics.header}</span>
                 </NavLink>
                 <NavLink activeClassName='active' className='dropdown-item' to={urlToSettings} onClick={doClose}>
                     <Icon type='settings' /> <span>{texts.common.settings}</span>
@@ -234,6 +240,10 @@ export const AppPage = () => {
 
                 <Route path={combineUrl(match.url, 'settings/')} exact>
                     <AppSettingsPage />
+                </Route>
+
+                <Route path={combineUrl(match.url, 'topics/')} exact>
+                    <TopicsPage />
                 </Route>
 
                 <Route render={() =>

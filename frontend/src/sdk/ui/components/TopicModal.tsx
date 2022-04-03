@@ -8,127 +8,93 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
-import { booleanToSend, SDKConfig, sendToBoolean, Subscription, TopicOptions } from '@sdk/shared';
-import { Status, subscribe, unsubscribe, useDispatch } from '@sdk/ui/model';
+import { useCallback, useEffect } from 'preact/hooks';
+import {  SDKConfig, sendToBoolean, setSubscriptionChannel, SubscriptionDto } from '@sdk/shared';
+import { Status, subscribe, useDispatch } from '@sdk/ui/model';
 import { Loader } from './Loader';
-import { Modal } from './Modal';
 import { Toggle } from './Toggle';
+import { useMutable } from './utils';
 
 export interface TopicModalProps {
     // The main config.
     config: SDKConfig;
 
-    // The options.
-    options: TopicOptions;
+    // The subscription.
+    subscription: SubscriptionDto | null;
 
     // The subscription.
-    subscription: Subscription | null;
-
-    // The subscription.
-    subscriptionState: Status;
+    subscriptionStatus?: Status;
 
     // The topic to watch.
-    topicPrefix: string;
-
-    // Triggered when clicked outside.
-    onClickOutside?: () => void;
+    topic: string;
 }
 
 export const TopicModal = (props: TopicModalProps) => {
     const {
         config,
-        onClickOutside,
-        options,
         subscription,
-        subscriptionState,
-        topicPrefix,
+        subscriptionStatus,
+        topic,
     } = props;
 
     const dispatch = useDispatch();
-    const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription | null>(null);
+    const formState = useMutable<SubscriptionDto>({ topicSettings: {} });
+    const formValue = formState.current;
+    const inProgress = subscriptionStatus === 'InProgress';
 
     useEffect(() => {
-        setSubscriptionToEdit(subscription || { topicSettings: {} });
-    }, [subscription]);
+        formState.set(subscription || {} as any);
+    }, [subscription, formState]);
 
-    const doSetEmail = useCallback((send: boolean | undefined) => {
-        if (subscriptionToEdit) {
-            setChannel(subscriptionToEdit, 'email', send);
-        }
-    }, [subscriptionToEdit]);
-
-    const doSetPush = useCallback((send: boolean | undefined) => {
-        if (subscriptionToEdit) {
-            setChannel(subscriptionToEdit, 'webpush', send);
-        }
-    }, [subscriptionToEdit]);
+    const doChangeChannel = useCallback((send: boolean | undefined, name: string) => {
+        formState.set(v => setSubscriptionChannel(v, name, send));
+    }, [formState]);
 
     const doSubscribe = useCallback(() => {
-        if (subscriptionToEdit) {
-            subscribe(config, topicPrefix, subscriptionToEdit, dispatch);
-        }
-    }, [dispatch, config, subscriptionToEdit, topicPrefix]);
+        dispatch(subscribe(config, { [topic]: formValue }));
+    }, [dispatch, config, formValue, topic]);
 
     const doUnsubscribe = useCallback(() => {
-        unsubscribe(config, topicPrefix, dispatch);
-    }, [dispatch, config, topicPrefix]);
+        dispatch(subscribe(config, { [topic]: null }));
+    }, [dispatch, config, topic]);
 
     return (
-        <Modal onClickOutside={onClickOutside} position={options.position}>
-            {subscriptionToEdit &&
-                <Fragment>
-                    {config.allowEmails &&
-                        <div class='notifo-form-group'>
-                            <Toggle indeterminate value={sendToBoolean(subscriptionToEdit.topicSettings?.email?.send)}
-                                onChange={doSetEmail} />
+        <Fragment>
+            {config.allowedChannels['email'] &&
+                <div class='notifo-form-group'>
+                    <Toggle indeterminate value={sendToBoolean(formValue.topicSettings?.email?.send)} name='email' disabled={inProgress}
+                        onChange={doChangeChannel} />
 
-                            <label class='notifo-form-toggle-label'>{config.texts.notifyBeEmail}</label>
-                        </div>
-                    }
-
-                    <div class='notifo-form-group'>
-                        <Toggle indeterminate value={sendToBoolean(subscriptionToEdit.topicSettings?.webpush?.send)}
-                            onChange={doSetPush} />
-
-                        <label class='notifo-form-toggle-label'>{config.texts.notifyBeWebPush}</label>
-                    </div>
-
-                    <hr />
-
-                    <div class='notifo-form-group'>
-                        <button class='notifo-form-button primary' onClick={doSubscribe}>
-                            {subscription ? (
-                                <span>{config.texts.save}</span>
-                            ) : (
-                                <span>{config.texts.subscribe}</span>
-                            )}
-                        </button>
-
-                        {subscription &&
-                            <button class='notifo-form-button' onClick={doUnsubscribe}>
-                                {config.texts.unsubscribe}
-                            </button>
-                        }
-
-                        <Loader size={16} visible={subscriptionState === 'InProgress'} />
-                    </div>
-                </Fragment>
+                    <label class='notifo-form-toggle-label'>{config.texts.notifyBeEmail}</label>
+                </div>
             }
-        </Modal>
+
+            <div class='notifo-form-group'>
+                <Toggle indeterminate value={sendToBoolean(formValue.topicSettings?.webpush?.send)} name='webpush' disabled={inProgress}
+                    onChange={doChangeChannel} />
+
+                <label class='notifo-form-toggle-label'>{config.texts.notifyBeWebPush}</label>
+            </div>
+            
+            <hr />
+
+            <div class='notifo-form-group'>
+                <button class='notifo-form-button primary' onClick={doSubscribe} disabled={inProgress}>
+                    {subscription ? (
+                        <span>{config.texts.save}</span>
+                    ) : (
+                        <span>{config.texts.subscribe}</span>
+                    )}
+                </button>
+
+                {subscription &&
+                    <button class='notifo-form-button' onClick={doUnsubscribe} disabled={inProgress}>
+                        {config.texts.unsubscribe}
+                    </button>
+                }
+
+                <Loader size={16} visible={subscriptionStatus === 'InProgress'} />
+            </div>
+        </Fragment>
     );
 };
-
-function setChannel(subscription: Subscription, channel: string, value?: boolean) {
-    if (!subscription.topicSettings) {
-        subscription.topicSettings = {};
-    }
-
-    const send = booleanToSend(value);
-
-    if (!subscription.topicSettings[channel]) {
-        subscription.topicSettings[channel] = { send };
-    } else {
-        subscription.topicSettings[channel].send = send;
-    }
-}

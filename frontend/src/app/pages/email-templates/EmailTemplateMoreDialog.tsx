@@ -35,7 +35,7 @@ export const EmailTemplateMoreDialog = (props: EmailTemplateMoreDialogProps) => 
 
     return (
         <Modal isOpen={true} toggle={doCloseForm}>
-            <Formik<EmailTemplateDto> initialValues={template} onSubmit={doSave} enableReinitialize>
+            <Formik<EmailTemplateDto> initialValues={template} enableReinitialize onSubmit={doSave}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

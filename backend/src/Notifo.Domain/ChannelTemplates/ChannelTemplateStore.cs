@@ -97,7 +97,7 @@ namespace Notifo.Domain.ChannelTemplates
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    template = ChannelTemplate<T>.Create(appId, id, clock.GetCurrentInstant());
+                    template = new ChannelTemplate<T>(appId, id, clock.GetCurrentInstant());
                 }
 
                 var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);

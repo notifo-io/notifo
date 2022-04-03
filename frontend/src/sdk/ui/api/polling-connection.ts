@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { NotifoNotification, SDKConfig } from '@sdk/shared';
+import { NotifoNotificationDto, SDKConfig } from '@sdk/shared';
 import { Connection, HandleConnect, HandleDeletion, HandleNotifications } from './connection';
 
 type Update = {
     continuationToken: string;
 
-    notifications: NotifoNotification[];
+    notifications: NotifoNotificationDto[];
 
     deletions?: string[];
 };
@@ -171,6 +171,8 @@ export class PollingConnection implements Connection {
         for (const callback of this.handlersDeletion) {
             callback(payload);
         }
+
+        return Promise.resolve(true);
     }
 
     public confirmMany(seen: string[], confirmed: string | null | undefined = null) {
@@ -181,6 +183,8 @@ export class PollingConnection implements Connection {
         if (confirmed) {
             this.pendingConfirmed.push(confirmed);
         }
+
+        return Promise.resolve(true);
     }
 }
 

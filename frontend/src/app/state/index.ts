@@ -22,4 +22,5 @@ export * from './sms-templates';
 export * from './subscriptions';
 export * from './system-users';
 export * from './templates';
+export * from './topics';
 export * from './users';

@@ -8,48 +8,68 @@
 // tslint:disable: no-parameter-reassignment
 
 import { useEffect, useState } from 'preact/hooks';
-import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscription, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, UpdateProfile } from '@sdk/shared';
-import { Dispatch, set, Store } from './store';
+import { apiGetArchive, apiGetProfile, apiGetSubscriptions, apiGetTopics, apiPostProfile, apiPostSubscriptions, NotifoNotificationDto, ProfileDto, SDKConfig, SubscriptionDto, SubscriptionsDto, TopicDto, UpdateProfileDto } from '@sdk/shared';
+import { Store } from './store';
 
 export type Status = 'InProgress' | 'Failed' | 'Success';
 
 export interface SubscriptionState {
     // The load state.
-    status: Status;
+    loadingStatus: Status;
+
+    // The load state.
+    updateStatus?: Status;
 
     // The subscription.
-    subscription?: Subscription | null;
+    subscription?: SubscriptionDto | null;
 }
 
 export type SubscriptionsState = { [prefix: string]: SubscriptionState };
 
 export interface NotifoState {
     // The current notifications.
-    archive: ReadonlyArray<NotifoNotification>;
+    archive: ReadonlyArray<NotifoNotificationDto>;
 
-    // The notifications state.
-    archiveStatus: Status;
+    // The loading status of the archive.
+    archiveLoading: Status;
+
+    // Indicates if the archive has been loaded once.
+    archiveLoaded: boolean;
 
     // The current notifications.
-    notifications: ReadonlyArray<NotifoNotification>;
+    notifications: ReadonlyArray<NotifoNotificationDto>;
 
     // The notifications state.
     notificationsStatus: Status;
 
-    // The profile state.
-    profileStatus?: Status;
-
     // The loaded profile
-    profile?: Profile;
+    profile?: ProfileDto;
+
+    // The loading status of the profile.
+    profileLoading: Status;
+
+    // Indicates whether the profile has been loaded once.
+    profileLoaded: boolean;
+
+    // The updating status of the profile.
+    profileUpdating?: Status;
 
     // True when connected.
     isConnected?: boolean;
 
     // The subscriptions.
     subscriptions: SubscriptionsState;
+
+    // The loaded topics.
+    topics: TopicDto[];
+
+    // The loading status of the topics.
+    topicsLoading: Status;
+
+    // Indicates whether the topics have been loaded once.
+    topicsLoaded: boolean;
 }
 
-type NotifoDispatch = Dispatch<NotifoAction>;
 type NotifoAction = { type: NotifoActionType; [x: string]: any };
 
 type NotifoActionType =
@@ -58,9 +78,12 @@ type NotifoActionType =
     'LoadProfileFailed' |
     'LoadProfileStarted' |
     'LoadProfileSuccess' |
-    'LoadSubscriptionFailed' |
-    'LoadSubscriptionStarted' |
-    'LoadSubscriptionSuccess' |
+    'LoadSubscriptionsFailed' |
+    'LoadSubscriptionsStarted' |
+    'LoadSubscriptionsSuccess' |
+    'LoadTopicsFailed' |
+    'LoadTopicsStarted' |
+    'LoadTopicsSuccess' |
     'LoadArchiveFailed' |
     'LoadArchiveStarted' |
     'LoadArchiveSuccess' |
@@ -72,100 +95,91 @@ type NotifoActionType =
     'SetConnected' |
     'SubscribeFailed' |
     'SubscribeStarted' |
-    'SubscribeSuccess' |
-    'UnsubscribeFailed' |
-    'UnsubscribeStarted' |
-    'UnsubscribeSuccess';
+    'SubscribeSuccess';
 
 function reducer(state: NotifoState, action: NotifoAction): NotifoState {
     switch (action.type) {
-        case 'SetConnected': {
+        case 'SetConnected':
             return { ...state, isConnected: action.isConnected };
-        }
-        case 'LoadProfileStarted': {
-            return { ...state, profileStatus: 'InProgress' };
-        }
-        case 'LoadProfileFailed': {
-            return { ...state, profileStatus: 'Failed' };
-        }
-        case 'LoadProfileSuccess': {
-            return { ...state, profileStatus: 'Success', profile: action.profile };
-        }
-        case 'SaveProfileStarted': {
-            return { ...state, profileStatus: 'InProgress' };
-        }
-        case 'SaveProfileFailed': {
-            return { ...state, profileStatus: 'Failed' };
-        }
-        case 'SaveProfileSuccess': {
-            return { ...state, profileStatus: 'Success', profile: action.profile };
-        }
+        case 'LoadProfileStarted':
+            return { ...state, profileLoading: 'InProgress' };
+        case 'LoadProfileFailed':
+            return { ...state, profileLoading: 'Failed', profileLoaded: true };
+        case 'LoadProfileSuccess':
+            return { ...state, profileLoading: 'Success', profileLoaded: true, profile: action.profile };
+        case 'SaveProfileStarted':
+            return { ...state, profileUpdating: 'InProgress' };
+        case 'SaveProfileFailed':
+            return { ...state, profileUpdating: 'Failed' };
+        case 'SaveProfileSuccess':
+            return { ...state, profileUpdating: 'Success', profile: action.profile };
         case 'LoadArchiveStarted':
-            return { ...state, archiveStatus: 'InProgress' };
+            return { ...state, archiveLoading: 'InProgress' };
         case 'LoadArchiveFailed':
-            return { ...state, archiveStatus: 'Failed' };
+            return { ...state, archiveLoading: 'Failed', archiveLoaded: true };
         case 'LoadArchiveSuccess':
-            return { ...state, archiveStatus: 'Success', archive: action.notifications };
-        case 'LoadSubscriptionStarted': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
+            return { ...state, archiveLoading: 'Success', archiveLoaded: true, archive: action.notifications };
+        case 'LoadTopicsStarted':
+            return { ...state, topicsLoading: 'InProgress' };
+        case 'LoadTopicsFailed':
+            return { ...state, topicsLoading: 'Failed', topicsLoaded: true };
+        case 'LoadTopicsSuccess':
+            return { ...state, topicsLoading: 'Success', topicsLoaded: true, topics: action.topics };
+        case 'LoadSubscriptionsStarted': {
+            const subscriptions = { ...state.subscriptions };
+
+            for (const topic of action.topics) {
+                const existing = subscriptions[topic] || {};
+
+                subscriptions[topic] = { ...existing, loadingStatus: 'InProgress' };
+            }
 
             return { ...state, subscriptions };
         }
-        case 'LoadSubscriptionFailed': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
+        case 'LoadSubscriptionsFailed': {
+            const subscriptions = { ...state.subscriptions };
+
+            for (const topic of action.topics) {
+                const existing = subscriptions[topic] || {};
+
+                subscriptions[topic] = { ...existing, loadingStatus: 'Failed' };
+            }
 
             return { ...state, subscriptions };
         }
-        case 'LoadSubscriptionSuccess': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    { status: 'Success', subscription: action.subscription });
+        case 'LoadSubscriptionsSuccess': {
+            const subscriptions = { ...state.subscriptions };
+
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { loadingStatus: 'Success', subscription };
+            }
 
             return { ...state, subscriptions };
         }
         case 'SubscribeStarted': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
+            const subscriptions = { ...state.subscriptions };
+
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { loadingStatus: 'Success', updateStatus: 'InProgress', subscription };
+            }
 
             return { ...state, subscriptions };
         }
         case 'SubscribeFailed': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
+            const subscriptions = { ...state.subscriptions };
+
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { ...subscriptions[topic] || {}, updateStatus: 'Failed', subscription };
+            }
 
             return { ...state, subscriptions };
         }
         case 'SubscribeSuccess': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    { status: 'Success', subscription: action.subscription });
+            const subscriptions = { ...state.subscriptions };
 
-            return { ...state, subscriptions };
-        }
-        case 'UnsubscribeStarted': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'InProgress' } as SubscriptionState));
-
-            return { ...state, subscriptions };
-        }
-        case 'UnsubscribeFailed': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    s => ({ ...s, status: 'Failed' } as SubscriptionState));
-
-            return { ...state, subscriptions };
-        }
-        case 'UnsubscribeSuccess': {
-            const subscriptions =
-                set(state.subscriptions, action.topicPrefix,
-                    { status: 'Success', subscription: null });
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { ...subscriptions[topic] || {}, updateStatus: 'Success', subscription };
+            }
 
             return { ...state, subscriptions };
         }
@@ -175,7 +189,7 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
             return { ...state, notifications };
         }
         case 'NotificationsAdd': {
-            const newNotifications: ReadonlyArray<NotifoNotification> = action.notifications;
+            const newNotifications: ReadonlyArray<NotifoNotificationDto> = action.notifications;
 
             if (newNotifications.length === 0) {
                 return { ...state, notificationsStatus: 'Success' };
@@ -210,14 +224,19 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
 }
 
 const initialState: NotifoState = {
-    isConnected: false,
     archive: [],
-    archiveStatus: 'InProgress',
+    archiveLoaded: false,
+    archiveLoading: 'InProgress',
+    isConnected: false,
     notifications: [],
     notificationsStatus: 'InProgress',
     profile: undefined,
-    profileStatus: undefined,
+    profileLoaded: false,
+    profileLoading: 'InProgress',
     subscriptions: {},
+    topics: [],
+    topicsLoaded: false,
+    topicsLoading: 'InProgress',
 };
 
 const store = new Store<NotifoState, NotifoAction>(initialState, reducer);
@@ -256,86 +275,130 @@ export function getUnseen(state: NotifoState) {
     return count;
 }
 
-export async function loadSubscription(config: SDKConfig, topicPrefix: string, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'LoadSubscriptionStarted', topicPrefix });
-
-        const subscription = await apiGetSubscription(config, topicPrefix);
-
-        dispatch({ type: 'LoadSubscriptionSuccess', topicPrefix, subscription });
-    } catch (ex) {
-        dispatch({ type: 'LoadSubscriptionFailed', ex, topicPrefix });
+function mapStatus(statuses: (Status | undefined)[]) {
+    if (statuses.indexOf('InProgress') >= 0) {
+        return 'InProgress';
+    } else if (statuses.indexOf('Failed') >= 0) {
+        return 'Failed';
+    } else {
+        return 'Success';
     }
 }
 
-export async function subscribe(config: SDKConfig, topicPrefix: string, subscription: Subscription, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'SubscribeStarted', topicPrefix });
+export function getTopicsLoadingStatus(state: NotifoState): Status {
+    const statuses = [state.topicsLoading, ...state.topics.map(x => state.subscriptions[x.path]?.loadingStatus)];
 
-        const newSubscription = await apiPostSubscription(config, { topicPrefix, ...subscription });
-
-        dispatch({ type: 'SubscribeSuccess', topicPrefix, subscription: newSubscription });
-    } catch (ex) {
-        dispatch({ type: 'SubscribeFailed', ex, topicPrefix });
-    }
+    return mapStatus(statuses);
 }
 
-export async function unsubscribe(config: SDKConfig, topicPrefix: string, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'UnsubscribeStarted', topicPrefix });
+export function getTopicsUpdateStatus(state: NotifoState): Status {
+    const statuses = state.topics.map(x => state.subscriptions[x.path]?.updateStatus);
 
-        await apiDeleteSubscription(config, topicPrefix);
-
-        dispatch({ type: 'UnsubscribeSuccess', topicPrefix });
-    } catch (ex) {
-        dispatch({ type: 'UnsubscribeFailed', ex, topicPrefix });
-    }
+    return mapStatus(statuses);
 }
 
-export async function loadProfile(config: SDKConfig, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'LoadProfileStarted' });
+export function loadProfile(config: SDKConfig) {
+    return async (store: Store<NotifoState, NotifoAction>) => {
+        try {
+            store.dispatch({ type: 'LoadProfileStarted' });
 
-        const profile = await apiGetProfile(config);
+            const profile = await apiGetProfile(config);
 
-        dispatch({ type: 'LoadProfileSuccess', profile });
-    } catch (ex) {
-        dispatch({ type: 'LoadProfileFailed', ex });
-    }
+            store.dispatch({ type: 'LoadProfileSuccess', profile });
+        } catch (ex) {
+            store.dispatch({ type: 'LoadProfileFailed', ex });
+        }
+    };
 }
 
-export async function loadArchive(config: SDKConfig, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'LoadArchiveStarted' });
+export function loadArchive(config: SDKConfig) {
+    return async (store: Store<NotifoState, NotifoAction>) => {
+        try {
+            store.dispatch({ type: 'LoadArchiveStarted' });
 
-        const notifications = await apiGetArchive(config);
+            const notifications = await apiGetArchive(config);
 
-        dispatch({ type: 'LoadArchiveSuccess', notifications });
-    } catch (ex) {
-        dispatch({ type: 'LoadArchiveFailed', ex });
-    }
+            store.dispatch({ type: 'LoadArchiveSuccess', notifications });
+        } catch (ex) {
+            store.dispatch({ type: 'LoadArchiveFailed', ex });
+        }
+    };
 }
 
-export async function saveProfile(config: SDKConfig, update: UpdateProfile, dispatch: NotifoDispatch) {
-    try {
-        dispatch({ type: 'SaveProfileStarted' });
+export function loadTopics(config: SDKConfig) {
+    return async (store: Store<NotifoState, NotifoAction>) => {
+        try {
+            store.dispatch({ type: 'LoadTopicsStarted' });
 
-        const profile = await apiPostProfile(config, update);
+            const topics = await apiGetTopics(config);
 
-        dispatch({ type: 'SaveProfileSuccess', profile });
-    } catch (ex) {
-        dispatch({ type: 'SaveProfileFailed', ex });
-    }
+            store.dispatch({ type: 'LoadTopicsSuccess', topics });
+        } catch (ex) {
+            store.dispatch({ type: 'LoadTopicsFailed', ex });
+        }
+    };
 }
 
-export function setConnected(isConnected: boolean, dispatch: (action: any) => void) {
-    dispatch({ type: 'SetConnected', isConnected });
+export function saveProfile(config: SDKConfig, update: UpdateProfileDto) {
+    return async (store: Store<NotifoState, NotifoAction>) => {
+        try {
+            store.dispatch({ type: 'SaveProfileStarted' });
+
+            const profile = await apiPostProfile(config, update);
+
+            store.dispatch({ type: 'SaveProfileSuccess', profile });
+        } catch (ex) {
+            store.dispatch({ type: 'SaveProfileFailed', ex });
+        }
+    };
 }
 
-export function deleteNotification(id: string, dispatch: (action: any) => void) {
-    dispatch({ type: 'NotificationRemove', id });
+export function loadSubscriptions(config: SDKConfig, topics: string[]) {
+    return async (store: Store<NotifoState, NotifoAction>) => {
+        topics = topics.filter(x => !store.current.subscriptions[x]);
+
+        if (topics.length === 0) {
+            return;
+        }
+
+        try {
+            store.dispatch({ type: 'LoadSubscriptionsStarted', topics });
+    
+            const subscriptions = await apiGetSubscriptions(config, topics);
+    
+            store.dispatch({ type: 'LoadSubscriptionsSuccess', topics, subscriptions });
+        } catch (ex) {
+            store.dispatch({ type: 'LoadSubscriptionsFailed', ex, topics });
+        }
+    };
 }
 
-export function addNotifications(notifications: ReadonlyArray<NotifoNotification>, dispatch: (action: any) => void) {
-    dispatch({ type: 'NotificationsAdd', notifications });
+export function subscribe(config: SDKConfig, subscriptions: SubscriptionsDto) {
+    return async (store: Store<NotifoState, NotifoAction>) => {
+        if (Object.keys(subscriptions).length === 0) {
+            return;
+        }
+
+        store.dispatch({ type: 'SubscribeStarted', subscriptions });
+
+        try {
+            await apiPostSubscriptions(config, subscriptions);
+
+            store.dispatch({ type: 'SubscribeSuccess', subscriptions });
+        } catch (ex) {
+            store.dispatch({ type: 'SubscribeFailed', ex, subscriptions });
+        }
+    };
+}
+
+export function setConnected(isConnected: boolean): NotifoAction {
+    return { type: 'SetConnected', isConnected };
+}
+
+export function deleteNotification(id: string): NotifoAction {
+    return { type: 'NotificationRemove', id };
+}
+
+export function addNotifications(notifications: ReadonlyArray<NotifoNotificationDto>): NotifoAction {
+    return { type: 'NotificationsAdd', notifications };
 }

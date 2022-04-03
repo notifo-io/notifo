@@ -45,7 +45,7 @@ export const LogPage = () => {
                         <Col>
                             <h2>{texts.log.header}</h2>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {logEntries.isLoading ? (
                                 <Loader visible={logEntries.isLoading} />
                             ) : (

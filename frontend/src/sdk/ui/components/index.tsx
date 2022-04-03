@@ -17,8 +17,8 @@ export function renderNotificationsUI(element: Element, options: NotificationsOp
     render(<NotificationsUI config={config} options={options} />, element);
 }
 
-export function renderTopicUI(element: Element, topicPrefix: string, options: TopicOptions, config: SDKConfig) {
-    render(<TopicUI config={config} topicPrefix={topicPrefix} options={options} />, element);
+export function renderTopicUI(element: Element, topic: string, options: TopicOptions, config: SDKConfig) {
+    render(<TopicUI config={config} topic={topic} options={options} />, element);
 }
 
 export function renderWebPushUI(element: Element, config: SDKConfig, onAllow: () => void, onDeny: () => void) {

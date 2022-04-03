@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { Button, ButtonGroup, Card, CardBody, Col, Row, Table } from 'reactstrap';
+import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { deleteSubscription, loadSubscriptions, togglePublishDialog, useApp, useSubscriptions } from '@app/state';
@@ -52,7 +52,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     }, [dispatch, appId, userId]);
 
     const doDelete = React.useCallback((subscription: SubscriptionDto) => {
-        dispatch(deleteSubscription({ appId, userId, prefix: subscription.topicPrefix }));
+        dispatch(deleteSubscription({ appId, userId, topicPrefix: subscription.topicPrefix }));
     }, [dispatch, appId, userId]);
 
     const doPublish = React.useCallback((subscription: SubscriptionDto) => {
@@ -70,17 +70,21 @@ export const Subscriptions = (props: SubscriptionsProps) => {
             <Row className='align-items-center header'>
                 <Col xs={12} lg={6}>
                     <Row className='align-items-center flex-nowrap'>
-                        <Col className='col-button'>
-                            <ButtonGroup>
-                                <Button Button color='simple' className='btn-flat truncate' outline onClick={onSwitch}>
-                                    {texts.notifications.header}
-                                </Button>
-                                <Button Button color='simple' className='btn-flat truncate active'>
-                                    {texts.subscriptions.header}
-                                </Button>
-                            </ButtonGroup>
+                        <Col className='no-overflow'>
+                            <Nav className='nav-tabs2'>
+                                <NavItem>
+                                    <NavLink onClick={onSwitch}>
+                                        {texts.topics.header}
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink active>
+                                        {texts.topics.explicit}
+                                    </NavLink>
+                                </NavItem>
+                            </Nav>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {subscriptions.isLoading ? (
                                 <Loader visible={subscriptions.isLoading} />
                             ) : (

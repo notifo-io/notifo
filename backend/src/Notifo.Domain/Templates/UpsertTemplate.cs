@@ -10,11 +10,11 @@ using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Domain.Templates
 {
-    public sealed class UpdateTemplate : ICommand<Template>
+    public sealed class UpsertTemplate : ICommand<Template>
     {
         public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 
-        public NotificationSettings Settings { get; } = new NotificationSettings();
+        public NotificationSettings? Settings { get; set; }
 
         public ValueTask<Template?> ExecuteAsync(Template target, IServiceProvider serviceProvider, CancellationToken ct)
         {
@@ -30,26 +30,12 @@ namespace Notifo.Domain.Templates
                     Formatting = Formatting
                 };
             }
-            else if (newTemplate.Formatting == null)
-            {
-                newTemplate = newTemplate with
-                {
-                    Formatting = new NotificationFormatting<LocalizedText>()
-                };
-            }
 
             if (Settings != null)
             {
                 newTemplate = newTemplate with
                 {
                     Settings = Settings
-                };
-            }
-            else if (newTemplate.Settings == null)
-            {
-                newTemplate = newTemplate with
-                {
-                    Settings = new NotificationSettings()
                 };
             }
 

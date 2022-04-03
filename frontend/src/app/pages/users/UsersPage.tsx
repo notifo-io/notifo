@@ -67,7 +67,7 @@ export const UsersPage = () => {
                         <Col>
                             <h2 className='truncate'>{texts.users.header}</h2>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {users.isLoading ? (
                                 <Loader visible={users.isLoading} />
                             ) : (
@@ -142,7 +142,7 @@ export const UsersPage = () => {
 
                     {!users.isLoading && users.items && users.items.length === 0 &&
                         <tr className='list-item-empty'>
-                            <td colSpan={4}>{texts.users.usersNotFound}</td>
+                            <td colSpan={6}>{texts.users.usersNotFound}</td>
                         </tr>
                     }
                 </tbody>

@@ -26,7 +26,7 @@ namespace Notifo.Domain.Users
                 Token = token1
             };
 
-            var user = new User
+            var user = new User("1", "1", default)
             {
                 MobilePushTokens = new List<string>
                     {
@@ -59,7 +59,7 @@ namespace Notifo.Domain.Users
                 Token = token1
             };
 
-            var user = new User
+            var user = new User("1", "1", default)
             {
                 MobilePushTokens = new List<string>
                     {
@@ -85,7 +85,7 @@ namespace Notifo.Domain.Users
                 Token = token1
             };
 
-            var user = new User
+            var user = new User("1", "1", default)
             {
                 MobilePushTokens = new List<string>
                     {

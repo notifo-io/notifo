@@ -1,0 +1,46 @@
+.notifo {
+    &-topic {
+        border-bottom: 1px solid $color-border;
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        padding-top: 0;
+
+        &:last-child {
+            border: 0;
+        }
+
+        &-toggle {
+            width: 5.5rem;
+        }
+
+        &-details {
+            font-size: $font-size-sm;
+            font-weight: normal;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            width: 100%;
+        }
+
+        h3 {
+            font-size: $font-size-sm;
+            font-weight: 500;
+        }
+
+        label {
+            font-weight: normal;
+            margin-top: .25rem;
+            margin-right: 1rem;
+        }
+    }
+
+    &-topics {
+        &-title {
+            font-size: $font-size-sm;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    }
+}

@@ -8,67 +8,18 @@
 using NodaTime;
 using Notifo.Infrastructure.Texts;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Templates
 {
-    public sealed record Template
+    public sealed record Template(string AppId, string Code, Instant Created)
     {
-        public string AppId { get; init; }
-
-        public string Code { get; init; }
-
         public bool IsAutoCreated { get; init; }
-
-        public Instant Created { get; init; }
 
         public Instant LastUpdate { get; init; }
 
-        public NotificationFormatting<LocalizedText> Formatting { get; init; }
+        public NotificationFormatting<LocalizedText> Formatting { get; init; } = new NotificationFormatting<LocalizedText>();
 
-        public NotificationSettings Settings { get; init; }
-
-        public static Template Create(string appId, string code, Instant now)
-        {
-            return new Template { AppId = appId, Code = code, Created = now };
-        }
-
-        public Template Update(UpdateTemplate update)
-        {
-            var newTemplate = this with
-            {
-                IsAutoCreated = false
-            };
-
-            if (update.Formatting != null)
-            {
-                newTemplate = newTemplate with
-                {
-                    Formatting = update.Formatting
-                };
-            }
-            else if (newTemplate.Formatting == null)
-            {
-                newTemplate = newTemplate with
-                {
-                    Formatting = new NotificationFormatting<LocalizedText>()
-                };
-            }
-
-            if (update.Settings != null)
-            {
-                newTemplate = newTemplate with
-                {
-                    Settings = update.Settings
-                };
-            }
-            else if (newTemplate.Settings == null)
-            {
-                newTemplate = newTemplate with
-                {
-                    Settings = new NotificationSettings()
-                };
-            }
-
-            return newTemplate;
-        }
+        public NotificationSettings Settings { get; init; } = new NotificationSettings();
     }
 }

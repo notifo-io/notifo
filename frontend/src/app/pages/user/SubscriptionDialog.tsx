@@ -80,7 +80,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
 
     return (
         <Modal isOpen={true} size='lg' toggle={doCloseForm}>
-            <Formik<SubscriptionDto> initialValues={initialValues} onSubmit={doSave} enableReinitialize validationSchema={FormSchema}>
+            <Formik<SubscriptionDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>

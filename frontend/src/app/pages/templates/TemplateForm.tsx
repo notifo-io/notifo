@@ -97,7 +97,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     }, [template]);
 
     return (
-        <Formik<TemplateDto> initialValues={initialValues} onSubmit={doPublish} enableReinitialize validationSchema={FormSchema}>
+        <Formik<TemplateDto> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
             {({ handleSubmit, values }) => (
                 <Card className='template-form slide-right'>
                     <CardHeader>

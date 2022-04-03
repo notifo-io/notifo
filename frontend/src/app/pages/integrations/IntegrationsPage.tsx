@@ -65,7 +65,7 @@ export const IntegrationsPage = () => {
                 <Col>
                     <h2>{texts.integrations.header}</h2>
                 </Col>
-                <Col xs='auto'>
+                <Col xs='auto' className='col-refresh'>
                     {loading ? (
                         <Loader visible={loading} />
                     ) : (

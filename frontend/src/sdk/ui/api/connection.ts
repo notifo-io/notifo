@@ -5,10 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { NotifoNotification } from '@sdk/shared';
+import { NotifoNotificationDto } from '@sdk/shared';
 
 export type HandleConnect = () => void;
-export type HandleNotifications = (notifications: ReadonlyArray<NotifoNotification>, isUpdate: boolean) => void;
+export type HandleNotifications = (notifications: ReadonlyArray<NotifoNotificationDto>, isUpdate: boolean) => void;
 export type HandleDeletion = (request: { id: string }) => void;
 
 export interface Connection {
@@ -22,7 +22,7 @@ export interface Connection {
 
     onDisconnected(handler: HandleConnect): void;
 
-    delete(id: string): void;
+    delete(id: string): Promise<any>;
 
-    confirmMany(seen: string[], confirmed: string | null | undefined): void;
+    confirmMany(seen: string[], confirmed?: string | null): Promise<any>;
 }

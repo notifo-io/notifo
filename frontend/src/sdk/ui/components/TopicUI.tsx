@@ -8,11 +8,13 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useEffect } from 'preact/hooks';
 import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
-import { loadSubscription, useDispatch, useStore } from '@sdk/ui/model';
+import { loadSubscriptions, useDispatch, useStore } from '@sdk/ui/model';
+import { Modal } from './Modal';
 import { TopicButton } from './TopicButton';
 import { TopicModal } from './TopicModal';
+import { useToggle } from './utils';
 
 export interface TopicUIProps {
     config: SDKConfig;
@@ -21,50 +23,42 @@ export interface TopicUIProps {
     options: TopicOptions;
 
     // The topic to watch.
-    topicPrefix: string;
+    topic: string;
 }
 
 export const TopicUI = (props: TopicUIProps) => {
     const {
         config,
         options,
-        topicPrefix,
+        topic,
     } = props;
 
     const dispatch = useDispatch();
-    const subscriptionState = useStore(x => x.subscriptions[topicPrefix]);
-    const subscription = subscriptionState?.subscription;
-    const subscriptionStatus = subscriptionState?.status;
-    const [isOpen, setIsOpen] = useState(false);
+    const modal = useToggle();
+    const subscriptionState = useStore(x => x.subscriptions[topic]);
+    const subscriptionStatus = subscriptionState?.updateStatus;
 
     useEffect(() => {
-        if (isUndefined(subscription)) {
-            loadSubscription(config, topicPrefix, dispatch);
-        }
-    }, [dispatch, config, subscription, topicPrefix]);
+        dispatch(loadSubscriptions(config, [topic]));
+    }, [dispatch, config, topic]);
 
-    const doShow = useCallback(() => {
-        setIsOpen(true);
-    }, []);
-
-    const doHide = useCallback(() => {
-        setIsOpen(false);
-    }, []);
-
-    if (isUndefined(subscription)) {
+    if (isUndefined(subscriptionState?.subscription)) {
         return null;
     }
 
     return (
         <div class='notifo'>
-            <TopicButton options={options} subscription={subscription} onClick={doShow} />
+            <TopicButton options={options} subscription={subscriptionState?.subscription} onClick={modal.show} />
 
-            {isOpen &&
-                <TopicModal config={config} options={options}
-                    subscription={subscription}
-                    subscriptionState={subscriptionStatus}
-                    topicPrefix={topicPrefix}
-                    onClickOutside={doHide} />
+            {modal.isOpen &&
+                <Modal onClickOutside={modal.hide} position={options.position}>
+                    <TopicModal
+                        config={config}
+                        subscription={subscriptionState?.subscription}
+                        subscriptionStatus={subscriptionStatus}
+                        topic={topic}
+                    />
+                </Modal>
             }
         </div>
     );

@@ -11,7 +11,7 @@ export type Dispatch<TAction> = (action: TAction) => void;
 export type StoreRecucer<TState, TAction> = (state: TState, action: TAction) => TState;
 export type StoreListener<TState> = (state: TState) => void;
 
-export class Store<TState, TAction extends { type: string }> {
+export class Store<TState, TAction extends { type: string } = { type: string } & any> {
     private readonly listeners: StoreListener<TState>[] = [];
     private devTools: any;
 
@@ -30,6 +30,12 @@ export class Store<TState, TAction extends { type: string }> {
                 name: window['title'] ? `${window['title']} Notifo SDK` : 'Notifo SDK',
             });
 
+            this.devTools.subscribe((message: any) => {
+                if (message.type === 'DISPATCH' && message.payload.type === 'JUMP_TO_ACTION') {
+                    this.setState(JSON.parse(message.state));
+                }
+            });
+
             this.devTools.init(state);
         }
     }
@@ -46,7 +52,12 @@ export class Store<TState, TAction extends { type: string }> {
         this.listeners.splice(this.listeners.indexOf(callback), 1);
     }
 
-    public dispatch = (action: TAction) => {
+    public dispatch = (action: TAction | Function) => {
+        if (isFunction(action)) {
+            action(this);
+            return;
+        }
+
         const newState = this.reducer(this.state, action);
 
         if (this.devTools) {
@@ -65,36 +76,4 @@ export class Store<TState, TAction extends { type: string }> {
             this.state = newState;
         }
     }
-}
-
-export function set<T>(states: { [key: string]: T }, id: string, update: T | ((previous: T) => T)) {
-    let newValue: T;
-
-    if (isFunction(update)) {
-        newValue = update(states[id]);
-    } else {
-        newValue = update;
-    }
-
-    if (states[id] !== newValue) {
-        const updated = { ...states };
-
-        updated[id] = newValue;
-
-        return updated;
-    }
-
-    return states;
-}
-
-export function remove<T>(states: { [key: string]: T }, id: string) {
-    if (states[id]) {
-        const updated = { ...states };
-
-        delete updated[id];
-
-        return updated;
-    }
-
-    return states;
 }

@@ -70,7 +70,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private void Parse(EmailTemplate template, List<EmailFormattingError> errors)
         {
-            Format(EmailJob.ForPreview, template, new App(), new User(), errors);
+            Format(EmailJob.ForPreview, template, new App("1", default), new User("1", "1", default), errors);
 
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
             {

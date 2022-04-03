@@ -9,12 +9,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { isFunction } from 'lodash';
 import { h } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
-import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
+import { useEffect, useState } from 'preact/hooks';
+import { NotificationsOptions, SDKConfig } from '@sdk/shared';
+import { buildConnection } from '@sdk/ui/api';
 import { addNotifications, deleteNotification, setConnected, useDispatch } from '@sdk/ui/model';
-import { buildConnection } from './../api';
+import { Modal } from './Modal';
 import { NotificationsButton } from './NotificationsButton';
 import { NotificationsModal } from './NotificationsModal';
+import { useToggle } from './utils';
 
 export interface NotificationsUIProps {
     // The main config.
@@ -31,12 +33,12 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const [isOpen, setIsOpen] = useState(false);
+    const modal = useToggle();
     const [connection] = useState(() => buildConnection(config));
 
     useEffect(() => {
         connection.onNotifications((notifications, isUpdate) => {
-            addNotifications(notifications, dispatch);
+            dispatch(addNotifications(notifications));
 
             if (isUpdate && isFunction(config.onNotification)) {
                 for (const notification of notifications) {
@@ -51,59 +53,35 @@ export const NotificationsUI = (props: NotificationsUIProps) => {
         });
 
         connection.onDelete(({ id }) => {
-            deleteNotification(id, dispatch);
+            dispatch(deleteNotification(id));
         });
 
         connection.onReconnected(() => {
-            setConnected(true, dispatch);
+            dispatch(setConnected(true));
         });
 
         connection.onDisconnected(() => {
-            setConnected(false, dispatch);
+            dispatch(setConnected(false));
         });
 
         connection.start().then(() => {
-            setConnected(true, dispatch);
+            dispatch(setConnected(true));
         });
     }, [dispatch, config, connection]);
 
-    const doConfirm = useCallback(async (notification: NotifoNotification) => {
-        await connection.confirmMany([], notification.id);
-
-        addNotifications([{ ...notification, isConfirmed: true }], dispatch);
-    }, [dispatch, connection]);
-
-    const doSee = useCallback(async (notification: NotifoNotification) => {
-        await connection.confirmMany([notification.id]);
-
-        addNotifications([{ ...notification, isSeen: true }], dispatch);
-    }, [dispatch, connection]);
-
-    const doDelete = useCallback(async (notification: NotifoNotification) => {
-        await connection.delete(notification.id);
-    }, [connection]);
-
-    const doShow = useCallback(() => {
-        setIsOpen(true);
-    }, []);
-
-    const doHide = useCallback(() => {
-        setIsOpen(false);
-    }, []);
-
     return (
         <div class='notifo'>
-            <NotificationsButton options={options} onClick={doShow} />
+            <NotificationsButton options={options} onClick={modal.show} />
 
-            {isOpen &&
-                <NotificationsModal
-                    config={config}
-                    onClickOutside={doHide}
-                    onConfirm={doConfirm}
-                    onDelete={doDelete}
-                    onSeen={doSee}
-                    options={options}
-                />
+            {modal.isOpen &&
+                <Modal onClickOutside={modal.hide} position={options.position}>
+                    <NotificationsModal
+                        config={config}
+                        connection={connection}
+                        onClickOutside={modal.hide}
+                        options={options}
+                    />
+                </Modal>
             }
         </div>
     );

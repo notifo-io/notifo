@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using System.Globalization;
+using System.Text.Json;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Areas.Frontend;
+using Notifo.Domain.Utils;
 using Notifo.Pipeline;
 
 namespace Notifo
@@ -50,7 +52,7 @@ namespace Notifo
                 services.AddSignalR()
                     .AddJsonProtocol(options =>
                     {
-                        options.PayloadSerializerOptions.Configure();
+                        options.PayloadSerializerOptions.Configure(ConfigureJson);
                     });
             }
 
@@ -76,7 +78,7 @@ namespace Notifo
                 })
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.Configure();
+                    options.JsonSerializerOptions.Configure(ConfigureJson);
                 })
                 .AddRazorRuntimeCompilation();
 
@@ -91,7 +93,7 @@ namespace Notifo
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
             services.AddMyIntegrations();
-            services.AddMyJson();
+            services.AddMyJson(ConfigureJson);
             services.AddMyLog();
             services.AddMyMedia();
             services.AddMyMessaging(config);
@@ -125,6 +127,11 @@ namespace Notifo
             services.IntegrateTwilio();
 
             services.AddInitializer();
+        }
+
+        private static void ConfigureJson(JsonSerializerOptions options)
+        {
+            options.Converters.Add(new JsonTopicIdConverter());
         }
 
         public void Configure(IApplicationBuilder app)

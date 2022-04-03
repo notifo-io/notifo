@@ -7,17 +7,27 @@
 
 using NodaTime;
 using Notifo.Domain.Counters;
+using Notifo.Infrastructure.Collections;
+using Notifo.Infrastructure.Texts;
+
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
 namespace Notifo.Domain.Topics
 {
-    public sealed class Topic
+    public sealed record Topic(string AppId, string Path, Instant Created)
     {
-        public string AppId { get; set; }
+        public Instant LastUpdate { get; init; }
 
-        public string Path { get; set; }
+        public bool IsExplicit { get; init; }
 
-        public Instant LastUpdate { get; set; }
+        public bool ShowAutomatically { get; init; }
 
-        public CounterMap Counters { get; set; }
+        public LocalizedText Name { get; init; } = new LocalizedText();
+
+        public LocalizedText Description { get; init; } = new LocalizedText();
+
+        public ReadonlyDictionary<string, TopicChannel> Channels { get; init; } = ReadonlyDictionary.Empty<string, TopicChannel>();
+
+        public CounterMap Counters { get; init; } = new CounterMap();
     }
 }

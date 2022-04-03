@@ -57,24 +57,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbSubscriptionRepository/QueryAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbSubscription>>
-                {
-                    Filter.Eq(x => x.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.UserId))
-                {
-                    filters.Add(Filter.Eq(x => x.UserId, query.UserId));
-                }
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(Filter.Regex(x => x.TopicPrefix, regex));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -184,6 +167,32 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
                 await Collection.DeleteManyAsync(filter, ct);
             }
+        }
+
+        private static FilterDefinition<MongoDbSubscription> BuildFilter(string appId, SubscriptionQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbSubscription>>
+            {
+                Filter.Eq(x => x.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.UserId))
+            {
+                filters.Add(Filter.Eq(x => x.UserId, query.UserId));
+            }
+
+            if (query.Topics != null)
+            {
+                filters.Add(Filter.In(x => x.TopicPrefix, query.Topics));
+            }
+            else if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(Filter.Regex(x => x.TopicPrefix, regex));
+            }
+
+            return Filter.And(filters);
         }
 
         private static FilterDefinition<MongoDbSubscription> CreatePrefixFilter(string appId, string? userId, TopicId topic, bool withUser)

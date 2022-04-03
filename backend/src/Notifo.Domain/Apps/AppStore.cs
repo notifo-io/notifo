@@ -133,7 +133,7 @@ namespace Notifo.Domain.Apps
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    app = App.Create(id, clock.GetCurrentInstant());
+                    app = new App(id, clock.GetCurrentInstant());
                 }
 
                 var newApp = await command.ExecuteAsync(app, services, ct);

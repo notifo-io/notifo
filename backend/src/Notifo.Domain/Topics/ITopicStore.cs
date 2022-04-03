@@ -13,5 +13,11 @@ namespace Notifo.Domain.Topics
     {
         Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
             CancellationToken ct = default);
+
+        Task<Topic> UpsertAsync(string appId, TopicId path, ICommand<Topic> command,
+            CancellationToken ct = default);
+
+        Task DeleteAsync(string appId, TopicId path,
+            CancellationToken ct = default);
     }
 }

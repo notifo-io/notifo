@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { Button, ButtonGroup, Card, CardBody, Col, Row, Table } from 'reactstrap';
+import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
 import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
@@ -52,16 +52,20 @@ export const Notifications = (props: NotificationsProps) => {
                 <Col xs={12} lg={6}>
                     <Row className='align-items-center flex-nowrap'>
                         <Col className='col-button'>
-                            <ButtonGroup>
-                                <Button Button color='simple' className='btn-flat truncate active'>
-                                    {texts.notifications.header}
-                                </Button>
-                                <Button Button color='simple' className='btn-flat truncate' outline onClick={onSwitch}>
-                                    {texts.subscriptions.header}
-                                </Button>
-                            </ButtonGroup>
+                            <Nav className='nav-tabs2'>
+                                <NavItem>
+                                    <NavLink active>
+                                        {texts.topics.header}
+                                    </NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink onClick={onSwitch}>
+                                        {texts.topics.explicit}
+                                    </NavLink>
+                                </NavItem>
+                            </Nav>
                         </Col>
-                        <Col xs='auto'>
+                        <Col xs='auto' className='col-refresh'>
                             {notifications.isLoading ? (
                                 <Loader visible={notifications.isLoading} />
                             ) : (

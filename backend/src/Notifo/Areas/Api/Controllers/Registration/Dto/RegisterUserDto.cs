@@ -24,7 +24,7 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dtos
 
         public string? PreferredTimezone { get; set; }
 
-        public string[]? Topics { get; set; }
+        public TopicId[]? Topics { get; set; }
 
         public UpsertUser ToUpsert()
         {

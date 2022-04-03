@@ -16,11 +16,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class JsonServiceExtensions
     {
-        public static void AddMyJson(this IServiceCollection services)
+        public static void AddMyJson(this IServiceCollection services, Action<JsonSerializerOptions> configure)
         {
             var options =
                 new JsonSerializerOptions()
-                    .Configure();
+                    .Configure(configure);
 
             services.AddSingleton(options);
 
@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IJsonSerializer>();
         }
 
-        public static JsonSerializerOptions Configure(this JsonSerializerOptions options)
+        public static JsonSerializerOptions Configure(this JsonSerializerOptions options, Action<JsonSerializerOptions> configure)
         {
             options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
@@ -41,6 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
             options.Converters.Add(new JsonStringEnumConverter());
             options.Converters.Add(new JsonTimeSpanConverter());
             options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+
+            configure(options);
 
             return options;
         }

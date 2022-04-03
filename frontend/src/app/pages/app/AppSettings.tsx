@@ -54,7 +54,7 @@ export const AppSettings = (props: AppSettingsProps) => {
         <>
             <h2 className='mt-5'>{texts.common.settings}</h2>
 
-            <Formik<UpsertAppDto> initialValues={appDetails} onSubmit={doSave} validationSchema={FormSchema}>
+            <Formik<UpsertAppDto> initialValues={appDetails} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <Card>

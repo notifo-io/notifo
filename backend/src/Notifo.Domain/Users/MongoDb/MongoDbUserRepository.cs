@@ -82,23 +82,7 @@ namespace Notifo.Domain.Users.MongoDb
         {
             using (var activity = Telemetry.Activities.StartActivity("MongoDbUserRepository/QueryAsync"))
             {
-                var filters = new List<FilterDefinition<MongoDbUser>>
-                {
-                    Filter.Eq(x => x.Doc.AppId, appId)
-                };
-
-                if (!string.IsNullOrWhiteSpace(query.Query))
-                {
-                    var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                    filters.Add(
-                        Filter.Or(
-                            Filter.Regex(x => x.Doc.Id, regex),
-                            Filter.Regex(x => x.Doc.FullName, regex),
-                            Filter.Regex(x => x.Doc.EmailAddress, regex)));
-                }
-
-                var filter = Filter.And(filters);
+                var filter = BuildFilter(appId, query);
 
                 var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
                 var resultTotal = (long)resultItems.Count;
@@ -203,6 +187,27 @@ namespace Notifo.Domain.Users.MongoDb
 
                 await Collection.BulkWriteAsync(writes, cancellationToken: ct);
             }
+        }
+
+        private static FilterDefinition<MongoDbUser> BuildFilter(string appId, UserQuery query)
+        {
+            var filters = new List<FilterDefinition<MongoDbUser>>
+            {
+                Filter.Eq(x => x.Doc.AppId, appId)
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.Query))
+            {
+                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
+
+                filters.Add(
+                    Filter.Or(
+                        Filter.Regex(x => x.Doc.Id, regex),
+                        Filter.Regex(x => x.Doc.FullName, regex),
+                        Filter.Regex(x => x.Doc.EmailAddress, regex)));
+            }
+
+            return Filter.And(filters);
         }
     }
 }

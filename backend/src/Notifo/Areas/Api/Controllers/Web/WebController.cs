@@ -13,6 +13,7 @@ using Notifo.Areas.Api.Controllers.Web.Dtos;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -28,7 +29,6 @@ namespace Notifo.Areas.Api.Controllers.Web
             IOptions<SignalROptions> signalROptions)
         {
             this.userNotificationStore = userNotificationStore;
-
             this.signalROptions = signalROptions.Value;
         }
 
@@ -84,21 +84,15 @@ namespace Notifo.Areas.Api.Controllers.Web
                 await userNotificationStore.TrackSeenAsync(request.Seen, details);
             }
 
-            if (request.Confirmed != null)
+            foreach (var id in request.Confirmed.OrEmpty())
             {
-                foreach (var id in request.Confirmed)
-                {
-                    await userNotificationStore.TrackConfirmedAsync(id, details);
-                }
+                await userNotificationStore.TrackConfirmedAsync(id, details);
             }
 #pragma warning restore MA0040 // Flow the cancellation token
 
-            if (request.Deleted != null)
+            foreach (var id in request.Deleted.OrEmpty())
             {
-                foreach (var id in request.Deleted)
-                {
-                    await userNotificationStore.DeleteAsync(id, HttpContext.RequestAborted);
-                }
+                await userNotificationStore.DeleteAsync(id, HttpContext.RequestAborted);
             }
 
             var notifications = await userNotificationStore.QueryAsync(App.Id, UserId, new UserNotificationQuery
@@ -121,7 +115,7 @@ namespace Notifo.Areas.Api.Controllers.Web
                 ContinuationToken = continuationToken
             };
 
-            foreach (var notification in notifications)
+            foreach (var notification in notifications.OrEmpty().NotNull())
             {
                 if (notification.IsDeleted)
                 {

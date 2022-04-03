@@ -45,8 +45,7 @@ namespace Notifo.Domain.Templates
 
             if (template == null)
             {
-                template = Template.Create(appId, code, clock.GetCurrentInstant());
-                template = template with
+                template = new Template(appId, code, clock.GetCurrentInstant())
                 {
                     IsAutoCreated = true
                 };
@@ -82,7 +81,7 @@ namespace Notifo.Domain.Templates
                         throw new DomainObjectNotFoundException(code);
                     }
 
-                    template = Template.Create(appId, code, clock.GetCurrentInstant());
+                    template = new Template(appId, code, clock.GetCurrentInstant());
                 }
 
                 var newTemplate = await command.ExecuteAsync(template, services, ct);
@@ -99,7 +98,7 @@ namespace Notifo.Domain.Templates
 
                 await repository.UpsertAsync(newTemplate, etag, ct);
 
-                return template;
+                return newTemplate;
             });
         }
 

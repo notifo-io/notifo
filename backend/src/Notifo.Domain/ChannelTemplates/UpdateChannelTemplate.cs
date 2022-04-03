@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
@@ -41,7 +42,7 @@ namespace Notifo.Domain.ChannelTemplates
                 };
             }
 
-            if (Name != null && !string.Equals(Name, template.Name, StringComparison.Ordinal))
+            if (Is.IsChanged(Name, template.Name))
             {
                 newTemplate = newTemplate with
                 {
@@ -49,7 +50,7 @@ namespace Notifo.Domain.ChannelTemplates
                 };
             }
 
-            if (Primary.HasValue && Primary != template.Primary)
+            if (Is.IsChanged(Primary, template.Primary))
             {
                 newTemplate = newTemplate with
                 {

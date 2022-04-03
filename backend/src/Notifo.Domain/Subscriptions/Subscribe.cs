@@ -15,6 +15,8 @@ namespace Notifo.Domain.Subscriptions
     {
         public NotificationSettings? TopicSettings { get; set; }
 
+        public bool MergeSettings { get; set; }
+
         public bool CanCreate => true;
 
         public async ValueTask<Subscription?> ExecuteAsync(Subscription subscription, IServiceProvider serviceProvider,
@@ -24,9 +26,16 @@ namespace Notifo.Domain.Subscriptions
 
             await CheckWhitelistAsync(userStore, subscription, ct);
 
+            var newSettings = TopicSettings;
+
+            if (MergeSettings || newSettings == null)
+            {
+                newSettings = NotificationSettings.Merged(subscription.TopicSettings, TopicSettings);
+            }
+
             var newSubscription = subscription with
             {
-                TopicSettings = TopicSettings ?? subscription.TopicSettings
+                TopicSettings = newSettings
             };
 
             return newSubscription;

@@ -19,11 +19,12 @@ namespace Benchmarks
     [SimpleJob]
     public class EmailFormatterBenchmarks
     {
-        private readonly App app = new App();
+        private readonly App app = new App("1", default);
         private readonly IEmailFormatter emailFormatterNormal = new EmailFormatterNormal(new FakeImageFormatter(), new MjmlRenderer());
         private readonly IEmailFormatter emailFormatterLiquid = new EmailFormatterLiquid(new FakeImageFormatter(), new MjmlRenderer());
         private readonly EmailTemplate emailTemplateNormal;
         private readonly EmailTemplate emailTemplateLiquid;
+        private readonly User user = new User("1", "1", default);
 
         public EmailFormatterBenchmarks()
         {
@@ -47,13 +48,13 @@ namespace Benchmarks
         [Benchmark]
         public async ValueTask<FormattedEmail> FormatNormal()
         {
-            return await emailFormatterNormal.FormatAsync(EmailJob.ForPreview, emailTemplateNormal, app, new User());
+            return await emailFormatterNormal.FormatAsync(EmailJob.ForPreview, emailTemplateNormal, app, user);
         }
 
         [Benchmark]
         public async ValueTask<FormattedEmail> FormatLiquid()
         {
-            return await emailFormatterLiquid.FormatAsync(EmailJob.ForPreview, emailTemplateLiquid, app, new User());
+            return await emailFormatterLiquid.FormatAsync(EmailJob.ForPreview, emailTemplateLiquid, app, user);
         }
     }
 }

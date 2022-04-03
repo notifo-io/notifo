@@ -10,7 +10,7 @@
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
-import { NotificationsOptions, NotifoNotification, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
+import { NotificationsOptions, NotifoNotificationDto, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { Icon } from './Icon';
 import { Image } from './Image';
 import { Loader } from './Loader';
@@ -20,7 +20,7 @@ export type UpdateState = 'InProgress' | 'Failed' | 'None' | 'Done';
 
 export interface NotificationItemProps {
     // The confirmation button.
-    notification: NotifoNotification;
+    notification: NotifoNotificationDto;
 
     // The modal element.
     modal?: HTMLElement;
@@ -35,13 +35,13 @@ export interface NotificationItemProps {
     disabled?: boolean;
 
     // Clicked when a notification is confirmed.
-    onConfirm?: (notification: NotifoNotification) => Promise<any>;
+    onConfirm?: (notification: NotifoNotificationDto) => Promise<any>;
 
     // Clicked when a notification is seen.
-    onSeen?: (notification: NotifoNotification) => Promise<any>;
+    onSeen?: (notification: NotifoNotificationDto) => Promise<any>;
 
     // Clicked when a notification is deleted.
-    onDelete?: (notification: NotifoNotification) => Promise<any>;
+    onDelete?: (notification: NotifoNotificationDto) => Promise<any>;
 }
 
 export const NotificationItem = (props: NotificationItemProps) => {

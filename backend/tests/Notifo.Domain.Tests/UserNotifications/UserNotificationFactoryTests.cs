@@ -25,14 +25,14 @@ namespace Notifo.Domain.UserNotifications
         private readonly IClock clock = A.Fake<IClock>();
         private readonly ILogStore logStore = A.Fake<ILogStore>();
         private readonly App app;
-        private readonly User user = new User();
+        private readonly User user = new User("1", "1", default);
         private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
         private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();
         private readonly IUserNotificationFactory sut;
 
         public UserNotificationFactoryTests()
         {
-            app = new App
+            app = new App("1", default)
             {
                 Languages = ReadonlyList.Create("en", "de")
             };
