@@ -8,7 +8,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { Middleware } from 'redux';
 import { ErrorDto, listThunk, Query } from '@app/framework';
-import { Clients, SubscriptionDto } from '@app/service';
+import { Clients, SubscribeDto, SubscriptionDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { SubscriptionsState } from './state';
 
@@ -23,13 +23,13 @@ export const loadSubscriptions = (appId: string, userId: string, query?: Partial
 };
 
 export const upsertSubscription = createApiThunk('subscriptions/upsert',
-    (arg: { appId: string; userId: string; params: SubscriptionDto }) => {
-        return Clients.Users.postSubscription(arg.appId, arg.userId, arg.params);
+    (arg: { appId: string; userId: string; params: SubscribeDto }) => {
+        return Clients.Users.postSubscriptions(arg.appId, arg.userId, { subscribe: [arg.params] });
     });
 
 export const deleteSubscription = createApiThunk('subscriptions/delete',
-    (arg: { appId: string; userId: string; prefix: string }) => {
-        return Clients.Users.deleteSubscription(arg.appId, arg.userId, arg.prefix);
+    (arg: { appId: string; userId: string; topicPrefix: string }) => {
+        return Clients.Users.postSubscriptions(arg.appId, arg.userId, { unsubscribe: [arg.topicPrefix] });
     });
 
 export const subscriptionsMiddleware: Middleware = store => next => action => {

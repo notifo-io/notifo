@@ -52,13 +52,16 @@ export const TopicRow = React.memo((props: TopicRowProps) => {
     }, [onEdit, topic]);
 
     return (
-        <CounterRow counters={topic.counters} columnCount={2} showCounters={showCounters}>
+        <CounterRow counters={topic.counters} columnCount={5} showCounters={showCounters}>
             <tr className='list-item-summary'>
                 <td>
                     <span className='truncate'>{topic.path}</span>
                 </td>
                 <td>
                     <span className='truncate'>{topic.name?.[language]}</span>
+                </td>
+                <td>
+                    {topic.showAutomatically ? texts.common.yes : ''}
                 </td>
                 <td>
                     {topic.isExplicit ? texts.common.yes : ''}

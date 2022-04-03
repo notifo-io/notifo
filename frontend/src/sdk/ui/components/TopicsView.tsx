@@ -9,13 +9,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect, useRef } from 'preact/hooks';
-import { NotificationsOptions, SDKConfig, setSubscriptionChannel, Subscription } from '@sdk/shared';
+import { NotificationsOptions, SDKConfig, setSubscriptionChannel, setTopic, SubscriptionsDto } from '@sdk/shared';
 import { getTopicsLoadingStatus, getTopicsUpdateStatus, loadSubscriptions, subscribe, useDispatch, useStore } from '@sdk/ui/model';
 import { Loader } from './Loader';
 import { TopicItem } from './TopicItem';
 import { useMutable } from './utils';
-
-type Subscriptions = { [path: string]: Subscription | undefined | null };
 
 export interface TopicsViewProps {
     // The main config.
@@ -29,7 +27,7 @@ export const TopicsView = (props: TopicsViewProps) => {
     const { config } = props;
 
     const dispatch = useDispatch();
-    const formState = useMutable<Subscriptions>({});
+    const formState = useMutable<SubscriptionsDto>({});
     const formValue = formState.current;
     const loaded = useStore(x => x.topicsLoaded);
     const loading = useStore(x => getTopicsLoadingStatus(x));
@@ -43,13 +41,11 @@ export const TopicsView = (props: TopicsViewProps) => {
     }, [dispatch, config]);
 
     useEffect(() => {
-        const newValue: Subscriptions = {};
-
-        for (const topic of Object.values(topics)) {
-            newValue[topic.path] = subscriptions[topic.path]?.subscription;
-        }
-
-        formState.set(newValue);
+        formState.set(value => {
+            for (const topic of topics) {
+                value[topic.path] = subscriptions[topic.path]?.subscription || null;
+            }
+        });
     }, [formState, subscriptions, topics]);
 
     const doChangeTopic = useCallback((send: boolean | undefined, path: string) => {
@@ -61,7 +57,7 @@ export const TopicsView = (props: TopicsViewProps) => {
     }, [formState]);
 
     const doSave = useCallback(() => {
-        dispatch(subscribe(config, formValue as any));
+        dispatch(subscribe(config, formValue));
     }, [config, dispatch, formValue]);
 
     const disabled = loading == 'InProgress' || updating === 'InProgress';
@@ -82,7 +78,7 @@ export const TopicsView = (props: TopicsViewProps) => {
 
             {topics.length > 0 &&
                 <Fragment>
-                    {Object.values(topics).map(topic => 
+                    {topics.map(topic => 
                         <TopicItem key={topic}
                             config={config}
                             disabled={disabled}
@@ -109,11 +105,3 @@ export const TopicsView = (props: TopicsViewProps) => {
         </Fragment>
     );
 };
-
-function setTopic(value: Subscriptions, send: boolean | undefined, path: string) {
-    if (!send) {
-        value[path] = undefined;
-    } else {
-        value[path] = { topicSettings: {} };
-    }
-}

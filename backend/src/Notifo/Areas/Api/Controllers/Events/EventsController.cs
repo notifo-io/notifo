@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Events.Dtos;
 using Notifo.Domain.Events;
 using Notifo.Domain.Identity;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -66,22 +67,16 @@ namespace Notifo.Areas.Api.Controllers.Events
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
         {
-            if (request?.Requests != null)
+            if (request.Requests?.Length > 100)
             {
-                if (request.Requests.Length > 100)
-                {
-                    throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
-                }
+                throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
+            }
 
-                foreach (var dto in request.Requests)
-                {
-                    if (dto != null)
-                    {
-                        var @event = dto.ToEvent(appId);
+            foreach (var dto in request.Requests.OrEmpty().NotNull())
+            {
+                var @event = dto.ToEvent(appId);
 
-                        await eventPublisher.PublishAsync(@event, HttpContext.RequestAborted);
-                    }
-                }
+                await eventPublisher.PublishAsync(@event, HttpContext.RequestAborted);
             }
 
             return NoContent();

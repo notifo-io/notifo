@@ -11,6 +11,7 @@ using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -139,11 +140,11 @@ namespace Notifo.Areas.Api.Controllers.Users
         }
 
         /// <summary>
-        /// Creates a user subscription.
+        /// Upserts or deletes my subscriptions.
         /// </summary>
         /// <param name="request">The subscription settings.</param>
         /// <returns>
-        /// 204 => Topic created.
+        /// 204 => User subscribed.
         /// </returns>
         /// <remarks>
         /// User Id and App Id are resolved using the API token.
@@ -151,32 +152,38 @@ namespace Notifo.Areas.Api.Controllers.Users
         [HttpPost("api/me/subscriptions")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(SubscriptionDto))]
-        public async Task<IActionResult> PostMySubscription([FromBody] SubscriptionDto request)
+        public async Task<IActionResult> PostMySubscriptions([FromBody] SubscribeManyDto request)
         {
-            var update = request.ToUpdate();
+            foreach (var dto in request.Subscribe.OrEmpty())
+            {
+                var update = dto.ToUpdate();
 
-            var subscription = await subscriptionStore.UpsertAsync(App.Id, UserId, request.TopicPrefix, update, HttpContext.RequestAborted);
+                await subscriptionStore.UpsertAsync(App.Id, UserId, dto.TopicPrefix, update, HttpContext.RequestAborted);
+            }
 
-            var response = SubscriptionDto.FromDomainObject(subscription);
+            foreach (var topic in request.Unsubscribe.OrEmpty())
+            {
+                await subscriptionStore.DeleteAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
+            }
 
-            return Ok(response);
+            return NoContent();
         }
 
         /// <summary>
-        /// Deletes a user subscription.
+        /// Remove my subscription.
         /// </summary>
-        /// <param name="topic">The topic path.</param>
+        /// <param name="prefix">The topic prefix.</param>
         /// <returns>
-        /// 204 => Topic deleted.
+        /// 204 => User unsubscribed.
         /// </returns>
         /// <remarks>
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
-        [HttpDelete("api/me/subscriptions/{*topic}")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteMySubscription(string topic)
+        [HttpPost("api/me/subscriptions/{*prefix}")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> DeleteSubscription(string prefix)
         {
-            await subscriptionStore.DeleteAsync(App.Id, UserIdOrSub, topic, HttpContext.RequestAborted);
+            await subscriptionStore.DeleteAsync(App.Id, UserId, Uri.UnescapeDataString(prefix), HttpContext.RequestAborted);
 
             return NoContent();
         }

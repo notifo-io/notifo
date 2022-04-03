@@ -126,6 +126,10 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         de: 'Wir wollen dir Push Benachrichtigungen schenken',
         en: 'We want to send you push notifications.',
     },
+    webpushTopics: {
+        de: 'Abonniere die folgenden Themen um auf dem neuesten Stand zu sein. Du kannst dich jederzeit von diesen Themen abmelden oder auch später anmelden.',
+        en: 'Subscribe to the following topics to be always up to date. You can unsubscribe any time you want or subscribe to these topics later.',
+    },
 };
 
 const IS_DEV = global['window'] && (window.location.host.indexOf('localhost:3002') >= 0 || window.location.host.indexOf('localhost:5002') >= 0);
@@ -418,6 +422,7 @@ type Texts<T> = {
     webpush: T;
     webpushConfirmText: T;
     webpushConfirmTitle: T;
+    webpushTopics: T;
 };
 
 const TextKeys: ReadonlyArray<keyof Texts<any>> = [
@@ -449,4 +454,5 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'webpush',
     'webpushConfirmText',
     'webpushConfirmTitle',
+    'webpushTopics',
 ];

@@ -5,13 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { NotifoNotification, SDKConfig } from '@sdk/shared';
+import { NotifoNotificationDto, SDKConfig } from '@sdk/shared';
 import { Connection, HandleConnect, HandleDeletion, HandleNotifications } from './connection';
 
 type Update = {
     continuationToken: string;
 
-    notifications: NotifoNotification[];
+    notifications: NotifoNotificationDto[];
 
     deletions?: string[];
 };

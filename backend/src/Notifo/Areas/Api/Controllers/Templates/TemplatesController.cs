@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Templates.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Templates;
+using Notifo.Infrastructure;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.Templates
@@ -60,19 +61,13 @@ namespace Notifo.Areas.Api.Controllers.Templates
         {
             var response = new List<TemplateDto>();
 
-            if (request?.Requests != null)
+            foreach (var dto in request.Requests.OrEmpty().NotNull())
             {
-                foreach (var dto in request.Requests)
-                {
-                    if (dto != null)
-                    {
-                        var update = dto.ToUpdate();
+                var update = dto.ToUpdate();
 
-                        var template = await templateStore.UpsertAsync(appId, dto.Code, update, HttpContext.RequestAborted);
+                var template = await templateStore.UpsertAsync(appId, dto.Code, update, HttpContext.RequestAborted);
 
-                        response.Add(TemplateDto.FromDomainObject(template));
-                    }
-                }
+                response.Add(TemplateDto.FromDomainObject(template));
             }
 
             return Ok(response);

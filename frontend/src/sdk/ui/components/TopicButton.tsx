@@ -9,7 +9,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
 import { useCallback } from 'preact/hooks';
-import { Subscription, TopicOptions } from '@sdk/shared';
+import { SubscriptionDto, TopicOptions } from '@sdk/shared';
 import { Icon } from './Icon';
 
 export interface TopicButtonProps {
@@ -17,7 +17,7 @@ export interface TopicButtonProps {
     options: TopicOptions;
 
     // True when subscribed.
-    subscription: Subscription | null;
+    subscription: SubscriptionDto | null;
 
     // Invoked when the button is clicked.
     onClick: () => void;

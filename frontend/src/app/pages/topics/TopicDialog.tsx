@@ -113,6 +113,9 @@ export const TopicDialog = (props: TopicDialogProps) => {
                                     onLanguageSelect={setLanguage}
                                 />
 
+                                <Forms.Boolean name='showAutomatically'
+                                    label={texts.topics.showAutomatically} hints={texts.topics.showAutomaticallyHints} />
+
                                 <hr />
 
                                 {CHANNELS.map(channel =>

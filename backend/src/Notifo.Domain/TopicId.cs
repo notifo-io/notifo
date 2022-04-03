@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Notifo.Domain
 {
-    public readonly struct TopicId
+    public record struct TopicId
     {
 #pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
         private static readonly Regex Regex = new Regex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled);
@@ -27,17 +27,22 @@ namespace Notifo.Domain
             Id = id;
         }
 
-        public string[] GetParts()
-        {
-            return Id.Split('/');
-        }
-
         public static bool IsValid(string? id)
         {
             return !string.IsNullOrWhiteSpace(id) && Regex.IsMatch(id);
         }
 
-        public bool StartsWith(string id)
+        public readonly string[] GetParts()
+        {
+            return Id.Split('/');
+        }
+
+        public readonly bool StartsWith(TopicId id)
+        {
+            return Id.StartsWith(id, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public readonly bool StartsWith(string id)
         {
             return Id.StartsWith(id, StringComparison.OrdinalIgnoreCase);
         }
@@ -52,7 +57,7 @@ namespace Notifo.Domain
             return new TopicId(value);
         }
 
-        public override string ToString()
+        public override readonly string ToString()
         {
             return Id;
         }

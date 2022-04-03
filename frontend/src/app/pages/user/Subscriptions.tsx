@@ -52,7 +52,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     }, [dispatch, appId, userId]);
 
     const doDelete = React.useCallback((subscription: SubscriptionDto) => {
-        dispatch(deleteSubscription({ appId, userId, prefix: subscription.topicPrefix }));
+        dispatch(deleteSubscription({ appId, userId, topicPrefix: subscription.topicPrefix }));
     }, [dispatch, appId, userId]);
 
     const doPublish = React.useCallback((subscription: SubscriptionDto) => {

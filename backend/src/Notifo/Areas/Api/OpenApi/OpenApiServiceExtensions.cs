@@ -9,6 +9,7 @@ using NJsonSchema;
 using NJsonSchema.Generation.TypeMappers;
 using NodaTime;
 using Notifo.Areas.Api.OpenApi;
+using Notifo.Domain;
 using NSwag.Generation;
 using NSwag.Generation.Processors;
 
@@ -53,7 +54,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             settings.TypeMappers = new List<ITypeMapper>
             {
-                CreateStringMap<Instant>(JsonFormatStrings.DateTime)
+                CreateStringMap<Instant>(JsonFormatStrings.DateTime),
+                CreateStringMap<TopicId>()
             };
         }
 

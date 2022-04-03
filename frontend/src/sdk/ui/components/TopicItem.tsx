@@ -8,7 +8,7 @@
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { h } from 'preact';
-import { isUndefined, SDKConfig, sendToBoolean, Subscription, Topic } from '@sdk/shared';
+import { isUndefined, SDKConfig, sendToBoolean, SubscriptionDto, TopicDto } from '@sdk/shared';
 import { Toggle } from './Toggle';
 
 export interface TopicItemProps {
@@ -16,19 +16,19 @@ export interface TopicItemProps {
     config: SDKConfig;
     
     // True, when the form is disabled.
-    disabled: boolean;
+    disabled?: boolean;
+
+    // The assigned subscription.
+    subscription?: SubscriptionDto | null;
+
+    // The current topic.
+    topic: TopicDto;
 
     // Trigger when the channel setting has been changed.
     onChangeChannel: (send: boolean | undefined, topic: string, channel: string) => void;
 
     // Invoked when the topic setting has beenchanged.
     onChangeTopic: (send: boolean | undefined, path: string) => void;
-
-    // The assigned subscription.
-    subscription?: Subscription | null;
-
-    // The current topic.
-    topic: Topic;
 }
 
 export const TopicItem = (props: TopicItemProps) => {
@@ -71,7 +71,7 @@ export const TopicItem = (props: TopicItemProps) => {
     );
 };
 
-function getAllowedChannels(topic: Topic, config: SDKConfig) {
+function getAllowedChannels(topic: TopicDto, config: SDKConfig) {
     const result: { name: string; label: string }[] = [];
 
     for (const [key, value] of Object.entries(topic.channels)) {

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
@@ -17,7 +18,7 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         /// <summary>
         /// The path of the topic.
         /// </summary>
-        public string? Path { get; set; }
+        public TopicId Path { get; set; }
 
         /// <summary>
         /// The name.
@@ -32,7 +33,7 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos
         /// <summary>
         /// True to show the topic automatically to new users, e.g. when he accepts push notifications.
         /// </summary>
-        public bool ShowAutomatically { get; set; }
+        public bool? ShowAutomatically { get; set; }
 
         /// <summary>
         /// Settings per channel.

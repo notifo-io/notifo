@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
-using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
@@ -32,6 +31,11 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// The optional description.
         /// </summary>
         public string? Description { get; set; }
+
+        /// <summary>
+        /// True to show the topic automatically to new users, e.g. when he accepts push notifications.
+        /// </summary>
+        public bool ShowAutomatically { get; set; }
 
         /// <summary>
         /// The channel options.

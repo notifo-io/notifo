@@ -121,14 +121,69 @@ export class UserClient {
     }
 
     /**
+     * Query the user topics.
+     * @param language (optional) The optional language.
+     * @return User subscriptions returned.
+     */
+    getTopics(language?: string | null | undefined): Promise<UserTopicDto[]> {
+        let url_ = this.baseUrl + "/api/me/topics?";
+        if (language !== undefined && language !== null)
+            url_ += "language=" + encodeURIComponent("" + language) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <RequestInit>{
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetTopics(_response);
+        });
+    }
+
+    protected processGetTopics(response: Response): Promise<UserTopicDto[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : <UserTopicDto[]>JSON.parse(_responseText, this.jsonParseReviver);
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : <ErrorDto>JSON.parse(_responseText, this.jsonParseReviver);
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserTopicDto[]>(<any>null);
+    }
+
+    /**
      * Query the user subscriptions.
+     * @param topics (optional) The topics we are interested in.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return User subscriptions returned.
      */
-    getSubscriptions(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
+    getMySubscriptions(topics?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
         let url_ = this.baseUrl + "/api/me/subscriptions?";
+        if (topics !== undefined && topics !== null)
+            url_ += "Topics=" + encodeURIComponent("" + topics) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -149,11 +204,11 @@ export class UserClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetSubscriptions(_response);
+            return this.processGetMySubscriptions(_response);
         });
     }
 
-    protected processGetSubscriptions(response: Response): Promise<ListResponseDtoOfSubscriptionDto> {
+    protected processGetMySubscriptions(response: Response): Promise<ListResponseDtoOfSubscriptionDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -183,11 +238,11 @@ export class UserClient {
     }
 
     /**
-     * Creates a user subscription.
+     * Upserts or deletes my subscriptions.
      * @param request The subscription settings.
-     * @return Topic created.
+     * @return User subscribed.
      */
-    postMySubscription(request: SubscriptionDto): Promise<void> {
+    postMySubscriptions(request: SubscribeManyDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -202,11 +257,11 @@ export class UserClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPostMySubscription(_response);
+            return this.processPostMySubscriptions(_response);
         });
     }
 
-    protected processPostMySubscription(response: Response): Promise<void> {
+    protected processPostMySubscriptions(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -291,29 +346,29 @@ export class UserClient {
     }
 
     /**
-     * Deletes a user subscription.
-     * @param topic The topic path.
-     * @return Topic deleted.
+     * Remove my subscription.
+     * @param prefix The topic prefix.
+     * @return User unsubscribed.
      */
-    deleteMySubscription(topic: string): Promise<void> {
-        let url_ = this.baseUrl + "/api/me/subscriptions/{topic}";
-        if (topic === undefined || topic === null)
-            throw new Error("The parameter 'topic' must be defined.");
-        url_ = url_.replace("{topic}", encodeURIComponent("" + topic));
+    deleteSubscription(prefix: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/me/subscriptions/{prefix}";
+        if (prefix === undefined || prefix === null)
+            throw new Error("The parameter 'prefix' must be defined.");
+        url_ = url_.replace("{prefix}", encodeURIComponent("" + prefix));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ = <RequestInit>{
-            method: "DELETE",
+            method: "POST",
             headers: {
             }
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDeleteMySubscription(_response);
+            return this.processDeleteSubscription(_response);
         });
     }
 
-    protected processDeleteMySubscription(response: Response): Promise<void> {
+    protected processDeleteSubscription(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -689,13 +744,13 @@ export class UsersClient {
     }
 
     /**
-     * Upsert a user subscriptions.
+     * Upserts or deletes multiple user subscriptions.
      * @param appId The app where the user belongs to.
      * @param id The user ID.
      * @param request The subscription object.
      * @return User subscribed.
      */
-    postSubscription(appId: string, id: string, request: SubscriptionDto): Promise<void> {
+    postSubscriptions(appId: string, id: string, request: SubscribeManyDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -716,11 +771,11 @@ export class UsersClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processPostSubscription(_response);
+            return this.processPostSubscriptions(_response);
         });
     }
 
-    protected processPostSubscription(response: Response): Promise<void> {
+    protected processPostSubscriptions(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
@@ -752,11 +807,11 @@ export class UsersClient {
     }
 
     /**
-     * Remove a user subscriptions.
+     * Unsubscribes a user from a subscription.
      * @param appId The app where the user belongs to.
      * @param id The user ID.
      * @param prefix The topic prefix.
-     * @return User subscribed.
+     * @return User unsubscribed.
      */
     deleteSubscription(appId: string, id: string, prefix: string): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions/{prefix}";
@@ -5473,6 +5528,19 @@ export interface UpdateProfileDto {
     settings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
+export interface UserTopicDto {
+    /** The path. */
+    path: string;
+    /** The name. */
+    name: string;
+    /** The optional description. */
+    description?: string | undefined;
+    /** The channel options. */
+    channels: { [key: string]: TopicChannel; };
+}
+
+export type TopicChannel = "Allowed" | "NotAllowed";
+
 export interface ListResponseDtoOfSubscriptionDto {
     /** The items. */
     items: SubscriptionDto[];
@@ -5484,7 +5552,21 @@ export interface SubscriptionDto {
     /** The topic to add. */
     topicPrefix: string;
     /** Notification settings per channel. */
-    topicSettings?: { [key: string]: NotificationSettingDto; };
+    topicSettings: { [key: string]: NotificationSettingDto; };
+}
+
+export interface SubscribeManyDto {
+    /** A list of topics to create. */
+    subscribe?: SubscribeDto[] | undefined;
+    /** A list of topics to unsubscribe from. */
+    unsubscribe?: string[] | undefined;
+}
+
+export interface SubscribeDto {
+    /** The topic to add. */
+    topicPrefix: string;
+    /** Notification settings per channel. */
+    topicSettings?: { [key: string]: NotificationSettingDto; } | undefined;
 }
 
 export interface ListResponseDtoOfUserDto {
@@ -5604,6 +5686,8 @@ export interface TopicDto {
     name?: LocalizedText | undefined;
     /** The description. */
     description?: LocalizedText | undefined;
+    /** True to show the topic automatically to new users, e.g. when he accepts push notifications. */
+    showAutomatically?: boolean;
     /** The channel settings. */
     channels?: { [key: string]: TopicChannel; } | undefined;
     /** The statistics counters. */
@@ -5614,8 +5698,6 @@ export interface LocalizedText {
 
     [key: string]: string | any; 
 }
-
-export type TopicChannel = "Allowed" | "NotAllowed";
 
 export type TopicQueryScope = "All" | "Explicit" | "Implicit";
 
@@ -5631,6 +5713,8 @@ export interface UpsertTopicDto {
     name?: LocalizedText | undefined;
     /** The description. */
     description?: LocalizedText | undefined;
+    /** True to show the topic automatically to new users, e.g. when he accepts push notifications. */
+    showAutomatically?: boolean;
     /** Settings per channel. */
     channels?: { [key: string]: TopicChannel; } | undefined;
 }

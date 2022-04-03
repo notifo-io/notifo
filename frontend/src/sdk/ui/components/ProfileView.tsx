@@ -8,7 +8,7 @@
 /** @jsx h */
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect } from 'preact/hooks';
-import { NotificationsOptions, SDKConfig, sendToBoolean, setUserChannel, UpdateProfile } from '@sdk/shared';
+import { NotificationsOptions, SDKConfig, sendToBoolean, setUserChannel, UpdateProfileDto } from '@sdk/shared';
 import { loadProfile, saveProfile, useDispatch, useStore } from '@sdk/ui/model';
 import { Loader } from './Loader';
 import { Toggle } from './Toggle';
@@ -26,7 +26,7 @@ export const ProfileView = (props: ProfileViewProps) => {
     const { config } = props;
 
     const dispatch = useDispatch();
-    const formState = useMutable<UpdateProfile>({} as any);
+    const formState = useMutable<UpdateProfileDto>({} as any);
     const formValue = formState.current;
     const loaded = useStore(x => x.profileLoaded);
     const loading = useStore(x => x.profileLoading);

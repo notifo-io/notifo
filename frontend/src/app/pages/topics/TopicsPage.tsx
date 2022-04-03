@@ -111,6 +111,7 @@ export const TopicsPage = () => {
                     <col />
                     <col />
                     <col style={{ width: 100 }} />
+                    <col style={{ width: 100 }} />
                     <col style={{ width: 130 }} />
                 </colgroup>
 
@@ -121,6 +122,9 @@ export const TopicsPage = () => {
                         </th>
                         <th>
                             <span className='truncate'>{texts.common.name}</span>
+                        </th>
+                        <th>
+                            <span className='truncate'>{texts.topics.showAutomatically}</span>
                         </th>
                         <th>
                             <span className='truncate'>{texts.topics.explicit}</span>
@@ -145,7 +149,7 @@ export const TopicsPage = () => {
 
                     {!topics.isLoading && topics.items && topics.items.length === 0 &&
                         <tr className='list-item-empty'>
-                            <td colSpan={4}>{texts.topics.topicsNotFound}</td>
+                            <td colSpan={5}>{texts.topics.topicsNotFound}</td>
                         </tr>
                     }
                 </tbody>

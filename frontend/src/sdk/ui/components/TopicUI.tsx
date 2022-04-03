@@ -34,9 +34,9 @@ export const TopicUI = (props: TopicUIProps) => {
     } = props;
 
     const dispatch = useDispatch();
+    const modal = useToggle();
     const subscriptionState = useStore(x => x.subscriptions[topic]);
     const subscriptionStatus = subscriptionState?.updateStatus;
-    const modal = useToggle();
 
     useEffect(() => {
         dispatch(loadSubscriptions(config, [topic]));

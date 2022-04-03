@@ -13,6 +13,7 @@ using Notifo.Domain.Integrations;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
 using NSwag.Annotations;
@@ -131,7 +132,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         }
 
         /// <summary>
-        /// Upsert a user subscriptions.
+        /// Upserts or deletes multiple user subscriptions.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
@@ -142,7 +143,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// </returns>
         [HttpPost("api/apps/{appId}/users/{id}/subscriptions")]
         [AppPermission(NotifoRoles.AppAdmin)]
-        public async Task<IActionResult> PostSubscription(string appId, string id, [FromBody] SubscriptionDto request)
+        public async Task<IActionResult> PostSubscriptions(string appId, string id, [FromBody] SubscribeManyDto request)
         {
             var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
 
@@ -151,21 +152,29 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            var update = request.ToUpdate();
+            foreach (var dto in request.Subscribe.OrEmpty())
+            {
+                var update = dto.ToUpdate();
 
-            await subscriptionStore.UpsertAsync(appId, id, request.TopicPrefix, update, HttpContext.RequestAborted);
+                await subscriptionStore.UpsertAsync(appId, id, dto.TopicPrefix, update, HttpContext.RequestAborted);
+            }
+
+            foreach (var topic in request.Unsubscribe.OrEmpty())
+            {
+                await subscriptionStore.DeleteAsync(appId, id, topic, HttpContext.RequestAborted);
+            }
 
             return NoContent();
         }
 
         /// <summary>
-        /// Remove a user subscriptions.
+        /// Unsubscribes a user from a subscription.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
         /// <returns>
-        /// 204 => User subscribed.
+        /// 204 => User unsubscribed.
         /// 404 => User or app not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}/subscriptions/{*prefix}")]
@@ -179,7 +188,7 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            await subscriptionStore.DeleteAsync(appId, id, prefix, HttpContext.RequestAborted);
+            await subscriptionStore.DeleteAsync(appId, id, Uri.UnescapeDataString(prefix), HttpContext.RequestAborted);
 
             return NoContent();
         }
@@ -200,24 +209,18 @@ namespace Notifo.Areas.Api.Controllers.Users
         {
             var response = new List<UserDto>();
 
-            if (request?.Requests != null)
+            if (request.Requests.Length > 100)
             {
-                if (request.Requests.Length > 100)
-                {
-                    throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
-                }
+                throw new ValidationException($"Only 100 users can be update in one request, found: {request.Requests.Length}");
+            }
 
-                foreach (var dto in request.Requests)
-                {
-                    if (dto != null)
-                    {
-                        var update = dto.ToUpsert();
+            foreach (var dto in request.Requests.OrEmpty().NotNull())
+            {
+                var update = dto.ToUpsert();
 
-                        var user = await userStore.UpsertAsync(appId, dto.Id, update, HttpContext.RequestAborted);
+                var user = await userStore.UpsertAsync(appId, dto.Id, update, HttpContext.RequestAborted);
 
-                        response.Add(UserDto.FromDomainObject(user, null, null));
-                    }
-                }
+                response.Add(UserDto.FromDomainObject(user, null, null));
             }
 
             return Ok(response);

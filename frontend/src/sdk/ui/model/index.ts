@@ -8,7 +8,7 @@
 // tslint:disable: no-parameter-reassignment
 
 import { useEffect, useState } from 'preact/hooks';
-import { apiDeleteSubscription, apiGetArchive, apiGetProfile, apiGetSubscriptions, apiGetTopics, apiPostProfile, apiPostSubscription, NotifoNotification, Profile, SDKConfig, Subscription, Subscriptions, Topic, UpdateProfile } from '@sdk/shared';
+import { apiGetArchive, apiGetProfile, apiGetSubscriptions, apiGetTopics, apiPostProfile, apiPostSubscriptions, NotifoNotificationDto, ProfileDto, SDKConfig, SubscriptionDto, SubscriptionsDto, TopicDto, UpdateProfileDto } from '@sdk/shared';
 import { Store } from './store';
 
 export type Status = 'InProgress' | 'Failed' | 'Success';
@@ -21,14 +21,14 @@ export interface SubscriptionState {
     updateStatus?: Status;
 
     // The subscription.
-    subscription?: Subscription | null;
+    subscription?: SubscriptionDto | null;
 }
 
 export type SubscriptionsState = { [prefix: string]: SubscriptionState };
 
 export interface NotifoState {
     // The current notifications.
-    archive: ReadonlyArray<NotifoNotification>;
+    archive: ReadonlyArray<NotifoNotificationDto>;
 
     // The loading status of the archive.
     archiveLoading: Status;
@@ -37,13 +37,13 @@ export interface NotifoState {
     archiveLoaded: boolean;
 
     // The current notifications.
-    notifications: ReadonlyArray<NotifoNotification>;
+    notifications: ReadonlyArray<NotifoNotificationDto>;
 
     // The notifications state.
     notificationsStatus: Status;
 
     // The loaded profile
-    profile?: Profile;
+    profile?: ProfileDto;
 
     // The loading status of the profile.
     profileLoading: Status;
@@ -61,7 +61,7 @@ export interface NotifoState {
     subscriptions: SubscriptionsState;
 
     // The loaded topics.
-    topics: Topic[];
+    topics: TopicDto[];
 
     // The loading status of the topics.
     topicsLoading: Status;
@@ -150,9 +150,7 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
         case 'LoadSubscriptionsSuccess': {
             const subscriptions = { ...state.subscriptions };
 
-            for (const topic of action.topics) {
-                const subscription = action.subscriptions.find((x: any) => x.topicPrefix === topic) || null;
-
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
                 subscriptions[topic] = { loadingStatus: 'Success', subscription };
             }
 
@@ -161,21 +159,27 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
         case 'SubscribeStarted': {
             const subscriptions = { ...state.subscriptions };
 
-            subscriptions[action.topic] = { loadingStatus: 'Success', updateStatus: 'InProgress', subscription: action.subscription };
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { loadingStatus: 'Success', updateStatus: 'InProgress', subscription };
+            }
 
             return { ...state, subscriptions };
         }
         case 'SubscribeFailed': {
             const subscriptions = { ...state.subscriptions };
 
-            subscriptions[action.topic] = { ...subscriptions[action.topic] || {}, updateStatus: 'Failed' };
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { ...subscriptions[topic] || {}, updateStatus: 'Failed', subscription };
+            }
 
             return { ...state, subscriptions };
         }
         case 'SubscribeSuccess': {
             const subscriptions = { ...state.subscriptions };
 
-            subscriptions[action.topic] = { ...subscriptions[action.topic] || {}, updateStatus: 'Success', subscription: action.subscription };
+            for (const [topic, subscription] of Object.entries(action.subscriptions as SubscriptionsDto)) {
+                subscriptions[topic] = { ...subscriptions[topic] || {}, updateStatus: 'Success', subscription };
+            }
 
             return { ...state, subscriptions };
         }
@@ -185,7 +189,7 @@ function reducer(state: NotifoState, action: NotifoAction): NotifoState {
             return { ...state, notifications };
         }
         case 'NotificationsAdd': {
-            const newNotifications: ReadonlyArray<NotifoNotification> = action.notifications;
+            const newNotifications: ReadonlyArray<NotifoNotificationDto> = action.notifications;
 
             if (newNotifications.length === 0) {
                 return { ...state, notificationsStatus: 'Success' };
@@ -335,7 +339,7 @@ export function loadTopics(config: SDKConfig) {
     };
 }
 
-export function saveProfile(config: SDKConfig, update: UpdateProfile) {
+export function saveProfile(config: SDKConfig, update: UpdateProfileDto) {
     return async (store: Store<NotifoState, NotifoAction>) => {
         try {
             store.dispatch({ type: 'SaveProfileStarted' });
@@ -369,26 +373,20 @@ export function loadSubscriptions(config: SDKConfig, topics: string[]) {
     };
 }
 
-export function subscribe(config: SDKConfig, subscriptions: Subscriptions) {
+export function subscribe(config: SDKConfig, subscriptions: SubscriptionsDto) {
     return async (store: Store<NotifoState, NotifoAction>) => {
         if (Object.keys(subscriptions).length === 0) {
             return;
         }
 
-        for (let [topic, subscription] of Object.entries(subscriptions)) {
-            store.dispatch({ type: 'SubscribeStarted', topic, subscription });
+        store.dispatch({ type: 'SubscribeStarted', subscriptions });
 
-            try {
-                if (subscription) {
-                    subscription = await apiPostSubscription(config, { topicPrefix: topic, ...subscription });
-                } else {
-                    await apiDeleteSubscription(config, topic);
-                }
+        try {
+            await apiPostSubscriptions(config, subscriptions);
 
-                store.dispatch({ type: 'SubscribeSuccess', topic, subscription });
-            } catch (ex) {
-                store.dispatch({ type: 'SubscribeFailed', ex, topic, subscription });
-            }
+            store.dispatch({ type: 'SubscribeSuccess', subscriptions });
+        } catch (ex) {
+            store.dispatch({ type: 'SubscribeFailed', ex, subscriptions });
         }
     };
 }
@@ -401,6 +399,6 @@ export function deleteNotification(id: string): NotifoAction {
     return { type: 'NotificationRemove', id };
 }
 
-export function addNotifications(notifications: ReadonlyArray<NotifoNotification>): NotifoAction {
+export function addNotifications(notifications: ReadonlyArray<NotifoNotificationDto>): NotifoAction {
     return { type: 'NotificationsAdd', notifications };
 }

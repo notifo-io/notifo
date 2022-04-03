@@ -15,7 +15,7 @@ export type NotificationChannel = { send: NotificationSend };
 export type NotificationSettings = { [channel: string]: NotificationChannel };
 export type TopicChannel = 'Allowed' | 'NotAllowed';
 
-export interface NotifoNotification {
+export interface NotifoNotificationDto {
     // The optional id.
     id: string;
 
@@ -70,17 +70,14 @@ export interface ConnectDto {
     connectionMode: ConnectionMode;
 }
 
-export interface Subscription {
-    // The prefix to the topic.
-    topicPrefix?: string;
-
+export interface SubscriptionDto {
     // The notification settings.
     topicSettings: NotificationSettings;
 }
 
-export type Subscriptions = { [path: string]: Subscription | null };
+export type SubscriptionsDto = { [path: string]: SubscriptionDto | null };
 
-export interface Topic {
+export interface TopicDto {
     // The path.
     path: string;
 
@@ -95,9 +92,12 @@ export interface Topic {
 
     // The notification settings.
     subscription?: NotificationSettings;
+
+    // True to show the topic automatically to new users, e.g. when he accepts push notifications.
+    showAutomatically: boolean;
 }
 
-export interface Profile extends UpdateProfile {
+export interface ProfileDto extends UpdateProfileDto {
     // The support languages configured in the app.
     supportedLanguages: ReadonlyArray<string>;
 
@@ -105,7 +105,7 @@ export interface Profile extends UpdateProfile {
     supportedTimezones: ReadonlyArray<string>;
 }
 
-export interface UpdateProfile {
+export interface UpdateProfileDto {
     // The email address.
     emailAddress?: string;
 
@@ -122,7 +122,7 @@ export interface UpdateProfile {
     settings?: NotificationSettings;
 }
 
-export function parseShortNotification(value: any): NotifoNotification {
+export function parseShortNotification(value: any): NotifoNotificationDto {
     return {
         id: value.id,
         body: value.nb,
@@ -139,7 +139,7 @@ export function parseShortNotification(value: any): NotifoNotification {
     };
 }
 
-export function setUserChannel(target: UpdateProfile, channel: string, value?: boolean) {
+export function setUserChannel(target: UpdateProfileDto, channel: string, value?: boolean) {
     target.settings ||= {};
 
     const send = booleanToSend(value);
@@ -151,7 +151,7 @@ export function setUserChannel(target: UpdateProfile, channel: string, value?: b
     }
 }
 
-export function setSubscriptionChannel(target: Subscription, channel: string, value?: boolean) {
+export function setSubscriptionChannel(target: SubscriptionDto, channel: string, value?: boolean) {
     target.topicSettings ||= {};
 
     const send = booleanToSend(value);
@@ -160,6 +160,14 @@ export function setSubscriptionChannel(target: Subscription, channel: string, va
         target.topicSettings[channel] = { send };
     } else {
         target.topicSettings[channel].send = send;
+    }
+}
+
+export function setTopic(value: SubscriptionsDto, send: boolean | undefined, path: string) {
+    if (!send) {
+        value[path] = null;
+    } else {
+        value[path] = { topicSettings: {} };
     }
 }
 
@@ -185,8 +193,18 @@ export function sendToBoolean(send: NotificationSend | undefined) {
     }
 }
 
-export async function apiPostSubscription(config: SDKConfig, subscription: Subscription & { topicPrefix: string }): Promise<Subscription | null> {
+export async function apiPostSubscriptions(config: SDKConfig, subscriptions: SubscriptionsDto): Promise<any> {
     const url = combineUrl(config.apiUrl, 'api/me/subscriptions/');
+
+    const request: any = { subscribe: [], unsubscribe: [] };
+
+    for (let [topicPrefix, subscription] of Object.entries(subscriptions)) {
+        if (subscription) {
+            request.subscribe.push({ topicPrefix, topicSettings: subscription.topicSettings || {} });
+        } else {
+            request.unsubscribe.push(topicPrefix);
+        }
+    }
 
     const response = await fetch(url, {
         method: 'POST',
@@ -194,13 +212,38 @@ export async function apiPostSubscription(config: SDKConfig, subscription: Subsc
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
-        body: JSON.stringify(subscription),
+        body: JSON.stringify(request),
     });
 
     if (response.status === 404) {
         return null;
-    } else if (response.ok) {
-        return await response.json();
+    } else if (!response.ok) {
+        throw new Error(`Request failed with ${response.status}`);
+    }
+}
+
+export async function apiGetSubscriptions(config: SDKConfig, topics: string[]): Promise<SubscriptionsDto> {
+    const url = combineUrl(config.apiUrl, `api/me/subscriptions/?topics=${topics.join(',')}`);
+
+    const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+            ...getAuthHeader(config),
+        },
+    });
+
+    if (response.ok) {
+        const result: SubscriptionsDto = {};
+        
+        for (const item of (await response.json()).items) {
+            result[item.topicPrefix] = { topicSettings: item.topicSettings };
+        }
+
+        for (const topic of topics) {
+            result[topic] = result[topic] || null;
+        }
+
+        return result;
     } else {
         throw new Error(`Request failed with ${response.status}`);
     }
@@ -226,7 +269,7 @@ export async function apiGetConnect(config: SDKConfig): Promise<any> {
     Object.assign(config, result);
 }
 
-export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<NotifoNotification>> {
+export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<NotifoNotificationDto>> {
     const url = combineUrl(config.apiUrl, 'api/me/notifications/archive');
 
     const response = await fetch(url, {
@@ -245,7 +288,7 @@ export async function apiGetArchive(config: SDKConfig): Promise<ReadonlyArray<No
     }
 }
 
-export async function apiGetTopics(config: SDKConfig): Promise<ReadonlyArray<Topic>> {
+export async function apiGetTopics(config: SDKConfig): Promise<ReadonlyArray<TopicDto>> {
     const url = combineUrl(config.apiUrl, 'api/me/topics');
 
     const response = await fetch(url, {
@@ -264,24 +307,7 @@ export async function apiGetTopics(config: SDKConfig): Promise<ReadonlyArray<Top
     }
 }
 
-export async function apiGetSubscriptions(config: SDKConfig, topics: string[]): Promise<Subscription[]> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/?topics=${topics.join(',')}`);
-
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            ...getAuthHeader(config),
-        },
-    });
-
-    if (response.ok) {
-        return (await response.json()).items;
-    } else {
-        throw new Error(`Request failed with ${response.status}`);
-    }
-}
-
-export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> {
+export async function apiGetProfile(config: SDKConfig): Promise<ProfileDto | null> {
     const url = combineUrl(config.apiUrl, 'api/me/');
 
     const response = await fetch(url, {
@@ -300,7 +326,7 @@ export async function apiGetProfile(config: SDKConfig): Promise<Profile | null> 
     }
 }
 
-export async function apiPostProfile(config: SDKConfig, update: UpdateProfile): Promise<Profile> {
+export async function apiPostProfile(config: SDKConfig, update: UpdateProfileDto): Promise<ProfileDto> {
     const url = combineUrl(config.apiUrl, 'api/me/');
 
     const response = await fetch(url, {
@@ -319,17 +345,6 @@ export async function apiPostProfile(config: SDKConfig, update: UpdateProfile): 
     } else {
         throw new Error(`Request failed with ${response.status}`);
     }
-}
-
-export async function apiDeleteSubscription(config: SDKConfig, topicPrefix: string): Promise<any> {
-    const url = combineUrl(config.apiUrl, `api/me/subscriptions/${topicPrefix}`);
-
-    await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            ...getAuthHeader(config),
-        },
-    });
 }
 
 export async function apiPostWebPush(config: SDKConfig, subscription: PushSubscription) {

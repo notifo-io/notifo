@@ -21,14 +21,14 @@ export const loadTopics = (appId: string, scope: TopicQueryScope, query?: Partia
     return list.action({ appId, scope, query, reset });
 };
 
-export const upsertTopic = createApiThunk('users/upsert',
+export const upsertTopic = createApiThunk('topics/upsert',
     async (arg: { appId: string; scope: TopicQueryScope; params: UpsertTopicDto }) => {
         const response = await Clients.Topics.postTopics(arg.appId, { requests: [arg.params] });
 
         return response[0];
     });
 
-export const deleteTopic = createApiThunk('users/delete',
+export const deleteTopic = createApiThunk('topics/delete',
     (arg: { appId: string; path: string; scope: TopicQueryScope }) => {
         return Clients.Topics.deleteTopic(arg.appId, arg.path);
     });

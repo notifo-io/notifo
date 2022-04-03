@@ -7,9 +7,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Topics.Dtos;
-using Notifo.Domain;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Topics;
+using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
@@ -64,19 +64,13 @@ namespace Notifo.Areas.Api.Controllers.Topics
         {
             var response = new List<TopicDto>();
 
-            if (request?.Requests != null)
+            foreach (var dto in request.Requests.OrEmpty().NotNull())
             {
-                foreach (var dto in request.Requests)
-                {
-                    if (dto != null)
-                    {
-                        var update = dto.ToUpdate();
+                var update = dto.ToUpdate();
 
-                        var topic = await topicStore.UpsertAsync(appId, new TopicId(dto.Path!), update, HttpContext.RequestAborted);
+                var topic = await topicStore.UpsertAsync(appId, dto.Path, update, HttpContext.RequestAborted);
 
-                        response.Add(TopicDto.FromDomainObject(topic));
-                    }
-                }
+                response.Add(TopicDto.FromDomainObject(topic));
             }
 
             return Ok(response);

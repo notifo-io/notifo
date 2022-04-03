@@ -91,7 +91,7 @@ namespace Notifo.Domain.Topics
 
                 await repository.UpsertAsync(newTopic, etag, ct);
 
-                return topic;
+                return newTopic;
             });
         }
 

@@ -9,7 +9,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect } from 'preact/hooks';
-import {  SDKConfig, sendToBoolean, setSubscriptionChannel, Subscription } from '@sdk/shared';
+import {  SDKConfig, sendToBoolean, setSubscriptionChannel, SubscriptionDto } from '@sdk/shared';
 import { Status, subscribe, useDispatch } from '@sdk/ui/model';
 import { Loader } from './Loader';
 import { Toggle } from './Toggle';
@@ -20,7 +20,7 @@ export interface TopicModalProps {
     config: SDKConfig;
 
     // The subscription.
-    subscription: Subscription | null;
+    subscription: SubscriptionDto | null;
 
     // The subscription.
     subscriptionStatus?: Status;
@@ -38,7 +38,7 @@ export const TopicModal = (props: TopicModalProps) => {
     } = props;
 
     const dispatch = useDispatch();
-    const formState = useMutable<Subscription>({ topicSettings: {} });
+    const formState = useMutable<SubscriptionDto>({ topicSettings: {} });
     const formValue = formState.current;
     const inProgress = subscriptionStatus === 'InProgress';
 

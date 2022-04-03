@@ -6,11 +6,12 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain;
 using Notifo.Domain.Subscriptions;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {
-    public sealed class SubscriptionDto
+    public sealed class SubscribeDto
     {
         /// <summary>
         /// The topic to add.
@@ -21,23 +22,21 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        [Required]
-        public Dictionary<string, NotificationSettingDto> TopicSettings { get; set; } = new Dictionary<string, NotificationSettingDto>();
+        public Dictionary<string, NotificationSettingDto>? TopicSettings { get; set; }
 
-        public static SubscriptionDto FromDomainObject(Subscription subscription)
+        public Subscribe ToUpdate()
         {
-            var result = new SubscriptionDto
-            {
-                TopicPrefix = subscription.TopicPrefix
-            };
+            var result = new Subscribe();
 
-            if (subscription.TopicSettings != null)
+            if (TopicSettings?.Any() == true)
             {
-                foreach (var (key, value) in subscription.TopicSettings)
+                result.TopicSettings = new NotificationSettings();
+
+                foreach (var (key, value) in TopicSettings)
                 {
                     if (value != null)
                     {
-                        result.TopicSettings[key] = NotificationSettingDto.FromDomainObject(value);
+                        result.TopicSettings[key] = value.ToDomainObject();
                     }
                 }
             }

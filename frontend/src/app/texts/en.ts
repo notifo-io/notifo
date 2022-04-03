@@ -314,6 +314,8 @@ export const EN = {
         implicit: 'Implicit',
         namePlaceholder: 'Give your topic a name.',
         searchPlaceholder: 'Search',
+        showAutomatically: 'Show automatically',
+        showAutomaticallyHints: 'Ask the user to subscribe when he uses the frontend the first time.',
         topicsNotFound: 'No Topics found',
     },
     users: {

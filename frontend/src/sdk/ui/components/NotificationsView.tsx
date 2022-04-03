@@ -9,7 +9,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Fragment, h } from 'preact';
 import { useCallback } from 'preact/hooks';
-import { NotificationsOptions, NotifoNotification, SDKConfig } from '@sdk/shared';
+import { NotificationsOptions, NotifoNotificationDto, SDKConfig } from '@sdk/shared';
 import { Connection } from '@sdk/ui/api';
 import { addNotifications, useDispatch, useStore } from '@sdk/ui/model';
 import { Loader } from './Loader';
@@ -42,19 +42,19 @@ export const NotificationsView = (props: NotificationsViewProps) => {
     const isLoaded = useStore(x => x.notificationsStatus !== 'InProgress');
     const isConnected = useStore(x => x.isConnected);
 
-    const doConfirm = useCallback(async (notification: NotifoNotification) => {
+    const doConfirm = useCallback(async (notification: NotifoNotificationDto) => {
         await connection.confirmMany([], notification.id);
 
         dispatch(addNotifications([{ ...notification, isConfirmed: true }]));
     }, [dispatch, connection]);
 
-    const doSee = useCallback(async (notification: NotifoNotification) => {
+    const doSee = useCallback(async (notification: NotifoNotificationDto) => {
         await connection.confirmMany([notification.id]);
 
         dispatch(addNotifications([{ ...notification, isSeen: true }]));
     }, [dispatch, connection]);
 
-    const doDelete = useCallback(async (notification: NotifoNotification) => {
+    const doDelete = useCallback(async (notification: NotifoNotificationDto) => {
         await connection.delete(notification.id);
     }, [connection]);
 

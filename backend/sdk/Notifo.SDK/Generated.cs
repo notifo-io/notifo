@@ -32,20 +32,28 @@ namespace Notifo.SDK
         System.Threading.Tasks.Task<ProfileDto> PostUserAsync(UpdateProfileDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Query the user topics.</summary>
+        /// <param name="language">The optional language.</param>
+        /// <returns>User subscriptions returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserTopicDto>> GetTopicsAsync(string language = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query the user subscriptions.</summary>
+        /// <param name="topics">The topics we are interested in.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User subscriptions returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetMySubscriptionsAsync(string topics = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Creates a user subscription.</summary>
+        /// <summary>Upserts or deletes my subscriptions.</summary>
         /// <param name="request">The subscription settings.</param>
-        /// <returns>Topic created.</returns>
+        /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostMySubscriptionAsync(SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PostMySubscriptionsAsync(SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Gets a user subscription.</summary>
@@ -55,11 +63,11 @@ namespace Notifo.SDK
         System.Threading.Tasks.Task<SubscriptionDto> GetMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Deletes a user subscription.</summary>
-        /// <param name="topic">The topic path.</param>
-        /// <returns>Topic deleted.</returns>
+        /// <summary>Remove my subscription.</summary>
+        /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteSubscriptionAsync(string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
     }
     
@@ -276,16 +284,113 @@ namespace Notifo.SDK
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Query the user topics.</summary>
+        /// <param name="language">The optional language.</param>
+        /// <returns>User subscriptions returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserTopicDto>> GetTopicsAsync(string language = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/topics?");
+            if (language != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("language") + "=").Append(System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<UserTopicDto>>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 400)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Query the user subscriptions.</summary>
+        /// <param name="topics">The topics we are interested in.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User subscriptions returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetMySubscriptionsAsync(string topics = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions?");
+            if (topics != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("Topics") + "=").Append(System.Uri.EscapeDataString(ConvertToString(topics, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
             if (query != null) 
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("query") + "=").Append(System.Uri.EscapeDataString(ConvertToString(query, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -378,11 +483,11 @@ namespace Notifo.SDK
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Creates a user subscription.</summary>
+        /// <summary>Upserts or deletes my subscriptions.</summary>
         /// <param name="request">The subscription settings.</param>
-        /// <returns>Topic created.</returns>
+        /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task PostMySubscriptionAsync(SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PostMySubscriptionsAsync(SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
@@ -562,18 +667,18 @@ namespace Notifo.SDK
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Deletes a user subscription.</summary>
-        /// <param name="topic">The topic path.</param>
-        /// <returns>Topic deleted.</returns>
+        /// <summary>Remove my subscription.</summary>
+        /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task DeleteMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task DeleteSubscriptionAsync(string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
-            if (topic == null)
-                throw new System.ArgumentNullException("topic");
+            if (prefix == null)
+                throw new System.ArgumentNullException("prefix");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions/{topic}");
-            urlBuilder_.Replace("{topic}", System.Uri.EscapeDataString(ConvertToString(topic, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions/{prefix}");
+            urlBuilder_.Replace("{prefix}", System.Uri.EscapeDataString(ConvertToString(prefix, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -581,7 +686,8 @@ namespace Notifo.SDK
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
-                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
     
                     PrepareRequest(client_, request_, urlBuilder_);
                     var url_ = urlBuilder_.ToString();
@@ -800,20 +906,20 @@ namespace Notifo.SDK
         System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Upsert a user subscriptions.</summary>
+        /// <summary>Upserts or deletes multiple user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
         /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostSubscriptionAsync(string appId, string id, SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PostSubscriptionsAsync(string appId, string id, SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Remove a user subscriptions.</summary>
+        /// <summary>Unsubscribes a user from a subscription.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
-        /// <returns>User subscribed.</returns>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteSubscriptionAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
     
@@ -1419,13 +1525,13 @@ namespace Notifo.SDK
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Upsert a user subscriptions.</summary>
+        /// <summary>Upserts or deletes multiple user subscriptions.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
         /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task PostSubscriptionAsync(string appId, string id, SubscriptionDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public async System.Threading.Tasks.Task PostSubscriptionsAsync(string appId, string id, SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -1522,11 +1628,11 @@ namespace Notifo.SDK
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Remove a user subscriptions.</summary>
+        /// <summary>Unsubscribes a user from a subscription.</summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
-        /// <returns>User subscribed.</returns>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task DeleteSubscriptionAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -11999,6 +12105,42 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class UserTopicDto 
+    {
+        /// <summary>The path.</summary>
+        [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Path { get; set; }
+    
+        /// <summary>The name.</summary>
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Name { get; set; }
+    
+        /// <summary>The optional description.</summary>
+        [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Description { get; set; }
+    
+        /// <summary>The channel options.</summary>
+        [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, TopicChannel> Channels { get; set; } = new System.Collections.Generic.Dictionary<string, TopicChannel>();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum TopicChannel
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Allowed")]
+        Allowed = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"NotAllowed")]
+        NotAllowed = 1,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class ListResponseDtoOfSubscriptionDto 
     {
         /// <summary>The items.</summary>
@@ -12023,6 +12165,36 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> TopicSettings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class SubscribeManyDto 
+    {
+        /// <summary>A list of topics to create.</summary>
+        [Newtonsoft.Json.JsonProperty("subscribe", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<SubscribeDto> Subscribe { get; set; }
+    
+        /// <summary>A list of topics to unsubscribe from.</summary>
+        [Newtonsoft.Json.JsonProperty("unsubscribe", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<string> Unsubscribe { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public partial class SubscribeDto 
+    {
+        /// <summary>The topic to add.</summary>
+        [Newtonsoft.Json.JsonProperty("topicPrefix", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string TopicPrefix { get; set; }
+    
+        /// <summary>Notification settings per channel.</summary>
+        [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.IDictionary<string, NotificationSettingDto> TopicSettings { get; set; }
     
     
@@ -12291,6 +12463,10 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public LocalizedText Description { get; set; }
     
+        /// <summary>True to show the topic automatically to new users, e.g. when he accepts push notifications.</summary>
+        [Newtonsoft.Json.JsonProperty("showAutomatically", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool ShowAutomatically { get; set; }
+    
         /// <summary>The channel settings.</summary>
         [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.IDictionary<string, TopicChannel> Channels { get; set; }
@@ -12306,17 +12482,6 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
     public partial class LocalizedText : System.Collections.Generic.Dictionary<string, string>
     {
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public enum TopicChannel
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"Allowed")]
-        Allowed = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"NotAllowed")]
-        NotAllowed = 1,
     
     }
     
@@ -12359,6 +12524,10 @@ namespace Notifo.SDK
         /// <summary>The description.</summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public LocalizedText Description { get; set; }
+    
+        /// <summary>True to show the topic automatically to new users, e.g. when he accepts push notifications.</summary>
+        [Newtonsoft.Json.JsonProperty("showAutomatically", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool ShowAutomatically { get; set; }
     
         /// <summary>Settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

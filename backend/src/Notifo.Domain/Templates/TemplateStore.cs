@@ -98,7 +98,7 @@ namespace Notifo.Domain.Templates
 
                 await repository.UpsertAsync(newTemplate, etag, ct);
 
-                return template;
+                return newTemplate;
             });
         }
 
