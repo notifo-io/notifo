@@ -49,7 +49,7 @@ export const AppsPage = () => {
             {apps.items &&
                 <div>
                     {apps.items.map(app => (
-                        <Link key={app.id} to={`${match.path}/${app.id}`} className='card-link'>
+                        <Link key={app.id} to={`${match.path}/${app.id}`} className='d-inline-block'>
                             <Card className='app-card'>
                                 <CardBody>
                                     {app.name ? (
