@@ -8,6 +8,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -19,6 +20,7 @@ using Notifo.Infrastructure.Tasks;
 
 namespace Notifo.Areas.Account.Pages
 {
+    [Authorize]
     public sealed class ProfileModel : PageModelBase<ProfileModel>
     {
         public bool HasPassword { get; set; }

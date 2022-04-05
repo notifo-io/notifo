@@ -24,6 +24,10 @@ export const FormatDate = React.memo((props: FormatDateProps) => {
         return null;
     }
 
+    if (date === '1970-01-01T00:00:00Z') {
+        return null;
+    }
+
     let dateValue: Date | number | string = date;
 
     if (Types.isNumber(dateValue)) {
