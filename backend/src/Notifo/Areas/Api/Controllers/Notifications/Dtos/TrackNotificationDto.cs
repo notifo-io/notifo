@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
-
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 {
     public sealed class TrackNotificationDto
@@ -14,12 +12,12 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// <summary>
         /// The id of the noitifications to mark as confirmed.
         /// </summary>
-        public Guid? Confirmed { get; set; }
+        public string? Confirmed { get; set; }
 
         /// <summary>
         /// The id of the noitifications to mark as seen.
         /// </summary>
-        public Guid[]? Seen { get; set; }
+        public string[]? Seen { get; set; }
 
         /// <summary>
         /// The channel name.
@@ -30,10 +28,5 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// The device identifier.
         /// </summary>
         public string? DeviceIdentifier { get; set; }
-
-        public TrackingDetails ToDetails()
-        {
-            return new TrackingDetails { Channel = Channel, DeviceIdentifier = DeviceIdentifier };
-        }
     }
 }

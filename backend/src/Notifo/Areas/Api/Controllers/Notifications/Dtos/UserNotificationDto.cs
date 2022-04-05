@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain;
+using Notifo.Domain.Channels;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
 
@@ -35,6 +37,8 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 
             SimpleMapper.Map(source, result);
             SimpleMapper.Map(source.Formatting, result);
+
+            result.TrackingToken = new TrackingToken(source.Id, Providers.Web, Providers.Web).ToParsableString();
 
             return result;
         }

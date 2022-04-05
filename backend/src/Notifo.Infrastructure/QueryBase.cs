@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace Notifo.Infrastructure
 {
-    public abstract class QueryBase
+    public abstract record QueryBase
     {
         public int Skip { get; set; }
 

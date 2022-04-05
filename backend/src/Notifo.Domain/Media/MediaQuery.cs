@@ -9,7 +9,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Media
 {
-    public sealed class MediaQuery : QueryBase
+    public sealed record MediaQuery : QueryBase
     {
         public string? Query { get; set; }
     }

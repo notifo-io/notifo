@@ -13,10 +13,10 @@ namespace Notifo.Domain.UserNotifications
     {
         Task DistributeAsync(UserEventMessage userEvent);
 
-        Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails options);
+        Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens);
 
-        Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails options);
+        Task TrackSeenAsync(IEnumerable<TrackingToken> tokens);
 
-        Task TrackConfirmedAsync(Guid id, TrackingDetails options);
+        Task TrackConfirmedAsync(TrackingToken token);
     }
 }

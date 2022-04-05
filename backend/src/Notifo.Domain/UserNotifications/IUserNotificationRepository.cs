@@ -24,22 +24,22 @@ namespace Notifo.Domain.UserNotifications
         Task<UserNotification?> FindAsync(Guid id,
             CancellationToken ct = default);
 
-        Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle,
+        Task<UserNotification?> TrackConfirmedAsync(TrackingToken token, Instant now,
             CancellationToken ct = default);
 
         Task DeleteAsync(Guid id,
             CancellationToken ct = default);
 
-        Task TrackDeliveredAsync(IEnumerable<Guid> ids, HandledInfo handle,
+        Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens, Instant now,
             CancellationToken ct = default);
 
-        Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
+        Task TrackSeenAsync(IEnumerable<TrackingToken> tokens, Instant now,
             CancellationToken ct = default);
 
         Task InsertAsync(UserNotification notification,
             CancellationToken ct = default);
 
-        Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates,
+        Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuration, ChannelSendInfo Info)> updates,
             CancellationToken ct = default);
     }
 }

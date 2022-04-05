@@ -7,12 +7,9 @@
 
 using NodaTime;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.UserNotifications
 {
-    public sealed class HandledInfo
-    {
-        public Instant Timestamp { get; set; }
-
-        public string? Channel { get; set; }
-    }
+    public sealed record HandledInfo(Instant Timestamp, string? Channel);
 }

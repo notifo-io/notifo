@@ -15,6 +15,12 @@ namespace Notifo.Domain
 
         public Instant LastUpdate { get; set; }
 
+        public Instant? FirstConfirmed { get; set; }
+
+        public Instant? FirstSeen { get; set; }
+
+        public Instant? FirstDelivered { get; set; }
+
         public string? Detail { get; set; }
     }
 }

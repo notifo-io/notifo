@@ -14,7 +14,7 @@ namespace Notifo.Domain.Channels.WebPush
     public sealed class WebPushPayload
     {
         [JsonPropertyName("id")]
-        public Guid Id { get; set; }
+        public string Id { get; set; }
 
         [JsonPropertyName("cu")]
         public string? ConfirmUrl { get; set; }

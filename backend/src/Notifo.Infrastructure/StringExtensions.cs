@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Globalization;
+using System.Text;
 
 namespace Notifo.Infrastructure
 {
@@ -53,6 +54,28 @@ namespace Notifo.Infrastructure
         public static string ToIso8601(this DateTime value)
         {
             return value.ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);
+        }
+
+        public static string ToBase64(this string value)
+        {
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+        }
+
+        public static string FromBase64(this string value)
+        {
+            return Encoding.UTF8.GetString(Convert.FromBase64String(value));
+        }
+
+        public static string FromOptionalBase64(this string value)
+        {
+            try
+            {
+                return Encoding.Default.GetString(Convert.FromBase64String(value));
+            }
+            catch (FormatException)
+            {
+                return value;
+            }
         }
     }
 }

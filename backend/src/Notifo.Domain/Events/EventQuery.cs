@@ -9,7 +9,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Events
 {
-    public sealed class EventQuery : QueryBase
+    public sealed record EventQuery : QueryBase
     {
         public string? Query { get; set; }
     }

@@ -76,11 +76,7 @@ export class SignalRConnection implements Connection {
     }
 
     public confirmMany(seen: string[], confirmed: string | null | undefined = null) {
-        return this.signalR.send('confirmMany', {
-            channel: 'web',
-            confirmed,
-            seen,
-        });
+        return this.signalR.send('confirmMany', { confirmed, seen });
     }
 }
 

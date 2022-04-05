@@ -219,7 +219,7 @@ namespace Notifo.Domain.UserNotifications
         public async Task HandleAsync(ConfirmMessage message,
             CancellationToken ct = default)
         {
-            var notification = await userNotificationsStore.TrackConfirmedAsync(message.Id, message.Details, ct);
+            var notification = await userNotificationsStore.TrackConfirmedAsync(message.Token, ct);
 
             if (notification == null || !notification.Channels.Any())
             {
@@ -262,43 +262,42 @@ namespace Notifo.Domain.UserNotifications
             }
         }
 
-        public async Task TrackConfirmedAsync(Guid id, TrackingDetails details)
+        public async Task TrackConfirmedAsync(TrackingToken token)
         {
-            await confirmProducer.ProduceAsync(id.ToString(), new ConfirmMessage { Id = id, Details = details });
+            if (!token.IsValid)
+            {
+                return;
+            }
+
+            await confirmProducer.ProduceAsync(token.ToString(), new ConfirmMessage { Token = token });
         }
 
-        public async Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details)
+        public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens)
         {
-            await userNotificationsStore.TrackDeliveredAsync(ids, details);
+            await userNotificationsStore.TrackDeliveredAsync(tokens);
 
-            if (!string.IsNullOrWhiteSpace(details.Channel))
+            foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
             {
-                var channel = channels.FirstOrDefault(x => x.Name == details.Channel);
+                var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
 
                 if (channel != null)
                 {
-                    foreach (var id in ids)
-                    {
-                        await channel.HandleDeliveredAsync(id, details);
-                    }
+                    await channel.HandleDeliveredAsync(token);
                 }
             }
         }
 
-        public async Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details)
+        public async Task TrackSeenAsync(IEnumerable<TrackingToken> tokens)
         {
-            await userNotificationsStore.TrackSeenAsync(ids, details);
+            await userNotificationsStore.TrackSeenAsync(tokens);
 
-            if (!string.IsNullOrWhiteSpace(details.Channel))
+            foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
             {
-                var channel = channels.FirstOrDefault(x => x.Name == details.Channel);
+                var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
 
                 if (channel != null)
                 {
-                    foreach (var id in ids)
-                    {
-                        await channel.HandleSeenAsync(id, details);
-                    }
+                    await channel.HandleSeenAsync(token);
                 }
             }
         }

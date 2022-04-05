@@ -9,7 +9,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Users
 {
-    public sealed class UserQuery : QueryBase
+    public sealed record UserQuery : QueryBase
     {
         public string? Query { get; set; }
     }

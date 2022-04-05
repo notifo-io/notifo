@@ -67,18 +67,18 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task HandleSeenAsync(Guid id, TrackingDetails details)
+        public async Task HandleSeenAsync(TrackingToken token)
         {
             using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
             {
-                var token = details.DeviceIdentifier;
+                var mobileToken = token.DeviceIdentifier;
 
-                if (string.IsNullOrWhiteSpace(token))
+                if (string.IsNullOrWhiteSpace(mobileToken))
                 {
                     return;
                 }
 
-                var notification = await userNotificationStore.FindAsync(id);
+                var notification = await userNotificationStore.FindAsync(token.Id);
 
                 if (notification == null)
                 {
@@ -92,7 +92,7 @@ namespace Notifo.Domain.Channels.MobilePush
                     return;
                 }
 
-                var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == token && x.DeviceType == MobileDeviceType.iOS);
+                var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == mobileToken && x.DeviceType == MobileDeviceType.iOS);
 
                 if (userToken != null)
                 {

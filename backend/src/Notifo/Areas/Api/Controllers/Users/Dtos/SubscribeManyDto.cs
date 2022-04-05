@@ -1,4 +1,11 @@
-﻿using Notifo.Domain;
+﻿// ==========================================================================
+//  Notifo.io
+// ==========================================================================
+//  Copyright (c) Sebastian Stehle
+//  All rights reserved. Licensed under the MIT license.
+// ==========================================================================
+
+using Notifo.Domain;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos
 {

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Domain;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 using NSwag.Annotations;
@@ -33,11 +34,11 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpPut]
         [HttpPost]
         [Route("api/tracking/notifications/{id}/seen")]
-        public async Task<IActionResult> Seen(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
+        public async Task<IActionResult> Seen(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            var details = new TrackingDetails(channel, deviceIdentifier);
+            var tokens = Enumerable.Repeat(TrackingToken.Parse(id, channel, deviceIdentifier), 1);
 
-            await userNotificationService.TrackSeenAsync(Enumerable.Repeat(id, 1), details);
+            await userNotificationService.TrackSeenAsync(tokens);
 
             return TrackingPixel();
         }
@@ -46,24 +47,24 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpPut]
         [HttpPost]
         [Route("api/tracking/notifications/{id}/delivered")]
-        public async Task<IActionResult> Delivered(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
+        public async Task<IActionResult> Delivered(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            var details = new TrackingDetails(channel, deviceIdentifier);
+            var tokens = Enumerable.Repeat(TrackingToken.Parse(id, channel, deviceIdentifier), 1);
 
-            await userNotificationService.TrackDeliveredAsync(Enumerable.Repeat(id, 1), details);
+            await userNotificationService.TrackDeliveredAsync(tokens);
 
             return TrackingPixel();
         }
 
         [HttpGet]
         [Route("api/tracking/notifications/{id}/confirm")]
-        public async Task<IActionResult> Confirm(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
+        public async Task<IActionResult> Confirm(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            var details = new TrackingDetails(channel, deviceIdentifier);
+            var token = TrackingToken.Parse(id, channel, deviceIdentifier);
 
-            await userNotificationService.TrackConfirmedAsync(id, details);
+            await userNotificationService.TrackConfirmedAsync(token);
 
-            var notification = await userNotificationStore.FindAsync(id, HttpContext.RequestAborted);
+            var notification = await userNotificationStore.FindAsync(token.Id, HttpContext.RequestAborted);
 
             if (notification == null)
             {
@@ -93,11 +94,11 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
         [HttpPost]
         [Route("api/tracking/notifications/{id}/confirm")]
-        public async Task<IActionResult> ConfirmPost(Guid id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
+        public async Task<IActionResult> ConfirmPost(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
-            var details = new TrackingDetails(channel, deviceIdentifier);
+            var token = TrackingToken.Parse(id, channel, deviceIdentifier);
 
-            await userNotificationService.TrackConfirmedAsync(id, details);
+            await userNotificationService.TrackConfirmedAsync(token);
 
             return NoContent();
         }

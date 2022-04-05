@@ -22,6 +22,9 @@ export interface NotifoNotificationDto {
     // The notification subject.
     subject: string;
 
+    // The tracking token.
+    trackingToken: string;
+
     // The notification body.
     body?: string;
 
@@ -136,6 +139,7 @@ export function parseShortNotification(value: any): NotifoNotificationDto {
         subject: value.ns,
         trackDeliveredUrl: value.td,
         trackSeenUrl: value.ts,
+        trackingToken: value.id,
     };
 }
 

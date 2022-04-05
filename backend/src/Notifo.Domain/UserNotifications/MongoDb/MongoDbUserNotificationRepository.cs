@@ -25,19 +25,6 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
         static MongoDbUserNotificationRepository()
         {
-            BsonClassMap.RegisterClassMap<UserNotification>(cm =>
-            {
-                cm.AutoMap();
-
-                cm.SetIgnoreExtraElements(true);
-
-                cm.MapProperty(x => x.FirstSeen)
-                    .SetIgnoreIfNull(true);
-
-                cm.MapProperty(x => x.FirstConfirmed)
-                    .SetIgnoreIfNull(true);
-            });
-
             BsonClassMap.RegisterClassMap<BaseUserNotification>(cm =>
             {
                 cm.AutoMap();
@@ -48,19 +35,51 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                     .SetSerializer(new GuidSerializer(BsonType.String));
             });
 
-            BsonClassMap.RegisterClassMap<UserNotificationChannel>(cm =>
+            BsonClassMap.RegisterClassMap<ChannelSendInfo>(cm =>
             {
                 cm.AutoMap();
 
                 cm.SetIgnoreExtraElements(true);
+
+                cm.MapProperty(x => x.FirstConfirmed)
+                    .SetIgnoreIfNull(true);
 
                 cm.MapProperty(x => x.FirstDelivered)
                     .SetIgnoreIfNull(true);
 
                 cm.MapProperty(x => x.FirstSeen)
                     .SetIgnoreIfNull(true);
+            });
+
+            BsonClassMap.RegisterClassMap<UserNotification>(cm =>
+            {
+                cm.AutoMap();
+
+                cm.SetIgnoreExtraElements(true);
 
                 cm.MapProperty(x => x.FirstConfirmed)
+                    .SetIgnoreIfNull(true);
+
+                cm.MapProperty(x => x.FirstDelivered)
+                    .SetIgnoreIfNull(true);
+
+                cm.MapProperty(x => x.FirstSeen)
+                    .SetIgnoreIfNull(true);
+            });
+
+            BsonClassMap.RegisterClassMap<UserNotificationChannel>(cm =>
+            {
+                cm.AutoMap();
+
+                cm.SetIgnoreExtraElements(true);
+
+                cm.MapProperty(x => x.FirstConfirmed)
+                    .SetIgnoreIfNull(true);
+
+                cm.MapProperty(x => x.FirstDelivered)
+                    .SetIgnoreIfNull(true);
+
+                cm.MapProperty(x => x.FirstSeen)
                     .SetIgnoreIfNull(true);
 
                 cm.MapProperty(x => x.Status)
@@ -200,14 +219,14 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task TrackDeliveredAsync(IEnumerable<Guid> ids, HandledInfo handle,
+        public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens, Instant now,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackDeliveredAsync"))
             {
                 var writes = new List<WriteModel<UserNotification>>();
 
-                MarkDelivered(ids, handle, writes);
+                AddStatusUpdateWrites(writes, tokens, now, "FirstDelivered");
 
                 if (writes.Count == 0)
                 {
@@ -218,15 +237,15 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task TrackSeenAsync(IEnumerable<Guid> ids, HandledInfo handle,
+        public async Task TrackSeenAsync(IEnumerable<TrackingToken> tokens, Instant now,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackSeenAsync"))
             {
                 var writes = new List<WriteModel<UserNotification>>();
 
-                MarkDelivered(ids, handle, writes);
-                MarkSeen(ids, handle, writes);
+                AddStatusUpdateWrites(writes, tokens, now, "FirstDelivered");
+                AddStatusUpdateWrites(writes, tokens, now, "FirstSeen");
 
                 if (writes.Count == 0)
                 {
@@ -237,25 +256,32 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task<UserNotification?> TrackConfirmedAsync(Guid id, HandledInfo handle,
+        public async Task<UserNotification?> TrackConfirmedAsync(TrackingToken token, Instant now,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackConfirmedAsync"))
             {
-                await TrackSeenAsync(Enumerable.Repeat(id, 1), handle, ct);
+                await TrackSeenAsync(Enumerable.Repeat(token, 1), now, ct);
+
+                var handle = new HandledInfo(now, token.Channel);
 
                 var entity =
                     await Collection.FindOneAndUpdateAsync(
                         Filter.And(
-                            Filter.Eq(x => x.Id, id),
+                            Filter.Eq(x => x.Id, token.Id),
                             Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
                             Filter.Exists(x => x.FirstConfirmed, false)),
-                        Update.Set(x => x.FirstSeen, handle).Max(x => x.Updated, handle.Timestamp),
+                        Update
+                            .Set(x => x.FirstConfirmed, handle).Max(x => x.Updated, handle.Timestamp),
                         cancellationToken: ct);
 
                 if (entity != null)
                 {
-                    entity.FirstConfirmed = handle;
+                    if (entity.FirstConfirmed == null)
+                    {
+                        entity.FirstConfirmed = handle;
+                    }
+
                     entity.Updated = handle.Timestamp;
                 }
 
@@ -263,7 +289,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuraton, ChannelSendInfo Info)> updates,
+        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuration, ChannelSendInfo Info)> updates,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))
@@ -346,53 +372,33 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        private static void MarkDelivered(IEnumerable<Guid> ids, HandledInfo handle, List<WriteModel<UserNotification>> writes)
+        private static void AddStatusUpdateWrites(List<WriteModel<UserNotification>> writes, IEnumerable<TrackingToken> tokens, Instant now, string propertyName)
         {
-            var timestamp = handle.Timestamp;
-
-            foreach (var id in ids)
+            foreach (var token in tokens.Where(x => x.IsValid))
             {
-                var channel = handle.Channel;
+                var channel = token.Channel;
 
                 writes.Add(new UpdateOneModel<UserNotification>(
                     Filter.And(
-                        Filter.Eq(x => x.Id, id),
-                        Filter.Exists(x => x.FirstDelivered, false)),
-                    Update.Set(x => x.FirstDelivered, handle).Max(x => x.Updated, timestamp)));
-
-                if (!string.IsNullOrWhiteSpace(channel))
-                {
-                    writes.Add(new UpdateOneModel<UserNotification>(
-                        Filter.And(
-                            Filter.Eq(x => x.Id, id),
-                            Filter.Exists($"Channels.{channel}")),
-                        Update.Min($"Channels.{channel}.FirstDelivered", timestamp)));
-                }
-            }
-        }
-
-        private static void MarkSeen(IEnumerable<Guid> ids, HandledInfo handle, List<WriteModel<UserNotification>> writes)
-        {
-            var timestamp = handle.Timestamp;
-
-            foreach (var id in ids)
-            {
-                writes.Add(new UpdateOneModel<UserNotification>(
-                    Filter.And(
-                        Filter.Eq(x => x.Id, id),
-                        Filter.Exists(x => x.FirstSeen, false)),
+                        Filter.Eq(x => x.Id, token.Id),
+                        Filter.Exists(propertyName, false)),
                     Update
-                        .Set(x => x.FirstSeen, handle).Max(x => x.Updated, timestamp)));
-
-                var channel = handle.Channel;
+                        .Set(x => x.FirstSeen, new HandledInfo(now, channel)).Max(x => x.Updated, now)));
 
                 if (!string.IsNullOrWhiteSpace(channel))
                 {
+                    var update = Update.Min($"Channels.{channel}.{propertyName}", now);
+
+                    if (!string.IsNullOrWhiteSpace(token.DeviceIdentifier))
+                    {
+                        update = update.Min($"Channels.{channel}.Status.{token.DeviceIdentifier.ToBase64()}.{propertyName}", now);
+                    }
+
                     writes.Add(new UpdateOneModel<UserNotification>(
                         Filter.And(
-                            Filter.Eq(x => x.Id, id),
+                            Filter.Eq(x => x.Id, token.Id),
                             Filter.Exists($"Channels.{channel}")),
-                        Update.Min($"Channels.{channel}.FirstSeen", timestamp)));
+                        update));
                 }
             }
         }

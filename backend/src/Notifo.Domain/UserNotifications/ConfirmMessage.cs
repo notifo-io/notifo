@@ -9,8 +9,6 @@ namespace Notifo.Domain.UserNotifications
 {
     public sealed class ConfirmMessage
     {
-        public Guid Id { get; set; }
-
-        public TrackingDetails Details { get; set; }
+        public TrackingToken Token { get; set; }
     }
 }

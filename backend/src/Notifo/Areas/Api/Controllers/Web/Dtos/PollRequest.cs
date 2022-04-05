@@ -13,11 +13,11 @@ namespace Notifo.Areas.Api.Controllers.Web.Dtos
     {
         public Guid[]? Deleted { get; set; }
 
-        public Guid[]? Delivered { get; set; }
+        public string[]? Delivered { get; set; }
 
-        public Guid[]? Seen { get; set; }
+        public string[]? Seen { get; set; }
 
-        public Guid[]? Confirmed { get; set; }
+        public string[]? Confirmed { get; set; }
 
         public Instant? Token { get; set; }
     }

@@ -22,7 +22,7 @@ namespace Notifo.Domain.UserNotifications
         Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
             CancellationToken ct = default);
 
-        Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details = default,
+        Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
             CancellationToken ct = default);
 
         Task<UserNotification?> FindAsync(Guid id,
@@ -31,10 +31,10 @@ namespace Notifo.Domain.UserNotifications
         Task DeleteAsync(Guid id,
             CancellationToken ct = default);
 
-        Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+        Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens,
             CancellationToken ct = default);
 
-        Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+        Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
             CancellationToken ct = default);
 
         Task TrackAttemptAsync(UserEventMessage userEvent,

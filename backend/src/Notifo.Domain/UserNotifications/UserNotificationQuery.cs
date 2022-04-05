@@ -10,7 +10,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public sealed class UserNotificationQuery : QueryBase
+    public sealed record UserNotificationQuery : QueryBase
     {
         public Instant After { get; set; }
 

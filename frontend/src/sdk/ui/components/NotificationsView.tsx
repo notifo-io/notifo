@@ -43,13 +43,13 @@ export const NotificationsView = (props: NotificationsViewProps) => {
     const isConnected = useStore(x => x.isConnected);
 
     const doConfirm = useCallback(async (notification: NotifoNotificationDto) => {
-        await connection.confirmMany([], notification.id);
+        await connection.confirmMany([], notification.trackingToken);
 
         dispatch(addNotifications([{ ...notification, isConfirmed: true }]));
     }, [dispatch, connection]);
 
     const doSee = useCallback(async (notification: NotifoNotificationDto) => {
-        await connection.confirmMany([notification.id]);
+        await connection.confirmMany([notification.trackingToken]);
 
         dispatch(addNotifications([{ ...notification, isSeen: true }]));
     }, [dispatch, connection]);

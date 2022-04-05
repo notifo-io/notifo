@@ -14,7 +14,7 @@ namespace Notifo.Domain.Utils
     {
         public override TopicId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return reader.GetString();
+            return reader.GetString()!;
         }
 
         public override void Write(Utf8JsonWriter writer, TopicId value, JsonSerializerOptions options)

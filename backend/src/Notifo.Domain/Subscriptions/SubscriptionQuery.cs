@@ -9,7 +9,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Subscriptions
 {
-    public sealed class SubscriptionQuery : QueryBase
+    public sealed record SubscriptionQuery : QueryBase
     {
         public string? UserId { get; set; }
 

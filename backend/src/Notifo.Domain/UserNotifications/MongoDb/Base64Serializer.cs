@@ -7,6 +7,7 @@
 
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb
 {

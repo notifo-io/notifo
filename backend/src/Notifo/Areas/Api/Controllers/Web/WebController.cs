@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 using NodaTime;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Areas.Api.Controllers.Web.Dtos;
-using Notifo.Domain.Channels;
+using Notifo.Domain;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
@@ -22,6 +22,8 @@ namespace Notifo.Areas.Api.Controllers.Web
     [OpenApiIgnore]
     public sealed class WebController : BaseController
     {
+        private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };
+
         private readonly IUserNotificationStore userNotificationStore;
         private readonly SignalROptions signalROptions;
 
@@ -61,32 +63,33 @@ namespace Notifo.Areas.Api.Controllers.Web
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> GetMyPolling([FromBody] PollRequest request)
         {
-            var token = request.Token ?? default;
+            var requestToken = request.Token ?? default;
 
-            if (token != default)
+            if (requestToken != default)
             {
-                token = token.Minus(Duration.FromSeconds(10));
+                requestToken = requestToken.Minus(Duration.FromSeconds(10));
             }
-
-            var details = new TrackingDetails
-            {
-                Channel = Providers.Web
-            };
 
 #pragma warning disable MA0040 // Flow the cancellation token
             if (request.Delivered?.Length > 0)
             {
-                await userNotificationStore.TrackSeenAsync(request.Delivered, details);
+                var tokens = request.Delivered.Select(x => TrackingToken.Parse(x));
+
+                await userNotificationStore.TrackSeenAsync(tokens);
             }
 
             if (request.Seen?.Length > 0)
             {
-                await userNotificationStore.TrackSeenAsync(request.Seen, details);
+                var tokens = request.Seen.Select(x => TrackingToken.Parse(x));
+
+                await userNotificationStore.TrackSeenAsync(tokens);
             }
 
             foreach (var id in request.Confirmed.OrEmpty())
             {
-                await userNotificationStore.TrackConfirmedAsync(id, details);
+                var token = TrackingToken.Parse(id);
+
+                await userNotificationStore.TrackConfirmedAsync(token);
             }
 #pragma warning restore MA0040 // Flow the cancellation token
 
@@ -95,13 +98,7 @@ namespace Notifo.Areas.Api.Controllers.Web
                 await userNotificationStore.DeleteAsync(id, HttpContext.RequestAborted);
             }
 
-            var notifications = await userNotificationStore.QueryAsync(App.Id, UserId, new UserNotificationQuery
-            {
-                After = token,
-                Scope = UserNotificationQueryScope.All,
-                Take = 100,
-                TotalNeeded = false
-            }, HttpContext.RequestAborted);
+            var notifications = await userNotificationStore.QueryAsync(App.Id, UserId, DefaultQuery with { After = requestToken }, HttpContext.RequestAborted);
 
             var continuationToken = notifications.Select(x => x.Updated).OrderBy(x => x).LastOrDefault();
 

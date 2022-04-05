@@ -7,6 +7,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
+using Notifo.Domain;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
@@ -110,16 +111,18 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
         {
-            var details = request.ToDetails();
-
-            if (request.Confirmed.HasValue)
+            if (request.Confirmed != null)
             {
-                await userNotificationService.TrackConfirmedAsync(request.Confirmed.Value, details);
+                var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.DeviceIdentifier);
+
+                await userNotificationService.TrackConfirmedAsync(token);
             }
 
             if (request.Seen?.Length > 0)
             {
-                await userNotificationService.TrackSeenAsync(request.Seen, details);
+                var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.DeviceIdentifier));
+
+                await userNotificationService.TrackSeenAsync(tokens);
             }
 
             return NoContent();

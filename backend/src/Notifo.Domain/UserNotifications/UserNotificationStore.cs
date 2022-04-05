@@ -72,34 +72,28 @@ namespace Notifo.Domain.UserNotifications
             return repository.IsConfirmedOrHandledAsync(id, channel, configuration, ct);
         }
 
-        public Task<UserNotification?> TrackConfirmedAsync(Guid id, TrackingDetails details = default,
+        public Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
             CancellationToken ct = default)
         {
-            Guard.NotDefault(id);
+            Guard.NotDefault(token);
 
-            var handle = CreateHandle(details);
-
-            return repository.TrackConfirmedAsync(id, handle, ct);
+            return repository.TrackConfirmedAsync(token, clock.GetCurrentInstant(), ct);
         }
 
-        public Task TrackDeliveredAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+        public Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens,
             CancellationToken ct = default)
         {
-            Guard.NotNull(ids);
+            Guard.NotNull(tokens);
 
-            var handle = CreateHandle(details);
-
-            return repository.TrackDeliveredAsync(ids, handle, ct);
+            return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
         }
 
-        public Task TrackSeenAsync(IEnumerable<Guid> ids, TrackingDetails details = default,
+        public Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
             CancellationToken ct = default)
         {
-            Guard.NotNull(ids);
+            Guard.NotNull(tokens);
 
-            var handle = CreateHandle(details);
-
-            return repository.TrackSeenAsync(ids, handle, ct);
+            return repository.TrackSeenAsync(tokens, clock.GetCurrentInstant(), ct);
         }
 
         public Task TrackAttemptAsync(UserEventMessage userEvent,
@@ -187,13 +181,6 @@ namespace Notifo.Domain.UserNotifications
             var now = clock.GetCurrentInstant();
 
             return new ChannelSendInfo { LastUpdate = now, Detail = detail, Status = status };
-        }
-
-        private HandledInfo CreateHandle(TrackingDetails details)
-        {
-            var now = clock.GetCurrentInstant();
-
-            return new HandledInfo { Timestamp = now, Channel = details.Channel };
         }
     }
 }

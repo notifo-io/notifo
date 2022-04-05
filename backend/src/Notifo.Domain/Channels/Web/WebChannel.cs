@@ -21,9 +21,7 @@ namespace Notifo.Domain.Channels.Web
 
         public bool IsSystem => true;
 
-        public WebChannel(
-            IUserNotificationStore userNotificationStore,
-            IStreamClient streamClient,
+        public WebChannel(IUserNotificationStore userNotificationStore, IStreamClient streamClient,
             ILogger<WebChannel> log)
         {
             this.streamClient = streamClient;
@@ -34,7 +32,7 @@ namespace Notifo.Domain.Channels.Web
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
         {
-            yield return options.User.Id;
+            yield return Name;
         }
 
         public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options,

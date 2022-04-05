@@ -20,12 +20,12 @@ namespace Notifo.Domain.Channels
 
         IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options);
 
-        Task HandleDeliveredAsync(Guid id, TrackingDetails details)
+        Task HandleDeliveredAsync(TrackingToken token)
         {
             return Task.CompletedTask;
         }
 
-        Task HandleSeenAsync(Guid id, TrackingDetails details)
+        Task HandleSeenAsync(TrackingToken token)
         {
             return Task.CompletedTask;
         }

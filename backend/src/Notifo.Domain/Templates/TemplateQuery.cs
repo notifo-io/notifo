@@ -9,7 +9,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Templates
 {
-    public sealed class TemplateQuery : QueryBase
+    public sealed record TemplateQuery : QueryBase
     {
         public string? Query { get; set; }
     }
