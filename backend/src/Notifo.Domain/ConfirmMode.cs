@@ -10,9 +10,6 @@ namespace Notifo.Domain
     public enum ConfirmMode
     {
         None,
-        Explicit,
-
-        [Obsolete("Not supported across all platforms.")]
-        Seen
+        Explicit
     }
 }

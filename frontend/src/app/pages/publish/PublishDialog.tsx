@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 import { FormError, Forms, Loader, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { NotificationsForm, TemplateInput } from '@app/shared/components';
+import { CHANNELS } from '@app/shared/utils/model';
 import { publish, togglePublishDialog, useApp, usePublish } from '@app/state';
 import { texts } from '@app/texts';
 
@@ -68,7 +69,17 @@ export const PublishDialog = () => {
         dispatch(publish({ appId, params }));
     }, [dispatch, appId]);
 
-    const initialValues: any = dialogValues || {};
+    const initialValues: any = React.useMemo(() => {
+        const result = { ...dialogValues };
+
+        result.settings ||= {};
+
+        for (const channel of CHANNELS) {
+            result.settings[channel] ||= { send: 'Inherit', condition: 'Inherit' };
+        }
+
+        return result;
+    }, [dialogValues]);
 
     return (
         <Modal isOpen={dialogOpen} size='lg' backdrop={false} toggle={doCloseForm}>

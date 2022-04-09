@@ -118,12 +118,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                                 if (template.Settings?.Count > 0)
                                 {
-                                    var settings = new NotificationSettings();
-
-                                    settings.OverrideBy(template.Settings);
-                                    settings.OverrideBy(@event.Settings);
-
-                                    @event.Settings = settings;
+                                    @event.Settings = ChannelSettings.Merged(template.Settings, @event.Settings);
                                 }
                             }
                         }
@@ -266,7 +261,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             if (result.SubscriptionSettings == null)
             {
-                result.SubscriptionSettings = new NotificationSettings();
+                result.SubscriptionSettings = new ChannelSettings();
             }
 
             return result;

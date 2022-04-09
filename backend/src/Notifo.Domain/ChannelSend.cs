@@ -12,8 +12,8 @@ using System.Text.Json.Serialization;
 
 namespace Notifo.Domain
 {
-    [JsonConverter(typeof(NotificationSendConverter))]
-    public enum NotificationSend
+    [JsonConverter(typeof(ChannelSendConverter))]
+    public enum ChannelSend
     {
         Inherit,
         Send,
@@ -21,30 +21,30 @@ namespace Notifo.Domain
         NotAllowed
     }
 
-    public sealed class NotificationSendConverter : JsonConverter<NotificationSend>
+    public sealed class ChannelSendConverter : JsonConverter<ChannelSend>
     {
-        private JsonConverter<NotificationSend>? enumConverter;
+        private JsonConverter<ChannelSend>? enumConverter;
 
-        public override NotificationSend Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override ChannelSend Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
             {
                 case JsonTokenType.Null:
-                    return NotificationSend.Inherit;
+                    return ChannelSend.Inherit;
                 case JsonTokenType.True:
-                    return NotificationSend.Send;
+                    return ChannelSend.Send;
                 case JsonTokenType.False:
-                    return NotificationSend.NotSending;
+                    return ChannelSend.NotSending;
             }
 
-            enumConverter ??= (JsonConverter<NotificationSend>)new JsonStringEnumConverter().CreateConverter(typeof(NotificationSend), options);
+            enumConverter ??= (JsonConverter<ChannelSend>)new JsonStringEnumConverter().CreateConverter(typeof(ChannelSend), options);
 
             return enumConverter.Read(ref reader, typeToConvert, options);
         }
 
-        public override void Write(Utf8JsonWriter writer, NotificationSend value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, ChannelSend value, JsonSerializerOptions options)
         {
-            enumConverter ??= (JsonConverter<NotificationSend>)new JsonStringEnumConverter().CreateConverter(typeof(NotificationSend), options);
+            enumConverter ??= (JsonConverter<ChannelSend>)new JsonStringEnumConverter().CreateConverter(typeof(ChannelSend), options);
             enumConverter.Write(writer, value, options);
         }
     }

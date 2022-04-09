@@ -49,7 +49,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// <summary>
         /// The notification settings.
         /// </summary>
-        public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
+        public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
 
         /// <summary>
         /// User defined properties.
@@ -87,7 +87,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
 
             if (Settings?.Any() == true)
             {
-                result.Settings = new NotificationSettings();
+                result.Settings = new ChannelSettings();
 
                 foreach (var (key, value) in Settings)
                 {

@@ -15,9 +15,9 @@ namespace Notifo.Domain.ChannelTemplates
 {
     public sealed class UpdateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
     {
-        public string Language { get; set; }
+        public string Language { get; init; }
 
-        public T Template { get; set; }
+        public T Template { get; init; }
 
         private sealed class Validator : AbstractValidator<UpdateChannelTemplateLanguage<T>>
         {

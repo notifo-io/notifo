@@ -201,14 +201,14 @@ namespace Notifo.Domain.Subscriptions.MongoDb
                 AppId = appId,
                 UserId = userId,
                 TopicPrefix = topicPrefix,
-                TopicSettings = new NotificationSettings()
+                TopicSettings = new ChannelSettings()
             };
 
             if (sendEmail)
             {
-                subscription.TopicSettings[Providers.Email] = new NotificationSetting
+                subscription.TopicSettings[Providers.Email] = new ChannelSetting
                 {
-                    Send = NotificationSend.Send
+                    Send = ChannelSend.Send
                 };
             }
 

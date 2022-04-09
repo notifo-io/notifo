@@ -22,7 +22,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> TopicSettings { get; set; } = new Dictionary<string, NotificationSettingDto>();
+        public Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
         public static SubscriptionDto FromDomainObject(Subscription subscription)
         {
@@ -37,7 +37,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 {
                     if (value != null)
                     {
-                        result.TopicSettings[key] = NotificationSettingDto.FromDomainObject(value);
+                        result.TopicSettings[key] = ChannelSettingDto.FromDomainObject(value);
                     }
                 }
             }

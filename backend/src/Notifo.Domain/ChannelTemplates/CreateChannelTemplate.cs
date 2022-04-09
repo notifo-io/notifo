@@ -13,11 +13,11 @@ namespace Notifo.Domain.ChannelTemplates
 {
     public sealed class CreateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
     {
-        public bool CanCreate => true;
-
         public string? Language { get; set; }
 
         public string? Kind { get; set; }
+
+        public bool CanCreate => true;
 
         public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
             CancellationToken ct)

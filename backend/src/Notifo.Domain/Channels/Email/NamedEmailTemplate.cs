@@ -11,12 +11,12 @@ namespace Notifo.Domain.Channels.Email
 {
     public sealed class NamedEmailTemplate
     {
-        public string? Name { get; set; }
+        public string? Name { get; init; }
 
-        public bool Primary { get; set; }
+        public bool Primary { get; init; }
 
-        public Instant LastUpdate { get; set; }
+        public Instant LastUpdate { get; init; }
 
-        public Dictionary<string, EmailTemplate> Languages { get; set; } = new Dictionary<string, EmailTemplate>();
+        public Dictionary<string, EmailTemplate> Languages { get; init; } = new Dictionary<string, EmailTemplate>();
     }
 }

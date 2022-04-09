@@ -20,6 +20,6 @@ namespace Notifo.Domain.Templates
 
         public NotificationFormatting<LocalizedText> Formatting { get; init; } = new NotificationFormatting<LocalizedText>();
 
-        public NotificationSettings Settings { get; init; } = new NotificationSettings();
+        public ChannelSettings Settings { get; init; } = new ChannelSettings();
     }
 }

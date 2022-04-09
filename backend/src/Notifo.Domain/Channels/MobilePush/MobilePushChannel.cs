@@ -51,7 +51,7 @@ namespace Notifo.Domain.Channels.MobilePush
             this.clock = clock;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (!integrationManager.IsConfigured<IMobilePushSender>(options.App, notification))
             {
@@ -101,7 +101,7 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("MobilePushChannel/SendAsync"))
@@ -118,12 +118,7 @@ namespace Notifo.Domain.Channels.MobilePush
                     await TryWakeupAsync(notification, token, ct);
                 }
 
-                var job = new MobilePushJob(notification, configuration, token.DeviceType)
-                {
-                    IsImmediate = options.IsUpdate || setting.DelayDuration == Duration.Zero,
-                    IsUpdate = options.IsUpdate,
-                    IsConfirmed = notification.FirstConfirmed != null
-                };
+                var job = new MobilePushJob(notification, setting, configuration, token.DeviceType, options.IsUpdate);
 
                 if (options.IsUpdate)
                 {
@@ -138,7 +133,7 @@ namespace Notifo.Domain.Channels.MobilePush
                     await userNotificationQueue.ScheduleAsync(
                         job.ScheduleKey,
                         job,
-                        setting.DelayDuration,
+                        job.Delay,
                         false, ct);
                 }
             }
@@ -154,17 +149,14 @@ namespace Notifo.Domain.Channels.MobilePush
                 return;
             }
 
-            var wakeupJob = new MobilePushJob(new UserNotification
+            var dummyNotification = new UserNotification
             {
                 AppId = notification.AppId,
                 UserId = notification.UserId,
                 UserLanguage = notification.UserLanguage
-            }, token.Token, token.DeviceType)
-            {
-                IsImmediate = true,
-                IsUpdate = false,
-                IsConfirmed = notification.FirstConfirmed != null
             };
+
+            var wakeupJob = new MobilePushJob(dummyNotification, null, token.Token, token.DeviceType, false);
 
             await userNotificationQueue.ScheduleAsync(
                 wakeupJob.ScheduleKey,
@@ -197,16 +189,13 @@ namespace Notifo.Domain.Channels.MobilePush
 
             using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
             {
-                var id = job.Notification.Id;
-
-                // If the notification is not scheduled it is very unlikey it has been confirmed already.
-                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, job.DeviceToken, Name, ct))
+                if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
                     await UpdateAsync(job, ProcessStatus.Skipped);
                 }
                 else
                 {
-                    await SendAsync(job, ct);
+                    await SendJobAsync(job, ct);
                 }
 
                 return true;
@@ -218,7 +207,7 @@ namespace Notifo.Domain.Channels.MobilePush
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public async Task SendAsync(MobilePushJob job,
+        private async Task SendJobAsync(MobilePushJob job,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("SendMobilePush"))

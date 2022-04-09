@@ -56,7 +56,7 @@ namespace Notifo.Domain.Channels.Email
             this.userStore = userStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (!integrationManager.IsConfigured<IEmailSender>(options.App, notification))
             {
@@ -71,22 +71,22 @@ namespace Notifo.Domain.Channels.Email
             yield return options.User.EmailAddress;
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
+            if (options.IsUpdate)
+            {
+                return;
+            }
+
             using (Telemetry.Activities.StartActivity("EmailChannel/SendAsync"))
             {
-                if (options.IsUpdate)
-                {
-                    return;
-                }
-
                 var job = new EmailJob(notification, setting, configuration);
 
                 await userNotificationQueue.ScheduleGroupedAsync(
                     job.ScheduleKey,
                     job,
-                    setting.DelayDuration,
+                    job.Delay,
                     false, ct);
             }
         }
@@ -100,23 +100,23 @@ namespace Notifo.Domain.Channels.Email
 
             using (Telemetry.Activities.StartActivity("EmailChannel/Handle", ActivityKind.Internal, parentContext, links: links))
             {
-                var nonConfirmed = new List<EmailJob>();
+                var unhandledJobs = new List<EmailJob>();
 
                 foreach (var job in jobs)
                 {
-                    if (await userNotificationStore.IsConfirmedOrHandledAsync(job.Notification.Id, job.EmailAddress, Name, ct))
+                    if (await userNotificationStore.IsHandledAsync(job, this, ct))
                     {
                         await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
                     }
                     else
                     {
-                        nonConfirmed.Add(job);
+                        unhandledJobs.Add(job);
                     }
                 }
 
-                if (nonConfirmed.Any())
+                if (unhandledJobs.Any())
                 {
-                    await SendJobsAsync(nonConfirmed, ct);
+                    await SendJobsAsync(unhandledJobs, ct);
                 }
 
                 return true;

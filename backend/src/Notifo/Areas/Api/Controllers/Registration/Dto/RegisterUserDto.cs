@@ -32,19 +32,19 @@ namespace Notifo.Areas.Api.Controllers.Registration.Dtos
 
             result.FullName = DisplayName;
 
-            result.Settings = new NotificationSettings
+            result.Settings = new ChannelSettings
             {
-                [Providers.WebPush] = new NotificationSetting
+                [Providers.WebPush] = new ChannelSetting
                 {
-                    Send = NotificationSend.Send
+                    Send = ChannelSend.Send
                 }
             };
 
             if (!string.IsNullOrWhiteSpace(result.EmailAddress))
             {
-                result.Settings[Providers.Email] = new NotificationSetting
+                result.Settings[Providers.Email] = new ChannelSetting
                 {
-                    Send = NotificationSend.Send
+                    Send = ChannelSend.Send
                 };
             }
 

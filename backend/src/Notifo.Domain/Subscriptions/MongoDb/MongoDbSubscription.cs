@@ -30,7 +30,7 @@ namespace Notifo.Domain.Subscriptions.MongoDb
 
         [BsonRequired]
         [BsonElement("s")]
-        public NotificationSettings? TopicSettings { get; set; }
+        public ChannelSettings? TopicSettings { get; set; }
 
         public static string CreateId(string appId, string userId, string topicPrefix)
         {

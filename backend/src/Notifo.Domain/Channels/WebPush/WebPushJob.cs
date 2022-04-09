@@ -6,37 +6,52 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using NodaTime;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Channels.WebPush
 {
-    public sealed class WebPushJob : IUserNotification
+    public sealed class WebPushJob : IUserNotification, IChannelJob
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public string AppId { get; set; }
+        public string AppId { get; init; }
 
-        public string EventId { get; set; }
+        public string EventId { get; init; }
 
-        public string UserId { get; set; }
+        public string UserId { get; init; }
 
-        public string Topic { get; set; }
+        public string Topic { get; init; }
 
-        public string Payload { get; set; }
+        public string Payload { get; init; }
 
-        public WebPushSubscription Subscription { get; set; }
+        public WebPushSubscription Subscription { get; init; }
 
-        public ActivityContext UserEventActivity { get; set; }
+        public ActivityContext UserEventActivity { get; init; }
 
-        public ActivityContext EventActivity { get; set; }
+        public ActivityContext EventActivity { get; init; }
 
-        public ActivityContext NotificationActivity { get; set; }
+        public ActivityContext NotificationActivity { get; init; }
 
-        public bool IsImmediate { get; set; }
+        public bool IsConfirmed { get; init; }
 
-        public bool IsUpdate { get; set; }
+        public bool IsUpdate { get; init; }
+
+        public ChannelCondition Condition { get; init; }
+
+        public Duration Delay { get; init; }
+
+        Guid IChannelJob.NotificationId
+        {
+            get => Id;
+        }
+
+        public string Configuration
+        {
+            get => Subscription.Endpoint;
+        }
 
         public string ScheduleKey
         {
@@ -47,15 +62,18 @@ namespace Notifo.Domain.Channels.WebPush
         {
         }
 
-        public WebPushJob(UserNotification notification, WebPushSubscription subscription, IJsonSerializer serializer)
+        public WebPushJob(UserNotification notification, ChannelSetting setting, WebPushSubscription subscription, IJsonSerializer serializer, bool isUpdate)
         {
-            Subscription = subscription;
-
             SimpleMapper.Map(notification, this);
 
             var payload = WebPushPayload.Create(notification, subscription.Endpoint);
 
+            Condition = setting.Condition;
+            Delay = Duration.FromSeconds(setting?.DelayInSeconds ?? 0);
+            IsConfirmed = notification.FirstConfirmed != null;
+            IsUpdate = isUpdate;
             Payload = serializer.SerializeToString(payload);
+            Subscription = subscription;
         }
     }
 }

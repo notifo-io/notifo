@@ -43,7 +43,7 @@ namespace Notifo.Domain.Users
 
         public ReadonlyList<WebPushSubscription> WebPushSubscriptions { get; init; } = ReadonlyList.Empty<WebPushSubscription>();
 
-        public NotificationSettings Settings { get; init; } = new NotificationSettings();
+        public ChannelSettings Settings { get; init; } = new ChannelSettings();
 
         public CounterMap Counters { get; init; } = new CounterMap();
     }

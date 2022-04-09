@@ -11,9 +11,9 @@ namespace Notifo.Domain.UserNotifications
 {
     public sealed class UserNotificationsOptions : IValidatableOptions
     {
-        public TimeSpan RetentionTime { get; set; } = TimeSpan.FromDays(20);
+        public TimeSpan RetentionTime { get; init; } = TimeSpan.FromDays(20);
 
-        public int MaxItemsPerUser { get; set; } = 5000;
+        public int MaxItemsPerUser { get; init; } = 5000;
 
         public IEnumerable<ConfigurationError> Validate()
         {

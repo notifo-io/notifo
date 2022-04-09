@@ -53,20 +53,20 @@ namespace Notifo.Areas.Api.Controllers.Registration
                 {
                     var command = new Subscribe
                     {
-                        TopicSettings = new NotificationSettings
+                        TopicSettings = new ChannelSettings
                         {
-                            [Providers.WebPush] = new NotificationSetting
+                            [Providers.WebPush] = new ChannelSetting
                             {
-                                Send = NotificationSend.Send
+                                Send = ChannelSend.Send
                             }
                         }
                     };
 
                     if (!string.IsNullOrEmpty(request.EmailAddress))
                     {
-                        command.TopicSettings[Providers.Email] = new NotificationSetting
+                        command.TopicSettings[Providers.Email] = new ChannelSetting
                         {
-                            Send = NotificationSend.Send
+                            Send = ChannelSend.Send
                         };
                     }
 

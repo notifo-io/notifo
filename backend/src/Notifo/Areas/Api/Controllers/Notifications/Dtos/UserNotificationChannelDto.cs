@@ -18,7 +18,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// The notification settings.
         /// </summary>
         [Required]
-        public NotificationSettingDto Setting { get; set; }
+        public ChannelSettingDto Setting { get; set; }
 
         /// <summary>
         /// The status per token or configuration.
@@ -50,11 +50,11 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
 
             if (source.Setting != null)
             {
-                result.Setting = NotificationSettingDto.FromDomainObject(source.Setting);
+                result.Setting = ChannelSettingDto.FromDomainObject(source.Setting);
             }
             else
             {
-                result.Setting = new NotificationSettingDto();
+                result.Setting = new ChannelSettingDto();
             }
 
             if (source.Status != null)

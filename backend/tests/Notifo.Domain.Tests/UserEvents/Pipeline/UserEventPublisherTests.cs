@@ -139,7 +139,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 new Subscription
                 {
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 },
                 new Subscription
@@ -177,7 +177,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Formatting = @event.Formatting!,
                     Properties = @event.Properties,
                     SubscriptionPrefix = subscriptions[1].TopicPrefix.ToString(),
-                    SubscriptionSettings = new NotificationSettings(),
+                    SubscriptionSettings = new ChannelSettings(),
                     Topic = @event.Topic,
                     UserId = subscriptions[1].UserId
                 }
@@ -200,7 +200,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 new Subscription
                 {
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 }
             };
@@ -263,7 +263,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Formatting = @event.Formatting!,
                     Properties = new NotificationProperties(),
                     SubscriptionPrefix = "users/123",
-                    SubscriptionSettings = new NotificationSettings(),
+                    SubscriptionSettings = new ChannelSettings(),
                     Topic = @event.Topic,
                     UserId = "123"
                 }
@@ -303,7 +303,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Formatting = @event.Formatting!,
                     Properties = new NotificationProperties(),
                     SubscriptionPrefix = "users/all",
-                    SubscriptionSettings = new NotificationSettings(),
+                    SubscriptionSettings = new ChannelSettings(),
                     Topic = @event.Topic,
                     UserId = "123"
                 },
@@ -315,7 +315,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Formatting = @event.Formatting!,
                     Properties = new NotificationProperties(),
                     SubscriptionPrefix = "users/all",
-                    SubscriptionSettings = new NotificationSettings(),
+                    SubscriptionSettings = new ChannelSettings(),
                     Topic = @event.Topic,
                     UserId = "456"
                 }
@@ -338,7 +338,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 new Subscription
                 {
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 }
             };
@@ -377,7 +377,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 new Subscription
                 {
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 },
                 new Subscription
@@ -419,7 +419,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Properties = new NotificationProperties(),
                     Silent = true,
                     SubscriptionPrefix = subscriptions[1].TopicPrefix.ToString(),
-                    SubscriptionSettings = new NotificationSettings(),
+                    SubscriptionSettings = new ChannelSettings(),
                     Topic = @event.Topic,
                     UserId = subscriptions[1].UserId
                 }
@@ -453,7 +453,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 new Subscription
                 {
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 }
             };

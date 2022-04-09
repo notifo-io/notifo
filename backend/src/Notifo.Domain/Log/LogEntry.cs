@@ -11,14 +11,14 @@ namespace Notifo.Domain.Log
 {
     public sealed class LogEntry
     {
-        public string AppId { get; set; }
+        public string AppId { get; init; }
 
-        public string Message { get; set; }
+        public string Message { get; init; }
 
-        public Instant FirstSeen { get; set; }
+        public Instant FirstSeen { get; init; }
 
-        public Instant LastSeen { get; set; }
+        public Instant LastSeen { get; init; }
 
-        public long Count { get; set; }
+        public long Count { get; init; }
     }
 }

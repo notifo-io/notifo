@@ -12,7 +12,13 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationRepository
     {
-        Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+        Task<bool> IsHandledOrConfirmedAsync(Guid id, string channel, string configuration,
+            CancellationToken ct = default);
+
+        Task<bool> IsHandledOrSeenAsync(Guid id, string channel, string configuration,
+            CancellationToken ct = default);
+
+        Task<bool> IsHandledAsync(Guid id, string channel, string configuration,
             CancellationToken ct = default);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,

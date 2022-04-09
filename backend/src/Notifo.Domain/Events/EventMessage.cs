@@ -34,9 +34,9 @@ namespace Notifo.Domain.Events
 
         public Instant Enqueued { get; set; }
 
-        public NotificationFormatting<LocalizedText>? Formatting { get; set; }
+        public ChannelSettings Settings { get; set; } = new ChannelSettings();
 
-        public NotificationSettings? Settings { get; set; } = new NotificationSettings();
+        public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 
         public NotificationProperties Properties { get; set; }
 

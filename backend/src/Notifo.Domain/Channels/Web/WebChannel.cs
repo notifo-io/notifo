@@ -30,12 +30,12 @@ namespace Notifo.Domain.Channels.Web
             this.log = log;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             yield return Name;
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting settings, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting settings, string configuration, SendOptions options,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))

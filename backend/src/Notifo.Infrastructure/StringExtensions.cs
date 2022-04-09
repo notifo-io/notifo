@@ -51,6 +51,18 @@ namespace Notifo.Infrastructure
             return value;
         }
 
+        public static string Truncate(this string source, int length)
+        {
+            if (source.Length < length)
+            {
+                return source;
+            }
+
+            var trimLength = length - 3;
+
+            return source[..trimLength] + "...";
+        }
+
         public static string ToIso8601(this DateTime value)
         {
             return value.ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);

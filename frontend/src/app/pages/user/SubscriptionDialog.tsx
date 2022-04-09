@@ -72,7 +72,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
         result.topicSettings ||= {};
 
         for (const channel of CHANNELS) {
-            result.topicSettings[channel] ||= { send: 'Inherit' };
+            result.topicSettings[channel] ||= { send: 'Inherit', condition: 'Inherit' };
         }
 
         return result;

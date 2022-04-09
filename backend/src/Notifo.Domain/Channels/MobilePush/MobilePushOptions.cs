@@ -9,12 +9,12 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public struct MobilePushOptions
     {
-        public string DeviceToken { get; set; }
+        public string DeviceToken { get; init; }
 
-        public MobileDeviceType DeviceType { get; set; }
+        public MobileDeviceType DeviceType { get; init; }
 
-        public bool IsConfirmed { get; set; }
+        public bool IsConfirmed { get; init; }
 
-        public bool Wakeup { get; set; }
+        public bool Wakeup { get; init; }
     }
 }

@@ -27,7 +27,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string Text { get; set; }
 
-        public Dictionary<string, string> ItemTemplates { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string, string> ItemTemplates { get; init; } = new Dictionary<string, string>();
 
         public string Format(List<EmailJob> jobs, Dictionary<string, string?> properties, string emailAddress, bool asHtml, IImageFormatter imageFormatter)
         {

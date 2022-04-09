@@ -30,7 +30,7 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
+        public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
 
         public UpsertTemplate ToUpdate()
         {
@@ -47,7 +47,7 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
 
             if (Settings != null)
             {
-                result.Settings = new NotificationSettings();
+                result.Settings = new ChannelSettings();
 
                 foreach (var (key, value) in Settings)
                 {

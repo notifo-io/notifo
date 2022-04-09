@@ -39,9 +39,9 @@ namespace Notifo.Domain.UserEvents
 
         public Instant Enqueued { get; set; }
 
-        public NotificationSettings? EventSettings { get; set; }
+        public ChannelSettings? EventSettings { get; set; }
 
-        public NotificationSettings? SubscriptionSettings { get; set; }
+        public ChannelSettings? SubscriptionSettings { get; set; }
 
         public NotificationFormatting<LocalizedText> Formatting { get; set; }
 

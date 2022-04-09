@@ -14,55 +14,54 @@ namespace Notifo.Domain.Channels.WebPush
     public sealed class WebPushPayload
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public string Id { get; init; }
 
         [JsonPropertyName("cu")]
-        public string? ConfirmUrl { get; set; }
+        public string? ConfirmUrl { get; init; }
 
         [JsonPropertyName("ct")]
-        public string? ConfirmText { get; set; }
+        public string? ConfirmText { get; init; }
 
         [JsonPropertyName("is")]
-        public string? ImageSmall { get; set; }
+        public string? ImageSmall { get; init; }
 
         [JsonPropertyName("il")]
-        public string? ImageLarge { get; set; }
+        public string? ImageLarge { get; init; }
 
         [JsonPropertyName("lt")]
-        public string? LinkText { get; set; }
+        public string? LinkText { get; init; }
 
         [JsonPropertyName("lu")]
-        public string? LinkUrl { get; set; }
+        public string? LinkUrl { get; init; }
 
         [JsonPropertyName("td")]
-        public string? TrackDeliveredUrl { get; set; }
+        public string? TrackDeliveredUrl { get; init; }
 
         [JsonPropertyName("ts")]
-        public string? TrackSeenUrl { get; set; }
+        public string? TrackSeenUrl { get; init; }
 
         [JsonPropertyName("ci")]
-        public bool IsConfirmed { get; set; }
+        public bool IsConfirmed { get; init; }
 
         [JsonPropertyName("ns")]
-        public string Subject { get; set; }
+        public string Subject { get; init; }
 
         [JsonPropertyName("nb")]
-        public string? Body { get; set; }
+        public string? Body { get; init; }
 
         public static WebPushPayload Create(UserNotification notification, string endpoint)
         {
-            var result = new WebPushPayload();
+            var result = new WebPushPayload
+            {
+                ConfirmText = notification.Formatting.ConfirmText,
+                ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint),
+                IsConfirmed = notification.FirstConfirmed != null,
+                TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, endpoint),
+                TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, endpoint)
+            };
 
             SimpleMapper.Map(notification, result);
             SimpleMapper.Map(notification.Formatting, result);
-
-            result.IsConfirmed = notification.FirstConfirmed != null;
-
-            result.ConfirmText = notification.Formatting.ConfirmText;
-            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint);
-
-            result.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, endpoint);
-            result.TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, endpoint);
 
             return result;
         }

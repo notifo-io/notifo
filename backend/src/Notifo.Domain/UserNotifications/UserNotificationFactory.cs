@@ -17,7 +17,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public class UserNotificationFactory : IUserNotificationFactory
+    public sealed class UserNotificationFactory : IUserNotificationFactory
     {
         private const string DefaultConfirmText = "Confirm";
         private readonly IUserNotificationUrl url;
@@ -110,46 +110,31 @@ namespace Notifo.Domain.UserNotifications
             OverrideBy(notification, userEvent.EventSettings);
         }
 
-        private static void OverrideBy(UserNotification notification, NotificationSettings? source)
+        private static void OverrideBy(UserNotification notification, ChannelSettings? source)
         {
-            if (source != null)
+            if (source == null)
             {
-                foreach (var (channelName, sourceSetting) in source)
+                return;
+            }
+
+            foreach (var (channel, setting) in source)
+            {
+                if (notification.Channels.TryGetValue(channel, out var channelInfo))
                 {
-                    if (notification.Channels.TryGetValue(channelName, out var channel))
+                    channelInfo = channelInfo with
                     {
-                        var setting = channel.Setting;
-
-                        if (sourceSetting.Send != NotificationSend.Inherit && setting.Send != NotificationSend.NotAllowed)
-                        {
-                            setting.Send = sourceSetting.Send;
-                        }
-
-                        if (sourceSetting.DelayInSeconds.HasValue)
-                        {
-                            setting.DelayInSeconds = sourceSetting.DelayInSeconds;
-                        }
-
-                        if (sourceSetting.Properties?.Count > 0)
-                        {
-                            setting.Properties ??= new NotificationProperties();
-
-                            foreach (var (key, value) in sourceSetting.Properties)
-                            {
-                                setting.Properties[key] = value;
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(sourceSetting.Template))
-                        {
-                            setting.Template = sourceSetting.Template;
-                        }
-                    }
-                    else
-                    {
-                        notification.Channels[channelName] = UserNotificationChannel.Create(sourceSetting);
-                    }
+                        Setting = channelInfo.Setting.OverrideBy(setting)
+                    };
                 }
+                else
+                {
+                    channelInfo = new UserNotificationChannel
+                    {
+                        Setting = setting
+                    };
+                }
+
+                notification.Channels[channel] = channelInfo;
             }
         }
     }

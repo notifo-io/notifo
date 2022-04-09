@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain.Channels;
 using Notifo.Domain.Counters;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications.Internal;
@@ -66,10 +67,29 @@ namespace Notifo.Domain.UserNotifications
             return repository.DeleteAsync(id, ct);
         }
 
-        public Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+        public Task<bool> IsHandledAsync(IChannelJob job, ICommunicationChannel channel,
             CancellationToken ct = default)
         {
-            return repository.IsConfirmedOrHandledAsync(id, channel, configuration, ct);
+            if (job == null || job.IsUpdate || job.Delay <= Duration.Zero || job.NotificationId == default)
+            {
+                return Task.FromResult(false);
+            }
+
+            switch (job.Condition)
+            {
+                case ChannelCondition.IfNotConfirmed:
+                    return repository.IsHandledOrConfirmedAsync(job.NotificationId, channel.Name, job.Configuration, ct);
+                case ChannelCondition.IfNotSeen:
+                    return repository.IsHandledOrSeenAsync(job.NotificationId, channel.Name, job.Configuration, ct);
+                default:
+                    return repository.IsHandledAsync(job.NotificationId, channel.Name, job.Configuration, ct);
+            }
+        }
+
+        public Task<bool> IsHandledOrSeenAsync(Guid id, string channel, string configuration,
+            CancellationToken ct = default)
+        {
+            return repository.IsHandledOrSeenAsync(id, channel, configuration, ct);
         }
 
         public Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,

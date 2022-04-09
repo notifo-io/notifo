@@ -54,7 +54,7 @@ namespace Notifo.Domain.Channels.WebPush
             PublicKey = options.Value.VapidPublicKey;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (notification.Silent)
             {
@@ -72,7 +72,7 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("WebPushChannel/SendAsync"))
@@ -84,13 +84,11 @@ namespace Notifo.Domain.Channels.WebPush
                     return;
                 }
 
-                var job = new WebPushJob(notification, subscription, serializer);
+                var job = new WebPushJob(notification, setting, subscription, serializer, options.IsUpdate);
 
                 // Do not use scheduling when the notification is an update.
-                if (options.IsUpdate || setting.DelayDuration == Duration.Zero)
+                if (options.IsUpdate)
                 {
-                    job.IsImmediate = true;
-
                     await userNotificationQueue.ScheduleAsync(
                         job.ScheduleKey,
                         job,
@@ -102,7 +100,7 @@ namespace Notifo.Domain.Channels.WebPush
                     await userNotificationQueue.ScheduleAsync(
                         job.ScheduleKey,
                         job,
-                        setting.DelayDuration,
+                        job.Delay,
                         false, ct);
                 }
             }
@@ -122,10 +120,7 @@ namespace Notifo.Domain.Channels.WebPush
 
             using (Telemetry.Activities.StartActivity("WebPushChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
             {
-                var config = job.Subscription.Endpoint;
-
-                // If the notification is not scheduled it is very unlikey it has been confirmed already.
-                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, config, Name, ct))
+                if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
                     await UpdateAsync(job, ProcessStatus.Skipped);
                 }

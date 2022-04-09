@@ -186,17 +186,21 @@ namespace Notifo.Domain.UserNotifications
                 {
                     if (channel.IsSystem && !string.IsNullOrWhiteSpace(channel.Name))
                     {
-                        if (!notification.Channels.TryGetValue(channel.Name, out var systemConfig))
+                        if (!notification.Channels.TryGetValue(channel.Name, out var channelInfo))
                         {
-                            systemConfig = UserNotificationChannel.Create();
+                            channelInfo = new UserNotificationChannel
+                            {
+                                Setting = new ChannelSetting
+                                {
+                                    Send = ChannelSend.Send
+                                }
+                            };
 
-                            notification.Channels[channel.Name] = systemConfig;
+                            notification.Channels[channel.Name] = channelInfo;
                         }
-
-                        systemConfig.Setting.Send = NotificationSend.Send;
                     }
 
-                    if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.ShouldSend)
+                    if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.Send == ChannelSend.Send)
                     {
                         var configurations = channel.GetConfigurations(notification, channelConfig.Setting, options);
 
