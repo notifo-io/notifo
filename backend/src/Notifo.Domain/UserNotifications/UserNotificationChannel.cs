@@ -11,7 +11,7 @@ namespace Notifo.Domain.UserNotifications
 {
     public sealed record UserNotificationChannel
     {
-        public ChannelSetting Setting { get; init; }
+        public ChannelSetting Setting { get; init; } = new ChannelSetting();
 
         public Dictionary<string, ChannelSendInfo> Status { get; init; } = new Dictionary<string, ChannelSendInfo>();
 

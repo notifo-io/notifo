@@ -104,30 +104,14 @@ namespace Notifo.Domain.UserNotifications
             notification.Channels = new Dictionary<string, UserNotificationChannel>();
 
             OverrideBy(notification, user.Settings);
-            OverrideBy(notification, userEvent.SubscriptionSettings);
-            OverrideBy(notification, userEvent.EventSettings);
+            OverrideBy(notification, userEvent.Settings);
         }
 
         private static void OverrideBy(UserNotification notification, ChannelSettings? source)
         {
-            if (source == null)
+            foreach (var (channel, setting) in source.OrEmpty())
             {
-                return;
-            }
-
-            foreach (var (channel, setting) in source)
-            {
-                if (notification.Channels.TryGetValue(channel, out var channelInfo))
-                {
-                    channelInfo.Setting.OverrideBy(setting);
-                }
-                else
-                {
-                    notification.Channels[channel] = new UserNotificationChannel
-                    {
-                        Setting = setting
-                    };
-                }
+                notification.Channels.GetOrAddNew(channel).Setting.OverrideBy(setting);
             }
         }
     }

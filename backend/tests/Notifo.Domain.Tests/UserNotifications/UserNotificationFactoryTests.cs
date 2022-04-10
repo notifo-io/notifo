@@ -233,15 +233,7 @@ namespace Notifo.Domain.UserNotifications
                 }
             });
 
-            userEvent.SubscriptionSettings = new ChannelSettings
-            {
-                [Providers.Email] = new ChannelSetting
-                {
-                    Send = ChannelSend.Send
-                }
-            };
-
-            userEvent.EventSettings = new ChannelSettings
+            userEvent.Settings = new ChannelSettings
             {
                 [Providers.Email] = new ChannelSetting
                 {

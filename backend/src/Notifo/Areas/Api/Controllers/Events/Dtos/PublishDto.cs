@@ -107,11 +107,6 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
                 result.Scheduling = new Scheduling();
             }
 
-            if (result.Properties == null)
-            {
-                result.Properties = new NotificationProperties();
-            }
-
             if (topic != null)
             {
                 result.Topic = topic;

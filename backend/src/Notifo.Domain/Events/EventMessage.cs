@@ -38,7 +38,7 @@ namespace Notifo.Domain.Events
 
         public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 
-        public NotificationProperties Properties { get; set; }
+        public NotificationProperties? Properties { get; set; }
 
         public Scheduling? Scheduling { get; set; }
 
@@ -54,7 +54,6 @@ namespace Notifo.Domain.Events
             {
                 RuleFor(x => x.AppId).NotNull().NotEmpty();
                 RuleFor(x => x.Topic).Topic();
-                RuleFor(x => x.Properties).NotNull();
             }
         }
 

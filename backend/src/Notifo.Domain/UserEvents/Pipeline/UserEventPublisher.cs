@@ -116,10 +116,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                                     @event.Formatting = template.Formatting;
                                 }
 
-                                if (template.Settings?.Count > 0)
-                                {
-                                    @event.Settings = ChannelSettings.Merged(template.Settings, @event.Settings);
-                                }
+                                @event.Settings = ChannelSettings.Merged(template.Settings, @event.Settings);
                             }
                         }
 
@@ -129,7 +126,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
                             return;
                         }
 
-                        @event.Formatting = @event.Formatting.Format(@event.Properties);
+                        if (@event.Properties != null)
+                        {
+                            @event.Formatting = @event.Formatting.Format(@event.Properties);
+                        }
 
                         try
                         {
@@ -244,24 +244,17 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
         private static UserEventMessage CreateUserEventMessage(EventMessage @event, Subscription subscription)
         {
-            var result = SimpleMapper.Map(@event, new UserEventMessage
+            var result = new UserEventMessage
             {
-                EventId = @event.Id,
-                EventSettings = @event.Settings,
-                SubscriptionPrefix = subscription.TopicPrefix,
-                SubscriptionSettings = subscription.TopicSettings,
-                Topic = @event.Topic,
-                UserId = subscription.UserId
-            });
+                EventId = @event.Id
+            };
 
-            if (result.Properties == null)
-            {
-                result.Properties = new NotificationProperties();
-            }
+            SimpleMapper.Map(@event, result);
+            SimpleMapper.Map(subscription, result);
 
-            if (result.SubscriptionSettings == null)
+            if (subscription.TopicSettings != null)
             {
-                result.SubscriptionSettings = new ChannelSettings();
+                result.Settings = ChannelSettings.Merged(@event.Settings, subscription.TopicSettings);
             }
 
             return result;

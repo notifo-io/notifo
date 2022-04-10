@@ -27,23 +27,13 @@ namespace Notifo.Domain
 
             foreach (var source in sources)
             {
-                result.OverrideBy(source);
+                foreach (var (channel, setting) in source.OrEmpty())
+                {
+                    result.GetOrAddNew(channel).OverrideBy(setting);
+                }
             }
 
             return result;
-        }
-
-        public void OverrideBy(ChannelSettings? source)
-        {
-            if (source == null)
-            {
-                return;
-            }
-
-            foreach (var (channel, setting) in source)
-            {
-                this.GetOrAddNew(channel).OverrideBy(setting);
-            }
         }
     }
 }
