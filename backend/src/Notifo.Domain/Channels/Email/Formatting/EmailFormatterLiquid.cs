@@ -102,28 +102,37 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             var context = CreateContext(jobs.Select(x => x.Notification), app, user);
 
-            var message = new EmailMessage
-            {
-                FromEmail = template.FromEmail.OrDefault(jobs[0].FromEmail!),
-                FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
-                ToEmail = user.EmailAddress!,
-                ToName = user.FullName,
-            };
+            var subject = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(template.Subject))
             {
-                message.Subject = FormatSubject(template.Subject, context, errors)!;
+                subject = FormatSubject(template.Subject, context, errors)!;
             }
+
+            string? bodyText = null;
 
             if (!string.IsNullOrWhiteSpace(template.BodyText))
             {
-                message.BodyText = FormatText(template.BodyText, context, jobs, errors)!;
+                bodyText = FormatText(template.BodyText, context, jobs, errors)!;
             }
+
+            string? bodyHtml = null;
 
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
             {
-                message.BodyHtml = FormatBodyHtml(template.BodyHtml, context, jobs, message.ToEmail, errors, noCache)!;
+                bodyHtml = FormatBodyHtml(template.BodyHtml, context, jobs, user.EmailAddress!, errors, noCache)!;
             }
+
+            var message = new EmailMessage
+            {
+                BodyHtml = bodyHtml,
+                BodyText = bodyText,
+                FromEmail = template.FromEmail.OrDefault(jobs[0].FromEmail!),
+                FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
+                Subject = subject,
+                ToEmail = user.EmailAddress!,
+                ToName = user.FullName,
+            };
 
             return message;
         }

@@ -30,7 +30,7 @@ namespace Notifo.Domain.Users
 
         public ReadonlyDictionary<string, string>? Properties { get; set; }
 
-        public NotificationSettings? Settings { get; set; }
+        public ChannelSettings? Settings { get; set; }
 
         public bool MergeSettings { get; set; }
 
@@ -116,7 +116,7 @@ namespace Notifo.Domain.Users
 
                 if (MergeSettings)
                 {
-                    newSettings = NotificationSettings.Merged(user.Settings, Settings);
+                    newSettings = ChannelSettings.Merged(user.Settings, Settings);
                 }
 
                 newUser = newUser with

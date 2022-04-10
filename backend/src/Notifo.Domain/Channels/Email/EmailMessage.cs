@@ -13,14 +13,14 @@ namespace Notifo.Domain.Channels.Email
 
         public string? FromName { get; set; }
 
-        public string ToEmail { get; set; }
+        public string ToEmail { get; init; }
 
-        public string? ToName { get; set; }
+        public string? ToName { get; init; }
 
-        public string Subject { get; set; }
+        public string Subject { get; init; }
 
-        public string? BodyText { get; set; }
+        public string? BodyText { get; init; }
 
-        public string? BodyHtml { get; set; }
+        public string? BodyHtml { get; init; }
     }
 }

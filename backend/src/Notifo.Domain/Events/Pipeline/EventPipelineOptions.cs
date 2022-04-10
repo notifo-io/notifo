@@ -9,6 +9,6 @@ namespace Notifo.Domain.Events.Pipeline
 {
     public sealed class EventPipelineOptions
     {
-        public string ChannelName { get; set; } = "events";
+        public string ChannelName { get; init; } = "events";
     }
 }

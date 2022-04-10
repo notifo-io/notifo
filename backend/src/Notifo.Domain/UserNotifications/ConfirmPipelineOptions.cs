@@ -9,6 +9,6 @@ namespace Notifo.Domain.UserNotifications
 {
     public sealed class ConfirmPipelineOptions
     {
-        public string ChannelName { get; set; } = "confirms";
+        public string ChannelName { get; init; } = "confirms";
     }
 }

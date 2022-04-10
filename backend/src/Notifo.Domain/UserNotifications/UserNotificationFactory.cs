@@ -17,7 +17,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public class UserNotificationFactory : IUserNotificationFactory
+    public sealed class UserNotificationFactory : IUserNotificationFactory
     {
         private const string DefaultConfirmText = "Confirm";
         private readonly IUserNotificationUrl url;
@@ -67,25 +67,23 @@ namespace Notifo.Domain.UserNotifications
                 Id = Guid.NewGuid()
             });
 
+            notification.Updated = clock.GetCurrentInstant();
             notification.UserLanguage = language;
-
             notification.Formatting = formatting;
 
-            ConfigureTracking(notification, language, userEvent);
-            ConfigureSettings(notification, user, userEvent);
-
-            notification.Updated = clock.GetCurrentInstant();
+            ConfigureTracking(notification, userEvent);
+            ConfigureSettings(notification, userEvent, user);
 
             return notification;
         }
 
-        private void ConfigureTracking(UserNotification notification, string language, UserEventMessage userEvent)
+        private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)
         {
             var confirmMode = userEvent.Formatting.ConfirmMode;
 
             if (confirmMode == ConfirmMode.Explicit)
             {
-                notification.ConfirmUrl = url.TrackConfirmed(notification.Id, language);
+                notification.ConfirmUrl = url.TrackConfirmed(notification.Id, notification.UserLanguage);
 
                 if (string.IsNullOrWhiteSpace(notification.Formatting.ConfirmText))
                 {
@@ -97,59 +95,23 @@ namespace Notifo.Domain.UserNotifications
                 notification.Formatting.ConfirmText = null;
             }
 
-            notification.TrackDeliveredUrl = url.TrackDelivered(notification.Id, language);
-            notification.TrackSeenUrl = url.TrackSeen(notification.Id, language);
+            notification.TrackDeliveredUrl = url.TrackDelivered(notification.Id, notification.UserLanguage);
+            notification.TrackSeenUrl = url.TrackSeen(notification.Id, notification.UserLanguage);
         }
 
-        private static void ConfigureSettings(UserNotification notification, User user, UserEventMessage userEvent)
+        private static void ConfigureSettings(UserNotification notification, UserEventMessage userEvent, User user)
         {
             notification.Channels = new Dictionary<string, UserNotificationChannel>();
 
             OverrideBy(notification, user.Settings);
-            OverrideBy(notification, userEvent.SubscriptionSettings);
-            OverrideBy(notification, userEvent.EventSettings);
+            OverrideBy(notification, userEvent.Settings);
         }
 
-        private static void OverrideBy(UserNotification notification, NotificationSettings? source)
+        private static void OverrideBy(UserNotification notification, ChannelSettings? source)
         {
-            if (source != null)
+            foreach (var (channel, setting) in source.OrEmpty())
             {
-                foreach (var (channelName, sourceSetting) in source)
-                {
-                    if (notification.Channels.TryGetValue(channelName, out var channel))
-                    {
-                        var setting = channel.Setting;
-
-                        if (sourceSetting.Send != NotificationSend.Inherit && setting.Send != NotificationSend.NotAllowed)
-                        {
-                            setting.Send = sourceSetting.Send;
-                        }
-
-                        if (sourceSetting.DelayInSeconds.HasValue)
-                        {
-                            setting.DelayInSeconds = sourceSetting.DelayInSeconds;
-                        }
-
-                        if (sourceSetting.Properties?.Count > 0)
-                        {
-                            setting.Properties ??= new NotificationProperties();
-
-                            foreach (var (key, value) in sourceSetting.Properties)
-                            {
-                                setting.Properties[key] = value;
-                            }
-                        }
-
-                        if (!string.IsNullOrWhiteSpace(sourceSetting.Template))
-                        {
-                            setting.Template = sourceSetting.Template;
-                        }
-                    }
-                    else
-                    {
-                        notification.Channels[channelName] = UserNotificationChannel.Create(sourceSetting);
-                    }
-                }
+                notification.Channels.GetOrAddNew(channel).Setting.OverrideBy(setting);
             }
         }
     }

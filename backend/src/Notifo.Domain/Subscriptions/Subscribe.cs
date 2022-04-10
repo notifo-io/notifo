@@ -13,7 +13,7 @@ namespace Notifo.Domain.Subscriptions
 {
     public sealed class Subscribe : ICommand<Subscription>
     {
-        public NotificationSettings? TopicSettings { get; set; }
+        public ChannelSettings? TopicSettings { get; set; }
 
         public bool MergeSettings { get; set; }
 
@@ -30,7 +30,7 @@ namespace Notifo.Domain.Subscriptions
 
             if (MergeSettings || newSettings == null)
             {
-                newSettings = NotificationSettings.Merged(subscription.TopicSettings, TopicSettings);
+                newSettings = ChannelSettings.Merged(subscription.TopicSettings, TopicSettings);
             }
 
             var newSubscription = subscription with

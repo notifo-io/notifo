@@ -11,13 +11,13 @@ namespace Notifo.Domain
 {
     public sealed class Scheduling
     {
-        public SchedulingType Type { get; set; }
+        public SchedulingType Type { get; init; }
 
-        public IsoDayOfWeek? NextWeekDay { get; set; }
+        public IsoDayOfWeek? NextWeekDay { get; init; }
 
-        public LocalDate? Date { get; set; }
+        public LocalDate? Date { get; init; }
 
-        public LocalTime Time { get; set; }
+        public LocalTime Time { get; init; }
 
         public static Instant CalculateScheduleTime(Scheduling? scheduling, IClock clock, string userTimeZone)
         {

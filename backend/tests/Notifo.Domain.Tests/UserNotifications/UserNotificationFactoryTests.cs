@@ -221,31 +221,23 @@ namespace Notifo.Domain.UserNotifications
         {
             var userEvent = CreateMinimumUserEvent();
 
-            user.Settings.CopyFrom(new NotificationSettings
+            user.Settings.CopyFrom(new ChannelSettings
             {
-                [Providers.Email] = new NotificationSetting
+                [Providers.Email] = new ChannelSetting
                 {
-                    Send = NotificationSend.Send
+                    Send = ChannelSend.Send
                 },
-                [Providers.MobilePush] = new NotificationSetting
+                [Providers.MobilePush] = new ChannelSetting
                 {
                     DelayInSeconds = 100
                 }
             });
 
-            userEvent.SubscriptionSettings = new NotificationSettings
+            userEvent.Settings = new ChannelSettings
             {
-                [Providers.Email] = new NotificationSetting
+                [Providers.Email] = new ChannelSetting
                 {
-                    Send = NotificationSend.Send
-                }
-            };
-
-            userEvent.EventSettings = new NotificationSettings
-            {
-                [Providers.Email] = new NotificationSetting
-                {
-                    Send = NotificationSend.NotSending
+                    Send = ChannelSend.NotSending
                 }
             };
 
@@ -256,16 +248,16 @@ namespace Notifo.Domain.UserNotifications
                 {
                     [Providers.Email] = new UserNotificationChannel
                     {
-                        Setting = new NotificationSetting
+                        Setting = new ChannelSetting
                         {
-                            Send = NotificationSend.NotSending
+                            Send = ChannelSend.NotSending
                         },
                         Status = new Dictionary<string, ChannelSendInfo>()
                     },
 
                     [Providers.MobilePush] = new UserNotificationChannel
                     {
-                        Setting = new NotificationSetting
+                        Setting = new ChannelSetting
                         {
                             DelayInSeconds = 100
                         },

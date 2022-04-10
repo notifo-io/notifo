@@ -16,7 +16,7 @@ namespace Notifo.Domain.Utils
         private static readonly Regex FormatPattern = new Regex(@"\{\{[\s]*(?<Path>[^\s]+)[\s]*(\|[\s]*(?<Transform>[^\?}]+))?(\?[\s]*(?<Fallback>[^\}\s]+))?[\s]*\}\}", RegexOptions.Compiled);
 #pragma warning restore MA0023 // Add RegexOptions.ExplicitCapture
 
-        public static string Format(this string text, Dictionary<string, string?> properties)
+        public static string Format(this string text, Dictionary<string, string?>? properties)
         {
             if (text == null || string.IsNullOrWhiteSpace(text))
             {
@@ -27,8 +27,12 @@ namespace Notifo.Domain.Utils
             {
                 var path = match.Groups["Path"].Value;
 
-                if (properties.TryGetValue(path, out var result) && result != null)
+                var result = string.Empty;
+
+                if (properties != null && properties.TryGetValue(path, out var temp) && temp != null)
                 {
+                    result = temp;
+
                     var transforms = match.Groups["Transform"].Value.Split('|', StringSplitOptions.RemoveEmptyEntries);
 
                     foreach (var transform in transforms)
@@ -45,7 +49,7 @@ namespace Notifo.Domain.Utils
                     }
                 }
 
-                if (string.IsNullOrWhiteSpace(result))
+                if (string.IsNullOrWhiteSpace(result) && match.Groups.ContainsKey("Fallback"))
                 {
                     result = match.Groups["Fallback"].Value;
                 }
@@ -54,7 +58,7 @@ namespace Notifo.Domain.Utils
             });
         }
 
-        public static LocalizedText Format(this LocalizedText input, Dictionary<string, string?> properties)
+        public static LocalizedText Format(this LocalizedText input, Dictionary<string, string?>? properties)
         {
             if (input == null)
             {

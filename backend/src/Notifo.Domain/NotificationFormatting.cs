@@ -25,7 +25,7 @@ namespace Notifo.Domain
             return source.Transform(SelectText(language));
         }
 
-        public static NotificationFormatting<LocalizedText> Format(this NotificationFormatting<LocalizedText> source, NotificationProperties properties)
+        public static NotificationFormatting<LocalizedText> Format(this NotificationFormatting<LocalizedText> source, NotificationProperties? properties)
         {
             return source.Transform(FormatText(properties));
         }
@@ -48,7 +48,7 @@ namespace Notifo.Domain
             };
         }
 
-        private static Func<LocalizedText?, LocalizedText> FormatText(NotificationProperties properties)
+        private static Func<LocalizedText?, LocalizedText> FormatText(NotificationProperties? properties)
         {
             return text =>
             {

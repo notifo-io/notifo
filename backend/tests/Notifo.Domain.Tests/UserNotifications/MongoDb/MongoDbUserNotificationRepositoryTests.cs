@@ -110,9 +110,9 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 {
                     [channel] = new UserNotificationChannel
                     {
-                        Setting = new NotificationSetting
+                        Setting = new ChannelSetting
                         {
-                            Send = NotificationSend.Send
+                            Send = ChannelSend.Send
                         },
                         Status = new Dictionary<string, ChannelSendInfo>
                         {

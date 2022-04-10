@@ -134,17 +134,55 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 null, ct);
         }
 
-        public async Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+        public async Task<bool> IsHandledOrConfirmedAsync(Guid id, string channel, string configuration,
             CancellationToken ct = default)
         {
-            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsConfirmedOrHandledAsync"))
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsHandledOrConfirmedAsync"))
             {
                 var filter =
-                   Filter.And(
-                       Filter.Eq(x => x.Id, id),
-                       Filter.Or(
+                    Filter.And(
+                        Filter.Eq(x => x.Id, id),
+                        Filter.Or(
                             Filter.Exists(x => x.FirstConfirmed),
                             Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
+
+                var count =
+                    await Collection.Find(filter).Limit(1)
+                        .CountDocumentsAsync(ct);
+
+                return count == 1;
+            }
+        }
+
+        public async Task<bool> IsHandledOrSeenAsync(Guid id, string channel, string configuration,
+            CancellationToken ct = default)
+        {
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsHandledOrSeenAsync"))
+            {
+                var filter =
+                    Filter.And(
+                        Filter.Eq(x => x.Id, id),
+                        Filter.Or(
+                            Filter.Exists(x => x.FirstSeen),
+                            Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
+
+                var count =
+                    await Collection.Find(filter).Limit(1)
+                        .CountDocumentsAsync(ct);
+
+                return count == 1;
+            }
+        }
+
+        public async Task<bool> IsHandledAsync(Guid id, string channel, string configuration,
+            CancellationToken ct = default)
+        {
+            using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsHandledAsync"))
+            {
+                var filter =
+                    Filter.And(
+                        Filter.Eq(x => x.Id, id),
+                        Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled));
 
                 var count =
                     await Collection.Find(filter).Limit(1)

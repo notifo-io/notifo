@@ -53,7 +53,7 @@ namespace Notifo.Domain.Channels.Sms
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (!integrationManager.IsConfigured<ISmsSender>(options.App, notification))
             {
@@ -109,25 +109,22 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
+            if (options.IsUpdate)
+            {
+                return;
+            }
+
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                if (options.IsUpdate)
-                {
-                    return;
-                }
-
-                var job = new SmsJob(notification, setting.Template, configuration)
-                {
-                    IsImmediate = setting.DelayDuration == Duration.Zero
-                };
+                var job = new SmsJob(notification, setting, configuration);
 
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
-                    setting.DelayDuration,
+                    job.Delay,
                     false, ct);
             }
         }
@@ -146,8 +143,7 @@ namespace Notifo.Domain.Channels.Sms
 
             using (Telemetry.Activities.StartActivity("SmsChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
             {
-                // If the notification is not scheduled it is very unlikey it has been confirmed already.
-                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(job.Id, job.PhoneNumber, Name, ct))
+                if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
                     await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
                 }
@@ -217,7 +213,7 @@ namespace Notifo.Domain.Channels.Sms
                         await SkipAsync(job, skip);
                     }
 
-                    var text = smsFormatter.Format(template, job.Text);
+                    var text = smsFormatter.Format(template, job.PhoneText);
 
                     var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Id.ToString(), ct);
 

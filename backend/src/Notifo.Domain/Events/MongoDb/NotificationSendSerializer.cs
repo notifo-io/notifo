@@ -11,7 +11,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Notifo.Domain.Events.MongoDb
 {
-    public sealed class NotificationSendSerializer : SerializerBase<NotificationSend>
+    public sealed class NotificationSendSerializer : SerializerBase<ChannelSend>
     {
         private static volatile int isRegistered;
 
@@ -23,7 +23,7 @@ namespace Notifo.Domain.Events.MongoDb
             }
         }
 
-        public override NotificationSend Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        public override ChannelSend Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         {
             var reader = context.Reader;
 
@@ -31,19 +31,19 @@ namespace Notifo.Domain.Events.MongoDb
             {
                 case BsonType.Null:
                     reader.ReadNull();
-                    return NotificationSend.Inherit;
+                    return ChannelSend.Inherit;
                 case BsonType.Boolean:
                     {
                         var value = reader.ReadBoolean();
 
-                        return value ? NotificationSend.Send : NotificationSend.NotSending;
+                        return value ? ChannelSend.Send : ChannelSend.NotSending;
                     }
 
                 case BsonType.String:
                     {
                         var value = reader.ReadString();
 
-                        if (Enum.TryParse<NotificationSend>(value, true, out var result))
+                        if (Enum.TryParse<ChannelSend>(value, true, out var result))
                         {
                             return result;
                         }
@@ -55,7 +55,7 @@ namespace Notifo.Domain.Events.MongoDb
             throw new NotSupportedException();
         }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, NotificationSend value)
+        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, ChannelSend value)
         {
             context.Writer.WriteString(value.ToString());
         }

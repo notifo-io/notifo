@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain.Channels;
 using Notifo.Domain.UserEvents;
 using Notifo.Infrastructure;
 
@@ -13,7 +14,7 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationStore
     {
-        Task<bool> IsConfirmedOrHandledAsync(Guid id, string channel, string configuration,
+        Task<bool> IsHandledAsync(IChannelJob job, ICommunicationChannel channel,
             CancellationToken ct = default);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,

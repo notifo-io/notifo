@@ -12022,19 +12022,25 @@ namespace Notifo.SDK
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSettingDto>();
     
     
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public partial class NotificationSettingDto 
+    public partial class ChannelSettingDto 
     {
-        /// <summary>True or false to send the notification for the channel.</summary>
+        /// <summary>Defines if to send a notification through this channel.</summary>
         [Newtonsoft.Json.JsonProperty("send", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public NotificationSend Send { get; set; }
+        public ChannelSend Send { get; set; }
+    
+        /// <summary>Defines when to send a notification through this channel.</summary>
+        [Newtonsoft.Json.JsonProperty("condition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ChannelCondition Condition { get; set; }
     
         /// <summary>The delay in seconds.</summary>
         [Newtonsoft.Json.JsonProperty("delayInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12052,7 +12058,7 @@ namespace Notifo.SDK
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
-    public enum NotificationSend
+    public enum ChannelSend
     {
         [System.Runtime.Serialization.EnumMember(Value = @"Inherit")]
         Inherit = 0,
@@ -12065,6 +12071,23 @@ namespace Notifo.SDK
     
         [System.Runtime.Serialization.EnumMember(Value = @"NotAllowed")]
         NotAllowed = 3,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
+    public enum ChannelCondition
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Inherit")]
+        Inherit = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"IfNotSeen")]
+        IfNotSeen = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"IfNotConfirmed")]
+        IfNotConfirmed = 2,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Always")]
+        Always = 3,
     
     }
     
@@ -12099,7 +12122,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; }
     
     
     }
@@ -12120,6 +12143,10 @@ namespace Notifo.SDK
         /// <summary>The optional description.</summary>
         [Newtonsoft.Json.JsonProperty("description", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Description { get; set; }
+    
+        /// <summary>True to show the topic automatically to new users, e.g. when he accepts push notifications.</summary>
+        [Newtonsoft.Json.JsonProperty("showAutomatically", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool ShowAutomatically { get; set; }
     
         /// <summary>The channel options.</summary>
         [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12166,7 +12193,7 @@ namespace Notifo.SDK
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> TopicSettings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSettingDto>();
     
     
     }
@@ -12195,7 +12222,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> TopicSettings { get; set; }
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> TopicSettings { get; set; }
     
     
     }
@@ -12281,7 +12308,7 @@ namespace Notifo.SDK
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSettingDto>();
     
         /// <summary>The statistics counters.</summary>
         [Newtonsoft.Json.JsonProperty("counters", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12402,7 +12429,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; }
     
     
     }
@@ -12514,7 +12541,7 @@ namespace Notifo.SDK
     public partial class UpsertTopicDto 
     {
         /// <summary>The path of the topic.</summary>
-        [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Path { get; set; }
     
         /// <summary>The name.</summary>
@@ -12526,8 +12553,8 @@ namespace Notifo.SDK
         public LocalizedText Description { get; set; }
     
         /// <summary>True to show the topic automatically to new users, e.g. when he accepts push notifications.</summary>
-        [Newtonsoft.Json.JsonProperty("showAutomatically", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool ShowAutomatically { get; set; }
+        [Newtonsoft.Json.JsonProperty("showAutomatically", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? ShowAutomatically { get; set; }
     
         /// <summary>Settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("channels", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12577,7 +12604,7 @@ namespace Notifo.SDK
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSettingDto>();
     
     
     }
@@ -12632,9 +12659,6 @@ namespace Notifo.SDK
         [System.Runtime.Serialization.EnumMember(Value = @"Explicit")]
         Explicit = 1,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"Seen")]
-        Seen = 2,
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.3.1.0 (Newtonsoft.Json v9.0.0.0)")]
@@ -12663,7 +12687,7 @@ namespace Notifo.SDK
     
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; }
     
     
     }
@@ -12796,7 +12820,7 @@ namespace Notifo.SDK
         /// <summary>The notification settings.</summary>
         [Newtonsoft.Json.JsonProperty("setting", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public NotificationSettingDto Setting { get; set; } = new NotificationSettingDto();
+        public ChannelSettingDto Setting { get; set; } = new ChannelSettingDto();
     
         /// <summary>The status per token or configuration.</summary>
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -12898,6 +12922,11 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset Updated { get; set; }
     
+        /// <summary>The tracking token.</summary>
+        [Newtonsoft.Json.JsonProperty("trackingToken", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string TrackingToken { get; set; }
+    
         /// <summary>The optional body text.</summary>
         [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Body { get; set; }
@@ -12979,11 +13008,11 @@ namespace Notifo.SDK
     {
         /// <summary>The id of the noitifications to mark as confirmed.</summary>
         [Newtonsoft.Json.JsonProperty("confirmed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? Confirmed { get; set; }
+        public string Confirmed { get; set; }
     
         /// <summary>The id of the noitifications to mark as seen.</summary>
         [Newtonsoft.Json.JsonProperty("seen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<System.Guid> Seen { get; set; }
+        public System.Collections.Generic.ICollection<string> Seen { get; set; }
     
         /// <summary>The channel name.</summary>
         [Newtonsoft.Json.JsonProperty("channel", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -13260,7 +13289,7 @@ namespace Notifo.SDK
         /// <summary>Notification settings per channel.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, NotificationSettingDto>();
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSettingDto>();
     
         /// <summary>User defined properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -13396,7 +13425,7 @@ namespace Notifo.SDK
     
         /// <summary>The notification settings.</summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.IDictionary<string, NotificationSettingDto> Settings { get; set; }
+        public System.Collections.Generic.IDictionary<string, ChannelSettingDto> Settings { get; set; }
     
         /// <summary>User defined properties.</summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

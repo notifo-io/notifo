@@ -13,13 +13,13 @@ namespace Notifo.Domain.Integrations
 {
     public sealed record ConfiguredIntegration(string Type, ReadonlyDictionary<string, string> Properties)
     {
-        public bool Enabled { get; set; }
+        public bool Enabled { get; init; }
 
-        public bool? Test { get; set; }
+        public bool? Test { get; init; }
 
-        public int Priority { get; set; }
+        public int Priority { get; init; }
 
-        public string? Condition { get; set; }
+        public string? Condition { get; init; }
 
         public IntegrationStatus Status { get; set; }
     }

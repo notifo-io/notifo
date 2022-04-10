@@ -96,7 +96,7 @@ export const UserDialog = (props: UserDialogProps) => {
         result.settings ||= {};
 
         for (const channel of CHANNELS) {
-            result.settings[channel] ||= { send: 'Inherit' };
+            result.settings[channel] ||= { send: 'Inherit', condition: 'Inherit' };
         }
 
         return result;

@@ -33,7 +33,7 @@ namespace Notifo.Domain.ChannelTemplates
 
                 foreach (var (key, value) in Languages)
                 {
-                    languages[key] = await factory.ParseAsync(value);
+                    languages[key] = await factory.ParseAsync(value, ct);
                 }
 
                 newTemplate = newTemplate with

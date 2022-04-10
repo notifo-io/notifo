@@ -12,8 +12,8 @@ export const CHANNELS = [
     'messaging',
     'mobilepush',
     'sms',
-    'webhook',
     'webpush',
+    'webhook',
 ];
 
 export const CONFIRM_MODES = [{
@@ -36,6 +36,20 @@ export const SEND_MODES = [{
 }, {
     value: 'NotAllowed',
     label: texts.common.sendModes.doNotAllow,
+}];
+
+export const CONDITION_MODES = [{
+    value: 'Inherit',
+    label: texts.common.conditionModes.inherit,
+}, {
+    value: 'Always',
+    label: texts.common.conditionModes.always,
+}, {
+    value: 'IfNotSeen',
+    label: texts.common.conditionModes.ifNotSeen,
+}, {
+    value: 'IfNotConfirmed',
+    label: texts.common.conditionModes.ifNotConfirmed,
 }];
 
 export const ALLOWED_MODES = [{

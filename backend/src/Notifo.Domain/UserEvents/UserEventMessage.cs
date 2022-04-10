@@ -17,9 +17,9 @@ namespace Notifo.Domain.UserEvents
 
         public string UserId { get; set; }
 
-        public string SubscriptionPrefix { get; set; }
-
         public string Topic { get; set; }
+
+        public string TopicPrefix { get; set; }
 
         public string EventId { get; set; }
 
@@ -39,13 +39,11 @@ namespace Notifo.Domain.UserEvents
 
         public Instant Enqueued { get; set; }
 
-        public NotificationSettings? EventSettings { get; set; }
-
-        public NotificationSettings? SubscriptionSettings { get; set; }
+        public ChannelSettings? Settings { get; set; }
 
         public NotificationFormatting<LocalizedText> Formatting { get; set; }
 
-        public NotificationProperties Properties { get; set; }
+        public NotificationProperties? Properties { get; set; }
 
         public Scheduling? Scheduling { get; set; }
 

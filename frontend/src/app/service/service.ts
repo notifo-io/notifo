@@ -5492,12 +5492,14 @@ export interface ProfileDto {
     /** The supported timezones. */
     supportedTimezones: string[];
     /** Notification settings per channel. */
-    settings: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: ChannelSettingDto; };
 }
 
-export interface NotificationSettingDto {
-    /** True or false to send the notification for the channel. */
-    send: NotificationSend;
+export interface ChannelSettingDto {
+    /** Defines if to send a notification through this channel. */
+    send: ChannelSend;
+    /** Defines when to send a notification through this channel. */
+    condition: ChannelCondition;
     /** The delay in seconds. */
     delayInSeconds?: number | undefined;
     /** The template if the channel supports it. */
@@ -5506,7 +5508,9 @@ export interface NotificationSettingDto {
     properties?: NotificationProperties | undefined;
 }
 
-export type NotificationSend = "Inherit" | "Send" | "NotSending" | "NotAllowed";
+export type ChannelSend = "Inherit" | "Send" | "NotSending" | "NotAllowed";
+
+export type ChannelCondition = "Inherit" | "IfNotSeen" | "IfNotConfirmed" | "Always";
 
 export interface NotificationProperties {
 
@@ -5525,7 +5529,7 @@ export interface UpdateProfileDto {
     /** The timezone of the user. */
     preferredTimezone?: string | undefined;
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; } | undefined;
+    settings?: { [key: string]: ChannelSettingDto; } | undefined;
 }
 
 export interface UserTopicDto {
@@ -5535,6 +5539,8 @@ export interface UserTopicDto {
     name: string;
     /** The optional description. */
     description?: string | undefined;
+    /** True to show the topic automatically to new users, e.g. when he accepts push notifications. */
+    showAutomatically?: boolean;
     /** The channel options. */
     channels: { [key: string]: TopicChannel; };
 }
@@ -5552,7 +5558,7 @@ export interface SubscriptionDto {
     /** The topic to add. */
     topicPrefix: string;
     /** Notification settings per channel. */
-    topicSettings: { [key: string]: NotificationSettingDto; };
+    topicSettings: { [key: string]: ChannelSettingDto; };
 }
 
 export interface SubscribeManyDto {
@@ -5566,7 +5572,7 @@ export interface SubscribeDto {
     /** The topic to add. */
     topicPrefix: string;
     /** Notification settings per channel. */
-    topicSettings?: { [key: string]: NotificationSettingDto; } | undefined;
+    topicSettings?: { [key: string]: ChannelSettingDto; } | undefined;
 }
 
 export interface ListResponseDtoOfUserDto {
@@ -5606,7 +5612,7 @@ export interface UserDto {
     /** The user properties. */
     properties?: { [key: string]: string; } | undefined;
     /** Notification settings per channel. */
-    settings: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: ChannelSettingDto; };
     /** The statistics counters. */
     counters: { [key: string]: number; };
     /** The mobile push tokens. */
@@ -5658,7 +5664,7 @@ export interface UpsertUserDto {
     /** The user properties. */
     properties?: { [key: string]: string; } | undefined;
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; } | undefined;
+    settings?: { [key: string]: ChannelSettingDto; } | undefined;
 }
 
 export interface AddAllowedTopicDto {
@@ -5708,13 +5714,13 @@ export interface UpsertTopicsDto {
 
 export interface UpsertTopicDto {
     /** The path of the topic. */
-    path?: string | undefined;
+    path?: string;
     /** The name. */
     name?: LocalizedText | undefined;
     /** The description. */
     description?: LocalizedText | undefined;
     /** True to show the topic automatically to new users, e.g. when he accepts push notifications. */
-    showAutomatically?: boolean;
+    showAutomatically?: boolean | undefined;
     /** Settings per channel. */
     channels?: { [key: string]: TopicChannel; } | undefined;
 }
@@ -5736,7 +5742,7 @@ export interface TemplateDto {
     /** The formatting. */
     formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: ChannelSettingDto; };
 }
 
 export interface NotificationFormattingDto {
@@ -5758,7 +5764,7 @@ export interface NotificationFormattingDto {
     confirmMode: ConfirmMode;
 }
 
-export type ConfirmMode = "None" | "Explicit" | "Seen";
+export type ConfirmMode = "None" | "Explicit";
 
 export interface UpsertTemplatesDto {
     /** The templates to update. */
@@ -5771,7 +5777,7 @@ export interface UpsertTemplateDto {
     /** The formatting. */
     formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings?: { [key: string]: NotificationSettingDto; } | undefined;
+    settings?: { [key: string]: ChannelSettingDto; } | undefined;
 }
 
 export interface ListResponseDtoOfSystemUserDto {
@@ -5830,6 +5836,8 @@ export interface UserNotificationBaseDto {
     created: string;
     /** The timestamp when the notification has been updated. */
     updated: string;
+    /** The tracking token. */
+    trackingToken: string;
     /** The optional body text. */
     body?: string | undefined;
     /** The optional link to the small image. */
@@ -5867,7 +5875,7 @@ export interface UserNotificationDetailsDto extends UserNotificationBaseDto {
 
 export interface UserNotificationChannelDto {
     /** The notification settings. */
-    setting: NotificationSettingDto;
+    setting: ChannelSettingDto;
     /** The status per token or configuration. */
     status: { [key: string]: ChannelSendInfoDto; };
     /** The first time the notification has been marked as delivered for this channel. */
@@ -6024,7 +6032,7 @@ export interface EventDto {
     /** The final formatting infos. */
     formatting: NotificationFormattingDto;
     /** Notification settings per channel. */
-    settings: { [key: string]: NotificationSettingDto; };
+    settings: { [key: string]: ChannelSettingDto; };
     /** User defined properties. */
     properties: { [key: string]: string; };
     /** The scheduling options. */
@@ -6072,7 +6080,7 @@ export interface PublishDto {
     /** Preformatting when no template is used. */
     preformatted?: NotificationFormattingDto | undefined;
     /** The notification settings. */
-    settings?: { [key: string]: NotificationSettingDto; } | undefined;
+    settings?: { [key: string]: ChannelSettingDto; } | undefined;
     /** User defined properties. */
     properties?: NotificationProperties | undefined;
     /** The scheduling options. */

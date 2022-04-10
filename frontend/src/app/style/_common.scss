@@ -44,6 +44,40 @@ label {
     }
 }
 
+.rules {
+    & {
+        overflow-x: auto;
+    }
+
+    &-label {
+        display: inline-block;
+        padding-left: .5rem !important;
+        padding-right: .5rem !important;
+        padding-top: .5rem;
+    }
+
+    .row {
+        flex-wrap: nowrap;
+    }
+
+    &-send {
+        @include force-width(10rem);
+    }
+
+    &-delay {
+        @include force-width(5rem);
+    }
+
+    &-type {
+        @include force-width(8rem);
+    }
+
+    &-condition {
+        min-width: 10rem;
+        max-width: 100%;
+    }
+}
+
 legend {
     border-bottom: 1px solid rgba(0, 0, 0, 10%);
     font-size: .9rem;

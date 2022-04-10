@@ -15,7 +15,7 @@ namespace Notifo.Domain.Subscriptions
 
         public TopicId TopicPrefix { get; init; }
 
-        public NotificationSettings? TopicSettings { get; init; }
+        public ChannelSettings? TopicSettings { get; init; }
 
         public static Subscription Create(string appId, string userId, TopicId prefix)
         {

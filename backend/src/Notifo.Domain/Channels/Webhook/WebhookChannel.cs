@@ -42,7 +42,7 @@ namespace Notifo.Domain.Channels.Webhook
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting setting, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting setting, SendOptions options)
         {
             var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification);
 
@@ -57,7 +57,7 @@ namespace Notifo.Domain.Channels.Webhook
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
@@ -70,13 +70,10 @@ namespace Notifo.Domain.Channels.Webhook
                     return;
                 }
 
-                var job = new WebhookJob(notification, configuration, webhook)
-                {
-                    IsUpdate = options.IsUpdate
-                };
+                var job = new WebhookJob(notification, setting, configuration, webhook, options.IsUpdate);
 
                 // Do not use scheduling when the notification is an update.
-                if (options.IsUpdate)
+                if (job.IsUpdate)
                 {
                     await userNotificationQueue.ScheduleAsync(
                         job.ScheduleKey,
@@ -89,7 +86,7 @@ namespace Notifo.Domain.Channels.Webhook
                     await userNotificationQueue.ScheduleAsync(
                         job.ScheduleKey,
                         job,
-                        setting.DelayDuration,
+                        job.Delay,
                         false, ct);
                 }
             }
@@ -104,18 +101,13 @@ namespace Notifo.Domain.Channels.Webhook
 
             using (Telemetry.Activities.StartActivity("WebhookChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
             {
-                try
+                if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
-                    await UpdateAsync(job, ProcessStatus.Attempt);
-
-                    await SendJobAsync(job, ct);
-
-                    await UpdateAsync(job, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Skipped);
                 }
-                catch (Exception ex)
+                else
                 {
-                    await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
-                    throw;
+                    await SendJobAsync(job, ct);
                 }
 
                 return true;
@@ -123,6 +115,24 @@ namespace Notifo.Domain.Channels.Webhook
         }
 
         private async Task SendJobAsync(WebhookJob job,
+            CancellationToken ct)
+        {
+            try
+            {
+                await UpdateAsync(job, ProcessStatus.Attempt);
+
+                await SendCoreAsync(job, ct);
+
+                await UpdateAsync(job, ProcessStatus.Handled);
+            }
+            catch (Exception ex)
+            {
+                await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
+                throw;
+            }
+        }
+
+        private async Task SendCoreAsync(WebhookJob job,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("Send"))

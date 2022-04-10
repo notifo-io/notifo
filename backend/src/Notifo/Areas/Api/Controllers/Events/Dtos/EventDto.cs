@@ -17,7 +17,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
     {
         private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
         private static readonly Dictionary<string, string> EmptyProperties = new Dictionary<string, string>();
-        private static readonly Dictionary<string, NotificationSettingDto> EmptySettings = new Dictionary<string, NotificationSettingDto>();
+        private static readonly Dictionary<string, ChannelSettingDto> EmptySettings = new Dictionary<string, ChannelSettingDto>();
 
         /// <summary>
         /// The id of the event.
@@ -73,7 +73,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; }
+        public Dictionary<string, ChannelSettingDto> Settings { get; set; }
 
         /// <summary>
         /// User defined properties.
@@ -107,7 +107,7 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         {
             var result = SimpleMapper.Map(source, new EventDto
             {
-                Settings = new Dictionary<string, NotificationSettingDto>()
+                Settings = new Dictionary<string, ChannelSettingDto>()
             });
 
             result.Properties = source.Properties ?? EmptyProperties;
@@ -133,13 +133,13 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
 
             if (source.Settings?.Count > 0)
             {
-                result.Settings = new Dictionary<string, NotificationSettingDto>();
+                result.Settings = new Dictionary<string, ChannelSettingDto>();
 
                 foreach (var (key, value) in source.Settings)
                 {
                     if (value != null)
                     {
-                        result.Settings[key] = NotificationSettingDto.FromDomainObject(value);
+                        result.Settings[key] = ChannelSettingDto.FromDomainObject(value);
                     }
                 }
             }

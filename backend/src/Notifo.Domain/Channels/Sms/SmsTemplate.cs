@@ -9,6 +9,6 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class SmsTemplate
     {
-        public string Text { get; set; }
+        public string Text { get; init; }
     }
 }

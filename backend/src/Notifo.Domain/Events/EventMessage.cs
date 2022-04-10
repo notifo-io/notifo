@@ -34,11 +34,11 @@ namespace Notifo.Domain.Events
 
         public Instant Enqueued { get; set; }
 
+        public ChannelSettings Settings { get; set; } = new ChannelSettings();
+
         public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 
-        public NotificationSettings? Settings { get; set; } = new NotificationSettings();
-
-        public NotificationProperties Properties { get; set; }
+        public NotificationProperties? Properties { get; set; }
 
         public Scheduling? Scheduling { get; set; }
 
@@ -54,7 +54,6 @@ namespace Notifo.Domain.Events
             {
                 RuleFor(x => x.AppId).NotNull().NotEmpty();
                 RuleFor(x => x.Topic).Topic();
-                RuleFor(x => x.Properties).NotNull();
             }
         }
 

@@ -119,28 +119,37 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             var properties = CreateProperties(jobs, app, user, jobs[0]);
 
-            var message = new EmailMessage
-            {
-                FromEmail = template.FromEmail.OrDefault(jobs[0].FromEmail!),
-                FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
-                ToEmail = user.EmailAddress!,
-                ToName = user.FullName,
-            };
+            var subject = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(template.Subject))
             {
-                message.Subject = FormatSubject(template.Subject, properties)!;
+                subject = FormatSubject(template.Subject, properties)!;
             }
+
+            string? bodyText = null;
 
             if (template.ParsedBodyText != null)
             {
-                message.BodyText = FormatBodyText(template.ParsedBodyText, properties, jobs, message.ToEmail, errors)!;
+                bodyText = FormatBodyText(template.ParsedBodyText, properties, jobs, user.EmailAddress!, errors)!;
             }
+
+            string? bodyHtml = null;
 
             if (template.ParsedBodyHtml != null)
             {
-                message.BodyHtml = FormatBodyHtml(template.ParsedBodyHtml, properties, jobs, message.ToEmail, errors)!;
+                bodyHtml = FormatBodyHtml(template.ParsedBodyHtml, properties, jobs, user.EmailAddress!, errors)!;
             }
+
+            var message = new EmailMessage
+            {
+                BodyHtml = bodyHtml,
+                BodyText = bodyText,
+                FromEmail = template.FromEmail.OrDefault(jobs[0].FromEmail!),
+                FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
+                Subject = subject,
+                ToEmail = user.EmailAddress!,
+                ToName = user.FullName,
+            };
 
             return message;
         }

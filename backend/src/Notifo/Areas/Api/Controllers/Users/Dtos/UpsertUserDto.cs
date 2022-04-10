@@ -57,7 +57,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public Dictionary<string, NotificationSettingDto>? Settings { get; set; }
+        public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
 
         public UpsertUser ToUpsert()
         {
@@ -65,7 +65,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
 
             if (Settings != null)
             {
-                result.Settings = new NotificationSettings();
+                result.Settings = new ChannelSettings();
 
                 foreach (var (key, value) in Settings)
                 {

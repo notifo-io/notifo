@@ -11,11 +11,11 @@ namespace Notifo.Domain.Channels.WebPush
 {
     public sealed class WebPushOptions : IValidatableOptions
     {
-        public string VapidPublicKey { get; set; }
+        public string VapidPublicKey { get; init; }
 
-        public string VapidPrivateKey { get; set; }
+        public string VapidPrivateKey { get; init; }
 
-        public string Subject { get; set; }
+        public string Subject { get; init; }
 
         public IEnumerable<ConfigurationError> Validate()
         {

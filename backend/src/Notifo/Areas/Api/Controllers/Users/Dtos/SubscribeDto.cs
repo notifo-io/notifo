@@ -22,7 +22,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// <summary>
         /// Notification settings per channel.
         /// </summary>
-        public Dictionary<string, NotificationSettingDto>? TopicSettings { get; set; }
+        public Dictionary<string, ChannelSettingDto>? TopicSettings { get; set; }
 
         public Subscribe ToUpdate()
         {
@@ -30,7 +30,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
 
             if (TopicSettings?.Any() == true)
             {
-                result.TopicSettings = new NotificationSettings();
+                result.TopicSettings = new ChannelSettings();
 
                 foreach (var (key, value) in TopicSettings)
                 {

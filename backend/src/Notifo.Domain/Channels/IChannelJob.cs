@@ -5,10 +5,20 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+using NodaTime;
+
+namespace Notifo.Domain.Channels
 {
-    public sealed class ConfirmMessage
+    public interface IChannelJob
     {
-        public TrackingToken Token { get; init; }
+        Guid NotificationId { get; }
+
+        Duration Delay { get; }
+
+        ChannelCondition Condition { get; }
+
+        string Configuration { get; }
+
+        bool IsUpdate => false;
     }
 }

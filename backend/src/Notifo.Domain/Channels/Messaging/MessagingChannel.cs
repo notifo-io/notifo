@@ -24,7 +24,6 @@ namespace Notifo.Domain.Channels.Messaging
 {
     public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>
     {
-        private const string DefaultToken = "Default";
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
         private readonly ILogger<MessagingChannel> log;
@@ -54,31 +53,28 @@ namespace Notifo.Domain.Channels.Messaging
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, NotificationSetting settings, SendOptions options)
+        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
             if (senders.Any(x => x.Target.HasTarget(options.User)))
             {
-                yield return DefaultToken;
+                yield return MessagingJob.DefaultToken;
             }
         }
 
-        public async Task SendAsync(UserNotification notification, NotificationSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
             CancellationToken ct)
         {
+            if (options.IsUpdate)
+            {
+                return;
+            }
+
             using (Telemetry.Activities.StartActivity("MessagingChannel/SendAsync"))
             {
-                if (options.IsUpdate)
-                {
-                    return;
-                }
-
-                var job = new MessagingJob(notification, setting.Template)
-                {
-                    IsImmediate = setting.DelayDuration == Duration.Zero
-                };
+                var job = new MessagingJob(notification, setting);
 
                 var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification);
 
@@ -96,7 +92,7 @@ namespace Notifo.Domain.Channels.Messaging
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
-                    setting.DelayDuration,
+                    job.Delay,
                     false, ct);
             }
         }
@@ -115,10 +111,7 @@ namespace Notifo.Domain.Channels.Messaging
 
             using (Telemetry.Activities.StartActivity("MessagingChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
             {
-                var id = job.Notification.Id;
-
-                // If the notification is not scheduled it is very unlikey it has been confirmed already.
-                if (!job.IsImmediate && await userNotificationStore.IsConfirmedOrHandledAsync(id, Name, DefaultToken, ct))
+                if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
                     await UpdateAsync(job.Notification, ProcessStatus.Skipped);
                 }
@@ -127,7 +120,7 @@ namespace Notifo.Domain.Channels.Messaging
                     await SendJobAsync(job, ct);
                 }
 
-                return false;
+                return true;
             }
         }
 
@@ -161,7 +154,7 @@ namespace Notifo.Domain.Channels.Messaging
                     var (skip, template) = await GetTemplateAsync(
                         job.Notification.AppId,
                         job.Notification.UserLanguage,
-                        job.TemplateName,
+                        job.NotificationTemplate,
                         ct);
 
                     if (skip != null)
@@ -220,7 +213,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         private Task UpdateAsync(IUserNotification notification, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, DefaultToken, status, reason);
+            return userNotificationStore.CollectAndUpdateAsync(notification, Name, MessagingJob.DefaultToken, status, reason);
         }
 
         private async Task SkipAsync(MessagingJob job, string reason)

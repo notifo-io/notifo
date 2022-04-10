@@ -42,7 +42,7 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; } = new Dictionary<string, NotificationSettingDto>();
+        public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
         public static TemplateDto FromDomainObject(Template source)
         {
@@ -63,7 +63,7 @@ namespace Notifo.Areas.Api.Controllers.Templates.Dtos
                 {
                     if (value != null)
                     {
-                        result.Settings[key] = NotificationSettingDto.FromDomainObject(value);
+                        result.Settings[key] = ChannelSettingDto.FromDomainObject(value);
                     }
                 }
             }

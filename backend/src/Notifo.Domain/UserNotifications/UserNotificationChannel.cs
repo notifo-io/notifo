@@ -9,25 +9,16 @@ using NodaTime;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public sealed class UserNotificationChannel
+    public sealed record UserNotificationChannel
     {
-        public NotificationSetting Setting { get; init; }
+        public ChannelSetting Setting { get; init; } = new ChannelSetting();
 
-        public Dictionary<string, ChannelSendInfo> Status { get; init; }
+        public Dictionary<string, ChannelSendInfo> Status { get; init; } = new Dictionary<string, ChannelSendInfo>();
 
-        public Instant? FirstConfirmed { get; set; }
+        public Instant? FirstConfirmed { get; init; }
 
-        public Instant? FirstSeen { get; set; }
+        public Instant? FirstSeen { get; init; }
 
-        public Instant? FirstDelivered { get; set; }
-
-        public static UserNotificationChannel Create(NotificationSetting? setting = null)
-        {
-            return new UserNotificationChannel
-            {
-                Setting = setting ?? new NotificationSetting(),
-                Status = new Dictionary<string, ChannelSendInfo>()
-            };
-        }
+        public Instant? FirstDelivered { get; init; }
     }
 }

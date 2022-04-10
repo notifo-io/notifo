@@ -99,7 +99,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// Notification settings per channel.
         /// </summary>
         [Required]
-        public Dictionary<string, NotificationSettingDto> Settings { get; set; } = new Dictionary<string, NotificationSettingDto>();
+        public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
         /// <summary>
         /// The statistics counters.
@@ -130,7 +130,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 {
                     if (value != null)
                     {
-                        result.Settings[key] = NotificationSettingDto.FromDomainObject(value);
+                        result.Settings[key] = ChannelSettingDto.FromDomainObject(value);
                     }
                 }
             }

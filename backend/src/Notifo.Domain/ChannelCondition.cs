@@ -5,10 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain
 {
-    public sealed class ConfirmMessage
+    public enum ChannelCondition
     {
-        public TrackingToken Token { get; init; }
+        Inherit,
+        IfNotSeen,
+        IfNotConfirmed,
+        Always
     }
 }

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -138,14 +139,22 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings
+                    {
+                        ["sms"] = new ChannelSetting()
+                    },
                     UserId = "123"
                 },
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates",
-                    TopicSettings = null!,
+                    TopicSettings = new ChannelSettings
+                    {
+                        ["web"] = new ChannelSetting()
+                    },
                     UserId = "456"
                 }
             };
@@ -157,30 +166,20 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
-                new UserEventMessage
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
-                    Formatting = @event.Formatting!,
-                    Properties = @event.Properties,
-                    SubscriptionPrefix = subscriptions[0].TopicPrefix.ToString(),
-                    SubscriptionSettings = subscriptions[0].TopicSettings,
+                    Settings = subscriptions[0].TopicSettings,
                     Topic = @event.Topic,
+                    TopicPrefix = subscriptions[0].TopicPrefix.ToString(),
                     UserId = subscriptions[0].UserId
-                },
-                new UserEventMessage
+                }, @event),
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
-                    Formatting = @event.Formatting!,
-                    Properties = @event.Properties,
-                    SubscriptionPrefix = subscriptions[1].TopicPrefix.ToString(),
-                    SubscriptionSettings = new NotificationSettings(),
+                    Settings = subscriptions[1].TopicSettings,
                     Topic = @event.Topic,
+                    TopicPrefix = subscriptions[1].TopicPrefix.ToString(),
                     UserId = subscriptions[1].UserId
-                }
+                }, @event),
             });
 
             A.CallTo(() => eventStore.InsertAsync(@event, ct))
@@ -191,16 +190,18 @@ namespace Notifo.Domain.UserEvents.Pipeline
         }
 
         [Fact]
-        public async Task Should_create_empy_properties_if_not_set_in_event()
+        public async Task Should_not_create_empy_properties_if_not_set_in_event()
         {
             var @event = CreateMinimumEvent();
+
+            @event.Properties = null;
 
             var subscriptions = new[]
             {
                 new Subscription
                 {
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 }
             };
@@ -210,7 +211,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             await sut.PublishAsync(@event, ct);
 
-            Assert.NotNull(publishedUserEvents[0].Properties);
+            Assert.Null(publishedUserEvents[0].Properties);
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
@@ -225,6 +226,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates/sport",
                     TopicSettings = null!,
                     UserId = "123"
@@ -236,7 +238,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             await sut.PublishAsync(@event, ct);
 
-            Assert.NotNull(publishedUserEvents[0].SubscriptionSettings);
+            Assert.NotNull(publishedUserEvents[0].Settings);
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
                 .MustNotHaveHappened();
@@ -255,18 +257,12 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
-                new UserEventMessage
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
-                    Formatting = @event.Formatting!,
-                    Properties = new NotificationProperties(),
-                    SubscriptionPrefix = "users/123",
-                    SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
+                    TopicPrefix = "users/123",
                     UserId = "123"
-                }
+                }, @event),
             });
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -295,30 +291,18 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
-                new UserEventMessage
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
-                    Formatting = @event.Formatting!,
-                    Properties = new NotificationProperties(),
-                    SubscriptionPrefix = "users/all",
-                    SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
+                    TopicPrefix = "users/all",
                     UserId = "123"
-                },
-                new UserEventMessage
+                }, @event),
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
-                    Formatting = @event.Formatting!,
-                    Properties = new NotificationProperties(),
-                    SubscriptionPrefix = "users/all",
-                    SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
+                    TopicPrefix = "users/all",
                     UserId = "456"
-                }
+                }, @event)
             });
 
             A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, ct))
@@ -337,8 +321,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 }
             };
@@ -362,10 +347,10 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             var @event = CreateMinimumEvent();
 
-            @event.TemplateCode = "TEMPL";
             @event.Data = "123";
             @event.Formatting = null;
             @event.Silent = true;
+            @event.TemplateCode = "TEMPL";
 
             var template = CreateMinimumTemplate();
 
@@ -376,12 +361,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 },
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates",
                     TopicSettings = null!,
                     UserId = "456"
@@ -395,34 +382,20 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             publishedUserEvents.Should().BeEquivalentTo(new List<UserEventMessage>
             {
-                new UserEventMessage
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    Data = "123",
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
-                    Formatting = template.Formatting.Format(@event.Properties),
-                    Properties = new NotificationProperties(),
-                    Silent = true,
-                    SubscriptionPrefix = subscriptions[0].TopicPrefix.ToString(),
-                    SubscriptionSettings = subscriptions[0].TopicSettings,
+                    Formatting = template.Formatting.Format(@event.Properties!),
                     Topic = @event.Topic,
+                    TopicPrefix = subscriptions[0].TopicPrefix.ToString(),
                     UserId = subscriptions[0].UserId
-                },
-                new UserEventMessage
+                }, @event),
+                FromEvent(new UserEventMessage
                 {
-                    AppId = @event.AppId,
-                    Data = "123",
-                    EventId = @event.Id,
-                    EventSettings = @event.Settings,
                     Formatting = template.Formatting.Format(@event.Properties),
-                    Properties = new NotificationProperties(),
-                    Silent = true,
-                    SubscriptionPrefix = subscriptions[1].TopicPrefix.ToString(),
-                    SubscriptionSettings = new NotificationSettings(),
                     Topic = @event.Topic,
+                    TopicPrefix = subscriptions[1].TopicPrefix.ToString(),
                     UserId = subscriptions[1].UserId
-                }
+                }, @event)
             });
 
             A.CallTo(() => eventStore.InsertAsync(@event, ct))
@@ -452,8 +425,9 @@ namespace Notifo.Domain.UserEvents.Pipeline
             {
                 new Subscription
                 {
+                    AppId = @event.AppId,
                     TopicPrefix = "updates/sport",
-                    TopicSettings = new NotificationSettings(),
+                    TopicSettings = new ChannelSettings(),
                     UserId = "123"
                 }
             };
@@ -500,11 +474,26 @@ namespace Notifo.Domain.UserEvents.Pipeline
             }
         }
 
+        private static UserEventMessage FromEvent(UserEventMessage userEventMessage, EventMessage @event)
+        {
+            userEventMessage.AppId = @event.AppId;
+            userEventMessage.Data = @event.Data;
+            userEventMessage.EventActivity = @event.EventActivity;
+            userEventMessage.EventId = @event.Id;
+            userEventMessage.Formatting ??= @event.Formatting!;
+            userEventMessage.Properties ??= @event.Properties;
+            userEventMessage.Settings ??= new ChannelSettings();
+            userEventMessage.Silent = @event.Silent;
+            userEventMessage.Topic ??= @event.Topic;
+
+            return userEventMessage;
+        }
+
         private static Template CreateMinimumTemplate(bool isAutoCreated = false)
         {
-            var template = new Template("1", "1", default)
+            return new Template("1", "1", default)
             {
-                IsAutoCreated = isAutoCreated,
+                AppId = "app",
                 Formatting = new NotificationFormatting<LocalizedText>
                 {
                     Subject = new LocalizedText
@@ -512,29 +501,32 @@ namespace Notifo.Domain.UserEvents.Pipeline
                         ["de"] = "Test"
                     }
                 },
-                AppId = "app"
+                IsAutoCreated = isAutoCreated,
             };
-
-            return template;
         }
 
         private static EventMessage CreateMinimumEvent()
         {
-            var @event = new EventMessage
+            return new EventMessage
             {
+                AppId = "app",
                 Formatting = new NotificationFormatting<LocalizedText>
                 {
                     Subject = new LocalizedText
                     {
                         ["de"] = "Test"
                     }
-                }
+                },
+                Properties = new NotificationProperties
+                {
+                    ["property1"] = "value1"
+                },
+                EventActivity = new ActivityContext(
+                    ActivityTraceId.CreateRandom(),
+                    ActivitySpanId.CreateRandom(),
+                    ActivityTraceFlags.None),
+                Topic = "updates/stort",
             };
-
-            @event.AppId = "app";
-            @event.Topic = "updates/sport";
-
-            return @event;
         }
     }
 }
