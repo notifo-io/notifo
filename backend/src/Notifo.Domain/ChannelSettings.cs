@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Infrastructure;
+
 namespace Notifo.Domain
 {
     public sealed class ChannelSettings : Dictionary<string, ChannelSetting>
@@ -40,14 +42,7 @@ namespace Notifo.Domain
 
             foreach (var (channel, setting) in source)
             {
-                if (TryGetValue(channel, out var existing))
-                {
-                    existing.OverrideBy(setting);
-                }
-                else
-                {
-                    this[channel] = setting;
-                }
+                this.GetOrAddNew(channel).OverrideBy(setting);
             }
         }
     }

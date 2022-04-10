@@ -67,25 +67,23 @@ namespace Notifo.Domain.UserNotifications
                 Id = Guid.NewGuid()
             });
 
+            notification.Updated = clock.GetCurrentInstant();
             notification.UserLanguage = language;
-
             notification.Formatting = formatting;
 
-            ConfigureTracking(notification, language, userEvent);
-            ConfigureSettings(notification, user, userEvent);
-
-            notification.Updated = clock.GetCurrentInstant();
+            ConfigureTracking(notification, userEvent);
+            ConfigureSettings(notification, userEvent, user);
 
             return notification;
         }
 
-        private void ConfigureTracking(UserNotification notification, string language, UserEventMessage userEvent)
+        private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)
         {
             var confirmMode = userEvent.Formatting.ConfirmMode;
 
             if (confirmMode == ConfirmMode.Explicit)
             {
-                notification.ConfirmUrl = url.TrackConfirmed(notification.Id, language);
+                notification.ConfirmUrl = url.TrackConfirmed(notification.Id, notification.UserLanguage);
 
                 if (string.IsNullOrWhiteSpace(notification.Formatting.ConfirmText))
                 {
@@ -97,11 +95,11 @@ namespace Notifo.Domain.UserNotifications
                 notification.Formatting.ConfirmText = null;
             }
 
-            notification.TrackDeliveredUrl = url.TrackDelivered(notification.Id, language);
-            notification.TrackSeenUrl = url.TrackSeen(notification.Id, language);
+            notification.TrackDeliveredUrl = url.TrackDelivered(notification.Id, notification.UserLanguage);
+            notification.TrackSeenUrl = url.TrackSeen(notification.Id, notification.UserLanguage);
         }
 
-        private static void ConfigureSettings(UserNotification notification, User user, UserEventMessage userEvent)
+        private static void ConfigureSettings(UserNotification notification, UserEventMessage userEvent, User user)
         {
             notification.Channels = new Dictionary<string, UserNotificationChannel>();
 
@@ -121,20 +119,15 @@ namespace Notifo.Domain.UserNotifications
             {
                 if (notification.Channels.TryGetValue(channel, out var channelInfo))
                 {
-                    channelInfo = channelInfo with
-                    {
-                        Setting = channelInfo.Setting.OverrideBy(setting)
-                    };
+                    channelInfo.Setting.OverrideBy(setting);
                 }
                 else
                 {
-                    channelInfo = new UserNotificationChannel
+                    notification.Channels[channel] = new UserNotificationChannel
                     {
                         Setting = setting
                     };
                 }
-
-                notification.Channels[channel] = channelInfo;
             }
         }
     }
