@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Diagnostics;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -170,14 +169,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     Settings = subscriptions[0].TopicSettings,
                     Topic = @event.Topic,
-                    TopicPrefix = subscriptions[0].TopicPrefix.ToString(),
+                    TopicPrefix = subscriptions[0].TopicPrefix,
                     UserId = subscriptions[0].UserId
                 }, @event),
                 FromEvent(new UserEventMessage
                 {
                     Settings = subscriptions[1].TopicSettings,
                     Topic = @event.Topic,
-                    TopicPrefix = subscriptions[1].TopicPrefix.ToString(),
+                    TopicPrefix = subscriptions[1].TopicPrefix,
                     UserId = subscriptions[1].UserId
                 }, @event),
             });
@@ -386,14 +385,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     Formatting = template.Formatting.Format(@event.Properties!),
                     Topic = @event.Topic,
-                    TopicPrefix = subscriptions[0].TopicPrefix.ToString(),
+                    TopicPrefix = subscriptions[0].TopicPrefix,
                     UserId = subscriptions[0].UserId
                 }, @event),
                 FromEvent(new UserEventMessage
                 {
                     Formatting = template.Formatting.Format(@event.Properties),
                     Topic = @event.Topic,
-                    TopicPrefix = subscriptions[1].TopicPrefix.ToString(),
+                    TopicPrefix = subscriptions[1].TopicPrefix,
                     UserId = subscriptions[1].UserId
                 }, @event)
             });
@@ -521,10 +520,6 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     ["property1"] = "value1"
                 },
-                EventActivity = new ActivityContext(
-                    ActivityTraceId.CreateRandom(),
-                    ActivitySpanId.CreateRandom(),
-                    ActivityTraceFlags.None),
                 Topic = "updates/stort",
             };
         }
