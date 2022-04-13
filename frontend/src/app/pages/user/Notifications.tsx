@@ -53,9 +53,7 @@ export const Notifications = (props: NotificationsProps) => {
         setChannels(channels => {
             let newChannels: string[];
 
-            if (channels.length === 0) {
-                newChannels = CHANNELS.filter(x => x !== channel);
-            } else if (channels.indexOf(channel) >= 0) {
+            if (channels.indexOf(channel) >= 0) {
                 newChannels = channels.filter(x => x !== channel);
             } else {
                 newChannels = [...channels, channel];
@@ -105,7 +103,7 @@ export const Notifications = (props: NotificationsProps) => {
             <Row className='channels-filter' noGutters>
                 {CHANNELS.map(channel => 
                     <Col xs={2} key={channel}>
-                        <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 || channels.length === 0 })} onClick={() => doToggleChannel(channel)}>
+                        <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 })} onClick={() => doToggleChannel(channel)}>
                             {texts.notificationSettings[channel].name}
                         </Button>
                     </Col>,
