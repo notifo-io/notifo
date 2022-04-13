@@ -65,7 +65,7 @@ export const NotificationsModal = (props: NotificationsModalProps) => {
                     </li>
                 }
 
-                {config.allowProfile &&
+                {(config.allowProfile && !options.hideProfile) &&
                     <li class={makeActive(viewMode, 'Profile')} onClick={() => setViewMode('Profile')}>
                         {config.texts.profile}
                     </li>

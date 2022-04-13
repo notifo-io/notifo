@@ -64,7 +64,7 @@ export const UserRow = React.memo((props: UserRowProps) => {
     const url = combineUrl(match.url, user.id);
 
     return (
-        <CounterRow counters={user.counters} columnCount={4} showCounters={showCounters}>
+        <CounterRow counters={user.counters} columnCount={6} showCounters={showCounters}>
             <tr className='list-item-summary'>
                 <td>
                     <NavLink to={url}>
