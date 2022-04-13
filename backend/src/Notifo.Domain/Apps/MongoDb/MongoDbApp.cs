@@ -11,7 +11,6 @@ using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb
 {
-    [BsonIgnoreExtraElements]
     public sealed class MongoDbApp : MongoDbEntity<App>
     {
         [BsonIgnoreIfNull]

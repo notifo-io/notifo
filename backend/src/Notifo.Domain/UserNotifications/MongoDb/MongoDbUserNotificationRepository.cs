@@ -29,8 +29,6 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             {
                 cm.AutoMap();
 
-                cm.SetIgnoreExtraElements(true);
-
                 cm.MapIdProperty(x => x.Id)
                     .SetSerializer(new GuidSerializer(BsonType.String));
             });
@@ -38,8 +36,6 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             BsonClassMap.RegisterClassMap<ChannelSendInfo>(cm =>
             {
                 cm.AutoMap();
-
-                cm.SetIgnoreExtraElements(true);
 
                 cm.MapProperty(x => x.FirstConfirmed)
                     .SetIgnoreIfNull(true);
@@ -55,8 +51,6 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             {
                 cm.AutoMap();
 
-                cm.SetIgnoreExtraElements(true);
-
                 cm.MapProperty(x => x.FirstConfirmed)
                     .SetIgnoreIfNull(true);
 
@@ -70,8 +64,6 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             BsonClassMap.RegisterClassMap<UserNotificationChannel>(cm =>
             {
                 cm.AutoMap();
-
-                cm.SetIgnoreExtraElements(true);
 
                 cm.MapProperty(x => x.FirstConfirmed)
                     .SetIgnoreIfNull(true);

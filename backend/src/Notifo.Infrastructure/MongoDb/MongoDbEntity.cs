@@ -25,7 +25,6 @@ namespace Notifo.Infrastructure.MongoDb
         }
     }
 
-    [BsonIgnoreExtraElements]
     public abstract class MongoDbEntity<T> : MongoDbEntity
     {
         [BsonElement("d")]

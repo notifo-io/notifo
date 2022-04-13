@@ -18,18 +18,22 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static void AddMyMongoDb(this IServiceCollection services, IConfiguration config)
         {
-            InstantSerializer.Register();
-
             ActivityContextSerializer.Register();
             ActivitySpanIdSerializer.Register();
             ActivityTraceIdSerializer.Register();
-
+            DurationSerializer.Register();
+            InstantSerializer.Register();
             LocalDateSerializer.Register();
             LocalTimeSerializer.Register();
 
             ConventionRegistry.Register("EnumStringConvention", new ConventionPack
             {
                 new EnumRepresentationConvention(BsonType.String)
+            }, t => true);
+
+            ConventionRegistry.Register("IgnoreExtraElements", new ConventionPack
+            {
+                new IgnoreExtraElementsConvention(true)
             }, t => true);
 
             services.ConfigureAndValidate<MongoDbOptions>(config, "storage:mongoDb");

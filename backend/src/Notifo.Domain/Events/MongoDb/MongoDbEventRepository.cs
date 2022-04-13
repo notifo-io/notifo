@@ -26,8 +26,6 @@ namespace Notifo.Domain.Events.MongoDb
             {
                 cm.AutoMap();
 
-                cm.SetIgnoreExtraElements(true);
-
                 cm.SetIdMember(null);
             });
         }

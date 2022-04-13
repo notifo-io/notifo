@@ -21,8 +21,6 @@ namespace Notifo.Domain.Apps.MongoDb
             {
                 cm.AutoMap();
 
-                cm.SetIgnoreExtraElements(true);
-
                 cm.MapProperty(x => x.Counters)
                     .SetIgnoreIfNull(true);
             });

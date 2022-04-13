@@ -8,7 +8,6 @@
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
@@ -18,16 +17,6 @@ namespace Notifo.Domain.Users.MongoDb
 {
     public sealed class MongoDbUserRepository : MongoDbStore<MongoDbUser>, IUserRepository
     {
-        static MongoDbUserRepository()
-        {
-            BsonClassMap.RegisterClassMap<User>(cm =>
-            {
-                cm.AutoMap();
-
-                cm.SetIgnoreExtraElements(true);
-            });
-        }
-
         public MongoDbUserRepository(IMongoDatabase database)
             : base(database)
         {
