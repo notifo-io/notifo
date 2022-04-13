@@ -1,4 +1,11 @@
-﻿using MongoDB.Bson;
+﻿// ==========================================================================
+//  Notifo.io
+// ==========================================================================
+//  Copyright (c) Sebastian Stehle
+//  All rights reserved. Licensed under the MIT license.
+// ==========================================================================
+
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
@@ -6,7 +13,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Notifo.Infrastructure.MongoDb
 {
-    public sealed class LazyEnumSerializer<T> : SerializerBase<T> where T : struct
+    public sealed class SoftEnumSerializer<T> : SerializerBase<T> where T : struct
     {
         private static volatile int isRegistered;
 
@@ -14,7 +21,7 @@ namespace Notifo.Infrastructure.MongoDb
         {
             if (Interlocked.Increment(ref isRegistered) == 1)
             {
-                BsonSerializer.RegisterSerializer(new LazyEnumSerializer<T>());
+                BsonSerializer.RegisterSerializer(new SoftEnumSerializer<T>());
             }
         }
 

@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 
 namespace Notifo.Domain.Utils
 {
-    public sealed class JsonLazyEnumConverter<T> : JsonConverter<T> where T : struct
+    public sealed class JsonSoftEnumConverter<T> : JsonConverter<T> where T : struct
     {
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {

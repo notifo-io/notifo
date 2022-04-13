@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Notifo.Infrastructure.MongoDb
 {
-    public class LazyEnumSerializerTests
+    public class SoftEnumSerializerTests
     {
         public enum MyEnum
         {
@@ -18,9 +18,9 @@ namespace Notifo.Infrastructure.MongoDb
             B
         }
 
-        public LazyEnumSerializerTests()
+        public SoftEnumSerializerTests()
         {
-            LazyEnumSerializer<MyEnum>.Register();
+            SoftEnumSerializer<MyEnum>.Register();
         }
 
         [Theory]

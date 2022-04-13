@@ -132,7 +132,7 @@ namespace Notifo
 
         private static void ConfigureJson(JsonSerializerOptions options)
         {
-            options.Converters.Add(new JsonLazyEnumConverter<ConfirmMode>());
+            options.Converters.Add(new JsonSoftEnumConverter<ConfirmMode>());
             options.Converters.Add(new JsonTopicIdConverter());
         }
 

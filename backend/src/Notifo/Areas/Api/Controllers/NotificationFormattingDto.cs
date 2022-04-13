@@ -55,7 +55,7 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// The confirmation mode.
         /// </summary>
-        [JsonConverter(typeof(JsonLazyEnumConverter<ConfirmMode>))]
+        [JsonConverter(typeof(JsonSoftEnumConverter<ConfirmMode>))]
         public ConfirmMode ConfirmMode { get; set; }
 
         public static NotificationFormattingDto FromDomainObject(NotificationFormatting<LocalizedText> source)

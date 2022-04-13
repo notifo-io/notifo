@@ -13,7 +13,7 @@ namespace Notifo.Domain
 {
     public record struct TrackingToken(Guid Id, string? Channel = null, string? DeviceIdentifier = null)
     {
-        public bool IsValid => Id != default;
+        public readonly bool IsValid => Id != default;
 
         public static TrackingToken Parse(string id, string? channel = null, string? deviceIdentifier = null)
         {

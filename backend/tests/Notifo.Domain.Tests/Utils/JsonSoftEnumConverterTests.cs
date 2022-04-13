@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Notifo.Domain.Utils
 {
-    public class JsonLazyEnumConverterTests
+    public class JsonSoftEnumConverterTests
     {
         public enum MyEnum
         {
@@ -26,7 +26,7 @@ namespace Notifo.Domain.Utils
         [InlineData("", MyEnum.A)]
         public void Should_deserialize_from_string(string source, MyEnum expected)
         {
-            var serialized = TestUtils.Deserialize<MyEnum>(source, new JsonLazyEnumConverter<MyEnum>());
+            var serialized = TestUtils.Deserialize<MyEnum>(source, new JsonSoftEnumConverter<MyEnum>());
 
             Assert.Equal(expected, serialized);
         }

@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         typeof(ReadonlyDictionary<,>),
                         typeof(ReadonlyDictionarySerializer<,>));
 
-                    LazyEnumSerializer<ConfirmMode>.Register();
+                    SoftEnumSerializer<ConfirmMode>.Register();
 
                     services.AddMyMongoApps();
                     services.AddMyMongoDb(config);
