@@ -19,7 +19,7 @@ main {
 }
 
 .form-text {
-    font-size: .85rem;
+    font-size: $font-size-sm;
     font-weight: normal;
     line-height: 1.75;
 }
@@ -29,11 +29,11 @@ main {
 }
 
 label {
-    font-size: .85rem;
+    font-size: $font-size-sm;
     font-weight: 600;
 
     &.col-form-label {
-        font-size: .9rem;
+        font-size: $font-size-sm;
         font-weight: 600;
         text-align: right;
     }
@@ -80,7 +80,7 @@ label {
 
 legend {
     border-bottom: 1px solid rgba(0, 0, 0, 10%);
-    font-size: .9rem;
+    font-size: $font-size-sm;
     font-weight: normal;
     margin-bottom: 1.5rem;
     padding-bottom: .25rem;
@@ -377,7 +377,7 @@ $small-gutters: 4px;
             background: $color-white;
             border: 0;
             display: flex;
-            font-size: 85%;
+            font-size: $font-size-sm;
             font-weight: normal;
             padding: .5rem 0 0 1rem;
         }
@@ -457,7 +457,7 @@ $small-gutters: 4px;
 .list {
     &-item {
         &-empty {
-            font-size: .875rem;
+            font-size: $font-size-sm;
         }
 
         &-summary,
@@ -663,7 +663,7 @@ div {
 
         span {
             display: block;
-            font-size: .8rem;
+            font-size: $font-size-sm;
             font-weight: normal;
             margin-top: .125rem;
         }
@@ -766,7 +766,7 @@ div {
     }
 
     th {
-        font-size: .8rem;
+        font-size: $font-size-sm;
         padding-bottom: .5rem;
         padding-top: .5rem;
 
@@ -776,11 +776,11 @@ div {
     }
 
     td {
-        font-size: .875rem;
+        font-size: $font-size-sm;
     }
 
     &-sm-text {
-        font-size: .875rem;
+        font-size: $font-size-sm;
     }
 }
 
@@ -867,7 +867,7 @@ div {
     }
 
     &-info {
-        font-size: .875rem;
+        font-size: $font-size-sm;
         line-height: 2rem;
         text-align: center;
         text-decoration: none;

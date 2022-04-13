@@ -223,7 +223,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
                 foreach (var userId in userIds)
                 {
-                    var filter = BuildFilter(appId, userId, new UserNotificationQuery());
+                    var filter = BuildFilter(appId, userId);
 
                     var item = await Collection.Find(filter).Limit(1).SortByDescending(x => x.Created).Only(x => x.Created).FirstOrDefaultAsync(ct);
 
@@ -452,16 +452,16 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             return Filter.And(filters);
         }
 
-        private static FilterDefinition<UserNotification> BuildFilter(string appId, string userId, UserNotificationQuery query)
+        private static FilterDefinition<UserNotification> BuildFilter(string appId, string userId, UserNotificationQuery? query = null)
         {
             var filters = new List<FilterDefinition<UserNotification>>
             {
                 Filter.Eq(x => x.AppId, appId),
                 Filter.Eq(x => x.UserId, userId),
-                Filter.Gte(x => x.Updated, query.After)
+                Filter.Gte(x => x.Updated, query?.After ?? default)
             };
 
-            switch (query.Scope)
+            switch (query?.Scope)
             {
                 case UserNotificationQueryScope.Deleted:
                     filters.Add(Filter.Eq(x => x.IsDeleted, true));
@@ -474,11 +474,18 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                     break;
             }
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
+            if (!string.IsNullOrWhiteSpace(query?.Query))
             {
                 var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
                 filters.Add(Filter.Regex(x => x.Formatting.Subject, regex));
+            }
+
+            if (query?.Channels?.Length > 0)
+            {
+                var channelFilters = query.Channels.Map(x => Filter.Eq($"Channels.{x}.Setting.Send", "Send"));
+
+                filters.Add(Filter.Or(channelFilters));
             }
 
             return Filter.And(filters);

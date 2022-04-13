@@ -43,9 +43,9 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         [HttpGet("api/apps/{appId}/users/{id}/notifications")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
-        public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] QueryDto q)
+        public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] UserNotificationQueryDto q)
         {
-            var notifications = await userNotificationsStore.QueryAsync(appId, id, q.ToQuery<UserNotificationQuery>(true), HttpContext.RequestAborted);
+            var notifications = await userNotificationsStore.QueryAsync(appId, id, q.ToQuery(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<UserNotificationDetailsDto>();
 
@@ -66,9 +66,9 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         [Route("api/me/notifications")]
         [AppPermission(NotifoRoles.AppUser)]
         [Produces(typeof(ListResponseDto<UserNotificationDto>))]
-        public async Task<IActionResult> GetMyNotifications([FromQuery] QueryDto q)
+        public async Task<IActionResult> GetMyNotifications([FromQuery] UserNotificationQueryDto q)
         {
-            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery<UserNotificationQuery>(false), HttpContext.RequestAborted);
+            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<UserNotificationDto>();
 
