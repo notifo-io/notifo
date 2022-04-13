@@ -5,11 +5,13 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
+import { CHANNELS } from '@app/shared/utils/model';
 import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationRow } from './NotificationRow';
@@ -29,22 +31,39 @@ export const Notifications = (props: NotificationsProps) => {
     const app = useApp()!;
     const appId = app.id;
     const notifications = useNotifications(x => x.notifications);
+    const [channels, setChannels] = React.useState<string[]>([]);
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
     });
 
     React.useEffect(() => {
-        dispatch(loadNotifications(appId, userId, {}));
-    }, [dispatch, appId, userId]);
+        dispatch(loadNotifications(appId, userId, {}, undefined, channels));
+    }, [dispatch, appId, userId, channels]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadNotifications(appId, userId));
-    }, [dispatch, appId, userId]);
+        dispatch(loadNotifications(appId, userId, undefined, undefined, channels));
+    }, [dispatch, appId, userId, channels]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadNotifications(appId, userId, q));
-    }, [dispatch, appId, userId]);
+        dispatch(loadNotifications(appId, userId, q, undefined, channels));
+    }, [dispatch, appId, userId, channels]);
+
+    const doToggleChannel = React.useCallback((channel: string) => {
+        setChannels(channels => {
+            let newChannels: string[];
+
+            if (channels.length === 0) {
+                newChannels = CHANNELS.filter(x => x !== channel);
+            } else if (channels.indexOf(channel) >= 0) {
+                newChannels = channels.filter(x => x !== channel);
+            } else {
+                newChannels = [...channels, channel];
+            }
+
+            return newChannels.length >= CHANNELS.length ? [] : newChannels;
+        });
+    }, []);
 
     return (
         <>
@@ -82,6 +101,16 @@ export const Notifications = (props: NotificationsProps) => {
             </Row>
 
             <FormError error={notifications.error} />
+
+            <Row className='channels-filter' noGutters>
+                {CHANNELS.map(channel => 
+                    <Col xs={2} key={channel}>
+                        <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 || channels.length === 0 })} onClick={() => doToggleChannel(channel)}>
+                            {texts.notificationSettings[channel].name}
+                        </Button>
+                    </Col>,
+                )}
+            </Row>
 
             <Card className='card-table'>
                 <CardBody>

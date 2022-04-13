@@ -29,3 +29,46 @@
         }
     }
 }
+
+.channels-filter {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin-bottom: .25rem;
+
+    .col-2 {
+        overflow: hidden;
+        padding-left: .125rem;
+        padding-right: .125rem;
+
+        &:first-child {
+            padding: 0;
+        }
+
+        &:last-child {
+            padding: 0;
+        }
+    }
+
+    .btn {
+        @include truncate;
+        background: $color-white;
+        border: 1px solid $color-border;
+        border-radius: $border-radius;
+        box-shadow: none;
+        font-size: $font-size-sm;
+        font-weight: normal;
+        padding: .75rem .25rem !important;
+        opacity: .6;
+        text-align: center;
+        text-transform: none;
+        width: 100%;
+
+        &:hover {
+            background: $color-white;
+        }
+
+        &.active {
+            opacity: 1;
+        }
+    }
+}

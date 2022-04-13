@@ -18,6 +18,8 @@ namespace Notifo.Domain.UserNotifications
 
         public string? Query { get; set; }
 
+        public string[]? Channels { get; set; }
+
         public UserNotificationQuery()
         {
             TotalNeeded = false;

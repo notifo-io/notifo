@@ -63,8 +63,11 @@ export interface SearchRequest extends Query {
     skip: number;
 }
 
-type ListLoader<TItem, TExtra> = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>; total: number; extra?: TExtra }>;
-type ListArg = { query?: Partial<SearchRequest>; reset?: boolean } & { [x: string]: any };
+type ListLoader<TItem, TExtra> 
+    = (request: SearchRequest) => Promise<{ items: ReadonlyArray<TItem>; total: number; extra?: TExtra }>;
+
+type ListArg 
+    = { query?: Partial<SearchRequest>; reset?: boolean } & { [x: string]: any };
 
 export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, loader: ListLoader<TItem, TExtra>) {
     const name = `${prefix}/${key}/load`;
