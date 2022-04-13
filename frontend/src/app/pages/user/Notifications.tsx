@@ -16,6 +16,8 @@ import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationRow } from './NotificationRow';
 
+const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook');
+
 export interface NotificationsProps {
     // The user id.
     userId: string;
@@ -59,7 +61,7 @@ export const Notifications = (props: NotificationsProps) => {
                 newChannels = [...channels, channel];
             }
 
-            return newChannels.length >= CHANNELS.length ? [] : newChannels;
+            return newChannels.length >= NON_WEBHOOKS.length ? [] : newChannels;
         });
     }, []);
 
@@ -101,7 +103,7 @@ export const Notifications = (props: NotificationsProps) => {
             <FormError error={notifications.error} />
 
             <Row className='channels-filter' noGutters>
-                {CHANNELS.map(channel => 
+                {NON_WEBHOOKS.map(channel => 
                     <Col xs={2} key={channel}>
                         <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 })} onClick={() => doToggleChannel(channel)}>
                             {texts.notificationSettings[channel].name}
