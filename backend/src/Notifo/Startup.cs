@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Areas.Frontend;
+using Notifo.Domain;
 using Notifo.Domain.Utils;
 using Notifo.Pipeline;
 
@@ -131,7 +132,7 @@ namespace Notifo
 
         private static void ConfigureJson(JsonSerializerOptions options)
         {
-            options.Converters.Add(new JsonConfirmModeConverter());
+            options.Converters.Add(new JsonLazyEnumConverter<ConfirmMode>());
             options.Converters.Add(new JsonTopicIdConverter());
         }
 

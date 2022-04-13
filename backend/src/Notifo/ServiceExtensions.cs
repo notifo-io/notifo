@@ -6,8 +6,10 @@
 // ==========================================================================
 
 using MongoDB.Bson.Serialization;
+using Notifo.Domain;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;
+using Notifo.Infrastructure.MongoDb;
 using Notifo.Pipeline;
 using StackExchange.Redis;
 
@@ -58,6 +60,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     BsonSerializer.RegisterGenericSerializerDefinition(
                         typeof(ReadonlyDictionary<,>),
                         typeof(ReadonlyDictionarySerializer<,>));
+
+                    LazyEnumSerializer<ConfirmMode>.Register();
 
                     services.AddMyMongoApps();
                     services.AddMyMongoDb(config);

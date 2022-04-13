@@ -10,13 +10,13 @@ using System.Text.Json.Serialization;
 
 namespace Notifo.Domain.Utils
 {
-    public sealed class JsonConfirmModeConverter : JsonConverter<ConfirmMode>
+    public sealed class JsonLazyEnumConverter<T> : JsonConverter<T> where T : struct
     {
-        public override ConfirmMode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var text = reader.GetString();
 
-            if (Enum.TryParse<ConfirmMode>(text, true, out var confirmMode))
+            if (Enum.TryParse<T>(text, true, out var confirmMode))
             {
                 return confirmMode;
             }
@@ -24,7 +24,7 @@ namespace Notifo.Domain.Utils
             return default;
         }
 
-        public override void Write(Utf8JsonWriter writer, ConfirmMode value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString());
         }

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
@@ -86,9 +87,35 @@ namespace Notifo.Infrastructure.TestHelpers
             }
         }
 
+        public static TOut SerializeAndDeserializeBson<TIn, TOut>(this TIn value)
+        {
+            var obj = new ObjectHolder<TIn>
+            {
+                Value = value
+            };
+
+            var stream = new MemoryStream();
+
+            using (var writer = new BsonBinaryWriter(stream))
+            {
+                BsonSerializer.Serialize(writer, obj);
+
+                writer.Flush();
+            }
+
+            stream.Position = 0;
+
+            using (var reader = new BsonBinaryReader(stream))
+            {
+                var result = BsonSerializer.Deserialize<ObjectHolder<TOut>>(reader);
+
+                return result.Value;
+            }
+        }
+
         public static T Deserialize<T>(string value)
         {
-            var json = $"{{ \"Value\": {value} }}";
+            var json = $"{{ \"Value\": \"{value}\" }}";
 
             return JsonSerializer.Deserialize<ObjectHolder<T>>(json, DefaultOptions)!.Value;
         }
@@ -98,6 +125,17 @@ namespace Notifo.Infrastructure.TestHelpers
             var json = $"{{ \"Value\": {value} }}";
 
             return JsonSerializer.Deserialize<ObjectHolder<T>>(json, DefaultOptions)!.Value;
+        }
+
+        public static T Deserialize<T>(string value, JsonConverter converter)
+        {
+            var options = new JsonSerializerOptions();
+
+            options.Converters.Add(converter);
+
+            var json = $"{{ \"Value\": \"{value}\" }}";
+
+            return JsonSerializer.Deserialize<ObjectHolder<T>>(json, options)!.Value;
         }
     }
 }
