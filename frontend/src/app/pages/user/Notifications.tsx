@@ -74,12 +74,12 @@ export const Notifications = (props: NotificationsProps) => {
                             <Nav className='nav-tabs2'>
                                 <NavItem>
                                     <NavLink active>
-                                        {texts.topics.header}
+                                        {texts.notifications.header}
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink onClick={onSwitch}>
-                                        {texts.topics.explicit}
+                                        {texts.subscriptions.header}
                                     </NavLink>
                                 </NavItem>
                             </Nav>

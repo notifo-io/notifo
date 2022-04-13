@@ -74,12 +74,12 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                             <Nav className='nav-tabs2'>
                                 <NavItem>
                                     <NavLink onClick={onSwitch}>
-                                        {texts.topics.header}
+                                        {texts.notifications.header}
                                     </NavLink>
                                 </NavItem>
                                 <NavItem>
                                     <NavLink active>
-                                        {texts.topics.explicit}
+                                        {texts.subscriptions.header}
                                     </NavLink>
                                 </NavItem>
                             </Nav>
