@@ -131,6 +131,7 @@ namespace Notifo
 
         private static void ConfigureJson(JsonSerializerOptions options)
         {
+            options.Converters.Add(new JsonConfirmModeConverter());
             options.Converters.Add(new JsonTopicIdConverter());
         }
 

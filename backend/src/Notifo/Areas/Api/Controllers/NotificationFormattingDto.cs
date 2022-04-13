@@ -6,7 +6,9 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using Notifo.Domain;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure.Reflection;
 using Notifo.Infrastructure.Texts;
 
@@ -53,7 +55,7 @@ namespace Notifo.Areas.Api.Controllers
         /// <summary>
         /// The confirmation mode.
         /// </summary>
-        [Required]
+        [JsonConverter(typeof(JsonConfirmModeConverter))]
         public ConfirmMode ConfirmMode { get; set; }
 
         public static NotificationFormattingDto FromDomainObject(NotificationFormatting<LocalizedText> source)
