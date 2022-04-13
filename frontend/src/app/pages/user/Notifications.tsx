@@ -104,7 +104,7 @@ export const Notifications = (props: NotificationsProps) => {
 
             <Row className='channels-filter' noGutters>
                 {NON_WEBHOOKS.map(channel => 
-                    <Col xs={2} key={channel}>
+                    <Col key={channel} style={{ width: `100/${NON_WEBHOOKS.length}%` }}>
                         <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 })} onClick={() => doToggleChannel(channel)}>
                             {texts.notificationSettings[channel].name}
                         </Button>
