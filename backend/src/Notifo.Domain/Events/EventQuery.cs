@@ -12,5 +12,7 @@ namespace Notifo.Domain.Events
     public sealed record EventQuery : QueryBase
     {
         public string? Query { get; set; }
+
+        public string[]? Channels { get; set; }
     }
 }

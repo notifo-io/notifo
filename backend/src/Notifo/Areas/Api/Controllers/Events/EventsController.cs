@@ -42,9 +42,9 @@ namespace Notifo.Areas.Api.Controllers.Events
         [HttpGet("api/apps/{appId}/events/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<EventDto>))]
-        public async Task<IActionResult> GetEvents(string appId, [FromQuery] QueryDto q)
+        public async Task<IActionResult> GetEvents(string appId, [FromQuery] EventQueryDto q)
         {
-            var topics = await eventStore.QueryAsync(appId, q.ToQuery<EventQuery>(true), HttpContext.RequestAborted);
+            var topics = await eventStore.QueryAsync(appId, q.ToQuery(true), HttpContext.RequestAborted);
 
             var response = new ListResponseDto<EventDto>();
 

@@ -5,15 +5,19 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
+import { CHANNELS } from '@app/shared/utils/model';
 import { loadEvents, useApp, useEvents } from '@app/state';
 import { texts } from '@app/texts';
 import { EventRow } from './EventRow';
+
+const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook');
 
 export const EventsPage = () => {
     const dispatch = useDispatch();
@@ -21,22 +25,37 @@ export const EventsPage = () => {
     const appId = app.id;
     const events = useEvents(x => x.events);
     const [showCounters, setshowCounters] = useSavedState(false, 'show.counters');
+    const [channels, setChannels] = React.useState<string[]>([]);
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
     });
 
     React.useEffect(() => {
-        dispatch(loadEvents(appId, undefined));
-    }, [dispatch, appId]);
+        dispatch(loadEvents(appId, {}, undefined, channels));
+    }, [dispatch, appId, channels]);
 
     const doRefresh = React.useCallback(() => {
-        dispatch(loadEvents(appId));
-    }, [dispatch, appId]);
+        dispatch(loadEvents(appId, undefined, undefined, channels));
+    }, [dispatch, appId, channels]);
 
     const doLoad = React.useCallback((q?: Partial<Query>) => {
-        dispatch(loadEvents(appId, q));
-    }, [dispatch, appId]);
+        dispatch(loadEvents(appId, q, undefined, channels));
+    }, [dispatch, appId, channels]);
+
+    const doToggleChannel = React.useCallback((channel: string) => {
+        setChannels(channels => {
+            let newChannels: string[];
+
+            if (channels.indexOf(channel) >= 0) {
+                newChannels = channels.filter(x => x !== channel);
+            } else {
+                newChannels = [...channels, channel];
+            }
+
+            return newChannels.length >= NON_WEBHOOKS.length ? [] : newChannels;
+        });
+    }, []);
 
     return (
         <div className='events'>
@@ -63,6 +82,16 @@ export const EventsPage = () => {
             </Row>
 
             <FormError error={events.error} />
+
+            <Row className='channels-filter' noGutters>
+                {NON_WEBHOOKS.map(channel => 
+                    <Col key={channel} style={{ width: `100/${NON_WEBHOOKS.length}%` }}>
+                        <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 })} onClick={() => doToggleChannel(channel)}>
+                            {texts.notificationSettings[channel].name}
+                        </Button>
+                    </Col>,
+                )}
+            </Row>
 
             <Table className='table-fixed table-simple table-middle'>
                 <colgroup>
@@ -96,7 +125,7 @@ export const EventsPage = () => {
                         </>
                     }
 
-                    {!events.isLoading && events.items && events.items.length === 0 &&
+                    {events.isLoaded && events.items && events.items.length === 0 &&
                         <tr className='list-item-empty'>
                             <td colSpan={4}>{texts.events.eventsNotFound}</td>
                         </tr>

@@ -82,7 +82,7 @@ export const MediaPage = () => {
                     </>
                 }
 
-                {!media.isLoading && media.items && media.items.length === 0 &&
+                {media.isLoaded && media.items && media.items.length === 0 &&
                     <div className='list-item-empty'>
                         {texts.media.mediaNotFound}
                     </div>

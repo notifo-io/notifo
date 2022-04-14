@@ -100,7 +100,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
                         </>
                     }
 
-                    {!medias.isLoading && medias.items && medias.items.length === 0 &&
+                    {medias.isLoaded && medias.items && medias.items.length === 0 &&
                         <div className='list-item-empty'>
                             {texts.media.mediaNotFound}
                         </div>

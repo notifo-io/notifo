@@ -109,7 +109,7 @@ export const TemplatesList = (props: TemplateListProps) => {
                                 </>
                             }
 
-                            {!templates.isLoading && templates.items && templates.items.length === 0 &&
+                            {templates.isLoaded && templates.items && templates.items.length === 0 &&
                                 <tr className='list-item-empty'>
                                     <td colSpan={2}>{texts.templates.templatesNotFound}</td>
                                 </tr>

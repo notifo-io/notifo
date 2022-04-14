@@ -94,7 +94,7 @@ export const EmailTemplatesPage = () => {
                 </>
             }
 
-            {!emailTemplates.isLoading && emailTemplates.items?.length === 0 &&
+            {emailTemplates.isLoaded && emailTemplates.items?.length === 0 &&
                 <div className='empty-button'>
                     <Label>{texts.emailTemplates.notFound}</Label>
 

@@ -147,7 +147,7 @@ export const TopicsPage = () => {
                         </>
                     }
 
-                    {!topics.isLoading && topics.items && topics.items.length === 0 &&
+                    {topics.isLoaded && topics.items && topics.items.length === 0 &&
                         <tr className='list-item-empty'>
                             <td colSpan={5}>{texts.topics.topicsNotFound}</td>
                         </tr>

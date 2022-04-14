@@ -80,7 +80,7 @@ export const SmsTemplatesPage = () => {
                 </>
             }
 
-            {!smsTemplates.isLoading && smsTemplates.items?.length === 0 &&
+            {smsTemplates.isLoaded && smsTemplates.items?.length === 0 &&
                 <div className='empty-button'>
                     <Label>{texts.smsTemplates.notFound}</Label>
 

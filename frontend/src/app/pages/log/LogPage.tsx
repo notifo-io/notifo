@@ -99,7 +99,7 @@ export const LogPage = () => {
                                 </>
                             }
 
-                            {!logEntries.isLoading && logEntries.items && logEntries.items.length === 0 &&
+                            {logEntries.isLoaded && logEntries.items && logEntries.items.length === 0 &&
                                 <tr>
                                     <td colSpan={4}>{texts.log.logEntriesNotFound}</td>
                                 </tr>

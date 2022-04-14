@@ -2699,16 +2699,19 @@ export class EventsClient {
     /**
      * Query events.
      * @param appId The app where the events belongs to.
+     * @param channels (optional) The active channels.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return Events returned.
      */
-    getEvents(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfEventDto> {
+    getEvents(appId: string, channels?: string[] | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfEventDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (channels !== undefined && channels !== null)
+            channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -5767,7 +5770,7 @@ export interface NotificationFormattingDto {
     /** The optional link name with one entry per language. */
     linkText?: LocalizedText | undefined;
     /** The confirmation mode. */
-    confirmMode: ConfirmMode;
+    confirmMode?: ConfirmMode;
 }
 
 export type ConfirmMode = "None" | "Explicit";

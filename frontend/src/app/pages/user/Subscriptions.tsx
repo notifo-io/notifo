@@ -147,7 +147,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                                 </>
                             }
 
-                            {!subscriptions.isLoading && subscriptions.items && subscriptions.items.length === 0 &&
+                            {subscriptions.isLoaded && subscriptions.items && subscriptions.items.length === 0 &&
                                 <tr>
                                     <td colSpan={4}>{texts.subscriptions.subscriptionsNotFound}</td>
                                 </tr>
