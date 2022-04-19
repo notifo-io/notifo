@@ -23,6 +23,11 @@ namespace Notifo.SDK
         IConfigsClient Configs { get; }
 
         /// <summary>
+        /// Provides the client to query and manage email templates.
+        /// </summary>
+        IEmailTemplatesClient EmailTemplates { get; }
+
+        /// <summary>
         /// Provides the client to query and manage events.
         /// </summary>
         IEventsClient Events { get; }
@@ -43,9 +48,29 @@ namespace Notifo.SDK
         IMobilePushClient MobilePush { get; }
 
         /// <summary>
+        /// Provides the client to query and manage messaging templates.
+        /// </summary>
+        IMessagingTemplatesClient MessagingTemplates { get; }
+
+        /// <summary>
         /// Provides the client to query and manage notifications.
         /// </summary>
         INotificationsClient Notifications { get; }
+
+        /// <summary>
+        /// Provides the client to make ping requests.
+        /// </summary>
+        IPingClient Ping { get; }
+
+        /// <summary>
+        /// Provides the client to query and manage SMS templates.
+        /// </summary>
+        ISmsTemplatesClient SmsTemplates { get; }
+
+        /// <summary>
+        /// Provides the client to query and manage system users.
+        /// </summary>
+        ISystemUsersClient SystemUsers { get; }
 
         /// <summary>
         /// Provides the client to query and manage templates.
@@ -56,6 +81,11 @@ namespace Notifo.SDK
         /// Provides the client to query and manage topics.
         /// </summary>
         ITopicsClient Topics { get; }
+
+        /// <summary>
+        /// Provides the client to query user specific endpoints.
+        /// </summary>
+        IUserClient User { get; }
 
         /// <summary>
         /// Provides the client to query and manage users.

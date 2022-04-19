@@ -10,18 +10,24 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using Notifo.Identity;
+using NSwag.Annotations;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Notifo.Areas.Account.Controllers
 {
+    [OpenApiIgnore]
     public class AuthorizationController : ControllerBase<AuthorizationController>
     {
         private readonly IOpenIddictScopeManager scopeManager;
+        private readonly IOpenIddictApplicationManager applicationManager;
 
-        public AuthorizationController(IOpenIddictScopeManager scopeManager)
+        public AuthorizationController(IOpenIddictScopeManager scopeManager, IOpenIddictApplicationManager applicationManager)
         {
+            this.applicationManager = applicationManager;
             this.scopeManager = scopeManager;
         }
 
@@ -73,6 +79,25 @@ namespace Notifo.Areas.Account.Controllers
                 {
                     claim.SetDestinations(GetDestinations(claim, principal));
                 }
+
+                return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            }
+
+            if (request.IsClientCredentialsGrantType())
+            {
+                if (request.ClientId == null)
+                {
+                    throw new InvalidOperationException("The OpenID Connect request cannot be retrieved.");
+                }
+
+                var application = await applicationManager.FindByClientIdAsync(request.ClientId, HttpContext.RequestAborted);
+
+                if (application == null)
+                {
+                    throw new InvalidOperationException("The application details cannot be found in the database.");
+                }
+
+                var principal = await CreateApplicationPrincipalAsync(request, application);
 
                 return SignIn(principal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
@@ -146,6 +171,49 @@ namespace Notifo.Areas.Account.Controllers
             await SignInManager.SignOutAsync();
 
             return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        private async Task<ClaimsPrincipal> CreateApplicationPrincipalAsync(OpenIddictRequest request, object application)
+        {
+            var identity = new ClaimsIdentity(
+                TokenValidationParameters.DefaultAuthenticationType,
+                Claims.Name,
+                Claims.Role);
+
+            var principal = new ClaimsPrincipal(identity);
+
+            if (request.ClientId != null)
+            {
+                identity.AddClaim(Claims.Subject, request.ClientId,
+                    Destinations.AccessToken,
+                    Destinations.IdentityToken);
+            }
+
+            var properties = await applicationManager.GetPropertiesAsync(application, HttpContext.RequestAborted);
+
+            foreach (var claim in properties.Claims())
+            {
+                identity.AddClaim(claim);
+            }
+
+            return await EnrichPrincipalAsync(principal, request);
+        }
+
+        private async Task<ClaimsPrincipal> EnrichPrincipalAsync(ClaimsPrincipal principal, OpenIddictRequest request)
+        {
+            var scopes = request.GetScopes();
+
+            var resources = await scopeManager.ListResourcesAsync(scopes, HttpContext.RequestAborted).ToListAsync(HttpContext.RequestAborted);
+
+            principal.SetScopes(scopes);
+            principal.SetResources(resources);
+
+            foreach (var claim in principal.Claims)
+            {
+                claim.SetDestinations(GetDestinations(claim, principal));
+            }
+
+            return principal;
         }
 
         private static IEnumerable<string> GetDestinations(Claim claim, ClaimsPrincipal principal)

@@ -6,7 +6,11 @@
 // ==========================================================================
 
 using System.Globalization;
+using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Options;
+using Notifo.Domain.Identity;
 using Notifo.Identity.InMemory;
 using OpenIddict.Abstractions;
 using Squidex.Hosting;
@@ -16,6 +20,22 @@ namespace Notifo.Identity
 {
     public static class InMemoryConfiguration
     {
+        public static IEnumerable<Claim> Claims(this IReadOnlyDictionary<string, JsonElement> properties)
+        {
+            foreach (var (key, value) in properties)
+            {
+                var values = (string[]?)new OpenIddictParameter(value);
+
+                if (values != null)
+                {
+                    foreach (var claimValue in values)
+                    {
+                        yield return new Claim(key, claimValue);
+                    }
+                }
+            }
+        }
+
         private static string BuildId(string value)
         {
             const int MongoDbLength = 24;
@@ -42,6 +62,13 @@ namespace Notifo.Identity
             return sb.ToString();
         }
 
+        public static OpenIddictApplicationDescriptor SetAdmin(this OpenIddictApplicationDescriptor application)
+        {
+            application.Properties[ClaimTypes.Role] = (JsonElement)new OpenIddictParameter(NotifoRoles.HostAdmin);
+
+            return application;
+        }
+
         public sealed class Scopes : InMemoryScopeStore
         {
             public Scopes()
@@ -64,12 +91,12 @@ namespace Notifo.Identity
 
         public sealed class Applications : InMemoryApplicationStore
         {
-            public Applications(IUrlGenerator urlGenerator)
-                : base(BuildClients(urlGenerator))
+            public Applications(IUrlGenerator urlGenerator, IOptions<NotifoIdentityOptions> options)
+                : base(BuildClients(urlGenerator, options.Value))
             {
             }
 
-            private static IEnumerable<(string, OpenIddictApplicationDescriptor)> BuildClients(IUrlGenerator urlGenerator)
+            private static IEnumerable<(string, OpenIddictApplicationDescriptor)> BuildClients(IUrlGenerator urlGenerator, NotifoIdentityOptions identityOptions)
             {
                 yield return (BuildId(Constants.FrontendClient), new OpenIddictApplicationDescriptor
                 {
@@ -97,6 +124,30 @@ namespace Notifo.Identity
                         Permissions.ResponseTypes.Code,
                         Permissions.ResponseTypes.IdToken,
                         Permissions.ResponseTypes.IdTokenToken,
+                        Permissions.ResponseTypes.Token,
+                        Permissions.Scopes.Email,
+                        Permissions.Scopes.Profile,
+                        Permissions.Scopes.Roles,
+                        Constants.ApiScope
+                    }
+                });
+
+                if (!identityOptions.IsAdminClientConfigured())
+                {
+                    yield break;
+                }
+
+                var adminClientId = identityOptions.AdminClientId!;
+
+                yield return (adminClientId, new OpenIddictApplicationDescriptor
+                {
+                    DisplayName = "Admin Client",
+                    ClientId = adminClientId,
+                    ClientSecret = identityOptions.AdminClientSecret,
+                    Permissions =
+                    {
+                        Permissions.Endpoints.Token,
+                        Permissions.GrantTypes.ClientCredentials,
                         Permissions.ResponseTypes.Token,
                         Permissions.Scopes.Email,
                         Permissions.Scopes.Profile,

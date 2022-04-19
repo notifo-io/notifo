@@ -94,6 +94,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     builder.AllowImplicitFlow();
                     builder.AllowAuthorizationCodeFlow();
+                    builder.AllowClientCredentialsFlow();
 
                     builder.SetAccessTokenLifetime(TimeSpan.FromDays(30));
 
@@ -128,6 +129,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     builder.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
                         .As<IOpenIddictApplicationStore<ImmutableApplication>>();
+
+                    builder.ReplaceApplicationManager(typeof(ApplicationManager<>));
                 });
 
             services.AddSingletonAs<MongoDbUserStore>()
