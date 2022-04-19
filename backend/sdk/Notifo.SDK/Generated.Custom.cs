@@ -79,7 +79,7 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
         }
     }
 
@@ -87,7 +87,15 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
+        }
+    }
+
+    public partial class EmailTemplatesClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
         }
     }
 
@@ -95,7 +103,7 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
         }
     }
 
@@ -103,7 +111,15 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
+        }
+    }
+
+    public partial class MobilePushClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
         }
     }
 
@@ -111,7 +127,39 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
+        }
+    }
+
+    public partial class NotificationsClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
+        }
+    }
+
+    public partial class PingClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
+        }
+    }
+
+    public partial class SmsTemplatesClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
+        }
+    }
+
+    public partial class SystemUsersClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
         }
     }
 
@@ -119,7 +167,7 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
         }
     }
 
@@ -127,7 +175,15 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
+        }
+    }
+
+    public partial class UserClient
+    {
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            settings.Configure();
         }
     }
 
@@ -135,7 +191,7 @@ namespace Notifo.SDK
     {
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
+            settings.Configure();
         }
     }
 }

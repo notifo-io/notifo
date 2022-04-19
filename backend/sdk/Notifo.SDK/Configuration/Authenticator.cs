@@ -1,7 +1,7 @@
 ﻿// ==========================================================================
-//  Squidex Headless CMS
+//  Notifo.io
 // ==========================================================================
-//  Copyright (c) Squidex UG (haftungsbeschraenkt)
+//  Copyright (c) Sebastian Stehle
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 

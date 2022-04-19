@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Notifo.SDK;
-using System.Diagnostics;
 using TestSuite.Utils;
 
 namespace TestSuite

@@ -61,7 +61,7 @@ namespace Notifo.SDK.Configuration
         {
             if (cacheExpires < DateTimeOffset.UtcNow)
             {
-                cacheEntry = null;
+                RemoveFromCache();
             }
 
             return cacheEntry;
