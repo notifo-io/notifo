@@ -7,7 +7,7 @@ services:
     networks:
       - internal
 
-  squidex:
+  notifo:
     image: notifo
     ports:
       - "8080:80"
@@ -17,7 +17,7 @@ services:
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
-      - ASSETS_RESIZERURL=http://resizer:8081
+      - ASSETS__RESIZERURL=http://resizer:8081
     networks:
       - internal
     depends_on:
