@@ -1,4 +1,4 @@
-name: Build and Push to Nuget
+name: Nuget Package
 
 on:
   push:
