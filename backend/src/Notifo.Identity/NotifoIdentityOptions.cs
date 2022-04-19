@@ -11,6 +11,10 @@ namespace Notifo.Identity
     {
         public bool AllowPasswordAuth { get; set; }
 
+        public string AdminClientId { get; set; }
+
+        public string AdminClientSecret { get; set; }
+
         public string GithubClient { get; set; }
 
         public string GithubSecret { get; set; }
@@ -20,6 +24,11 @@ namespace Notifo.Identity
         public string GoogleSecret { get; set; }
 
         public NotifoIdentityUser[] Users { get; set; }
+
+        public bool IsAdminClientConfigured()
+        {
+            return !string.IsNullOrWhiteSpace(AdminClientId) && !string.IsNullOrWhiteSpace(AdminClientSecret);
+        }
 
         public bool IsGithubAuthConfigured()
         {

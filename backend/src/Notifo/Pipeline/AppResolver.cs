@@ -87,6 +87,11 @@ namespace Notifo.Pipeline
                 }
             }
 
+            if (roles.Contains(NotifoRoles.HostAdmin))
+            {
+                roles.Add(NotifoRoles.AppOwner);
+            }
+
             if (roles.Contains(NotifoRoles.AppOwner))
             {
                 roles.Add(NotifoRoles.AppAdmin);

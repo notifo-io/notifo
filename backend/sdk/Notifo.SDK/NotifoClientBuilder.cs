@@ -5,8 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System;
-using System.Net.Http;
+using Notifo.SDK.Configuration;
 
 namespace Notifo.SDK
 {
@@ -18,6 +17,8 @@ namespace Notifo.SDK
         private bool readResponseAsString;
         private string apiKey;
         private string apiUrl = "https://app.notifo.io";
+        private string clientId;
+        private string clientSecret;
         private TimeSpan timeout = TimeSpan.FromSeconds(10);
         private HttpClient httpClient;
 
@@ -42,6 +43,30 @@ namespace Notifo.SDK
         public NotifoClientBuilder SetApiKey(string apiKey)
         {
             this.apiKey = apiKey;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the client ID to use.
+        /// </summary>
+        /// <param name="clientId">The client ID.</param>
+        /// <returns>The current instance.</returns>
+        public NotifoClientBuilder SetClientId(string clientId)
+        {
+            this.clientId = clientId;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the client Secret to use.
+        /// </summary>
+        /// <param name="clientSecret">The client Secret.</param>
+        /// <returns>The current instance.</returns>
+        public NotifoClientBuilder SetClientSecret(string clientSecret)
+        {
+            this.clientSecret = clientSecret;
 
             return this;
         }
@@ -101,9 +126,9 @@ namespace Notifo.SDK
         /// <exception cref="InvalidOperationException">Configuration is not valid.</exception>
         public INotifoClient Build()
         {
-            if (string.IsNullOrWhiteSpace(apiKey))
+            if (string.IsNullOrWhiteSpace(apiKey) && string.IsNullOrWhiteSpace(clientId) && string.IsNullOrWhiteSpace(clientSecret))
             {
-                throw new InvalidOperationException("API Key not defined.");
+                throw new InvalidOperationException("Neiter, API Key, nor Client ID and secret is defined.");
             }
 
             if (string.IsNullOrWhiteSpace(apiUrl))
@@ -116,9 +141,17 @@ namespace Notifo.SDK
                 throw new InvalidOperationException("API URL is not a well defined absolute URL.");
             }
 
-            httpClient ??= new HttpClient();
+            if (!string.IsNullOrWhiteSpace(apiKey))
+            {
+                httpClient ??= new HttpClient();
+                httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
+            }
+            else
+            {
+                httpClient ??= new HttpClient(new AuthenticatingHttpMessageHandler(new CachingAuthenticator(new Authenticator(apiUrl.TrimEnd('/'), clientId, clientSecret))));
+            }
+
             httpClient.Timeout = timeout;
-            httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
 
             var client = new NotifoClient(httpClient, apiUrl, readResponseAsString);
 

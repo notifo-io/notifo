@@ -22,6 +22,7 @@ namespace Notifo.SDK
         private readonly Lazy<IMediaClient> media;
         private readonly Lazy<IMobilePushClient> mobilePush;
         private readonly Lazy<INotificationsClient> notifications;
+        private readonly Lazy<IPingClient> ping;
         private readonly Lazy<ITemplatesClient> templates;
         private readonly Lazy<ITopicsClient> topics;
         private readonly Lazy<IUsersClient> users;
@@ -46,6 +47,9 @@ namespace Notifo.SDK
 
         /// <inheritdoc />
         public INotificationsClient Notifications => notifications.Value;
+
+        /// <inheritdoc />
+        public IPingClient Ping => ping.Value;
 
         /// <inheritdoc />
         public ITemplatesClient Templates => templates.Value;
@@ -121,6 +125,15 @@ namespace Notifo.SDK
             notifications = new Lazy<INotificationsClient>(() =>
             {
                 return new NotificationsClient(httpClient)
+                {
+                    BaseUrl = baseUrl,
+                    ReadResponseAsString = readResponseAsString
+                };
+            });
+
+            ping = new Lazy<IPingClient>(() =>
+            {
+                return new PingClient(httpClient)
                 {
                     BaseUrl = baseUrl,
                     ReadResponseAsString = readResponseAsString

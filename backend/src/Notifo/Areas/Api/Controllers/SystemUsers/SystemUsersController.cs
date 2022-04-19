@@ -14,7 +14,7 @@ using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.Tracking.SystemUsers
+namespace Notifo.Areas.Api.Controllers.SystemUsers
 {
     [OpenApiTags("SystemUsers")]
     public sealed class SystemUsersController : BaseController

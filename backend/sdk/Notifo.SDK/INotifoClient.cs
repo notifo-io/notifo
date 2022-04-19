@@ -38,6 +38,11 @@ namespace Notifo.SDK
         IMediaClient Media { get; }
 
         /// <summary>
+        /// Provides the client to make ping requests.
+        /// </summary>
+        IPingClient Ping { get; }
+
+        /// <summary>
         /// Provides the client to query and manage mobile push settings.
         /// </summary>
         IMobilePushClient MobilePush { get; }
