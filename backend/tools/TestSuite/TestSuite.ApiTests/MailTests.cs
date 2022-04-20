@@ -119,12 +119,12 @@ namespace TestSuite.ApiTests
             {
                 while (!cts.IsCancellationRequested)
                 {
-                    var messages = await mailcatcher.GetMessagesAsync();
+                    var messages = await mailcatcher.GetMessagesAsync(cts.Token);
                     var message = messages.FirstOrDefault(x => x.Subject.Contains(appName, StringComparison.OrdinalIgnoreCase));
 
                     if (message != null)
                     {
-                        var body = await mailcatcher.GetBodyAsync(message.Id);
+                        var body = await mailcatcher.GetBodyAsync(message.Id, cts.Token);
 
                         Assert.Contains(subjectId, body.Plain, StringComparison.OrdinalIgnoreCase);
                         Assert.Contains(subjectId, body.Html, StringComparison.OrdinalIgnoreCase);
@@ -220,7 +220,7 @@ namespace TestSuite.ApiTests
             {
                 while (!cts.IsCancellationRequested)
                 {
-                    logs = await _.Client.Logs.GetLogsAsync(app_0.Id);
+                    logs = await _.Client.Logs.GetLogsAsync(app_0.Id, cancellationToken: cts.Token);
 
                     if (logs.Total > 0)
                     {

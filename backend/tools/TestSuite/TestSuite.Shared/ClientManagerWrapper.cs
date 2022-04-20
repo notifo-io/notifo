@@ -35,13 +35,18 @@ namespace TestSuite
 
             ServerUrl = GetValue("config:server:url", "https://localhost:5002");
 
+            var timeout =
+                Debugger.IsAttached ?
+                    TimeSpan.FromMinutes(5) :
+                    TimeSpan.FromSeconds(10);
+
             Client =
                 NotifoClientBuilder.Create()
                     .ReadResponseAsString(true)
                     .SetClientId(ClientId)
                     .SetClientSecret(ClientSecret)
                     .SetApiUrl(ServerUrl)
-                    .SetTimeout(Debugger.IsAttached ? TimeSpan.FromMinutes(5) : TimeSpan.FromSeconds(100))
+                    .SetTimeout(timeout)
                     .Build();
         }
 

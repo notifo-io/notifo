@@ -49,16 +49,18 @@ namespace TestSuite.ApiTests
             Host = host;
         }
 
-        public Task<ReceivedEmail[]> GetMessagesAsync()
+        public Task<ReceivedEmail[]> GetMessagesAsync(
+            CancellationToken ct = default)
         {
-            return httpClient.GetFromJsonAsync<ReceivedEmail[]>("/messages");
+            return httpClient.GetFromJsonAsync<ReceivedEmail[]>("/messages", ct);
         }
 
-        public async Task<ReceivedEmailBody> GetBodyAsync(int id)
+        public async Task<ReceivedEmailBody> GetBodyAsync(int id,
+            CancellationToken ct = default)
         {
             var responses = await Task.WhenAll(
-                httpClient.GetStringAsync($"/messages/{id}.html"),
-                httpClient.GetStringAsync($"/messages/{id}.plain"));
+                httpClient.GetStringAsync($"/messages/{id}.html", ct),
+                httpClient.GetStringAsync($"/messages/{id}.plain", ct));
 
             return new ReceivedEmailBody { Html = responses[0], Plain = responses[1] };
         }
