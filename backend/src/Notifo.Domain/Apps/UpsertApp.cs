@@ -43,7 +43,7 @@ namespace Notifo.Domain.Apps
 
             var newApp = app;
 
-            if (Is.IsChanged(Languages, app.Languages))
+            if (Is.Changed(Languages, app.Languages))
             {
                 newApp = newApp with
                 {
@@ -51,7 +51,7 @@ namespace Notifo.Domain.Apps
                 };
             }
 
-            if (Is.IsChanged(Name, app.Name))
+            if (Is.Changed(Name, app.Name))
             {
                 newApp = newApp with
                 {
@@ -59,7 +59,7 @@ namespace Notifo.Domain.Apps
                 };
             }
 
-            if (Is.IsChanged(ConfirmUrl, app.ConfirmUrl))
+            if (Is.Changed(ConfirmUrl, app.ConfirmUrl))
             {
                 newApp = newApp with
                 {

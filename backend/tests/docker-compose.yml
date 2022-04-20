@@ -13,11 +13,11 @@ services:
       - "8080:80"
     environment:
       - URLS__BASEURL=http://localhost:8080
+      - ASSETS__RESIZERURL=http://resizer:8081
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
-      - ASSETS__RESIZERURL=http://resizer:8081
     networks:
       - internal
     depends_on:
@@ -31,6 +31,22 @@ services:
       - internal
     depends_on:
       - mongo
+
+  webhookcatcher:
+    image: tarampampam/webhook-tester
+    command: serve --port 1026
+    ports:
+      - "1026:1026"
+    networks:
+      - internal
+
+  mailcatcher:
+    image: jeanberu/mailcatcher
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    networks:
+      - internal
     
 networks:
   internal:

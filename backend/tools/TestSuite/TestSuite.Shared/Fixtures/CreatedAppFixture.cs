@@ -16,56 +16,57 @@ namespace TestSuite.Fixtures
             "hello@squidex.io"
         };
 
-        public static string AppId { get; set; }
+        public string AppId { get; set; }
 
-        public CreatedAppFixture()
+        public override async Task InitializeAsync()
         {
-            if (AppId == null)
-            {
-                Task.Run(async () =>
-                {
-                    var apps = await Client.Apps.GetAppsAsync();
-
-                    AppId = apps.FirstOrDefault(x => x.Name == AppName)?.Id;
-                }).Wait();
-            }
+            await base.InitializeAsync();
 
             if (AppId == null)
             {
-                Task.Run(async () =>
+                try
                 {
-                    try
+                    var app = await Client.Apps.PostAppAsync(new UpsertAppDto
                     {
-                        var app = await Client.Apps.PostAppAsync(new UpsertAppDto
+                        Name = AppName,
+                        Languages = new[]
                         {
-                            Name = AppName,
-                            Languages = new[]
-                            {
-                                "en",
-                                "de"
-                            }
-                        });
-
-                        AppId = app.Id;
-                    }
-                    catch (NotifoException ex)
-                    {
-                        if (ex.StatusCode != 400)
-                        {
-                            throw;
+                            "en",
+                            "de"
                         }
-                    }
+                    });
 
-                    var invite = new AddContributorDto { Role = "Owner" };
-
-                    foreach (var contributor in Contributors)
+                    AppId = app.Id;
+                }
+                catch (NotifoException ex)
+                {
+                    if (ex.StatusCode != 400)
                     {
-                        invite.Email = contributor;
-
-                        await Client.Apps.PostContributorAsync(AppName, invite);
+                        throw;
                     }
-                }).Wait();
+                }
             }
+
+            if (AppId == null)
+            {
+                await FindAppAsync();
+            }
+
+            var invite = new AddContributorDto { Role = "Owner" };
+
+            foreach (var contributor in Contributors)
+            {
+                invite.Email = contributor;
+
+                await Client.Apps.PostContributorAsync(AppId, invite);
+            }
+        }
+
+        private async Task FindAppAsync()
+        {
+            var apps = await Client.Apps.GetAppsAsync();
+
+            AppId = apps.FirstOrDefault(x => x.Name == AppName)?.Id;
         }
     }
 }

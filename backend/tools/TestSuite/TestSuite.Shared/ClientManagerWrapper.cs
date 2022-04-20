@@ -14,7 +14,7 @@ namespace TestSuite
 {
     public sealed class ClientManagerWrapper
     {
-        private static Task<ClientManagerWrapper> manager;
+        private static readonly Task<ClientManagerWrapper> Instance = CreateInternalAsync();
 
         public INotifoClient Client { get; set; }
 
@@ -35,23 +35,24 @@ namespace TestSuite
 
             ServerUrl = GetValue("config:server:url", "https://localhost:5002");
 
+            var timeout =
+                Debugger.IsAttached ?
+                    TimeSpan.FromMinutes(5) :
+                    TimeSpan.FromSeconds(10);
+
             Client =
                 NotifoClientBuilder.Create()
+                    .ReadResponseAsString(true)
                     .SetClientId(ClientId)
                     .SetClientSecret(ClientSecret)
                     .SetApiUrl(ServerUrl)
-                    .SetTimeout(Debugger.IsAttached ? TimeSpan.FromMinutes(5) : TimeSpan.FromSeconds(100))
+                    .SetTimeout(timeout)
                     .Build();
         }
 
         public static Task<ClientManagerWrapper> CreateAsync()
         {
-            if (manager == null)
-            {
-                manager = CreateInternalAsync();
-            }
-
-            return manager;
+            return Instance;
         }
 
         private static Task<ClientManagerWrapper> CreateInternalAsync()
@@ -69,7 +70,7 @@ namespace TestSuite
             {
                 Console.WriteLine("Waiting {0} seconds to access server", waitSeconds);
 
-                using (var cts = new CancellationTokenSource(waitSeconds * 1000))
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(waitSeconds)))
                 {
                     while (!cts.IsCancellationRequested)
                     {
@@ -85,6 +86,8 @@ namespace TestSuite
                         }
                     }
                 }
+
+                Console.WriteLine("Connected to server");
             }
             else
             {

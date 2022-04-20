@@ -43,7 +43,7 @@ namespace Notifo.Domain.Topics
                 IsExplicit = true
             };
 
-            if (Is.IsChanged(Name, topic.Name))
+            if (Is.Changed(Name, topic.Name))
             {
                 newTopic = newTopic with
                 {
@@ -51,7 +51,7 @@ namespace Notifo.Domain.Topics
                 };
             }
 
-            if (Is.IsChanged(Description, topic.Description))
+            if (Is.Changed(Description, topic.Description))
             {
                 newTopic = newTopic with
                 {
@@ -59,7 +59,7 @@ namespace Notifo.Domain.Topics
                 };
             }
 
-            if (Is.IsChanged(ShowAutomatically, topic.ShowAutomatically))
+            if (Is.Changed(ShowAutomatically, topic.ShowAutomatically))
             {
                 newTopic = newTopic with
                 {

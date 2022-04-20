@@ -6265,24 +6265,24 @@ export interface CreateIntegrationDto {
     /** The configured properties. */
     properties: { [key: string]: string; };
     /** True when enabled. */
-    enabled?: boolean;
+    enabled?: boolean | undefined;
     /** True when used for test events. */
     test?: boolean | undefined;
     /** The priority in which order the integrations must run. */
-    priority?: number;
+    priority?: number | undefined;
 }
 
 export interface UpdateIntegrationDto {
     /** The configured properties. */
     properties: { [key: string]: string; };
     /** True when enabled. */
-    enabled?: boolean;
+    enabled?: boolean | undefined;
     /** True when used for test events. */
     test?: boolean | undefined;
     /** The javascript condition. */
     condition?: string | undefined;
     /** The priority in which order the integrations must run. */
-    priority?: number;
+    priority?: number | undefined;
 }
 
 export interface ErrorDto {

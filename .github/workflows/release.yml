@@ -87,8 +87,10 @@ jobs:
         with:
           image: mcr.microsoft.com/dotnet/sdk:6.0
           environment: |
+            MAILCATCHER__HOST__SMTP=mailcatcher
             CONFIG__WAIT=60
             CONFIG__SERVER__URL=http://localhost:8080
+            WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher
           default_network: host
           options: --name test
           volumes: ${{ github.workspace }}:/src

@@ -37,6 +37,14 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
             Summary = true
         };
 
+        private static readonly IntegrationProperty SendAlwaysProperty = new IntegrationProperty("SendAlways", IntegrationPropertyType.Boolean)
+        {
+            EditorLabel = Texts.Webhook_SendAlwaysLabel,
+            EditorDescription = Texts.Webhook_SendAlwaysHints,
+            IsRequired = false,
+            Summary = false
+        };
+
         private static readonly IntegrationProperty SendConfirmProperty = new IntegrationProperty("SendConfirm", IntegrationPropertyType.Boolean)
         {
             EditorLabel = Texts.Webhook_SendConfirmLabel,
@@ -89,6 +97,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
                     Name = NameProperty.GetString(configured),
                     HttpUrl = url,
                     HttpMethod = httpMethod ?? "POST",
+                    SendAlways = SendAlwaysProperty.GetBoolean(configured),
                     SendConfirm = SendConfirmProperty.GetBoolean(configured)
                 };
             }

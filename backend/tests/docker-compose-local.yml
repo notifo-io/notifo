@@ -1,0 +1,21 @@
+version: '3'
+services:
+  webhhookcatcher:
+    image: tarampampam/webhook-tester
+    command: serve --port 1026
+    ports:
+      - "1026:1026"
+    networks:
+      - internal
+
+  mailcatcher:
+    image: jeanberu/mailcatcher
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    networks:
+      - internal
+    
+networks:
+  internal:
+    driver: bridge
