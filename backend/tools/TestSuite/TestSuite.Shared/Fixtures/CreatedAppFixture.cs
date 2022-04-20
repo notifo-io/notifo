@@ -46,7 +46,7 @@ namespace TestSuite.Fixtures
                     }
                 }
 
-                appId = await FindAppAsync()!;
+                appId = await FindAppAsync();
 
                 string[] contributors =
                 {
