@@ -37,19 +37,9 @@ namespace TestSuite.ApiTests
 
         public int SmtpPort { get; }
 
-        public MailcatcherClient(string apiHost, int apiPort, string smptHost, int smtpPort)
+        public MailcatcherClient(string apiHost, int apiPort, string smtpHost, int smtpPort)
         {
-            if (string.IsNullOrWhiteSpace(apiHost))
-            {
-                apiHost = "localhost";
-            }
-
-            if (string.IsNullOrWhiteSpace(smptHost))
-            {
-                smptHost = "localhost";
-            }
-
-            SmtpHost = smptHost;
+            SmtpHost = smtpHost;
             SmtpPort = smtpPort;
 
             httpClient = new HttpClient

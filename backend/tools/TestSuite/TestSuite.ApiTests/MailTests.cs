@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.SDK;
 using System.Globalization;
+using Notifo.SDK;
 using TestSuite.Fixtures;
 using TestSuite.Utils;
 using Xunit;
@@ -16,19 +16,17 @@ using Xunit;
 
 namespace TestSuite.ApiTests
 {
-    public class MailTests : IClassFixture<ClientFixture>
+    public class MailTests : IClassFixture<ClientFixture>, IClassFixture<MailcatcherFixture>
     {
         private readonly MailcatcherClient mailcatcher;
 
         public ClientFixture _ { get; }
 
-        public MailTests(ClientFixture fixture)
+        public MailTests(ClientFixture fixture, MailcatcherFixture mailcatcher)
         {
             _ = fixture;
 
-            mailcatcher = new MailcatcherClient(
-                TestHelpers.Configuration["mailcatcher:host:api"], 1080,
-                TestHelpers.Configuration["mailcatcher:host:smtp"], 1025);
+            this.mailcatcher = mailcatcher.Client;
         }
 
         [Theory]

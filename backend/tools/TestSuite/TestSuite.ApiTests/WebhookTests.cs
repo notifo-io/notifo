@@ -15,19 +15,17 @@ using Xunit;
 
 namespace TestSuite.ApiTests
 {
-    public class WebhookTests : IClassFixture<ClientFixture>
+    public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookCatcherFixture>
     {
         private readonly WebhookCatcherClient webhookCatcher;
 
         public ClientFixture _ { get; }
 
-        public WebhookTests(ClientFixture fixture)
+        public WebhookTests(ClientFixture fixture, WebhookCatcherFixture webhookCatcher)
         {
             _ = fixture;
 
-            webhookCatcher = new WebhookCatcherClient(
-                TestHelpers.Configuration["webhookcatcher:host:api"], 1026,
-                TestHelpers.Configuration["webhookcatcher:host:endpoint"], 1026);
+            this.webhookCatcher = webhookCatcher.Client;
         }
 
         [Fact]
