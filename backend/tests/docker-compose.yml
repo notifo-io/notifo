@@ -40,8 +40,6 @@ services:
       - "1080:1080"
     networks:
       - internal
-    depends_on:
-      - mongo
     
 networks:
   internal:
