@@ -13,29 +13,34 @@ namespace Notifo.Domain.Utils
 {
     public static class Is
     {
-        public static bool IsChanged([NotNullWhen(true)] string? value, string? other)
+        public static bool Changed([NotNullWhen(true)] string? value, string? other)
         {
             return value != null && !string.Equals(value, other, StringComparison.Ordinal);
         }
 
-        public static bool IsChanged<T>([NotNullWhen(true)] T[]? value, IReadOnlyList<T>? other)
+        public static bool Changed<T>([NotNullWhen(true)] T[]? value, IReadOnlyList<T>? other)
         {
             return value?.Length > 0 && !value.EqualsList(other);
         }
 
-        public static bool IsChanged([NotNullWhen(true)] LocalizedText? value, LocalizedText? other)
+        public static bool Changed([NotNullWhen(true)] LocalizedText? value, LocalizedText? other)
         {
             return value != null && !value.Equals(other);
         }
 
-        public static bool IsChanged<T>([NotNullWhen(true)] T? value, T other) where T : struct
+        public static bool Changed<T>([NotNullWhen(true)] T? value, T other) where T : struct
         {
             return value != null && !Equals(value, other);
         }
 
-        public static bool IsChanged<T>([NotNullWhen(true)] T? value, T other) where T : class
+        public static bool Changed<T>([NotNullWhen(true)] T? value, T other) where T : class
         {
             return value != null && !Equals(value, other);
+        }
+
+        public static bool Changed<T>([NotNullWhen(true)] T? value, T? other) where T : struct
+        {
+            return !Equals(value, other);
         }
     }
 }

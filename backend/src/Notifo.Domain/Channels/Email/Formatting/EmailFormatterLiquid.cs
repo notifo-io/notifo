@@ -43,9 +43,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
             this.imageFormatter = imageFormatter;
         }
 
-        public bool Accepts(EmailTemplate template)
+        public bool Accepts(string? kind)
         {
-            return string.Equals(template.Kind, "Liquid", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(kind, "Liquid", StringComparison.OrdinalIgnoreCase);
         }
 
         public ValueTask<EmailTemplate> CreateInitialAsync(string? kind = null,

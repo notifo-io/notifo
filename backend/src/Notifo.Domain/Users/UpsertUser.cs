@@ -54,7 +54,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user;
 
-            if (Is.IsChanged(FullName, user.FullName))
+            if (Is.Changed(FullName, user.FullName))
             {
                 newUser = newUser with
                 {
@@ -62,7 +62,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Is.IsChanged(EmailAddress, user.EmailAddress))
+            if (Is.Changed(EmailAddress, user.EmailAddress))
             {
                 newUser = newUser with
                 {
@@ -70,7 +70,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Is.IsChanged(PhoneNumber, user.PhoneNumber))
+            if (Is.Changed(PhoneNumber, user.PhoneNumber))
             {
                 newUser = newUser with
                 {
@@ -78,7 +78,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Is.IsChanged(Properties, user.Properties))
+            if (Is.Changed(Properties, user.Properties))
             {
                 newUser = newUser with
                 {
@@ -86,7 +86,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Is.IsChanged(PreferredLanguage, user.PreferredLanguage))
+            if (Is.Changed(PreferredLanguage, user.PreferredLanguage))
             {
                 newUser = newUser with
                 {
@@ -94,7 +94,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Is.IsChanged(PreferredTimezone, user.PreferredTimezone))
+            if (Is.Changed(PreferredTimezone, user.PreferredTimezone))
             {
                 newUser = newUser with
                 {
@@ -102,7 +102,7 @@ namespace Notifo.Domain.Users
                 };
             }
 
-            if (Is.IsChanged(RequiresWhitelistedTopics, user.RequiresWhitelistedTopics))
+            if (Is.Changed(RequiresWhitelistedTopics, user.RequiresWhitelistedTopics))
             {
                 newUser = newUser with
                 {

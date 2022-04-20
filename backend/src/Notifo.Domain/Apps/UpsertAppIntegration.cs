@@ -8,6 +8,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Integrations;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
@@ -22,11 +23,11 @@ namespace Notifo.Domain.Apps
 
         public string? Condition { get; set; }
 
-        public bool Enabled { get; set; }
+        public bool? Enabled { get; set; }
 
         public bool? Test { get; set; }
 
-        public int Priority { get; set; }
+        public int? Priority { get; set; }
 
         public ReadonlyDictionary<string, string> Properties { get; set; }
 
@@ -69,22 +70,22 @@ namespace Notifo.Domain.Apps
                 configured = new ConfiguredIntegration(Type, Properties);
             }
 
-            if (Test != configured.Test)
+            if (Is.Changed(Test, configured.Test))
             {
                 configured = configured with { Test = Test };
             }
 
-            if (Enabled != configured.Enabled)
+            if (Is.Changed(Enabled, configured.Enabled))
             {
-                configured = configured with { Enabled = Enabled };
+                configured = configured with { Enabled = Enabled.Value };
             }
 
-            if (Priority != configured.Priority)
+            if (Is.Changed(Priority, configured.Priority))
             {
-                configured = configured with { Priority = Priority };
+                configured = configured with { Priority = Priority.Value };
             }
 
-            if (Condition != configured.Condition)
+            if (Is.Changed(Condition, configured.Condition))
             {
                 configured = configured with { Condition = Condition };
             }

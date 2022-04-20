@@ -42,7 +42,7 @@ namespace Notifo.Domain.ChannelTemplates
                 };
             }
 
-            if (Is.IsChanged(Name, template.Name))
+            if (Is.Changed(Name, template.Name))
             {
                 newTemplate = newTemplate with
                 {
@@ -50,7 +50,7 @@ namespace Notifo.Domain.ChannelTemplates
                 };
             }
 
-            if (Is.IsChanged(Primary, template.Primary))
+            if (Is.Changed(Primary, template.Primary))
             {
                 newTemplate = newTemplate with
                 {

@@ -29,7 +29,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// True when enabled.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool? Enabled { get; set; }
 
         /// <summary>
         /// True when used for test events.
@@ -39,7 +39,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// <summary>
         /// The priority in which order the integrations must run.
         /// </summary>
-        public int Priority { get; set; }
+        public int? Priority { get; set; }
 
         public UpsertAppIntegration ToUpdate()
         {

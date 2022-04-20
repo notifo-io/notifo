@@ -37,6 +37,7 @@ namespace TestSuite
 
             Client =
                 NotifoClientBuilder.Create()
+                    .ReadResponseAsString(true)
                     .SetClientId(ClientId)
                     .SetClientSecret(ClientSecret)
                     .SetApiUrl(ServerUrl)

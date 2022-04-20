@@ -19,21 +19,24 @@ namespace Notifo.Domain.Channels.Email.Formatting
             this.inner = inner;
         }
 
-        public bool Accepts(EmailTemplate template)
+        public bool Accepts(string? kind)
         {
             return true;
         }
 
-        public async ValueTask<EmailTemplate> CreateInitialAsync(string? type = null,
+        public async ValueTask<EmailTemplate> CreateInitialAsync(string? kind = null,
             CancellationToken ct = default)
         {
             foreach (var formatter in inner)
             {
-                var template = await formatter.CreateInitialAsync(type, ct);
-
-                if (template != null)
+                if (formatter.Accepts(kind))
                 {
-                    return template;
+                    var template = await formatter.CreateInitialAsync(kind, ct);
+
+                    if (template != null)
+                    {
+                        return template;
+                    }
                 }
             }
 
@@ -45,7 +48,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             foreach (var formatter in inner)
             {
-                if (formatter.Accepts(input))
+                if (formatter.Accepts(input.Kind))
                 {
                     return formatter.ParseAsync(input, ct);
                 }
@@ -59,7 +62,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             foreach (var formatter in inner)
             {
-                if (formatter.Accepts(template))
+                if (formatter.Accepts(template.Kind))
                 {
                     return formatter.FormatAsync(jobs, template, app, user, noCache, ct);
                 }

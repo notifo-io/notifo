@@ -9,7 +9,7 @@ using Notifo.SDK;
 
 namespace TestSuite.Fixtures
 {
-    public class ClientFixture : IDisposable
+    public class ClientFixture
     {
         public ClientManagerWrapper Notifo { get; }
 
@@ -26,11 +26,6 @@ namespace TestSuite.Fixtures
         public ClientFixture()
         {
             Notifo = ClientManagerWrapper.CreateAsync().Result;
-        }
-
-        public virtual void Dispose()
-        {
-            GC.SuppressFinalize(this);
         }
     }
 }
