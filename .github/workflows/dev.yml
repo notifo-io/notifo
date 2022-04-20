@@ -163,5 +163,5 @@ jobs:
       - name: Push Tags
         if: github.event_name != 'pull_request'
         run: |
-          docker push notifo/notifo:dev
-          docker push notifo/notifo:dev-${{ env.BUILD_NUMBER }}
+          docker push squidex/notifo:dev
+          docker push squidex/notifo:dev-${{ env.BUILD_NUMBER }}
