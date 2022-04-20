@@ -7,14 +7,14 @@
     <Company>Squidex UG (haftungsbeschränkt)</Company>
     <Copyright>MIT</Copyright>
     <Description>ClientLibrary for Notifo</Description>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<LangVersion>10.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>10.0</LangVersion>
     <PackageTags>Notifo System</PackageTags>
     <PackageIcon>logo-squared.png</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://notifo.io</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
