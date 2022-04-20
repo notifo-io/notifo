@@ -11,22 +11,24 @@ namespace TestSuite.Fixtures
 {
     public class CreatedAppFixture : ClientFixture
     {
-        private static readonly string[] Contributors =
-        {
-            "hello@squidex.io"
-        };
-
-        public string AppId { get; set; }
+        public string AppId { get; private set; }
 
         public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
 
-            if (AppId == null)
+            AppId = await Factories.CreateAsync(nameof(AppName), async () =>
             {
+                var appId = await FindAppAsync();
+
+                if (appId != null)
+                {
+                    return appId;
+                }
+
                 try
                 {
-                    var app = await Client.Apps.PostAppAsync(new UpsertAppDto
+                    await Client.Apps.PostAppAsync(new UpsertAppDto
                     {
                         Name = AppName,
                         Languages = new[]
@@ -35,8 +37,6 @@ namespace TestSuite.Fixtures
                             "de"
                         }
                     });
-
-                    AppId = app.Id;
                 }
                 catch (NotifoException ex)
                 {
@@ -45,28 +45,32 @@ namespace TestSuite.Fixtures
                         throw;
                     }
                 }
-            }
 
-            if (AppId == null)
-            {
-                await FindAppAsync();
-            }
+                appId = await FindAppAsync()!;
 
-            var invite = new AddContributorDto { Role = "Owner" };
+                string[] contributors =
+                {
+                    "hello@squidex.io"
+                };
 
-            foreach (var contributor in Contributors)
-            {
-                invite.Email = contributor;
+                var invite = new AddContributorDto { Role = "Owner" };
 
-                await Client.Apps.PostContributorAsync(AppId, invite);
-            }
+                foreach (var contributor in contributors)
+                {
+                    invite.Email = contributor;
+
+                    await Client.Apps.PostContributorAsync(appId, invite);
+                }
+
+                return appId;
+            });
         }
 
-        private async Task FindAppAsync()
+        private async Task<string> FindAppAsync()
         {
             var apps = await Client.Apps.GetAppsAsync();
 
-            AppId = apps.FirstOrDefault(x => x.Name == AppName)?.Id;
+            return apps.FirstOrDefault(x => x.Name == AppName)?.Id;
         }
     }
 }

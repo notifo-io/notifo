@@ -26,7 +26,14 @@ namespace TestSuite.Fixtures
 
         public virtual async Task InitializeAsync()
         {
-            Notifo = await ClientManagerWrapper.CreateAsync();
+            Notifo = await Factories.CreateAsync(nameof(ClientManagerWrapper), async () =>
+            {
+                var clientManager = new ClientManagerWrapper();
+
+                await clientManager.ConnectAsync();
+
+                return clientManager;
+            });
         }
 
         public virtual Task DisposeAsync()

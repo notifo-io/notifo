@@ -14,8 +14,6 @@ namespace TestSuite
 {
     public sealed class ClientManagerWrapper
     {
-        private static readonly Task<ClientManagerWrapper> Instance = CreateInternalAsync();
-
         public INotifoClient Client { get; set; }
 
         public string AppName { get; }
@@ -28,12 +26,12 @@ namespace TestSuite
 
         public ClientManagerWrapper()
         {
-            AppName = GetValue("config:app:name", "integration-tests");
+            AppName = TestHelpers.GetAndPrintValue("config:app:name", "integration-tests");
 
-            ClientId = GetValue("config:client:id", "root");
-            ClientSecret = GetValue("config:client:secret", "xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=");
+            ClientId = TestHelpers.GetAndPrintValue("config:client:id", "root");
+            ClientSecret = TestHelpers.GetAndPrintValue("config:client:secret", "xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=");
 
-            ServerUrl = GetValue("config:server:url", "https://localhost:5002");
+            ServerUrl = TestHelpers.GetAndPrintValue("config:server:url", "https://localhost:5002");
 
             var timeout =
                 Debugger.IsAttached ?
@@ -50,19 +48,7 @@ namespace TestSuite
                     .Build();
         }
 
-        public static Task<ClientManagerWrapper> CreateAsync()
-        {
-            return Instance;
-        }
-
-        private static Task<ClientManagerWrapper> CreateInternalAsync()
-        {
-            var clientManager = new ClientManagerWrapper();
-
-            return clientManager.ConnectAsync();
-        }
-
-        public async Task<ClientManagerWrapper> ConnectAsync()
+        public async Task ConnectAsync()
         {
             var waitSeconds = TestHelpers.Configuration.GetValue<int>("config:wait");
 
@@ -93,24 +79,6 @@ namespace TestSuite
             {
                 Console.WriteLine("Waiting for server is skipped.");
             }
-
-            return this;
-        }
-
-        private static string GetValue(string name, string fallback)
-        {
-            var value = TestHelpers.Configuration[name];
-
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                value = fallback;
-            }
-            else
-            {
-                Console.WriteLine("Using: {0}={1}", name, value);
-            }
-
-            return value;
         }
     }
 }
