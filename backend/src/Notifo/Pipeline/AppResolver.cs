@@ -27,9 +27,19 @@ namespace Notifo.Pipeline
 
             if (appPermission != null && appPermission.RequiredAppRoles.Length > 0)
             {
-                var appId = context.RouteData.Values["appId"]?.ToString();
+                string? appId;
 
-                if (string.IsNullOrWhiteSpace(appId))
+                if (context.RouteData.Values.TryGetValue("appId", out var appIdValue))
+                {
+                    appId = appIdValue?.ToString();
+
+                    if (string.IsNullOrWhiteSpace(appId))
+                    {
+                        context.Result = new NotFoundResult();
+                        return;
+                    }
+                }
+                else
                 {
                     appId = context.HttpContext.User.AppId();
                 }
