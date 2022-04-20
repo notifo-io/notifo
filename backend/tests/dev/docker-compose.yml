@@ -1,7 +1,7 @@
 version: '3'
 services:
   resizer:
-    image: squidex/resizer:dev-2
+    image: squidex/resizer:dev-40
     ports:
       - "8081:80"
     networks:

@@ -117,7 +117,7 @@ jobs:
         if: failure()
         uses: jwalton/gh-docker-logs@v1
         with:
-         images: 'notifo-tmp'
+         images: 'notifo-tmp,squidex/resizer'
          tail: '100'
 
       - name: Cleanup Test
