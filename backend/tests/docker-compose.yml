@@ -16,10 +16,8 @@ services:
       - ASSETS__RESIZERURL=http://resizer:8081
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
-      - MAILCATCHER__HOST=mailcatcher
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
-      - WEBHOOKCATCHER__HOST=webhookcatcher
     networks:
       - internal
     depends_on:
@@ -46,6 +44,7 @@ services:
     image: jeanberu/mailcatcher
     ports:
       - "1025:1025"
+      - "1080:1080"
     networks:
       - internal
     
