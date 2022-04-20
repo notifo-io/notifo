@@ -36,9 +36,9 @@ services:
 
   webhhookcatcher:
     image: tarampampam/webhook-tester
-    command: serve --port 8080
+    command: serve --port 1026
     ports:
-      - "8080:8080"
+      - "1026:1026"
     networks:
       - internal
 

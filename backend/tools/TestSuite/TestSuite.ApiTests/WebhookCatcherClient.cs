@@ -43,7 +43,7 @@ namespace TestSuite.ApiTests
 
             httpClient = new HttpClient
             {
-                BaseAddress = new Uri($"http://{host}:8080")
+                BaseAddress = new Uri($"http://{host}:1026")
             };
             Host = host;
         }
