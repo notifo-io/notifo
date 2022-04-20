@@ -13,7 +13,7 @@ services:
       - "8080:80"
     environment:
       - URLS__BASEURL=http://localhost:8080
-      - ASSETS__RESIZERURL=http://resizer:8081
+      - ASSETS__RESIZERURL=http://resizer
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
@@ -29,8 +29,6 @@ services:
       - "8081:80"
     networks:
       - internal
-    depends_on:
-      - mongo
 
   webhookcatcher:
     image: tarampampam/webhook-tester

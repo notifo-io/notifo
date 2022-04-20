@@ -1,5 +1,12 @@
 version: '3'
 services:
+  resizer:
+    image: squidex/resizer:dev-2
+    ports:
+      - "8081:80"
+    networks:
+      - internal
+
   webhhookcatcher:
     image: tarampampam/webhook-tester
     command: serve --port 1026
