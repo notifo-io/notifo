@@ -146,7 +146,6 @@ namespace Notifo.Domain.Integrations
         {
             Guard.NotNullOrEmpty(id);
             Guard.NotNull(app);
-            Guard.NotNull(target);
 
             foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
             {

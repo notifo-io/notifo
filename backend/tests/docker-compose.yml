@@ -19,6 +19,7 @@ services:
       - MAILCATCHER__HOST=mailcatcher
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
+      - WEBHOOKCATCHER__HOST=webhookcatcher
     networks:
       - internal
     depends_on:
@@ -33,11 +34,18 @@ services:
     depends_on:
       - mongo
 
+  webhhookcatcher:
+    image: tarampampam/webhook-tester
+    command: serve --port 8080
+    ports:
+      - "8080:8080"
+    networks:
+      - internal
+
   mailcatcher:
     image: jeanberu/mailcatcher
     ports:
       - "1025:1025"
-      - "1080:1080"
     networks:
       - internal
     

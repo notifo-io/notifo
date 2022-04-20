@@ -270,6 +270,12 @@
   <data name="Webhook_NameLabel" xml:space="preserve">
     <value>Name</value>
   </data>
+  <data name="Webhook_SendAlwaysHints" xml:space="preserve">
+    <value>Use this webhook for all notifications.</value>
+  </data>
+  <data name="Webhook_SendAlwaysLabel" xml:space="preserve">
+    <value>Send always</value>
+  </data>
   <data name="Webhook_SendConfirmHints" xml:space="preserve">
     <value>Send confirmed notifications to this webhook.</value>
   </data>

@@ -520,6 +520,24 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Use this webhook for all notifications..
+        /// </summary>
+        internal static string Webhook_SendAlwaysHints {
+            get {
+                return ResourceManager.GetString("Webhook_SendAlwaysHints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send always.
+        /// </summary>
+        internal static string Webhook_SendAlwaysLabel {
+            get {
+                return ResourceManager.GetString("Webhook_SendAlwaysLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Send confirmed notifications to this webhook..
         /// </summary>
         internal static string Webhook_SendConfirmHints {

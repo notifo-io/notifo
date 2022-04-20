@@ -62,7 +62,7 @@ namespace Notifo.Domain.Channels.Webhook
         {
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App);
+                var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App, notification);
 
                 // The webhook must match the name or the conditions.
                 if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))

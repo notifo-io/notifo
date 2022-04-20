@@ -16,10 +16,14 @@ namespace TestSuite.Fixtures
             "hello@squidex.io"
         };
 
-        public static string AppId { get; set; }
+        private static string appId;
+
+        public string AppId { get; set; }
 
         public CreatedAppFixture()
         {
+            AppId = appId;
+
             if (AppId == null)
             {
                 Task.Run(async () =>
@@ -66,6 +70,8 @@ namespace TestSuite.Fixtures
                     }
                 }).Wait();
             }
+
+            appId = AppId;
         }
     }
 }
