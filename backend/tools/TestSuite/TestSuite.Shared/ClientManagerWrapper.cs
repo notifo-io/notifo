@@ -14,7 +14,7 @@ namespace TestSuite
 {
     public sealed class ClientManagerWrapper
     {
-        private static Task<ClientManagerWrapper> manager;
+        private static readonly Task<ClientManagerWrapper> Instance = CreateInternalAsync();
 
         public INotifoClient Client { get; set; }
 
@@ -52,9 +52,7 @@ namespace TestSuite
 
         public static Task<ClientManagerWrapper> CreateAsync()
         {
-            manager ??= CreateInternalAsync();
-
-            return manager;
+            return Instance;
         }
 
         private static Task<ClientManagerWrapper> CreateInternalAsync()
