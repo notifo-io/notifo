@@ -57,7 +57,7 @@ namespace TestSuite.ApiTests
 
             var responseObj = await response.Content.ReadFromJsonAsync<WebhookSession>(cancellationToken: ct);
 
-            return ($"http://{Host}:8080/{responseObj.Uuid}", responseObj.Uuid);
+            return ($"http://{Host}:1026/{responseObj.Uuid}", responseObj.Uuid);
         }
 
         public async Task<WebhookRequest[]> GetRequestsAsync(string sessionId,
