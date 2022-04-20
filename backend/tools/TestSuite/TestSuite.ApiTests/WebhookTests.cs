@@ -25,7 +25,9 @@ namespace TestSuite.ApiTests
         {
             _ = fixture;
 
-            webhookCatcher = new WebhookCatcherClient(TestHelpers.Configuration["webhookcatcher:host"]);
+            webhookCatcher = new WebhookCatcherClient(
+                TestHelpers.Configuration["webhookcatcher:host:api"], 1026,
+                TestHelpers.Configuration["webhookcatcher:host:endpoint"], 1026);
         }
 
         [Fact]

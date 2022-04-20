@@ -33,20 +33,29 @@ namespace TestSuite.ApiTests
     {
         private readonly HttpClient httpClient;
 
-        public string Host { get; }
+        public string SmtpHost { get; }
 
-        public MailcatcherClient(string host)
+        public int SmtpPort { get; }
+
+        public MailcatcherClient(string apiHost, int apiPort, string smptHost, int smtpPort)
         {
-            if (string.IsNullOrWhiteSpace(host))
+            if (string.IsNullOrWhiteSpace(apiHost))
             {
-                host = "localhost";
+                apiHost = "localhost";
             }
+
+            if (string.IsNullOrWhiteSpace(smptHost))
+            {
+                smptHost = "localhost";
+            }
+
+            SmtpHost = smptHost;
+            SmtpPort = smtpPort;
 
             httpClient = new HttpClient
             {
-                BaseAddress = new Uri($"http://{host}:1080")
+                BaseAddress = new Uri($"http://{apiHost}:{apiPort}")
             };
-            Host = host;
         }
 
         public Task<ReceivedEmail[]> GetMessagesAsync(

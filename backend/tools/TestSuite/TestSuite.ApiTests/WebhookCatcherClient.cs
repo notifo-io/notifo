@@ -32,20 +32,29 @@ namespace TestSuite.ApiTests
     {
         private readonly HttpClient httpClient;
 
-        public string Host { get; }
+        public string EndpointHost { get; }
 
-        public WebhookCatcherClient(string host)
+        public int EndpointPort { get; }
+
+        public WebhookCatcherClient(string apiHost, int apiPort, string endpointHost, int endpointPort)
         {
-            if (string.IsNullOrWhiteSpace(host))
+            if (string.IsNullOrWhiteSpace(apiHost))
             {
-                host = "localhost";
+                apiHost = "localhost";
             }
+
+            if (string.IsNullOrWhiteSpace(endpointHost))
+            {
+                endpointHost = "localhost";
+            }
+
+            EndpointHost = endpointHost;
+            EndpointPort = endpointPort;
 
             httpClient = new HttpClient
             {
-                BaseAddress = new Uri($"http://{host}:1026")
+                BaseAddress = new Uri($"http://{apiHost}:{apiPort}")
             };
-            Host = host;
         }
 
         public async Task<(string, string)> CreateSessionAsync(
@@ -57,7 +66,7 @@ namespace TestSuite.ApiTests
 
             var responseObj = await response.Content.ReadFromJsonAsync<WebhookSession>(cancellationToken: ct);
 
-            return ($"http://{Host}:1026/{responseObj.Uuid}", responseObj.Uuid);
+            return ($"http://{EndpointHost}:{EndpointPort}/{responseObj.Uuid}", responseObj.Uuid);
         }
 
         public async Task<WebhookRequest[]> GetRequestsAsync(string sessionId,

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.SDK;
+using System.Globalization;
 using TestSuite.Fixtures;
 using TestSuite.Utils;
 using Xunit;
@@ -25,7 +26,9 @@ namespace TestSuite.ApiTests
         {
             _ = fixture;
 
-            mailcatcher = new MailcatcherClient(TestHelpers.Configuration["mailcatcher:host"]);
+            mailcatcher = new MailcatcherClient(
+                TestHelpers.Configuration["mailcatcher:host:api"], 1080,
+                TestHelpers.Configuration["mailcatcher:host:smtp"], 1025);
         }
 
         [Theory]
@@ -59,10 +62,10 @@ namespace TestSuite.ApiTests
                 Type = "SMTP",
                 Properties = new Dictionary<string, string>
                 {
-                    ["host"] = mailcatcher.Host,
+                    ["host"] = mailcatcher.SmtpHost,
                     ["fromEmail"] = "hello@notifo.io",
                     ["fromName"] = "Hello Notifo",
-                    ["port"] = "1025"
+                    ["port"] = mailcatcher.SmtpPort.ToString(CultureInfo.InvariantCulture)
                 },
                 Enabled = true
             };
@@ -158,10 +161,10 @@ namespace TestSuite.ApiTests
                 Type = "SMTP",
                 Properties = new Dictionary<string, string>
                 {
-                    ["host"] = mailcatcher.Host,
+                    ["host"] = mailcatcher.SmtpHost,
                     ["fromEmail"] = "hello@notifo.io",
                     ["fromName"] = "Hello Notifo",
-                    ["port"] = "1025"
+                    ["port"] = mailcatcher.SmtpPort.ToString(CultureInfo.InvariantCulture)
                 },
                 Enabled = true
             };
