@@ -9,16 +9,11 @@ namespace TestSuite
 {
     public static class ClientManagerFactory
     {
-        private static Task<ClientManagerWrapper> manager;
+        private static readonly Task<ClientManagerWrapper> Instance = CreateInternalAsync();
 
         public static Task<ClientManagerWrapper> CreateAsync()
         {
-            if (manager == null)
-            {
-                manager = CreateInternalAsync();
-            }
-
-            return manager;
+            return Instance;
         }
 
         private static async Task<ClientManagerWrapper> CreateInternalAsync()

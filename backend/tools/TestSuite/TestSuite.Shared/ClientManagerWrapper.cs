@@ -52,10 +52,7 @@ namespace TestSuite
 
         public static Task<ClientManagerWrapper> CreateAsync()
         {
-            if (manager == null)
-            {
-                manager = CreateInternalAsync();
-            }
+            manager ??= CreateInternalAsync();
 
             return manager;
         }
@@ -75,7 +72,7 @@ namespace TestSuite
             {
                 Console.WriteLine("Waiting {0} seconds to access server", waitSeconds);
 
-                using (var cts = new CancellationTokenSource(waitSeconds * 1000))
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(waitSeconds)))
                 {
                     while (!cts.IsCancellationRequested)
                     {
@@ -91,6 +88,8 @@ namespace TestSuite
                         }
                     }
                 }
+
+                Console.WriteLine("Connected to server");
             }
             else
             {

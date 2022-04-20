@@ -6,12 +6,13 @@
 // ==========================================================================
 
 using Notifo.SDK;
+using Xunit;
 
 namespace TestSuite.Fixtures
 {
-    public class ClientFixture
+    public class ClientFixture : IAsyncLifetime
     {
-        public ClientManagerWrapper Notifo { get; }
+        public ClientManagerWrapper Notifo { get; private set; }
 
         public string AppName => Notifo.AppName;
 
@@ -23,9 +24,14 @@ namespace TestSuite.Fixtures
 
         public INotifoClient Client => Notifo.Client;
 
-        public ClientFixture()
+        public virtual async Task InitializeAsync()
         {
-            Notifo = ClientManagerWrapper.CreateAsync().Result;
+            Notifo = await ClientManagerWrapper.CreateAsync();
+        }
+
+        public virtual Task DisposeAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }
