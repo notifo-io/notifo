@@ -46,8 +46,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// <summary>
         /// The tracking token.
         /// </summary>
-        [Required]
-        public string TrackingToken { get; set; }
+        public string? TrackingToken { get; set; }
 
         /// <summary>
         /// The optional body text.
