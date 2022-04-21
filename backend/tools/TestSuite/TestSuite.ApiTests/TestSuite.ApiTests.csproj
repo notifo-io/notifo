@@ -14,6 +14,7 @@
     <None Remove="Assets\SampleImage_WEBP_350kb - Copy.webp" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MessageBird" Version="3.2.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="1.0.701">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
