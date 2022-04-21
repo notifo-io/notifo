@@ -42,11 +42,11 @@ namespace TestSuite.ApiTests
             var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
 
 
-            // STEP 1: Start session
+            // STEP 1: Start webhook session
             var (url, sessionId) = await webhookCatcher.CreateSessionAsync();
 
 
-            // STEP 1: Create integration
+            // STEP 2: Create integration
             var emailIntegrationRequest = new CreateIntegrationDto
             {
                 Type = "Webhook",
