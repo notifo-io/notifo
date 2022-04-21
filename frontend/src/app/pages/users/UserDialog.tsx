@@ -37,22 +37,22 @@ export const UserDialog = (props: UserDialogProps) => {
     const [dialogUser, setDialogUser] = React.useState(props.user);
     const [dialogTab, setDialogTab] = React.useState(0);
     const [wasUpserting, setWasUpserting] = React.useState(false);
+    const dialogUserId = dialogUser?.id;
 
     React.useEffect(() => {
-        async function loadData() {
+        async function loadData(id: string) {
             try {
-                const newUser = await Clients.Users.getUser(appId, dialogUser!.id);
+                const newUser = await Clients.Users.getUser(appId, id);
 
                 setDialogUser(newUser);
             } catch {
-                setDialogUser(dialogUser);
             }
         }
 
-        if (dialogUser) {
-            loadData();
+        if (dialogUserId) {
+            loadData(dialogUserId);
         }
-    }, [appId, dialogUser]);
+    }, [appId, dialogUserId]);
 
     React.useEffect(() => {
         if (upserting) {
