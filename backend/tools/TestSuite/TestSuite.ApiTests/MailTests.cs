@@ -117,6 +117,7 @@ namespace TestSuite.ApiTests
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
 
+            // Get email status
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
             {
                 while (!cts.IsCancellationRequested)

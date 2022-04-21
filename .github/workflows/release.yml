@@ -88,6 +88,7 @@ jobs:
           image: mcr.microsoft.com/dotnet/sdk:6.0
           environment: |
             MAILCATCHER__HOST__SMTP=mailcatcher
+            MESSAGEBIRD__ACCESSKEY=${{ secrets.MESSAGEBIRD__ACCESSKEY }}
             CONFIG__WAIT=60
             CONFIG__SERVER__URL=http://localhost:8080
             WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher

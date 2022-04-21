@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MessageBird;
+using MessageBird.Objects;
 using Notifo.SDK;
 using TestSuite.Fixtures;
 using TestSuite.Utils;
@@ -15,22 +17,23 @@ using Xunit;
 
 namespace TestSuite.ApiTests
 {
-    public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookCatcherFixture>
+    public class SmsTests : IClassFixture<ClientFixture>
     {
-        private readonly WebhookCatcherClient webhookCatcher;
-
         public ClientFixture _ { get; }
 
-        public WebhookTests(ClientFixture fixture, WebhookCatcherFixture webhookCatcher)
+        public SmsTests(ClientFixture fixture)
         {
             _ = fixture;
-
-            this.webhookCatcher = webhookCatcher.Client;
         }
 
         [Fact]
-        public async Task Should_send_webhook()
+        public async Task Should_send_SMS()
         {
+            var phoneNumber = "00436703091161";
+
+            var accessKey = TestHelpers.GetAndPrintValue("messagebird:accessKey", "invalid");
+
+
             var appName = Guid.NewGuid().ToString();
 
             // STEP 0: Create app
@@ -42,19 +45,23 @@ namespace TestSuite.ApiTests
             var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
 
 
-            // STEP 1: Start webhook session
-            var (url, sessionId) = await webhookCatcher.CreateSessionAsync();
+            // STEP 1: Create sms template.
+            var smsTemplateRequest = new CreateChannelTemplateDto
+            {
+            };
+
+            await _.Client.SmsTemplates.PostTemplateAsync(app_0.Id, smsTemplateRequest);
 
 
             // STEP 2: Create integration
             var emailIntegrationRequest = new CreateIntegrationDto
             {
-                Type = "Webhook",
+                Type = "MessageBird",
                 Properties = new Dictionary<string, string>
                 {
-                    ["Url"] = url,
-                    ["SendAlways"] = "true",
-                    ["SendConfirm"] = "true"
+                    ["accessKey"] = accessKey,
+                    ["phoneNumber"] = phoneNumber,
+                    ["phoneNumbers"] = string.Empty
                 },
                 Enabled = true
             };
@@ -67,7 +74,10 @@ namespace TestSuite.ApiTests
             {
                 Requests = new List<UpsertUserDto>
                 {
-                    new UpsertUserDto()
+                    new UpsertUserDto
+                    {
+                        PhoneNumber = phoneNumber
+                    }
                 }
             };
 
@@ -75,7 +85,7 @@ namespace TestSuite.ApiTests
             var user_0 = users_0.First();
 
 
-            // STEP 4: Send webhook
+            // STEP 4: Send SMS
             var subjectId = Guid.NewGuid().ToString();
 
             var publishRequest = new PublishManyDto
@@ -94,7 +104,7 @@ namespace TestSuite.ApiTests
                         },
                         Settings = new Dictionary<string, ChannelSettingDto>
                         {
-                            [Providers.WebHook] = new ChannelSettingDto
+                            [Providers.Sms] = new ChannelSettingDto
                             {
                                 Send = ChannelSend.Send
                             }
@@ -106,10 +116,25 @@ namespace TestSuite.ApiTests
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
 
-            // Get webhook status
-            var requests = await webhookCatcher.WaitForRequestsAsync(sessionId, TimeSpan.FromSeconds(30));
+            // Get SMS status
+            var messageBird = Client.CreateDefault(accessKey);
 
-            Assert.Contains(requests, x => x.Method == "POST" && x.Content.Contains(subjectId, StringComparison.OrdinalIgnoreCase));
+            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+            {
+                while (!cts.IsCancellationRequested)
+                {
+                    var messages = messageBird.ListMessages(string.Empty, 200);
+
+                    if (messages.Items.Any(x => x.Body.Contains(subjectId, StringComparison.OrdinalIgnoreCase) && x.Recipients.Items[0].Status == Recipient.RecipientStatus.Delivered))
+                    {
+                        return;
+                    }
+
+                    await Task.Delay(1000);
+                }
+            }
+
+            Assert.False(true, "SMS not sent.");
         }
     }
 }

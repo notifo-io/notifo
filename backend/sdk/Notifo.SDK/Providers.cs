@@ -23,6 +23,11 @@ namespace Notifo.SDK
         public static readonly string MobilePush = "mobilepush";
 
         /// <summary>
+        /// The name of the Sms provider.
+        /// </summary>
+        public static readonly string Sms = "sms";
+
+        /// <summary>
         /// The name of the WebHook provider.
         /// </summary>
         public static readonly string WebHook = "webhook";
