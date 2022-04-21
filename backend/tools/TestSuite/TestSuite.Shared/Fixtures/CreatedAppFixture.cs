@@ -31,7 +31,7 @@ namespace TestSuite.Fixtures
                     await Client.Apps.PostAppAsync(new UpsertAppDto
                     {
                         Name = AppName,
-                        Languages = new[]
+                        Languages = new List<string>
                         {
                             "en",
                             "de"

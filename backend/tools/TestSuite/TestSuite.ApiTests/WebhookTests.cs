@@ -72,6 +72,7 @@ namespace TestSuite.ApiTests
             };
 
             var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+            var user_0 = users_0.First();
 
 
             // STEP 4: Send email
@@ -83,7 +84,7 @@ namespace TestSuite.ApiTests
                 {
                     new PublishDto
                     {
-                        Topic = $"users/{users_0.First().Id}",
+                        Topic = $"users/{user_0.Id}",
                         Preformatted = new NotificationFormattingDto
                         {
                             Subject = new LocalizedText
@@ -104,22 +105,8 @@ namespace TestSuite.ApiTests
 
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
-            WebhookRequest[] requests = null;
 
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
-            {
-                while (!cts.IsCancellationRequested)
-                {
-                    requests = await webhookCatcher.GetRequestsAsync(sessionId, cts.Token);
-
-                    if (requests.Length > 0)
-                    {
-                        break;
-                    }
-
-                    await Task.Delay(50, cts.Token);
-                }
-            }
+            var requests = await webhookCatcher.WaitForRequestsAsync(sessionId, TimeSpan.FromSeconds(30));
 
             Assert.Contains(requests, x => x.Method == "POST" && x.Content.Contains(subjectId, StringComparison.OrdinalIgnoreCase));
         }

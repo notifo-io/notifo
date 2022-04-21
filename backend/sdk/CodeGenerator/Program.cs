@@ -36,9 +36,15 @@ namespace CodeGenerator
                 UseBaseUrl = true
             };
 
+            generatorSettings.CSharpGeneratorSettings.ExcludedTypeNames = new[] { "JsonInheritanceConverter" };
+            generatorSettings.CSharpGeneratorSettings.ArrayBaseType = "System.Collections.Generic.List";
+            generatorSettings.CSharpGeneratorSettings.ArrayInstanceType = "System.Collections.Generic.List";
+            generatorSettings.CSharpGeneratorSettings.ArrayType = "System.Collections.Generic.List";
+            generatorSettings.CSharpGeneratorSettings.DictionaryBaseType = "System.Collections.Generic.Dictionary";
+            generatorSettings.CSharpGeneratorSettings.DictionaryInstanceType = "System.Collections.Generic.Dictionary";
+            generatorSettings.CSharpGeneratorSettings.DictionaryType = "System.Collections.Generic.Dictionary";
             generatorSettings.CSharpGeneratorSettings.Namespace = "Notifo.SDK";
             generatorSettings.CSharpGeneratorSettings.RequiredPropertiesMustBeDefined = false;
-            generatorSettings.CSharpGeneratorSettings.ExcludedTypeNames = new[] { "JsonInheritanceConverter" };
 
             var codeGenerator = new CSharpClientGenerator(document, generatorSettings);
 

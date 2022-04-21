@@ -8,7 +8,6 @@
 using System.Globalization;
 using Notifo.SDK;
 using TestSuite.Fixtures;
-using TestSuite.Utils;
 using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
@@ -84,6 +83,7 @@ namespace TestSuite.ApiTests
             };
 
             var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+            var user_0 = users_0.First();
 
 
             // STEP 4: Send email
@@ -95,7 +95,7 @@ namespace TestSuite.ApiTests
                 {
                     new PublishDto
                     {
-                        Topic = $"users/{users_0.First().Id}",
+                        Topic = $"users/{user_0.Id}",
                         Preformatted = new NotificationFormattingDto
                         {
                             Subject = new LocalizedText
@@ -115,6 +115,7 @@ namespace TestSuite.ApiTests
             };
 
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
+
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
             {
@@ -183,6 +184,7 @@ namespace TestSuite.ApiTests
             };
 
             var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+            var user_0 = users_0.First();
 
 
             // STEP 3: Send email
@@ -194,7 +196,7 @@ namespace TestSuite.ApiTests
                 {
                     new PublishDto
                     {
-                        Topic = $"users/{users_0.First().Id}",
+                        Topic = $"users/{user_0.Id}",
                         Preformatted = new NotificationFormattingDto
                         {
                             Subject = new LocalizedText
@@ -215,25 +217,10 @@ namespace TestSuite.ApiTests
 
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
-            ListResponseDtoOfLogEntryDto logs = null;
 
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30)))
-            {
-                while (!cts.IsCancellationRequested)
-                {
-                    logs = await _.Client.Logs.GetLogsAsync(app_0.Id, cancellationToken: cts.Token);
+            var logs = await _.Client.Logs.WaitForLogEntriesAsync(app_0.Id, null, TimeSpan.FromSeconds(30));
 
-                    if (logs.Total > 0)
-                    {
-                        return;
-                    }
-
-                    await Task.Delay(50);
-                }
-            }
-
-            Assert.NotNull(logs);
-            Assert.Contains(logs.Items, x => x.Message.Contains("Template not found", StringComparison.OrdinalIgnoreCase));
+            Assert.Contains(logs, x => x.Message.Contains("Template not found", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

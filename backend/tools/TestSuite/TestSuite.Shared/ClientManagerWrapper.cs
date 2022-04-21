@@ -33,19 +33,34 @@ namespace TestSuite
 
             ServerUrl = TestHelpers.GetAndPrintValue("config:server:url", "https://localhost:5002");
 
-            var timeout =
-                Debugger.IsAttached ?
-                    TimeSpan.FromMinutes(5) :
-                    TimeSpan.FromSeconds(10);
-
             Client =
                 NotifoClientBuilder.Create()
                     .ReadResponseAsString(true)
                     .SetClientId(ClientId)
                     .SetClientSecret(ClientSecret)
                     .SetApiUrl(ServerUrl)
-                    .SetTimeout(timeout)
+                    .SetTimeout(Timeout())
                     .Build();
+        }
+
+        public INotifoClient CreateUserClient(UserDto user)
+        {
+            var userClient =
+                NotifoClientBuilder.Create()
+                    .ReadResponseAsString(true)
+                    .SetApiKey(user.ApiKey)
+                    .SetApiUrl(ServerUrl)
+                    .SetTimeout(Timeout())
+                    .Build();
+
+            return userClient;
+        }
+
+        private static TimeSpan Timeout()
+        {
+            return Debugger.IsAttached ?
+                TimeSpan.FromMinutes(5) :
+                TimeSpan.FromSeconds(10);
         }
 
         public async Task ConnectAsync()

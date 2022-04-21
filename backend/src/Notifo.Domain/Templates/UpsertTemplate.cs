@@ -16,7 +16,7 @@ namespace Notifo.Domain.Templates
 
         public ChannelSettings? Settings { get; set; }
 
-        public bool CanCreate => false;
+        public bool CanCreate => true;
 
         public ValueTask<Template?> ExecuteAsync(Template target, IServiceProvider serviceProvider, CancellationToken ct)
         {

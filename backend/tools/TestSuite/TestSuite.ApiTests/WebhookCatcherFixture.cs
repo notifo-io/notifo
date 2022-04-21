@@ -15,25 +15,9 @@ namespace TestSuite.ApiTests
 
         public WebhookCatcherFixture()
         {
-            var apiHost = TestHelpers.Configuration["webhookcatcher:host:api"];
-            var apiPort = 1026;
-
-            if (string.IsNullOrWhiteSpace(apiHost))
-            {
-                apiHost = "localhost";
-            }
-
-            var endpointHost = TestHelpers.Configuration["webhookcatcher:host:endpoint"];
-            var endpointPort = 1026;
-
-            if (string.IsNullOrWhiteSpace(endpointHost))
-            {
-                endpointHost = "localhost";
-            }
-
-            Console.WriteLine("Using Webhookcatcher with Host {0}:{1} and Smtp Host {2}:{3}", apiHost, apiPort, endpointHost, endpointPort);
-
-            Client = new WebhookCatcherClient(apiHost, apiPort, endpointHost, endpointPort);
+            Client = new WebhookCatcherClient(
+                TestHelpers.GetAndPrintValue("webhookcatcher:host:api", "localhost"), 1026,
+                TestHelpers.GetAndPrintValue("webhookcatcher:host:endpoint", "localhost"), 1026);
         }
     }
 }
