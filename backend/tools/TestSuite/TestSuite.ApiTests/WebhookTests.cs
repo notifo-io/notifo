@@ -42,7 +42,7 @@ namespace TestSuite.ApiTests
             var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
 
 
-            // STEP 1: Start session
+            // STEP 1: Start webhook session
             var (url, sessionId) = await webhookCatcher.CreateSessionAsync();
 
 
