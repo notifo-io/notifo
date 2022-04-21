@@ -130,10 +130,10 @@
     <value>You cannot update yourself.</value>
   </data>
   <data name="ChannelTemplate_LanguageNotFound" xml:space="preserve">
-    <value>Cannot find language {0} in template {1}.</value>
+    <value>Cannot find language {0} in template '{1}'.</value>
   </data>
   <data name="ChannelTemplate_NotFound" xml:space="preserve">
-    <value>Cannot find template {0}.</value>
+    <value>Cannot find template '{0}'.</value>
   </data>
   <data name="ChannelTemplate_ResolvedWithFallback" xml:space="preserve">
     <value>Cannot find named template {0}, falling back to primary.</value>

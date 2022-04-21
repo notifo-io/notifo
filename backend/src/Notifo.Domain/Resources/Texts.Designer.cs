@@ -97,7 +97,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find language {0} in template {1}..
+        ///   Looks up a localized string similar to Cannot find language {0} in template &apos;{1}&apos;..
         /// </summary>
         internal static string ChannelTemplate_LanguageNotFound {
             get {
@@ -106,7 +106,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find template {0}..
+        ///   Looks up a localized string similar to Cannot find template &apos;{0}&apos;..
         /// </summary>
         internal static string ChannelTemplate_NotFound {
             get {

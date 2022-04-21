@@ -220,7 +220,7 @@ namespace TestSuite.ApiTests
 
             var logs = await _.Client.Logs.WaitForLogEntriesAsync(app_0.Id, null, TimeSpan.FromSeconds(30));
 
-            Assert.Contains(logs, x => x.Message.Contains("Template not found", StringComparison.OrdinalIgnoreCase));
+            Assert.Contains(logs, x => x.Message.Contains("Cannot find template", StringComparison.OrdinalIgnoreCase));
         }
     }
 }

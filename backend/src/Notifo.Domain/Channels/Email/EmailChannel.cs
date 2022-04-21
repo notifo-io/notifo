@@ -281,7 +281,7 @@ namespace Notifo.Domain.Channels.Email
             {
                 case TemplateResolveStatus.ResolvedWithFallback:
                     {
-                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name ?? "Unnamed");
 
                         await logStore.LogAsync(appId, Name, error);
                         break;
@@ -289,14 +289,14 @@ namespace Notifo.Domain.Channels.Email
 
                 case TemplateResolveStatus.NotFound:
                     {
-                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name ?? "Unnamed");
 
                         return (error, null);
                     }
 
                 case TemplateResolveStatus.LanguageNotFound:
                     {
-                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
+                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name ?? "Unnamed");
 
                         return (error, null);
                     }
