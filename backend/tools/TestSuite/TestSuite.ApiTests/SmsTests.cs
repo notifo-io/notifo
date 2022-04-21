@@ -116,6 +116,7 @@ namespace TestSuite.ApiTests
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
 
+            // Get SMS status
             var messageBird = Client.CreateDefault(accessKey);
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))

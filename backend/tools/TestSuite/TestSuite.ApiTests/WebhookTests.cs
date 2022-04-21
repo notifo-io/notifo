@@ -46,7 +46,7 @@ namespace TestSuite.ApiTests
             var (url, sessionId) = await webhookCatcher.CreateSessionAsync();
 
 
-            // STEP 1: Create integration
+            // STEP 2: Create integration
             var emailIntegrationRequest = new CreateIntegrationDto
             {
                 Type = "Webhook",
@@ -62,7 +62,7 @@ namespace TestSuite.ApiTests
             await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
 
 
-            // STEP 2: Create user
+            // STEP 3: Create user
             var userRequest = new UpsertUsersDto
             {
                 Requests = new List<UpsertUserDto>
@@ -75,7 +75,7 @@ namespace TestSuite.ApiTests
             var user_0 = users_0.First();
 
 
-            // STEP 3: Send email
+            // STEP 4: Send webhook
             var subjectId = Guid.NewGuid().ToString();
 
             var publishRequest = new PublishManyDto
@@ -106,6 +106,7 @@ namespace TestSuite.ApiTests
             await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
 
+            // Get webhook status
             var requests = await webhookCatcher.WaitForRequestsAsync(sessionId, TimeSpan.FromSeconds(30));
 
             Assert.Contains(requests, x => x.Method == "POST" && x.Content.Contains(subjectId, StringComparison.OrdinalIgnoreCase));
