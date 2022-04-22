@@ -288,7 +288,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// <param name="appId">The app where the users belongs to.</param>
         /// <param name="id">The user id to delete.</param>
         /// <returns>
-        /// 200 => User deleted.
+        /// 204 => User deleted.
         /// 404 => App not found.
         /// </returns>
         [HttpDelete("api/apps/{appId}/users/{id}")]

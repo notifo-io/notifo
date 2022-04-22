@@ -616,7 +616,7 @@ export class UsersClient {
      * @param id The user id to delete.
      * @return User deleted.
      */
-    deleteUser(appId: string, id: string): Promise<FileResponse> {
+    deleteUser(appId: string, id: string): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -629,7 +629,6 @@ export class UsersClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
-                "Accept": "application/octet-stream"
             }
         };
 
@@ -638,14 +637,13 @@ export class UsersClient {
         });
     }
 
-    protected processDeleteUser(response: Response): Promise<FileResponse> {
+    protected processDeleteUser(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return response.blob().then(blob => { return { fileName: fileName, data: blob, status: status, headers: _headers }; });
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
             return throwException("App not found.", status, _responseText, _headers);
@@ -667,7 +665,7 @@ export class UsersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<FileResponse>(null as any);
+        return Promise.resolve<void>(null as any);
     }
 
     /**
