@@ -947,7 +947,7 @@ namespace Notifo.SDK
         /// <param name="id">The user id to delete.</param>
         /// <returns>User deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -1392,7 +1392,7 @@ namespace Notifo.SDK
         /// <param name="id">The user id to delete.</param>
         /// <returns>User deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -1412,7 +1412,6 @@ namespace Notifo.SDK
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -1435,12 +1434,9 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 204)
                         {
-                            var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                            var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
-                            return fileResponse_;
+                            return;
                         }
                         else
                         if (status_ == 404)

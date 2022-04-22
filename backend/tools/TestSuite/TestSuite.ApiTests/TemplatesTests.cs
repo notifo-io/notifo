@@ -59,7 +59,6 @@ namespace TestSuite.ApiTests
                 }
             };
 
-
             var templates = await _.Client.Templates.PostTemplatesAsync(_.AppId, templateRequest);
 
             Assert.Equal(2, templates.Count);

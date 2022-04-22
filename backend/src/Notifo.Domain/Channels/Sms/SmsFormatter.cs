@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using FluentValidation;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
@@ -13,8 +14,6 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class SmsFormatter : ISmsFormatter
     {
-        private const string NotificationPlaceholder = "{{notification.subject}}";
-
         private sealed class Validator : AbstractValidator<SmsTemplate>
         {
             public Validator()
@@ -28,7 +27,7 @@ namespace Notifo.Domain.Channels.Sms
         {
             var template = new SmsTemplate
             {
-                Text = NotificationPlaceholder
+                Text = "{{ notification.subject }}"
             };
 
             return new ValueTask<SmsTemplate>(template);
@@ -44,7 +43,6 @@ namespace Notifo.Domain.Channels.Sms
 
         public string Format(SmsTemplate? template, string text)
         {
-            Guard.NotNull(template);
             Guard.NotNullOrEmpty(text);
 
             if (template == null)
@@ -52,11 +50,17 @@ namespace Notifo.Domain.Channels.Sms
                 return MaxLength(text, 140);
             }
 
-            var templateLength = template.Text.Replace(NotificationPlaceholder, string.Empty, StringComparison.OrdinalIgnoreCase).Length;
+            var properties = new Dictionary<string, string?>
+            {
+                ["notification.subject"] = string.Empty
+            };
 
-            var maxLength = 140 - templateLength;
+            var lengthTemplate = template.Text.Format(properties).Length;
+            var lengthAllowed = 140 - lengthTemplate;
 
-            return template.Text.Replace(NotificationPlaceholder, MaxLength(text, maxLength), StringComparison.OrdinalIgnoreCase);
+            properties["notification.subject"] = MaxLength(text, lengthAllowed);
+
+            return template.Text.Format(properties);
         }
 
         private static string MaxLength(string source, int maxLength)

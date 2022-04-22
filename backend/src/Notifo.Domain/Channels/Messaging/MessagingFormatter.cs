@@ -15,7 +15,6 @@ namespace Notifo.Domain.Channels.Messaging
 {
     public sealed class MessagingFormatter : IMessagingFormatter
     {
-        private const string PlaceholderSubject = "{{notification.subject}}";
         private readonly IImageFormatter imageFormatter;
 
         private sealed class Validator : AbstractValidator<MessagingTemplate>
@@ -36,7 +35,7 @@ namespace Notifo.Domain.Channels.Messaging
         {
             var template = new MessagingTemplate
             {
-                Text = PlaceholderSubject
+                Text = "{{notification.subject}}"
             };
 
             return new ValueTask<MessagingTemplate>(template);
@@ -52,7 +51,6 @@ namespace Notifo.Domain.Channels.Messaging
 
         public string Format(MessagingTemplate? template, BaseUserNotification notification)
         {
-            Guard.NotNull(template);
             Guard.NotNull(notification);
 
             if (template == null)
