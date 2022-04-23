@@ -11,8 +11,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using Squidex.Assets;
-using Squidex.Assets.ImageMagick;
-using Squidex.Assets.ImageSharp;
 using Squidex.Assets.Remote;
 using Squidex.Hosting;
 
