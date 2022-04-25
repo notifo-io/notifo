@@ -9,7 +9,7 @@ namespace Notifo.Domain.Topics
 {
     public enum TopicChannel
     {
-        Allowed,
-        NotAllowed
+        NotAllowed,
+        Allowed
     }
 }

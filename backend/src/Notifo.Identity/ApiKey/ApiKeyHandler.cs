@@ -28,11 +28,11 @@ namespace Notifo.Identity.ApiKey
         private readonly IAppStore appStore;
         private readonly IUserStore userStore;
 
-        public ApiKeyHandler(IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IAppStore appStore, IUserStore userStore)
+        public ApiKeyHandler(IAppStore appStore, IUserStore userStore,
+                IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
             : base(options, logger, encoder, clock)
         {
             this.appStore = appStore;
-
             this.userStore = userStore;
         }
 

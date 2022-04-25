@@ -7,6 +7,7 @@
 
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Areas.Api.Utils;
+using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Channels.Web;
@@ -31,7 +32,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddSingletonAs<UrlBuilder>()
-                .As<IUserNotificationUrl>().As<ISmsUrl>().As<IMessagingUrl>();
+                .As<IEmailUrl>().As<IMessagingUrl>().As<ISmsUrl>().As<IUserNotificationUrl>();
         }
     }
 }

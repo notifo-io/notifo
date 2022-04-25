@@ -1,0 +1,12 @@
+﻿@inject IHtmlLocalizer<AppResources> T
+
+@{
+    ViewData["Title"] = T["EmailPreferencesTitle"];
+    ViewData["AppName"] = Model.AppName;
+
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<h3>@T["EmailPreferencesHeadline"]</h3>
+
+<div class="notifo-form-group pb-2 notifo-text">@T["EmailPreferencesSavedText"]</div>

@@ -117,6 +117,24 @@
                 margin-top: 4px;
             }
         }
+
+        &-inner {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            width: 450px;
+
+            .notifo-modal-panel {
+                max-height: 100%;
+            }
+        }
+    }
+}
+
+body {
+    &.notifo {
+        display: block;
+        background: #efefef;
     }
 }
 

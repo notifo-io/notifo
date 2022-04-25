@@ -5,12 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
+using Notifo.Domain.Topics;
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Areas.Api.Controllers.EmailPreferences
 {
-    public interface ISmsUrl : IUserNotificationUrl
+    public sealed class EmailPreferencesVM
     {
-        string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
+        public string AppName { get; set; }
+
+        public Dictionary<Topic, bool> Topics { get; set; }
+
+        public bool EmailsDisabled { get; set; }
     }
 }

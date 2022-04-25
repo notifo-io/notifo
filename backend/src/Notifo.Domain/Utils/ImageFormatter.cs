@@ -32,15 +32,5 @@ namespace Notifo.Domain.Utils
 
             return $"{baseUrl}/Empty.Png";
         }
-
-        public string? FormatWhenSet(string? url, string preset)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-            {
-                return null;
-            }
-
-            return Format(url, preset);
-        }
     }
 }

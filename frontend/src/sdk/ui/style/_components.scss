@@ -46,6 +46,10 @@
         }
     }
 
+    &-text {
+        font-size: $font-size-sm;
+    }
+
     &-form {
         &-group {
             margin-top: .75rem;
@@ -111,6 +115,7 @@
         &-toggle {
             @include size($size-toggle * 2, $size-toggle);
             @include middle;
+            appearance: none;
             background: $color-border;
             border: $color-border;
             border-radius: $size-toggle;
@@ -120,27 +125,30 @@
             position: relative;
             transition: background-color .3s ease;
 
-            &-slider {
+            &::before {
                 @include size($size-toggle - 4px, $size-toggle - 4px);
                 @include absolute(2px, null, null, 2px);
                 background: $color-background;
                 border: 0;
                 border-radius: $size-toggle;
                 box-shadow: 0 2px 2px $color-shadow;
+                content: '';
                 transition: transform .3s ease;
             }
 
-            &-label {
-                @include middle;
-                font-size: $font-size-sm;
-                font-weight: normal;
-                margin-left: .5rem;
-            }
-
-            &.checked {
+            &:checked {
                 background: $color-success;
 
-                .notifo-form-toggle-slider {
+                &::before {
+                    transform: translateX($size-toggle);
+                }
+            }
+
+            &.checked,
+            &:checked {
+                background: $color-success;
+
+                &::before {
                     transform: translateX($size-toggle);
                 }
             }
@@ -148,15 +156,22 @@
             &.unchecked {
                 background: $color-error;
 
-                .notifo-form-toggle-slider {
+                &::before {
                     transform: translateX(0);
                 }
             }
 
             &.indeterminate {
-                .notifo-form-toggle-slider {
+                &::before {
                     transform: translateX($size-toggle * .5);
                 }
+            }
+
+            &-label {
+                @include middle;
+                font-size: $font-size-sm;
+                font-weight: normal;
+                margin-left: .5rem;
             }
         }
     }
@@ -187,5 +202,11 @@
         font-weight: normal;
         margin-bottom: 1rem;
         padding: .5rem 1rem;
+    }
+}
+
+input {
+    &.notifo-form-toggle {
+        background: $color-error;
     }
 }

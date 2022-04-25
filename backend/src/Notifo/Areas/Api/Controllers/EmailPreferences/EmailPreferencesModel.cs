@@ -5,20 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Utils;
-
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Areas.Api.Controllers.EmailPreferences
 {
-    internal sealed class FakeImageFormatter : IImageFormatter
+    public sealed class EmailPreferencesModel
     {
-        public string Format(string? url, string preset)
-        {
-            return url ?? string.Empty;
-        }
+        public Dictionary<string, bool>? Topics { get; set; }
 
-        public string? FormatWhenSet(string? url, string preset)
-        {
-            return url;
-        }
+        public bool All { get; set; }
     }
 }

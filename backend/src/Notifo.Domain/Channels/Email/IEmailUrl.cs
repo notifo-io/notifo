@@ -7,10 +7,10 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Email
 {
-    public interface ISmsUrl : IUserNotificationUrl
+    public interface IEmailUrl : IUserNotificationUrl
     {
-        string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
+        string EmailPreferences(string apiKey, string language);
     }
 }
