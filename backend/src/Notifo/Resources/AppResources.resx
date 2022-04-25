@@ -555,4 +555,25 @@
   <data name="Gallery7" xml:space="preserve">
     <value>Leverage the REST API.</value>
   </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="EmailPreferencesAll" xml:space="preserve">
+    <value>All Emails</value>
+  </data>
+  <data name="EmailPreferencesAllText" xml:space="preserve">
+    <value>Send me other Emails, for example direct push notifications.</value>
+  </data>
+  <data name="EmailPreferencesSavedText" xml:space="preserve">
+    <value>Your email preferences have been saved successfully. If you have unsubscribed from emails you will not received more emails in the future.</value>
+  </data>
+  <data name="EmailPreferencesHeadline" xml:space="preserve">
+    <value>Email Preferences</value>
+  </data>
+  <data name="EmailPreferencesText" xml:space="preserve">
+    <value>Update your email preferences and decide whether you want to get notified by email for certain topics or if you do not want to receive emails anymore.</value>
+  </data>
+  <data name="EmailPreferencesTitle" xml:space="preserve">
+    <value>Email Preferences</value>
+  </data>
 </root>

@@ -23,6 +23,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         private static readonly string DefaultBodyText;
         private static readonly string DefaultSubject;
         private readonly IImageFormatter imageFormatter;
+        private readonly IEmailUrl emailUrl;
 
         static EmailFormatterLiquid()
         {
@@ -37,10 +38,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
             DefaultSubject = ReadResource("DefaultSubject.text");
         }
 
-        public EmailFormatterLiquid(IImageFormatter imageFormatter, IMjmlRenderer mjmlRenderer)
+        public EmailFormatterLiquid(IImageFormatter imageFormatter, IEmailUrl emailUrl, IMjmlRenderer mjmlRenderer)
             : base(mjmlRenderer)
         {
             this.imageFormatter = imageFormatter;
+            this.emailUrl = emailUrl;
         }
 
         public bool Accepts(string? kind)
@@ -199,6 +201,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             context.SetValue("app", app);
             context.SetValue("user", user);
             context.SetValue("notifications", emailNotifications);
+            context.SetValue("preferencesUrl", emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage));
 
             return context;
         }

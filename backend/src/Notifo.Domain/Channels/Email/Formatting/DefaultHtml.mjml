@@ -112,6 +112,9 @@
     </mj-section>
     <mj-section padding-top="10px">
       <mj-column>
+		<mj-text font-family="Open Sans" font-size="12px" padding="4px" align="center" text-decoration="underline">
+		  <a style="color: inherit" href="{{ preferencesUrl }}">Email Preferences</a>
+		</mj-text>
         <mj-text font-family="Open Sans" font-size="12px" padding="4px" align="center">Acme Corporation, Inc.</mj-text>
         <mj-text font-family="Open Sans" font-size="12px" padding="4px" align="center">New York City, United Stated</mj-text>
       </mj-column>

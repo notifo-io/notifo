@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Globalization;
+
 namespace Notifo.Infrastructure.Texts
 {
     public sealed class LocalizedText : Dictionary<string, string>, IEquatable<LocalizedText>
@@ -54,6 +56,51 @@ namespace Notifo.Infrastructure.Texts
         public override int GetHashCode()
         {
             return this.DictionaryHashCode();
+        }
+
+        public string SelectTextByCulture(bool first = false)
+        {
+            return SelectTextByCulture(CultureInfo.CurrentCulture, first);
+        }
+
+        public string SelectTextByCulture(CultureInfo cultureInfo, bool first = false)
+        {
+            return SelectText(cultureInfo.ToString(), cultureInfo.TwoLetterISOLanguageName, first);
+        }
+
+        public string SelectText(string language, bool first = false)
+        {
+            if (TryGetValue(language, out var text))
+            {
+                return text;
+            }
+
+            if (first && Count > 0)
+            {
+                return Values.First();
+            }
+
+            return string.Empty;
+        }
+
+        public string SelectText(string language1, string language2, bool first = false)
+        {
+            if (TryGetValue(language1, out var text))
+            {
+                return text;
+            }
+
+            if (TryGetValue(language2, out text))
+            {
+                return text;
+            }
+
+            if (first && Count > 0)
+            {
+                return Values.First();
+            }
+
+            return string.Empty;
         }
     }
 }

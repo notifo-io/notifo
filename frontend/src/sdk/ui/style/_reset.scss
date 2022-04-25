@@ -17,12 +17,32 @@ label {
     margin: 0;
 }
 
+h1 {
+    margin-top: 1rem;
+}
+
 h3 {
     font-size: 1.1rem;
 }
 
 h4 {
     font-size: 1.1rem;
+}
+
+.mt-1 {
+    margin-top: .5rem;
+}
+
+.mb-1 {
+    margin-bottom: .5rem;
+}
+
+.mb-4 {
+    margin-bottom: 2rem;
+}
+
+.pb-2 {
+    padding-bottom: 1rem;
 }
 
 small {

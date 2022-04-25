@@ -126,4 +126,28 @@
   <data name="ConfirmTitle" xml:space="preserve">
     <value>Empfang bestätigt</value>
   </data>
+  <data name="EmailPreferencesAll" xml:space="preserve">
+    <value>Alle Emails</value>
+  </data>
+  <data name="EmailPreferencesAllText" xml:space="preserve">
+    <value>Ich möchte Email Benachrichtungen generell empfangen.</value>
+  </data>
+  <data name="EmailPreferencesdSavedText" xml:space="preserve">
+    <value>Deine Email-Einstellungen wurden erfolgreich gespeichert. Falls du dich von einem Thema abgemeldet hast, wirst du in Zukunft nicht mehr darüber benachrichtigt. Falls du dich von allen Emails abgemeldet hast, wirst du keine weiteren Emails mehr empfangen.</value>
+  </data>
+  <data name="EmailPreferencesHeadline" xml:space="preserve">
+    <value>Von Emails abmelden</value>
+  </data>
+  <data name="EmailPreferencesSavedTitle" xml:space="preserve">
+    <value>Erfolgreich abgemeldet</value>
+  </data>
+  <data name="EmailPreferencesText" xml:space="preserve">
+    <value>Melde dich von Themen oder allen Email-Benachrichtungen ab um keine weiteren Emails mehr zu erhalten.</value>
+  </data>
+  <data name="EmailPreferencesTitle" xml:space="preserve">
+    <value>Abmeldet</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
 </root>

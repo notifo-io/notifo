@@ -20,6 +20,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
         private static readonly string DefaultBodyText;
         private static readonly string DefaultSubject;
         private readonly IImageFormatter imageFormatter;
+        private readonly IEmailUrl emailUrl;
 
         static EmailFormatterNormal()
         {
@@ -28,10 +29,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
             DefaultSubject = ReadResource("DefaultSubject.text");
         }
 
-        public EmailFormatterNormal(IImageFormatter imageFormatter, IMjmlRenderer mjmlRenderer)
+        public EmailFormatterNormal(IImageFormatter imageFormatter, IEmailUrl emailUrl, IMjmlRenderer mjmlRenderer)
             : base(mjmlRenderer)
         {
             this.imageFormatter = imageFormatter;
+            this.emailUrl = emailUrl;
         }
 
         public bool Accepts(string? kind)
@@ -188,7 +190,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        private static Dictionary<string, string?> CreateProperties(List<EmailJob> jobs, App app, User user, EmailJob firstJob)
+        private Dictionary<string, string?> CreateProperties(List<EmailJob> jobs, App app, User user, EmailJob firstJob)
         {
             var notification = firstJob.Notification;
 
@@ -201,7 +203,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 ["user.email"] = user.EmailAddress,
                 ["user.emailAddress"] = user.EmailAddress,
                 ["notification.subject"] = notification.Formatting.Subject,
-                ["notification.body"] = notification.Formatting.Body
+                ["notification.body"] = notification.Formatting.Body,
+                ["preferencesUrl"] = emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage)
             };
 
             foreach (var job in jobs)

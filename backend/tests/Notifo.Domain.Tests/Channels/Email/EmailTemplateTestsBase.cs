@@ -5,20 +5,40 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using FakeItEasy;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
+using Notifo.Domain.Utils;
 using Xunit;
+
+#pragma warning disable MA0056 // Do not call overridable members in constructor
 
 namespace Notifo.Domain.Channels.Email
 {
     public abstract class EmailTemplateTestsBase
     {
         private readonly App app = new App("1", default);
+        private readonly EmailTemplate emailTemplate;
+        private readonly IEmailFormatter emailFormatter;
 
-        protected abstract EmailTemplate EmailTemplate { get; }
+        protected EmailTemplateTestsBase()
+        {
+            var emailUrl = A.Fake<IEmailUrl>();
 
-        protected abstract IEmailFormatter EmailFormatter { get; }
+            A.CallTo(() => emailUrl.EmailPreferences(A<string>._, A<string>._))
+                .Returns("url/to/email-preferences");
+
+            var imageFormatter = A.Fake<IImageFormatter>();
+
+            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._))
+                .ReturnsLazily(x => x.GetArgument<string>(0) ?? string.Empty);
+
+            emailFormatter = CreateFormatter(emailUrl, imageFormatter);
+            emailTemplate = emailFormatter.CreateInitialAsync().AsTask().Result;
+        }
+
+        protected abstract IEmailFormatter CreateFormatter(IEmailUrl url, IImageFormatter imageFormatter);
 
         [Fact]
         public async Task Should_generate_simple_template()
@@ -46,6 +66,9 @@ namespace Notifo.Domain.Channels.Email
                 Assert.Contains(notification.Formatting.Body, text, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, text, StringComparison.OrdinalIgnoreCase);
             }
+
+            Assert.Contains("url/to/email-preferences", html, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("url/to/email-preferences", text, StringComparison.OrdinalIgnoreCase);
 
             await File.WriteAllTextAsync("_out\\template-single.html", html);
             await File.WriteAllTextAsync("_out\\template-single.txt", text);
@@ -271,7 +294,7 @@ namespace Notifo.Domain.Channels.Email
 
         private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs)
         {
-            var formatted = await EmailFormatter.FormatAsync(jobs, EmailTemplate, app, new User("1", "1", default));
+            var formatted = await emailFormatter.FormatAsync(jobs, emailTemplate, app, new User("1", "1", default));
 
             return (formatted.Message?.BodyHtml, formatted.Message?.BodyText);
         }

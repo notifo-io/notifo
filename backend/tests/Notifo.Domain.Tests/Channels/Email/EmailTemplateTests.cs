@@ -7,20 +7,15 @@
 
 using Mjml.Net;
 using Notifo.Domain.Channels.Email.Formatting;
-
-#pragma warning disable MA0056 // Do not call overridable members in constructor
+using Notifo.Domain.Utils;
 
 namespace Notifo.Domain.Channels.Email
 {
     public class EmailTemplateTests : EmailTemplateTestsBase
     {
-        protected override EmailTemplate EmailTemplate { get; }
-
-        protected override IEmailFormatter EmailFormatter { get; } = new EmailFormatterNormal(new FakeImageFormatter(), new MjmlRenderer());
-
-        public EmailTemplateTests()
+        protected override IEmailFormatter CreateFormatter(IEmailUrl url, IImageFormatter imageFormatter)
         {
-            EmailTemplate = EmailFormatter.CreateInitialAsync().AsTask().Result;
+            return new EmailFormatterNormal(imageFormatter, url, new MjmlRenderer());
         }
     }
 }

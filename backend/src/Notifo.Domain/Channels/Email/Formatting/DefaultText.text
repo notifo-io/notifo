@@ -18,3 +18,5 @@ Click this link to confirm this notification: {{ notification.confirmUrl }}
 Best regards,
 
 Your {{ app.name }} team.
+
+Use the following link to change your email preferences: {{ preferencesUrl }}

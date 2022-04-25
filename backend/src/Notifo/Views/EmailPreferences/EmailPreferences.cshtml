@@ -1,0 +1,54 @@
+﻿@inject IHtmlLocalizer<AppResources> T
+@model Notifo.Areas.Api.Controllers.EmailPreferences.EmailPreferencesVM
+
+@{
+    ViewData["Title"] = T["EmailPreferencesTitle"];
+    ViewData["AppName"] = Model.AppName;
+
+    Layout = "~/Views/_Layout.cshtml";
+}
+
+<h3>@T["EmailPreferencesHeadline"]</h3>
+
+<div class="notifo-form-group mb-4 notifo-text">@T["EmailPreferencesText"]</div>
+
+<form method="post">
+    <div class="notifo-form-group">
+        @foreach (var (topic, send) in Model.Topics)
+        {
+            <div class="notifo-topic">
+                <div class="notifo-topic-toggle">
+                    <input name="topics.@topic.Path" type="checkbox" value="true" checked="@send" class="notifo-form-toggle" />
+                </div>
+
+                <div class="notifo-topic-details">
+                    <h3>@topic.Name.SelectTextByCulture()</h3>
+                        
+                    <div>
+                        @topic.Description.SelectTextByCulture(true)
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="notifo-topic">
+            <div class="notifo-topic-toggle">
+                <input name="all" type="checkbox" value="true" checked="checked" class="notifo-form-toggle" />
+            </div>
+
+            <div class="notifo-topic-details">
+                <h3>@T["EmailPreferencesAll"]</h3>
+                        
+                <div>
+                    @T["EmailPreferencesAllText"]
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notifo-form-group">
+        <button class="notifo-form-button primary" type="submit">
+            @T["Save"]
+        </button>
+    </div>
+</form>

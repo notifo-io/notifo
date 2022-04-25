@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Text;
+using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.UserNotifications;
@@ -13,13 +14,18 @@ using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Utils
 {
-    public sealed class UrlBuilder : IUserNotificationUrl, ISmsUrl, IMessagingUrl
+    public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotificationUrl
     {
         private readonly IUrlGenerator urlGenerator;
 
         public UrlBuilder(IUrlGenerator urlGenerator)
         {
             this.urlGenerator = urlGenerator;
+        }
+
+        public string EmailPreferences(string apiKey, string language)
+        {
+            return urlGenerator.BuildUrl($"api/email-preferences?access_token={apiKey}&amp;culture={language}");
         }
 
         public string TrackConfirmed(Guid notificationId, string language)
