@@ -16,9 +16,10 @@ namespace Notifo.Pipeline
                 return false;
             }
 
-            if (routeValue is string stringValue)
+            if (routeValue is string @string)
             {
-                return stringValue.AsSpan().Trim().Length == stringValue.Length;
+                // Do not allow whitespaces only and leading and trailing whitespaces.
+                return !string.IsNullOrWhiteSpace(@string) && @string.AsSpan().Trim().Length == @string.Length;
             }
 
             return routeValue != null;
