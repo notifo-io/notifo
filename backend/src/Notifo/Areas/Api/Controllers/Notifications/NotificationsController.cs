@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         /// 200 => User notifications returned.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/users/{id}/notifications")]
+        [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/notifications")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
         public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] UserNotificationQueryDto q)

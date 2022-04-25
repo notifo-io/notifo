@@ -39,7 +39,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// 200 => Events returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/events/")]
+        [HttpGet("api/apps/{appId:notEmpty}/events/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<EventDto>))]
         public async Task<IActionResult> GetEvents(string appId, [FromQuery] EventQueryDto q)
@@ -63,7 +63,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         /// 204 => Events created.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/events/")]
+        [HttpPost("api/apps/{appId:notEmpty}/events/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
         {
@@ -94,7 +94,7 @@ namespace Notifo.Areas.Api.Controllers.Events
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> PostMyEvents([FromBody] PublishDto request)
         {
-            var @event = request.ToEvent(App.Id, $"users/{UserId}");
+            var @event = request.ToEvent(App.Id, $"users/{UserId:notEmpty}");
 
             await eventPublisher.PublishAsync(@event, HttpContext.RequestAborted);
 

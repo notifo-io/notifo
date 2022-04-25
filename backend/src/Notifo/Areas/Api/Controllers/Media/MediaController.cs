@@ -53,7 +53,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 200 => Media returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/media/")]
+        [HttpGet("api/apps/{appId:notEmpty}/media/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<MediaDto>))]
         public async Task<IActionResult> GetMedias(string appId, [FromQuery] QueryDto q)
@@ -78,8 +78,8 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 200 => Media returned.
         /// 404 => Media or app not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/media/{fileName}")]
-        [HttpGet("api/assets/{appId}/{fileName}")]
+        [HttpGet("api/apps/{appId:notEmpty}/media/{fileName:notEmpty}")]
+        [HttpGet("api/assets/{appId:notEmpty}/{fileName:notEmpty}")]
         [AllowAnonymous]
         public async Task<IActionResult> Download(string appId, string fileName, [FromQuery] MediaFileQueryDto? query = null)
         {
@@ -97,7 +97,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 201 => Media uploaded.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/media/")]
+        [HttpPost("api/apps/{appId:notEmpty}/media/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> Upload(string appId, IFormFile file)
         {
@@ -117,7 +117,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// 204 => Media deleted.
         /// 404 => App not found.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/media/{fileName}")]
+        [HttpDelete("api/apps/{appId:notEmpty}/media/{fileName:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> Delete(string appId, string fileName)
         {
@@ -149,7 +149,7 @@ namespace Notifo.Areas.Api.Controllers.Media
             {
                 contentCallback = async (bodyStream, range, ct) =>
                 {
-                    var resizedAsset = $"{appId}_{media.FileName}_{resizeOptions}";
+                    var resizedAsset = $"{appId:notEmpty}_{media.FileName}_{resizeOptions:notEmpty}";
 
                     if (query.ForceResize)
                     {

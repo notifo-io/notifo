@@ -56,7 +56,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 200 => Channel templates returned.
         /// 404 => Channel template or app not found.
         /// </returns>
-        [HttpGet("{id}")]
+        [HttpGet("{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<ChannelTemplateDetailsDto<TDto>> GetTemplate(string appId, string id)
         {
@@ -100,7 +100,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 200 => Channel template created.
         /// 404 => Channel template or app not found.
         /// </returns>
-        [HttpPost("{id}")]
+        [HttpPost("{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<TDto> PostTemplateLanguage(string appId, string id, [FromBody] CreateChannelTemplateLanguageDto request)
         {
@@ -121,7 +121,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 204 => Channel template updated.
         /// 404 => Channel template or app not found.
         /// </returns>
-        [HttpPut("{id}")]
+        [HttpPut("{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PutTemplate(string appId, string id, [FromBody] UpdateChannelTemplateDto<TDto> request)
         {
@@ -143,7 +143,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 204 => Channel template updated.
         /// 404 => Channel template or app not found.
         /// </returns>
-        [HttpPut("{id}/{language}")]
+        [HttpPut("{id:notEmpty}/{language:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PutTemplateLanguage(string appId, string id, string language, [FromBody] TDto request)
         {
@@ -164,7 +164,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 204 => Channel template updated.
         /// 404 => Channel template or app not found.
         /// </returns>
-        [HttpDelete("{id}/{language}")]
+        [HttpDelete("{id:notEmpty}/{language:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteTemplateLanguage(string appId, string id, string language)
         {
@@ -184,7 +184,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 204 => Channel template deleted.
         /// 404 => Channel template or app not found.
         /// </returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteTemplate(string appId, string id)
         {

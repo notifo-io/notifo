@@ -34,7 +34,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
         /// 200 => Topics returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/topics/")]
+        [HttpGet("api/apps/{appId:notEmpty}/topics/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<TopicDto>))]
         public async Task<IActionResult> GetTopics(string appId, [FromQuery] TopicQueryDto q)
@@ -57,7 +57,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
         /// <returns>
         /// 200 => Named topics upserted.
         /// </returns>
-        [HttpPost("api/apps/{appId}/topics/")]
+        [HttpPost("api/apps/{appId:notEmpty}/topics/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(List<TopicDto>))]
         public async Task<IActionResult> PostTopics(string appId, [FromBody] UpsertTopicsDto request)
@@ -84,7 +84,7 @@ namespace Notifo.Areas.Api.Controllers.Topics
         /// <returns>
         /// 204 => Topic deleted.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/topics/{*id}")]
+        [HttpDelete("api/apps/{appId:notEmpty}/topics/{*id}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<TopicDto>))]
         public async Task<IActionResult> DeleteTopic(string appId, string id)

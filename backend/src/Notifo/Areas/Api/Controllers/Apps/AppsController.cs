@@ -65,7 +65,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => Apps returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}")]
+        [HttpGet("api/apps/{appId:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> GetApp(string appId)
@@ -112,7 +112,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => App updated.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}")]
+        [HttpPost("api/apps/{appId:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PutApp(string appId, [FromBody] UpsertAppDto request)
@@ -135,7 +135,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => Apps returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/contributors")]
+        [HttpPost("api/apps/{appId:notEmpty}/contributors")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> PostContributor(string appId, [FromBody] AddContributorDto request)
@@ -158,7 +158,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => Apps returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/contributors/{contributorId}")]
+        [HttpPost("api/apps/{appId:notEmpty}/contributors/{contributorId:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(AppDetailsDto))]
         public async Task<IActionResult> DeleteContributor(string appId, string contributorId)
@@ -180,7 +180,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => App email templates returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/integrations")]
+        [HttpGet("api/apps/{appId:notEmpty}/integrations")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ConfiguredIntegrationsDto))]
         public IActionResult GetIntegrations(string appId)
@@ -199,7 +199,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 200 => App integration created.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/integration/")]
+        [HttpPost("api/apps/{appId:notEmpty}/integration/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(IntegrationCreatedDto))]
         public async Task<IActionResult> PostIntegration(string appId, [FromBody] CreateIntegrationDto request)
@@ -223,7 +223,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 204 => App integration updated.
         /// 404 => App not found.
         /// </returns>
-        [HttpPut("api/apps/{appId}/integrations/{id}")]
+        [HttpPut("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PutIntegration(string appId, string id, [FromBody] UpdateIntegrationDto request)
         {
@@ -243,7 +243,7 @@ namespace Notifo.Areas.Api.Controllers.Apps
         /// 204 => App integration deleted.
         /// 404 => App not found.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/integrations/{id}")]
+        [HttpDelete("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteIntegration(string appId, string id)
         {

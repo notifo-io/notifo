@@ -50,7 +50,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => Users returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/users/")]
+        [HttpGet("api/apps/{appId:notEmpty}/users/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<UserDto>))]
         public async Task<IActionResult> GetUsers(string appId, [FromQuery] QueryDto q, [FromQuery] bool withDetails = false)
@@ -82,7 +82,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => User returned.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/users/{id}")]
+        [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(UserDto))]
         public async Task<IActionResult> GetUser(string appId, string id, [FromQuery] bool withDetails = false)
@@ -116,7 +116,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => User subscriptions returned.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/users/{id}/subscriptions")]
+        [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<SubscriptionDto>))]
         public async Task<IActionResult> GetSubscriptions(string appId, string id, [FromQuery] QueryDto q)
@@ -141,7 +141,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 204 => User subscribed.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/users/{id}/subscriptions")]
+        [HttpPost("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostSubscriptions(string appId, string id, [FromBody] SubscribeManyDto request)
         {
@@ -177,7 +177,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 204 => User unsubscribed.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/users/{id}/subscriptions/{*prefix}")]
+        [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions/{*prefix}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteSubscription(string appId, string id, string prefix)
         {
@@ -202,7 +202,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 200 => Users upserted.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/users/")]
+        [HttpPost("api/apps/{appId:notEmpty}/users/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(List<UserDto>))]
         public async Task<IActionResult> PostUsers(string appId, [FromBody] UpsertUsersDto request)
@@ -236,7 +236,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 204 => User updated.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/users/{id}/allowed-topics")]
+        [HttpPost("api/apps/{appId:notEmpty}/users/{id:notEmpty}/allowed-topics")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicDto request)
         {
@@ -264,7 +264,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 204 => User updated.
         /// 404 => User or app not found.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/users/{id}/allowed-topics/{*prefix}")]
+        [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/allowed-topics/{*prefix}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteAllowedTopic(string appId, string id, string prefix)
         {
@@ -291,7 +291,7 @@ namespace Notifo.Areas.Api.Controllers.Users
         /// 204 => User deleted.
         /// 404 => App not found.
         /// </returns>
-        [HttpDelete("api/apps/{appId}/users/{id}")]
+        [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> DeleteUser(string appId, string id)
         {
