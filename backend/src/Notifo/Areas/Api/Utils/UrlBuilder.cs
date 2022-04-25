@@ -25,7 +25,7 @@ namespace Notifo.Areas.Api.Utils
 
         public string EmailPreferences(string apiKey, string language)
         {
-            return urlGenerator.BuildUrl($"api/email-preferences?access_token={apiKey}&culture={language}");
+            return urlGenerator.BuildUrl($"api/email-preferences?access_token={apiKey}&amp;culture={language}");
         }
 
         public string TrackConfirmed(Guid notificationId, string language)
