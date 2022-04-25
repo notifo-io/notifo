@@ -122,7 +122,7 @@ namespace TestSuite.ApiTests
 
 
             // Get SMS status
-            var messageBird = Client.CreateDefault(AccessKey);
+            var messageBird = new MessageBirdClient(AccessKey);
 
             var text = $"<start>{subjectId}</end>";
 
@@ -130,9 +130,9 @@ namespace TestSuite.ApiTests
             {
                 while (!cts.IsCancellationRequested)
                 {
-                    var messages = messageBird.ListMessages(string.Empty, 200);
+                    var messages = await messageBird.GetMessagesAsync(200);
 
-                    if (messages.Items.Any(x => x.Body == text && x.Recipients.Items[0].Status == Recipient.RecipientStatus.Delivered))
+                    if (messages.Items.Any(x => x.Body == text && x.Recipients.Items[0].Status == "delivered"))
                     {
                         return;
                     }
@@ -222,15 +222,15 @@ namespace TestSuite.ApiTests
 
 
             // Get SMS status
-            var messageBird = Client.CreateDefault(AccessKey);
+            var messageBird = new MessageBirdClient(AccessKey);
 
             using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
             {
                 while (!cts.IsCancellationRequested)
                 {
-                    var messages = messageBird.ListMessages(string.Empty, 200);
+                    var messages = await messageBird.GetMessagesAsync(200);
 
-                    if (messages.Items.Any(x => x.Body == subjectId && x.Recipients.Items[0].Status == Recipient.RecipientStatus.Delivered))
+                    if (messages.Items.Any(x => x.Body == subjectId && x.Recipients.Items[0].Status == "delivered"))
                     {
                         return;
                     }
