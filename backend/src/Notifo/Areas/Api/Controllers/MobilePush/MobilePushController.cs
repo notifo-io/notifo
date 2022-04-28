@@ -94,9 +94,9 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         /// <returns>
         /// 204 => Mobile push token removed.
         /// </returns>
-        [HttpDelete("api/mobilepush/{token}")]
+        [HttpDelete("api/mobilepush/{token:notEmpty}")]
         [AppPermission(NotifoRoles.AppUser)]
-        [Obsolete("Use new endpoint <api/me/mobilepush/{token}>")]
+        [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
         [OpenApiIgnore]
         public Task<IActionResult> DeleteMyTokenOld(string token)
         {
@@ -110,7 +110,7 @@ namespace Notifo.Areas.Api.Controllers.MobilePush
         /// <returns>
         /// 204 => Mobile push token removed.
         /// </returns>
-        [HttpDelete("api/me/mobilepush/{token}")]
+        [HttpDelete("api/me/mobilepush/{token:notEmpty}")]
         [AppPermission(NotifoRoles.AppUser)]
         public async Task<IActionResult> DeleteMyToken(string token)
         {

@@ -33,7 +33,7 @@ namespace Notifo.Areas.Api.Controllers.Logs
         /// 200 => Log entries returned.
         /// 404 => App not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/logs/")]
+        [HttpGet("api/apps/{appId:notEmpty}/logs/")]
         [AppPermission(NotifoRoles.AppAdmin)]
         [Produces(typeof(ListResponseDto<LogEntryDto>))]
         public async Task<IActionResult> GetLogs(string appId, [FromQuery] QueryDto q)

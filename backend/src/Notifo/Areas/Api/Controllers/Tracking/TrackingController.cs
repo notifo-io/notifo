@@ -33,7 +33,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpGet]
         [HttpPut]
         [HttpPost]
-        [Route("api/tracking/notifications/{id}/seen")]
+        [Route("api/tracking/notifications/{id:notEmpty}/seen")]
         public async Task<IActionResult> Seen(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var tokens = Enumerable.Repeat(TrackingToken.Parse(id, channel, deviceIdentifier), 1);
@@ -46,7 +46,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         [HttpGet]
         [HttpPut]
         [HttpPost]
-        [Route("api/tracking/notifications/{id}/delivered")]
+        [Route("api/tracking/notifications/{id:notEmpty}/delivered")]
         public async Task<IActionResult> Delivered(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var tokens = Enumerable.Repeat(TrackingToken.Parse(id, channel, deviceIdentifier), 1);
@@ -57,7 +57,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         }
 
         [HttpGet]
-        [Route("api/tracking/notifications/{id}/confirm")]
+        [Route("api/tracking/notifications/{id:notEmpty}/confirm")]
         public async Task<IActionResult> Confirm(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var token = TrackingToken.Parse(id, channel, deviceIdentifier);
@@ -79,11 +79,11 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
                 if (url.Contains('?', StringComparison.OrdinalIgnoreCase))
                 {
-                    url += $"&id={id}";
+                    url += $"&id={id:notEmpty}";
                 }
                 else
                 {
-                    url += $"?id={id}";
+                    url += $"?id={id:notEmpty}";
                 }
 
                 return Redirect(url);
@@ -93,7 +93,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
         }
 
         [HttpPost]
-        [Route("api/tracking/notifications/{id}/confirm")]
+        [Route("api/tracking/notifications/{id:notEmpty}/confirm")]
         public async Task<IActionResult> ConfirmPost(string id, [FromQuery] string? channel = null, [FromQuery] string? deviceIdentifier = null)
         {
             var token = TrackingToken.Parse(id, channel, deviceIdentifier);

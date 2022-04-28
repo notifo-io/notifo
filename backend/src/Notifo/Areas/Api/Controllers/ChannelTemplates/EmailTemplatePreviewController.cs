@@ -45,7 +45,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 200 => Channel template preview returned.
         /// 404 => Channel template not found.
         /// </returns>
-        [HttpGet("api/apps/{appId}/email-templates/{id}/preview")]
+        [HttpGet("api/apps/{appId:notEmpty}/email-templates/{id:notEmpty}/preview")]
         [Produces("text/html")]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> GetPreview(string appId, string id)
@@ -76,7 +76,7 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         /// 200 => Template rendered.
         /// 404 => App not found.
         /// </returns>
-        [HttpPost("api/apps/{appId}/email-templates/render")]
+        [HttpPost("api/apps/{appId:notEmpty}/email-templates/render")]
         [Produces(typeof(EmailPreviewDto))]
         [AppPermission(NotifoRoles.AppAdmin)]
         public async Task<IActionResult> PostPreview(string appId, [FromBody] EmailPreviewRequestDto request)

@@ -56,7 +56,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 200 => User returned.
         /// 404 => User not found.
         /// </returns>
-        [HttpGet("api/system-users/{id}/")]
+        [HttpGet("api/system-users/{id:notEmpty}/")]
         [ProducesResponseType(typeof(SystemUserDto), 201)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> GetUser(string id)
@@ -101,7 +101,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 200 => User updated.
         /// 403 => User cannot be updated.
         /// </returns>
-        [HttpPut("api/system-users/{id}/")]
+        [HttpPut("api/system-users/{id:notEmpty}/")]
         [ProducesResponseType(typeof(SystemUserDto), 200)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> PutUser(string id, [FromBody] UpdateSystemUserDto request)
@@ -126,7 +126,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 200 => User locked.
         /// 403 => User cannot be locked.
         /// </returns>
-        [HttpPut("api/system-users/{id}/lock/")]
+        [HttpPut("api/system-users/{id:notEmpty}/lock/")]
         [ProducesResponseType(typeof(SystemUserDto), 200)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> LockUser(string id)
@@ -151,7 +151,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 200 => User unlocked.
         /// 403 => User cannot be unlocked.
         /// </returns>
-        [HttpPut("api/system-users/{id}/unlock/")]
+        [HttpPut("api/system-users/{id:notEmpty}/unlock/")]
         [ProducesResponseType(typeof(SystemUserDto), 200)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> UnlockUser(string id)
@@ -176,7 +176,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 204 => User deleted.
         /// 403 => User cannot be deleted.
         /// </returns>
-        [HttpDelete("api/system-users/{id}/")]
+        [HttpDelete("api/system-users/{id:notEmpty}/")]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> DeleteUser(string id)
         {

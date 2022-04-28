@@ -13,7 +13,7 @@ using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates
 {
-    [Route("api/apps/{appId}/messaging-templates")]
+    [Route("api/apps/{appId:notEmpty}/messaging-templates")]
     [OpenApiTag("MessagingTemplates")]
     public sealed class MessagingTemplatesController : ChannelTemplatesController<MessagingTemplate, MessagingTemplateDto>
     {

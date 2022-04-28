@@ -65,6 +65,11 @@ namespace Notifo
             services.AddHttpClient();
             services.AddHttpContextAccessor();
 
+            services.AddRouting(options =>
+            {
+                options.ConstraintMap.Add("notEmpty", typeof(NotEmptyRouteConstraint));
+            });
+
             services.AddMvc(options =>
                 {
                     options.Filters.Add<AppResolver>();
