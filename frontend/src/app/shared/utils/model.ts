@@ -18,44 +18,44 @@ export const CHANNELS = [
 
 export const CONFIRM_MODES = [{
     value: 'Explicit',
-    label: texts.common.confirmModes.explicit,
+    label: texts.common.confirmModes.Explicit,
 }, {
     value: 'None',
-    label: texts.common.confirmModes.none,
+    label: texts.common.confirmModes.None,
 }];
 
 export const SEND_MODES = [{
     value: 'Inherit',
-    label: texts.common.sendModes.inherit,
+    label: texts.common.sendModes.Inherit,
 }, {
     value: 'Send',
-    label: texts.common.sendModes.send,
+    label: texts.common.sendModes.Send,
 }, {
     value: 'NotSending',
-    label: texts.common.sendModes.doNotSend,
+    label: texts.common.sendModes.NotSending,
 }, {
     value: 'NotAllowed',
-    label: texts.common.sendModes.doNotAllow,
+    label: texts.common.sendModes.NotAllowed,
 }];
 
 export const CONDITION_MODES = [{
     value: 'Inherit',
-    label: texts.common.conditionModes.inherit,
+    label: texts.common.conditionModes.Inherit,
 }, {
     value: 'Always',
-    label: texts.common.conditionModes.always,
+    label: texts.common.conditionModes.Always,
 }, {
     value: 'IfNotSeen',
-    label: texts.common.conditionModes.ifNotSeen,
+    label: texts.common.conditionModes.IfNotSeen,
 }, {
     value: 'IfNotConfirmed',
-    label: texts.common.conditionModes.ifNotConfirmed,
+    label: texts.common.conditionModes.IfNotConfirmed,
 }];
 
 export const ALLOWED_MODES = [{
     value: 'Allowed',
-    label: texts.common.allowed,
+    label: texts.common.allowedModes.Allowed,
 }, {
     value: 'NotAllowed',
-    label: texts.common.notAllowed,
+    label: texts.common.allowedModes.NotAllowed,
 }];

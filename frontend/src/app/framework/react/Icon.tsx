@@ -55,15 +55,12 @@ export interface IconProps {
 
     // The icon type.
     type: IconType;
-
-    // True when spinning.
-    spin?: boolean;
 }
 
 export const Icon = (props: IconProps) => {
-    const { className, spin, type } = props;
+    const { className, type } = props;
 
     return (
-        <i className={classNames(className, `icon-${type}`, { spin2: spin })} />
+        <i className={classNames(className, `icon-${type}`)} />
     );
 };

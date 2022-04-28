@@ -769,14 +769,14 @@ div {
         font-size: $font-size-sm;
         padding-bottom: .5rem;
         padding-top: .5rem;
-
-        .bordered {
-            border: 1px solid $color-table;
-        }
     }
 
     td {
         font-size: $font-size-sm;
+
+        &.bordered {
+            border: 1px solid $color-table;
+        }
     }
 
     &-sm-text {
@@ -932,59 +932,6 @@ textarea {
     &.disabled {
         opacity: .5;
         pointer-events: none;
-    }
-}
-
-//
-// Animations
-//
-.spin {
-    animation: spin 3s infinite linear;
-}
-
-.spin2 {
-    animation: spin2 1s infinite linear;
-}
-
-i {
-    &.spin {
-        display: inline-block;
-    }
-
-    &.spin2 {
-        display: inline-block;
-    }
-}
-
-@keyframes spin2 {
-    50% {
-        transform: rotate(180deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes spin {
-    20% {
-        transform: rotate(0deg);
-    }
-
-    30% {
-        transform: rotate(180deg);
-    }
-
-    70% {
-        transform: rotate(180deg);
-    }
-
-    80% {
-        transform: rotate(360deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
     }
 }
 
