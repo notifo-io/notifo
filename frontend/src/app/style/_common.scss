@@ -491,6 +491,18 @@ $small-gutters: 4px;
                 }
             }
 
+            &.expanded {
+                td {
+                    border-bottom-color: $color-white;
+                }
+
+                &:hover {
+                    td {
+                        border-bottom-color: lighten($color-primary, 10%);
+                    }
+                }
+            }
+
             &.selected {
                 border: 2px solid $color-primary;
 

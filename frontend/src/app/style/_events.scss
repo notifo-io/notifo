@@ -4,3 +4,9 @@
 .events {
     max-width: 1200px;
 }
+
+.event-row-details {
+    .json-details {
+        border-top: 1px solid $color-border;
+    }
+}

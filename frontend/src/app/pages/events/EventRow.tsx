@@ -5,6 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import * as React from 'react';
 import { Button } from 'reactstrap';
 import { FormatDate, Icon, JsonDetails } from '@app/framework';
@@ -28,7 +29,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
         <>
             <CounterRow counters={event.counters} columnCount={4} showCounters={showCounters}>
                 <>
-                    <tr className='list-item-summary'>
+                    <tr className={classNames('list-item-summary', { expanded: isOpen })}>
                         <td>
                             <Button size='sm' color='link' onClick={() => setIsOpen(!isOpen)}>
                                 <Icon type={isOpen ? 'expand_less' : 'expand_more'} />
@@ -48,7 +49,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
                     </tr>
 
                     {isOpen &&
-                        <tr className='list-item-details'>
+                        <tr className='list-item-details event-row-details'>
                             <td className='no-padding' colSpan={4}>
                                 <JsonDetails object={event} />
                             </td>
