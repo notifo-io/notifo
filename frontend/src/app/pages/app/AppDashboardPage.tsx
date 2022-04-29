@@ -29,7 +29,7 @@ export const AppDashboardPage = () => {
 
             <CounterCards counters={app.counters} />
 
-            <div className='text-right text-muted'>
+            <div className='text-right text-muted' style={{ marginTop: '-1rem' }}>
                 <small>{texts.common.statisticsInfo}</small>
             </div>
 
