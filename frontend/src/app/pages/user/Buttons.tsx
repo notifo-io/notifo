@@ -151,5 +151,5 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
 };
 
 function getButtonClass(hasValue: boolean) {
-    return classNames('btn-flat', 'pl-0', 'pr-0', { 'text-primary': hasValue, 'text-muted': !hasValue });
+    return classNames('btn-flat btn-font-lg', 'pl-0', 'pr-0', { 'text-primary': hasValue, 'text-muted': !hasValue });
 }

@@ -103,19 +103,28 @@ export const UserPage = () => {
 
                                     <FormGroup row>
                                         <Col xs={5}>
-                                            <Label>{texts.common.created}</Label>
+                                            <Label className='truncate'>{texts.common.created}</Label>
                                         </Col>
-                                        <Col xs={7} className='text-right'>
+                                        <Col xs={7} className='text-right text-sm'>
                                             <FormatDate date={user.created} />
                                         </Col>
                                     </FormGroup>
 
                                     <FormGroup row>
                                         <Col xs={5}>
-                                            <Label>{texts.common.lastUpdate}</Label>
+                                            <Label className='truncate'>{texts.common.lastUpdate}</Label>
                                         </Col>
-                                        <Col xs={7} className='text-right'>
+                                        <Col xs={7} className='text-right text-sm'>
                                             <FormatDate date={user.lastUpdate} />
+                                        </Col>
+                                    </FormGroup>
+
+                                    <FormGroup row>
+                                        <Col xs={5}>
+                                            <Label className='truncate'>{texts.common.lastNotification}</Label>
+                                        </Col>
+                                        <Col xs={7} className='text-right text-sm'>
+                                            <FormatDate date={user.lastNotification} />
                                         </Col>
                                     </FormGroup>
 

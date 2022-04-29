@@ -288,6 +288,10 @@ $small-gutters: 4px;
     }
 }
 
+.btn-font-lg {
+    font-size: 1rem;
+}
+
 .btn-simple {
     color: $color-primary;
 }
@@ -798,6 +802,10 @@ div {
 
 .popper-lg {
     max-width: 500px;
+}
+
+.text-sm {
+    font-size: $font-size-sm;
 }
 
 .text-lg {
