@@ -462,7 +462,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                     filters.Add(Filter.Ne(x => x.IsDeleted, true));
                     break;
                 default:
-                    filters.Add(Filter.Ne(nameof(UserNotification.IsDeleted), 0));
+                    filters.Add(Filter.RawNe(nameof(UserNotification.IsDeleted), BsonValue.Create("invalid")));
                     break;
             }
 

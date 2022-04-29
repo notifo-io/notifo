@@ -8,7 +8,11 @@
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
+
+#pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Notifo.Infrastructure.MongoDb
 {
@@ -96,6 +100,47 @@ namespace Notifo.Infrastructure.MongoDb
 
                     yield return item;
                 }
+            }
+        }
+
+        public static FilterDefinition<T> RawNe<T>(this FilterDefinitionBuilder<T> builder, string field, BsonValue value)
+        {
+            var filter = new BsonDocument
+            {
+                [field] = new BsonDocument
+                {
+                    ["$ne"] = value
+                }
+            };
+
+            return new RawFilterDefinition<T>(filter);
+        }
+
+        public static FilterDefinition<T> Eq<T>(this FilterDefinitionBuilder<T> builder, string field, BsonValue value)
+        {
+            var filter = new BsonDocument
+            {
+                [field] = new BsonDocument
+                {
+                    ["$eq"] = value
+                }
+            };
+
+            return new RawFilterDefinition<T>(filter);
+        }
+
+        private sealed class RawFilterDefinition<T> : FilterDefinition<T>
+        {
+            private readonly BsonDocument document;
+
+            public RawFilterDefinition(BsonDocument document)
+            {
+                this.document = document;
+            }
+
+            public override BsonDocument Render(IBsonSerializer<T> documentSerializer, IBsonSerializerRegistry serializerRegistry, LinqProvider linqProvider)
+            {
+                return document;
             }
         }
     }
