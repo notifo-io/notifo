@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, ListState } from '@app/framework';
+import { ErrorInfo, ListState } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 
 export interface SubscriptionsStateInStore {
@@ -20,5 +20,5 @@ export interface SubscriptionsState {
     upserting?: boolean;
 
     // The creating error.
-    upsertingError?: ErrorDto;
+    upsertingError?: ErrorInfo;
 }

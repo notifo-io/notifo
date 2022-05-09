@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
 
@@ -73,18 +74,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public Instant? LastNotification { get; set; }
 
         /// <summary>
-        /// The number of web hook tokens.
-        /// </summary>
-        [Required]
-        public int NumberOfWebPushTokens { get; set; }
-
-        /// <summary>
-        /// The number of web hook tokens.
-        /// </summary>
-        [Required]
-        public int NumberOfMobilePushTokens { get; set; }
-
-        /// <summary>
         /// True when only whitelisted topic are allowed.
         /// </summary>
         [Required]
@@ -114,6 +103,12 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public List<MobilePushTokenDto> MobilePushTokens { get; set; } = new List<MobilePushTokenDto>();
 
         /// <summary>
+        /// The web push subscriptions.
+        /// </summary>
+        [Required]
+        public List<WebPushSubscriptionDto> WebPushSubscriptions { get; set; } = new List<WebPushSubscriptionDto>();
+
+        /// <summary>
         /// The supported user properties.
         /// </summary>
         public List<UserPropertyDto>? UserProperties { get; set; }
@@ -121,8 +116,6 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         public static UserDto FromDomainObject(User source, List<UserProperty>? properties, IReadOnlyDictionary<string, Instant>? lastNotifications)
         {
             var result = SimpleMapper.Map(source, new UserDto());
-
-            result.NumberOfWebPushTokens = source.WebPushSubscriptions?.Count ?? 0;
 
             if (source.Settings != null)
             {
@@ -135,14 +128,14 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 }
             }
 
-            if (source.MobilePushTokens != null)
+            foreach (var subscription in source.WebPushSubscriptions.OrEmpty())
             {
-                result.NumberOfMobilePushTokens = source.MobilePushTokens.Count;
+                result.WebPushSubscriptions.Add(WebPushSubscriptionDto.FromDomainObject(subscription));
+            }
 
-                foreach (var token in source.MobilePushTokens)
-                {
-                    result.MobilePushTokens.Add(MobilePushTokenDto.FromDomainObject(token));
-                }
+            foreach (var token in source.MobilePushTokens.OrEmpty())
+            {
+                result.MobilePushTokens.Add(MobilePushTokenDto.FromDomainObject(token));
             }
 
             if (properties != null)

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto } from '@app/framework';
+import { ErrorInfo } from '@app/framework';
 import { ListState } from '@app/framework/model';
 import { AppDetailsDto, AppDto } from '@app/service';
 
@@ -31,23 +31,23 @@ export interface AppsState {
     loadingDetails?: boolean;
 
     // The loading details error.
-    loadingDetailsError?: ErrorDto;
+    loadingDetailsError?: ErrorInfo;
 
     // True if creating.
     creating?: boolean;
 
     // The creating error.
-    creatingError?: ErrorDto;
+    creatingError?: ErrorInfo;
 
     // True if upserting.
     upserting?: boolean;
 
     // The upserting error.
-    upsertingError?: ErrorDto;
+    upsertingError?: ErrorInfo;
 
     // True if updating the contributors.
     contributorsUpdating?: boolean;
 
     // The contributor error.
-    contributorsError?: ErrorDto;
+    contributorsError?: ErrorInfo;
 }

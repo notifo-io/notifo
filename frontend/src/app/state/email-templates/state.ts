@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, ListState } from '@app/framework';
+import { ErrorInfo, ListState } from '@app/framework';
 import { ChannelTemplateDetailsDtoOfEmailTemplateDto, ChannelTemplateDto } from '@app/service';
 
 export interface EmailTemplatesStateInStore {
@@ -23,41 +23,41 @@ export interface EmailTemplatesState {
     loadingTemplate?: boolean;
 
     // The email templates loading error.
-    loadingTemplateError?: ErrorDto;
+    loadingTemplateError?: ErrorInfo;
 
     // True if creating an email template.
     creating?: boolean;
 
     // The error if creating an email template fails.
-    creatingError?: ErrorDto;
+    creatingError?: ErrorInfo;
 
     // True if creating an email template language.
     creatingLanguage?: boolean;
 
     // The error if creating an email template language fails.
-    creatingLanguageError?: ErrorDto;
+    creatingLanguageError?: ErrorInfo;
 
     // True if updating an email template.
     updating?: boolean;
 
     // The error if updating an email template fails.
-    updatingError?: ErrorDto;
+    updatingError?: ErrorInfo;
 
     // True if updating an email template language.
     updatingLanguage?: boolean;
 
     // The error if updating an email template language fails.
-    updatingLanguageError?: ErrorDto;
+    updatingLanguageError?: ErrorInfo;
 
     // True if deleting an email template.
     deleting?: boolean;
 
     // The error if deleting an email template language.
-    deletingError?: ErrorDto;
+    deletingError?: ErrorInfo;
 
     // True if deleting an email template language.
     deletingLanguage?: boolean;
 
     // The error if deleting an email template language fails.
-    deletingLanguageError?: ErrorDto;
+    deletingLanguageError?: ErrorInfo;
 }

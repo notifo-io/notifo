@@ -6,7 +6,8 @@
  */
 
 import { createReducer, Middleware } from '@reduxjs/toolkit';
-import { ErrorDto, listThunk, Query } from '@app/framework';
+import { toast } from 'react-toastify';
+import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { ChannelTemplateDto, Clients, EmailTemplateDto, UpdateChannelTemplateDtoOfEmailTemplateDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { EmailTemplatesState } from './state';
@@ -60,9 +61,13 @@ export const emailTemplatesMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (createEmailTemplate.fulfilled.match(action) || deleteEmailTemplate.fulfilled.match(action)) {
-        const load: any = loadEmailTemplates(action.meta.arg.appId);
+        const { appId } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadEmailTemplates(appId) as any);
+    } else if (
+        deleteEmailTemplate.rejected.match(action) ||
+        deleteEmailTemplateLanguage.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -82,7 +87,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(loadEmailTemplate.rejected, (state, action) => {
         state.loadingTemplate = false;
-        state.loadingTemplateError = action.payload as ErrorDto;
+        state.loadingTemplateError = action.payload as ErrorInfo;
     })
     .addCase(loadEmailTemplate.fulfilled, (state, action) => {
         state.loadingTemplate = false;
@@ -95,7 +100,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(createEmailTemplate.rejected, (state, action) => {
         state.creating = false;
-        state.creatingError = action.payload as ErrorDto;
+        state.creatingError = action.payload as ErrorInfo;
     })
     .addCase(createEmailTemplate.fulfilled, (state) => {
         state.creating = false;
@@ -107,7 +112,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(createEmailTemplateLanguage.rejected, (state, action) => {
         state.creatingLanguage = false;
-        state.creatingLanguageError = action.payload as ErrorDto;
+        state.creatingLanguageError = action.payload as ErrorInfo;
     })
     .addCase(createEmailTemplateLanguage.fulfilled, (state, action) => {
         state.creatingLanguage = false;
@@ -123,7 +128,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(updateEmailTemplate.rejected, (state, action) => {
         state.updating = false;
-        state.updatingError = action.payload as ErrorDto;
+        state.updatingError = action.payload as ErrorInfo;
     })
     .addCase(updateEmailTemplate.fulfilled, (state, action) => {
         state.updating = false;
@@ -139,7 +144,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(updateEmailTemplateLanguage.rejected, (state, action) => {
         state.updatingLanguage = false;
-        state.updatingLanguageError = action.payload as ErrorDto;
+        state.updatingLanguageError = action.payload as ErrorInfo;
     })
     .addCase(updateEmailTemplateLanguage.fulfilled, (state, action) => {
         state.updatingLanguage = false;
@@ -155,7 +160,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(deleteEmailTemplate.rejected, (state, action) => {
         state.deleting = false;
-        state.deletingError = action.payload as ErrorDto;
+        state.deletingError = action.payload as ErrorInfo;
     })
     .addCase(deleteEmailTemplate.fulfilled, (state) => {
         state.deleting = false;
@@ -167,7 +172,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
     })
     .addCase(deleteEmailTemplateLanguage.rejected, (state, action) => {
         state.deletingLanguage = false;
-        state.deletingLanguageError = action.payload as ErrorDto;
+        state.deletingLanguageError = action.payload as ErrorInfo;
     })
     .addCase(deleteEmailTemplateLanguage.fulfilled, (state, action) => {
         state.deletingLanguage = false;

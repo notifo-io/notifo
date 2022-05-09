@@ -72,35 +72,32 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
             await publisherClient.PublishAsync(pubSubMessage);
         }
 
-        public Task SubscribeAsync(MessageCallback<T> onMessage,
+        public async Task SubscribeAsync(MessageCallback<T> onMessage,
             CancellationToken ct = default)
-        {
-            SubscribeCoreAsync(onMessage).Forget();
-
-            return Task.CompletedTask;
-        }
-
-        private async Task SubscribeCoreAsync(MessageCallback<T> onMessage)
         {
             var subcriptionName = new SubscriptionName(options.ProjectId, $"{options.Prefix}{topicId}");
 
             subscriberClient = await SubscriberClient.CreateAsync(subcriptionName);
-            subscriberClient.StartAsync(async (pubSubMessage, subscriberToken) =>
+            SubscribeCoreAsync(onMessage).Forget();
+        }
+
+        private async Task SubscribeCoreAsync(MessageCallback<T> onMessage)
+        {
+            try
             {
-                var message = serializer.Deserialize<Envelope<T>>(pubSubMessage.Data.Span);
-
-                await onMessage(message, subscriberToken);
-
-                return SubscriberClient.Reply.Ack;
-            }).ContinueWith(task =>
-            {
-                var exception = task.Exception?.Flatten()?.InnerException;
-
-                if (exception != null && exception is not OperationCanceledException)
+                await subscriberClient!.StartAsync(async (pubSubMessage, subscriberToken) =>
                 {
-                    log.LogError(exception, "Failed to consume message.");
-                }
-            }, CancellationToken.None).Forget();
+                    var message = serializer.Deserialize<Envelope<T>>(pubSubMessage.Data.Span);
+
+                    await onMessage(message, subscriberToken);
+
+                    return SubscriberClient.Reply.Ack;
+                });
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                log.LogError(ex, "Failed to consume message.");
+            }
         }
     }
 }

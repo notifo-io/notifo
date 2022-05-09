@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, ListState } from '@app/framework';
+import { ErrorInfo, ListState } from '@app/framework';
 import { UserDto } from '@app/service';
 
 export interface UsersStateInStore {
@@ -29,5 +29,5 @@ export interface UsersState {
     upserting?: boolean;
 
     // The error if upserting fails.
-    upsertingError?: ErrorDto;
+    upsertingError?: ErrorInfo;
 }

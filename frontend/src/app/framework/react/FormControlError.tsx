@@ -7,11 +7,11 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import { ErrorDto, isErrorVisible } from '@app/framework/utils';
+import { ErrorInfo, isErrorVisible } from '@app/framework/utils';
 
 export interface FormControlErrorProps {
     // The list of errors.
-    error?: ErrorDto | string;
+    error?: ErrorInfo | string;
 
     // The submit count.
     submitCount: number;

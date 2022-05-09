@@ -6,8 +6,9 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 import { Middleware } from 'redux';
-import { ErrorDto, listThunk, Query } from '@app/framework';
+import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { Clients, SystemUserDto, UpdateSystemUserDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { SystemUsersState } from './state';
@@ -50,9 +51,9 @@ export const systemUsersMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (upsertSystemUser.fulfilled.match(action) || deleteSystemUser.fulfilled.match(action)) {
-        const load: any = loadSystemUsers();
-
-        store.dispatch(load);
+        store.dispatch(loadSystemUsers() as any);
+    } else if (deleteSystemUser.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -78,7 +79,7 @@ export const systemUsersReducer = createReducer(initialState, builder => list.in
     })
     .addCase(upsertSystemUser.rejected, (state, action) => {
         state.upserting = false;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(upsertSystemUser.fulfilled, (state) => {
         state.upserting = false;

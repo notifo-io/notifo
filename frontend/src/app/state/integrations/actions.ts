@@ -6,7 +6,8 @@
  */
 
 import { createReducer, Middleware } from '@reduxjs/toolkit';
-import { ErrorDto } from '@app/framework';
+import { toast } from 'react-toastify';
+import { ErrorInfo, formatError } from '@app/framework';
 import { Clients, CreateIntegrationDto, UpdateIntegrationDto } from '@app/service';
 import { createApiThunk, selectApp } from '../shared';
 import { IntegrationsState } from './state';
@@ -35,9 +36,11 @@ export const integrationsMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (createIntegration.fulfilled.match(action) || updateIntegration.fulfilled.match(action)) {
-        const load: any = loadIntegrations({ appId: action.meta.arg.appId });
+        const { appId } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadIntegrations({ appId }) as any);
+    } else if (updateIntegration.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -55,7 +58,7 @@ export const integrationsReducer = createReducer(initialState, builder => builde
     })
     .addCase(loadIntegrations.rejected, (state, action) => {
         state.loading = false;
-        state.loadingError = action.payload as ErrorDto;
+        state.loadingError = action.payload as ErrorInfo;
     })
     .addCase(loadIntegrations.fulfilled, (state, action) => {
         state.configured = action.payload.configured;
@@ -69,7 +72,7 @@ export const integrationsReducer = createReducer(initialState, builder => builde
     })
     .addCase(createIntegration.rejected, (state, action) => {
         state.upserting = false;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(createIntegration.fulfilled, (state, action) => {
         state.upserting = false;
@@ -85,7 +88,7 @@ export const integrationsReducer = createReducer(initialState, builder => builde
     })
     .addCase(updateIntegration.rejected, (state, action) => {
         state.upserting = false;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(updateIntegration.fulfilled, (state, action) => {
         state.upserting = false;

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto } from '@app/framework';
+import { ErrorInfo } from '@app/framework';
 import { PublishDto } from '@app/service';
 
 export interface PublishStateInStore {
@@ -17,7 +17,7 @@ export interface PublishState {
     publishing?: boolean;
 
     // The publishing error.
-    publishingError?: ErrorDto;
+    publishingError?: ErrorInfo;
 
     // True when the dialog is open.
     dialogOpen?: boolean;

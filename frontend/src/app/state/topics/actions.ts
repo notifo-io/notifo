@@ -6,7 +6,8 @@
  */
 
 import { createReducer, Middleware } from '@reduxjs/toolkit';
-import { ErrorDto, listThunk, Query } from '@app/framework';
+import { toast } from 'react-toastify';
+import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { Clients, TopicDto, TopicQueryScope, UpsertTopicDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { TopicsState } from './state';
@@ -37,9 +38,11 @@ export const topicsMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (upsertTopic.fulfilled.match(action) || deleteTopic.fulfilled.match(action)) {
-        const load: any = loadTopics(action.meta.arg.appId, action.meta.arg.scope);
+        const { appId, scope } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadTopics(appId, scope) as any);
+    } else if (deleteTopic.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -59,7 +62,7 @@ export const topicsReducer = createReducer(initialState, builder => list.initial
     })
     .addCase(upsertTopic.rejected, (state, action) => {
         state.upserting = false;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(upsertTopic.fulfilled, (state) => {
         state.upserting = false;

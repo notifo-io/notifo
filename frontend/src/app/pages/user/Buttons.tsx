@@ -7,9 +7,11 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import { Button, Popover, PopoverBody, Table } from 'reactstrap';
 import { ApiValue, ClickOutside, FormatDate, Icon } from '@app/framework';
 import { UserDto } from '@app/service';
+import { deleteUserMobilePushToken, deleteUserWebPushSubscription } from '@app/state';
 import { texts } from '@app/texts';
 
 function usePopover(): [boolean, () => void, () => void, () => void] {
@@ -74,21 +76,53 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
     );
 };
 
-export const ButtonWebPush = ({ user }: { user: UserDto }) => {
+export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto }) => {
+    const dispatch = useDispatch();
     const [isOpen, open, close, toggle] = usePopover();
 
-    const hasValue = user.numberOfWebPushTokens > 0;
+    const doDelete = React.useCallback((endpoint: string) => {
+        dispatch(deleteUserWebPushSubscription({ appId, userId: user.id, endpoint }));
+    }, [appId, dispatch, user.id]);
+
+    const hasValue = user.webPushSubscriptions.length > 0;
 
     return (
         <>
             <Button color='none' id='buttonWebPush' className={getButtonClass(hasValue)} block onClick={open}>
-                <Icon type='browser' /> {user.numberOfWebPushTokens}
+                <Icon type='browser' /> {user.webPushSubscriptions.length}
             </Button>
 
-            <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={toggle}>
+            <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={toggle} popperClassName='popper-lg'>
                 <ClickOutside onClickOutside={close}>
                     <PopoverBody>
-                        {user.numberOfWebPushTokens}
+                        <Table className='table-middle table-fixed condensed' size='sm' borderless>
+                            <colgroup>
+                                <col />
+                                <col style={{ width: 40 }} />
+                            </colgroup>
+
+                            <thead>
+                                <tr>
+                                    <th>{texts.common.token}</th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {user.webPushSubscriptions.map((subscription, i) => (
+                                    <tr key={i}>
+                                        <td>
+                                            <ApiValue size='sm' value={subscription.endpoint} />
+                                        </td>
+                                        <td>            
+                                            <Button size='sm' color='danger' onClick={() => doDelete(subscription.endpoint)}>
+                                                <Icon type='delete' />
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
                     </PopoverBody>
                 </ClickOutside>
             </Popover>
@@ -96,15 +130,20 @@ export const ButtonWebPush = ({ user }: { user: UserDto }) => {
     );
 };
 
-export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
+export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto }) => {
+    const dispatch = useDispatch();
     const [isOpen, open, close, toggle] = usePopover();
 
-    const hasValue = user.numberOfMobilePushTokens > 0;
+    const doDelete = React.useCallback((token: string) => {
+        dispatch(deleteUserMobilePushToken({ appId, userId: user.id, token }));
+    }, [appId, dispatch, user.id]);
+
+    const hasValue = user.mobilePushTokens.length > 0;
 
     return (
         <>
             <Button color='none' id='buttonMobilePush' className={getButtonClass(hasValue)} block onClick={open}>
-                <Icon type='mobile' /> {user.numberOfMobilePushTokens}
+                <Icon type='mobile' /> {user.mobilePushTokens.length > 0}
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonMobilePush' placement='auto' toggle={toggle} popperClassName='popper-lg'>
@@ -115,6 +154,7 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
                                 <col style={{ width: 100 }} />
                                 <col />
                                 <col style={{ width: 170 }} />
+                                <col style={{ width: 40 }} />
                             </colgroup>
 
                             <thead>
@@ -122,6 +162,7 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
                                     <th>{texts.common.device}</th>
                                     <th>{texts.common.token}</th>
                                     <th>{texts.common.lastWakeup}</th>
+                                    <th>&nbsp;</th>
                                 </tr>
                             </thead>
 
@@ -138,6 +179,11 @@ export const ButtonMobilePush = ({ user }: { user: UserDto }) => {
                                             ) : (
                                                 <>{texts.common.notYet}</>
                                             )}
+                                        </td>
+                                        <td>            
+                                            <Button size='sm' color='danger' onClick={() => doDelete(token.token)}>
+                                                <Icon type='delete' />
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))}

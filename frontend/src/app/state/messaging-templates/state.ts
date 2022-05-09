@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, ListState } from '@app/framework';
+import { ErrorInfo, ListState } from '@app/framework';
 import { ChannelTemplateDetailsDtoOfMessagingTemplateDto, ChannelTemplateDto } from '@app/service';
 
 export interface MessagingTemplatesStateInStore {
@@ -23,23 +23,23 @@ export interface MessagingTemplatesState {
     loadingTemplate?: boolean;
 
     // The messaging templates loading error.
-    loadingTemplateError?: ErrorDto;
+    loadingTemplateError?: ErrorInfo;
 
     // True if creating an messaging template.
     creating?: boolean;
 
     // The error if creating an messaging template fails.
-    creatingError?: ErrorDto;
+    creatingError?: ErrorInfo;
 
     // True if updating an messaging template.
     updating?: boolean;
 
     // The error if updating an messaging template fails.
-    updatingError?: ErrorDto;
+    updatingError?: ErrorInfo;
 
     // True if deleting an messaging template.
     deleting?: boolean;
 
     // The error if deleting an messaging template language.
-    deletingError?: ErrorDto;
+    deletingError?: ErrorInfo;
 }

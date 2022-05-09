@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto, ListState } from '@app/framework';
+import { ErrorInfo, ListState } from '@app/framework';
 import { TemplateDto } from '@app/service';
 
 export interface TemplatesStateInStore {
@@ -23,5 +23,5 @@ export interface TemplatesState {
     upserting?: boolean;
 
     // The creating error.
-    upsertingError?: ErrorDto;
+    upsertingError?: ErrorInfo;
 }

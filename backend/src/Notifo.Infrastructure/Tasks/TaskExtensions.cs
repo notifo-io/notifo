@@ -25,7 +25,7 @@ namespace Notifo.Infrastructure.Tasks
             {
                 task.ContinueWith(
                     IgnoreTaskContinuation,
-                    CancellationToken.None,
+                    default,
                     TaskContinuationOptions.OnlyOnFaulted |
                     TaskContinuationOptions.ExecuteSynchronously,
                     TaskScheduler.Default);

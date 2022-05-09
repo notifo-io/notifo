@@ -6,7 +6,7 @@
  */
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ErrorDto, listThunk } from '@app/framework';
+import { ErrorInfo, listThunk } from '@app/framework';
 import { AddContributorDto, AppDto, Clients, UpsertAppDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { AppsState, CreateAppParams } from './state';
@@ -66,7 +66,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     })
     .addCase(createApp.rejected, (state, action) => {
         state.creating = false;
-        state.creatingError = action.payload as ErrorDto;
+        state.creatingError = action.payload as ErrorInfo;
     })
     .addCase(createApp.fulfilled, (state, action) => {
         state.creating = false;
@@ -80,7 +80,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     })
     .addCase(loadDetails.rejected, (state, action) => {
         state.loadingDetails = false;
-        state.loadingDetailsError = action.payload as ErrorDto;
+        state.loadingDetailsError = action.payload as ErrorInfo;
     })
     .addCase(loadDetails.fulfilled, (state, action) => {
         state.loadingDetails = false;
@@ -93,7 +93,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     })
     .addCase(upsertApp.rejected, (state, action) => {
         state.upserting = false;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(upsertApp.fulfilled, (state, action) => {
         state.upserting = false;
@@ -110,7 +110,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     })
     .addCase(addContributor.rejected, (state, action) => {
         state.contributorsUpdating = false;
-        state.contributorsError = action.payload as ErrorDto;
+        state.contributorsError = action.payload as ErrorInfo;
     })
     .addCase(addContributor.fulfilled, (state, action) => {
         state.contributorsUpdating = false;
@@ -127,7 +127,7 @@ export const appsReducer = createReducer(initialState, builder => list.initializ
     })
     .addCase(removeContributor.rejected, (state, action) => {
         state.contributorsUpdating = false;
-        state.contributorsError = action.payload as ErrorDto;
+        state.contributorsError = action.payload as ErrorInfo;
     })
     .addCase(removeContributor.fulfilled, (state, action) => {
         state.contributorsUpdating = false;

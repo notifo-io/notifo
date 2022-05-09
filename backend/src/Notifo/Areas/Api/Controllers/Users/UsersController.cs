@@ -283,6 +283,62 @@ namespace Notifo.Areas.Api.Controllers.Users
         }
 
         /// <summary>
+        /// Remove an web push token.
+        /// </summary>
+        /// <param name="appId">The app where the users belong to.</param>
+        /// <param name="id">The user ID.</param>
+        /// <param name="token">The token.</param>
+        /// <returns>
+        /// 204 => User updated.
+        /// 404 => User or app not found.
+        /// </returns>
+        [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/mobilepush/{token}")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> DeleteMobilePushToken(string appId, string id, string token)
+        {
+            var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var update = new RemoveUserMobileToken { Token = Uri.UnescapeDataString(token) };
+
+            await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Remove an web push subscription.
+        /// </summary>
+        /// <param name="appId">The app where the users belong to.</param>
+        /// <param name="id">The user ID.</param>
+        /// <param name="endpoint">The endpoint.</param>
+        /// <returns>
+        /// 204 => User updated.
+        /// 404 => User or app not found.
+        /// </returns>
+        [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/webpush/{endpoint}")]
+        [AppPermission(NotifoRoles.AppAdmin)]
+        public async Task<IActionResult> DeleteWebPushSubscription(string appId, string id, string endpoint)
+        {
+            var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var update = new RemoveUserWebPushSubscription { Endpoint = Uri.UnescapeDataString(endpoint) };
+
+            await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+
+            return NoContent();
+        }
+
+        /// <summary>
         /// Delete a user.
         /// </summary>
         /// <param name="appId">The app where the users belongs to.</param>

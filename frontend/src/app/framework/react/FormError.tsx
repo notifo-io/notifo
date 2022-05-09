@@ -8,11 +8,11 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import { Alert } from 'reactstrap';
-import { ErrorDetails, ErrorDto, formatError, isError, Types } from '@app/framework/utils';
+import { ErrorDetails, ErrorInfo, formatError, isError, Types } from '@app/framework/utils';
 
 export interface FormErrorProps {
     // The error.
-    error?: ErrorDto | string | null;
+    error?: ErrorInfo | string | null;
 
     // Optional class name.
     className?: string;

@@ -6,7 +6,7 @@
  */
 
 import { ActionReducerMapBuilder, createAction, Dispatch } from '@reduxjs/toolkit';
-import { buildError, ErrorDto, Types } from './../utils';
+import { buildError, ErrorInfo, Types } from './../utils';
 
 export interface ListState<T, TExtra = any> extends Query {
     // The total number of items.
@@ -16,7 +16,7 @@ export interface ListState<T, TExtra = any> extends Query {
     extra?: TExtra;
 
     // The loading error.
-    error?: ErrorDto | null;
+    error?: ErrorInfo | null;
 
     // True if at least loaded once.
     isLoaded?: boolean;
@@ -74,7 +74,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
 
     type ActionPendingType = { reset?: boolean; request: SearchRequest };
     type ActionFulfilledType = { items: readonly TItem[]; extra?: TExtra; total: number };
-    type ActionRejectedType = { error: ErrorDto };
+    type ActionRejectedType = { error: ErrorInfo };
 
     const actionPending = createAction<ActionPendingType>(`${name}/pending`);
     const actionFulfilled = createAction<ActionFulfilledType>(`${name}/fulfilled`);

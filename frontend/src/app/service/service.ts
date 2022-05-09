@@ -991,6 +991,130 @@ export class UsersClient {
         }
         return Promise.resolve<void>(null as any);
     }
+
+    /**
+     * Remove an web push token.
+     * @param appId The app where the users belong to.
+     * @param id The user ID.
+     * @param token The token.
+     * @return User updated.
+     */
+    deleteMobilePushToken(appId: string, id: string, token: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/mobilepush/{token}";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (token === undefined || token === null)
+            throw new Error("The parameter 'token' must be defined.");
+        url_ = url_.replace("{token}", encodeURIComponent("" + token));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteMobilePushToken(_response);
+        });
+    }
+
+    protected processDeleteMobilePushToken(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Remove an web push subscription.
+     * @param appId The app where the users belong to.
+     * @param id The user ID.
+     * @param endpoint The endpoint.
+     * @return User updated.
+     */
+    deleteWebPushSubscription(appId: string, id: string, endpoint: string): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/webpush/{endpoint}";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (endpoint === undefined || endpoint === null)
+            throw new Error("The parameter 'endpoint' must be defined.");
+        url_ = url_.replace("{endpoint}", encodeURIComponent("" + endpoint));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteWebPushSubscription(_response);
+        });
+    }
+
+    protected processDeleteWebPushSubscription(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed", status, _responseText, _headers, result500);
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Validation error", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export class TopicsClient {
@@ -5398,7 +5522,7 @@ export interface UserTopicDto {
     channels: { [key: string]: TopicChannel; };
 }
 
-export type TopicChannel = "Allowed" | "NotAllowed";
+export type TopicChannel = "NotAllowed" | "Allowed";
 
 export interface ListResponseDtoOfSubscriptionDto {
     /** The items. */
@@ -5456,10 +5580,6 @@ export interface UserDto {
     lastUpdate: string;
     /** The date time (ISO 8601) when the user has been received the last notification. */
     lastNotification?: string | undefined;
-    /** The number of web hook tokens. */
-    numberOfWebPushTokens: number;
-    /** The number of web hook tokens. */
-    numberOfMobilePushTokens: number;
     /** True when only whitelisted topic are allowed. */
     requiresWhitelistedTopics: boolean;
     /** The user properties. */
@@ -5470,6 +5590,8 @@ export interface UserDto {
     counters: { [key: string]: number; };
     /** The mobile push tokens. */
     mobilePushTokens: MobilePushTokenDto[];
+    /** The web push subscriptions. */
+    webPushSubscriptions: WebPushSubscriptionDto[];
     /** The supported user properties. */
     userProperties?: UserPropertyDto[] | undefined;
 }
@@ -5484,6 +5606,11 @@ export interface MobilePushTokenDto {
 }
 
 export type MobileDeviceType = "Unknown" | "Android" | "iOS";
+
+export interface WebPushSubscriptionDto {
+    /** The endpoint. */
+    endpoint: string;
+}
 
 export interface UserPropertyDto {
     /** The field name for the property. */
@@ -5876,10 +6003,6 @@ export interface EventDto {
     displayName: string;
     /** Additional user defined data. */
     data?: string | undefined;
-    /** The optional name of the Email template. */
-    emailTemplate?: string | undefined;
-    /** The optional name of the SMS template. */
-    smsTemplate?: string | undefined;
     /** The time when the event has been created. */
     created: string;
     /** The final formatting infos. */

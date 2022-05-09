@@ -29,7 +29,7 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            if (!user.WebPushSubscriptions.Any(x => x.Endpoint != Endpoint))
+            if (!user.WebPushSubscriptions.Any(x => x.Endpoint == Endpoint))
             {
                 return default;
             }

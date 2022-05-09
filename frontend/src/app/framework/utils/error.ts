@@ -10,7 +10,7 @@ import { Types } from './types';
 
 // tslint:disable: no-parameter-reassignment
 
-export interface ErrorDto {
+export interface ErrorInfo {
     readonly statusCode: number;
     readonly response: any;
     readonly details?: ErrorDetails[];
@@ -21,15 +21,15 @@ export interface ErrorDetails {
     readonly message: string;
 }
 
-export function isErrorVisible(error: string | ErrorDto | undefined | null, touched: boolean, submitCount: number): boolean {
+export function isErrorVisible(error: string | ErrorInfo | undefined | null, touched: boolean, submitCount: number): boolean {
     return !!error && (touched || submitCount > 0);
 }
 
-export function isError(error: any): error is ErrorDto {
+export function isError(error: any): error is ErrorInfo {
     return error && Types.isNumber(error.statusCode) && Types.isBoolean(error.wellFormed);
 }
 
-export function buildErrorWithFallback(error: any, message: string): ErrorDto {
+export function buildErrorWithFallback(error: any, message: string): ErrorInfo {
     if (isError(error)) {
         if (error.wellFormed) {
             return error;
@@ -57,7 +57,7 @@ export function buildError(statusCode: number, response: any, details?: any, wel
     return { statusCode, response, details, wellFormed };
 }
 
-export function formatError(error: ErrorDto) {
+export function formatError(error: ErrorInfo) {
     if (error.response) {
         if (Types.isString(error.response)) {
             return error.response;

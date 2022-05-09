@@ -6,7 +6,8 @@
  */
 
 import { createReducer, Middleware } from '@reduxjs/toolkit';
-import { ErrorDto, listThunk, Query } from '@app/framework';
+import { toast } from 'react-toastify';
+import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { ChannelTemplateDto, Clients, UpdateChannelTemplateDtoOfSmsTemplateDto } from '@app/service';
 import { createApiThunk, selectApp } from '../shared';
 import { SmsTemplatesState } from './state';
@@ -50,9 +51,11 @@ export const smsTemplatesMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (createSmsTemplate.fulfilled.match(action) || deleteSmsTemplate.fulfilled.match(action)) {
-        const load: any = loadSmsTemplates(action.meta.arg.appId);
+        const { appId } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadSmsTemplates(appId) as any);
+    } else if (deleteSmsTemplate.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -72,7 +75,7 @@ export const smsTemplatesReducer = createReducer(initialState, builder => list.i
     })
     .addCase(loadSmsTemplate.rejected, (state, action) => {
         state.loadingTemplate = false;
-        state.loadingTemplateError = action.payload as ErrorDto;
+        state.loadingTemplateError = action.payload as ErrorInfo;
     })
     .addCase(loadSmsTemplate.fulfilled, (state, action) => {
         state.loadingTemplate = false;
@@ -85,7 +88,7 @@ export const smsTemplatesReducer = createReducer(initialState, builder => list.i
     })
     .addCase(createSmsTemplate.rejected, (state, action) => {
         state.creating = false;
-        state.creatingError = action.payload as ErrorDto;
+        state.creatingError = action.payload as ErrorInfo;
     })
     .addCase(createSmsTemplate.fulfilled, (state) => {
         state.creating = false;
@@ -97,7 +100,7 @@ export const smsTemplatesReducer = createReducer(initialState, builder => list.i
     })
     .addCase(updateSmsTemplate.rejected, (state, action) => {
         state.updating = false;
-        state.updatingError = action.payload as ErrorDto;
+        state.updatingError = action.payload as ErrorInfo;
     })
     .addCase(updateSmsTemplate.fulfilled, (state, action) => {
         state.updating = false;
@@ -113,7 +116,7 @@ export const smsTemplatesReducer = createReducer(initialState, builder => list.i
     })
     .addCase(deleteSmsTemplate.rejected, (state, action) => {
         state.deleting = false;
-        state.deletingError = action.payload as ErrorDto;
+        state.deletingError = action.payload as ErrorInfo;
     })
     .addCase(deleteSmsTemplate.fulfilled, (state) => {
         state.deleting = false;

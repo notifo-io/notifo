@@ -38,7 +38,7 @@ namespace Notifo.Domain.Users
                     .ToReadonlyList(),
             };
 
-            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), CancellationToken.None);
+            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
             Assert.Equal(new[]
             {
@@ -70,7 +70,7 @@ namespace Notifo.Domain.Users
                     .ToReadonlyList(),
             };
 
-            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), CancellationToken.None);
+            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
             Assert.Null(updatedUser);
         }
@@ -95,7 +95,7 @@ namespace Notifo.Domain.Users
                     .ToReadonlyList(),
             };
 
-            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), CancellationToken.None);
+            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
             Assert.Empty(updatedUser!.MobilePushTokens);
         }

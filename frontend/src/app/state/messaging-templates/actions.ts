@@ -6,7 +6,8 @@
  */
 
 import { createReducer, Middleware } from '@reduxjs/toolkit';
-import { ErrorDto, listThunk, Query } from '@app/framework';
+import { toast } from 'react-toastify';
+import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { ChannelTemplateDto, Clients, UpdateChannelTemplateDtoOfMessagingTemplateDto } from '@app/service';
 import { createApiThunk, selectApp } from '../shared';
 import { MessagingTemplatesState } from './state';
@@ -50,9 +51,11 @@ export const messagingTemplatesMiddleware: Middleware = store => next => action 
     const result = next(action);
 
     if (createMessagingTemplate.fulfilled.match(action) || deleteMessagingTemplate.fulfilled.match(action)) {
-        const load: any = loadMessagingTemplates(action.meta.arg.appId);
+        const { appId } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadMessagingTemplates(appId) as any);
+    } else if (deleteMessagingTemplate.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -72,7 +75,7 @@ export const messagingTemplatesReducer = createReducer(initialState, builder => 
     })
     .addCase(loadMessagingTemplate.rejected, (state, action) => {
         state.loadingTemplate = false;
-        state.loadingTemplateError = action.payload as ErrorDto;
+        state.loadingTemplateError = action.payload as ErrorInfo;
     })
     .addCase(loadMessagingTemplate.fulfilled, (state, action) => {
         state.loadingTemplate = false;
@@ -85,7 +88,7 @@ export const messagingTemplatesReducer = createReducer(initialState, builder => 
     })
     .addCase(createMessagingTemplate.rejected, (state, action) => {
         state.creating = false;
-        state.creatingError = action.payload as ErrorDto;
+        state.creatingError = action.payload as ErrorInfo;
     })
     .addCase(createMessagingTemplate.fulfilled, (state) => {
         state.creating = false;
@@ -97,7 +100,7 @@ export const messagingTemplatesReducer = createReducer(initialState, builder => 
     })
     .addCase(updateMessagingTemplate.rejected, (state, action) => {
         state.updating = false;
-        state.updatingError = action.payload as ErrorDto;
+        state.updatingError = action.payload as ErrorInfo;
     })
     .addCase(updateMessagingTemplate.fulfilled, (state, action) => {
         state.updating = false;
@@ -113,7 +116,7 @@ export const messagingTemplatesReducer = createReducer(initialState, builder => 
     })
     .addCase(deleteMessagingTemplate.rejected, (state, action) => {
         state.deleting = false;
-        state.deletingError = action.payload as ErrorDto;
+        state.deletingError = action.payload as ErrorInfo;
     })
     .addCase(deleteMessagingTemplate.fulfilled, (state) => {
         state.deleting = false;

@@ -86,10 +86,10 @@ export const UserPage = () => {
 
                                     <Row>
                                         <Col xs={3}>
-                                            <ButtonWebPush user={user} />
+                                            <ButtonWebPush appId={appId} user={user} />
                                         </Col>
                                         <Col xs={3}>
-                                            <ButtonMobilePush user={user} />
+                                            <ButtonMobilePush appId={appId} user={user} />
                                         </Col>
                                         <Col xs={3}>
                                             <ButtonEmail user={user} />

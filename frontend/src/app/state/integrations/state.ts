@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ErrorDto } from '@app/framework';
+import { ErrorInfo } from '@app/framework';
 import { ConfiguredIntegrationDto, ConfiguredIntegrationsDto, IntegrationDefinitionDto } from '@app/service';
 
 export interface IntegrationsStateInStore {
@@ -17,13 +17,13 @@ export interface IntegrationsState extends Partial<ConfiguredIntegrationsDto> {
     loading?: boolean;
 
     // The loading integrations error.
-    loadingError?: ErrorDto;
+    loadingError?: ErrorInfo;
 
     // True if upserting integrations.
     upserting?: boolean;
 
     // The upserting integrations error.
-    upsertingError?: ErrorDto;
+    upsertingError?: ErrorInfo;
 }
 
 export function getSummaryProperties(definition: IntegrationDefinitionDto, configured: ConfiguredIntegrationDto) {

@@ -12,18 +12,52 @@ using Xunit;
 
 namespace Notifo.Domain.Users
 {
-    public class AddUserWebPushSubscriptionTests
+    public class RemoveUserWebPushSubscriptionTests
     {
         [Fact]
-        public async Task Should_not_remove_existing_subscriptions_when_new_subscription_added()
+        public async Task Should_remove_subscription_if_endpoint_exists()
         {
-            var sut = new AddUserWebPushSubscription();
-
             var endpoint1 = "test endpoint 1";
             var endpoint2 = "test endpoint 2";
             var endpoint3 = "test endpoint 3";
 
-            sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
+            var sut = new RemoveUserWebPushSubscription
+            {
+                Endpoint = endpoint1
+            };
+
+            var user = new User("1", "1", default)
+            {
+                WebPushSubscriptions = new List<string>
+                    {
+                        endpoint1,
+                        endpoint2,
+                        endpoint3
+                    }
+                    .Select(e => new WebPushSubscription { Endpoint = e })
+                    .ToReadonlyList(),
+            };
+
+            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
+
+            Assert.Equal(new[]
+            {
+                endpoint2,
+                endpoint3
+            }, updatedUser!.WebPushSubscriptions.Select(x => x.Endpoint).OrderBy(x => x).ToArray());
+        }
+
+        [Fact]
+        public async Task Should_not_change_subscriptions_if_endpoint_not_exists()
+        {
+            var endpoint1 = "test endpoint 1";
+            var endpoint2 = "test endpoint 2";
+            var endpoint3 = "test endpoint 3";
+
+            var sut = new RemoveUserWebPushSubscription
+            {
+                Endpoint = endpoint1
+            };
 
             var user = new User("1", "1", default)
             {
@@ -38,30 +72,24 @@ namespace Notifo.Domain.Users
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
-            Assert.Equal(new[]
-            {
-                endpoint1,
-                endpoint2,
-                endpoint3
-            }, updatedUser!.WebPushSubscriptions.Select(x => x.Endpoint).OrderBy(x => x).ToArray());
+            Assert.Null(updatedUser);
         }
 
         [Fact]
-        public async Task Should_not_change_existing_subscription_if_subscription_added_again()
+        public async Task Should_remove_single_subscription()
         {
-            var sut = new AddUserWebPushSubscription();
+            var endpoint1 = "test endpoint 1";
 
-            var endpoint1 = "test subscription 1";
-            var endpoint2 = "test subscription 2";
-
-            sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
+            var sut = new RemoveUserWebPushSubscription
+            {
+                Endpoint = endpoint1
+            };
 
             var user = new User("1", "1", default)
             {
                 WebPushSubscriptions = new List<string>
                     {
-                        endpoint1,
-                        endpoint2
+                        endpoint1
                     }
                     .Select(e => new WebPushSubscription { Endpoint = e })
                     .ToReadonlyList(),
@@ -69,7 +97,7 @@ namespace Notifo.Domain.Users
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
-            Assert.Null(updatedUser);
+            Assert.Empty(updatedUser!.WebPushSubscriptions);
         }
     }
 }

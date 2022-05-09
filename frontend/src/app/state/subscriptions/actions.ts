@@ -6,8 +6,9 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 import { Middleware } from 'redux';
-import { ErrorDto, listThunk, Query } from '@app/framework';
+import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { Clients, SubscribeDto, SubscriptionDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { SubscriptionsState } from './state';
@@ -36,9 +37,11 @@ export const subscriptionsMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (upsertSubscription.fulfilled.match(action) || deleteSubscription.fulfilled.match(action)) {
-        const load: any = loadSubscriptions(action.meta.arg.appId, action.meta.arg.userId);
+        const { appId, userId } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadSubscriptions(appId, userId) as any);
+    } else if (deleteSubscription.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;
@@ -58,7 +61,7 @@ export const subscriptionsReducer = createReducer(initialState, builder => list.
     })
     .addCase(upsertSubscription.rejected, (state, action) => {
         state.upserting = false;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(upsertSubscription.fulfilled, (state) => {
         state.upserting = false;

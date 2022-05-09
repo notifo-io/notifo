@@ -6,7 +6,7 @@
  */
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ErrorDto, listThunk } from '@app/framework';
+import { ErrorInfo, listThunk } from '@app/framework';
 import { Clients, TemplateDto } from '@app/service';
 import { createApiThunk, selectApp } from './../shared';
 import { TemplatesState } from './state';
@@ -52,7 +52,7 @@ export const templatesReducer = createReducer(initialState, builder => list.init
     })
     .addCase(upsertTemplate.rejected, (state, action) => {
         state.upserting = true;
-        state.upsertingError = action.payload as ErrorDto;
+        state.upsertingError = action.payload as ErrorInfo;
     })
     .addCase(upsertTemplate.fulfilled, (state, action) => {
         state.upserting = false;

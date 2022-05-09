@@ -6,8 +6,9 @@
  */
 
 import { createReducer } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
 import { Middleware } from 'redux';
-import { listThunk, Query } from '@app/framework';
+import { formatError, listThunk, Query } from '@app/framework';
 import { Clients, MediaDto } from '@app/service';
 import { createApiThunk, selectApp } from '../shared';
 import { MediaState } from './state';
@@ -36,9 +37,11 @@ export const mediaMiddleware: Middleware = store => next => action => {
     const result = next(action);
 
     if (uploadMedia.fulfilled.match(action) || deleteMedia.fulfilled.match(action)) {
-        const load: any = loadMedia(action.meta.arg.appId);
+        const { appId } = action.meta.arg;
 
-        store.dispatch(load);
+        store.dispatch(loadMedia(appId) as any);
+    } else if (deleteMedia.rejected.match(action)) {
+        toast.error(formatError(action.payload as any));
     }
 
     return result;

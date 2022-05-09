@@ -6,7 +6,7 @@
  */
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
-import { ErrorDto } from '@app/framework';
+import { ErrorInfo } from '@app/framework';
 import { Clients, PublishDto } from '@app/service';
 import { createApiThunk } from '../shared';
 import { PublishState } from './state';
@@ -33,7 +33,7 @@ export const publishReducer = createReducer(initialState, builder => builder
     })
     .addCase(publish.rejected, (state, action) => {
         state.publishing = false;
-        state.publishingError = action.payload as ErrorDto;
+        state.publishingError = action.payload as ErrorInfo;
     })
     .addCase(publish.fulfilled, (state) => {
         state.publishing = false;
