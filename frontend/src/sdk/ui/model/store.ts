@@ -14,6 +14,7 @@ export type StoreListener<TState> = (state: TState) => void;
 export class Store<TState, TAction extends { type: string } = { type: string } & any> {
     private readonly listeners: StoreListener<TState>[] = [];
     private devTools: any;
+    private subscription?: Function;
 
     public get current() {
         return this.state;
@@ -28,9 +29,12 @@ export class Store<TState, TAction extends { type: string } = { type: string } &
         if (extension) {
             this.devTools = extension.connect({
                 name: window['title'] ? `${window['title']} Notifo SDK` : 'Notifo SDK',
+                features: {
+                    jump: true,
+                },
             });
 
-            this.devTools.subscribe((message: any) => {
+            this.subscription = this.devTools.subscribe((message: any) => {
                 if (message.type === 'DISPATCH' && message.payload.type === 'JUMP_TO_ACTION') {
                     this.setState(JSON.parse(message.state));
                 }
@@ -41,6 +45,8 @@ export class Store<TState, TAction extends { type: string } = { type: string } &
     }
 
     public destroy() {
+        this.subscription?.();
+
         this.devTools?.disconnect();
     }
 
