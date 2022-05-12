@@ -9,7 +9,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.150" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.153" />
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.3" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.4.0" />
     <PackageReference Include="Google.Cloud.Trace.V2" Version="2.3.0" />

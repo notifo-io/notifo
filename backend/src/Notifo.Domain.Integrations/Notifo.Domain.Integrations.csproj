@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.150" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.0.153" />
     <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
     <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
-    <PackageReference Include="FluentValidation" Version="10.4.0" />
+    <PackageReference Include="FluentValidation" Version="11.0.0" />
     <PackageReference Include="Fluid.Core" Version="2.2.15" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="libphonenumber-csharp" Version="8.12.46" />

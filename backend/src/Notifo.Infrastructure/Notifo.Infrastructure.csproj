@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.Core" Version="3.7.10.11" />
+    <PackageReference Include="AWSSDK.Core" Version="3.7.10.14" />
     <PackageReference Include="Confluent.Kafka" Version="1.8.2" />
-    <PackageReference Include="FluentValidation" Version="10.4.0" />
+    <PackageReference Include="FluentValidation" Version="11.0.0" />
     <PackageReference Include="Google.Cloud.PubSub.V1" Version="2.9.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="1.0.701">
       <PrivateAssets>all</PrivateAssets>
