@@ -10,7 +10,7 @@ using Notifo.Infrastructure.KeyValueStore.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class MongoDbKeyValueSoreExtensions
+    public static class MongoDbKeyValueStoreServiceExtensions
     {
         public static void AddMyMongoDbKeyValueStore(this IServiceCollection services)
         {

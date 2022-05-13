@@ -6,27 +6,22 @@
  */
 
 import * as React from 'react';
-import { useDispatch } from 'react-redux';
 import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
-import { loadTemplates, useApp, useTemplates } from '@app/state';
+import { TemplateDto } from '@app/service';
 
-export const TemplateInput = (props: FormEditorProps) => {
-    const dispatch = useDispatch();
-    const app = useApp()!;
-    const appId = app.id;
-    const templates = useTemplates(x => x.templates);
+export interface TemplateInputProps extends FormEditorProps {
+    // The actual templates.
+    templates: ReadonlyArray<TemplateDto> | undefined;
+}
 
-    React.useEffect(() => {
-        if (!templates.isLoaded) {
-            dispatch(loadTemplates(appId));
-        }
-    }, [dispatch, appId, templates.isLoaded]);
+export const TemplateInput = (props: TemplateInputProps) => {
+    const { templates, ...other } = props;
 
     const options = React.useMemo(() => {
         const result: FormEditorOption<string | undefined>[] = [];
 
-        if (templates.items) {
-            for (const { code: label } of templates.items) {
+        if (templates) {
+            for (const { code: label } of templates) {
                 if (label) {
                     result.push({ label, value: label });
                 }
@@ -34,9 +29,9 @@ export const TemplateInput = (props: FormEditorProps) => {
         }
 
         return result;
-    }, [templates.items]);
+    }, [templates]);
 
     return (
-        <Forms.Select {...props} options={options} />
+        <Forms.Select {...other} options={options} />
     );
 };

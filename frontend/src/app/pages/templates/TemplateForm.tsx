@@ -119,7 +119,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
 
                     <CardBody>
                         <Row className='template-form-inner'>
-                            <Col>
+                            <Col xs='auto'>
                                 <Form onSubmit={handleSubmit}>
                                     <fieldset disabled={upserting}>
                                         <Forms.Text name='code' vertical

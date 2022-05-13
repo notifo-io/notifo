@@ -14104,6 +14104,12 @@ namespace Notifo.SDK
         public string TemplateCode { get; set; }
 
         /// <summary>
+        /// The template variants with propability.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("templateVariants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.Dictionary<string, double> TemplateVariants { get; set; }
+
+        /// <summary>
         /// Additional user defined data.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

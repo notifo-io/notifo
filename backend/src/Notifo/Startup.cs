@@ -98,6 +98,7 @@ namespace Notifo
             services.AddMyEmailChannel();
             services.AddMyEvents(config);
             services.AddMyIdentity(config);
+            services.AddMyInfrastructure();
             services.AddMyIntegrations();
             services.AddMyJson(ConfigureJson);
             services.AddMyLog();

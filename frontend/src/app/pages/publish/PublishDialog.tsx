@@ -13,9 +13,9 @@ import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem,
 import * as Yup from 'yup';
 import { FormError, Forms, Loader, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
-import { NotificationsForm, TemplateInput } from '@app/shared/components';
+import { NotificationsForm, TemplateInput, TemplateVariantsInput } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
-import { publish, togglePublishDialog, useApp, usePublish } from '@app/state';
+import { loadTemplates, publish, togglePublishDialog, useApp, usePublish, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 
 const FormSchema = Yup.object({
@@ -34,6 +34,14 @@ const FormSchema = Yup.object({
         )
         .label(texts.common.templateCode),
 
+    // Array of templates variants.
+    templateVariants: Yup.array(Yup.object({
+        probability: Yup.number().requiredI18n().minI18n(0).maxI18n(100)
+            .label(texts.common.propability),
+        templateCode: Yup.string().requiredI18n()
+            .label(texts.common.templateCode),
+    })),
+
     // Subject is required when not templated.
     preformatted: Yup.object()
         .when('templated', (other: boolean, schema: Yup.ObjectSchema<any>) =>
@@ -42,15 +50,20 @@ const FormSchema = Yup.object({
         .label(texts.common.formatting),
 });
 
+type PublishForms = Omit<PublishDto, 'templateVariants'> & {
+    templateVariants: { probability: number; templateCode: string }[];
+};
+
 export const PublishDialog = () => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const publishing = usePublish(x => x.publishing);
-    const publishingError = usePublish(x => x.publishingError);
     const dialogOpen = usePublish(x => x.dialogOpen);
     const dialogValues = usePublish(x => x.dialogValues || {});
+    const publishing = usePublish(x => x.publishing);
+    const publishingError = usePublish(x => x.publishingError);
+    const templates = useTemplates(x => x.templates);
     const wasPublishing = usePrevious(publishing);
     const [tab, setTab] = React.useState(0);
     const [language, setLanguage] = React.useState<string>(appLanguages[0]);
@@ -61,11 +74,28 @@ export const PublishDialog = () => {
         }
     }, [publishing, publishingError, wasPublishing]);
 
+    React.useEffect(() => {
+        if (!templates.isLoaded) {
+            dispatch(loadTemplates(appId));
+        }
+    }, [appId, dispatch, templates.isLoaded]);
+
     const doCloseForm = React.useCallback(() => {
         dispatch(togglePublishDialog({ open: false }));
     }, [dispatch]);
 
-    const doPublish = React.useCallback((params: PublishDto) => {
+    const doPublish = React.useCallback((form: PublishForms) => {
+        const { templateVariants, ...other } = form;
+        const params: PublishDto = other;
+
+        if (templateVariants?.length > 0) {
+            params.templateVariants = {};
+
+            for (const variant of templateVariants) {
+                params.templateVariants[variant.templateCode] = variant.probability / 100;
+            }
+        }
+
         dispatch(publish({ appId, params }));
     }, [dispatch, appId]);
 
@@ -83,7 +113,7 @@ export const PublishDialog = () => {
 
     return (
         <Modal isOpen={dialogOpen} size='lg' backdrop={false} toggle={doCloseForm}>
-            <Formik<PublishDto> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
+            <Formik<PublishForms> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
                 {({ handleSubmit, values }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>
@@ -108,8 +138,13 @@ export const PublishDialog = () => {
                                             label={texts.common.templateMode} />
 
                                         {values['templated'] &&
-                                            <TemplateInput name='templateCode'
-                                                label={texts.common.templateCode} hints={texts.common.templateCodeHints} />
+                                            <>
+                                                <TemplateInput name='templateCode' templates={templates.items}
+                                                    label={texts.common.templateCode} hints={texts.common.templateCodeHints} />
+
+                                                <TemplateVariantsInput name='templateVariants' templates={templates.items} variants={values.templateVariants} 
+                                                    label={texts.common.variants} />
+                                            </>
                                         }
 
                                         <NotificationsForm.Formatting

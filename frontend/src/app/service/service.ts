@@ -6049,6 +6049,8 @@ export interface PublishDto {
     creatorId?: string | undefined;
     /** The template code. */
     templateCode?: string | undefined;
+    /** The template variants with propability. */
+    templateVariants?: { [key: string]: number; } | undefined;
     /** Additional user defined data. */
     data?: string | undefined;
     /** A custom timestamp. */

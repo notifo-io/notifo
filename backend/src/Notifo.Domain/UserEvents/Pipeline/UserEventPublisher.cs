@@ -39,6 +39,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         private readonly ICounterService counters;
         private readonly IEventStore eventStore;
         private readonly ILogger<UserEventPublisher> log;
+        private readonly Randomizer randomizer;
         private readonly ILogStore logStore;
         private readonly ISubscriptionStore subscriptionStore;
         private readonly ITemplateStore templateStore;
@@ -51,11 +52,13 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ITemplateStore templateStore,
             IUserStore userStore,
             IUserEventProducer userEventProducer,
-            ILogger<UserEventPublisher> log)
+            ILogger<UserEventPublisher> log,
+            Randomizer randomizer)
         {
             this.counters = counters;
             this.eventStore = eventStore;
             this.log = log;
+            this.randomizer = randomizer;
             this.logStore = logStore;
             this.subscriptionStore = subscriptionStore;
             this.templateStore = templateStore;
@@ -101,9 +104,34 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                     if (count == 0)
                     {
-                        if (!string.IsNullOrWhiteSpace(@event.TemplateCode))
+                        var templateCode = (string?)null;
+
+                        if (@event.TemplateVariants?.Count > 0)
                         {
-                            var template = await templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct);
+                            var random = randomizer.NextDouble();
+
+                            var propability = 0d;
+
+                            foreach (var (key, value) in @event.TemplateVariants)
+                            {
+                                propability += value;
+
+                                if (random <= propability)
+                                {
+                                    templateCode = key;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (string.IsNullOrWhiteSpace(templateCode))
+                        {
+                            templateCode = @event.TemplateCode;
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(templateCode))
+                        {
+                            var template = await templateStore.GetAsync(@event.AppId, templateCode, ct);
 
                             if (template?.IsAutoCreated == false)
                             {
@@ -122,7 +150,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
                         if (@event.Formatting?.HasSubject() != true)
                         {
-                            await logStore.LogAsync(@event.AppId, string.Format(CultureInfo.InvariantCulture, Texts.Template_NoSubject, @event.TemplateCode));
+                            await logStore.LogAsync(@event.AppId, string.Format(CultureInfo.InvariantCulture, Texts.Template_NoSubject, templateCode));
                             return;
                         }
 

@@ -34,6 +34,12 @@
 
     &-inner {
         min-width: 1100px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+
+        form {
+            max-width: 700px;
+        }
     }
 
     &-preview {

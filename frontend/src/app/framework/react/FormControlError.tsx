@@ -7,7 +7,7 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import { ErrorInfo, isErrorVisible } from '@app/framework/utils';
+import { ErrorInfo, formatError, isError, isErrorVisible, Types } from '@app/framework/utils';
 
 export interface FormControlErrorProps {
     // The list of errors.
@@ -30,10 +30,18 @@ export const FormControlError = (props: FormControlErrorProps) => {
         return null;
     }
 
+    let errorString: string | undefined;
+
+    if (Types.isString(error)) {
+        errorString = error;
+    } else if (isError(error)) {
+        errorString = formatError(error);
+    }
+
     return (
         <div className='errors-container'>
             <div className={classNames('errors', alignment ? `errors-${alignment}` : false)}>
-                {error}
+                {errorString}
             </div>
         </div>
     );

@@ -25,13 +25,14 @@ namespace Notifo.Domain.UserEvents.Pipeline
     {
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
         private readonly CancellationToken ct;
-        private readonly ISubscriptionStore subscriptionStore = A.Fake<ISubscriptionStore>();
         private readonly ICounterService counters = A.Fake<ICounterService>();
-        private readonly ITemplateStore templateStore = A.Fake<ITemplateStore>();
-        private readonly ILogStore logStore = A.Fake<ILogStore>();
         private readonly IEventStore eventStore = A.Fake<IEventStore>();
-        private readonly IUserStore userStore = A.Fake<IUserStore>();
+        private readonly ILogStore logStore = A.Fake<ILogStore>();
         private readonly IMessageProducer<UserEventMessage> producer = A.Fake<IMessageProducer<UserEventMessage>>();
+        private readonly ISubscriptionStore subscriptionStore = A.Fake<ISubscriptionStore>();
+        private readonly ITemplateStore templateStore = A.Fake<ITemplateStore>();
+        private readonly IUserStore userStore = A.Fake<IUserStore>();
+        private readonly Randomizer randomizer = A.Fake<Randomizer>();
         private readonly List<UserEventMessage> publishedUserEvents = new List<UserEventMessage>();
         private readonly UserEventPublisher sut;
 
@@ -44,7 +45,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
 
             var log = A.Fake<ILogger<UserEventPublisher>>();
 
-            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, log);
+            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, log, randomizer);
         }
 
         [Fact]
@@ -461,6 +462,34 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 .MustNotHaveHappened();
 
             A.CallTo(() => logStore.LogAsync(@event.AppId, A<string>._))
+                .MustHaveHappened();
+        }
+
+        [Theory]
+        [InlineData(0.0, "TEMPL1")]
+        [InlineData(0.2, "TEMPL1")]
+        [InlineData(0.4, "TEMPL1")]
+        [InlineData(0.5, "TEMPL2")]
+        [InlineData(0.6, "TEMPL2")]
+        [InlineData(1.0, "TEMPL3")]
+        public async Task Should_get_template_on_propability(double probability, string expectedCode)
+        {
+            var @event = CreateMinimumEvent();
+
+            @event.Topic = "users/123";
+            @event.TemplateCode = "TEMPL3";
+            @event.TemplateVariants = new Dictionary<string, double>
+            {
+                ["TEMPL1"] = 0.4,
+                ["TEMPL2"] = 0.2
+            };
+
+            A.CallTo(() => randomizer.NextDouble())
+                .Returns(probability);
+
+            await sut.PublishAsync(@event, ct);
+
+            A.CallTo(() => templateStore.GetAsync(@event.AppId, expectedCode, ct))
                 .MustHaveHappened();
         }
 

@@ -138,6 +138,7 @@ export const EN = {
         prio: 'Prio',
         profile: 'Profile',
         profileSettings: 'Your Settings',
+        propability: 'Propability',
         publish: 'Publish',
         refresh: 'Refresh',
         roles: 'Roles',
@@ -179,6 +180,7 @@ export const EN = {
         uploadText: 'Drop file on existing item to replace the asset with a newer version.',
         urlPlaceholder: 'https://my-site.com/path',
         users: 'Users',
+        variants: 'Variants',
         verified: 'Verified',
         via: 'via',
         webPlugin: 'Web Plugin',
@@ -186,6 +188,7 @@ export const EN = {
         webPush: 'Web Push',
         welcome: 'Welcome',
         when: 'when',
+        with: 'with',
         yes: 'Yes',
     },
     emailTemplates: {

@@ -39,7 +39,6 @@ export type IconType =
     'person_add' |
     'person' |
     'photo_size_select_actual' |
-    'plus' |
     'publish' |
     'refresh' |
     'search' |

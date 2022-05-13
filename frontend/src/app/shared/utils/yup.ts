@@ -21,6 +21,14 @@ function requiredI18nNumber(this: Yup.NumberSchema) {
     return this.required(texts.validation.requiredFn);
 }
 
+function maxI18N(this: Yup.NumberSchema, max: number) {
+    return this.max(max, texts.validation.requiredFn);
+}
+
+function minI18N(this: Yup.NumberSchema, min: number) {
+    return this.min(min, texts.validation.requiredFn);
+}
+
 function requiredI18n(this: Yup.StringSchema) {
     return this.required(texts.validation.requiredFn);
 }
@@ -53,12 +61,11 @@ export function extendYup() {
     Yup.addMethod(Yup.object, 'atLeastOneStringI18n', atLeastOneStringI18n);
 
     Yup.addMethod(Yup.string, 'emailI18n', emailI18n);
-
     Yup.addMethod(Yup.string, 'urlI18n', urlI18n);
-
     Yup.addMethod(Yup.string, 'requiredI18n', requiredI18n);
-
     Yup.addMethod(Yup.string, 'topicI18n', topicI18n);
 
+    Yup.addMethod(Yup.number, 'maxI18n', maxI18N);
+    Yup.addMethod(Yup.number, 'minI18n', minI18N);
     Yup.addMethod(Yup.number, 'requiredI18n', requiredI18nNumber);
 }

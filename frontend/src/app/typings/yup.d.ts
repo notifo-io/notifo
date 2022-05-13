@@ -21,6 +21,10 @@ declare module 'yup' {
 
     interface NumberSchema {
         requiredI18n(): NumberSchema;
+
+        maxI18n(value: number): NumberSchema;
+
+        minI18n(value: number): NumberSchema;
     }
 
     interface ObjectSchema<TShape, TContext, TIn> {

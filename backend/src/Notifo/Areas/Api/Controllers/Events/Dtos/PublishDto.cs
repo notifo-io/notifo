@@ -32,6 +32,11 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos
         public string? TemplateCode { get; set; }
 
         /// <summary>
+        /// The template variants with propability.
+        /// </summary>
+        public Dictionary<string, double>? TemplateVariants { get; set; }
+
+        /// <summary>
         /// Additional user defined data.
         /// </summary>
         public string? Data { get; set; }
