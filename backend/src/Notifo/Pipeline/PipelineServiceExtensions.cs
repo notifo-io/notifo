@@ -20,10 +20,8 @@ namespace Notifo.Pipeline
             services.Configure<DiagnoserOptions>(config, "diagnostics");
             services.Configure<GCHealthCheckOptions>(config, "diagnostics:gc");
 
-            services.AddHealthChecks();
-
-            services.AddSingletonAs<GCHealthCheck>()
-                .As<IHealthCheck>();
+            services.AddHealthChecks()
+                .AddCheck<GCHealthCheck>("gc");
 
             services.AddSingletonAs<Diagnoser>()
                 .AsSelf();

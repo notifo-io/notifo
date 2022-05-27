@@ -25,13 +25,17 @@ namespace Notifo.Infrastructure.Diagnostics
         {
             var workingSet = Process.GetCurrentProcess().WorkingSet64;
 
+            var heapSize = GC.GetTotalMemory(false);
+
             var data = new Dictionary<string, object>
             {
-                { "HeapSize", GC.GetTotalMemory(false) },
                 { "Gen0CollectionCount", GC.CollectionCount(0) },
                 { "Gen1CollectionCount", GC.CollectionCount(1) },
                 { "Gen2CollectionCount", GC.CollectionCount(2) },
-                { "WorkingSet", workingSet.ToReadableSize() }
+                { "HeapSizeBytes", heapSize },
+                { "HeapSizeString", heapSize.ToReadableSize() },
+                { "WorkingSetBytes", workingSet },
+                { "WorkingSetString", workingSet.ToReadableSize() }
             };
 
             var status = workingSet < threshold ?
