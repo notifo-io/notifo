@@ -8,6 +8,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 
@@ -38,6 +39,20 @@ namespace Notifo.Infrastructure.MongoDb
             {
                 reader.ReadNull();
                 return default;
+            }
+
+            if (reader.CurrentBsonType == BsonType.Int32)
+            {
+                var number = reader.ReadInt32();
+
+                return Unsafe.As<int, T>(ref number);
+            }
+
+            if (reader.CurrentBsonType == BsonType.Int64)
+            {
+                var number = (int)reader.ReadInt64();
+
+                return Unsafe.As<int, T>(ref number);
             }
 
             var text = context.Reader.ReadString();

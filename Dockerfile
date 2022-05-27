@@ -68,7 +68,13 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0.0-bullseye-slim
 RUN apt-get update \
  && apt-get install -y curl
 
-# Default AspNetCore directory
+# Default tool directory
+WORKDIR /tools
+
+# Copy tools from backend build stage.
+COPY --from=backend /tools .
+
+# Default app directory
 WORKDIR /app
 
 # Copy from build stages
