@@ -8,15 +8,25 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Net.Http.Headers;
+using Notifo.Infrastructure.Diagnostics;
 using Notifo.Infrastructure.Json;
 
 namespace Notifo.Pipeline
 {
     public static class PipelineServiceExtensions
     {
-        public static void AddMyWebPipeline(this IServiceCollection services)
+        public static void AddMyWebPipeline(this IServiceCollection services, IConfiguration config)
         {
+            services.Configure<DiagnoserOptions>(config, "diagnostics");
+            services.Configure<GCHealthCheckOptions>(config, "diagnostics:gc");
+
             services.AddHealthChecks();
+
+            services.AddSingletonAs<GCHealthCheck>()
+                .As<IHealthCheck>();
+
+            services.AddSingletonAs<Diagnoser>()
+                .AsSelf();
 
             services.AddSingletonAs<FileCallbackResultExecutor>()
                 .AsSelf();

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Pipeline;
 using System.Net;
 
 namespace Notifo
@@ -21,6 +22,11 @@ namespace Notifo
                 .ConfigureLogging((context, builder) =>
                 {
                     builder.ConfigureForMe(context.Configuration);
+                })
+                .ConfigureServices(services =>
+                {
+                    // Step 0: Log all configuration.
+                    services.AddHostedService<LogConfigurationHost>();
                 })
                 .ConfigureWebHostDefaults(builder =>
                 {

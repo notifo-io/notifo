@@ -120,7 +120,7 @@ namespace Notifo
             services.AddMyUtils();
             services.AddMyWebChannel();
             services.AddMyWebhookChannel();
-            services.AddMyWebPipeline();
+            services.AddMyWebPipeline(config);
             services.AddMyWebPushChannel(config);
 
             services.IntegrateAmazonSES(config);
