@@ -30,6 +30,13 @@ RUN dotnet test --no-restore --filter Category!=Dependencies
 # Publish
 RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -p:version=$NOTIFO__VERSION
 
+# Install tools
+RUN dotnet tool install --tool-path /tools dotnet-counters \
+ && dotnet tool install --tool-path /tools dotnet-dump \
+ && dotnet tool install --tool-path /tools dotnet-gcdump \
+ && dotnet tool install --tool-path /tools dotnet-trace
+
+
 #
 # Stage 2, Build Frontend
 #
@@ -70,5 +77,10 @@ COPY --from=frontend /build/ wwwroot/build/
 
 EXPOSE 80
 EXPOSE 443
+
+ENV DIAGNOSTICS__COUNTERSTOOL=/tools/dotnet-counters
+ENV DIAGNOSTICS__DUMPTOOL=/tools/dotnet-dump
+ENV DIAGNOSTICS__GCDUMPTOOL=/tools/dotnet-gcdump
+ENV DIAGNOSTICS__TRACETOOL=/tools/dotnet-trace
 
 ENTRYPOINT ["dotnet", "Notifo.dll"]
