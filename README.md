@@ -1,6 +1,6 @@
 # Notifo - Notification Service!
 
-[![Build and Push to Dockerhub](https://github.com/notifo-io/notifo/actions/workflows/deploy.yml/badge.svg)](https://github.com/notifo-io/notifo/actions/workflows/deploy.yml) 
+[![Release](https://github.com/notifo-io/notifo/actions/workflows/release.yml/badge.svg)](https://github.com/notifo-io/notifo/actions/workflows/release.yml) 
 [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/squidex/notifo?sort=date)](https://hub.docker.com/r/squidex/notifo)
 
 Try it out at https://app.notifo.io!
