@@ -63,7 +63,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.Kafka
         {
             if (producer == null)
             {
-                throw new InvalidOperationException("Producer not initialized yet.");
+                ThrowHelper.InvalidOperationException("Producer not initialized yet.");
+                return;
             }
 
             var message = new Message<string, Envelope<T>> { Value = envelope, Key = key };

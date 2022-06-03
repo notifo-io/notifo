@@ -40,14 +40,14 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
             if (body.Length > 140)
             {
-                throw new ArgumentException("Text must not have more than 140 characters.", nameof(message));
+                ThrowHelper.ArgumentException("Text must not have more than 140 characters.", nameof(message));
             }
 
             to = PhoneNumberUtil.Normalize(to).TrimStart(TrimChars);
 
             if (!long.TryParse(to, NumberStyles.Integer, CultureInfo.InvariantCulture, out var recipient))
             {
-                throw new ArgumentException("Not a valid phone number.", nameof(message));
+                ThrowHelper.ArgumentException("Not a valid phone number.", nameof(message));
             }
 
             using (var client = httpClientFactory.CreateClient())

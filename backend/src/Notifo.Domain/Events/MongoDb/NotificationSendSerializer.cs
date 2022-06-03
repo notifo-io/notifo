@@ -8,6 +8,7 @@
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Events.MongoDb
 {
@@ -52,7 +53,8 @@ namespace Notifo.Domain.Events.MongoDb
                     }
             }
 
-            throw new NotSupportedException();
+            ThrowHelper.NotSupportedException();
+            return default;
         }
 
         public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, ChannelSend value)

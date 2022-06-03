@@ -38,7 +38,8 @@ namespace Notifo.Infrastructure.MongoDb
 
                     return ActivityTraceId.CreateFromString(text);
                 default:
-                    throw new BsonSerializationException($"Expected BsonType.String or JsonTokenType.Null, got {reader.CurrentBsonType}.");
+                    ThrowHelper.BsonSerializationException($"Expected BsonType.String or JsonTokenType.Null, got {reader.CurrentBsonType}.");
+                    return default;
             }
         }
 

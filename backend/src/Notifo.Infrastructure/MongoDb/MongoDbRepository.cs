@@ -35,7 +35,8 @@ namespace Notifo.Infrastructure.MongoDb
             {
                 if (mongoCollection == null)
                 {
-                    throw new InvalidOperationException("Collection has not been initialized yet.");
+                    ThrowHelper.InvalidOperationException("Collection has not been initialized yet.");
+                    return default!;
                 }
 
                 return mongoCollection;

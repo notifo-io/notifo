@@ -21,7 +21,8 @@ namespace Notifo.Infrastructure.Collections
             {
                 if (!TryGetValue(key, out var value))
                 {
-                    throw new KeyNotFoundException();
+                    ThrowHelper.KeyNotFoundException();
+                    return default!;
                 }
 
                 return value;

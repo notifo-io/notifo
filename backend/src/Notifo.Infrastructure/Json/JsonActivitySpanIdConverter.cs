@@ -24,7 +24,8 @@ namespace Notifo.Infrastructure.Json
 
                     return ActivitySpanId.CreateFromString(text);
                 default:
-                    throw new JsonException($"Expected JsonTokenType.String or JsonTokenType.Null, got {reader.TokenType}.");
+                    ThrowHelper.JsonException($"Expected JsonTokenType.String or JsonTokenType.Null, got {reader.TokenType}.");
+                    return default;
             }
         }
 

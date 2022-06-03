@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Pipeline;
 using System.Net;
+using Notifo.Pipeline;
 
 namespace Notifo
 {

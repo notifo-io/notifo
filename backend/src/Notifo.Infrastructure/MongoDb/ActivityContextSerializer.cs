@@ -65,7 +65,8 @@ namespace Notifo.Infrastructure.MongoDb
                                 spanId = ActivitySpanId.CreateFromString(reader.ReadString());
                                 break;
                             default:
-                                throw new BsonSerializationException($"Invalid property {name}.");
+                                ThrowHelper.BsonSerializationException($"Invalid property {name}.");
+                                return default;
                         }
                     }
 
@@ -73,7 +74,8 @@ namespace Notifo.Infrastructure.MongoDb
 
                     return new ActivityContext(traceId, spanId, traceFlags, traceState, isRemote);
                 default:
-                    throw new BsonSerializationException($"Expected BsonType.Document or JsonTokenType.Null, got {reader.CurrentBsonType}.");
+                    ThrowHelper.BsonSerializationException($"Expected BsonType.Document or JsonTokenType.Null, got {reader.CurrentBsonType}.");
+                    return default;
             }
         }
 

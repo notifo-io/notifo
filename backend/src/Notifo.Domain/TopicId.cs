@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Text.RegularExpressions;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain
 {
@@ -21,7 +22,7 @@ namespace Notifo.Domain
         {
             if (!IsValid(id))
             {
-                throw new ArgumentException("Invalid id", nameof(id));
+                ThrowHelper.ArgumentException("Invalid id", nameof(id));
             }
 
             Id = id;

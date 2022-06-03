@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Account.Pages.Utils;
 using Notifo.Domain.Identity;
+using Notifo.Infrastructure;
 using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 #pragma warning disable MA0048 // File name must match type name
@@ -41,7 +42,8 @@ namespace Notifo.Areas.Account.Pages
         {
             if (remoteError != null)
             {
-                throw new InvalidOperationException(T["ExternalLoginError"]);
+                ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
+                return default!;
             }
 
             var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
@@ -120,7 +122,8 @@ namespace Notifo.Areas.Account.Pages
 
             if (loginInfo == null)
             {
-                throw new InvalidOperationException(T["ExternalLoginError"]);
+                ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
+                return default!;
             }
 
             var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;

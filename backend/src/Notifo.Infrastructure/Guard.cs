@@ -20,7 +20,7 @@ namespace Notifo.Infrastructure
         {
             if (float.IsNaN(target) || float.IsPositiveInfinity(target) || float.IsNegativeInfinity(target))
             {
-                throw new ArgumentException("Value must be a valid number.", parameterName);
+                ThrowHelper.ArgumentException("Value must be a valid number.", parameterName);
             }
         }
 
@@ -31,7 +31,7 @@ namespace Notifo.Infrastructure
         {
             if (double.IsNaN(target) || double.IsPositiveInfinity(target) || double.IsNegativeInfinity(target))
             {
-                throw new ArgumentException("Value must be a valid number.", parameterName);
+                ThrowHelper.ArgumentException("Value must be a valid number.", parameterName);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Notifo.Infrastructure
         {
             if (target != null && target.GetType() != typeof(T))
             {
-                throw new ArgumentException($"The parameter must be of type {typeof(T)}", parameterName);
+                ThrowHelper.ArgumentException($"The parameter must be of type {typeof(T)}", parameterName);
             }
         }
 
@@ -53,7 +53,7 @@ namespace Notifo.Infrastructure
         {
             if (target != null && expectedType != null && target.GetType() != expectedType)
             {
-                throw new ArgumentException($"The parameter must be of type {expectedType}", parameterName);
+                ThrowHelper.ArgumentException($"The parameter must be of type {expectedType}", parameterName);
             }
         }
 
@@ -64,7 +64,7 @@ namespace Notifo.Infrastructure
         {
             if (!target.IsBetween(lower, upper))
             {
-                throw new ArgumentException($"Value must be between {lower} and {upper}", parameterName);
+                ThrowHelper.ArgumentException($"Value must be between {lower} and {upper}", parameterName);
             }
         }
 
@@ -75,7 +75,7 @@ namespace Notifo.Infrastructure
         {
             if (!target.IsEnumValue())
             {
-                throw new ArgumentException($"Value must be a valid enum type {typeof(TEnum)}", parameterName);
+                ThrowHelper.ArgumentException($"Value must be a valid enum type {typeof(TEnum)}", parameterName);
             }
         }
 
@@ -86,7 +86,7 @@ namespace Notifo.Infrastructure
         {
             if (target.CompareTo(lower) <= 0)
             {
-                throw new ArgumentException($"Value must be greater than {lower}", parameterName);
+                ThrowHelper.ArgumentException($"Value must be greater than {lower}", parameterName);
             }
         }
 
@@ -97,7 +97,7 @@ namespace Notifo.Infrastructure
         {
             if (target.CompareTo(lower) < 0)
             {
-                throw new ArgumentException($"Value must be greater or equal to {lower}", parameterName);
+                ThrowHelper.ArgumentException($"Value must be greater or equal to {lower}", parameterName);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Notifo.Infrastructure
         {
             if (target.CompareTo(upper) >= 0)
             {
-                throw new ArgumentException($"Value must be less than {upper}", parameterName);
+                ThrowHelper.ArgumentException($"Value must be less than {upper}", parameterName);
             }
         }
 
@@ -119,7 +119,7 @@ namespace Notifo.Infrastructure
         {
             if (target.CompareTo(upper) > 0)
             {
-                throw new ArgumentException($"Value must be less or equal to {upper}", parameterName);
+                ThrowHelper.ArgumentException($"Value must be less or equal to {upper}", parameterName);
             }
         }
 
@@ -132,7 +132,7 @@ namespace Notifo.Infrastructure
 
             if (target?.Count == 0)
             {
-                throw new ArgumentException("Collection does not contain an item.", parameterName);
+                ThrowHelper.ArgumentException("Collection does not contain an item.", parameterName);
             }
         }
 
@@ -143,7 +143,7 @@ namespace Notifo.Infrastructure
         {
             if (target == Guid.Empty)
             {
-                throw new ArgumentException("Value cannot be empty.", parameterName);
+                ThrowHelper.ArgumentException("Value cannot be empty.", parameterName);
             }
         }
 
@@ -154,7 +154,7 @@ namespace Notifo.Infrastructure
         {
             if (target == null)
             {
-                throw new ArgumentNullException(parameterName);
+                ThrowHelper.ArgumentNullException(parameterName);
             }
         }
 
@@ -165,7 +165,7 @@ namespace Notifo.Infrastructure
         {
             if (Equals(target, default(T)!))
             {
-                throw new ArgumentException("Value cannot be an the default value.", parameterName);
+                ThrowHelper.ArgumentException("Value cannot be an the default value.", parameterName);
             }
         }
 
@@ -178,7 +178,7 @@ namespace Notifo.Infrastructure
 
             if (string.IsNullOrWhiteSpace(target))
             {
-                throw new ArgumentException("String parameter cannot be null or empty and cannot contain only blanks.", parameterName);
+                ThrowHelper.ArgumentException("String parameter cannot be null or empty and cannot contain only blanks.", parameterName);
             }
         }
 
@@ -191,7 +191,7 @@ namespace Notifo.Infrastructure
 
             if (target != null && target.Intersect(Path.GetInvalidFileNameChars()).Any())
             {
-                throw new ArgumentException("Value contains an invalid character.", parameterName);
+                ThrowHelper.ArgumentException("Value contains an invalid character.", parameterName);
             }
         }
     }

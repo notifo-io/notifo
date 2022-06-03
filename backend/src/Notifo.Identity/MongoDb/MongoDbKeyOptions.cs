@@ -70,7 +70,7 @@ namespace Notifo.Identity.MongoDb
 
             if (key == null)
             {
-                throw new InvalidOperationException("Cannot read key.");
+                ThrowHelper.InvalidOperationException("Cannot read key.");
             }
 
             securityKey = new RsaSecurityKey(key.Parameters.ToParameters())

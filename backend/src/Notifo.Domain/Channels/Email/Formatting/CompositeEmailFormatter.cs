@@ -7,6 +7,7 @@
 
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Email.Formatting
 {
@@ -40,7 +41,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 }
             }
 
-            throw new NotSupportedException();
+            ThrowHelper.NotSupportedException();
+            return default!;
         }
 
         public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input,
@@ -54,7 +56,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 }
             }
 
-            throw new NotSupportedException();
+            ThrowHelper.NotSupportedException();
+            return default!;
         }
 
         public ValueTask<FormattedEmail> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user, bool noCache = false,
@@ -68,7 +71,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 }
             }
 
-            throw new NotSupportedException();
+            ThrowHelper.NotSupportedException();
+            return default;
         }
     }
 }

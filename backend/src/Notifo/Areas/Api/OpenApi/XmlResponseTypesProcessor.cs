@@ -7,6 +7,7 @@
 
 using System.Text.RegularExpressions;
 using Namotion.Reflection;
+using Notifo.Infrastructure;
 using NSwag;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
@@ -40,7 +41,8 @@ namespace Notifo.Areas.Api.OpenApi
 
                     if (description.Contains("=&gt;", StringComparison.OrdinalIgnoreCase))
                     {
-                        throw new InvalidOperationException("Description not formatted correcly.");
+                        ThrowHelper.InvalidOperationException("Description not formatted correcly.");
+                        return false;
                     }
 
                     response.Description = description;

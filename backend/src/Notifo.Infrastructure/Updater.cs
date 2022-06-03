@@ -35,7 +35,8 @@ namespace Notifo.Infrastructure
                 }
             }
 
-            throw new InvalidOperationException("Invalid state reached.");
+            ThrowHelper.InvalidOperationException("Invalid state reached.");
+            return default!;
         }
 
         public static async Task UpdateRetriedAsync(int numRetries, Func<Task> action)

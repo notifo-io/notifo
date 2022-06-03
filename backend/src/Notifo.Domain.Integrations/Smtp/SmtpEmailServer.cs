@@ -10,6 +10,7 @@ using Microsoft.Extensions.ObjectPool;
 using MimeKit;
 using MimeKit.Text;
 using Notifo.Domain.Channels.Email;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Smtp
 {
@@ -87,7 +88,8 @@ namespace Notifo.Domain.Integrations.Smtp
                 }
                 else
                 {
-                    throw new InvalidOperationException("Cannot send email without text body or html body");
+                    ThrowHelper.InvalidOperationException("Cannot send email without text body or html body");
+                    return;
                 }
 
                 smtpMessage.Subject = message.Subject;

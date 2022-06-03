@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Runtime.CompilerServices;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
-using System.Runtime.CompilerServices;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 

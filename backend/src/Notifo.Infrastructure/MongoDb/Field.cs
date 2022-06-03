@@ -29,7 +29,8 @@ namespace Notifo.Infrastructure.MongoDb
                 classMap = classMap.BaseClassMap;
             }
 
-            throw new InvalidOperationException("Cannot find member name.");
+            ThrowHelper.InvalidOperationException("Cannot find member name.");
+            return default!;
         }
     }
 }

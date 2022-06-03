@@ -59,7 +59,8 @@ namespace Notifo.Infrastructure.Messaging.Implementation.GooglePubSub
         {
             if (publisherClient == null)
             {
-                throw new InvalidOperationException("Publisher not initialized yet.");
+                ThrowHelper.InvalidOperationException("Publisher not initialized yet.");
+                return;
             }
 
             var serialized = serializer.SerializeToBytes(envelope);

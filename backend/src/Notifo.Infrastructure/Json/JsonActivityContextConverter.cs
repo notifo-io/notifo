@@ -56,13 +56,15 @@ namespace Notifo.Infrastructure.Json
                                 spanId = ActivitySpanId.CreateFromString(reader.GetString());
                                 break;
                             default:
-                                throw new JsonException($"Invalid property {property}.");
+                                ThrowHelper.JsonException($"Invalid property {property}.");
+                                return default;
                         }
                     }
 
                     return new ActivityContext(traceId, spanId, traceFlags, traceState, isRemote);
                 default:
-                    throw new JsonException($"Expected JsonTokenType.StartObject or JsonTokenType.Null, got {reader.TokenType}.");
+                    ThrowHelper.JsonException($"Expected JsonTokenType.StartObject or JsonTokenType.Null, got {reader.TokenType}.");
+                    return default;
             }
         }
 

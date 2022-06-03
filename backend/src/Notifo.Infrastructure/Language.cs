@@ -24,7 +24,8 @@ namespace Notifo.Infrastructure
             }
             catch (KeyNotFoundException)
             {
-                throw new NotSupportedException($"Language {iso2Code} is not supported");
+                ThrowHelper.NotSupportedException($"Language {iso2Code} is not supported");
+                return default!;
             }
         }
 
