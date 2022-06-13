@@ -82,7 +82,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                                                         {texts.notificationSettings[key]?.title}
                                                     </td>
                                                     <td>
-                                                        {texts.common.via}
+                                                        {texts.common.after}
                                                     </td>
                                                     <td className='text-right'>
                                                         {channel.setting.delayInSeconds || 0}
