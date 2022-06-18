@@ -19,7 +19,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         Task HandleCallbackAsync(App app, HttpContext httpContext);
 
-        Task<bool> SendAsync(MessagingJob job, string text,
+        Task<MessagingResult> SendAsync(MessagingJob job, string text,
             CancellationToken ct);
     }
 }

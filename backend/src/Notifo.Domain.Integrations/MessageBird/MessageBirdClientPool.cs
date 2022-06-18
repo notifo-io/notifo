@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Globalization;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
@@ -22,17 +21,15 @@ namespace Notifo.Domain.Integrations.MessageBird
             this.httpClientFactory = httpClientFactory;
         }
 
-        public IMessageBirdClient GetServer(string accessKey, long phoneNumber, Dictionary<string, string>? phoneNumbers)
+        public IMessageBirdClient GetClient(string accessKey)
         {
-            var cacheKey = $"MessageBirdSmsSender_{accessKey}_{phoneNumber}";
+            var cacheKey = $"MessageBirdSmsSender_{accessKey}";
 
             var found = GetOrCreate(cacheKey, () =>
             {
                 var options = Options.Create(new MessageBirdOptions
                 {
-                    AccessKey = accessKey,
-                    PhoneNumber = phoneNumber.ToString(CultureInfo.InvariantCulture),
-                    PhoneNumbers = phoneNumbers
+                    AccessKey = accessKey
                 });
 
                 var sender = new MessageBirdClient(httpClientFactory, options);

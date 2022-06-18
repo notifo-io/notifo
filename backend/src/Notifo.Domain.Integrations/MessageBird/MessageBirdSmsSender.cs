@@ -21,17 +21,23 @@ namespace Notifo.Domain.Integrations.MessageBird
         private readonly ISmsCallback smsCallback;
         private readonly ISmsUrl smsUrl;
         private readonly string integrationId;
+        private readonly string phoneNumber;
+        private readonly Dictionary<string, string>? phoneNumbers;
 
         public MessageBirdSmsSender(
             IMessageBirdClient messageBirdClient,
             ISmsCallback smsCallback,
             ISmsUrl smsUrl,
-            string integrationId)
+            string integrationId,
+            string phoneNumber,
+            Dictionary<string, string>? phoneNumbers)
         {
             this.messageBirdClient = messageBirdClient;
             this.smsCallback = smsCallback;
             this.smsUrl = smsUrl;
             this.integrationId = integrationId;
+            this.phoneNumber = phoneNumber;
+            this.phoneNumbers = phoneNumbers;
         }
 
         public async Task HandleCallbackAsync(App app, HttpContext httpContext)
@@ -67,9 +73,11 @@ namespace Notifo.Domain.Integrations.MessageBird
         {
             try
             {
+                // The callback URL is used to get delivery status.
                 var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId);
 
-                var sms = new MessageBirdSmsMessage(to, body, token, callbackUrl);
+                // Call the phone number and use a local phone number for the user.
+                var sms = new SmsMessage(GetOriginator(to), to, body, token, callbackUrl);
 
                 var response = await messageBirdClient.SendSmsAsync(sms, ct);
 
@@ -88,6 +96,22 @@ namespace Notifo.Domain.Integrations.MessageBird
 
                 throw new DomainException(errorMessage);
             }
+        }
+
+        private string GetOriginator(string to)
+        {
+            if (phoneNumbers?.Count > 0 && to.Length > 2)
+            {
+                // Use the country code of the phone number to not look as a spam SMS.
+                var countryCode = to[..2];
+
+                if (phoneNumbers.TryGetValue(countryCode, out var originator))
+                {
+                    return originator;
+                }
+            }
+
+            return phoneNumber;
         }
     }
 }

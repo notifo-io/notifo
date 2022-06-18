@@ -216,12 +216,15 @@ namespace Notifo.Domain.Channels.Sms
 
                     var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Id.ToString(), ct);
 
+                    // Some integrations provide the actual result via webhook at a later point.
                     if (result == SmsResult.Delivered)
                     {
                         await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
                         return;
                     }
-                    else if (result == SmsResult.Sent)
+
+                    // If the SMS has been sent, but not delivered yet, we also do not try other integrations.
+                    if (result == SmsResult.Sent)
                     {
                         return;
                     }

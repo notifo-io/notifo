@@ -21,21 +21,21 @@ namespace Notifo.Domain.Integrations.Twilio
     {
         private readonly TwilioClientPool clientPool;
 
-        private static readonly IntegrationProperty AccountSidProperty = new IntegrationProperty("accountSid", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty AccountSidProperty = new IntegrationProperty("accountSid", PropertyType.Text)
         {
             EditorLabel = Texts.Twilio_AccountSidLabel,
             EditorDescription = null,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty AuthTokenProperty = new IntegrationProperty("authToken", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty AuthTokenProperty = new IntegrationProperty("authToken", PropertyType.Text)
         {
             EditorLabel = Texts.Twilio_AuthTokenLabel,
             EditorDescription = null,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty PhoneNumberProperty = new IntegrationProperty("phoneNumber", IntegrationPropertyType.Number)
+        private static readonly IntegrationProperty PhoneNumberProperty = new IntegrationProperty("phoneNumber", PropertyType.Number)
         {
             EditorLabel = Texts.Twilio_PhoneNumberLabel,
             EditorDescription = null,

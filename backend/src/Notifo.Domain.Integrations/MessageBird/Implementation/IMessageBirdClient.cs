@@ -13,6 +13,13 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     {
         Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext);
 
-        Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message, CancellationToken ct);
+        Task<SmsResponse> SendSmsAsync(SmsMessage message,
+            CancellationToken ct);
+
+        Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTemplateMessage message,
+            CancellationToken ct);
+
+        Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
+            CancellationToken ct);
     }
 }

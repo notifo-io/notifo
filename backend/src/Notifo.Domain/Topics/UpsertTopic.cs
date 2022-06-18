@@ -34,7 +34,8 @@ namespace Notifo.Domain.Topics
             }
         }
 
-        public ValueTask<Topic?> ExecuteAsync(Topic topic, IServiceProvider serviceProvider, CancellationToken ct)
+        public ValueTask<Topic?> ExecuteAsync(Topic topic, IServiceProvider serviceProvider,
+            CancellationToken ct)
         {
             Validate<Validator>.It(this);
 

@@ -14,7 +14,7 @@ namespace Notifo.Domain.Users
 {
     public sealed class SetUserProperty : ICommand<User>
     {
-        public string Property { get; set; }
+        public string PropertyKey { get; set; }
 
         public string? PropertyValue { get; set; }
 
@@ -22,7 +22,7 @@ namespace Notifo.Domain.Users
         {
             public Validator()
             {
-                RuleFor(x => x.Property).NotNull().NotEmpty();
+                RuleFor(x => x.PropertyKey).NotNull().NotEmpty();
             }
         }
 
@@ -33,7 +33,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user;
 
-            var existing = user.Properties.GetValueOrDefault(Property);
+            var existing = user.Properties.GetValueOrDefault(PropertyKey);
 
             if (!string.Equals(existing, PropertyValue, StringComparison.Ordinal))
             {
@@ -41,11 +41,11 @@ namespace Notifo.Domain.Users
 
                 if (PropertyValue == null)
                 {
-                    newProperties.Remove(Property);
+                    newProperties.Remove(PropertyKey);
                 }
                 else
                 {
-                    newProperties[Property] = PropertyValue;
+                    newProperties[PropertyKey] = PropertyValue;
                 }
 
                 newUser = newUser with

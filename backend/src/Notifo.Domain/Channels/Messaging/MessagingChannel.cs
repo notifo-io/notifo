@@ -77,6 +77,7 @@ namespace Notifo.Domain.Channels.Messaging
 
                 var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification);
 
+                // We try all integrations, ordered by priority.
                 foreach (var (_, sender) in integrations)
                 {
                     await sender.AddTargetsAsync(job, options.User);
@@ -185,7 +186,8 @@ namespace Notifo.Domain.Channels.Messaging
                 {
                     var result = await sender.SendAsync(job, text, ct);
 
-                    if (result)
+                    // If the message has been delivered, we do not try other integrations.
+                    if (result == MessagingResult.Delivered)
                     {
                         await UpdateAsync(job.Notification, ProcessStatus.Handled);
                         return;

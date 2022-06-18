@@ -5,14 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Integrations
 {
-    public enum SmsResult
+    public enum PropertyType
     {
-        Unknown,
-        Skipped,
-        Sent,
-        Delivered,
-        Failed
+        Text,
+        Number,
+        MultilineText,
+        Password,
+        Boolean
     }
 }

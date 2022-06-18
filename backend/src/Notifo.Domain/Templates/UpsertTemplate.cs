@@ -18,7 +18,8 @@ namespace Notifo.Domain.Templates
 
         public bool CanCreate => true;
 
-        public ValueTask<Template?> ExecuteAsync(Template target, IServiceProvider serviceProvider, CancellationToken ct)
+        public ValueTask<Template?> ExecuteAsync(Template target, IServiceProvider serviceProvider,
+            CancellationToken ct)
         {
             var newTemplate = target with
             {

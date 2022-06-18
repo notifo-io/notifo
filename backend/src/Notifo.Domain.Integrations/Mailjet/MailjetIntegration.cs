@@ -15,21 +15,21 @@ namespace Notifo.Domain.Integrations.Mailjet
     {
         private readonly MailjetEmailServerPool serverPool;
 
-        private static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", IntegrationPropertyType.Password)
+        private static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
         {
             EditorLabel = Texts.Mailjet_ApiKeyLabel,
             EditorDescription = null,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty ApiSecretProperty = new IntegrationProperty("apiSecret", IntegrationPropertyType.Password)
+        private static readonly IntegrationProperty ApiSecretProperty = new IntegrationProperty("apiSecret", PropertyType.Password)
         {
             EditorLabel = Texts.Mailjet_ApiSecretLabel,
             EditorDescription = null,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
         {
             Pattern = Patterns.Email,
             EditorLabel = Texts.Email_FromEmailLabel,
@@ -38,7 +38,7 @@ namespace Notifo.Domain.Integrations.Mailjet
             Summary = true
         };
 
-        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
         {
             EditorLabel = Texts.Email_FromNameLabel,
             EditorDescription = Texts.Email_FromNameDescription,

@@ -25,18 +25,15 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         public MessageBirdClient(IHttpClientFactory httpClientFactory, IOptions<MessageBirdOptions> options)
         {
             this.httpClientFactory = httpClientFactory;
-
             this.options = options.Value;
         }
 
-        public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message,
+        public async Task<SmsResponse> SendSmsAsync(SmsMessage message,
             CancellationToken ct)
         {
             Guard.NotNull(message);
-            Guard.NotNullOrEmpty(message.Body, nameof(message.Body));
-            Guard.NotNullOrEmpty(message.To, nameof(message.To));
 
-            var (to, body, reference, reportUrl) = message;
+            var (originator, to, body, reference, reportUrl) = message;
 
             if (body.Length > 140)
             {
@@ -56,7 +53,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
                 var request = new
                 {
-                    originator = GetOriginator(to),
+                    originator,
                     body,
                     reportUrl,
                     reference,
@@ -70,12 +67,82 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<MessageBirdSmsResponse>((JsonSerializerOptions?)null, ct);
+                    var result = await response.Content.ReadFromJsonAsync<SmsResponse>((JsonSerializerOptions?)null, ct);
 
                     return result!;
                 }
 
                 throw await HandleErrorAsync(response, ct);
+            }
+        }
+
+        public Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTemplateMessage message,
+            CancellationToken ct)
+        {
+            Guard.NotNull(message);
+
+            var (from, to, templateNamespace, templateName, code) = message;
+
+            var request = new
+            {
+                type = "hsm",
+                to,
+                from,
+                content = new
+                {
+                    hsm = new Dictionary<string, object>
+                    {
+                        ["templateName"] = templateName,
+                        ["language"] = new
+                        {
+                            policy = "deterministic",
+                            code
+                        },
+                        ["namespace"] = templateNamespace
+                    }
+                }
+            };
+
+            return SendRequestAsync(request, ct);
+        }
+
+        public Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
+            CancellationToken ct)
+        {
+            Guard.NotNull(message);
+
+            var (from, to, text) = message;
+
+            var request = new
+            {
+                type = "text",
+                to,
+                from,
+                content = new
+                {
+                    text
+                }
+            };
+
+            return SendRequestAsync(request, ct);
+        }
+
+        private async Task<ConversationResponse> SendRequestAsync<T>(T request,
+            CancellationToken ct)
+        {
+            using (var client = httpClientFactory.CreateClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
+
+                var response = await client.PostAsJsonAsync("https://conversations.messagebird.com/v1/send", request, ct);
+                var result = await response.Content.ReadFromJsonAsync<ConversationResponse>((JsonSerializerOptions?)null, ct);
+
+                if (result!.Error != null)
+                {
+                    throw new HttpIntegrationException<MessageBirdError>(result.Error.Description, (int)response.StatusCode);
+                }
+
+                return result;
             }
         }
 
@@ -131,21 +198,6 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
                 return new HttpIntegrationException<MessageBirdError>(message, (int)response.StatusCode);
             }
-        }
-
-        private string GetOriginator(string phoneNumber)
-        {
-            if (options.PhoneNumbers?.Count > 0 && phoneNumber.Length > 2)
-            {
-                var countryCode = phoneNumber[..2];
-
-                if (options.PhoneNumbers.TryGetValue(countryCode, out var originator))
-                {
-                    return originator;
-                }
-            }
-
-            return options.PhoneNumber;
         }
     }
 }

@@ -5,14 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Integrations
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public enum IntegrationPropertyType
+    public sealed record WhatsAppTextMessage(
+        string From,
+        string To,
+        string Message)
     {
-        Text,
-        Number,
-        MultilineText,
-        Password,
-        Boolean
     }
 }

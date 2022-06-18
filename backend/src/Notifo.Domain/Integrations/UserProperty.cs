@@ -9,7 +9,7 @@
 
 namespace Notifo.Domain.Integrations
 {
-    public sealed record UserProperty(string Name)
+    public sealed record UserProperty(string Name, PropertyType Type) : PropertyBase(Name, Type)
     {
         public string? EditorDescription { get; init; }
 

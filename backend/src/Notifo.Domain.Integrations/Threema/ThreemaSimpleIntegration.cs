@@ -14,7 +14,7 @@ namespace Notifo.Domain.Integrations.Threema
 {
     public sealed class ThreemaSimpleIntegration : IIntegration
     {
-        private static readonly IntegrationProperty ApiIdentity = new IntegrationProperty("apiIdentity", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty ApiIdentity = new IntegrationProperty("apiIdentity", PropertyType.Text)
         {
             EditorLabel = Texts.ThreemaSimple_ApiIdentityLabel,
             EditorDescription = null,
@@ -22,7 +22,7 @@ namespace Notifo.Domain.Integrations.Threema
             Summary = true
         };
 
-        private static readonly IntegrationProperty ApiSecret = new IntegrationProperty("apiSecret", IntegrationPropertyType.Password)
+        private static readonly IntegrationProperty ApiSecret = new IntegrationProperty("apiSecret", PropertyType.Password)
         {
             EditorLabel = Texts.ThreemaSimple_ApiSecretLabel,
             EditorDescription = null,

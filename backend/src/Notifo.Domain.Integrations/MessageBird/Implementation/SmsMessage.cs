@@ -9,7 +9,8 @@
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed record MessageBirdSmsMessage(
+    public sealed record SmsMessage(
+        string From,
         string To,
         string Body,
         string? Reference = null,

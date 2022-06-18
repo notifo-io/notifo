@@ -5,14 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Sms
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public enum SmsResult
+    public sealed record WhatsAppTemplateMessage(
+        string From,
+        string To,
+        string TemplateNamespace,
+        string TemplateName,
+        string LanguageCode)
     {
-        Unknown,
-        Skipped,
-        Sent,
-        Delivered,
-        Failed
     }
 }
