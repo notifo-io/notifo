@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 builder.AddAspNetCoreInstrumentation();
                 builder.AddHttpClientInstrumentation();
+                builder.AddMongoDBInstrumentation();
 
                 if (config.GetValue<bool>("logging:stackdriver:enabled"))
                 {

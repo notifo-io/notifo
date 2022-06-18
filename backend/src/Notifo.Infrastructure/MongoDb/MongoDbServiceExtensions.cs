@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
+using MongoDB.Driver.Core.Extensions.DiagnosticSources;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -42,7 +43,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var connectionString = c.GetRequiredService<IOptions<MongoDbOptions>>().Value.ConnectionString;
 
-                    return new MongoClient(connectionString);
+                    var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
+
+                    clientSettings.ClusterConfigurator = builder =>
+                    {
+                        builder.Subscribe(new DiagnosticsActivityEventSubscriber());
+                    };
+
+                    return new MongoClient(clientSettings);
                 })
                 .As<IMongoClient>();
 
