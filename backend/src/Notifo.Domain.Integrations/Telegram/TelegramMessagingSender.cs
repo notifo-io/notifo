@@ -102,7 +102,7 @@ namespace Notifo.Domain.Integrations.Telegram
                 return;
             }
 
-            await userStore.UpsertAsync(app.Id, user.Id, new SetUserProperty
+            await userStore.UpsertAsync(app.Id, user.Id, new SetUserSystemProperty
             {
                 PropertyKey = TelegramIntegration.UserUsername.Name,
                 PropertyValue = chatId,
@@ -167,7 +167,7 @@ namespace Notifo.Domain.Integrations.Telegram
 
         private static string? GetChatId(User user)
         {
-            return TelegramIntegration.UserChatId.GetString(user.Properties);
+            return TelegramIntegration.UserChatId.GetString(user.SystemProperties);
         }
 
         private static bool IsUpdate(TelegramUpdate update)

@@ -7,7 +7,7 @@
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class MessageBirdSmsStatus
+    public sealed class SmsStatus
     {
         public string Id { get; set; }
 

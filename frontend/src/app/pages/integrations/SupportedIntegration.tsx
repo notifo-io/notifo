@@ -40,7 +40,7 @@ export const SupportedIntegration = React.memo((props: SupportedIntegrationProps
 
                         <div>
                             {definition.capabilities.map(capability => (
-                                <Badge key={capability} color='secondary' pill>{capability}</Badge>
+                                <Badge key={capability} color='secondary' className='mr-1' pill>{capability}</Badge>
                             ))}
                         </div>
 

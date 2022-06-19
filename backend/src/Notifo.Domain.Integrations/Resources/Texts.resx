@@ -240,11 +240,11 @@
   <data name="MessageBird_SendWhatsAppLabel" xml:space="preserve">
     <value>Send WhatsApp</value>
   </data>
-  <data name="MessageBird_WhatsAppChannelDescription" xml:space="preserve">
-    <value>The ID of the channel.</value>
+  <data name="MessageBird_WhatsAppChannelIdDescription" xml:space="preserve">
+    <value>The ID of the WhatsApp Channel.</value>
   </data>
-  <data name="MessageBird_WhatsAppChannelLabel" xml:space="preserve">
-    <value>WhatsApp Channel</value>
+  <data name="MessageBird_WhatsAppChannelIdLabel" xml:space="preserve">
+    <value>WhatsApp Channel ID</value>
   </data>
   <data name="MessageBird_WhatsAppTemplateNameDescription" xml:space="preserve">
     <value>The name of the template. This is the initial message that will be send to your user once.</value>

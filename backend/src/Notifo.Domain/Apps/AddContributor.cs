@@ -54,14 +54,9 @@ namespace Notifo.Domain.Apps
                 throw new DomainException(Texts.App_CannotUpdateYourself);
             }
 
-            var newContributors = new Dictionary<string, string>(app.Contributors)
-            {
-                [user.Id] = Role
-            };
-
             var newApp = app with
             {
-                Contributors = newContributors.ToReadonlyDictionary()
+                Contributors = app.Contributors.Set(user.Id, Role)
             };
 
             return newApp;

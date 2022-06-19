@@ -36,7 +36,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user with
             {
-                WebPushSubscriptions = user.WebPushSubscriptions.Where(x => x.Endpoint != Endpoint).ToReadonlyList()
+                WebPushSubscriptions = user.WebPushSubscriptions.RemoveAll(x => x.Endpoint == Endpoint)
             };
 
             return new ValueTask<User?>(newUser);

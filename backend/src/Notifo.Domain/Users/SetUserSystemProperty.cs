@@ -12,13 +12,13 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users
 {
-    public sealed class SetUserProperty : ICommand<User>
+    public sealed class SetUserSystemProperty : ICommand<User>
     {
         public string PropertyKey { get; set; }
 
         public string? PropertyValue { get; set; }
 
-        private sealed class Validator : AbstractValidator<SetUserProperty>
+        private sealed class Validator : AbstractValidator<SetUserSystemProperty>
         {
             public Validator()
             {
@@ -33,24 +33,24 @@ namespace Notifo.Domain.Users
 
             var newUser = user;
 
-            var existing = user.Properties.GetValueOrDefault(PropertyKey);
+            var existing = user.SystemProperties?.GetValueOrDefault(PropertyKey);
 
             if (!string.Equals(existing, PropertyValue, StringComparison.Ordinal))
             {
-                var newProperties = new Dictionary<string, string>(user.Properties);
+                var newProperties = user.SystemProperties;
 
                 if (PropertyValue == null)
                 {
-                    newProperties.Remove(PropertyKey);
+                    newProperties = newProperties.Remove(PropertyKey);
                 }
                 else
                 {
-                    newProperties[PropertyKey] = PropertyValue;
+                    newProperties = newProperties.Set(PropertyKey, PropertyValue);
                 }
 
                 newUser = newUser with
                 {
-                    Properties = new ReadonlyDictionary<string, string>(newProperties)
+                    SystemProperties = newProperties
                 };
             }
 

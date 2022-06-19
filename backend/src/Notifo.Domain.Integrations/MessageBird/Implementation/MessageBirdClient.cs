@@ -137,18 +137,20 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 var response = await client.PostAsJsonAsync("https://conversations.messagebird.com/v1/send", request, ct);
                 var result = await response.Content.ReadFromJsonAsync<ConversationResponse>((JsonSerializerOptions?)null, ct);
 
-                if (result!.Error != null)
+                var error = result?.Errors?.FirstOrDefault() ?? result?.Error;
+
+                if (error != null)
                 {
-                    throw new HttpIntegrationException<MessageBirdError>(result.Error.Description, (int)response.StatusCode);
+                    throw new HttpIntegrationException<MessageBirdError>(error.Description, (int)response.StatusCode);
                 }
 
-                return result;
+                return result!;
             }
         }
 
-        public Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext)
+        public Task<SmsStatus> ParseStatusAsync(HttpContext httpContext)
         {
-            var result = new MessageBirdSmsStatus();
+            var result = new SmsStatus();
 
             var query = httpContext.Request.Query;
 

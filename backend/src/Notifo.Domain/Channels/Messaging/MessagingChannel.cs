@@ -54,6 +54,12 @@ namespace Notifo.Domain.Channels.Messaging
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
+            // Faster check because it does not allocate integrations.
+            if (!integrationManager.IsConfigured<IMessagingSender>(options.App, notification))
+            {
+                yield break;
+            }
+
             var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.

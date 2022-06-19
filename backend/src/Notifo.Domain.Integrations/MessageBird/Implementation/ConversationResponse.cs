@@ -32,6 +32,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         [JsonPropertyName("error")]
         public MessageBirdError? Error { get; set; }
 
+        [JsonPropertyName("errors")]
+        public MessageBirdError[]? Errors { get; set; }
+
         [JsonExtensionData]
         public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 

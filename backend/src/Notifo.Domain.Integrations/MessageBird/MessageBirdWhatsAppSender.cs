@@ -63,28 +63,30 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return MessagingResult.Skipped;
             }
 
-            var sentKey = $"whatsAppSend_{channelId}";
+            var to = job.Targets[WhatsAppPhoneNumber];
+
+            var sentKey = $"MessageBird_WhatsApp_{channelId}_{templateName}";
 
             // We need to send an initial template message to talk with the user.
-            if (!user.Properties.ContainsKey(sentKey))
+            if (user.SystemProperties?.ContainsKey(sentKey) != true)
             {
                 var templateMesage = new WhatsAppTemplateMessage(
                     channelId,
-                    job.Configuration,
+                    to,
                     templateNamespace,
                     templateName,
                     user.PreferredLanguage);
 
                 await messageBirdClient.SendWhatsAppAsync(templateMesage, ct);
 
-                await userStore.UpsertAsync(job.Notification.AppId, job.Notification.UserId, new SetUserProperty
+                await userStore.UpsertAsync(job.Notification.AppId, job.Notification.UserId, new SetUserSystemProperty
                 {
                     PropertyKey = sentKey,
                     PropertyValue = "true",
                 }, ct);
             }
 
-            var textMessage = new WhatsAppTextMessage(channelId, job.Configuration, text);
+            var textMessage = new WhatsAppTextMessage(channelId, to, text);
 
             // Just send the normal text message.
             await messageBirdClient.SendWhatsAppAsync(textMessage, ct);

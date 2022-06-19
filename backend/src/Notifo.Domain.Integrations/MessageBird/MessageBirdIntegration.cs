@@ -56,10 +56,10 @@ namespace Notifo.Domain.Integrations.MessageBird
             Summary = false
         };
 
-        private static readonly IntegrationProperty WhatsAppChannelProperty = new IntegrationProperty("whatsAppChannel", PropertyType.Text)
+        private static readonly IntegrationProperty WhatsAppChannelIdProperty = new IntegrationProperty("whatsAppChannelId", PropertyType.Text)
         {
-            EditorLabel = Texts.MessageBird_WhatsAppChannelLabel,
-            EditorDescription = Texts.MessageBird_WhatsAppChannelDescription,
+            EditorLabel = Texts.MessageBird_WhatsAppChannelIdLabel,
+            EditorDescription = Texts.MessageBird_WhatsAppChannelIdDescription,
             IsRequired = false,
             Summary = false
         };
@@ -87,8 +87,14 @@ namespace Notifo.Domain.Integrations.MessageBird
                 "./integrations/messagebird.svg",
                 new List<IntegrationProperty>
                 {
+                    SendSmsProperty,
+                    SendWhatsAppProperty,
                     AccessKeyProperty,
-                    PhoneNumberProperty
+                    PhoneNumberProperty,
+                    PhoneNumbersProperty,
+                    WhatsAppChannelIdProperty,
+                    WhatsAppTemplateNamespaceProperty,
+                    WhatsAppTemplateNameProperty
                 },
                 new List<UserProperty>(),
                 new HashSet<string>
@@ -117,6 +123,13 @@ namespace Notifo.Domain.Integrations.MessageBird
             if (sms != null)
             {
                 return sms;
+            }
+
+            var messaging = CreateMessaging(serviceType, configured, serviceProvider);
+
+            if (messaging != null)
+            {
+                return messaging;
             }
 
             return null;
@@ -164,7 +177,14 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return null;
             }
 
-            var channelId = WhatsAppChannelProperty.GetString(configured);
+            var accessKey = AccessKeyProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(accessKey))
+            {
+                return null;
+            }
+
+            var channelId = WhatsAppChannelIdProperty.GetString(configured);
 
             if (string.IsNullOrWhiteSpace(channelId))
             {
@@ -185,7 +205,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return null;
             }
 
-            var client = clientPool.GetClient(channelId);
+            var client = clientPool.GetClient(accessKey);
 
             return new MessageBirdWhatsAppSender(
                 client,

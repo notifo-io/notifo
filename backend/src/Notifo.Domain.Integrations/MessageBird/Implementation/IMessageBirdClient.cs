@@ -11,7 +11,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public interface IMessageBirdClient
     {
-        Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext);
+        Task<SmsStatus> ParseStatusAsync(HttpContext httpContext);
 
         Task<SmsResponse> SendSmsAsync(SmsMessage message,
             CancellationToken ct);

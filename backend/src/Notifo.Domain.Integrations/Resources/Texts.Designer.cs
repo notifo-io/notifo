@@ -412,20 +412,20 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The ID of the channel..
+        ///   Looks up a localized string similar to The ID of the WhatsApp Channel..
         /// </summary>
-        internal static string MessageBird_WhatsAppChannelDescription {
+        internal static string MessageBird_WhatsAppChannelIdDescription {
             get {
-                return ResourceManager.GetString("MessageBird_WhatsAppChannelDescription", resourceCulture);
+                return ResourceManager.GetString("MessageBird_WhatsAppChannelIdDescription", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WhatsApp Channel.
+        ///   Looks up a localized string similar to WhatsApp Channel ID.
         /// </summary>
-        internal static string MessageBird_WhatsAppChannelLabel {
+        internal static string MessageBird_WhatsAppChannelIdLabel {
             get {
-                return ResourceManager.GetString("MessageBird_WhatsAppChannelLabel", resourceCulture);
+                return ResourceManager.GetString("MessageBird_WhatsAppChannelIdLabel", resourceCulture);
             }
         }
         

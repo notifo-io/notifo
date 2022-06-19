@@ -39,6 +39,8 @@ namespace Notifo.Domain.Users
 
         public ReadonlyDictionary<string, string> Properties { get; init; } = ReadonlyDictionary.Empty<string, string>();
 
+        public ReadonlyDictionary<string, string>? SystemProperties { get; init; }
+
         public ReadonlyList<MobilePushToken> MobilePushTokens { get; init; } = ReadonlyList.Empty<MobilePushToken>();
 
         public ReadonlyList<WebPushSubscription> WebPushSubscriptions { get; init; } = ReadonlyList.Empty<WebPushSubscription>();
