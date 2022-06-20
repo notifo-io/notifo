@@ -101,6 +101,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             // Just send the normal text message.
             await messageBirdClient.SendWhatsAppAsync(textMessage, ct);
 
+            // We get the status asynchronously via webhook, therefore we tell the channel not mark the process as completed.
             return MessagingResult.Sent;
         }
 
