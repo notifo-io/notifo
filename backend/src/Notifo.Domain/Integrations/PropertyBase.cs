@@ -15,11 +15,11 @@ namespace Notifo.Domain.Integrations
     {
         public string? DefaultValue { get; init; }
 
-        public string? GetString(IReadOnlyDictionary<string, string> properties)
+        public string? GetString(IReadOnlyDictionary<string, string>? properties)
         {
             if (Type is PropertyType.Text or PropertyType.MultilineText or PropertyType.Password)
             {
-                if (properties.TryGetValue(Name, out var value))
+                if (properties != null && properties.TryGetValue(Name, out var value))
                 {
                     return value;
                 }
@@ -30,11 +30,11 @@ namespace Notifo.Domain.Integrations
             return null;
         }
 
-        public long GetNumber(IReadOnlyDictionary<string, string> properties)
+        public long GetNumber(IReadOnlyDictionary<string, string>? properties)
         {
             if (Type == PropertyType.Number)
             {
-                if (properties.TryGetValue(Name, out var value))
+                if (properties != null && properties.TryGetValue(Name, out var value))
                 {
                     if (TryParseLong(value, out var result))
                     {
@@ -51,11 +51,11 @@ namespace Notifo.Domain.Integrations
             return 0;
         }
 
-        public bool GetBoolean(IReadOnlyDictionary<string, string> properties)
+        public bool GetBoolean(IReadOnlyDictionary<string, string>? properties)
         {
             if (Type == PropertyType.Boolean)
             {
-                if (properties.TryGetValue(Name, out var value))
+                if (properties != null && properties.TryGetValue(Name, out var value))
                 {
                     if (TryParseBoolean(value, out var result))
                     {

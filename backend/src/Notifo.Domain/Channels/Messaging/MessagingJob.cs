@@ -36,7 +36,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         public string ScheduleKey
         {
-            get => Notification.Id.ToString();
+            get => ComputeScheduleKey(Notification.Id);
         }
 
         public MessagingJob()
@@ -49,6 +49,11 @@ namespace Notifo.Domain.Channels.Messaging
             Notification = notification;
             NotificationTemplate = setting.Template;
             Condition = setting.Condition;
+        }
+
+        public static string ComputeScheduleKey(Guid notificationId)
+        {
+            return $"{notificationId}";
         }
     }
 }

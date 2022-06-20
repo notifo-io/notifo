@@ -65,29 +65,26 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task HandleCallbackAsync(string to, string token, SmsResult result,
+        public async Task HandleCallbackAsync(string to, Guid notificationId, SmsResult result,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
             {
-                if (Guid.TryParse(token, out var id))
+                var notification = await userNotificationStore.FindAsync(notificationId, ct);
+
+                if (notification != null)
                 {
-                    var notification = await userNotificationStore.FindAsync(id, ct);
+                    await UpdateAsync(notification, to, result);
+                }
 
-                    if (notification != null)
-                    {
-                        await UpdateAsync(to, result, notification);
-                    }
-
-                    if (result == SmsResult.Delivered)
-                    {
-                        userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
-                    }
+                if (result == SmsResult.Delivered)
+                {
+                    userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
                 }
             }
         }
 
-        private async Task UpdateAsync(string to, SmsResult result, UserNotification notification)
+        private async Task UpdateAsync(UserNotification notification, string to, SmsResult result)
         {
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
@@ -248,9 +245,9 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        private Task UpdateAsync(IUserNotification token, string phoneNumber, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(IUserNotification notification, string phoneNumber, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(token, Name, phoneNumber, status, reason);
+            return userNotificationStore.CollectAndUpdateAsync(notification, Name, phoneNumber, status, reason);
         }
 
         private async Task SkipAsync(SmsJob job, string reason)

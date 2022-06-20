@@ -42,30 +42,35 @@ namespace Notifo.Domain.Integrations.MessageBird
 
         public async Task HandleCallbackAsync(App app, HttpContext httpContext)
         {
-            var status = await messageBirdClient.ParseStatusAsync(httpContext);
+            var status = await messageBirdClient.ParseSmsStatusAsync(httpContext);
 
-            if (status.Reference != null)
+            // If the reference is not a valid guid (notification-id), something just went wrong.
+            if (status.Reference == default)
             {
-                var result = default(SmsResult);
-
-                switch (status.Status)
-                {
-                    case MessageBirdStatus.Delivered:
-                        result = SmsResult.Delivered;
-                        break;
-                    case MessageBirdStatus.Delivery_Failed:
-                        result = SmsResult.Failed;
-                        break;
-                    case MessageBirdStatus.Sent:
-                        result = SmsResult.Sent;
-                        break;
-                }
-
-                if (result != SmsResult.Unknown)
-                {
-                    await smsCallback.HandleCallbackAsync(status.Recipient, status.Reference, result, httpContext.RequestAborted);
-                }
+                return;
             }
+
+            var result = default(SmsResult);
+
+            switch (status.Status)
+            {
+                case MessageBirdStatus.Delivered:
+                    result = SmsResult.Delivered;
+                    break;
+                case MessageBirdStatus.Delivery_Failed:
+                    result = SmsResult.Failed;
+                    break;
+                case MessageBirdStatus.Sent:
+                    result = SmsResult.Sent;
+                    break;
+            }
+
+            if (result == SmsResult.Unknown)
+            {
+                return;
+            }
+
+            await smsCallback.HandleCallbackAsync(status.Recipient, status.Reference, result, httpContext.RequestAborted);
         }
 
         public async Task<SmsResult> SendAsync(App app, string to, string body, string token,
@@ -81,6 +86,7 @@ namespace Notifo.Domain.Integrations.MessageBird
 
                 var response = await messageBirdClient.SendSmsAsync(sms, ct);
 
+                // Usually an error is received by the error response in the client, but in some cases it was not working properly.
                 if (response.Recipients.TotalSentCount != 1)
                 {
                     var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_ErrorUnknown, to);
@@ -88,6 +94,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                     throw new DomainException(errorMessage);
                 }
 
+                // We get the status asynchronously via webhook, therefore we tell the channel not mark the process as completed.
                 return SmsResult.Sent;
             }
             catch (ArgumentException ex)

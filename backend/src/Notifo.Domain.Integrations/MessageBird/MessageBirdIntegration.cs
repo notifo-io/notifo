@@ -125,7 +125,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return sms;
             }
 
-            var messaging = CreateMessaging(serviceType, configured, serviceProvider);
+            var messaging = CreateMessaging(serviceType, id, configured, serviceProvider);
 
             if (messaging != null)
             {
@@ -170,7 +170,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 phoneNumbersMap);
         }
 
-        private IMessagingSender? CreateMessaging(Type serviceType, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+        private IMessagingSender? CreateMessaging(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
             if (serviceType != typeof(IMessagingSender) || !SendWhatsAppProperty.GetBoolean(configured))
             {
@@ -209,7 +209,10 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             return new MessageBirdWhatsAppSender(
                 client,
+                serviceProvider.GetRequiredService<IMessagingCallback>(),
+                serviceProvider.GetRequiredService<IMessagingUrl>(),
                 serviceProvider.GetRequiredService<IUserStore>(),
+                id,
                 channelId,
                 templateNamespace,
                 templateName);

@@ -21,7 +21,7 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>
+    public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, IMessagingCallback
     {
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
@@ -66,6 +66,46 @@ namespace Notifo.Domain.Channels.Messaging
             if (senders.Any(x => x.Target.HasTarget(options.User)))
             {
                 yield return MessagingJob.DefaultToken;
+            }
+        }
+
+        public async Task HandleCallbackAsync(string to, Guid notificationId, MessagingResult result,
+            CancellationToken ct)
+        {
+            using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
+            {
+                var notification = await userNotificationStore.FindAsync(notificationId, ct);
+
+                if (notification != null)
+                {
+                    await UpdateAsync(notification, to, result);
+                }
+
+                if (result == MessagingResult.Delivered)
+                {
+                    userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
+                }
+            }
+        }
+
+        private async Task UpdateAsync(UserNotification notification, string to, MessagingResult result)
+        {
+            if (!notification.Channels.TryGetValue(Name, out var channel))
+            {
+                return;
+            }
+
+            if (channel.Status.TryGetValue(to, out var status) && status.Status == ProcessStatus.Attempt)
+            {
+                switch (result)
+                {
+                    case MessagingResult.Delivered:
+                        await UpdateAsync(notification, ProcessStatus.Handled);
+                        break;
+                    case MessagingResult.Failed:
+                        await UpdateAsync(notification, ProcessStatus.Failed);
+                        break;
+                }
             }
         }
 

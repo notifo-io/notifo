@@ -111,7 +111,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         {
             Guard.NotNull(message);
 
-            var (from, to, text) = message;
+            var (from, to, text, reference, reportUrl) = message;
 
             var request = new
             {
@@ -121,7 +121,8 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 content = new
                 {
                     text
-                }
+                },
+                reportUrl = $"{reportUrl}?reference={reference}&to={to}"
             };
 
             return SendRequestAsync(request, ct);
@@ -148,7 +149,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             }
         }
 
-        public Task<SmsStatus> ParseStatusAsync(HttpContext httpContext)
+        public Task<SmsStatus> ParseSmsStatusAsync(HttpContext httpContext)
         {
             var result = new SmsStatus();
 
@@ -164,9 +165,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 result.Recipient = recipient;
             }
 
-            if (query.TryGetValue("reference", out var reference))
+            if (query.TryGetValue("reference", out var reference) && Guid.TryParse(reference, out var referenceGuid))
             {
-                result.Reference = reference;
+                result.Reference = referenceGuid;
             }
 
             if (query.TryGetValue("status", out var statusString) && Enum.TryParse<MessageBirdStatus>(statusString, true, out var status))
@@ -180,6 +181,25 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             }
 
             return Task.FromResult(result);
+        }
+
+        public async Task<WhatsAppStatus> ParseWhatsAppStatusAsync(HttpContext httpContext)
+        {
+            var result = (await JsonSerializer.DeserializeAsync<WhatsAppStatus>(httpContext.Request.Body, cancellationToken: httpContext.RequestAborted))!;
+
+            var query = httpContext.Request.Query;
+
+            if (query.TryGetValue("reference", out var reference) && Guid.TryParse(reference, out var referenceGuid))
+            {
+                result.Reference = referenceGuid;
+            }
+
+            if (query.TryGetValue("to", out var to))
+            {
+                result.To = to;
+            }
+
+            return result;
         }
 
         private static async Task<Exception> HandleErrorAsync(HttpResponseMessage response,

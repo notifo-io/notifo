@@ -11,11 +11,11 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     {
         public string Id { get; set; }
 
-        public string? Reference { get; set; }
-
         public string Recipient { get; set; }
 
         public int StatusErrorCode { get; set; }
+
+        public Guid Reference { get; set; }
 
         public MessageBirdStatus Status { get; set; }
     }

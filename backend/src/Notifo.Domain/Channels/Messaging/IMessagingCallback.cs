@@ -7,12 +7,9 @@
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public enum MessagingResult
+    public interface IMessagingCallback
     {
-        Unknown,
-        Skipped,
-        Sent,
-        Delivered,
-        Failed
+        Task HandleCallbackAsync(string to, Guid notificationId, MessagingResult result,
+            CancellationToken ct);
     }
 }

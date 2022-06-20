@@ -12,7 +12,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     public sealed record WhatsAppTextMessage(
         string From,
         string To,
-        string Message)
+        string Message,
+        string? Reference,
+        string? ReportUrl)
     {
     }
 }

@@ -39,14 +39,19 @@ namespace Notifo.Domain.Integrations.Twilio
             this.integrationId = integrationId;
         }
 
-        public async Task HandleCallbackAsync(App app, HttpContext httpContext)
+        public Task HandleCallbackAsync(App app, HttpContext httpContext)
         {
             var request = httpContext.Request;
 
             var status = request.Form["MessageStatus"].ToString();
 
-            var reference = request.Query["reference"].ToString();
+            var referenceString = request.Query["reference"].ToString();
             var referenceNumber = request.Query["reference_number"].ToString();
+
+            if (!Guid.TryParse(referenceString, out var notificationId))
+            {
+                return Task.CompletedTask;
+            }
 
             var result = default(SmsResult);
 
@@ -64,10 +69,12 @@ namespace Notifo.Domain.Integrations.Twilio
                     break;
             }
 
-            if (result != SmsResult.Unknown)
+            if (result == SmsResult.Unknown)
             {
-                await smsCallback.HandleCallbackAsync(reference, referenceNumber, result, httpContext.RequestAborted);
+                return Task.CompletedTask;
             }
+
+            return smsCallback.HandleCallbackAsync(referenceNumber, notificationId, result, httpContext.RequestAborted);
         }
 
         public async Task<SmsResult> SendAsync(App app, string to, string body, string reference,

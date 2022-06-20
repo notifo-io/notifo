@@ -8,31 +8,33 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+#pragma warning disable MA0048 // File name must match type name
+
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class ConversationResponse
+    public sealed class WhatsAppStatus
     {
-        [JsonPropertyName("id")]
-        public string Id { get; set; }
+        [JsonIgnore]
+        public Guid Reference { get; set; }
 
-        [JsonPropertyName("conversationId")]
-        public string ConversationId { get; set; }
-
-        [JsonPropertyName("channelId")]
-        public string? ChannelId { get; set; }
+        [JsonIgnore]
+        public string To { get; internal set; }
 
         [JsonPropertyName("type")]
-        public string? Type { get; set; }
+        public string Type { get; set; }
 
-        [JsonPropertyName("direction")]
-        public string? Direction { get; set; }
+        [JsonPropertyName("message")]
+        public WhatsAppStatusMessage Message { get; set; }
 
         [JsonPropertyName("error")]
         public MessageBirdError? Error { get; set; }
 
-        [JsonPropertyName("errors")]
-        public MessageBirdError[]? Errors { get; set; }
+        [JsonExtensionData]
+        public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+    }
 
+    public sealed class WhatsAppStatusMessage
+    {
         [JsonExtensionData]
         public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 
