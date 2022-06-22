@@ -7,24 +7,16 @@
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public enum MessageBirdStatus
+    public sealed class SmsWebhookRequest
     {
-        Unknown,
-        Accepted,
-        Answered,
-        Buffered,
-        Calling,
-        Deleted,
-        Delivered,
-        Delivery_Failed,
-        Expired,
-        Failed,
-        Pending,
-        Read,
-        Received,
-        Rejected,
-        Scheduled,
-        Sent,
-        Transmitted
+        public string Id { get; set; }
+
+        public string Recipient { get; set; }
+
+        public int StatusErrorCode { get; set; }
+
+        public Guid Reference { get; set; }
+
+        public MessageBirdStatus Status { get; set; }
     }
 }

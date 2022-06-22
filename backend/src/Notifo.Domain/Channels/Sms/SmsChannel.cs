@@ -65,22 +65,25 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task HandleCallbackAsync(string to, Guid notificationId, SmsResult result,
+        public async Task HandleCallbackAsync(ISmsSender sender, SmsCallbackResponse response,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
             {
+                var (notificationId, to, result, details) = response;
                 var notification = await userNotificationStore.FindAsync(notificationId, ct);
 
                 if (notification != null)
                 {
                     await UpdateAsync(notification, to, result);
+
+                    if (!string.IsNullOrEmpty(details))
+                    {
+                        await logStore.LogAsync(notification.AppId, sender.Name, details);
+                    }
                 }
 
-                if (result == SmsResult.Delivered)
-                {
-                    userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
-                }
+                userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
             }
         }
 

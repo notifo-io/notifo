@@ -10,7 +10,8 @@ using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Users;
-using Notifo.Infrastructure;
+using Notifo.Infrastructure.Tasks;
+using System.Net;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
@@ -77,58 +78,93 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             var to = job.Targets[WhatsAppPhoneNumber];
 
-            var sentKey = $"MessageBird_WhatsApp_{channelId}_{templateName}";
+            var reportUrl = messagingUrl.MessagingWebhookUrl(job.Notification.AppId, integrationId);
+            var reportId = job.Notification.Id.ToString();
 
-            // We need to send an initial template message to talk with the user.
-            if (user.SystemProperties?.ContainsKey(sentKey) != true)
-            {
-                var templateMesage = new WhatsAppTemplateMessage(
-                    channelId,
-                    to,
-                    templateNamespace,
-                    templateName,
-                    user.PreferredLanguage);
-
-                var response = await messageBirdClient.SendWhatsAppAsync(templateMesage, ct);
-
-                // Fetch the endpoint for the current status.
-                while (response.Status == MessageBirdStatus.Accepted && !ct.IsCancellationRequested)
-                {
-                    response = await messageBirdClient.GetMessageAsync(response.Id, ct);
-
-                    var error = response.Errors?.FirstOrDefault() ?? response.Error;
-
-                    if (error != null)
-                    {
-                        throw new DomainException($"WhatsApp: {error.Description}");
-                    }
-
-                    await Task.Delay(100, ct);
-                }
-
-                await userStore.UpsertAsync(job.Notification.AppId, job.Notification.UserId, new SetUserSystemProperty
-                {
-                    PropertyKey = sentKey,
-                    PropertyValue = "true",
-                }, ct);
-            }
-
-            var textMessageUrl = messagingUrl.MessagingWebhookUrl(job.Notification.AppId, integrationId);
-            var textMessage = new WhatsAppTextMessage(channelId, to, text, job.Notification.Id.ToString(), textMessageUrl);
+            var textMessage = new WhatsAppTemplateMessage(
+                channelId,
+                to,
+                templateNamespace,
+                templateName,
+                user.PreferredLanguage,
+                reportUrl,
+                reportId,
+                new[] { text });
 
             // Just send the normal text message.
-            await messageBirdClient.SendWhatsAppAsync(textMessage, ct);
+            var response = await messageBirdClient.SendWhatsAppAsync(textMessage, ct);
+
+            // Query for the status, otherwise we cannot retrieve errors.
+            QueryAsync(job.Notification.Id, to, response).Forget();
 
             // We get the status asynchronously via webhook, therefore we tell the channel not mark the process as completed.
             return MessagingResult.Sent;
         }
 
+        private async Task QueryAsync(Guid id, string to, ConversationResponse response)
+        {
+            using (var tcs = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+            {
+                while ((response.Status == MessageBirdStatus.Pending || response.Status == MessageBirdStatus.Accepted) && !tcs.IsCancellationRequested)
+                {
+                    try
+                    {
+                        response = await messageBirdClient.GetMessageAsync(response.Id, tcs.Token);
+
+                        if (response.Status == MessageBirdStatus.Pending)
+                        {
+                            await Task.Delay(200, tcs.Token);
+                            continue;
+                        }
+
+                        var result = default(MessagingResult);
+
+                        switch (response.Status)
+                        {
+                            case MessageBirdStatus.Delivered:
+                                result = MessagingResult.Delivered;
+                                break;
+                            case MessageBirdStatus.Delivery_Failed:
+                            case MessageBirdStatus.Failed:
+                            case MessageBirdStatus.Rejected:
+                                result = MessagingResult.Failed;
+                                break;
+                            case MessageBirdStatus.Sent:
+                                result = MessagingResult.Sent;
+                                break;
+                        }
+
+                        if (result == MessagingResult.Unknown)
+                        {
+                            continue;
+                        }
+
+                        var callback = new MessagingCallbackResponse(id, to, result, response.Error?.Description);
+
+                        await messagingCallback.HandleCallbackAsync(this, callback, tcs.Token);
+                    }
+                    catch (HttpRequestException ex)
+                    {
+                        if (ex.StatusCode != HttpStatusCode.NotFound)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
         public async Task HandleCallbackAsync(App app, HttpContext httpContext)
         {
-            var status = await messageBirdClient.ParseWhatsAppStatusAsync(httpContext);
+            var status = await messageBirdClient.ParseWhatsAppWebhookAsync(httpContext);
 
             // If the reference is not a valid guid (notification-id), something just went wrong.
             if (status.Reference == default)
+            {
+                return;
+            }
+
+            if (status.Message.Status == MessageBirdStatus.Pending)
             {
                 return;
             }
@@ -153,7 +189,9 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return;
             }
 
-            await messagingCallback.HandleCallbackAsync(status.To, status.Reference, result, httpContext.RequestAborted);
+            var callback = new MessagingCallbackResponse(status.Reference, status.To, result, status.Error?.Description);
+
+            await messagingCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
         }
     }
 }

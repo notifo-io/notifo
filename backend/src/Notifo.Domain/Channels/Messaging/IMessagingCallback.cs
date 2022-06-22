@@ -5,11 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+#pragma warning disable MA0048 // File name must match type name
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Channels.Messaging
 {
+    public record struct MessagingCallbackResponse(Guid NotificationId, string To, MessagingResult Result, string? Details = null);
+
     public interface IMessagingCallback
     {
-        Task HandleCallbackAsync(string to, Guid notificationId, MessagingResult result,
+        Task HandleCallbackAsync(IMessagingSender sender, MessagingCallbackResponse response,
             CancellationToken ct);
     }
 }

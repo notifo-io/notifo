@@ -41,44 +41,6 @@ namespace Notifo.Domain.Integrations.Twilio
             this.integrationId = integrationId;
         }
 
-        public Task HandleCallbackAsync(App app, HttpContext httpContext)
-        {
-            var request = httpContext.Request;
-
-            var status = request.Form["MessageStatus"].ToString();
-
-            var referenceString = request.Query["reference"].ToString();
-            var referenceNumber = request.Query["reference_number"].ToString();
-
-            if (!Guid.TryParse(referenceString, out var notificationId))
-            {
-                return Task.CompletedTask;
-            }
-
-            var result = default(SmsResult);
-
-            switch (status)
-            {
-                case "sent":
-                    result = SmsResult.Sent;
-                    break;
-                case "delivered":
-                    result = SmsResult.Delivered;
-                    break;
-                case "failed":
-                case "undelivered":
-                    result = SmsResult.Failed;
-                    break;
-            }
-
-            if (result == SmsResult.Unknown)
-            {
-                return Task.CompletedTask;
-            }
-
-            return smsCallback.HandleCallbackAsync(referenceNumber, notificationId, result, httpContext.RequestAborted);
-        }
-
         public async Task<SmsResult> SendAsync(App app, string to, string body, string reference,
             CancellationToken ct = default)
         {
@@ -123,6 +85,46 @@ namespace Notifo.Domain.Integrations.Twilio
             }
 
             return new PhoneNumber(number);
+        }
+
+        public Task HandleCallbackAsync(App app, HttpContext httpContext)
+        {
+            var request = httpContext.Request;
+
+            var status = request.Form["MessageStatus"].ToString();
+
+            var referenceString = request.Query["reference"].ToString();
+            var referenceNumber = request.Query["reference_number"].ToString();
+
+            if (!Guid.TryParse(referenceString, out var notificationId))
+            {
+                return Task.CompletedTask;
+            }
+
+            var result = default(SmsResult);
+
+            switch (status)
+            {
+                case "sent":
+                    result = SmsResult.Sent;
+                    break;
+                case "delivered":
+                    result = SmsResult.Delivered;
+                    break;
+                case "failed":
+                case "undelivered":
+                    result = SmsResult.Failed;
+                    break;
+            }
+
+            if (result == SmsResult.Unknown)
+            {
+                return Task.CompletedTask;
+            }
+
+            var callback = new SmsCallbackResponse(notificationId, referenceNumber, result);
+
+            return smsCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
         }
     }
 }

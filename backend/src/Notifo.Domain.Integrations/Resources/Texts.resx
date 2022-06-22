@@ -247,7 +247,7 @@
     <value>WhatsApp Channel ID</value>
   </data>
   <data name="MessageBird_WhatsAppTemplateNameDescription" xml:space="preserve">
-    <value>The name of the template. This is the initial message that will be send to your user once.</value>
+    <value>The name of the template. Must have one parameter that will be the actual notification text (usually the subject).</value>
   </data>
   <data name="MessageBird_WhatsAppTemplateNameLabel" xml:space="preserve">
     <value>Template Name</value>

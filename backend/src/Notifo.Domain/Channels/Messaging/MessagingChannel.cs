@@ -69,33 +69,36 @@ namespace Notifo.Domain.Channels.Messaging
             }
         }
 
-        public async Task HandleCallbackAsync(string to, Guid notificationId, MessagingResult result,
+        public async Task HandleCallbackAsync(IMessagingSender sender, MessagingCallbackResponse response,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
             {
+                var (notificationId, _, result, details) = response;
                 var notification = await userNotificationStore.FindAsync(notificationId, ct);
 
                 if (notification != null)
                 {
-                    await UpdateAsync(notification, to, result);
+                    await UpdateAsync(notification, result);
+
+                    if (!string.IsNullOrEmpty(details))
+                    {
+                        await logStore.LogAsync(notification.AppId, sender.Name, details);
+                    }
                 }
 
-                if (result == MessagingResult.Delivered)
-                {
-                    userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
-                }
+                userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
             }
         }
 
-        private async Task UpdateAsync(UserNotification notification, string to, MessagingResult result)
+        private async Task UpdateAsync(UserNotification notification, MessagingResult result)
         {
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
                 return;
             }
 
-            if (channel.Status.TryGetValue(to, out var status) && status.Status == ProcessStatus.Attempt)
+            if (channel.Status.TryGetValue(MessagingJob.DefaultToken, out var status) && status.Status == ProcessStatus.Attempt)
             {
                 switch (result)
                 {

@@ -28,12 +28,30 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             this.options = options.Value;
         }
 
+        public async Task<ConversationResponse> GetMessageAsync(string id,
+            CancellationToken ct)
+        {
+            using (var client = httpClientFactory.CreateClient())
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
+
+                var result = await client.GetFromJsonAsync<ConversationResponse>($"https://conversations.messagebird.com/v1/messages/{id}", ct);
+
+                if (result == null)
+                {
+                    throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
+                }
+
+                return result;
+            }
+        }
+
         public async Task<SmsResponse> SendSmsAsync(SmsMessage message,
             CancellationToken ct)
         {
             Guard.NotNull(message);
 
-            var (originator, to, body, reference, reportUrl) = message;
+            var (originator, to, body, reportUrl, reference) = message;
 
             if (body.Length > 140)
             {
@@ -81,7 +99,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         {
             Guard.NotNull(message);
 
-            var (from, to, templateNamespace, templateName, language, reference, reportUrl, parameters) = message;
+            var (from, to, templateNamespace, templateName, language, reportUrl, reference, parameters) = message;
 
             var code = language.Replace('-', '_');
 
@@ -107,28 +125,10 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                         }).ToArray()
                     }
                 },
-                reportUrl = $"{reportUrl}?reference={reference}&to={to}"
+                reportUrl = UrlHelper.AppendQueries(reportUrl, "reference", reference, "to", to)
             };
 
             return SendRequestAsync(request, ct);
-        }
-
-        public async Task<ConversationResponse> GetMessageAsync(string id,
-            CancellationToken ct)
-        {
-            using (var client = httpClientFactory.CreateClient())
-            {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
-
-                var result = await client.GetFromJsonAsync<ConversationResponse>($"https://conversations.messagebird.com/v1/messages/{id}", ct);
-
-                if (result == null)
-                {
-                    throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
-                }
-
-                return result;
-            }
         }
 
         public Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
@@ -179,9 +179,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             }
         }
 
-        public Task<SmsCallback> ParseSmsStatusAsync(HttpContext httpContext)
+        public Task<SmsWebhookRequest> ParseSmsWebhookAsync(HttpContext httpContext)
         {
-            var result = new SmsCallback();
+            var result = new SmsWebhookRequest();
 
             var query = httpContext.Request.Query;
 
@@ -213,9 +213,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             return Task.FromResult(result);
         }
 
-        public async Task<WhatsAppStatus> ParseWhatsAppStatusAsync(HttpContext httpContext)
+        public async Task<WhatsAppWebhookRequest> ParseWhatsAppWebhookAsync(HttpContext httpContext)
         {
-            var result = (await JsonSerializer.DeserializeAsync<WhatsAppStatus>(httpContext.Request.Body, cancellationToken: httpContext.RequestAborted))!;
+            var result = (await JsonSerializer.DeserializeAsync<WhatsAppWebhookRequest>(httpContext.Request.Body, cancellationToken: httpContext.RequestAborted))!;
 
             var query = httpContext.Request.Query;
 

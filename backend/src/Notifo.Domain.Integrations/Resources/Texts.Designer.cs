@@ -430,7 +430,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The name of the template. This is the initial message that will be send to your user once..
+        ///   Looks up a localized string similar to The name of the template. Must have one parameter that will be the actual notification text (usually the subject)..
         /// </summary>
         internal static string MessageBird_WhatsAppTemplateNameDescription {
             get {
