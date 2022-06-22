@@ -24,6 +24,8 @@ namespace Notifo.Domain.Integrations.MessageBird
         private readonly string phoneNumber;
         private readonly Dictionary<string, string>? phoneNumbers;
 
+        public string Name => "MessageBird SMS";
+
         public MessageBirdSmsSender(
             IMessageBirdClient messageBirdClient,
             ISmsCallback smsCallback,

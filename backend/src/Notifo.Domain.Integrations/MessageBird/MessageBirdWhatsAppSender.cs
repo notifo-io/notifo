@@ -10,6 +10,7 @@ using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
@@ -24,6 +25,8 @@ namespace Notifo.Domain.Integrations.MessageBird
         private readonly string channelId;
         private readonly string templateNamespace;
         private readonly string templateName;
+
+        public string Name => "MessageBird WhatsApp";
 
         public MessageBirdWhatsAppSender(
             IMessageBirdClient messageBirdClient,
@@ -86,7 +89,22 @@ namespace Notifo.Domain.Integrations.MessageBird
                     templateName,
                     user.PreferredLanguage);
 
-                await messageBirdClient.SendWhatsAppAsync(templateMesage, ct);
+                var response = await messageBirdClient.SendWhatsAppAsync(templateMesage, ct);
+
+                // Fetch the endpoint for the current status.
+                while (response.Status == MessageBirdStatus.Accepted && !ct.IsCancellationRequested)
+                {
+                    response = await messageBirdClient.GetMessageAsync(response.Id, ct);
+
+                    var error = response.Errors?.FirstOrDefault() ?? response.Error;
+
+                    if (error != null)
+                    {
+                        throw new DomainException($"WhatsApp: {error.Description}");
+                    }
+
+                    await Task.Delay(100, ct);
+                }
 
                 await userStore.UpsertAsync(job.Notification.AppId, job.Notification.UserId, new SetUserSystemProperty
                 {

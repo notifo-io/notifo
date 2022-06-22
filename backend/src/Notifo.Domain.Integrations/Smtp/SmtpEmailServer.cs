@@ -19,6 +19,8 @@ namespace Notifo.Domain.Integrations.Smtp
         private readonly ObjectPool<SmtpClient> clientPool;
         private readonly SmtpOptions options;
 
+        public string Name => "SMTP";
+
         public SmtpEmailServer(SmtpOptions options)
         {
             this.options = options;

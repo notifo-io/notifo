@@ -21,6 +21,8 @@ namespace Notifo.Domain.Integrations.Mailchimp
         private readonly string fromEmail;
         private readonly string fromName;
 
+        public string Name => "Mailchimp";
+
         private sealed class ResponseMessage
         {
             [JsonPropertyName("email")]

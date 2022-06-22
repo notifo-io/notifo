@@ -228,7 +228,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, Name, ex.Message);
+                    await logStore.LogAsync(job.AppId, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {

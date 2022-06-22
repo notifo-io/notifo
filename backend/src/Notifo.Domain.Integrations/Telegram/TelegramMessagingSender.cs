@@ -27,6 +27,8 @@ namespace Notifo.Domain.Integrations.Telegram
         private readonly Func<ITelegramBotClient> client;
         private readonly IUserStore userStore;
 
+        public string Name => "Telegram";
+
         public TelegramMessagingSender(Func<ITelegramBotClient> client, IUserStore userStore)
         {
             this.client = client;

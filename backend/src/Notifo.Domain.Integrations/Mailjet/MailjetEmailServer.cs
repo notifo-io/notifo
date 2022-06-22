@@ -14,7 +14,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Mailjet
 {
-    public sealed class MailjetEmailServer : IEmailSender
+    public sealed class MailjetEmailServer
     {
         private readonly MailjetClient mailjetClient;
 
@@ -23,8 +23,7 @@ namespace Notifo.Domain.Integrations.Mailjet
             this.mailjetClient = mailjetClient;
         }
 
-        public async Task SendAsync(EmailMessage message,
-            CancellationToken ct = default)
+        public async Task SendAsync(EmailMessage message)
         {
             var email = new TransactionalEmailBuilder()
                 .WithFrom(new SendContact(

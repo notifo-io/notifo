@@ -25,6 +25,8 @@ namespace Notifo.Domain.Integrations.Twilio
         private readonly string phoneNumber;
         private readonly string integrationId;
 
+        public string Name => "Twilio SMS";
+
         public TwilioSmsSender(
             string phoneNumber,
             ITwilioRestClient twilioClient,

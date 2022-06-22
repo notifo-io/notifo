@@ -19,6 +19,8 @@ namespace Notifo.Domain.Integrations.Smtp
         private readonly string fromEmail;
         private readonly string fromName;
 
+        public string Name => "SMTP";
+
         public SmtpEmailSender(Func<SmtpEmailServer> server,
             string fromEmail,
             string fromName)

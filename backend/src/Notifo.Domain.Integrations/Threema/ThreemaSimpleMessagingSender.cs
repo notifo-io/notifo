@@ -21,6 +21,8 @@ namespace Notifo.Domain.Integrations.Threema
         private readonly string apiIdentity;
         private readonly string apiSecret;
 
+        public string Name => "Threema";
+
         public ThreemaSimpleMessagingSender(IHttpClientFactory httpClientFactory, string apiIdentity, string apiSecret)
         {
             this.httpClientFactory = httpClientFactory;

@@ -13,6 +13,8 @@ namespace Notifo.Domain.Channels.Messaging
 {
     public interface IMessagingSender
     {
+        string Name { get; }
+
         bool HasTarget(User user);
 
         Task AddTargetsAsync(MessagingJob job, User user);

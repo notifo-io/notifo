@@ -232,7 +232,7 @@ namespace Notifo.Domain.Channels.Email
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(appId, Name, ex.Message);
+                    await logStore.LogAsync(appId, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {

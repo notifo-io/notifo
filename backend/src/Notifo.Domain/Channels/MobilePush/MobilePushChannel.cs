@@ -272,7 +272,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 }
                 catch (MobilePushTokenExpiredException)
                 {
-                    await logStore.LogAsync(app.Id, Name, Texts.MobilePush_TokenRemoved);
+                    await logStore.LogAsync(app.Id, sender.Name, Texts.MobilePush_TokenRemoved);
 
                     var command = new RemoveUserMobileToken
                     {
@@ -284,7 +284,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(app.Id, Name, ex.Message);
+                    await logStore.LogAsync(app.Id, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {
