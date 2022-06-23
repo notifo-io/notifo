@@ -10,6 +10,7 @@ namespace Notifo.Domain.Channels.Sms
     public enum SmsResult
     {
         Unknown,
+        Skipped,
         Sent,
         Delivered,
         Failed

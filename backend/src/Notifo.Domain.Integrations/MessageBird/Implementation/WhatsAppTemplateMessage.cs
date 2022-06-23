@@ -5,18 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class MessageBirdSmsStatus
+    public sealed record WhatsAppTemplateMessage(
+        string From,
+        string To,
+        string TemplateNamespace,
+        string TemplateName,
+        string LanguageCode,
+        string? ReportUrl,
+        string[]? Parameters)
     {
-        public string Id { get; set; }
-
-        public string? Reference { get; set; }
-
-        public string Recipient { get; set; }
-
-        public int StatusErrorCode { get; set; }
-
-        public MessageBirdStatus Status { get; set; }
     }
 }

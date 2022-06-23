@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
@@ -39,11 +40,15 @@ namespace Notifo.Domain.Integrations.MessageBird
         {
             if (CanCreate(serviceType, id, configured))
             {
+                var options = serviceProvider.GetRequiredService<IOptions<MessageBirdOptions>>();
+
                 return new MessageBirdSmsSender(
                     serviceProvider.GetRequiredService<IMessageBirdClient>(),
                     serviceProvider.GetRequiredService<ISmsCallback>(),
                     serviceProvider.GetRequiredService<ISmsUrl>(),
-                    id);
+                    id,
+                    options.Value.PhoneNumber,
+                    options.Value.PhoneNumbers);
             }
 
             return null;

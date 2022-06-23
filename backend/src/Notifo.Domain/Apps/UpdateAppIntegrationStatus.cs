@@ -30,7 +30,7 @@ namespace Notifo.Domain.Apps
         {
             Validate<Validator>.It(this);
 
-            var newIntegrations = new Dictionary<string, ConfiguredIntegration>(app.Integrations);
+            var newIntegrations = app.Integrations.ToMutable();
 
             foreach (var (id, status) in Status)
             {

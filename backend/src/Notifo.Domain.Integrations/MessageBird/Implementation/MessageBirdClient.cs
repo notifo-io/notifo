@@ -19,24 +19,42 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     public sealed class MessageBirdClient : IMessageBirdClient
     {
         private static readonly char[] TrimChars = { ' ', '+', '0' };
-        private readonly MessageBirdOptions options;
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly Func<HttpClient> httpClientFactory;
 
         public MessageBirdClient(IHttpClientFactory httpClientFactory, IOptions<MessageBirdOptions> options)
         {
-            this.httpClientFactory = httpClientFactory;
+            this.httpClientFactory = () =>
+            {
+                var client = httpClientFactory.CreateClient();
 
-            this.options = options.Value;
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.Value.AccessKey);
+
+                return client;
+            };
         }
 
-        public async Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message,
+        public async Task<ConversationResponse> GetMessageAsync(string id,
+            CancellationToken ct)
+        {
+            using (var httpClient = httpClientFactory())
+            {
+                var result = await httpClient.GetFromJsonAsync<ConversationResponse>($"https://conversations.messagebird.com/v1/messages/{id}", ct);
+
+                if (result == null)
+                {
+                    throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
+                }
+
+                return result;
+            }
+        }
+
+        public async Task<SmsResponse> SendSmsAsync(SmsMessage message,
             CancellationToken ct)
         {
             Guard.NotNull(message);
-            Guard.NotNullOrEmpty(message.Body, nameof(message.Body));
-            Guard.NotNullOrEmpty(message.To, nameof(message.To));
 
-            var (to, body, reference, reportUrl) = message;
+            var (originator, to, body, reference, reportUrl) = message;
 
             if (body.Length > 140)
             {
@@ -50,13 +68,11 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 ThrowHelper.ArgumentException("Not a valid phone number.", nameof(message));
             }
 
-            using (var client = httpClientFactory.CreateClient())
+            using (var httpClient = httpClientFactory())
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
-
                 var request = new
                 {
-                    originator = GetOriginator(to),
+                    originator,
                     body,
                     reportUrl,
                     reference,
@@ -66,11 +82,11 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                     }
                 };
 
-                var response = await client.PostAsJsonAsync("https://rest.messagebird.com/messages", request, ct);
+                var response = await httpClient.PostAsJsonAsync("https://rest.messagebird.com/messages", request, ct);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<MessageBirdSmsResponse>((JsonSerializerOptions?)null, ct);
+                    var result = await response.Content.ReadFromJsonAsync<SmsResponse>((JsonSerializerOptions?)null, ct);
 
                     return result!;
                 }
@@ -79,9 +95,92 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             }
         }
 
-        public Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext)
+        public Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTemplateMessage message,
+            CancellationToken ct)
         {
-            var result = new MessageBirdSmsStatus();
+            Guard.NotNull(message);
+
+            var (from, to, templateNamespace, templateName, language, reportUrl, parameters) = message;
+
+            var code = language.Replace('-', '_');
+
+            var request = new
+            {
+                type = "hsm",
+                to,
+                from,
+                content = new
+                {
+                    hsm = new Dictionary<string, object?>
+                    {
+                        ["templateName"] = templateName,
+                        ["language"] = new
+                        {
+                            policy = "deterministic",
+                            code
+                        },
+                        ["params"] = parameters?.Select(x => new Dictionary<string, object>
+                        {
+                            ["default"] = x
+                        }),
+                        ["namespace"] = templateNamespace
+                    }
+                },
+                reportUrl
+            };
+
+            return SendRequestAsync(request, ct);
+        }
+
+        public Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
+            CancellationToken ct)
+        {
+            Guard.NotNull(message);
+
+            var (from, to, text, reportUrl) = message;
+
+            var request = new
+            {
+                type = "text",
+                to,
+                from,
+                content = new
+                {
+                    text
+                },
+                reportUrl
+            };
+
+            return SendRequestAsync(request, ct);
+        }
+
+        private async Task<ConversationResponse> SendRequestAsync<T>(T request,
+            CancellationToken ct)
+        {
+            using (var httpClient = httpClientFactory())
+            {
+                var response = await httpClient.PostAsJsonAsync("https://conversations.messagebird.com/v1/send", request, ct);
+                var result = await response.Content.ReadFromJsonAsync<ConversationResponse>((JsonSerializerOptions?)null, ct);
+
+                if (result == null)
+                {
+                    throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
+                }
+
+                var error = result.Errors?.FirstOrDefault() ?? result.Error;
+
+                if (error != null)
+                {
+                    throw new HttpIntegrationException<MessageBirdError>(error.Description, (int)response.StatusCode, error);
+                }
+
+                return result!;
+            }
+        }
+
+        public Task<SmsWebhookRequest> ParseSmsWebhookAsync(HttpContext httpContext)
+        {
+            var result = new SmsWebhookRequest();
 
             var query = httpContext.Request.Query;
 
@@ -113,6 +212,20 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
             return Task.FromResult(result);
         }
 
+        public async Task<WhatsAppWebhookRequest> ParseWhatsAppWebhookAsync(HttpContext httpContext)
+        {
+            var result = (await JsonSerializer.DeserializeAsync<WhatsAppWebhookRequest>(httpContext.Request.Body, cancellationToken: httpContext.RequestAborted))!;
+
+            var query = httpContext.Request.Query;
+
+            foreach (var (key, value) in httpContext.Request.Query)
+            {
+                result.Query[key] = value;
+            }
+
+            return result;
+        }
+
         private static async Task<Exception> HandleErrorAsync(HttpResponseMessage response,
             CancellationToken ct)
         {
@@ -131,21 +244,6 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
                 return new HttpIntegrationException<MessageBirdError>(message, (int)response.StatusCode);
             }
-        }
-
-        private string GetOriginator(string phoneNumber)
-        {
-            if (options.PhoneNumbers?.Count > 0 && phoneNumber.Length > 2)
-            {
-                var countryCode = phoneNumber[..2];
-
-                if (options.PhoneNumbers.TryGetValue(countryCode, out var originator))
-                {
-                    return originator;
-                }
-            }
-
-            return options.PhoneNumber;
         }
     }
 }

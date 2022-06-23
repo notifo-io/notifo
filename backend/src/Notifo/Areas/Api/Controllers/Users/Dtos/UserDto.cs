@@ -113,7 +113,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
         /// </summary>
         public List<UserPropertyDto>? UserProperties { get; set; }
 
-        public static UserDto FromDomainObject(User source, List<UserProperty>? properties, IReadOnlyDictionary<string, Instant>? lastNotifications)
+        public static UserDto FromDomainObject(User source, List<UserProperty>? userProperties, IReadOnlyDictionary<string, Instant>? lastNotifications)
         {
             var result = SimpleMapper.Map(source, new UserDto());
 
@@ -138,17 +138,17 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos
                 result.MobilePushTokens.Add(MobilePushTokenDto.FromDomainObject(token));
             }
 
-            if (properties != null)
+            if (userProperties != null)
             {
-                result.UserProperties = properties.Select(UserPropertyDto.FromDomainObject).ToList();
+                result.UserProperties = userProperties.Select(UserPropertyDto.FromDomainObject).ToList();
             }
-
-            result.Counters = source.Counters ?? EmptyCounters;
 
             if (lastNotifications != null && lastNotifications.TryGetValue(source.Id, out var lastNotification))
             {
                 result.LastNotification = lastNotification;
             }
+
+            result.Counters = source.Counters ?? EmptyCounters;
 
             return result;
         }

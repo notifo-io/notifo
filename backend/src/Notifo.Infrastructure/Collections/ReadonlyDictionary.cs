@@ -60,5 +60,33 @@ namespace Notifo.Infrastructure.Collections
 
             return new ReadonlyDictionary<TKey, TValue>(inner);
         }
+
+        public static Dictionary<TKey, TValue> ToMutable<TKey, TValue>(this ReadonlyDictionary<TKey, TValue>? source) where TKey : notnull
+        {
+            if (source == null)
+            {
+                return new Dictionary<TKey, TValue>();
+            }
+
+            return new Dictionary<TKey, TValue>(source);
+        }
+
+        public static ReadonlyDictionary<TKey, TValue> Set<TKey, TValue>(this ReadonlyDictionary<TKey, TValue>? source, TKey key, TValue value) where TKey : notnull
+        {
+            var mutable = source.ToMutable();
+
+            mutable[key] = value;
+
+            return mutable.ToReadonlyDictionary();
+        }
+
+        public static ReadonlyDictionary<TKey, TValue> Remove<TKey, TValue>(this ReadonlyDictionary<TKey, TValue>? source, TKey key) where TKey : notnull
+        {
+            var mutable = source.ToMutable();
+
+            mutable.Remove(key);
+
+            return mutable.ToReadonlyDictionary();
+        }
     }
 }

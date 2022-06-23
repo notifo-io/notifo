@@ -65,29 +65,29 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task HandleCallbackAsync(string to, string token, SmsResult result,
+        public async Task HandleCallbackAsync(ISmsSender sender, SmsCallbackResponse response,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
             {
-                if (Guid.TryParse(token, out var id))
+                var (notificationId, to, result, details) = response;
+                var notification = await userNotificationStore.FindAsync(notificationId, ct);
+
+                if (notification != null)
                 {
-                    var notification = await userNotificationStore.FindAsync(id, ct);
+                    await UpdateAsync(notification, to, result);
 
-                    if (notification != null)
+                    if (!string.IsNullOrEmpty(details))
                     {
-                        await UpdateAsync(to, result, notification);
-                    }
-
-                    if (result == SmsResult.Delivered)
-                    {
-                        userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(id));
+                        await logStore.LogAsync(notification.AppId, sender.Name, details);
                     }
                 }
+
+                userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
             }
         }
 
-        private async Task UpdateAsync(string to, SmsResult result, UserNotification notification)
+        private async Task UpdateAsync(UserNotification notification, string to, SmsResult result)
         {
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
@@ -216,19 +216,22 @@ namespace Notifo.Domain.Channels.Sms
 
                     var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Id.ToString(), ct);
 
+                    // Some integrations provide the actual result via webhook at a later point.
                     if (result == SmsResult.Delivered)
                     {
                         await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
                         return;
                     }
-                    else if (result == SmsResult.Sent)
+
+                    // If the SMS has been sent, but not delivered yet, we also do not try other integrations.
+                    if (result == SmsResult.Sent)
                     {
                         return;
                     }
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, Name, ex.Message);
+                    await logStore.LogAsync(job.AppId, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {
@@ -245,9 +248,9 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        private Task UpdateAsync(IUserNotification token, string phoneNumber, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(IUserNotification notification, string phoneNumber, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(token, Name, phoneNumber, status, reason);
+            return userNotificationStore.CollectAndUpdateAsync(notification, Name, phoneNumber, status, reason);
         }
 
         private async Task SkipAsync(SmsJob job, string reason)

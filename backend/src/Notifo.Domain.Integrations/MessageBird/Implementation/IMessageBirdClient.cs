@@ -11,8 +11,20 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public interface IMessageBirdClient
     {
-        Task<MessageBirdSmsStatus> ParseStatusAsync(HttpContext httpContext);
+        Task<SmsWebhookRequest> ParseSmsWebhookAsync(HttpContext httpContext);
 
-        Task<MessageBirdSmsResponse> SendSmsAsync(MessageBirdSmsMessage message, CancellationToken ct);
+        Task<WhatsAppWebhookRequest> ParseWhatsAppWebhookAsync(HttpContext httpContext);
+
+        Task<SmsResponse> SendSmsAsync(SmsMessage message,
+            CancellationToken ct);
+
+        Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTemplateMessage message,
+            CancellationToken ct);
+
+        Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
+            CancellationToken ct);
+
+        Task<ConversationResponse> GetMessageAsync(string id,
+            CancellationToken ct);
     }
 }

@@ -15,7 +15,7 @@ namespace Notifo.Domain.Integrations.Firebase
     {
         private readonly FirebaseMessagingPool messagingPool;
 
-        private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", PropertyType.Text)
         {
             EditorLabel = Texts.Firebase_ProjectIdLabel,
             EditorDescription = null,
@@ -23,21 +23,21 @@ namespace Notifo.Domain.Integrations.Firebase
             Summary = true
         };
 
-        private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", IntegrationPropertyType.MultilineText)
+        private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", PropertyType.MultilineText)
         {
             EditorLabel = Texts.Firebase_CredentialsLabel,
             EditorDescription = Texts.Firebase_CredentialsHints,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", IntegrationPropertyType.Boolean)
+        private static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", PropertyType.Boolean)
         {
             EditorLabel = Texts.Firebase_SilentAndroidLabel,
             EditorDescription = Texts.Firebase_SilentAndroidDescription,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", IntegrationPropertyType.Boolean)
+        private static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
         {
             EditorLabel = Texts.Firebase_SilentIOSLabel,
             EditorDescription = Texts.Firebase_SilentIOSDescription,

@@ -12,7 +12,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
 {
     public sealed class WebhookIntegration : IIntegration
     {
-        private static readonly IntegrationProperty HttpUrlProperty = new IntegrationProperty("Url", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty HttpUrlProperty = new IntegrationProperty("Url", PropertyType.Text)
         {
             EditorLabel = Texts.Webhook_URLLabel,
             EditorDescription = Texts.Webhook_URLHints,
@@ -20,7 +20,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
             Summary = true
         };
 
-        private static readonly IntegrationProperty HttpMethodProperty = new IntegrationProperty("Method", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty HttpMethodProperty = new IntegrationProperty("Method", PropertyType.Text)
         {
             EditorLabel = Texts.Webhook_MethodLabel,
             EditorDescription = Texts.Webhook_MethodHints,
@@ -29,7 +29,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
             Summary = false
         };
 
-        private static readonly IntegrationProperty NameProperty = new IntegrationProperty("Name", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty NameProperty = new IntegrationProperty("Name", PropertyType.Text)
         {
             EditorLabel = Texts.Webhook_NameLabel,
             EditorDescription = Texts.Webhook_NameHints,
@@ -37,7 +37,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
             Summary = true
         };
 
-        private static readonly IntegrationProperty SendAlwaysProperty = new IntegrationProperty("SendAlways", IntegrationPropertyType.Boolean)
+        private static readonly IntegrationProperty SendAlwaysProperty = new IntegrationProperty("SendAlways", PropertyType.Boolean)
         {
             EditorLabel = Texts.Webhook_SendAlwaysLabel,
             EditorDescription = Texts.Webhook_SendAlwaysHints,
@@ -45,7 +45,7 @@ namespace Notifo.Domain.Channels.Webhook.Integrations
             Summary = false
         };
 
-        private static readonly IntegrationProperty SendConfirmProperty = new IntegrationProperty("SendConfirm", IntegrationPropertyType.Boolean)
+        private static readonly IntegrationProperty SendConfirmProperty = new IntegrationProperty("SendConfirm", PropertyType.Boolean)
         {
             EditorLabel = Texts.Webhook_SendConfirmLabel,
             EditorDescription = Texts.Webhook_SendConfirmHints,

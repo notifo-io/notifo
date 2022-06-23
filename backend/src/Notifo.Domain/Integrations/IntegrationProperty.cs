@@ -5,15 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Notifo.Domain.Resources;
 
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+
 namespace Notifo.Domain.Integrations
 {
-    public sealed record IntegrationProperty(string Name, IntegrationPropertyType Type)
+    public sealed record IntegrationProperty(string Name, PropertyType Type) : PropertyBase(Name, Type)
     {
         public string? EditorDescription { get; init; }
 
@@ -35,15 +35,13 @@ namespace Notifo.Domain.Integrations
 
         public string? Pattern { get; init; }
 
-        public string? DefaultValue { get; init; }
-
         public IEnumerable<string> Validate(string? value)
         {
             switch (Type)
             {
-                case IntegrationPropertyType.Boolean:
+                case PropertyType.Boolean:
                     return Enumerable.Empty<string>();
-                case IntegrationPropertyType.Number:
+                case PropertyType.Number:
                     return ValidateNumber(value);
                 default:
                     return ValidateString(value);
@@ -113,59 +111,17 @@ namespace Notifo.Domain.Integrations
 
         public string? GetString(ConfiguredIntegration configured)
         {
-            if (Type is IntegrationPropertyType.Text or IntegrationPropertyType.MultilineText or IntegrationPropertyType.Password)
-            {
-                if (configured.Properties.TryGetValue(Name, out var value))
-                {
-                    return value;
-                }
-
-                return DefaultValue;
-            }
-
-            return null;
+            return GetString(configured.Properties);
         }
 
         public long GetNumber(ConfiguredIntegration configured)
         {
-            if (Type == IntegrationPropertyType.Number)
-            {
-                if (configured.Properties.TryGetValue(Name, out var value))
-                {
-                    if (TryParseLong(value, out var result))
-                    {
-                        return result;
-                    }
-                }
-
-                if (TryParseLong(DefaultValue, out var defaultResult))
-                {
-                    return defaultResult;
-                }
-            }
-
-            return 0;
+            return GetNumber(configured.Properties);
         }
 
         public bool GetBoolean(ConfiguredIntegration configured)
         {
-            if (Type == IntegrationPropertyType.Boolean)
-            {
-                if (configured.Properties.TryGetValue(Name, out var value))
-                {
-                    if (TryParseBoolean(value, out var result))
-                    {
-                        return result;
-                    }
-                }
-
-                if (TryParseBoolean(DefaultValue, out var defaultResult))
-                {
-                    return defaultResult;
-                }
-            }
-
-            return false;
+            return GetBoolean(configured.Properties);
         }
 
         private static bool TryParseLong(string? value, out long result)
@@ -177,28 +133,6 @@ namespace Notifo.Domain.Integrations
             }
 
             return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
-        }
-
-        private static bool TryParseBoolean(string? value, out bool result)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                result = false;
-                return true;
-            }
-
-            if (bool.TryParse(value, out result))
-            {
-                return true;
-            }
-
-            if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedNumber))
-            {
-                result = parsedNumber == 1;
-                return true;
-            }
-
-            return false;
         }
     }
 }

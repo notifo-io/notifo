@@ -394,6 +394,78 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Send SMS.
+        /// </summary>
+        internal static string MessageBird_SendSmsLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_SendSmsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Send WhatsApp.
+        /// </summary>
+        internal static string MessageBird_SendWhatsAppLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_SendWhatsAppLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ID of the WhatsApp Channel..
+        /// </summary>
+        internal static string MessageBird_WhatsAppChannelIdDescription {
+            get {
+                return ResourceManager.GetString("MessageBird_WhatsAppChannelIdDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to WhatsApp Channel ID.
+        /// </summary>
+        internal static string MessageBird_WhatsAppChannelIdLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_WhatsAppChannelIdLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the template. Must have one parameter that will be the actual notification text (usually the subject)..
+        /// </summary>
+        internal static string MessageBird_WhatsAppTemplateNameDescription {
+            get {
+                return ResourceManager.GetString("MessageBird_WhatsAppTemplateNameDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template Name.
+        /// </summary>
+        internal static string MessageBird_WhatsAppTemplateNameLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_WhatsAppTemplateNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The template namespace. Can be found in the WhatsApp templates Manager of your Facebook Business account..
+        /// </summary>
+        internal static string MessageBird_WhatsAppTemplateNamespaceDescription {
+            get {
+                return ResourceManager.GetString("MessageBird_WhatsAppTemplateNamespaceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template Namespace.
+        /// </summary>
+        internal static string MessageBird_WhatsAppTemplateNamespaceLabel {
+            get {
+                return ResourceManager.GetString("MessageBird_WhatsAppTemplateNamespaceLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Preconfigured Messagebird integration for SMS messages..
         /// </summary>
         internal static string MessageBirdIntegrated_Description {

@@ -73,7 +73,7 @@ export const UserDialog = (props: UserDialogProps) => {
     }, [dispatch, doCloseForm, upserting, upsertingError, wasUpserting]);
 
     const allProperties = React.useMemo(() => {
-        const properties = dialogUser?.userProperties || [];
+        const properties = [...dialogUser?.userProperties || []];
 
         if (dialogUser?.properties) {
             for (const name of Object.keys(dialogUser.properties)) {

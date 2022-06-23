@@ -234,6 +234,30 @@
   <data name="MessageBird_PhoneNumbersLabel" xml:space="preserve">
     <value>Phone Numbers</value>
   </data>
+  <data name="MessageBird_SendSmsLabel" xml:space="preserve">
+    <value>Send SMS</value>
+  </data>
+  <data name="MessageBird_SendWhatsAppLabel" xml:space="preserve">
+    <value>Send WhatsApp</value>
+  </data>
+  <data name="MessageBird_WhatsAppChannelIdDescription" xml:space="preserve">
+    <value>The ID of the WhatsApp Channel.</value>
+  </data>
+  <data name="MessageBird_WhatsAppChannelIdLabel" xml:space="preserve">
+    <value>WhatsApp Channel ID</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNameDescription" xml:space="preserve">
+    <value>The name of the template. Must have one parameter that will be the actual notification text (usually the subject).</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNameLabel" xml:space="preserve">
+    <value>Template Name</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNamespaceDescription" xml:space="preserve">
+    <value>The template namespace. Can be found in the WhatsApp templates Manager of your Facebook Business account.</value>
+  </data>
+  <data name="MessageBird_WhatsAppTemplateNamespaceLabel" xml:space="preserve">
+    <value>Template Namespace</value>
+  </data>
   <data name="SMTP_Description" xml:space="preserve">
     <value>Send emails using a custom email server.</value>
   </data>

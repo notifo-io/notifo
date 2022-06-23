@@ -5,15 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Channels.MobilePush
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public interface IMobilePushSender
+    public sealed record WhatsAppTextMessage(
+        string From,
+        string To,
+        string Message,
+        string? ReportUrl)
     {
-        string Name { get; }
-
-        Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
-            CancellationToken ct);
     }
 }

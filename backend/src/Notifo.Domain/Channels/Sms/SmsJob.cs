@@ -60,7 +60,7 @@ namespace Notifo.Domain.Channels.Sms
 
         public string ScheduleKey
         {
-            get => $"{Id}_{PhoneNumber}";
+            get => ComputeScheduleKey(Id, PhoneNumber);
         }
 
         IEnumerable<KeyValuePair<string, object>>? IIntegrationTarget.Properties
@@ -92,9 +92,9 @@ namespace Notifo.Domain.Channels.Sms
             TemplateName = setting.Template;
         }
 
-        public static string ComputeScheduleKey(Guid id)
+        public static string ComputeScheduleKey(Guid notificationId, string phoneNumber)
         {
-            return id.ToString();
+            return $"{notificationId}_{phoneNumber}";
         }
     }
 }

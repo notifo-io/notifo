@@ -18,6 +18,8 @@ namespace Notifo.Domain.Integrations.Firebase
         private readonly bool sendSilentAndroid;
         private readonly bool sendSilentIOS;
 
+        public string Name => "Firebase";
+
         public FirebaseMobilePushSender(Func<FirebaseMessagingWrapper> wrapper,
             bool sendSilentIOS,
             bool sendSilentAndroid)

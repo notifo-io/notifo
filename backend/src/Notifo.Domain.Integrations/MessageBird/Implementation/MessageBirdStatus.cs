@@ -9,14 +9,22 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public enum MessageBirdStatus
     {
+        Unknown,
+        Accepted,
         Answered,
         Buffered,
         Calling,
+        Deleted,
         Delivered,
         Delivery_Failed,
         Expired,
         Failed,
+        Pending,
+        Read,
+        Received,
+        Rejected,
         Scheduled,
-        Sent
+        Sent,
+        Transmitted
     }
 }

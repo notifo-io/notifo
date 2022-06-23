@@ -34,14 +34,12 @@ namespace Notifo.Domain.ChannelTemplates
 
             if (Language != null)
             {
-                var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+                var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+                var channelInstance = await channelFactory.CreateInitialAsync(newTemplate.Kind, ct);
 
                 newTemplate = newTemplate with
                 {
-                    Languages = new Dictionary<string, T>(template.Languages)
-                    {
-                        [Language] = await factory.CreateInitialAsync(newTemplate.Kind, ct)
-                    }.ToReadonlyDictionary()
+                    Languages = template.Languages.Set(Language, channelInstance)
                 };
             }
 

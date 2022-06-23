@@ -16,6 +16,8 @@ namespace Notifo.Domain.Integrations.Mailjet
         private readonly string fromEmail;
         private readonly string fromName;
 
+        public string Name => "Mailjet";
+
         public MailjetEmailSender(Func<MailjetEmailServer> server,
             string fromEmail,
             string fromName)
@@ -44,7 +46,7 @@ namespace Notifo.Domain.Integrations.Mailjet
             {
                 try
                 {
-                    await server().SendAsync(message, ct);
+                    await server().SendAsync(message);
                     break;
                 }
                 catch (ObjectDisposedException)

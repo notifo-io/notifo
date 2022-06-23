@@ -93,14 +93,9 @@ namespace Notifo.Domain.Apps
             await integrationManager.ValidateAsync(configured, ct);
             await integrationManager.HandleConfiguredAsync(Id, app, configured, previousIntegration, ct);
 
-            var newIntegrations = new Dictionary<string, ConfiguredIntegration>(app.Integrations)
-            {
-                [Id] = configured
-            };
-
             var newApp = app with
             {
-                Integrations = newIntegrations.ToReadonlyDictionary()
+                Integrations = app.Integrations.Set(Id, configured)
             };
 
             return newApp;

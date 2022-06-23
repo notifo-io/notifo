@@ -15,7 +15,7 @@ namespace Notifo.Domain.Integrations.Smtp
     {
         private readonly SmtpEmailServerPool serverPool;
 
-        private static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty HostProperty = new IntegrationProperty("host", PropertyType.Text)
         {
             EditorLabel = Texts.SMTP_HostLabel,
             EditorDescription = null,
@@ -23,26 +23,26 @@ namespace Notifo.Domain.Integrations.Smtp
             Summary = true
         };
 
-        private static readonly IntegrationProperty HostPortProperty = new IntegrationProperty("port", IntegrationPropertyType.Number)
+        private static readonly IntegrationProperty HostPortProperty = new IntegrationProperty("port", PropertyType.Number)
         {
             EditorLabel = Texts.SMTP_PortLabel,
             EditorDescription = null,
             DefaultValue = "587"
         };
 
-        private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty UsernameProperty = new IntegrationProperty("username", PropertyType.Text)
         {
             EditorLabel = Texts.SMTP_UsernameLabel,
             EditorDescription = Texts.SMTP_UsernameHints
         };
 
-        private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", IntegrationPropertyType.Password)
+        private static readonly IntegrationProperty PasswordProperty = new IntegrationProperty("password", PropertyType.Password)
         {
             EditorLabel = Texts.SMTP_PasswordLabel,
             EditorDescription = Texts.SMTP_PasswordHints
         };
 
-        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
         {
             Pattern = Patterns.Email,
             EditorLabel = Texts.Email_FromEmailLabel,
@@ -51,7 +51,7 @@ namespace Notifo.Domain.Integrations.Smtp
             Summary = true
         };
 
-        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
         {
             EditorLabel = Texts.Email_FromNameLabel,
             EditorDescription = Texts.Email_FromNameDescription,

@@ -29,7 +29,7 @@ namespace Notifo.Domain.Integrations.AmazonSES
         private readonly SmtpEmailServer smtpEmailServer;
         private AmazonSimpleEmailServiceClient amazonSES;
 
-        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
         {
             Pattern = Patterns.Email,
             EditorLabel = Texts.Email_FromEmailLabel,
@@ -38,14 +38,14 @@ namespace Notifo.Domain.Integrations.AmazonSES
             Summary = true
         };
 
-        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
         {
             EditorLabel = Texts.Email_FromNameLabel,
             EditorDescription = Texts.Email_FromNameDescription,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", IntegrationPropertyType.MultilineText)
+        private static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", PropertyType.MultilineText)
         {
             EditorLabel = Texts.Email_AdditionalFromEmailsLabel,
             EditorDescription = Texts.Email_AdditionalFromEmailsDescription,

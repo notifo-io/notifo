@@ -21,7 +21,7 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>
+    public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, IMessagingCallback
     {
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
@@ -54,12 +54,61 @@ namespace Notifo.Domain.Channels.Messaging
 
         public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
+            // Faster check because it does not allocate integrations.
+            if (!integrationManager.IsConfigured<IMessagingSender>(options.App, notification))
+            {
+                yield break;
+            }
+
             var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
             if (senders.Any(x => x.Target.HasTarget(options.User)))
             {
                 yield return MessagingJob.DefaultToken;
+            }
+        }
+
+        public async Task HandleCallbackAsync(IMessagingSender sender, MessagingCallbackResponse response,
+            CancellationToken ct)
+        {
+            using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
+            {
+                var (notificationId, result, details) = response;
+                var notification = await userNotificationStore.FindAsync(notificationId, ct);
+
+                if (notification != null)
+                {
+                    await UpdateAsync(notification, result);
+
+                    if (!string.IsNullOrEmpty(details))
+                    {
+                        await logStore.LogAsync(notification.AppId, sender.Name, details);
+                    }
+                }
+
+                userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
+            }
+        }
+
+        private async Task UpdateAsync(UserNotification notification, MessagingResult result)
+        {
+            if (!notification.Channels.TryGetValue(Name, out var channel))
+            {
+                return;
+            }
+
+            if (channel.Status.TryGetValue(MessagingJob.DefaultToken, out var status) && status.Status == ProcessStatus.Attempt)
+            {
+                switch (result)
+                {
+                    case MessagingResult.Delivered:
+                        await UpdateAsync(notification, ProcessStatus.Handled);
+                        break;
+                    case MessagingResult.Failed:
+                        await UpdateAsync(notification, ProcessStatus.Failed);
+                        break;
+                }
             }
         }
 
@@ -77,6 +126,7 @@ namespace Notifo.Domain.Channels.Messaging
 
                 var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification);
 
+                // We try all integrations, ordered by priority.
                 foreach (var (_, sender) in integrations)
                 {
                     await sender.AddTargetsAsync(job, options.User);
@@ -185,7 +235,8 @@ namespace Notifo.Domain.Channels.Messaging
                 {
                     var result = await sender.SendAsync(job, text, ct);
 
-                    if (result)
+                    // If the message has been delivered, we do not try other integrations.
+                    if (result == MessagingResult.Delivered)
                     {
                         await UpdateAsync(job.Notification, ProcessStatus.Handled);
                         return;
@@ -193,7 +244,7 @@ namespace Notifo.Domain.Channels.Messaging
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
+                    await logStore.LogAsync(job.Notification.AppId, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {

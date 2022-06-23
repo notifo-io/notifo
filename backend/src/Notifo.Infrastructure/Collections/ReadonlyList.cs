@@ -42,5 +42,42 @@ namespace Notifo.Infrastructure.Collections
 
             return new ReadonlyList<T>(inner);
         }
+
+        public static List<T> ToMutable<T>(this ReadonlyList<T>? source)
+        {
+            if (source == null)
+            {
+                return new List<T>();
+            }
+
+            return new List<T>(source);
+        }
+
+        public static ReadonlyList<T> Set<T>(this ReadonlyList<T>? source, T item)
+        {
+            var mutable = source.ToMutable();
+
+            mutable.Add(item);
+
+            return mutable.ToReadonlyList();
+        }
+
+        public static ReadonlyList<T> Remove<T>(this ReadonlyList<T>? source, T item)
+        {
+            var mutable = source.ToMutable();
+
+            mutable.Remove(item);
+
+            return mutable.ToReadonlyList();
+        }
+
+        public static ReadonlyList<T> RemoveAll<T>(this ReadonlyList<T>? source, Predicate<T> match)
+        {
+            var mutable = source.ToMutable();
+
+            mutable.RemoveAll(match);
+
+            return mutable.ToReadonlyList();
+        }
     }
 }

@@ -5,14 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+#pragma warning disable MA0048 // File name must match type name
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Integrations
+namespace Notifo.Domain.Channels.Messaging
 {
-    public sealed record UserProperty(string Name, PropertyType Type) : PropertyBase(Name, Type)
-    {
-        public string? EditorDescription { get; init; }
+    public record struct MessagingCallbackResponse(Guid NotificationId, MessagingResult Result, string? Details = null);
 
-        public string? EditorLabel { get; init; }
+    public interface IMessagingCallback
+    {
+        Task HandleCallbackAsync(IMessagingSender sender, MessagingCallbackResponse response,
+            CancellationToken ct);
     }
 }

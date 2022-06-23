@@ -33,16 +33,12 @@ namespace Notifo.Domain.ChannelTemplates
         {
             Validate<Validator>.It(this);
 
-            var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
-
-            var newLanguages = new Dictionary<string, T>(template.Languages)
-            {
-                [Language] = await factory.ParseAsync(Template, ct)
-            };
+            var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+            var channelInstance = await channelFactory.ParseAsync(Template, ct);
 
             var newTemplate = template with
             {
-                Languages = newLanguages.ToReadonlyDictionary()
+                Languages = template.Languages.Set(Language, channelInstance)
             };
 
             return newTemplate;

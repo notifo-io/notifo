@@ -129,16 +129,28 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         });
     }, [definition]);
 
-    const initialValues = configured ? {
-        ...configured,
-        properties: {
-            ...configured.properties,
-        },
-    } : {
-        enabled: true,
-        priority: 0,
-        properties: {},
-    };
+    const initialValues = React.useMemo(() => {
+        if (configured) {
+            return {
+                ...configured,
+                properties: {
+                    ...configured.properties,
+                },
+            };
+        } else {
+            const properties = {};
+
+            for (const property of definition.properties) {
+                properties[property.name] = property.defaultValue;
+            }
+
+            return {
+                enabled: true,
+                priority: 0,
+                properties,
+            };
+        }
+    }, [configured, definition.properties]);
 
     return (
         <Modal isOpen={true} size='lg' className='integration-dialog' backdrop={false} toggle={onClose}>

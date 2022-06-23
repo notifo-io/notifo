@@ -23,7 +23,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos
         /// The editor type.
         /// </summary>
         [Required]
-        public IntegrationPropertyType Type { get; set; }
+        public PropertyType Type { get; set; }
 
         /// <summary>
         /// The optional description.

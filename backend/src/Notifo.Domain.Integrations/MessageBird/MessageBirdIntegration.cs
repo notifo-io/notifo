@@ -5,10 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels;
+using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
+using Notifo.Domain.Users;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
@@ -16,14 +19,28 @@ namespace Notifo.Domain.Integrations.MessageBird
     {
         private readonly MessageBirdClientPool clientPool;
 
-        private static readonly IntegrationProperty AccessKeyProperty = new IntegrationProperty("accessKey", IntegrationPropertyType.Text)
+        private static readonly IntegrationProperty SendSmsProperty = new IntegrationProperty("sendSms", PropertyType.Boolean)
+        {
+            EditorLabel = Texts.MessageBird_SendSmsLabel,
+            EditorDescription = null,
+            DefaultValue = "true"
+        };
+
+        private static readonly IntegrationProperty SendWhatsAppProperty = new IntegrationProperty("sendWhatsApp", PropertyType.Boolean)
+        {
+            EditorLabel = Texts.MessageBird_SendWhatsAppLabel,
+            EditorDescription = null,
+            DefaultValue = "true"
+        };
+
+        private static readonly IntegrationProperty AccessKeyProperty = new IntegrationProperty("accessKey", PropertyType.Text)
         {
             EditorLabel = Texts.MessageBird_AccessKeyLabel,
             EditorDescription = null,
             IsRequired = true
         };
 
-        private static readonly IntegrationProperty PhoneNumberProperty = new IntegrationProperty("phoneNumber", IntegrationPropertyType.Number)
+        private static readonly IntegrationProperty PhoneNumberProperty = new IntegrationProperty("phoneNumber", PropertyType.Number)
         {
             EditorLabel = Texts.MessageBird_PhoneNumberLabel,
             EditorDescription = null,
@@ -31,12 +48,36 @@ namespace Notifo.Domain.Integrations.MessageBird
             Summary = true
         };
 
-        private static readonly IntegrationProperty PhoneNumbersProperty = new IntegrationProperty("phoneNumbers", IntegrationPropertyType.MultilineText)
+        private static readonly IntegrationProperty PhoneNumbersProperty = new IntegrationProperty("phoneNumbers", PropertyType.MultilineText)
         {
             EditorLabel = Texts.MessageBird_PhoneNumbersLabel,
             EditorDescription = Texts.MessageBird_PhoneNumbersDescription,
             IsRequired = false,
-            Summary = true
+            Summary = false
+        };
+
+        private static readonly IntegrationProperty WhatsAppChannelIdProperty = new IntegrationProperty("whatsAppChannelId", PropertyType.Text)
+        {
+            EditorLabel = Texts.MessageBird_WhatsAppChannelIdLabel,
+            EditorDescription = Texts.MessageBird_WhatsAppChannelIdDescription,
+            IsRequired = false,
+            Summary = false
+        };
+
+        private static readonly IntegrationProperty WhatsAppTemplateNameProperty = new IntegrationProperty("whatsAppTemplateName", PropertyType.Text)
+        {
+            EditorLabel = Texts.MessageBird_WhatsAppTemplateNameLabel,
+            EditorDescription = Texts.MessageBird_WhatsAppTemplateNameDescription,
+            IsRequired = false,
+            Summary = false
+        };
+
+        private static readonly IntegrationProperty WhatsAppTemplateNamespaceProperty = new IntegrationProperty("whatsAppTemplateNamespace", PropertyType.Text)
+        {
+            EditorLabel = Texts.MessageBird_WhatsAppTemplateNamespaceLabel,
+            EditorDescription = Texts.MessageBird_WhatsAppTemplateNamespaceDescription,
+            IsRequired = false,
+            Summary = false
         };
 
         public IntegrationDefinition Definition { get; } =
@@ -46,13 +87,20 @@ namespace Notifo.Domain.Integrations.MessageBird
                 "./integrations/messagebird.svg",
                 new List<IntegrationProperty>
                 {
+                    SendSmsProperty,
+                    SendWhatsAppProperty,
                     AccessKeyProperty,
-                    PhoneNumberProperty
+                    PhoneNumberProperty,
+                    PhoneNumbersProperty,
+                    WhatsAppChannelIdProperty,
+                    WhatsAppTemplateNamespaceProperty,
+                    WhatsAppTemplateNameProperty
                 },
                 new List<UserProperty>(),
                 new HashSet<string>
                 {
-                    Providers.Sms
+                    Providers.Sms,
+                    Providers.Messaging
                 })
             {
                 Description = Texts.MessageBird_Description
@@ -65,39 +113,109 @@ namespace Notifo.Domain.Integrations.MessageBird
 
         public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
         {
-            return serviceType == typeof(ISmsSender);
+            return serviceType == typeof(ISmsSender) || serviceType == typeof(IMessagingSender);
         }
 
         public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
         {
-            if (CanCreate(serviceType, id, configured))
+            var sms = CreateSms(serviceType, id, configured, serviceProvider);
+
+            if (sms != null)
             {
-                var accessKey = AccessKeyProperty.GetString(configured);
+                return sms;
+            }
 
-                if (string.IsNullOrWhiteSpace(accessKey))
-                {
-                    return null;
-                }
+            var messaging = CreateMessaging(serviceType, id, configured, serviceProvider);
 
-                var phoneNumber = PhoneNumberProperty.GetNumber(configured);
-
-                if (phoneNumber == 0)
-                {
-                    return null;
-                }
-
-                var phoneNumbers = PhoneNumbersProperty.GetString(configured);
-
-                var client = clientPool.GetServer(accessKey, phoneNumber, ParsePhoneNumbers(phoneNumbers));
-
-                return new MessageBirdSmsSender(
-                    client,
-                    serviceProvider.GetRequiredService<ISmsCallback>(),
-                    serviceProvider.GetRequiredService<ISmsUrl>(),
-                    id);
+            if (messaging != null)
+            {
+                return messaging;
             }
 
             return null;
+        }
+
+        private ISmsSender? CreateSms(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+        {
+            if (serviceType != typeof(ISmsSender) || !SendSmsProperty.GetBoolean(configured))
+            {
+                return null;
+            }
+
+            var accessKey = AccessKeyProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(accessKey))
+            {
+                return null;
+            }
+
+            var phoneNumber = PhoneNumberProperty.GetNumber(configured);
+
+            if (phoneNumber == 0)
+            {
+                return null;
+            }
+
+            var phoneNumbersString = PhoneNumbersProperty.GetString(configured);
+            var phoneNumbersMap = ParsePhoneNumbers(phoneNumbersString);
+
+            var client = clientPool.GetClient(accessKey);
+
+            return new MessageBirdSmsSender(
+                client,
+                serviceProvider.GetRequiredService<ISmsCallback>(),
+                serviceProvider.GetRequiredService<ISmsUrl>(),
+                id,
+                phoneNumber.ToString(CultureInfo.InvariantCulture),
+                phoneNumbersMap);
+        }
+
+        private IMessagingSender? CreateMessaging(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+        {
+            if (serviceType != typeof(IMessagingSender) || !SendWhatsAppProperty.GetBoolean(configured))
+            {
+                return null;
+            }
+
+            var accessKey = AccessKeyProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(accessKey))
+            {
+                return null;
+            }
+
+            var channelId = WhatsAppChannelIdProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(channelId))
+            {
+                return null;
+            }
+
+            var templateNamespace = WhatsAppTemplateNamespaceProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(templateNamespace))
+            {
+                return null;
+            }
+
+            var templateName = WhatsAppTemplateNameProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(templateName))
+            {
+                return null;
+            }
+
+            var client = clientPool.GetClient(accessKey);
+
+            return new MessageBirdWhatsAppSender(
+                client,
+                serviceProvider.GetRequiredService<IMessagingCallback>(),
+                serviceProvider.GetRequiredService<IMessagingUrl>(),
+                serviceProvider.GetRequiredService<IUserStore>(),
+                id,
+                channelId,
+                templateNamespace,
+                templateName);
         }
 
         private static Dictionary<string, string>? ParsePhoneNumbers(string? source)

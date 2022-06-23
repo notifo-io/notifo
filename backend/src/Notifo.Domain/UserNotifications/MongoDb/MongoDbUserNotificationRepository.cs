@@ -373,7 +373,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        private async Task CleanupAsync(UserNotification notification, CancellationToken ct)
+        private async Task CleanupAsync(UserNotification notification,
+            CancellationToken ct)
         {
             if (options.MaxItemsPerUser <= 0 || options.MaxItemsPerUser >= int.MaxValue)
             {

@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class MessageBirdSmsResponse
+    public sealed class SmsResponse
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

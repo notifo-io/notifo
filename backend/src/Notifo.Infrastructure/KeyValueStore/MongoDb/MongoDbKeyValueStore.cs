@@ -52,7 +52,8 @@ namespace Notifo.Infrastructure.KeyValueStore.MongoDb
             return result.IsModifiedCountAvailable && result.ModifiedCount == 1;
         }
 
-        public async Task<string?> SetIfNotExistsAsync(string key, string? value, CancellationToken ct = default)
+        public async Task<string?> SetIfNotExistsAsync(string key, string? value,
+            CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(key);
 

@@ -24,7 +24,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user with
             {
-                AllowedTopics = user.AllowedTopics.Where(x => x != Prefix).ToReadonlyList()
+                AllowedTopics = user.AllowedTopics.Remove(Prefix)
             };
 
             return new ValueTask<User?>(newUser);

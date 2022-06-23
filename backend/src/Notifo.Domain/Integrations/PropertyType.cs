@@ -5,15 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
-
-namespace Notifo.Domain.Channels.MobilePush
+namespace Notifo.Domain.Integrations
 {
-    public interface IMobilePushSender
+    public enum PropertyType
     {
-        string Name { get; }
-
-        Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
-            CancellationToken ct);
+        Text,
+        Number,
+        MultilineText,
+        Password,
+        Boolean
     }
 }

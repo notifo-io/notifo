@@ -30,21 +30,18 @@ namespace Notifo.Domain.ChannelTemplates
         {
             Validate<Validator>.It(this);
 
-            var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+            var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
             if (template.Languages.ContainsKey(Language))
             {
                 throw new DomainObjectConflictException(Language);
             }
 
-            var newLanguages = new Dictionary<string, T>(template.Languages)
-            {
-                [Language] = await factory.CreateInitialAsync(template.Kind, ct)
-            };
+            var channelInstance = await channelFactory.CreateInitialAsync(template.Kind, ct);
 
             var newTemplate = template with
             {
-                Languages = newLanguages.ToReadonlyDictionary()
+                Languages = template.Languages.Set(Language, channelInstance)
             };
 
             return newTemplate;

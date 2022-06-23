@@ -21,6 +21,8 @@ namespace Notifo.Domain.Integrations.Threema
         private readonly string apiIdentity;
         private readonly string apiSecret;
 
+        public string Name => "Threema";
+
         public ThreemaSimpleMessagingSender(IHttpClientFactory httpClientFactory, string apiIdentity, string apiSecret)
         {
             this.httpClientFactory = httpClientFactory;
@@ -52,7 +54,7 @@ namespace Notifo.Domain.Integrations.Threema
             return Task.CompletedTask;
         }
 
-        public async Task<bool> SendAsync(MessagingJob job, string text,
+        public async Task<MessagingResult> SendAsync(MessagingJob job, string text,
             CancellationToken ct)
         {
             using (var httpClient = httpClientFactory.CreateClient())
@@ -65,7 +67,7 @@ namespace Notifo.Domain.Integrations.Threema
                     {
                         if (await SendAsync(httpClient, "phone", phoneNumber, text, ct))
                         {
-                            return true;
+                            return MessagingResult.Delivered;
                         }
                     }
                     catch (Exception ex)
@@ -80,7 +82,7 @@ namespace Notifo.Domain.Integrations.Threema
                     {
                         if (await SendAsync(httpClient, "email", email, text, ct))
                         {
-                            return true;
+                            return MessagingResult.Delivered;
                         }
                     }
                     catch (Exception ex)
@@ -95,7 +97,7 @@ namespace Notifo.Domain.Integrations.Threema
                 }
             }
 
-            return false;
+            return MessagingResult.Skipped;
         }
 
         private async Task<bool> SendAsync(HttpClient httpClient, string toKey, string toValue, string text,

@@ -27,6 +27,8 @@ namespace Notifo.Domain.Integrations.Telegram
         private readonly Func<ITelegramBotClient> client;
         private readonly IUserStore userStore;
 
+        public string Name => "Telegram";
+
         public TelegramMessagingSender(Func<ITelegramBotClient> client, IUserStore userStore)
         {
             this.client = client;
@@ -102,29 +104,30 @@ namespace Notifo.Domain.Integrations.Telegram
                 return;
             }
 
-            await userStore.UpsertAsync(app.Id, user.Id, new SetUserProperty
+            await userStore.UpsertAsync(app.Id, user.Id, new SetUserSystemProperty
             {
-                Property = TelegramIntegration.UserUsername.Name,
+                PropertyKey = TelegramIntegration.UserUsername.Name,
                 PropertyValue = chatId,
             }, ct);
 
             await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
         }
 
-        public async Task<bool> SendAsync(MessagingJob job, string text,
+        public async Task<MessagingResult> SendAsync(MessagingJob job, string text,
             CancellationToken ct)
         {
             if (!job.Targets.TryGetValue(TelegramChatId, out var chatId))
             {
-                return false;
+                return MessagingResult.Skipped;
             }
 
             await SendMessageAsync(text, chatId, ct);
 
-            return true;
+            return MessagingResult.Delivered;
         }
 
-        private async Task SendMessageAsync(string text, string chatId, CancellationToken ct)
+        private async Task SendMessageAsync(string text, string chatId,
+            CancellationToken ct)
         {
             // Try a few attempts to get a non-disposed server instance.
             for (var i = 1; i <= Attempts; i++)
@@ -166,7 +169,7 @@ namespace Notifo.Domain.Integrations.Telegram
 
         private static string? GetChatId(User user)
         {
-            return user.Properties?.GetValueOrDefault(TelegramIntegration.UserChatId.Name);
+            return TelegramIntegration.UserChatId.GetString(user.SystemProperties);
         }
 
         private static bool IsUpdate(TelegramUpdate update)

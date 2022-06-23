@@ -36,7 +36,7 @@ namespace Notifo.Domain.Users
 
             var newUser = user with
             {
-                MobilePushTokens = user.MobilePushTokens.Where(x => x.Token != Token).ToReadonlyList()
+                MobilePushTokens = user.MobilePushTokens.RemoveAll(x => x.Token == Token)
             };
 
             return new ValueTask<User?>(newUser);

@@ -5,15 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
-
-namespace Notifo.Domain.Channels.MobilePush
+namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public interface IMobilePushSender
+    public sealed class SmsWebhookRequest
     {
-        string Name { get; }
+        public string Id { get; set; }
 
-        Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
-            CancellationToken ct);
+        public string Recipient { get; set; }
+
+        public string Reference { get; set; }
+
+        public int StatusErrorCode { get; set; }
+
+        public MessageBirdStatus Status { get; set; }
     }
 }
