@@ -19,23 +19,26 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     public sealed class MessageBirdClient : IMessageBirdClient
     {
         private static readonly char[] TrimChars = { ' ', '+', '0' };
-        private readonly MessageBirdOptions options;
-        private readonly IHttpClientFactory httpClientFactory;
+        private readonly Func<HttpClient> httpClientFactory;
 
         public MessageBirdClient(IHttpClientFactory httpClientFactory, IOptions<MessageBirdOptions> options)
         {
-            this.httpClientFactory = httpClientFactory;
-            this.options = options.Value;
+            this.httpClientFactory = () =>
+            {
+                var client = httpClientFactory.CreateClient();
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.Value.AccessKey);
+
+                return client;
+            };
         }
 
         public async Task<ConversationResponse> GetMessageAsync(string id,
             CancellationToken ct)
         {
-            using (var client = httpClientFactory.CreateClient())
+            using (var httpClient = httpClientFactory())
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
-
-                var result = await client.GetFromJsonAsync<ConversationResponse>($"https://conversations.messagebird.com/v1/messages/{id}", ct);
+                var result = await httpClient.GetFromJsonAsync<ConversationResponse>($"https://conversations.messagebird.com/v1/messages/{id}", ct);
 
                 if (result == null)
                 {
@@ -51,7 +54,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         {
             Guard.NotNull(message);
 
-            var (originator, to, body, reportUrl, reference) = message;
+            var (originator, to, body, reference, reportUrl) = message;
 
             if (body.Length > 140)
             {
@@ -65,10 +68,8 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 ThrowHelper.ArgumentException("Not a valid phone number.", nameof(message));
             }
 
-            using (var client = httpClientFactory.CreateClient())
+            using (var httpClient = httpClientFactory())
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
-
                 var request = new
                 {
                     originator,
@@ -81,7 +82,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                     }
                 };
 
-                var response = await client.PostAsJsonAsync("https://rest.messagebird.com/messages", request, ct);
+                var response = await httpClient.PostAsJsonAsync("https://rest.messagebird.com/messages", request, ct);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -99,7 +100,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         {
             Guard.NotNull(message);
 
-            var (from, to, templateNamespace, templateName, language, reportUrl, reference, parameters) = message;
+            var (from, to, templateNamespace, templateName, language, reportUrl, parameters) = message;
 
             var code = language.Replace('-', '_');
 
@@ -118,14 +119,14 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                             policy = "deterministic",
                             code
                         },
-                        ["namespace"] = templateNamespace,
                         ["params"] = parameters?.Select(x => new Dictionary<string, object>
                         {
                             ["default"] = x
-                        }).ToArray()
+                        }),
+                        ["namespace"] = templateNamespace
                     }
                 },
-                reportUrl = UrlHelper.AppendQueries(reportUrl, "reference", reference, "to", to)
+                reportUrl
             };
 
             return SendRequestAsync(request, ct);
@@ -136,7 +137,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         {
             Guard.NotNull(message);
 
-            var (from, to, text, reference, reportUrl) = message;
+            var (from, to, text, reportUrl) = message;
 
             var request = new
             {
@@ -147,7 +148,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 {
                     text
                 },
-                reportUrl = $"{reportUrl}?reference={reference}&to={to}"
+                reportUrl
             };
 
             return SendRequestAsync(request, ct);
@@ -156,11 +157,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         private async Task<ConversationResponse> SendRequestAsync<T>(T request,
             CancellationToken ct)
         {
-            using (var client = httpClientFactory.CreateClient())
+            using (var httpClient = httpClientFactory())
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.AccessKey);
-
-                var response = await client.PostAsJsonAsync("https://conversations.messagebird.com/v1/send", request, ct);
+                var response = await httpClient.PostAsJsonAsync("https://conversations.messagebird.com/v1/send", request, ct);
                 var result = await response.Content.ReadFromJsonAsync<ConversationResponse>((JsonSerializerOptions?)null, ct);
 
                 if (result == null)
@@ -195,9 +194,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 result.Recipient = recipient;
             }
 
-            if (query.TryGetValue("reference", out var reference) && Guid.TryParse(reference, out var referenceGuid))
+            if (query.TryGetValue("reference", out var reference))
             {
-                result.Reference = referenceGuid;
+                result.Reference = reference;
             }
 
             if (query.TryGetValue("status", out var statusString) && Enum.TryParse<MessageBirdStatus>(statusString, true, out var status))
@@ -219,14 +218,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
             var query = httpContext.Request.Query;
 
-            if (query.TryGetValue("reference", out var reference) && Guid.TryParse(reference, out var referenceGuid))
+            foreach (var (key, value) in httpContext.Request.Query)
             {
-                result.Reference = referenceGuid;
-            }
-
-            if (query.TryGetValue("to", out var to))
-            {
-                result.To = to;
+                result.Query[key] = value;
             }
 
             return result;

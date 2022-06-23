@@ -15,10 +15,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
     public sealed class WhatsAppWebhookRequest
     {
         [JsonIgnore]
-        public Guid Reference { get; set; }
-
-        [JsonIgnore]
-        public string To { get; internal set; }
+        public Dictionary<string, string> Query { get; } = new Dictionary<string, string>();
 
         [JsonPropertyName("type")]
         public string Type { get; set; }

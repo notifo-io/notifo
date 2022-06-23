@@ -74,7 +74,7 @@ namespace Notifo.Domain.Channels.Messaging
         {
             using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
             {
-                var (notificationId, _, result, details) = response;
+                var (notificationId, result, details) = response;
                 var notification = await userNotificationStore.FindAsync(notificationId, ct);
 
                 if (notification != null)

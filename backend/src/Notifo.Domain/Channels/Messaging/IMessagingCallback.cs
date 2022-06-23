@@ -10,7 +10,7 @@
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public record struct MessagingCallbackResponse(Guid NotificationId, string To, MessagingResult Result, string? Details = null);
+    public record struct MessagingCallbackResponse(Guid NotificationId, MessagingResult Result, string? Details = null);
 
     public interface IMessagingCallback
     {

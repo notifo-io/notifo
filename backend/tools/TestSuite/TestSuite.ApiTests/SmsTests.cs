@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MessageBird;
-using MessageBird.Objects;
 using Notifo.SDK;
 using TestSuite.Fixtures;
 using TestSuite.Utils;

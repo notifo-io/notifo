@@ -13,9 +13,9 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
         public string Recipient { get; set; }
 
-        public int StatusErrorCode { get; set; }
+        public string Reference { get; set; }
 
-        public Guid Reference { get; set; }
+        public int StatusErrorCode { get; set; }
 
         public MessageBirdStatus Status { get; set; }
     }

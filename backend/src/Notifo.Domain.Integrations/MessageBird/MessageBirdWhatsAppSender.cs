@@ -78,8 +78,12 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             var to = job.Targets[WhatsAppPhoneNumber];
 
-            var reportUrl = messagingUrl.MessagingWebhookUrl(job.Notification.AppId, integrationId);
-            var reportId = job.Notification.Id.ToString();
+            var queries = new Dictionary<string, string>
+            {
+                ["reference"] = job.Notification.Id.ToString()
+            };
+
+            var reportUrl = messagingUrl.MessagingWebhookUrl(job.Notification.AppId, integrationId, queries);
 
             var textMessage = new WhatsAppTemplateMessage(
                 channelId,
@@ -88,7 +92,6 @@ namespace Notifo.Domain.Integrations.MessageBird
                 templateName,
                 user.PreferredLanguage,
                 reportUrl,
-                reportId,
                 new[] { text });
 
             // Just send the normal text message.
@@ -139,7 +142,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                             continue;
                         }
 
-                        var callback = new MessagingCallbackResponse(id, to, result, response.Error?.Description);
+                        var callback = new MessagingCallbackResponse(id, result, response.Error?.Description);
 
                         await messagingCallback.HandleCallbackAsync(this, callback, tcs.Token);
                     }
@@ -159,7 +162,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             var status = await messageBirdClient.ParseWhatsAppWebhookAsync(httpContext);
 
             // If the reference is not a valid guid (notification-id), something just went wrong.
-            if (status.Reference == default)
+            if (!status.Query.TryGetValue("reference", out var query) || !Guid.TryParse(query, out var reference) || reference == default)
             {
                 return;
             }
@@ -189,7 +192,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return;
             }
 
-            var callback = new MessagingCallbackResponse(status.Reference, status.To, result, status.Error?.Description);
+            var callback = new MessagingCallbackResponse(reference, result, status.Error?.Description);
 
             await messagingCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
         }

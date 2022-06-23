@@ -95,7 +95,7 @@ namespace Notifo.Domain.Integrations.MessageBird
             var status = await messageBirdClient.ParseSmsWebhookAsync(httpContext);
 
             // If the reference is not a valid guid (notification-id), something just went wrong.
-            if (status.Reference == default)
+            if (!Guid.TryParse(status.Reference, out var reference) || reference == default)
             {
                 return;
             }
@@ -120,7 +120,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return;
             }
 
-            var callback = new SmsCallbackResponse(status.Reference, status.Recipient, result);
+            var callback = new SmsCallbackResponse(reference, status.Recipient, result);
 
             await smsCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
         }
