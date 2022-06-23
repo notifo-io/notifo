@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 
 namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
-    public sealed class WhatsAppStatus
+    public sealed class WhatsAppWebhookRequest
     {
         [JsonIgnore]
         public Guid Reference { get; set; }
