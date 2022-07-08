@@ -41,7 +41,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ct = cts.Token;
 
             A.CallTo(() => messageBus.PublishAsync(A<UserEventMessage>._, A<string>._, A<CancellationToken>._))
-                .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
+                .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(0)!));
 
             var log = A.Fake<ILogger<UserEventPublisher>>();
 

@@ -10,7 +10,6 @@ using NodaTime;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
-using Squidex.Hosting;
 using Squidex.Messaging;
 
 namespace Notifo.Domain.Events.Pipeline
