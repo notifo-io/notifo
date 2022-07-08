@@ -5,13 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Tasks;
-using System.Net;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {

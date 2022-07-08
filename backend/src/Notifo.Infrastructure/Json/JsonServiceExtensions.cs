@@ -11,6 +11,8 @@ using NodaTime;
 using NodaTime.Serialization.SystemTextJson;
 using Notifo.Infrastructure.Collections.Json;
 using Notifo.Infrastructure.Json;
+using Squidex.Messaging;
+using Squidex.Messaging.Implementation;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -23,6 +25,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     .Configure(configure);
 
             services.AddSingleton(options);
+
+            services.AddSingletonAs(c => new SystemTextJsonTransportSerializer(configure))
+                .As<ITransportSerializer>();
 
             services.AddSingletonAs<SystemTextJsonSerializer>()
                 .As<IJsonSerializer>();

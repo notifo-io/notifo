@@ -10,7 +10,7 @@ using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
 using Notifo.Domain.Events.MongoDb;
 using Notifo.Domain.Events.Pipeline;
-using Notifo.Infrastructure.Messaging;
+using Squidex.Messaging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -22,13 +22,18 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.ConfigureAndValidate<EventsOptions>(config, "events");
 
-            services.AddMessaging<EventMessage>(options.ChannelName);
+            services.AddMessaging(options.ChannelName, true);
+
+            services.Configure<MessagingOptions>(messaging =>
+            {
+                messaging.Routing.Add(x => x is EventMessage, options.ChannelName);
+            });
 
             services.AddSingletonAs<EventStore>()
                 .As<IEventStore>().As<ICounterTarget>();
 
             services.AddSingletonAs<EventConsumer>()
-                .AsSelf().As<IMessageHandler<EventMessage>>();
+                .AsSelf().As<IMessageHandler>();
 
             services.AddSingletonAs<EventPublisher>()
                 .As<IEventPublisher>();

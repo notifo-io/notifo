@@ -8,7 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserEvents.Pipeline;
-using Notifo.Infrastructure.Messaging;
+using Squidex.Messaging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -18,10 +18,15 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:userEvents").Get<UserEventPipelineOptions>() ?? new UserEventPipelineOptions();
 
-            services.AddMessaging<UserEventMessage>(options.ChannelName);
+            services.AddMessaging(options.ChannelName, true);
+
+            services.Configure<MessagingOptions>(messaging =>
+            {
+                messaging.Routing.Add(x => x is UserEventMessage, options.ChannelName);
+            });
 
             services.AddSingletonAs<UserEventConsumer>()
-                .AsSelf().As<IMessageHandler<UserEventMessage>>();
+                .AsSelf().As<IMessageHandler>();
 
             services.AddSingletonAs<UserEventPublisher>()
                 .As<IUserEventPublisher>();
