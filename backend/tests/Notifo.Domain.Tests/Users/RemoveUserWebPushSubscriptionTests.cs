@@ -35,7 +35,7 @@ namespace Notifo.Domain.Users
                         endpoint3
                     }
                     .Select(e => new WebPushSubscription { Endpoint = e })
-                    .ToReadonlyList(),
+                    .ToReadonlyList()
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
@@ -67,7 +67,7 @@ namespace Notifo.Domain.Users
                         endpoint3
                     }
                     .Select(e => new WebPushSubscription { Endpoint = e })
-                    .ToReadonlyList(),
+                    .ToReadonlyList()
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
@@ -92,7 +92,7 @@ namespace Notifo.Domain.Users
                         endpoint1
                     }
                     .Select(e => new WebPushSubscription { Endpoint = e })
-                    .ToReadonlyList(),
+                    .ToReadonlyList()
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);

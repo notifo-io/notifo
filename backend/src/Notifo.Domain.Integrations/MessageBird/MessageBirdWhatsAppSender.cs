@@ -98,17 +98,17 @@ namespace Notifo.Domain.Integrations.MessageBird
             var response = await messageBirdClient.SendWhatsAppAsync(textMessage, ct);
 
             // Query for the status, otherwise we cannot retrieve errors.
-            QueryAsync(job.Notification.Id, to, response).Forget();
+            QueryAsync(job.Notification.Id, response).Forget();
 
             // We get the status asynchronously via webhook, therefore we tell the channel not mark the process as completed.
             return MessagingResult.Sent;
         }
 
-        private async Task QueryAsync(Guid id, string to, ConversationResponse response)
+        private async Task QueryAsync(Guid id, ConversationResponse response)
         {
             using (var tcs = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
             {
-                while ((response.Status == MessageBirdStatus.Pending || response.Status == MessageBirdStatus.Accepted) && !tcs.IsCancellationRequested)
+                while (response.Status is MessageBirdStatus.Pending or MessageBirdStatus.Accepted && !tcs.IsCancellationRequested)
                 {
                     try
                     {

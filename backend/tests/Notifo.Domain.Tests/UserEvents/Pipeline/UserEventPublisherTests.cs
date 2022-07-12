@@ -179,7 +179,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Topic = @event.Topic,
                     TopicPrefix = subscriptions[1].TopicPrefix,
                     UserId = subscriptions[1].UserId
-                }, @event),
+                }, @event)
             });
 
             A.CallTo(() => eventStore.InsertAsync(@event, ct))
@@ -262,7 +262,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Topic = @event.Topic,
                     TopicPrefix = "users/123",
                     UserId = "123"
-                }, @event),
+                }, @event)
             });
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -529,7 +529,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                         ["de"] = "Test"
                     }
                 },
-                IsAutoCreated = isAutoCreated,
+                IsAutoCreated = isAutoCreated
             };
         }
 
@@ -549,7 +549,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     ["property1"] = "value1"
                 },
-                Topic = "updates/stort",
+                Topic = "updates/stort"
             };
         }
     }

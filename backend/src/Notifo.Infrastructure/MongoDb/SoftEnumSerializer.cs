@@ -14,7 +14,7 @@ using MongoDB.Bson.Serialization.Serializers;
 
 namespace Notifo.Infrastructure.MongoDb
 {
-    public sealed class SoftEnumSerializer<T> : SerializerBase<T> where T : struct
+    public sealed class SoftEnumSerializer<T> : SerializerBase<T>, IBsonPolymorphicSerializer where T : struct
     {
         private static volatile int isRegistered;
 

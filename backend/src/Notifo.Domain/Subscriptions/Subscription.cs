@@ -24,7 +24,7 @@ namespace Notifo.Domain.Subscriptions
                 AppId = appId,
                 TopicPrefix = prefix,
                 TopicSettings = null,
-                UserId = userId,
+                UserId = userId
             };
 
             return subscription;

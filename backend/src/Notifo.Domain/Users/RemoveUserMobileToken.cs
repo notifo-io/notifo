@@ -29,7 +29,7 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            if (!user.MobilePushTokens.Any(x => x.Token == Token))
+            if (user.MobilePushTokens.All(x => x.Token != Token))
             {
                 return default;
             }

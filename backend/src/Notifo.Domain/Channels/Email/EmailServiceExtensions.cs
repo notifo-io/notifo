@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 return new CompositeEmailFormatter(new IEmailFormatter[]
                 {
                     c.GetRequiredService<EmailFormatterNormal>(),
-                    c.GetRequiredService<EmailFormatterLiquid>(),
+                    c.GetRequiredService<EmailFormatterLiquid>()
                 });
             }).As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
 

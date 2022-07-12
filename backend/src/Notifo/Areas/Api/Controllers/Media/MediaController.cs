@@ -144,9 +144,11 @@ namespace Notifo.Areas.Api.Controllers.Media
 
             var contentLength = (long?)null;
             var contentCallback = (FileCallback?)null;
+            var contentType = media.MimeType;
 
-            if (media.Type == MediaType.Image && resizeOptions.IsValid)
+            if (media.Type == MediaType.Image && assetThumbnailGenerator.IsResizable(media.MimeType, resizeOptions, out var destinationMimeType))
             {
+                contentType = destinationMimeType;
                 contentCallback = async (bodyStream, range, ct) =>
                 {
                     var resizedAsset = $"{appId:notEmpty}_{media.FileName}_{resizeOptions:notEmpty}";

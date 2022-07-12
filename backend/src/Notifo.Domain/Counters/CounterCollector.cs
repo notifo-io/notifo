@@ -22,7 +22,7 @@ namespace Notifo.Domain.Counters
         private readonly Channel<Job[]> writeQueue;
         private readonly Task task;
 
-        sealed record Job(T Key, CounterMap Counters);
+        private sealed record Job(T Key, CounterMap Counters);
 
         public CounterCollector(ICounterStore<T> store, ILogger log,
             int capacity = 2000,

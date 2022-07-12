@@ -16,7 +16,5 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
         string TemplateName,
         string LanguageCode,
         string? ReportUrl,
-        string[]? Parameters)
-    {
-    }
+        string[]? Parameters);
 }

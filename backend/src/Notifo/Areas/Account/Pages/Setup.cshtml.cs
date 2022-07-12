@@ -77,7 +77,6 @@ namespace Notifo.Areas.Account.Pages
                 return Page();
             }
 
-            string errorMessage;
             try
             {
                 var user = await UserService.CreateAsync(model.Email, new UserValues
@@ -91,7 +90,7 @@ namespace Notifo.Areas.Account.Pages
             }
             catch (ValidationException ex)
             {
-                errorMessage = ex.Message;
+                ErrorMessage = ex.Message;
             }
             catch (Exception)
             {

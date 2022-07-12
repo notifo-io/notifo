@@ -23,13 +23,13 @@ namespace Notifo.Domain.Integrations.Telegram
         public static readonly UserProperty UserUsername = new UserProperty("telegramUserId", PropertyType.Text)
         {
             EditorLabel = Texts.Telegram_UsernameLabel,
-            EditorDescription = Texts.Telegram_UsernameDescription,
+            EditorDescription = Texts.Telegram_UsernameDescription
         };
 
         public static readonly UserProperty UserChatId = new UserProperty("telegramChatId", PropertyType.Text)
         {
             EditorLabel = Texts.Telegram_ChatIdLabel,
-            EditorDescription = Texts.Telegram_ChatIdDescription,
+            EditorDescription = Texts.Telegram_ChatIdDescription
         };
 
         private static readonly IntegrationProperty AccessToken = new IntegrationProperty("accessToken", PropertyType.Text)
@@ -51,7 +51,7 @@ namespace Notifo.Domain.Integrations.Telegram
                 new List<UserProperty>
                 {
                     UserUsername,
-                    UserChatId,
+                    UserChatId
                 },
                 new HashSet<string>
                 {

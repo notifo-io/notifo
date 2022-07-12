@@ -107,7 +107,7 @@ namespace Notifo.Domain.Integrations.Telegram
             await userStore.UpsertAsync(app.Id, user.Id, new SetUserSystemProperty
             {
                 PropertyKey = TelegramIntegration.UserUsername.Name,
-                PropertyValue = chatId,
+                PropertyValue = chatId
             }, ct);
 
             await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
@@ -174,7 +174,7 @@ namespace Notifo.Domain.Integrations.Telegram
 
         private static bool IsUpdate(TelegramUpdate update)
         {
-            return update.Message?.Type == MessageType.Text && update.Message?.Text == "/update";
+            return update.Message is { Type: MessageType.Text, Text: "/update" };
         }
 
         private static async Task<TelegramUpdate> ParseUpdateAsync(Stream stream)
