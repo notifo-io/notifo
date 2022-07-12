@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AsSelf();
         }
 
-        public static InterfaceRegistrator<T> AsSchedulingHandler<T>(this InterfaceRegistrator<T> registrator) where T : notnull, IScheduleHandler<T>
+        public static InterfaceRegistrator<T> AsSchedulingHandler<T>(this InterfaceRegistrator<T> registrator) where T : IScheduleHandler<T>
         {
             return registrator.As<IScheduleHandler<T>>();
         }

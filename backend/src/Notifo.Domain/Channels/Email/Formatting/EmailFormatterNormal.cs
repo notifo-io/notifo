@@ -150,7 +150,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
                 Subject = subject,
                 ToEmail = user.EmailAddress!,
-                ToName = user.FullName,
+                ToName = user.FullName
             };
 
             return message;

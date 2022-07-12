@@ -108,7 +108,7 @@ namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
 
             try
             {
-                var isConfirmed = true;
+                bool isConfirmed;
 
                 if (Debugger.IsAttached)
                 {

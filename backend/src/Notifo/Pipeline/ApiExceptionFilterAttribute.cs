@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Localization;
 using Notifo.Areas.Api;
-using Squidex.Log;
 
 namespace Notifo.Pipeline
 {

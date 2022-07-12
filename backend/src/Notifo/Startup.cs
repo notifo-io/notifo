@@ -103,7 +103,7 @@ namespace Notifo
             services.AddMyJson(ConfigureJson);
             services.AddMyLog();
             services.AddMyMedia();
-            services.AddMyMessaging(config);
+            services.AddMessagingTransport(config);
             services.AddMyMessagingChannel();
             services.AddMyMobilePushChannel();
             services.AddMyNodaTime();
@@ -134,6 +134,7 @@ namespace Notifo
             services.IntegrateTwilio();
 
             services.AddInitializer();
+            services.AddBackgroundProcesses();
         }
 
         private static void ConfigureJson(JsonSerializerOptions options)

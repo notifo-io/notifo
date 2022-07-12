@@ -376,7 +376,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         private async Task CleanupAsync(UserNotification notification,
             CancellationToken ct)
         {
-            if (options.MaxItemsPerUser <= 0 || options.MaxItemsPerUser >= int.MaxValue)
+            if (options.MaxItemsPerUser is <= 0 or >= int.MaxValue)
             {
                 return;
             }
@@ -405,13 +405,11 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
         private static void AddStatusUpdateWrites(List<WriteModel<UserNotification>> writes, IEnumerable<TrackingToken> tokens, Instant now, string propertyName)
         {
-            foreach (var token in tokens.Where(x => x.IsValid))
+            foreach (var (guid, channel, deviceIdentifier) in tokens.Where(x => x.IsValid))
             {
-                var channel = token.Channel;
-
                 writes.Add(new UpdateOneModel<UserNotification>(
                     Filter.And(
-                        Filter.Eq(x => x.Id, token.Id),
+                        Filter.Eq(x => x.Id, guid),
                         Filter.Exists(propertyName, false)),
                     Update
                         .Set(x => x.FirstSeen, new HandledInfo(now, channel)).Max(x => x.Updated, now)));
@@ -420,14 +418,14 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 {
                     var update = Update.Min($"Channels.{channel}.{propertyName}", now);
 
-                    if (!string.IsNullOrWhiteSpace(token.DeviceIdentifier))
+                    if (!string.IsNullOrWhiteSpace(deviceIdentifier))
                     {
-                        update = update.Min($"Channels.{channel}.Status.{token.DeviceIdentifier.ToBase64()}.{propertyName}", now);
+                        update = update.Min($"Channels.{channel}.Status.{deviceIdentifier.ToBase64()}.{propertyName}", now);
                     }
 
                     writes.Add(new UpdateOneModel<UserNotification>(
                         Filter.And(
-                            Filter.Eq(x => x.Id, token.Id),
+                            Filter.Eq(x => x.Id, guid),
                             Filter.Exists($"Channels.{channel}")),
                         update));
                 }

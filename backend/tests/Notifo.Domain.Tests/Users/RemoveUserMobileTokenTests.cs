@@ -35,7 +35,7 @@ namespace Notifo.Domain.Users
                         token3
                     }
                     .Select(t => new MobilePushToken { Token = t })
-                    .ToReadonlyList(),
+                    .ToReadonlyList()
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
@@ -67,7 +67,7 @@ namespace Notifo.Domain.Users
                         token3
                     }
                     .Select(t => new MobilePushToken { Token = t })
-                    .ToReadonlyList(),
+                    .ToReadonlyList()
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
@@ -92,7 +92,7 @@ namespace Notifo.Domain.Users
                         token1
                     }
                     .Select(t => new MobilePushToken { Token = t })
-                    .ToReadonlyList(),
+                    .ToReadonlyList()
             };
 
             var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);

@@ -9,7 +9,7 @@ using NodaTime;
 
 namespace Notifo.Infrastructure.Scheduling
 {
-    public interface IScheduler<T>
+    public interface IScheduler<in T>
     {
         void Complete(string key);
 

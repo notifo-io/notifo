@@ -18,7 +18,7 @@ using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
-using IUserEventProducer = Notifo.Infrastructure.Messaging.IMessageProducer<Notifo.Domain.UserEvents.UserEventMessage>;
+using IUserEventBus = Squidex.Messaging.IMessageBus;
 
 namespace Notifo.Domain.UserEvents.Pipeline
 {
@@ -43,7 +43,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         private readonly ILogStore logStore;
         private readonly ISubscriptionStore subscriptionStore;
         private readonly ITemplateStore templateStore;
-        private readonly IUserEventProducer userEventProducer;
+        private readonly IUserEventBus userEventProducer;
         private readonly IUserStore userStore;
 
         public UserEventPublisher(ICounterService counters, ILogStore logStore,
@@ -51,7 +51,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
             ISubscriptionStore subscriptionStore,
             ITemplateStore templateStore,
             IUserStore userStore,
-            IUserEventProducer userEventProducer,
+            IUserEventBus userEventProducer,
             ILogger<UserEventPublisher> log,
             Randomizer randomizer)
         {
@@ -177,7 +177,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                         userEventMessage.UserEventActivity = activity.Context;
                     }
 
-                    await ProduceAsync(subscription, userEventMessage);
+                    await userEventProducer.PublishAsync(userEventMessage, subscription.UserId, default);
                     count++;
                 }
 
@@ -198,11 +198,6 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     @event.Id,
                     @event.Topic);
             }
-        }
-
-        private async Task ProduceAsync(Subscription subscription, UserEventMessage userEventMessage)
-        {
-            await userEventProducer.ProduceAsync(subscription.UserId, userEventMessage);
         }
 
         private async IAsyncEnumerable<Subscription> GetSubscriptions(EventMessage @event,

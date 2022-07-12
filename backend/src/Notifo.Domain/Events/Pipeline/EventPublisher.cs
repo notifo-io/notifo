@@ -10,22 +10,22 @@ using NodaTime;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
-using IEventProducer = Notifo.Infrastructure.Messaging.IMessageProducer<Notifo.Domain.Events.EventMessage>;
+using Squidex.Messaging;
 
 namespace Notifo.Domain.Events.Pipeline
 {
     public sealed class EventPublisher : IEventPublisher
     {
         private static readonly Duration MaxAge = Duration.FromHours(1);
-        private readonly IEventProducer producer;
+        private readonly IMessageBus messageBus;
         private readonly ILogStore logStore;
         private readonly ILogger<EventPublisher> log;
         private readonly IClock clock;
 
-        public EventPublisher(IEventProducer producer, ILogStore logStore,
+        public EventPublisher(IMessageBus messageBus, ILogStore logStore,
             ILogger<EventPublisher> log, IClock clock)
         {
-            this.producer = producer;
+            this.messageBus = messageBus;
             this.logStore = logStore;
             this.log = log;
             this.clock = clock;
@@ -67,18 +67,13 @@ namespace Notifo.Domain.Events.Pipeline
                     message.EventActivity = activity.Context;
                 }
 
-                await ProduceAsync(message);
+                await messageBus.PublishAsync(message, message.AppId, ct);
 
                 log.LogInformation("Received event for app {appId} with ID {id} to topic {topic}.",
                     message.AppId,
                     message.Id,
                     message.Topic);
             }
-        }
-
-        private async Task ProduceAsync(EventMessage message)
-        {
-            await producer.ProduceAsync(message.AppId, message);
         }
     }
 }

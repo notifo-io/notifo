@@ -8,7 +8,7 @@
 using System.Diagnostics;
 using Notifo.Domain.UserEvents;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Messaging;
+using Squidex.Messaging;
 
 namespace Notifo.Domain.Events.Pipeline
 {
@@ -22,7 +22,7 @@ namespace Notifo.Domain.Events.Pipeline
         }
 
         public async Task HandleAsync(EventMessage message,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             var links = message.Links();
 

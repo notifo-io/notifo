@@ -9,8 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.UserNotifications.MongoDb;
-using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Scheduling;
+using Squidex.Messaging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -22,7 +22,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.ConfigureAndValidate<UserNotificationsOptions>(config, "notifications");
 
-            services.AddMessaging<ConfirmMessage>(options.ChannelName);
+            services.AddMessaging(options.ChannelName, true);
+
+            services.Configure<MessagingOptions>(messaging =>
+            {
+                messaging.Routing.Add(x => x is ConfirmMessage, options.ChannelName);
+            });
 
             services.AddSingletonAs<UserNotificationStore>()
                 .As<IUserNotificationStore>();
@@ -31,7 +36,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .As<IUserNotificationFactory>();
 
             services.AddSingletonAs<UserNotificationService>()
-                .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler<ConfirmMessage>>();
+                .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler>();
 
             services.AddScheduler<UserEventMessage>("UserNotifications");
         }

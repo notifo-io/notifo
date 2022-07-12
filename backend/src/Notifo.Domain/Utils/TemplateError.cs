@@ -36,7 +36,7 @@ namespace Notifo.Domain.Utils
 
             var parts = message[(startIndex + 4)..endIndex].Split(':');
 
-            if (parts.Length < 1 || parts.Length > 2)
+            if (parts.Length is < 1 or > 2)
             {
                 return new TemplateError(message);
             }

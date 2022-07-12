@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Notifo.Pipeline
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public sealed class AllowSynchronousIOAttribute : ActionFilterAttribute
     {
         public override void OnResultExecuting(ResultExecutingContext context)

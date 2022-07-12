@@ -15,8 +15,8 @@ using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Texts;
+using Squidex.Messaging;
 using Xunit;
 
 namespace Notifo.Domain.UserEvents.Pipeline
@@ -28,7 +28,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
         private readonly ICounterService counters = A.Fake<ICounterService>();
         private readonly IEventStore eventStore = A.Fake<IEventStore>();
         private readonly ILogStore logStore = A.Fake<ILogStore>();
-        private readonly IMessageProducer<UserEventMessage> producer = A.Fake<IMessageProducer<UserEventMessage>>();
+        private readonly IMessageBus messageBus = A.Fake<IMessageBus>();
         private readonly ISubscriptionStore subscriptionStore = A.Fake<ISubscriptionStore>();
         private readonly ITemplateStore templateStore = A.Fake<ITemplateStore>();
         private readonly IUserStore userStore = A.Fake<IUserStore>();
@@ -40,12 +40,12 @@ namespace Notifo.Domain.UserEvents.Pipeline
         {
             ct = cts.Token;
 
-            A.CallTo(() => producer.ProduceAsync(A<string>._, A<UserEventMessage>._, A<CancellationToken>._))
-                .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(1)!));
+            A.CallTo(() => messageBus.PublishAsync(A<UserEventMessage>._, A<string>._, A<CancellationToken>._))
+                .Invokes(call => publishedUserEvents.Add(call.GetArgument<UserEventMessage>(0)!));
 
             var log = A.Fake<ILogger<UserEventPublisher>>();
 
-            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, producer, log, randomizer);
+            sut = new UserEventPublisher(counters, logStore, eventStore, subscriptionStore, templateStore, userStore, messageBus, log, randomizer);
         }
 
         [Fact]
@@ -179,7 +179,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Topic = @event.Topic,
                     TopicPrefix = subscriptions[1].TopicPrefix,
                     UserId = subscriptions[1].UserId
-                }, @event),
+                }, @event)
             });
 
             A.CallTo(() => eventStore.InsertAsync(@event, ct))
@@ -262,7 +262,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                     Topic = @event.Topic,
                     TopicPrefix = "users/123",
                     UserId = "123"
-                }, @event),
+                }, @event)
             });
 
             A.CallTo(() => logStore.LogAsync(A<string>._, A<string>._))
@@ -529,7 +529,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                         ["de"] = "Test"
                     }
                 },
-                IsAutoCreated = isAutoCreated,
+                IsAutoCreated = isAutoCreated
             };
         }
 
@@ -549,7 +549,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 {
                     ["property1"] = "value1"
                 },
-                Topic = "updates/stort",
+                Topic = "updates/stort"
             };
         }
     }

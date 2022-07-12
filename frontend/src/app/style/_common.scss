@@ -813,6 +813,14 @@ div {
     max-width: 500px;
 }
 
+.bs-popover-left,
+.bs-popover-auto[x-placement^='left'] {
+    & > .arrow {
+        margin: 0 0 .3rem;
+        margin-right: .1rem;
+    }
+}
+
 .text-sm {
     font-size: $font-size-sm;
 }

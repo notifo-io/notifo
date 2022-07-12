@@ -218,7 +218,7 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 
             var query = httpContext.Request.Query;
 
-            foreach (var (key, value) in httpContext.Request.Query)
+            foreach (var (key, value) in query)
             {
                 result.Query[key] = value;
             }

@@ -72,7 +72,7 @@ namespace Notifo.Domain.ChannelTemplates.MongoDb
                                 .Include(x => x.Doc.Primary))
                         .ToListAsync(ct);
 
-                string? id = null;
+                string? id;
 
                 if (!string.IsNullOrWhiteSpace(name))
                 {

@@ -125,14 +125,7 @@ namespace Notifo.Domain.Integrations.MessageBird
                 return sms;
             }
 
-            var messaging = CreateMessaging(serviceType, id, configured, serviceProvider);
-
-            if (messaging != null)
-            {
-                return messaging;
-            }
-
-            return null;
+            return CreateMessaging(serviceType, id, configured, serviceProvider);
         }
 
         private ISmsSender? CreateSms(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)

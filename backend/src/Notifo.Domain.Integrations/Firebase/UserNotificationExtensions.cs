@@ -76,7 +76,7 @@ namespace Notifo.Domain.Integrations.Firebase
                 ["apns-push-type"] = "alert"
             };
 
-            if (notification.TimeToLiveInSeconds is int timeToLive)
+            if (notification.TimeToLiveInSeconds is { } timeToLive)
             {
                 androidConfig.TimeToLive = TimeSpan.FromSeconds(timeToLive);
 

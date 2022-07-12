@@ -15,8 +15,8 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Messaging;
 using Notifo.Infrastructure.Scheduling;
+using Squidex.Messaging;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
 namespace Notifo.Domain.UserNotifications
@@ -28,7 +28,7 @@ namespace Notifo.Domain.UserNotifications
         private readonly IEnumerable<ICommunicationChannel> channels;
         private readonly ILogger<UserNotificationService> log;
         private readonly ILogStore logStore;
-        private readonly IMessageProducer<ConfirmMessage> confirmProducer;
+        private readonly IMessageBus messageBus;
         private readonly IUserEventQueue userEventQueue;
         private readonly IUserNotificationFactory userNotificationFactory;
         private readonly IUserNotificationStore userNotificationsStore;
@@ -36,12 +36,12 @@ namespace Notifo.Domain.UserNotifications
 
         public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
             IAppStore appStore,
-            ILogStore logStore,
-            IMessageProducer<ConfirmMessage> confirmProducer,
+            IMessageBus messageBus,
             IUserEventQueue userEventQueue,
             IUserNotificationFactory userNotificationFactory,
             IUserNotificationStore userNotificationsStore,
             IUserStore userStore,
+            ILogStore logStore,
             ILogger<UserNotificationService> log,
             IClock clock)
         {
@@ -49,7 +49,7 @@ namespace Notifo.Domain.UserNotifications
             this.channels = channels;
             this.log = log;
             this.logStore = logStore;
-            this.confirmProducer = confirmProducer;
+            this.messageBus = messageBus;
             this.userEventQueue = userEventQueue;
             this.userNotificationFactory = userNotificationFactory;
             this.userNotificationsStore = userNotificationsStore;
@@ -221,7 +221,7 @@ namespace Notifo.Domain.UserNotifications
         }
 
         public async Task HandleAsync(ConfirmMessage message,
-            CancellationToken ct = default)
+            CancellationToken ct)
         {
             var notification = await userNotificationsStore.TrackConfirmedAsync(message.Token, ct);
 
@@ -273,7 +273,7 @@ namespace Notifo.Domain.UserNotifications
                 return;
             }
 
-            await confirmProducer.ProduceAsync(token.ToString(), new ConfirmMessage { Token = token });
+            await messageBus.PublishAsync(new ConfirmMessage { Token = token }, token.ToString());
         }
 
         public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens)
