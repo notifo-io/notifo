@@ -7,13 +7,13 @@
 
 using Notifo.SDK;
 using TestSuite.Fixtures;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
 
 namespace TestSuite.ApiTests
 {
+    [UsesVerify]
     public class AppTests : IClassFixture<ClientFixture>
     {
         public ClientFixture _ { get; }
@@ -49,6 +49,11 @@ namespace TestSuite.ApiTests
             var app_1 = await _.Client.Apps.GetAppAsync(app_0.Id);
 
             Assert.Equal(app_1.Name, appName);
+
+            await Verify(app_1)
+                .IgnoreMembersWithType<DateTimeOffset>()
+                .IgnoreMembers<AppDto>(x => x.ApiKeys)
+                .IgnoreMembers<AppDetailsDto>(x => x.ApiKeys);
         }
     }
 }

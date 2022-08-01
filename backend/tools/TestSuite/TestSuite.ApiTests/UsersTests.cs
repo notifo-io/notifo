@@ -7,13 +7,13 @@
 
 using Notifo.SDK;
 using TestSuite.Fixtures;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Id should not contain multiple blank lines in a row
 
 namespace TestSuite.ApiTests
 {
+    [UsesVerify]
     public class UsersTests : IClassFixture<CreatedAppFixture>
     {
         public CreatedAppFixture _ { get; set; }
@@ -58,6 +58,10 @@ namespace TestSuite.ApiTests
             Assert.Equal(userId2, user2.Id);
             Assert.Equal("name1_0", user1.FullName);
             Assert.Equal("name2_0", user2.FullName);
+
+            await Verify(user1)
+                .IgnoreMembersWithType<DateTimeOffset>()
+                .IgnoreMember<UserDto>(x => x.ApiKey);
         }
 
         [Fact]
@@ -92,6 +96,10 @@ namespace TestSuite.ApiTests
 
             Assert.Equal(1, users.Total);
             Assert.Equal(userId1, users.Items[0].Id);
+
+            await Verify(users)
+                .IgnoreMembersWithType<DateTimeOffset>()
+                .IgnoreMember<UserDto>(x => x.ApiKey);
         }
 
         [Fact]
@@ -145,6 +153,10 @@ namespace TestSuite.ApiTests
 
             Assert.Equal("name1_1", user1?.FullName);
             Assert.Equal("name2_0", user2?.FullName);
+
+            await Verify(user1)
+                .IgnoreMembersWithType<DateTimeOffset>()
+                .IgnoreMember<UserDto>(x => x.ApiKey);
         }
 
         [Fact]

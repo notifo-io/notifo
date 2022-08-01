@@ -6,25 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\SampleImage_BMP_3MB - Copy.bmp" />
-    <None Remove="Assets\SampleImage_GIF_500kb - Copy.gif" />
-    <None Remove="Assets\SampleImage_JPG_200kb - Copy.jpg" />
-    <None Remove="Assets\SampleImage_PNG_1mb - Copy.png" />
-    <None Remove="Assets\SampleImage_TGA_2mb - Copy.tga" />
-    <None Remove="Assets\SampleImage_WEBP_350kb - Copy.webp" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.701">
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.708">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="NSwag.Core" Version="13.15.10" />
-    <PackageReference Include="Squidex.Assets" Version="3.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="NSwag.Core" Version="13.16.1" />
+    <PackageReference Include="Squidex.Assets" Version="3.6.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+    <PackageReference Include="Verify.Xunit" Version="17.5.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

@@ -7,13 +7,13 @@
 
 using Notifo.SDK;
 using TestSuite.Fixtures;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
 
 namespace TestSuite.ApiTests
 {
+    [UsesVerify]
     public class TemplatesTests : IClassFixture<CreatedAppFixture>
     {
         public CreatedAppFixture _ { get; set; }
@@ -70,6 +70,9 @@ namespace TestSuite.ApiTests
             Assert.Equal(templateCode2, template2.Code);
             Assert.Equal("subject1_0", template1.Formatting.Subject["en"]);
             Assert.Equal("subject2_0", template2.Formatting.Subject["en"]);
+
+            await Verify(template1)
+                .IgnoreMembersWithType<DateTimeOffset>();
         }
 
         [Fact]
@@ -141,6 +144,9 @@ namespace TestSuite.ApiTests
 
             Assert.Equal("subject1_1", template1?.Formatting.Subject["en"]);
             Assert.Equal("subject2_0", template2?.Formatting.Subject["en"]);
+
+            await Verify(template1)
+                .IgnoreMembersWithType<DateTimeOffset>();
         }
 
         [Fact]

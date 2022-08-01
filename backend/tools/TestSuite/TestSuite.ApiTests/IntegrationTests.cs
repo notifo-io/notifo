@@ -7,12 +7,12 @@
 
 using Notifo.SDK;
 using TestSuite.Fixtures;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 
 namespace TestSuite.ApiTests
 {
+    [UsesVerify]
     public class IntegrationTests : IClassFixture<CreatedAppFixture>
     {
         public CreatedAppFixture _ { get; set; }
@@ -42,6 +42,9 @@ namespace TestSuite.ApiTests
             var integration = await _.Client.Apps.PostIntegrationAsync(_.AppId, emailIntegrationRequest);
 
             Assert.True(integration.Integration.Enabled);
+
+            await Verify(integration)
+                .IgnoreMembersWithType<DateTimeOffset>();
         }
     }
 }

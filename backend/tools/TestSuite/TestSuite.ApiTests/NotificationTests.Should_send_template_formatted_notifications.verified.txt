@@ -1,0 +1,14 @@
+﻿[
+  {
+    isSeen: false,
+    isConfirmed: false,
+    id: Guid_1,
+    subject: Guid_2,
+    silent: false,
+    body: ,
+    imageSmall: ,
+    imageLarge: ,
+    linkUrl: ,
+    linkText: 
+  }
+]

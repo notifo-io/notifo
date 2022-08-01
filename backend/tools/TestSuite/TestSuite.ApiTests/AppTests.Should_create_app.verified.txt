@@ -1,0 +1,8 @@
+﻿{
+  id: Guid_1,
+  name: Guid_2,
+  role: Owner,
+  languages: [
+    en
+  ]
+}

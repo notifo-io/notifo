@@ -7,19 +7,21 @@
 
 using Notifo.SDK;
 using TestSuite.Fixtures;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
 
 namespace TestSuite.ApiTests
 {
+    [UsesVerify]
     public class NotificationTests : IClassFixture<CreatedAppFixture>
     {
         public CreatedAppFixture _ { get; set; }
 
         public NotificationTests(CreatedAppFixture fixture)
         {
+            VerifierSettings.DontScrubDateTimes();
+
             _ = fixture;
         }
 
@@ -73,6 +75,12 @@ namespace TestSuite.ApiTests
             var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsyn(null, TimeSpan.FromSeconds(30));
 
             Assert.Contains(userNotifications, x => x.Subject == subjectId);
+
+            await Verify(userNotifications)
+                .IgnoreMembersWithType<DateTimeOffset>()
+                .IgnoreMember<UserNotificationBaseDto>(x => x.TrackingToken)
+                .IgnoreMember<UserNotificationBaseDto>(x => x.TrackDeliveredUrl)
+                .IgnoreMember<UserNotificationBaseDto>(x => x.TrackSeenUrl);
         }
 
         [Fact]
@@ -143,6 +151,12 @@ namespace TestSuite.ApiTests
             var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsyn(null, TimeSpan.FromSeconds(30));
 
             Assert.Contains(userNotifications, x => x.Subject == subjectId);
+
+            await Verify(userNotifications)
+                .IgnoreMembersWithType<DateTimeOffset>()
+                .IgnoreMember<UserNotificationBaseDto>(x => x.TrackingToken)
+                .IgnoreMember<UserNotificationBaseDto>(x => x.TrackDeliveredUrl)
+                .IgnoreMember<UserNotificationBaseDto>(x => x.TrackSeenUrl);
         }
     }
 }
