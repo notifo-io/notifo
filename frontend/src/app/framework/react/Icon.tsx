@@ -22,6 +22,8 @@ export type IconType =
     'expand_more' |
     'extension' |
     'file_copy' |
+    'fullscreen' |
+    'fullscreen_exit' |
     'history' |
     'hourglass_empty' |
     'integration' |

@@ -305,6 +305,12 @@ $small-gutters: 4px;
     color: $color-primary;
 }
 
+.btn-icon {
+    font-size: 1.25rem;
+    padding-top: .2rem;
+    padding-bottom: .2rem;
+}
+
 .card {
     &-title {
         font-size: 1rem;

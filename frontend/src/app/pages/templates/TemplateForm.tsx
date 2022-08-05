@@ -5,13 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import classNames from 'classnames';
 import { Formik } from 'formik';
 import * as React from 'react';
 import { PushPreviewTarget } from 'react-push-preview';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Row, UncontrolledButtonDropdown } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Forms, Loader, Types } from '@app/framework';
+import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -78,11 +79,16 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const appLanguages = app.languages;
     const upserting = useTemplates(x => x.upserting);
     const upsertingError = useTemplates(x => x.upsertingError);
+    const [fullscreen, setFullscreen] = React.useState<boolean>(false);
     const [target, setTarget] = React.useState<PushPreviewTarget>('Notifo');
 
     const doPublish = React.useCallback((params: TemplateDto) => {
         dispatch(upsertTemplate({ appId, params }));
     }, [dispatch, appId]);
+
+    const doToggleFullscreen = React.useCallback(() => {
+        setFullscreen(x => !x);
+    }, []);
 
     const initialValues: any = React.useMemo(() => {
         const result: Partial<TemplateDto> = Types.clone(template || {});
@@ -99,7 +105,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     return (
         <Formik<TemplateDto> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
             {({ handleSubmit, values }) => (
-                <Card className='template-form slide-right'>
+                <Card className={classNames('template-form', 'slide-right', { fullscreen })}>
                     <CardHeader>
                         <Row className='align-items-center'>
                             <Col>
@@ -110,9 +116,18 @@ export const TemplateForm = (props: TemplateFormProps) => {
                                 )}
                             </Col>
                             <Col xs='auto'>
-                                <button type="button" className="close" onClick={onClose}>
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
+                                <Button type='submit' color='success' disabled={upserting}>
+                                    <Loader light small visible={upserting} /> {texts.common.save}
+                                </Button>
+                            </Col>
+                            <Col xs='auto'>
+                                <Button type="button" color='icon' className='btn-flat' onClick={doToggleFullscreen}>
+                                    <Icon type={fullscreen ? 'fullscreen_exit' : 'fullscreen'} />
+                                </Button>
+
+                                <Button type="button" color='icon' className='btn-flat' onClick={onClose}>
+                                    <Icon type='clear' />
+                                </Button>
                             </Col>
                         </Row>
                     </CardHeader>
@@ -121,6 +136,8 @@ export const TemplateForm = (props: TemplateFormProps) => {
                         <Row className='template-form-inner'>
                             <Col xs='auto'>
                                 <Form onSubmit={handleSubmit}>
+                                    <FormError error={upsertingError} />
+
                                     <fieldset disabled={upserting}>
                                         <Forms.Text name='code' vertical
                                             label={texts.common.code} />
@@ -134,12 +151,6 @@ export const TemplateForm = (props: TemplateFormProps) => {
 
                                     <NotificationsForm.Settings
                                         field='settings' disabled={upserting} />
-
-                                    <FormError error={upsertingError} />
-
-                                    <Button type='submit' color='success' disabled={upserting}>
-                                        <Loader light small visible={upserting} /> {texts.common.save}
-                                    </Button>
                                 </Form>
                             </Col>
                             <Col xs='auto'>
