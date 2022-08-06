@@ -120,7 +120,7 @@ fieldset {
         margin-top: 2rem;
     }
 
-    .btn-group {
+    .localized-languages {
         @include absolute(0, 0, null, null);
     }
 
@@ -139,6 +139,28 @@ fieldset {
 
 .no-padding {
     padding: 0 !important;
+}
+
+.overlay {
+    & {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 0;
+        z-index: 10000;
+    }
+
+    &-target {
+        display: inline-block;
+    }
+
+    .dropdown-menu {
+        background: $color-white;
+        display: block;
+        outline-style: none;
+        overflow-x: visible;
+        overflow-y: auto;
+        position: static;
+    }
 }
 
 //

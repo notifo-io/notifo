@@ -6,7 +6,8 @@
  */
 
 import * as React from 'react';
-import { Button, ButtonGroup, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from 'reactstrap';
+import { Button, ButtonGroup, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
+import { OverlayDropdown } from './OverlayDropdown';
 
 export interface LanguageSelectorProps {
     // The color.
@@ -36,18 +37,19 @@ export const LanguageSelector = (props: LanguageSelectorProps) => {
     const color = props.color || 'secondary';
 
     return languages.length > 4 ? (
-        <UncontrolledButtonDropdown>
+        <OverlayDropdown button={
             <DropdownToggle color={color} size={size || 'sm'} outline caret>
                 {language}
             </DropdownToggle>
-            <DropdownMenu right>
+        }>
+            <DropdownMenu>
                 {languages.map(l => (
                     <DropdownItem key={l} onClick={() => onSelect && onSelect(l)}>
                         {l}
                     </DropdownItem>
                 ))}
             </DropdownMenu>
-        </UncontrolledButtonDropdown>
+        </OverlayDropdown>
     ) : (
         <ButtonGroup color={color} size={size || 'sm'}>
             {languages.map(l => (

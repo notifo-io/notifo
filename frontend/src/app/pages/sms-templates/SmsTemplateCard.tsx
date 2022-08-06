@@ -7,8 +7,8 @@
 
 import * as React from 'react';
 import { match, NavLink } from 'react-router-dom';
-import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap';
-import { Confirm, FormatDate, Icon } from '@app/framework';
+import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
+import { Confirm, FormatDate, Icon, OverlayDropdown } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { texts } from '@app/texts';
 import { combineUrl } from '@sdk/shared';
@@ -53,16 +53,17 @@ export const SmsTemplateCard = (props: SmsTemplateCardProps) => {
 
                     <Confirm onConfirm={doDelete} text={texts.emailTemplates.confirmDelete}>
                         {({ onClick }) => (
-                            <UncontrolledDropdown>
+                            <OverlayDropdown button={
                                 <DropdownToggle size='sm' nav>
                                     <Icon type='more' />
                                 </DropdownToggle>
-                                <DropdownMenu right>
+                            }>
+                                <DropdownMenu>
                                     <DropdownItem onClick={onClick}>
                                         {texts.common.delete}
                                     </DropdownItem>
                                 </DropdownMenu>
-                            </UncontrolledDropdown>
+                            </OverlayDropdown>
                         )}
                     </Confirm>
                 </CardBody>

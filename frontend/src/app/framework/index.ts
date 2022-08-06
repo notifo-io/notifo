@@ -26,6 +26,7 @@ export * from './react/Loader';
 export * from './react/LoadScript';
 export * from './react/ListPager';
 export * from './react/ListSearch';
+export * from './react/OverlayDropdown';
 export * from './react/PasswordInput';
 export * from './react/Shortcut';
 export * from './react/Title';

@@ -25,7 +25,7 @@ const FormSchema = Yup.object().shape({
         .label(texts.common.languages).min(1, texts.validation.minFn),
 
     // Valid URL
-    confirmUrl: Yup.string()
+    confirmUrl: Yup.string().nullable()
         .label(texts.app.confirmUrl).urlI18n(),
 });
 

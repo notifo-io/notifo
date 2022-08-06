@@ -1,25 +1,18 @@
-/*
- * Notifo.io
- *
- * @license
- * Copyright (c) Sebastian Stehle. All rights reserved.
- */
-
 import * as React from 'react';
 
 export interface ClickOutsideProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
     // When clicked outside.
-    onClickOutside: () => any;
+    onClickOutside: (event: MouseEvent) => any;
 
     // Indicates whether the outside click handler is active.
-    disabled?: boolean | null;
+    isActive?: boolean | null;
 
     // The children.
     children: React.ReactNode;
 }
 
 export const ClickOutside = React.memo((props: ClickOutsideProps) => {
-    const { children, disabled, onClickOutside, ...other } = props;
+    const { children, isActive, onClickOutside, ...other } = props;
 
     const container = React.useRef<HTMLDivElement>();
 
@@ -30,11 +23,11 @@ export const ClickOutside = React.memo((props: ClickOutsideProps) => {
     React.useEffect(() => {
         const onClick = (event: MouseEvent) => {
             if (container.current && !container.current.contains(event.target as any)) {
-                onClickOutside();
+                onClickOutside(event);
             }
         };
 
-        if (!disabled) {
+        if (isActive) {
             document.addEventListener('click', onClick, true);
 
             return () => {
@@ -43,7 +36,7 @@ export const ClickOutside = React.memo((props: ClickOutsideProps) => {
         }
 
         return undefined;
-    }, [disabled, onClickOutside]);
+    }, [isActive, onClickOutside]);
 
     return (
         <div {...other} ref={setContainer}>

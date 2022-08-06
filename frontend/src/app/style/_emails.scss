@@ -99,7 +99,7 @@ $size-email-header: 5rem;
         margin-top: .25rem;
     }
 
-    .dropdown {
+    .overlay-target {
         @include absolute(.5rem, .75rem);
     }
 }

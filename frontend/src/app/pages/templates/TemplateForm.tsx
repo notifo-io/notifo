@@ -10,9 +10,9 @@ import { Formik } from 'formik';
 import * as React from 'react';
 import { PushPreviewTarget } from 'react-push-preview';
 import { useDispatch } from 'react-redux';
-import { Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Row, UncontrolledButtonDropdown } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
+import { FormError, Forms, Icon, Loader, OverlayDropdown, Types } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -31,7 +31,9 @@ const FormSchema = Yup.object({
     }),
 });
 
-const ALL_TARGETS: { target: PushPreviewTarget; label: string }[] = [{
+type PushPreviewOption = { target: PushPreviewTarget; label: string };
+
+const ALL_TARGETS: PushPreviewOption[] = [{
     target: 'Notifo',
     label: 'Notifo',
 }, {
@@ -80,7 +82,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const upserting = useTemplates(x => x.upserting);
     const upsertingError = useTemplates(x => x.upsertingError);
     const [fullscreen, setFullscreen] = React.useState<boolean>(false);
-    const [target, setTarget] = React.useState<PushPreviewTarget>('Notifo');
+    const [target, setTarget] = React.useState<PushPreviewOption>(ALL_TARGETS[0]);
 
     const doPublish = React.useCallback((params: TemplateDto) => {
         dispatch(upsertTemplate({ appId, params }));
@@ -155,20 +157,25 @@ export const TemplateForm = (props: TemplateFormProps) => {
                             </Col>
                             <Col xs='auto'>
                                 <div className='template-form-preview sticky-top'>
-                                    <NotificationPreview formatting={values?.formatting} language={language} target={target}></NotificationPreview>
+                                    <Label>{texts.common.preview}</Label>
 
-                                    <UncontrolledButtonDropdown>
-                                        <DropdownToggle color='primary' outline caret>
-                                            {target}
-                                        </DropdownToggle>
-                                        <DropdownMenu right>
-                                            {ALL_TARGETS.map(x =>
-                                                <DropdownItem key={x.target} onClick={() => setTarget(x.target)}>
-                                                    {x.label}
-                                                </DropdownItem>,
-                                            )}
-                                        </DropdownMenu>
-                                    </UncontrolledButtonDropdown>
+                                    <NotificationPreview formatting={values?.formatting} language={language} target={target.target}></NotificationPreview>
+
+                                    <div className='text-center'>
+                                        <OverlayDropdown button={
+                                            <DropdownToggle color='primary' outline caret>
+                                                {target.label}
+                                            </DropdownToggle>
+                                        }>
+                                            <DropdownMenu>
+                                                {ALL_TARGETS.map(x =>
+                                                    <DropdownItem key={x.target} onClick={() => setTarget(x)}>
+                                                        {x.label}
+                                                    </DropdownItem>,
+                                                )}
+                                            </DropdownMenu>
+                                        </OverlayDropdown>
+                                    </div>
                                 </div>
                             </Col>
                         </Row>

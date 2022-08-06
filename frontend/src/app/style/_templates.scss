@@ -12,7 +12,7 @@
     @include box-shadow-outer(-2px, 0, 4px, .05);
     border: 0;
     border-radius: 0;
-    max-width: 70%;
+    max-width: 80%;
 
     &.fullscreen {
         @include fixed($size-header, 0, 0, $size-sidebar);
@@ -45,12 +45,18 @@
         form {
             max-width: 700px;
         }
-    }
 
-    &-preview {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        text-align: center;
+        .col-auto {
+            &:first-child {
+                border-right: 1px solid $color-border;
+                padding-left: 15px;
+                padding-right: 3rem;
+            }
+
+            &:last-child {
+                padding-left: 3rem;
+            }
+        }
     }
 
     .preview-container {
@@ -60,5 +66,6 @@
         margin-bottom: 1rem;
         width: 600px;
         text-align: left;
+        text-decoration: none;
     }
 }

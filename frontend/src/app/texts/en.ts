@@ -134,6 +134,7 @@ export const EN = {
         passwordsDoNotMatch: 'Passwords doe not match.',
         pending: 'Pending',
         phoneNumber: 'Phone Number',
+        preview: 'Preview',
         primary: 'Primary',
         prio: 'Prio',
         profile: 'Profile',

@@ -506,10 +506,12 @@ const InputLocalizedText = (props: LocalizedFormProps) => {
         <div className='localized-input'>
             <Forms.Error name={name} />
 
-            <LanguageSelector
-                languages={languages}
-                language={language}
-                onSelect={onLanguageSelect} />
+            <div className='localized-languages'>
+                <LanguageSelector
+                    languages={languages}
+                    language={language}
+                    onSelect={onLanguageSelect} />
+            </div>
 
             <InputText {...other} name={fieldName} />
         </div>
