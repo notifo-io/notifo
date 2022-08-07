@@ -41,10 +41,12 @@ export const MediaInput = (props: LocalizedFormProps) => {
     return (
         <Forms.Row className='localized-value' {...props}>
             <div className='input-container localized-input'>
-                <LanguageSelector
-                    languages={languages}
-                    language={language}
-                    onSelect={onLanguageSelect} />
+                <div className='localized-languages'>
+                    <LanguageSelector
+                        languages={languages}
+                        language={language}
+                        onSelect={onLanguageSelect} />
+                </div>
 
                 <Input type='text' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                     onChange={field.onChange}

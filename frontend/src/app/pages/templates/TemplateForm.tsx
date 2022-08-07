@@ -151,6 +151,8 @@ export const TemplateForm = (props: TemplateFormProps) => {
                                         languages={appLanguages}
                                         field='formatting' disabled={upserting} />
 
+                                    <hr />
+
                                     <NotificationsForm.Settings
                                         field='settings' disabled={upserting} />
                                 </Form>

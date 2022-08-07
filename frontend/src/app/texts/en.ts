@@ -27,6 +27,7 @@ export const EN = {
     apps: {
         createButton: 'New App',
         createHeader: 'Create new App',
+        createInfo: 'The name is used in the UI and can be changed later.',
         header: 'Apps',
         notFound: 'App not found',
     },
@@ -268,6 +269,7 @@ export const EN = {
             send: 'Send as Mobile Push',
             title: 'Mobile Push',
         },
+        settingsInfo: 'Notification settings will be merged in the following order:\n\n1. User settings.\n2. Overridden by topic settings.\n3. Overriden by notification settings.',
         sms: {
             name: 'SMS',
             send: 'Send as SMS',

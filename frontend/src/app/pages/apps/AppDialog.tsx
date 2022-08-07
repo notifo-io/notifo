@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Forms, Loader } from '@app/framework';
+import { FormAlert, FormError, Forms, Loader } from '@app/framework';
 import { createApp, CreateAppParams, createAppReset, useApps } from '@app/state';
 import { texts } from '@app/texts';
 
@@ -69,6 +69,8 @@ export const AppDialog = (props: AppDialogProps) => {
                         </ModalHeader>
 
                         <ModalBody>
+                            <FormAlert text={texts.apps.createInfo} />
+                            
                             <fieldset className='mt-3' disabled={creating}>
                                 <Forms.Text name='name' vertical
                                     label={texts.common.name} />

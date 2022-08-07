@@ -391,9 +391,28 @@ $small-gutters: 4px;
 }
 
 .alert {
+    position: relative;
+
     ul {
         margin-bottom: 0;
         margin-top: .5rem;
+    }
+
+    p {
+        margin-bottom: .25rem;
+    }
+
+    p:last-child {
+        margin: 0;
+    }
+
+    &-form {
+        padding-left: 4rem;
+
+        & > i {
+            @include absolute(1rem, null, null, 1rem);
+            font-size: 1.75rem;
+        }
     }
 }
 

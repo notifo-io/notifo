@@ -8,7 +8,7 @@
 import { useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Col, CustomInput, Row } from 'reactstrap';
-import { FormEditorProps, Forms, isErrorVisible, Types } from '@app/framework';
+import { FormAlert, FormEditorProps, Forms, isErrorVisible, Types } from '@app/framework';
 import { texts } from '@app/texts';
 import { CHANNELS, CONDITION_MODES, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { EmailTemplateInput } from './EmailTemplateInput';
@@ -86,6 +86,8 @@ export module NotificationsForm {
 
         return (
             <>
+                <FormAlert text={texts.notificationSettings.settingsInfo} />
+
                 <fieldset disabled={disabled}>
                     <legend>{texts.common.rules}</legend>
 

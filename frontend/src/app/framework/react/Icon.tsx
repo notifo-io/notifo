@@ -26,6 +26,7 @@ export type IconType =
     'fullscreen_exit' |
     'history' |
     'hourglass_empty' |
+    'info_outline' |
     'integration' |
     'keyboard_arrow_down' |
     'keyboard_arrow_left' |
