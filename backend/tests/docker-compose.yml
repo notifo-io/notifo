@@ -39,7 +39,7 @@ services:
       - MESSAGING__GOOGLEPUBSUB__PROJECTID=squidex-157415
       - GOOGLE_APPLICATION_CREDENTIALS=/var/lib/notifo/secrets/keyfile.json
     volumes:
-      - secrets:/var/lib/notifo/secrets
+      - -/secrets:/var/lib/notifo/secrets
     networks:
       - internal
     depends_on:
@@ -67,9 +67,6 @@ services:
       - "1080:1080"
     networks:
       - internal
-    
-volumes:
-  secrets:
 
 networks:
   internal:
