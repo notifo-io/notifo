@@ -7,13 +7,13 @@ services:
     networks:
       - internal
 
-  notifo:
-    image: notifo
+  notifo1:
+    image: squidex/notifo:dev-1074
     ports:
       - "8080:80"
     environment:
       - URLS__BASEURL=http://localhost:8080
-      - ASSETS__RESIZERURL=http://resizer
+      - ASSETS__RESIZERURL=http://resizer:9000
       - IDENTITY__ADMINCLIENTID=root
       - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
@@ -23,10 +23,32 @@ services:
     depends_on:
       - mongo
 
+  notifo2:
+    image: squidex/notifo:dev-1074
+    ports:
+      - "8081:80"
+    environment:
+      - URLS__BASEURL=http://localhost:8081
+      - ASSETS__RESIZERURL=http://resizer:9000
+      - IDENTITY__ADMINCLIENTID=root
+      - IDENTITY__ADMINCLIENTSECRET=xeLd6jFxqbXJrfmNLlO2j1apagGGGSyZJhFnIuHp4I0=
+      - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
+      - STORAGE__TYPE=MongoDB
+      - MESSAGING__TYPE=GooglePubSub
+      - MESSAGING__GOOGLEPUBSUB__PREFIX=ci-
+      - MESSAGING__GOOGLEPUBSUB__PROJECTID=squidex-157415
+      - GOOGLE_APPLICATION_CREDENTIALS=/var/lib/notifo/secrets/keyfile.json
+    volumes:
+      - ./secrets:/var/lib/notifo/secrets
+    networks:
+      - internal
+    depends_on:
+      - mongo
+
   resizer:
     image: squidex/resizer:dev-40
     ports:
-      - "8081:80"
+      - "9000:80"
     networks:
       - internal
 
@@ -45,7 +67,7 @@ services:
       - "1080:1080"
     networks:
       - internal
-    
+
 networks:
   internal:
     driver: bridge
