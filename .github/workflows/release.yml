@@ -73,10 +73,19 @@ jobs:
       - name: Load Image
         run: docker load < notifo-tmp.tar.gz
 
-      - name: Replace Image Name
+      - name: Replace Image Name1
         uses: mikefarah/yq@v4.9.1
         with:
-          cmd: yq e '.services.notifo.image = "notifo-tmp"' -i backend/tests/docker-compose.yml
+          cmd: yq e '.services.notifo1.image = "notifo-tmp"' -i backend/tests/docker-compose.yml
+
+      - name: Replace Image Name2
+        uses: mikefarah/yq@v4.9.1
+        with:
+          cmd: yq e '.services.notifo2.image = "notifo-tmp"' -i backend/tests/docker-compose.yml
+
+      - name: Inject Google Credentials
+        run: mkdir secrets && echo "${{ secrets.GOOGLE__KEYFILE }}" >| secrets/keyfile.json
+        working-directory: backend/tests
 
       - name: Start Test
         run: docker-compose up -d
@@ -93,7 +102,22 @@ jobs:
             CONFIG__SERVER__URL=http://localhost:8080
             WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher
           default_network: host
-          options: --name test
+          options: --name test1
+          volumes: ${{ github.workspace }}:/src
+          run: dotnet test /src/backend/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
+
+      - name: RUN TEST GooglePubSub
+        uses: kohlerdominik/docker-run-action@v1.0.0
+        with:
+          image: mcr.microsoft.com/dotnet/sdk:6.0
+          environment: |
+            MAILCATCHER__HOST__SMTP=mailcatcher
+            MESSAGEBIRD__ACCESSKEY=${{ secrets.MESSAGEBIRD__ACCESSKEY }}
+            CONFIG__WAIT=60
+            CONFIG__SERVER__URL=http://localhost:8081
+            WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher
+          default_network: host
+          options: --name test2
           volumes: ${{ github.workspace }}:/src
           run: dotnet test /src/backend/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
        

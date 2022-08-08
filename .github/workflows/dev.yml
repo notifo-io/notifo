@@ -119,7 +119,7 @@ jobs:
             CONFIG__SERVER__URL=http://localhost:8080
             WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher
           default_network: host
-          options: --name test
+          options: --name test1
           volumes: ${{ github.workspace }}:/src
           run: dotnet test /src/backend/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
 
@@ -134,7 +134,7 @@ jobs:
             CONFIG__SERVER__URL=http://localhost:8081
             WEBHOOKCATCHER__HOST__ENDPOINT=webhookcatcher
           default_network: host
-          options: --name test
+          options: --name test2
           volumes: ${{ github.workspace }}:/src
           run: dotnet test /src/backend/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
        

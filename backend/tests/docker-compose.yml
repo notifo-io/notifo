@@ -35,7 +35,7 @@ services:
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://mongo
       - STORAGE__TYPE=MongoDB
       - MESSAGING__TYPE=GooglePubSub
-      - MESSAGING__GOOGLEPUBSUB__PREFIX=test-
+      - MESSAGING__GOOGLEPUBSUB__PREFIX=ci-
       - MESSAGING__GOOGLEPUBSUB__PROJECTID=squidex-157415
       - GOOGLE_APPLICATION_CREDENTIALS=/var/lib/notifo/secrets/keyfile.json
     volumes:
