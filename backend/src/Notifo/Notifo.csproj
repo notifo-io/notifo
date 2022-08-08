@@ -10,9 +10,7 @@
   
   <ItemGroup>
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.3" />
-    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="5.0.0" />
-    <PackageReference Include="Google.Cloud.Trace.V2" Version="3.0.0" />
-    <PackageReference Include="Google.LongRunning" Version="3.0.0" />
+    <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.0.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="1.0.704">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

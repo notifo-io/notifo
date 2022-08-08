@@ -8,7 +8,9 @@
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Counters;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Collections;
 using Squidex.Caching;
 
 namespace Notifo.Domain.Apps
@@ -135,6 +137,10 @@ namespace Notifo.Domain.Apps
 
                     app = new App(id, clock.GetCurrentInstant());
                 }
+                else
+                {
+                    app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
+                }
 
                 var newApp = await command.ExecuteAsync(app, services, ct);
 
@@ -162,6 +168,8 @@ namespace Notifo.Domain.Apps
 
             if (app != null)
             {
+                app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
+
                 await cache.AddAsync(app.Id, app, CacheDuration);
             }
         }

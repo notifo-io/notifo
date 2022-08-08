@@ -26,7 +26,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton(options);
 
-            services.AddSingletonAs(c => new SystemTextJsonTransportSerializer(configure))
+            services.AddSingletonAs(c => new SystemTextJsonTransportSerializer(c => Configure(c, configure)))
                 .As<ITransportSerializer>();
 
             services.AddSingletonAs<SystemTextJsonSerializer>()
