@@ -110,14 +110,6 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             await Collection.Indexes.CreateOneAsync(
                 new CreateIndexModel<UserNotification>(
                     IndexKeys
-                        .Ascending(x => x.AppId)
-                        .Ascending(x => x.UserId)
-                        .Ascending(x => x.Created)),
-                null, ct);
-
-            await Collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<UserNotification>(
-                    IndexKeys
                         .Descending(x => x.Created),
                     new CreateIndexOptions
                     {
@@ -387,7 +379,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 {
                     var filter = BuildFilter(notification);
 
-                    var oldNotifications = Collection.Find(filter).Skip(options.MaxItemsPerUser).SortBy(x => x.Created).Only(x => x.Id).ToAsyncEnumerable(ct);
+                    // Sort descending because we do not want to delete the newest elements.
+                    var oldNotifications = Collection.Find(filter).Skip(options.MaxItemsPerUser).SortByDescending(x => x.Created).Only(x => x.Id).ToAsyncEnumerable(ct);
 
                     await foreach (var batch in oldNotifications.Chunk(5000, ct))
                     {
