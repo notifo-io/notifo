@@ -57,11 +57,22 @@ type PublishForms = Omit<PublishDto, 'templateVariants'> & {
 };
 
 export const PublishDialog = () => {
+    const dialogOpen = usePublish(x => x.dialogOpen);
+
+    if (!dialogOpen) {
+        return null;
+    }
+
+    return (
+        <PublishDialogInner />
+    );
+};
+
+const PublishDialogInner = () => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const dialogOpen = usePublish(x => x.dialogOpen);
     const dialogValues = usePublish(x => x.dialogValues || {});
     const publishing = usePublish(x => x.publishing);
     const publishingError = usePublish(x => x.publishingError);
@@ -119,7 +130,7 @@ export const PublishDialog = () => {
     }, [dialogValues]);
 
     return (
-        <Modal isOpen={dialogOpen} size='lg' backdrop={false} toggle={doCloseForm} className={classNames('publish-modal', { ['fullscreen-mode']: viewFullscreen })}>
+        <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm} className={classNames('publish-modal', { ['fullscreen-mode']: viewFullscreen })}>
             <Formik<PublishForms> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
                 {({ handleSubmit, values }) => (
                     <Form onSubmit={handleSubmit}>

@@ -20,13 +20,15 @@ $color-primary:       #8c84fa;
 $color-primary-darken:  darken($color-primary, 8%);
 $color-success:       #2dce89;
 
-$size-header: 4.25rem;
-$size-sidebar: 5rem;
+$text-muted:          darken(#8898aa, 5%);
+
+$size-header:           4.25rem;
+$size-sidebar:          5rem;
 
 $paragraph-font-size:   .875rem;
 $paragraph-font-weight: normal;
 
-$breakpoint-sm: 576px;
-$breakpoint-md: 768px;
-$breakpoint-lg: 992px;
-$breakpoint-xl: 1200px;
+$breakpoint-sm:         576px;
+$breakpoint-md:         768px;
+$breakpoint-lg:         992px;
+$breakpoint-xl:         1200px;

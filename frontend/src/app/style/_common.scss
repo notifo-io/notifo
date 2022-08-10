@@ -1070,6 +1070,14 @@ textarea {
         }
     }
 
+    .col-form {
+        fieldset {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
     .col-template {
         width: 660px;
         padding-left: 3rem;
