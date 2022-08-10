@@ -3,6 +3,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2022-08-10
+
+### Added
+
+* **Added**: Diagnostics endpoints to generate dumps and gcdumps.
+* **Added**: Fullscreen button for template editing.
+* **Emails**: Unsubscribe screen for emails.
+* **Integrations**: WhatsApp support for messaging channel.
+* **Notifications**: Template variants: Choose a template by probability.
+* **Testing**: Added verify to the API tests.
+* **Testing**: Automated API testing with Google PubSub.
+* **UI**: Better detail view for notifications.
+* **UI**: Show last notification per user.
+
+### Changed
+
+* **Backend**: Hotfix for a memory leak introduced by XML comments in OpenAPI.
+* **Messaging**: Better implementation for messaing solutions with test coverage.
+* **Notifications**: Reworked the notification rpeferences.
+* **UI**: Better UI for template management.
+
 ## [1.1.0] - 2022-04-23
 
 ### Added
