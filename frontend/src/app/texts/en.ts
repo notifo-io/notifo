@@ -124,6 +124,7 @@ export const EN = {
         noIntegration: 'No integration configured.',
         noName: '- Unnamed -',
         noTemplate: 'No named template found.',
+        notAvailable: 'Not available',
         notStarted: 'Not started',
         notYet: 'Not yet',
         notificationSettings: 'Notification Settings',

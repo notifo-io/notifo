@@ -24,6 +24,10 @@ main {
     line-height: 1.75;
 }
 
+.flex-nowrap {
+    flex-wrap: nowrap;
+}
+
 .col-refresh {
     width: 4rem;
 }
@@ -243,17 +247,44 @@ fieldset {
     }
 }
 
-.modal-header {
-    position: relative;
+.close {
+    padding: 1.25rem !important;
 
-    .nav-tabs2 {
-        @include absolute(null, null, 0);
+    & {
+        opacity: .75;
+    }
 
-        .nav-link {
-            font-size: 1rem;
-            font-weight: normal;
-            padding: 1rem 0;
-        }
+    span {
+        color: $color-text !important;
+        font-size: 1.25rem !important;
+        font-weight: normal !important;
+    }
+
+    &:hover {
+        opacity: 1 !important;
+    }
+}
+
+.fullscreen {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    line-height: 0;
+    opacity: .75;
+    padding: 1.25rem;
+    padding-top: 1.125rem;
+
+    i {
+        color: $color-text;
+        font-size: 1.25rem !important;
+        font-weight: normal !important;
+        height: 1.25rem;
+    }
+
+    &:hover {
+        opacity: 1;
+        transition: none;
+        transform: none;
     }
 }
 
@@ -375,6 +406,20 @@ $small-gutters: 4px;
         margin-right: 1rem;
         width: 17rem;
     }
+
+    &-header {
+        position: relative;
+
+        .close {
+            @include absolute(50%, 0);
+            margin: -30px 0 0;
+        }
+
+        .fullscreen {
+            @include absolute(50%, 4rem);
+            margin: -30px 0 0;
+        }
+    }
 }
 
 .empty-button {
@@ -407,11 +452,26 @@ $small-gutters: 4px;
     }
 
     &-form {
+        color: darken($color-text, 10%) !important;
+        background: lighten($color-background, 2%);
+        border: 0;
+        border-radius: $border-radius;
         padding-left: 4rem;
+        padding-top: 1.25rem;
+        padding-bottom: 1.25rem;
 
         & > i {
             @include absolute(1rem, null, null, 1rem);
             font-size: 1.75rem;
+        }
+
+        ul,
+        ol {
+            line-height: 1.7;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
         }
     }
 }
@@ -891,6 +951,14 @@ div {
 
     &-dialog {
         @include absolute(0, 0, 0, 0);
+
+        &.fullscreen-mode {
+            .modal-content {
+                @include fixed(0, 0, 0, 0);
+                border: 0;
+                border-radius: 0;
+            }
+        }
     }
 
     &-body {
@@ -914,6 +982,30 @@ div {
 
         .row {
             flex-grow: 1;
+        }
+    }
+
+    &-header {
+        position: relative;
+
+        .nav-tabs2 {
+            @include absolute(null, null, 0);
+
+            .nav-link {
+                font-size: 1rem;
+                font-weight: normal;
+                padding: 1rem 0;
+            }
+        }
+
+        .close {
+            @include absolute(50%, 0);
+            margin: -30px 0 0;
+        }
+
+        .fullscreen {
+            @include absolute(50%, 4rem);
+            margin: -30px 0 0;
         }
     }
 }
@@ -968,6 +1060,44 @@ div {
 textarea {
     &.form-control {
         height: 10rem;
+    }
+}
+
+.publish-modal {
+    .fullscreen {
+        @media (max-width: $breakpoint-xl) {
+            display: none;
+        }
+    }
+
+    .col-template {
+        width: 660px;
+        padding-left: 3rem;
+        padding-right: 15px;
+
+        @media (max-width: $breakpoint-xl) {
+            display: none;
+        }
+    }
+
+    &.fullscreen-mode {
+        @media (min-width: $breakpoint-xl) {
+            .col-form {
+                border-right: 1px solid $color-border;
+                padding-left: 15px;
+                padding-right: 3rem;
+                overflow: hidden;
+            }
+        }
+    }
+
+    .preview-container {
+        background-color: $color-background;
+        border: 2px solid $color-border;
+        border-radius: 2px;
+        width: 600px;
+        text-align: left;
+        text-decoration: none;
     }
 }
 

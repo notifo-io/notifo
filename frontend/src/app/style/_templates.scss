@@ -7,6 +7,18 @@
     }
 }
 
+.preview-container {
+    .desktop-macos-bigsur {
+        .rpp-main {
+            background: rgba(245, 245, 245);
+        }
+
+        .rpp-header {
+            margin-bottom: .0625rem !important;
+        }
+    }
+}
+
 .template-form {
     @include fixed($size-header, 0, 0, null);
     @include box-shadow-outer(-2px, 0, 4px, .05);
@@ -14,19 +26,9 @@
     border-radius: 0;
     max-width: 80%;
 
-    &.fullscreen {
+    &.fullscreen-mode {
         @include fixed($size-header, 0, 0, $size-sidebar);
         max-width: 100%;
-    }
-
-    .card-header {
-        background-color: $color-white;
-        border-left: 0;
-        border-radius: 0;
-
-        h3 {
-            margin: 0;
-        }
     }
 
     .card-body {
@@ -59,11 +61,32 @@
         }
     }
 
+    .card-header {
+        background-color: $color-white;
+        border-left: 0;
+        border-radius: 0;
+
+        h3 {
+            margin: 0;
+        }
+
+        .row {
+            flex-wrap: nowrap;
+        }
+
+        .col {
+            overflow: hidden;
+        }
+
+        .col-auto {
+            padding-right: 9rem !important;
+        }
+    }
+
     .preview-container {
         background-color: $color-background;
         border: 2px solid $color-border;
         border-radius: 2px;
-        margin-bottom: 1rem;
         width: 600px;
         text-align: left;
         text-decoration: none;

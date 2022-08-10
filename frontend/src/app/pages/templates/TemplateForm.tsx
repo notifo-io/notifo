@@ -8,11 +8,10 @@
 import classNames from 'classnames';
 import { Formik } from 'formik';
 import * as React from 'react';
-import { PushPreviewTarget } from 'react-push-preview';
 import { useDispatch } from 'react-redux';
-import { Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Label, Row } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Forms, Icon, Loader, OverlayDropdown, Types } from '@app/framework';
+import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -30,28 +29,6 @@ const FormSchema = Yup.object({
         subject: Yup.object().label(texts.common.subject).atLeastOneStringI18n(),
     }),
 });
-
-type PushPreviewOption = { target: PushPreviewTarget; label: string };
-
-const ALL_TARGETS: PushPreviewOption[] = [{
-    target: 'Notifo',
-    label: 'Notifo',
-}, {
-    target: 'DesktopChrome',
-    label: 'Chrome',
-}, {
-    target: 'DesktopMacOS2',
-    label: 'Big Sur',
-}, {
-    target: 'DesktopMacOS',
-    label: 'MacOS',
-}, {
-    target: 'MobileAndroid',
-    label: 'Android',
-}, {
-    target: 'MobileIOS',
-    label: 'iOS',
-}];
 
 export interface TemplateFormProps {
     // The template to edit.
@@ -81,15 +58,14 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const appLanguages = app.languages;
     const upserting = useTemplates(x => x.upserting);
     const upsertingError = useTemplates(x => x.upsertingError);
-    const [fullscreen, setFullscreen] = React.useState<boolean>(false);
-    const [target, setTarget] = React.useState<PushPreviewOption>(ALL_TARGETS[0]);
+    const [viewFullscreen, setViewFullscreen] = React.useState<boolean>(false);
 
     const doPublish = React.useCallback((params: TemplateDto) => {
         dispatch(upsertTemplate({ appId, params }));
     }, [dispatch, appId]);
 
     const doToggleFullscreen = React.useCallback(() => {
-        setFullscreen(x => !x);
+        setViewFullscreen(x => !x);
     }, []);
 
     const initialValues: any = React.useMemo(() => {
@@ -107,9 +83,9 @@ export const TemplateForm = (props: TemplateFormProps) => {
     return (
         <Formik<TemplateDto> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
             {({ handleSubmit, values }) => (
-                <Card className={classNames('template-form', 'slide-right', { fullscreen })}>
+                <Card className={classNames('template-form', 'slide-right', { ['fullscreen-mode']: viewFullscreen })}>
                     <CardHeader>
-                        <Row className='align-items-center'>
+                        <Row className='align-items-center d-nowrap'>
                             <Col>
                                 {template ? (
                                     <h3 className='truncate'>{texts.templates.templateEdit} {template.code}</h3>
@@ -122,16 +98,15 @@ export const TemplateForm = (props: TemplateFormProps) => {
                                     <Loader light small visible={upserting} /> {texts.common.save}
                                 </Button>
                             </Col>
-                            <Col xs='auto'>
-                                <Button type="button" color='icon' className='btn-flat' onClick={doToggleFullscreen}>
-                                    <Icon type={fullscreen ? 'fullscreen_exit' : 'fullscreen'} />
-                                </Button>
-
-                                <Button type="button" color='icon' className='btn-flat' onClick={onClose}>
-                                    <Icon type='clear' />
-                                </Button>
-                            </Col>
                         </Row>
+
+                        <button type='button' className='fullscreen' onClick={doToggleFullscreen}>
+                            <Icon type={viewFullscreen ? 'fullscreen_exit' : 'fullscreen'} />
+                        </button>
+
+                        <button type='button' className='close' onClick={onClose}>
+                            <span aria-hidden='true'>×</span>
+                        </button>
                     </CardHeader>
 
                     <CardBody>
@@ -160,24 +135,8 @@ export const TemplateForm = (props: TemplateFormProps) => {
                             <Col xs='auto'>
                                 <div className='template-form-preview sticky-top'>
                                     <Label>{texts.common.preview}</Label>
-
-                                    <NotificationPreview formatting={values?.formatting} language={language} target={target.target}></NotificationPreview>
-
-                                    <div className='text-center'>
-                                        <OverlayDropdown button={
-                                            <DropdownToggle color='primary' outline caret>
-                                                {target.label}
-                                            </DropdownToggle>
-                                        }>
-                                            <DropdownMenu>
-                                                {ALL_TARGETS.map(x =>
-                                                    <DropdownItem key={x.target} onClick={() => setTarget(x)}>
-                                                        {x.label}
-                                                    </DropdownItem>,
-                                                )}
-                                            </DropdownMenu>
-                                        </OverlayDropdown>
-                                    </div>
+                                    
+                                    <NotificationPreview formatting={values?.formatting} language={language}></NotificationPreview>
                                 </div>
                             </Col>
                         </Row>
