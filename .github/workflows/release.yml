@@ -84,8 +84,10 @@ jobs:
           cmd: yq e '.services.notifo2.image = "notifo-tmp"' -i backend/tests/docker-compose.yml
 
       - name: Inject Google Credentials
-        run: mkdir secrets && echo "${{ secrets.GOOGLE__KEYFILE }}" >| secrets/keyfile.json
+        run: mkdir secrets && echo "$GOOGLE__KEYFILE" >| secrets/keyfile.json
         working-directory: backend/tests
+        env:
+          GOOGLE__KEYFILE: ${{ secrets.GOOGLE__KEYFILE }}
 
       - name: Start Test
         run: docker-compose up -d
