@@ -8,9 +8,9 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Input } from 'reactstrap';
-import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
 import { loadIntegrations, useApp, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
+import { FormEditorOption, FormEditorProps, Forms } from './Forms';
 
 export const WebhookInput = (props: FormEditorProps) => {
     const dispatch = useDispatch();

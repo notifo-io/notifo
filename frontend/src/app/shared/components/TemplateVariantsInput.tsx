@@ -1,9 +1,10 @@
 import { FieldArray } from 'formik';
 import * as React from 'react';
 import { Button, Col, Row } from 'reactstrap';
-import { FormEditorProps, Forms, Icon } from '@app/framework';
+import { Icon } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { texts } from '@app/texts';
+import { FormEditorProps, Forms } from './Forms';
 import { TemplateInput } from './TemplateInput';
 
 type TemplateVariants = { probability: number; templateCode: string }[];

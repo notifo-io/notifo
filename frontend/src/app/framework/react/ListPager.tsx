@@ -13,12 +13,16 @@ import { ListState, Query } from './../model';
 export interface ListPagerProps {
     list: ListState<any>;
 
+    // Hide when nothing to navigate to.
+    hideWhenUseless?: boolean;
+
     // When going to another page.
     onChange: (request: Partial<Query>) => void;
 }
 
 export const ListPager = (props: ListPagerProps) => {
     const {
+        hideWhenUseless,
         list,
         onChange,
     } = props;
@@ -49,6 +53,10 @@ export const ListPager = (props: ListPagerProps) => {
     const doGoLast = React.useCallback(() => {
         onChange({ page: pageCount - 1 });
     }, [onChange, pageCount]);
+
+    if (!canGoNext && !canGoPrev && hideWhenUseless) {
+        return null;
+    }
 
     if (items == null && total === 0) {
         return null;

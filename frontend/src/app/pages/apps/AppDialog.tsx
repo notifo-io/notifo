@@ -10,7 +10,8 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormAlert, FormError, Forms, Loader } from '@app/framework';
+import { FormAlert, FormError, Loader } from '@app/framework';
+import { Forms } from '@app/shared/components';
 import { createApp, CreateAppParams, createAppReset, useApps } from '@app/state';
 import { texts } from '@app/texts';
 

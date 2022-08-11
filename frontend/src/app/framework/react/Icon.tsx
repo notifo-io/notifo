@@ -10,6 +10,8 @@ import * as React from 'react';
 
 export type IconType =
     'add' |
+    'add_circle' |
+    'add_circle_outline' |
     'alternate_email' |
     'browser' |
     'clear' |
@@ -27,6 +29,7 @@ export type IconType =
     'history' |
     'hourglass_empty' |
     'info_outline' |
+    'insert_emoticon' |
     'integration' |
     'keyboard_arrow_down' |
     'keyboard_arrow_left' |

@@ -9,12 +9,9 @@ import classNames from 'classnames';
 import { FieldHelperProps, FieldInputProps, FieldMetaProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
+import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle } from '@app/framework';
 import { isErrorVisible, Types } from '@app/framework/utils';
-import { FormControlError } from './FormControlError';
-import { Icon } from './Icon';
-import { LanguageSelector } from './LanguageSelector';
-import { PasswordInput } from './PasswordInput';
-import { Toggle } from './Toggle';
+import { Picker, PickerOptions } from './Picker';
 
 export type FormEditorOption<T> = { value?: T; label: string };
 
@@ -42,6 +39,9 @@ export interface FormEditorProps {
 
     // True to hide the error.
     hideError?: boolean;
+
+    // The picker props.
+    picker?: PickerOptions;
 }
 
 export interface ArrayFormProps<T> extends FormEditorProps {
@@ -292,18 +292,49 @@ const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { 
     );
 };
 
-const InputText = ({ name, placeholder }: FormEditorProps) => {
+const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
-    const [field, meta] = useFieldNew(name);
+    const [field, meta, helper] = useFieldNew(name);
+
+    const doAddPick = React.useCallback((value: string) => {
+        helper.setValue((field.value || '') + value);
+    }, [field.value, helper]);
 
     return (
-        <>
+        <div className='input-container'>
+            {picker &&
+                <Picker {...picker} onPick={doAddPick} value={field.value} />
+            }
+
             <Input type='text' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder={placeholder}
             />
-        </>
+        </div>
+    );
+};
+
+const InputTextarea = ({ name, picker, placeholder }: FormEditorProps) => {
+    const { submitCount } = useFormikContext();
+    const [field, meta, helper] = useFieldNew(name);
+
+    const doAddPick = React.useCallback((value: string) => {
+        helper.setValue((field.value || '') + value);
+    }, [field.value, helper]);
+
+    return (
+        <div className='input-container textarea'>
+            {picker &&
+                <Picker {...picker} onPick={doAddPick} value={field.value} />
+            }
+
+            <Input type='textarea' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                placeholder={placeholder}
+            />
+        </div>
     );
 };
 
@@ -314,21 +345,6 @@ const InputUrl = ({ name, placeholder }: FormEditorProps) => {
     return (
         <>
             <Input type='url' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                placeholder={placeholder}
-            />
-        </>
-    );
-};
-
-const InputTextarea = ({ name, placeholder }: FormEditorProps) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useFieldNew(name);
-
-    return (
-        <>
-            <Input type='textarea' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
                 onChange={field.onChange}
                 onBlur={field.onBlur}
                 placeholder={placeholder}

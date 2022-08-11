@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?1ojjwt');
-  src:  url('fonts/icomoon.eot?1ojjwt#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?1ojjwt') format('truetype'),
-    url('fonts/icomoon.woff?1ojjwt') format('woff'),
-    url('fonts/icomoon.svg?1ojjwt#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?nb44dm');
+  src:  url('fonts/icomoon.eot?nb44dm#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?nb44dm') format('truetype'),
+    url('fonts/icomoon.woff?nb44dm') format('woff'),
+    url('fonts/icomoon.svg?nb44dm#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,24 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-insert_emoticon:before {
+  content: "\e937";
+}
+.icon-add_circle_outline:before {
+  content: "\e935";
+}
+.icon-add_circle:before {
+  content: "\e936";
+}
+.icon-visibility_off:before {
+  content: "\e933";
+}
+.icon-remove_red_eye:before {
+  content: "\e934";
+}
+.icon-visibility:before {
+  content: "\e934";
+}
 .icon-info_outline:before {
   content: "\e932";
 }

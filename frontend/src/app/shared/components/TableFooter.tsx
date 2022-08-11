@@ -14,6 +14,9 @@ export interface TableFooterProps extends ListPagerProps {
     // True to show all details.
     showDetails?: boolean;
 
+    // Hide when nothing to navigate to.
+    hideWhenUseless?: boolean;
+
     // True to hide the details button.
     noDetailButton?: boolean;
 

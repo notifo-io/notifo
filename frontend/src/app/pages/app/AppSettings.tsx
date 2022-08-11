@@ -10,8 +10,9 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, Form } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Forms, Loader } from '@app/framework';
+import { FormError, Loader } from '@app/framework';
 import { AppDetailsDto, UpsertAppDto } from '@app/service';
+import { Forms } from '@app/shared/components';
 import { upsertApp, useApps, useCore } from '@app/state';
 import { texts } from '@app/texts';
 

@@ -12,7 +12,8 @@ import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Row } from 'reactstrap';
-import { FormError, Forms, Icon, Loader, Types } from '@app/framework';
+import { FormError, Icon, Loader, Types } from '@app/framework';
+import { Forms } from '@app/shared/components';
 import { loadSmsTemplate, updateSmsTemplate, useApp, useSmsTemplates } from '@app/state';
 import { texts } from '@app/texts';
 

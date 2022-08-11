@@ -6,8 +6,8 @@
  */
 
 import * as React from 'react';
-import { FormEditorOption, FormEditorProps, Forms } from '@app/framework';
 import { TemplateDto } from '@app/service';
+import { FormEditorOption, FormEditorProps, Forms } from './Forms';
 
 export interface TemplateInputProps extends FormEditorProps {
     // The actual templates.

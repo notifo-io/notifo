@@ -10,8 +10,9 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Forms, Loader, Types } from '@app/framework';
+import { FormError, Loader, Types } from '@app/framework';
 import { SystemUserDto, UpdateSystemUserDto } from '@app/service';
+import { Forms } from '@app/shared/components';
 import { upsertSystemUser, useSystemUsers } from '@app/state';
 import { texts } from '@app/texts';
 

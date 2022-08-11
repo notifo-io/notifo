@@ -1,4 +1,4 @@
-import { autoUpdate, flip, size, useFloating } from '@floating-ui/react-dom';
+import { flip, size, useFloating } from '@floating-ui/react-dom';
 import classNames from 'classnames';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
@@ -41,6 +41,7 @@ export class OverlayController {
 }
 
 export interface OverlayDropdownProps {
+    // The placement relative to the button.
     placement?: 'left' | 'right';
 
     // The button.
@@ -69,7 +70,8 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
         placement,
     } = props;
 
-    const [maxSize, setMaxSize] = React.useState({ width: Number.MAX_VALUE, height: Number.MAX_VALUE });
+    const [maxWidth, setMaxWidth] = React.useState(Number.MAX_VALUE);
+    const [maxHeight, setMaxHeight] = React.useState(Number.MAX_VALUE);
     const [show, setShow] = React.useState(false);
 
     React.useEffect(() => {
@@ -84,12 +86,31 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
             flip(),
             size({
                 apply({ availableWidth, availableHeight }) {
-                    setMaxSize({ width: availableWidth, height: availableHeight });
+                    setMaxWidth(availableWidth);
+                    setMaxHeight(availableHeight);
                 },
             }),
         ],
         strategy: 'fixed',
     });
+
+    React.useEffect(() => {
+        if (show) {
+            const timer = setInterval(() => {
+                update();
+            }, 100);
+
+            return () => {
+                clearInterval(timer);
+            };
+        }
+
+        return undefined;
+    }, [show, update]);
+
+    React.useEffect(() => {
+        update();
+    }, [show]);
 
     React.useEffect(() => {
         return controller?.listen(value => {
@@ -120,35 +141,6 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
             setShow(!show);
         }
     }, [show, update]);
-    
-    React.useEffect(() => {
-        if (!refs.reference.current || !refs.floating.current) {
-            return;
-        }
-     
-        return autoUpdate(
-            refs.reference.current,
-            refs.floating.current,
-            update);
-    }, [refs.reference, refs.floating, update]);
-
-    React.useEffect(() => {
-        update();
-    }, [show]);
-
-    React.useEffect(() => {
-        if (show) {
-            const timer = setInterval(() => {
-                update();
-            }, 100);
-
-            return () => {
-                clearInterval(timer);
-            };
-        }
-
-        return undefined;
-    }, [show, update]);
 
     return (
         <>
@@ -160,13 +152,7 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
                 <>
                     {ReactDOM.createPortal(
                         <ClickOutside isActive={true} onClickOutside={doClose}>
-                            <div className='overlay' ref={floating} onClick={doCloseAuto} style={{
-                                position: strategy,
-                                top: y ?? '',
-                                maxHeight: maxSize.height,
-                                maxWidth: maxSize.width,
-                                left: x ?? '',
-                            }}>
+                            <div className='overlay' ref={floating} onClick={doCloseAuto} style={{ position: strategy, left: x ?? 0, top: y ?? 0, maxHeight, maxWidth }}>
                                 {children}
                             </div>
                         </ClickOutside>,

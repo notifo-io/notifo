@@ -8,14 +8,24 @@
 import { useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Col, CustomInput, Row } from 'reactstrap';
-import { FormAlert, FormEditorProps, Forms, isErrorVisible, Types } from '@app/framework';
+import { FormAlert, isErrorVisible, Types } from '@app/framework';
 import { texts } from '@app/texts';
 import { CHANNELS, CONDITION_MODES, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { EmailTemplateInput } from './EmailTemplateInput';
-import { MediaInput } from './MediaInput';
+import { FormEditorProps, Forms } from './Forms';
 import { MessagingTemplateInput } from './MessagingTemplateInput';
 import { SmsTemplateInput } from './SmsTemplateInput';
 import { WebhookInput } from './WebhookInput';
+
+const PICK_MEDIA = {
+    pickMedia: true,
+    pickArgument: true,
+};
+
+const PICK_TEXT = {
+    pickEmoji: true,
+    pickArgument: true,
+};
 
 export module NotificationsForm {
     export interface FormattingProps {
@@ -43,25 +53,25 @@ export module NotificationsForm {
 
         return (
             <fieldset disabled={disabled}>
-                <Forms.LocalizedText name={`${field}.subject`} {...props}
+                <Forms.LocalizedText name={`${field}.subject`} {...props} picker={PICK_TEXT}
                     label={texts.common.messageSubject} />
 
-                <Forms.LocalizedTextArea name={`${field}.body`} {...props}
+                <Forms.LocalizedTextArea name={`${field}.body`} {...props} picker={PICK_TEXT}
                     label={texts.common.messageBody} />
 
-                <MediaInput name={`${field}.imageSmall`} {...props}
+                <Forms.LocalizedText name={`${field}.imageSmall`} {...props} picker={PICK_MEDIA}
                     label={texts.common.imageSmall} />
 
-                <MediaInput name={`${field}.imageLarge`} {...props}
+                <Forms.LocalizedText name={`${field}.imageLarge`} {...props} picker={PICK_MEDIA}
                     label={texts.common.imageLarge} />
 
-                <Forms.LocalizedText name={`${field}.linkUrl`} {...props}
+                <Forms.LocalizedText name={`${field}.linkUrl`} {...props} picker={PICK_TEXT}
                     label={texts.common.linkUrl} hints={texts.common.linkUrlHints}  />
 
-                <Forms.LocalizedText name={`${field}.linkText`} {...props}
+                <Forms.LocalizedText name={`${field}.linkText`} {...props} picker={PICK_TEXT}
                     label={texts.common.linkText} hints={texts.common.linkTextHints}  />
 
-                <Forms.LocalizedText name={`${field}.confirmText`} {...props}
+                <Forms.LocalizedText name={`${field}.confirmText`} {...props} picker={PICK_TEXT}
                     label={texts.common.confirmText} hints={texts.common.confirmTextHints} />
 
                 <Forms.Select name={`${field}.confirmMode`} {...props} options={CONFIRM_MODES}

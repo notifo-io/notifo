@@ -685,12 +685,7 @@ div {
     // Small triangle under the error tooltip with the border trick.
     &::after {
         @include absolute(auto, auto, -.7rem, .625rem);
-        border-color: $color-error transparent transparent;
-        border-style: solid;
-        border-width: .4rem;
-        content: '';
-        height: 0;
-        width: 0;
+        @include caret-bottom($color-error, .4rem);
         z-index: 1000;
     }
 
@@ -700,6 +695,7 @@ div {
         @include border-radius(2px);
         background: $color-error;
         border: 0;
+        border-radius: 0;
         color: $color-white;
         cursor: none;
         display: inline-block;
@@ -707,6 +703,7 @@ div {
         font-weight: normal;
         line-height: 1.1rem;
         padding: .25rem .6rem;
+        padding-left: .75rem;
         white-space: nowrap;
         width: auto;
         z-index: 1000;
@@ -728,6 +725,7 @@ div {
     @include absolute(.5rem, null, .5rem, 0);
     background: $color-primary;
     border: 0;
+    border-radius: 0;
     content: '';
     width: 4px;
 }
@@ -809,15 +807,46 @@ div {
     &-container {
         position: relative;
 
+        textarea {
+            padding-right: 4rem;
+        }
+
         input {
             padding-right: 4rem;
+        }
+
+        & > .overlay-target {
+            @include absolute(0, 0, 0);
+            display: block;
+        }
+
+        &.textarea {
+            & > .overlay-target {
+                bottom: auto;
+
+                .input-btn {
+                    position: static;
+                }
+            }
         }
     }
 
     &-btn {
-        @include absolute(null, 0, 0);
+        @include absolute(0, 0, 0);
+        background: 0;
+        border: 0;
+        border-radius: 0;
+        color: $color-text;
         padding-left: 1rem;
         padding-right: 1rem;
+
+        & > i {
+            display: block;
+        }
+
+        i.rotate {
+            transition: .2s ease-in transform;
+        }
 
         &:focus {
             box-shadow: none !important;
@@ -825,12 +854,23 @@ div {
 
         &:hover {
             box-shadow: none !important;
+
+            i.rotate {
+                transform: rotate(90deg);
+            }
         }
     }
 
     &-btn-lg {
         top: 2px;
     }
+}
+
+em-emoji-picker {
+    background-color: $color-white;
+    border-radius: $border-radius;
+    box-shadow: $dropdown-box-shadow;
+    margin-top: 2px;
 }
 
 //
@@ -979,6 +1019,8 @@ div {
 
     &-title {
         flex-grow: 1;
+        padding-left: 1rem;
+        padding-right: 3rem;
 
         .row {
             flex-grow: 1;
