@@ -486,7 +486,7 @@ const InputArray = (props: ArrayFormProps<any>) => {
         <div>
             <div>
                 {fieldValue.map(v => (
-                    <Badge key={v} color='secondary' className='mr-2 mb-2 badge-lg'>
+                    <Badge key={v} color='secondary' className='mr-2 mb-2 badge-lg badge-option'>
                         {v}
 
                         <span onClick={() => doRemove(v)}>
