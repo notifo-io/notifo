@@ -171,7 +171,7 @@ export const EN = {
         subject: 'Subject',
         template: 'Template',
         templateCode: 'Template Code',
-        templateCodeHints: 'If a template is used all properties (subject, body and so on) are used from the template, but can be overriden if necessary.',
+        templateCodeHints: 'If a template is used all properties (subject, body and so on) are used from the template, but can be overridden if necessary.',
         templateMode: 'Use template?',
         templates: 'Templates',
         text: 'Text',
@@ -272,7 +272,7 @@ export const EN = {
             send: 'Send as Mobile Push',
             title: 'Mobile Push',
         },
-        settingsInfo: 'Notification settings will be merged in the following order:\n\n1. User settings.\n2. Overridden by topic settings.\n3. Overriden by notification settings.',
+        settingsInfo: 'Notification settings will be merged in the following order:\n\n1. User settings.\n2. Overridden by topic settings.\n3. Overridden by notification settings.',
         sms: {
             name: 'SMS',
             send: 'Send as SMS',
