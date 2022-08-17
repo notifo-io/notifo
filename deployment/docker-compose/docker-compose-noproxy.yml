@@ -11,7 +11,7 @@ services:
   NOTIFO_notifo:
     image: "squidex/notifo:1"
     ports:
-      - "80:80"
+      - "80:5000"
     environment:
       - URLS__BASEURL=https://${NOTIFO_DOMAIN}
       - STORAGE__MONGODB__CONNECTIONSTRING=mongodb://notifo_mongo
@@ -21,6 +21,7 @@ services:
       - IDENTITY__GITHUBSECRET=${NOTIFO_GITHUBSECRET}
       - IDENTITY__MICROSOFTCLIENT=${NOTIFO_MICROSOFTCLIENT}
       - IDENTITY__MICROSOFTSECRET=${NOTIFO_MICROSOFTSECRET}
+      - ASPNETCORE_URLS=http://+:5000
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/healthz"]
       start_period: 60s
