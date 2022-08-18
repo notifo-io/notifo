@@ -43,9 +43,12 @@ namespace Notifo.Domain.Templates
 
             var (template, _) = await repository.GetAsync(appId, code, ct);
 
+            // Calculate once to have some timestamp for created and updated when new entity is created.
+            var now = clock.GetCurrentInstant();
+
             if (template == null)
             {
-                template = new Template(appId, code, clock.GetCurrentInstant())
+                template = new Template(appId, code, now)
                 {
                     IsAutoCreated = true
                 };
@@ -74,6 +77,9 @@ namespace Notifo.Domain.Templates
             {
                 var (template, etag) = await repository.GetAsync(appId, code, ct);
 
+                // Calculate once to have some timestamp for created and updated when new entity is created.
+                var now = clock.GetCurrentInstant();
+
                 if (template == null)
                 {
                     if (!command.CanCreate)
@@ -81,7 +87,7 @@ namespace Notifo.Domain.Templates
                         throw new DomainObjectNotFoundException(code);
                     }
 
-                    template = new Template(appId, code, clock.GetCurrentInstant());
+                    template = new Template(appId, code, now);
                 }
 
                 var newTemplate = await command.ExecuteAsync(template, services, ct);
@@ -93,7 +99,7 @@ namespace Notifo.Domain.Templates
 
                 newTemplate = newTemplate with
                 {
-                    LastUpdate = clock.GetCurrentInstant()
+                    LastUpdate = now
                 };
 
                 await repository.UpsertAsync(newTemplate, etag, ct);

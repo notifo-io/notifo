@@ -67,6 +67,9 @@ namespace Notifo.Domain.Topics
             {
                 var (topic, etag) = await repository.GetAsync(appId, path, ct);
 
+                // Calculate once to have some timestamp for created and updated when new entity is created.
+                var now = clock.GetCurrentInstant();
+
                 if (topic == null)
                 {
                     if (!command.CanCreate)
@@ -74,7 +77,7 @@ namespace Notifo.Domain.Topics
                         throw new DomainObjectNotFoundException(path);
                     }
 
-                    topic = new Topic(appId, path, clock.GetCurrentInstant());
+                    topic = new Topic(appId, path, now);
                 }
 
                 var newTopic = await command.ExecuteAsync(topic, services, ct);
@@ -86,7 +89,7 @@ namespace Notifo.Domain.Topics
 
                 newTopic = newTopic with
                 {
-                    LastUpdate = clock.GetCurrentInstant()
+                    LastUpdate = now
                 };
 
                 await repository.UpsertAsync(newTopic, etag, ct);

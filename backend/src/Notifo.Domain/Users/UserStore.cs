@@ -136,6 +136,8 @@ namespace Notifo.Domain.Users
             {
                 var (user, etag) = await repository.GetAsync(appId, id, ct);
 
+                var now = clock.GetCurrentInstant();
+
                 if (user == null)
                 {
                     if (!command.CanCreate)
@@ -143,19 +145,20 @@ namespace Notifo.Domain.Users
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    user = new User(appId, id, clock.GetCurrentInstant());
+                    user = new User(appId, id, now);
                 }
 
                 var newUser = await command.ExecuteAsync(user, services, ct);
 
                 if (newUser == null || ReferenceEquals(newUser, user))
                 {
+                    await DeliverAsync(user);
                     return user;
                 }
 
                 newUser = newUser with
                 {
-                    LastUpdate = clock.GetCurrentInstant()
+                    LastUpdate = now
                 };
 
                 await repository.UpsertAsync(newUser, etag, ct);
@@ -186,12 +189,12 @@ namespace Notifo.Domain.Users
 
             CounterMap.Cleanup(user.Counters);
 
-            await cache.AddAsync(user.UniqueId, user, CacheDuration, default);
-
             if (remove)
             {
                 await cache.RemoveAsync(user.UniqueId, default);
             }
+
+            await cache.AddAsync(user.UniqueId, user, CacheDuration, default);
         }
     }
 }

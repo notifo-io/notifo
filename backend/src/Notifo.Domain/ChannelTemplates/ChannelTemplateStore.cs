@@ -90,6 +90,9 @@ namespace Notifo.Domain.ChannelTemplates
             {
                 var (template, etag) = await repository.GetAsync(appId, id, ct);
 
+                // Calculate once to have some timestamp for created and updated when new entity is created.
+                var now = clock.GetCurrentInstant();
+
                 if (template == null)
                 {
                     if (!command.CanCreate)
@@ -97,7 +100,7 @@ namespace Notifo.Domain.ChannelTemplates
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    template = new ChannelTemplate<T>(appId, id, clock.GetCurrentInstant());
+                    template = new ChannelTemplate<T>(appId, id, now);
                 }
 
                 var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
@@ -109,7 +112,7 @@ namespace Notifo.Domain.ChannelTemplates
 
                 newTemplate = newTemplate with
                 {
-                    LastUpdate = clock.GetCurrentInstant()
+                    LastUpdate = now
                 };
 
                 await repository.UpsertAsync(newTemplate, etag, ct);

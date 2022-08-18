@@ -45,6 +45,7 @@ namespace Notifo.Domain.Media
             Guard.NotNullOrEmpty(appId);
             Guard.NotNull(file);
 
+            // Calculate once to have some timestamp for created and updated when new entity is created.
             var now = clock.GetCurrentInstant();
 
             var request = new MetadataRequest

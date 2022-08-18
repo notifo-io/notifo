@@ -128,6 +128,9 @@ namespace Notifo.Domain.Apps
             {
                 var (app, etag) = await repository.GetAsync(id, ct);
 
+                // Calculate once to have some timestamp for created and updated when new entity is created.
+                var now = clock.GetCurrentInstant();
+
                 if (app == null)
                 {
                     if (!command.CanCreate)
@@ -135,7 +138,7 @@ namespace Notifo.Domain.Apps
                         throw new DomainObjectNotFoundException(id);
                     }
 
-                    app = new App(id, clock.GetCurrentInstant());
+                    app = new App(id, now);
                 }
                 else
                 {
@@ -146,12 +149,13 @@ namespace Notifo.Domain.Apps
 
                 if (newApp == null || ReferenceEquals(app, newApp))
                 {
+                    await DeliverAsync(app);
                     return app;
                 }
 
                 newApp = newApp with
                 {
-                    LastUpdate = clock.GetCurrentInstant()
+                    LastUpdate = now
                 };
 
                 await repository.UpsertAsync(newApp, etag, ct);
@@ -168,16 +172,18 @@ namespace Notifo.Domain.Apps
             {
                 return;
             }
+
             CounterMap.Cleanup(app.Counters);
 
             app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
 
-            await cache.AddAsync(app.Id, app, CacheDuration, default);
-
             if (remove)
             {
-                await cache.RemoveAsync(app.Id, default;
+                // Invalidates all other copies in the cluster.
+                await cache.RemoveAsync(app.Id, default);
             }
+
+            await cache.AddAsync(app.Id, app, CacheDuration, default);
         }
     }
 }
