@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var options = config.GetSection("pipeline:userEvents").Get<UserEventPipelineOptions>() ?? new UserEventPipelineOptions();
 
-            services.AddMessaging(options.ChannelName, true);
+            services.AddMessaging(new ChannelName(options.ChannelName), true);
 
             services.Configure<MessagingOptions>(messaging =>
             {

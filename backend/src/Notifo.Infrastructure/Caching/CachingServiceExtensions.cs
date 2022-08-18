@@ -17,7 +17,6 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             services.AddAsyncLocalCache();
-            services.AddSimplePubSub();
         }
     }
 }

@@ -160,7 +160,7 @@ namespace Notifo.Domain.Users
 
                 await repository.UpsertAsync(newUser, etag, ct);
 
-                await DeliverAsync(newUser);
+                await DeliverAsync(newUser, true);
 
                 return newUser;
             });
@@ -174,16 +174,23 @@ namespace Notifo.Domain.Users
 
             await repository.DeleteAsync(appId, id, ct);
 
-            await cache.RemoveAsync($"{appId}_{id}");
+            await cache.RemoveAsync($"{appId}_{id}", default);
         }
 
-        private async Task DeliverAsync(User? user)
+        private async Task DeliverAsync(User? user, bool remove = false)
         {
-            CounterMap.Cleanup(user?.Counters);
-
-            if (user != null)
+            if (user == null)
             {
-                await cache.AddAsync(user.UniqueId, user, CacheDuration);
+                return;
+            }
+
+            CounterMap.Cleanup(user.Counters);
+
+            await cache.AddAsync(user.UniqueId, user, CacheDuration, default);
+
+            if (remove)
+            {
+                await cache.RemoveAsync(user.UniqueId, default);
             }
         }
     }

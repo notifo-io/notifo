@@ -156,21 +156,27 @@ namespace Notifo.Domain.Apps
 
                 await repository.UpsertAsync(newApp, etag, ct);
 
-                await DeliverAsync(newApp);
+                await DeliverAsync(newApp, true);
 
                 return newApp;
             });
         }
 
-        private async Task DeliverAsync(App? app)
+        private async Task DeliverAsync(App? app, bool remove = false)
         {
-            CounterMap.Cleanup(app?.Counters);
-
-            if (app != null)
+            if (app == null)
             {
-                app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
+                return;
+            }
+            CounterMap.Cleanup(app.Counters);
 
-                await cache.AddAsync(app.Id, app, CacheDuration);
+            app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
+
+            await cache.AddAsync(app.Id, app, CacheDuration, default);
+
+            if (remove)
+            {
+                await cache.RemoveAsync(app.Id, default;
             }
         }
     }

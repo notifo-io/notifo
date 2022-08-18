@@ -22,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.ConfigureAndValidate<EventsOptions>(config, "events");
 
-            services.AddMessaging(options.ChannelName, true);
+            services.AddMessaging(new ChannelName(options.ChannelName), true);
 
             services.Configure<MessagingOptions>(messaging =>
             {

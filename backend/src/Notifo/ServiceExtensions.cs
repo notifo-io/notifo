@@ -11,6 +11,10 @@ using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;
 using Notifo.Infrastructure.MongoDb;
 using Notifo.Pipeline;
+using Squidex.Caching;
+using Squidex.Messaging;
+using Squidex.Messaging.Implementation.Null;
+using Squidex.Messaging.Redis;
 using StackExchange.Redis;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -19,31 +23,22 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         private sealed class RedisConnection
         {
-            private readonly SemaphoreSlim connectionLock = new SemaphoreSlim(1);
             private readonly string connectionString;
-            private IConnectionMultiplexer connection;
+            private Task<IConnectionMultiplexer> connection;
 
             public RedisConnection(string connectionString)
             {
                 this.connectionString = connectionString;
             }
 
-            public async Task<IConnectionMultiplexer> ConnectAsync(TextWriter writer)
+            public Task<IConnectionMultiplexer> ConnectAsync(TextWriter writer)
             {
-                if (connection == null)
-                {
-                    await connectionLock.WaitAsync();
-                    try
-                    {
-                        connection ??= await ConnectionMultiplexer.ConnectAsync(connectionString, writer);
-                    }
-                    finally
-                    {
-                        connectionLock.Release();
-                    }
-                }
+                return connection ??= ConnectCoreAsync(writer);
+            }
 
-                return connection;
+            public async Task<IConnectionMultiplexer> ConnectCoreAsync(TextWriter writer)
+            {
+                return await ConnectionMultiplexer.ConnectAsync(connectionString, writer);
             }
         }
 
@@ -82,6 +77,13 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void AddMyClustering(this IServiceCollection services, IConfiguration config, SignalROptions signalROptions)
         {
+            var channel = new ChannelName("pubsub", ChannelType.Topic);
+
+            services.AddMessaging(options =>
+            {
+                options.Routing.Add(x => x is CacheInvalidateMessage, channel);
+            });
+
             config.ConfigureByOption("clustering:type", new Alternatives
             {
                 ["Redis"] = () =>
@@ -97,14 +99,22 @@ namespace Microsoft.Extensions.DependencyInjection
                             });
                     }
 
-                    services.AddRedisPubSub(options =>
+                    services.AddRedisTransport(config, options =>
                     {
                         options.ConnectionFactory = connection.ConnectAsync;
+                    });
+
+                    services.AddMessaging(channel, false, options =>
+                    {
+                        options.TransportSelector = (transports, name) => transports.First(x => x is RedisTransport);
                     });
                 },
                 ["None"] = () =>
                 {
-                    // NOOP
+                    services.AddMessaging(channel, false, options =>
+                    {
+                        options.TransportSelector = (transports, name) => transports.First(x => x is NullTransport);
+                    });
                 }
             });
         }
