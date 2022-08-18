@@ -13,6 +13,7 @@ using Notifo.Areas.Account.Pages.Utils;
 using Notifo.Identity;
 using Notifo.Infrastructure.Reflection;
 using Squidex.Assets;
+using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 #pragma warning disable MA0048 // File name must match type name
 
@@ -87,6 +88,10 @@ namespace Notifo.Areas.Account.Pages
                 await SignInManager.SignInAsync((IdentityUser)user.Identity, true);
 
                 return RedirectTo("~/");
+            }
+            catch (NotifoValidationException ex)
+            {
+                ErrorMessage = ex.Message;
             }
             catch (ValidationException ex)
             {

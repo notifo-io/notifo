@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Notifo.Areas.Account.Pages.Utils;
 using Notifo.Identity;
 using Notifo.Infrastructure.Tasks;
+using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationException;
 
 #pragma warning disable MA0048 // File name must match type name
 
@@ -155,6 +156,10 @@ namespace Notifo.Areas.Account.Pages
                 await SignInManager.SignInAsync((IdentityUser)user.Identity, true);
 
                 return RedirectToPage(new { statusMessage });
+            }
+            catch (NotifoValidationException ex)
+            {
+                ErrorMessage = ex.Message;
             }
             catch (ValidationException ex)
             {
