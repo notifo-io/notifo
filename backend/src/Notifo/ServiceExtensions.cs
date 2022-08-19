@@ -77,13 +77,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static void AddMyClustering(this IServiceCollection services, IConfiguration config, SignalROptions signalROptions)
         {
-            var channel = new ChannelName("pubsub", ChannelType.Topic);
-
-            services.AddMessaging(options =>
-            {
-                options.Routing.Add(x => x is CacheInvalidateMessage, channel);
-            });
-
             config.ConfigureByOption("clustering:type", new Alternatives
             {
                 ["Redis"] = () =>
@@ -104,14 +97,14 @@ namespace Microsoft.Extensions.DependencyInjection
                         options.ConnectionFactory = connection.ConnectAsync;
                     });
 
-                    services.AddMessaging(channel, false, options =>
+                    services.AddReplicatedCacheMessaging(true, options =>
                     {
                         options.TransportSelector = (transports, name) => transports.First(x => x is RedisTransport);
                     });
                 },
                 ["None"] = () =>
                 {
-                    services.AddMessaging(channel, false, options =>
+                    services.AddReplicatedCacheMessaging(false, options =>
                     {
                         options.TransportSelector = (transports, name) => transports.First(x => x is NullTransport);
                     });
