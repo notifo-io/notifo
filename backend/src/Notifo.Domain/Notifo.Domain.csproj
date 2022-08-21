@@ -29,8 +29,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="Mjml.Net" Version="1.4.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.16.1" />
-    <PackageReference Include="NodaTime" Version="3.1.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
+    <PackageReference Include="NodaTime" Version="3.1.2" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
