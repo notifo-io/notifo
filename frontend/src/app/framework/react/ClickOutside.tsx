@@ -5,7 +5,7 @@ export interface ClickOutsideProps extends React.DetailedHTMLProps<React.HTMLAtt
     onClickOutside: (event: MouseEvent) => any;
 
     // Indicates whether the outside click handler is active.
-    isActive?: boolean | null;
+    isActive: boolean;
 
     // The children.
     children: React.ReactNode;

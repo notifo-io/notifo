@@ -108,6 +108,8 @@ export const UserDialog = (props: UserDialogProps) => {
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
                         <ModalHeader toggle={doCloseForm}>
+                            &nbsp;
+                            
                             <Nav className='nav-tabs2'>
                                 <NavItem>
                                     <NavLink onClick={() => setDialogTab(0)} active={dialogTab === 0}>{dialogUser ? texts.users.editHeader : texts.users.createHeader}</NavLink>
