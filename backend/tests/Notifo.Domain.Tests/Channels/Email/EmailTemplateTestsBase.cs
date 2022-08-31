@@ -22,6 +22,8 @@ namespace Notifo.Domain.Channels.Email
         private readonly EmailTemplate emailTemplate;
         private readonly IEmailFormatter emailFormatter;
 
+        protected abstract string Name { get; }
+
         protected EmailTemplateTestsBase()
         {
             var emailUrl = A.Fake<IEmailUrl>();
@@ -60,18 +62,20 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.Formatting.Body, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.Formatting.Body!, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.Contains(notification.Formatting.Body, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.Contains(notification.Formatting.Body!, text, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, text, StringComparison.OrdinalIgnoreCase);
             }
 
             Assert.Contains("url/to/email-preferences", html, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("url/to/email-preferences", text, StringComparison.OrdinalIgnoreCase);
 
-            await File.WriteAllTextAsync("_out\\template-single.html", html);
-            await File.WriteAllTextAsync("_out\\template-single.txt", text);
+            await WriteResultFileAsync("template-single.html", html);
+            await WriteResultFileAsync("template-single.txt", text);
         }
 
         [Fact]
@@ -96,19 +100,21 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.Formatting.Body, html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.Formatting.Subject, html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.Formatting.LinkUrl, html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.Formatting.LinkText, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.Formatting.Body!, html, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.Formatting.Subject!, html, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.Formatting.LinkUrl!, html, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.Formatting.LinkText!, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.Contains(notification.Formatting.Body, text, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.Formatting.Subject, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.Contains(notification.Formatting.Body!, text, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.Formatting.Subject!, text, StringComparison.OrdinalIgnoreCase);
             }
 
             DoesNotContainPlaceholders(text);
 
-            await File.WriteAllTextAsync("_out\\template-link.html", html);
-            await File.WriteAllTextAsync("_out\\template-link.txt", text);
+            await WriteResultFileAsync("template-link.html", html);
+            await WriteResultFileAsync("template-link.txt", text);
         }
 
         [Fact]
@@ -131,15 +137,17 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.Formatting.ImageSmall, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.Formatting.ImageSmall!, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.DoesNotContain(notification.Formatting.ImageSmall, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.DoesNotContain(notification.Formatting.ImageSmall!, text, StringComparison.OrdinalIgnoreCase);
             }
 
             DoesNotContainPlaceholders(text);
 
-            await File.WriteAllTextAsync("_out\\template-image.html", html);
-            await File.WriteAllTextAsync("_out\\template-image.txt", text);
+            await WriteResultFileAsync("template-image.html", html);
+            await WriteResultFileAsync("template-image.txt", text);
         }
 
         [Fact]
@@ -164,15 +172,17 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.TrackSeenUrl, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.TrackSeenUrl!, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.DoesNotContain(notification.TrackSeenUrl, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.DoesNotContain(notification.TrackSeenUrl!, text, StringComparison.OrdinalIgnoreCase);
             }
 
             DoesNotContainPlaceholders(text);
 
-            await File.WriteAllTextAsync("_out\\template-tracking.html", html);
-            await File.WriteAllTextAsync("_out\\template-tracking.txt", text);
+            await WriteResultFileAsync("template-tracking.html", html);
+            await WriteResultFileAsync("template-tracking.txt", text);
         }
 
         [Fact]
@@ -198,16 +208,18 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.Formatting.ConfirmText, html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.ConfirmUrl, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.Formatting.ConfirmText!, html, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.ConfirmUrl!, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.Contains(notification.ConfirmUrl, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.Contains(notification.ConfirmUrl!, text, StringComparison.OrdinalIgnoreCase);
             }
 
             DoesNotContainPlaceholders(text);
 
-            await File.WriteAllTextAsync("_out\\template-button.html", html);
-            await File.WriteAllTextAsync("_out\\template-button.txt", text);
+            await WriteResultFileAsync("template-button.html", html);
+            await WriteResultFileAsync("template-button.txt", text);
         }
 
         [Fact]
@@ -233,17 +245,19 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.Formatting.ImageSmall, html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.Formatting.ConfirmText, html, StringComparison.OrdinalIgnoreCase);
-                Assert.Contains(notification.ConfirmUrl, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.Formatting.ImageSmall!, html, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.Formatting.ConfirmText!, html, StringComparison.OrdinalIgnoreCase);
+                Assert.Contains(notification.ConfirmUrl!, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.Contains(notification.ConfirmUrl, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.Contains(notification.ConfirmUrl!, text, StringComparison.OrdinalIgnoreCase);
             }
 
             DoesNotContainPlaceholders(text);
 
-            await File.WriteAllTextAsync("_out\\template-button-image.html", html);
-            await File.WriteAllTextAsync("_out\\template-button-image.txt", text);
+            await WriteResultFileAsync("template-button-image.html", html);
+            await WriteResultFileAsync("template-button-image.txt", text);
         }
 
         [Fact]
@@ -273,23 +287,32 @@ namespace Notifo.Domain.Channels.Email
 
             foreach (var notification in jobs.Select(x => x.Notification))
             {
-                Assert.Contains(notification.Formatting.Body, html, StringComparison.OrdinalIgnoreCase);
+                // Test Html result.
+                Assert.Contains(notification.Formatting.Body!, html, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, html, StringComparison.OrdinalIgnoreCase);
 
-                Assert.Contains(notification.Formatting.Body, text, StringComparison.OrdinalIgnoreCase);
+                // Test Text result.
+                Assert.Contains(notification.Formatting.Body!, text, StringComparison.OrdinalIgnoreCase);
                 Assert.Contains(notification.Formatting.Subject, text, StringComparison.OrdinalIgnoreCase);
             }
 
             DoesNotContainPlaceholders(text);
 
-            await File.WriteAllTextAsync("_out\\template-multi.html", html);
-            await File.WriteAllTextAsync("_out\\template-multi.txt", text);
+            await WriteResultFileAsync("template-multi.html", html);
+            await WriteResultFileAsync("template-multi.txt", text);
         }
 
         private static void DoesNotContainPlaceholders(string? text)
         {
             Assert.DoesNotContain("<!--", text, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("-->", text, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task WriteResultFileAsync(string path, string? contents)
+        {
+            var directory = Directory.CreateDirectory($"_out\\{Name}");
+
+            await File.WriteAllTextAsync(Path.Combine(directory.FullName, path), contents);
         }
 
         private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs)
