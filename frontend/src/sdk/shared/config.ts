@@ -78,6 +78,10 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
         de: 'Keine Benachrichtigungen vorhanden',
         en: 'You have no notifications yet.',
     },
+    okay: {
+        de: 'Okay',
+        en: 'Okay',
+    },
     profile: {
         de: 'Profil',
         en: 'Profile',
@@ -410,6 +414,7 @@ type Texts<T> = {
     notificationsEmpty: T;
     notifyBeEmail: T;
     notifyBeWebPush: T;
+    okay: T;
     profile: T;
     save: T;
     savingFailed: T;
@@ -442,6 +447,7 @@ const TextKeys: ReadonlyArray<keyof Texts<any>> = [
     'notificationsEmpty',
     'notifyBeEmail',
     'notifyBeWebPush',
+    'okay',
     'profile',
     'save',
     'savingFailed',

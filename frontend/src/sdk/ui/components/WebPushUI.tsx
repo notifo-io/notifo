@@ -107,10 +107,10 @@ export const WebPushUI = (props: WebPushUIProps) => {
 
                 <div class='notifo-form-group'>
                     <button class='notifo-form-button primary' onClick={doAllow}>
-                        {config.texts.allow}
+                        {config.texts.okay}
                     </button>
 
-                    <button class='notifo-form-button' onClick={onDeny}>
+                    <button class='notifo-form-button' style={{ display: 'none' }} onClick={onDeny}>
                         {config.texts.deny}
                     </button>
                 </div>
