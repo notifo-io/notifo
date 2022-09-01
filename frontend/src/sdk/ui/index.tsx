@@ -52,7 +52,38 @@ export module UI {
             await loadStyle(config.styleUrl);
         }
 
+        function now() {
+            return new Date().getTime();
+        }
+
+        function getLastDenied() {
+            try {
+                return parseInt(localStorage.getItem('notifo-denied') || '0', 10);
+            } catch {
+                return now();
+            }
+        }
+
+        function denied() {
+            try {
+                localStorage.setItem('notifo-denied', now().toString());
+            } catch {
+                return;
+            }
+        }
+
         return await new Promise((resolve) => {
+            const lastDenied = getLastDenied();
+
+            if (config.permissionDeniedLifetimeHours > 0) {
+                const hoursSinceLastDenied = (now() - lastDenied) / MILLISECONDS_PER_HOUR;
+
+                if (hoursSinceLastDenied < config.permissionDeniedLifetimeHours) {
+                    resolve(false);
+                    return;
+                }
+            }
+
             const element = document.body.appendChild(document.createElement('div'));
 
             const doAllow = () => {
@@ -64,6 +95,7 @@ export module UI {
             const doDeny = () => {
                 resolve(false);
 
+                denied();
                 destroy(element);
             };
 
@@ -107,3 +139,5 @@ function findElement(elementOrId: string | HTMLElement) {
 
     return element;
 }
+
+const MILLISECONDS_PER_HOUR = 1000 * 60 * 60;

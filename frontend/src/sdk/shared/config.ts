@@ -6,6 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
+import { isNumber } from 'lodash';
 import { isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
@@ -213,6 +214,10 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
         options.allowProfile = true;
     }
 
+    if (!isNumber(options.permissionDeniedLifetimeHours)) {
+        options.permissionDeniedLifetimeHours = 7 * 24;
+    }
+
     if (!isStringOption(options.apiUrl) && !isStringOption(options.apiKey)) {
         logWarn('init.apiUrl or init.apIKey must be defined');
 
@@ -320,6 +325,9 @@ export interface SDKConfig {
 
     // The timer interval.
     pollingInterval: number;
+
+    // How long the deny request will be valid. If it is 
+    permissionDeniedLifetimeHours: number;
 
     // The public key for web push encryption.
     publicKey?: string;

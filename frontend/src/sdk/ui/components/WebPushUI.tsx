@@ -106,13 +106,23 @@ export const WebPushUI = (props: WebPushUIProps) => {
                 </div>
 
                 <div class='notifo-form-group'>
-                    <button class='notifo-form-button primary' onClick={doAllow}>
-                        {config.texts.okay}
-                    </button>
-
-                    <button class='notifo-form-button' style={{ display: 'none' }} onClick={onDeny}>
-                        {config.texts.deny}
-                    </button>
+                    {config.permissionDeniedLifetimeHours > 0 ? (
+                        <Fragment>
+                            <button class='notifo-form-button primary' onClick={doAllow}>
+                                {config.texts.allow}
+                            </button>
+        
+                            <button class='notifo-form-button' onClick={onDeny}>
+                                {config.texts.deny}
+                            </button>
+                        </Fragment>
+                    ) : (
+                        <Fragment>
+                            <button class='notifo-form-button primary' onClick={doAllow}>
+                                {config.texts.okay}
+                            </button>
+                        </Fragment>
+                    )}
                 </div>
             </Modal>
         </div>
