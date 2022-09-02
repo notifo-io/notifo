@@ -93,7 +93,11 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
     return (
         <>
             <Button color='none' id='buttonWebPush' className={getButtonClass(hasValue)} block onClick={open}>
-                <Icon type='browser' /> {user.webPushSubscriptions.length}
+                <Icon type='browser' />
+
+                {user.webPushSubscriptions.length > 0 &&
+                    <>{user.webPushSubscriptions.length}</>
+                }
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={toggle} popperClassName='popper-lg'>
@@ -149,7 +153,11 @@ export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto
     return (
         <>
             <Button color='none' id='buttonMobilePush' className={getButtonClass(hasValue)} block onClick={open}>
-                <Icon type='mobile' /> {user.mobilePushTokens.length > 0}
+                <Icon type='mobile' />
+
+                {user.mobilePushTokens.length > 0 &&
+                    <>{user.mobilePushTokens.length}</>
+                }
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonMobilePush' placement='auto' toggle={toggle} popperClassName='popper-lg'>

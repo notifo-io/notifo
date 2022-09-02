@@ -561,18 +561,36 @@ $small-gutters: 4px;
     }
 }
 
+//
+// BADGES
+//
 .badge {
     i {
         margin-left: .5rem;
     }
+
+    &-lg {
+        font-size: 80%;
+    }
+
+    &-option {
+        text-transform: none;
+    }
 }
 
-.badge-lg {
-    font-size: 80%;
-}
+//
+// POPOVER
+//
+.popover {
+    &-inner {
+        max-height: 300px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
 
-.badge-option {
-    text-transform: none;
+    .arrow {
+        z-index: -1;
+    }
 }
 
 //
