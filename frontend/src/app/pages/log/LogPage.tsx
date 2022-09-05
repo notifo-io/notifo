@@ -81,10 +81,10 @@ export const LogPage = () => {
                                 <th>
                                     <span className='truncate'>{texts.common.count}</span>
                                 </th>
-                                <th>
+                                <th className='text-right'>
                                     <span className='truncate'>{texts.common.lastSeen}</span>
                                 </th>
-                                <th>
+                                <th className='text-right'>
                                     <span className='truncate'>{texts.common.firstSeen}</span>
                                 </th>
                             </tr>

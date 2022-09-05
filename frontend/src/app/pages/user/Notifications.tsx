@@ -118,7 +118,11 @@ export const Notifications = (props: NotificationsProps) => {
                         <colgroup>
                             <col style={{ width: 50 }} />
                             <col />
-                            <col style={{ width: 200 }} />
+                            <col style={{ width: 25 }}  />
+                            <col style={{ width: 25 }}  />
+                            <col style={{ width: 25 }}  />
+                            <col style={{ width: 25 }}  />
+                            <col style={{ width: 240 }} />
                         </colgroup>
 
                         <thead>
@@ -127,7 +131,10 @@ export const Notifications = (props: NotificationsProps) => {
                                 <th>
                                     <span className='truncate'>{texts.common.subject}</span>
                                 </th>
-                                <th>
+                                <th colSpan={4} data-tip={`${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
+                                    <span className='truncate'>{texts.common.status}</span>
+                                </th>
+                                <th className='text-right'>
                                     <span className='truncate'>{texts.common.timestamp}</span>
                                 </th>
                             </tr>

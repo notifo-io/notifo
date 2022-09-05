@@ -41,7 +41,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
                         <td>
                             <span className='truncate mono'>{event.topic}</span>
                         </td>
-                        <td>
+                        <td className='text-right'>
                             <span className='truncate'>
                                 <FormatDate format='Ppp' date={event.created} />
                             </span>

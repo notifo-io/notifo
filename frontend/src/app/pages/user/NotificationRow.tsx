@@ -7,6 +7,7 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Button, Nav, NavItem, NavLink, Table } from 'reactstrap';
 import { FormatDate, Icon, JsonDetails } from '@app/framework';
 import { UserNotificationChannelDto, UserNotificationDetailsDto } from '@app/service';
@@ -22,6 +23,16 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
 
     const [isOpen, setIsOpen] = React.useState(0);
 
+    React.useEffect(() => {
+        ReactTooltip.rebuild();
+    });
+    
+    const nonWebStatus = Object.entries(props.notification.channels).filter(x => x[0] !== 'web').map(x => x[1]);
+    const numHandled = nonWebStatus.filter(x => !!Object.values(x.status).find(x => x.status === 'Handled')).length;
+    const numFirstDelivered = nonWebStatus.filter(x => !!x.firstDelivered).length;
+    const numFirstSeen = nonWebStatus.filter(x => !!x.firstSeen).length;
+    const numFirstConfirmed = nonWebStatus.filter(x => !!x.firstConfirmed).length;
+
     return (
         <>
             <tr>
@@ -33,7 +44,19 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                 <td>
                     <span className='truncate'>{notification.subject}</span>
                 </td>
-                <td>
+                <td data-tip={texts.common.handled}>
+                    {numHandled || '-'}
+                </td>
+                <td data-tip={texts.common.delivered}>
+                    {numFirstDelivered || '-'}
+                </td>
+                <td data-tip={texts.common.seen}>
+                    {numFirstSeen || '-'}
+                </td>
+                <td data-tip={texts.common.confirmed}>
+                    {numFirstConfirmed || '-'}
+                </td>
+                <td className='text-right'>
                     <span className='truncate'>
                         <FormatDate format='Ppp' date={notification.created} />
                     </span>
@@ -43,7 +66,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
             {isOpen > 0 &&
                 <>
                     <tr className='user-notification-header'>
-                        <td className='no-padding bordered' colSpan={3}>
+                        <td className='no-padding bordered' colSpan={7}>
                             <Nav className='nav-tabs2'>
                                 <NavItem>
                                     <NavLink active={isOpen === 1} onClick={() => setIsOpen(1)}>
@@ -59,7 +82,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                         </td>
                     </tr>
                     <tr className='user-notification-details'>
-                        <td className={classNames('bordered', { 'no-padding': isOpen === 2 })} colSpan={3}>
+                        <td className={classNames('bordered', { 'no-padding': isOpen === 2 })} colSpan={7}>
                             {isOpen === 1 ? (
                                 <div>
                                     <Table className='user-notification-settings' size='sm'>

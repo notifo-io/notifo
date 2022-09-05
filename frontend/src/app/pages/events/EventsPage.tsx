@@ -110,7 +110,7 @@ export const EventsPage = () => {
                         <th>
                             <span className='truncate'>{texts.common.topic}</span>
                         </th>
-                        <th>
+                        <th className='text-right'>
                             <span className='truncate'>{texts.common.timestamp}</span>
                         </th>
                     </tr>

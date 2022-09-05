@@ -25,12 +25,12 @@ export const LogEntryRow = React.memo((props: LogEntryRowProps) => {
             <td>
                 <span className='truncate'>{Numbers.formatNumber(entry.count)}</span>
             </td>
-            <td>
+            <td className='text-right'>
                 <span className='truncate'>
                     <FormatDate date={entry.lastSeen} />
                 </span>
             </td>
-            <td>
+            <td className='text-right'>
                 <span className='truncate'>
                     <FormatDate date={entry.firstSeen} />
                 </span>
