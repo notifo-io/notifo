@@ -218,7 +218,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
                 if (app == null)
                 {
-                    log.LogWarning("Cannot send email: App not found.");
+                    log.LogWarning("Cannot send mobile push: App not found.");
 
                     await UpdateAsync(job, ProcessStatus.Handled);
                     return;
@@ -232,7 +232,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(job, Texts.Sms_ConfigReset);
+                        await SkipAsync(job, Texts.MobilePush_ConfigReset);
                         return;
                     }
 
