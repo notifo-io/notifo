@@ -11,26 +11,44 @@ namespace Notifo.Domain.Utils
 {
     public sealed class ImageFormatter : IImageFormatter
     {
-        private readonly Uri? baseUrl;
+        private readonly IUrlGenerator urlGenerator;
 
         public ImageFormatter(IUrlGenerator urlGenerator)
         {
-            Uri.TryCreate(urlGenerator.BuildUrl(), UriKind.Absolute, out baseUrl);
+            this.urlGenerator = urlGenerator;
         }
 
-        public string Format(string? url, string preset)
+        public string Format(string? url, string? preset)
         {
-            if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
-                if (baseUrl != null && uri.Host == baseUrl.Host && uri.Port == baseUrl.Port)
-                {
-                    return $"{url}?preset={preset}";
-                }
+                var baseUrl = urlGenerator.BuildUrl(string.Empty);
 
-                return url!;
+                if (url.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    var result = $"{url}";
+
+                    if (!string.IsNullOrEmpty(preset))
+                    {
+                        result += $"?preset={preset}";
+                    }
+
+                    return result;
+                }
+                else
+                {
+                    var result = $"{urlGenerator.BuildUrl("/api/assets/proxy")}?url={Uri.EscapeDataString(url)}";
+
+                    if (!string.IsNullOrEmpty(preset))
+                    {
+                        result += $"&preset={preset}";
+                    }
+
+                    return result;
+                }
             }
 
-            return $"{baseUrl}/Empty.Png";
+            return urlGenerator.BuildUrl("/Empty.png");
         }
     }
 }
