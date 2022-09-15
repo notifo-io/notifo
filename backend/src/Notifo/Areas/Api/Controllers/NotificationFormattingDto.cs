@@ -68,7 +68,12 @@ namespace Notifo.Areas.Api.Controllers
         public NotificationFormatting<LocalizedText> ToDomainObject()
         {
             var result = SimpleMapper.Map(this, new NotificationFormatting<LocalizedText>());
-
+            
+            // TODO: The ConfirmMode enum is not being mapped, and is always null on the reult. There's probably a
+            // better way to do this in the SimpleMapper for enums in general, but I lack the C# knowledge and project
+            // familiarity to implement this there efficiently, thus opting for a simpler approach to get confirms working.
+            result.ConfirmMode = this.ConfirmMode;
+            
             return result;
         }
     }
