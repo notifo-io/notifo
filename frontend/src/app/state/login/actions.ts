@@ -14,7 +14,7 @@ import { LoginState, User } from './state';
 
 const loginStarted = createAction('login/started');
 const loginDoneSilent = createAction<{ user: User }>('login/done/silent');
-const loginDoneRedirect = createAction<{ user: User }>('login/done/redirect');
+const loginDoneRedirect = createAction<{ user: User; redirectPath?: string }>('login/done/redirect');
 const loginFailed = createAction('login/failed');
 
 const logoutStarted = createAction('logout/started');
@@ -37,7 +37,7 @@ export const loginStart = () => {
         }
 
         if (!currentUser) {
-            await userManager.signinRedirect();
+            await userManager.signinRedirect({ state: { redirectPath: window.location.pathname } });
         } else {
             const user = getUser(currentUser);
 
@@ -57,7 +57,7 @@ export const loginDone = () => {
         } else if (currentUser) {
             const user = getUser(currentUser);
 
-            dispatch(loginDoneRedirect({ user }));
+            dispatch(loginDoneRedirect({ user, redirectPath: currentUser.state?.redirectPath }));
         }
     };
 };
@@ -98,7 +98,13 @@ export const loginMiddleware: Middleware = (state) => next => action => {
     const result = next(action);
 
     if (loginDoneRedirect.match(action) || logoutDoneRedirect.match(action) || loginFailed.match(action)) {
-        state.dispatch(routerActions.push('/'));
+        const path = action.payload?.redirectPath;
+
+        if (path) {
+            state.dispatch(routerActions.push(path));
+        } else {
+            state.dispatch(routerActions.push('/'));
+        }
     }
 
     return result;

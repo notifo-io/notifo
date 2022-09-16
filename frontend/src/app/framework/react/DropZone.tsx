@@ -125,10 +125,12 @@ export const DropZone = (props: DropZoneProps) => {
 };
 
 const ImageTypes: ReadonlyArray<string> = [
-    'image/jpeg',
-    'image/png',
-    'image/jpg',
+    'image/avif',
     'image/gif',
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
 ];
 
 function stopEvent(event: React.DragEvent) {

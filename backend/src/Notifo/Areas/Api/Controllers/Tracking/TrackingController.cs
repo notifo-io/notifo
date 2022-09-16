@@ -79,11 +79,11 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
                 if (url.Contains('?', StringComparison.OrdinalIgnoreCase))
                 {
-                    url += $"&id={id:notEmpty}";
+                    url += $"&id={id}";
                 }
                 else
                 {
-                    url += $"?id={id:notEmpty}";
+                    url += $"?id={id}";
                 }
 
                 return Redirect(url);

@@ -12,6 +12,7 @@ using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 
@@ -20,16 +21,18 @@ namespace Notifo.Domain.UserNotifications
     public sealed class UserNotificationFactory : IUserNotificationFactory
     {
         private const string DefaultConfirmText = "Confirm";
-        private readonly IUserNotificationUrl url;
+        private readonly IUserNotificationUrl notificationUrl;
+        private readonly IImageFormatter imageFormatter;
         private readonly IClock clock;
         private readonly ILogStore logstore;
 
-        public UserNotificationFactory(ILogStore logstore, IUserNotificationUrl url,
+        public UserNotificationFactory(ILogStore logstore, IUserNotificationUrl notificationUrl, IImageFormatter imageFormatter,
             IClock clock)
         {
-            this.clock = clock;
+            this.notificationUrl = notificationUrl;
+            this.imageFormatter = imageFormatter;
             this.logstore = logstore;
-            this.url = url;
+            this.clock = clock;
         }
 
         public UserNotification? Create(App app, User user, UserEventMessage userEvent)
@@ -71,10 +74,24 @@ namespace Notifo.Domain.UserNotifications
             notification.UserLanguage = language;
             notification.Formatting = formatting;
 
+            ConfigureImages(notification);
             ConfigureTracking(notification, userEvent);
             ConfigureSettings(notification, userEvent, user);
 
             return notification;
+        }
+
+        private void ConfigureImages(UserNotification notification)
+        {
+            if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageSmall))
+            {
+                notification.Formatting.ImageSmall = imageFormatter.Format(notification.Formatting.ImageSmall, null);
+            }
+
+            if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageLarge))
+            {
+                notification.Formatting.ImageLarge = imageFormatter.Format(notification.Formatting.ImageLarge, null);
+            }
         }
 
         private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)
@@ -83,7 +100,7 @@ namespace Notifo.Domain.UserNotifications
 
             if (confirmMode == ConfirmMode.Explicit)
             {
-                notification.ConfirmUrl = url.TrackConfirmed(notification.Id, notification.UserLanguage);
+                notification.ConfirmUrl = notificationUrl.TrackConfirmed(notification.Id, notification.UserLanguage);
 
                 if (string.IsNullOrWhiteSpace(notification.Formatting.ConfirmText))
                 {
@@ -95,8 +112,8 @@ namespace Notifo.Domain.UserNotifications
                 notification.Formatting.ConfirmText = null;
             }
 
-            notification.TrackDeliveredUrl = url.TrackDelivered(notification.Id, notification.UserLanguage);
-            notification.TrackSeenUrl = url.TrackSeen(notification.Id, notification.UserLanguage);
+            notification.TrackDeliveredUrl = notificationUrl.TrackDelivered(notification.Id, notification.UserLanguage);
+            notification.TrackSeenUrl = notificationUrl.TrackSeen(notification.Id, notification.UserLanguage);
         }
 
         private static void ConfigureSettings(UserNotification notification, UserEventMessage userEvent, User user)

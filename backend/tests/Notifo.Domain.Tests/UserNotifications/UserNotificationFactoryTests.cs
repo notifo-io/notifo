@@ -13,6 +13,7 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
@@ -23,11 +24,12 @@ namespace Notifo.Domain.UserNotifications
     public sealed class UserNotificationFactoryTests
     {
         private readonly IClock clock = A.Fake<IClock>();
+        private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();
+        private readonly IImageFormatter imageFormatter = A.Fake<IImageFormatter>();
         private readonly ILogStore logStore = A.Fake<ILogStore>();
         private readonly App app;
         private readonly User user = new User("1", "1", default);
         private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
-        private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();
         private readonly IUserNotificationFactory sut;
 
         public UserNotificationFactoryTests()
@@ -40,6 +42,9 @@ namespace Notifo.Domain.UserNotifications
             A.CallTo(() => clock.GetCurrentInstant())
                 .Returns(now);
 
+            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._))
+                .ReturnsLazily(new Func<string, string, string>((url, preset) => $"format/{url}/{preset}"));
+
             A.CallTo(() => notificationUrl.TrackConfirmed(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"confirm/{id}/?lang={lang}"));
 
@@ -49,7 +54,7 @@ namespace Notifo.Domain.UserNotifications
             A.CallTo(() => notificationUrl.TrackDelivered(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"delivered/{id}/?lang={lang}"));
 
-            sut = new UserNotificationFactory(logStore, notificationUrl, clock);
+            sut = new UserNotificationFactory(logStore, notificationUrl, imageFormatter, clock);
         }
 
         [Fact]
@@ -214,6 +219,51 @@ namespace Notifo.Domain.UserNotifications
             var notification = sut.Create(app, user, userEvent)!;
 
             Assert.Null(notification.Formatting.ConfirmText);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void Should_not_format_images_if_null_or_empty(string url)
+        {
+            var userEvent = CreateMinimumUserEvent();
+
+            userEvent.Formatting.ImageLarge = new LocalizedText
+            {
+                ["en"] = url
+            };
+
+            userEvent.Formatting.ImageSmall = new LocalizedText
+            {
+                ["en"] = url
+            };
+
+            var notification = sut.Create(app, user, userEvent)!;
+
+            Assert.Equal(string.Empty, notification.Formatting.ImageLarge);
+            Assert.Equal(string.Empty, notification.Formatting.ImageSmall);
+        }
+
+        [Fact]
+        public void Should_format_image_url()
+        {
+            var userEvent = CreateMinimumUserEvent();
+
+            userEvent.Formatting.ImageLarge = new LocalizedText
+            {
+                ["en"] = "image/large"
+            };
+
+            userEvent.Formatting.ImageSmall = new LocalizedText
+            {
+                ["en"] = "image/small"
+            };
+
+            var notification = sut.Create(app, user, userEvent)!;
+
+            Assert.Equal("format/image/large/", notification.Formatting.ImageLarge);
+            Assert.Equal("format/image/small/", notification.Formatting.ImageSmall);
         }
 
         [Fact]
