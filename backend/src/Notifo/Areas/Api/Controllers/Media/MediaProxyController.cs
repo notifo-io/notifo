@@ -58,7 +58,7 @@ namespace Notifo.Areas.Api.Controllers.Media
 
                 var source = new ResizeSource
                 {
-                    FileId = url.ToBase64(),
+                    FileId = url.Sha256Base64(),
                     FileName = (response.Content.Headers.ContentDisposition?.FileName).OrDefault("file"),
                     FileSize = (response.Content.Headers.ContentLength) ?? 0,
                     MimeType = (response.Content.Headers.ContentType?.ToString()).OrDefault("application/octet-stream"),
