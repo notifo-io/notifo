@@ -16,6 +16,8 @@ namespace TestSuite.ApiTests
     [UsesVerify]
     public class NotificationTests : IClassFixture<CreatedAppFixture>
     {
+        private readonly string subjectId = Guid.NewGuid().ToString();
+
         public CreatedAppFixture _ { get; set; }
 
         public NotificationTests(CreatedAppFixture fixture)
@@ -29,21 +31,10 @@ namespace TestSuite.ApiTests
         public async Task Should_send_self_formatted_notifications()
         {
             // STEP 0: Create user.
-            var userRequest = new UpsertUsersDto
-            {
-                Requests = new List<UpsertUserDto>
-                {
-                    new UpsertUserDto()
-                }
-            };
-
-            var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
-            var user_0 = users_0.First();
+            var user_0 = await CreateUserAsync();
 
 
             // STEP 1: Send Notification
-            var subjectId = Guid.NewGuid().ToString();
-
             var publishRequest = new PublishManyDto
             {
                 Requests = new List<PublishDto>
@@ -86,19 +77,8 @@ namespace TestSuite.ApiTests
         [Fact]
         public async Task Should_send_template_formatted_notifications()
         {
-            var subjectId = Guid.NewGuid().ToString();
-
             // STEP 0: Create user.
-            var userRequest = new UpsertUsersDto
-            {
-                Requests = new List<UpsertUserDto>
-                {
-                    new UpsertUserDto()
-                }
-            };
-
-            var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
-            var user_0 = users_0.First();
+            var user_0 = await CreateUserAsync();
 
 
             // STEP 1: Create template.
@@ -157,6 +137,125 @@ namespace TestSuite.ApiTests
                 .IgnoreMember<UserNotificationBaseDto>(x => x.TrackingToken)
                 .IgnoreMember<UserNotificationBaseDto>(x => x.TrackDeliveredUrl)
                 .IgnoreMember<UserNotificationBaseDto>(x => x.TrackSeenUrl);
+        }
+
+        [Fact]
+        public async Task Should_mark_notification_as_seen()
+        {
+            // STEP 0: Create user.
+            var user_0 = await CreateUserAsync();
+
+
+            // STEP 1: Send Notification
+            var publishRequest = new PublishManyDto
+            {
+                Requests = new List<PublishDto>
+                {
+                    new PublishDto
+                    {
+                        Topic = $"users/{user_0.Id}",
+                        Preformatted = new NotificationFormattingDto
+                        {
+                            Subject = new LocalizedText
+                            {
+                                ["en"] = subjectId
+                            }
+                        }
+                    }
+                }
+            };
+
+            await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+
+
+            // Test that notification has been created.
+            var notifications = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, null, TimeSpan.FromSeconds(30));
+            var notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+
+            Assert.NotNull(notification);
+            Assert.Null(notification.FirstSeen);
+
+
+            // STEP 2: Mark as seen
+            using (var httpClient = new HttpClient())
+            {
+                await httpClient.GetAsync(notification.TrackSeenUrl);
+            }
+
+
+            // Test if it has been marked as seen.
+            notifications = (await _.Client.Notifications.GetNotificationsAsync(_.AppId, user_0.Id)).Items.ToArray();
+            notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+
+            Assert.NotNull(notification.FirstSeen);
+        }
+
+        [Fact]
+        public async Task Should_mark_notification_as_confirmed_explicitely()
+        {
+            // STEP 0: Create user.
+            var user_0 = await CreateUserAsync();
+
+
+            // STEP 1: Send Notification
+            var publishRequest = new PublishManyDto
+            {
+                Requests = new List<PublishDto>
+                {
+                    new PublishDto
+                    {
+                        Topic = $"users/{user_0.Id}",
+                        Preformatted = new NotificationFormattingDto
+                        {
+                            Subject = new LocalizedText
+                            {
+                                ["en"] = subjectId
+                            },
+                            ConfirmMode = ConfirmMode.Explicit
+                        }
+                    }
+                }
+            };
+
+            await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+
+
+            // Test that notification has been created.
+            var notifications = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, null, TimeSpan.FromSeconds(30));
+            var notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+
+            Assert.NotNull(notification);
+            Assert.Null(notification.FirstConfirmed);
+
+
+            // STEP 2: Mark as seen
+            using (var httpClient = new HttpClient())
+            {
+                await httpClient.GetAsync(notification.ConfirmUrl);
+            }
+
+
+            // Test if it has been marked as seen.
+            notifications = (await _.Client.Notifications.GetNotificationsAsync(_.AppId, user_0.Id)).Items.ToArray();
+            notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+
+            Assert.NotNull(notification.FirstConfirmed);
+        }
+
+        private async Task<UserDto> CreateUserAsync()
+        {
+            var userRequest = new UpsertUsersDto
+            {
+                Requests = new List<UpsertUserDto>
+                {
+                    new UpsertUserDto()
+                }
+            };
+
+            var users_0 = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
+            var user_0 = users_0.First();
+
+            return user_0;
         }
     }
 }

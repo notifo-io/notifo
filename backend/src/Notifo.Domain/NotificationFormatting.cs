@@ -44,7 +44,7 @@ namespace Notifo.Domain
         {
             return text =>
             {
-                return text?.SelectText(language) ?? string.Empty;
+                return (text?.SelectText(language)).OrDefault(string.Empty);
             };
         }
 
