@@ -169,25 +169,28 @@ namespace TestSuite.ApiTests
 
 
             // Test that notification has been created.
-            var notifications = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, null, TimeSpan.FromSeconds(30));
-            var notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+            var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
 
-            Assert.NotNull(notification);
-            Assert.Null(notification.FirstSeen);
+            var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+            var notification_0 = notifications_0.SingleOrDefault();
+
+            Assert.NotNull(notification_0);
+            Assert.Null(notification_0.FirstSeen);
 
 
             // STEP 2: Mark as seen
             using (var httpClient = new HttpClient())
             {
-                await httpClient.GetAsync(notification.TrackSeenUrl);
+                await httpClient.GetAsync(notification_0.TrackSeenUrl);
             }
 
-
             // Test if it has been marked as seen.
-            notifications = (await _.Client.Notifications.GetNotificationsAsync(_.AppId, user_0.Id)).Items.ToArray();
-            notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+            var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstSeen != null);
 
-            Assert.NotNull(notification.FirstSeen);
+            var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+            var notification_1 = notifications_1.SingleOrDefault();
+
+            Assert.NotNull(notification_1.FirstSeen);
         }
 
         [Fact]
@@ -221,25 +224,28 @@ namespace TestSuite.ApiTests
 
 
             // Test that notification has been created.
-            var notifications = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, null, TimeSpan.FromSeconds(30));
-            var notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+            var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
 
-            Assert.NotNull(notification);
-            Assert.Null(notification.FirstConfirmed);
+            var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+            var notification_0 = notifications_0.SingleOrDefault();
+
+            Assert.NotNull(notification_0);
+            Assert.Null(notification_0.FirstConfirmed);
 
 
             // STEP 2: Mark as seen
             using (var httpClient = new HttpClient())
             {
-                await httpClient.GetAsync(notification.ConfirmUrl);
+                await httpClient.GetAsync(notification_0.ConfirmUrl);
             }
 
-
             // Test if it has been marked as seen.
-            notifications = (await _.Client.Notifications.GetNotificationsAsync(_.AppId, user_0.Id)).Items.ToArray();
-            notification = notifications.SingleOrDefault(x => x.Subject == subjectId);
+            var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstConfirmed != null);
 
-            Assert.NotNull(notification.FirstConfirmed);
+            var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+            var notification_1 = notifications_1.SingleOrDefault();
+
+            Assert.NotNull(notification_1.FirstSeen);
         }
 
         private async Task<UserDto> CreateUserAsync()
