@@ -77,6 +77,9 @@ namespace Notifo.SDK
         /// <inheritdoc />
         public IUsersClient Users => users.Value;
 
+        /// <inheritdoc />
+        public HttpClient HttpClient { get; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifoClient"/> class with the HTTP client and the base URL.
         /// </summary>
@@ -85,6 +88,8 @@ namespace Notifo.SDK
         /// <param name="readResponseAsString">True, to read the response as string.</param>
         public NotifoClient(HttpClient httpClient, string baseUrl, bool readResponseAsString)
         {
+            HttpClient = httpClient;
+
             apps = new Lazy<IAppsClient>(() =>
             {
                 return new AppsClient(httpClient)

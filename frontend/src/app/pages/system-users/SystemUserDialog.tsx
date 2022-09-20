@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Loader, Types } from '@app/framework';
+import { FormError, Loader, Types, useEventCallback } from '@app/framework';
 import { SystemUserDto, UpdateSystemUserDto } from '@app/service';
 import { Forms } from '@app/shared/components';
 import { upsertSystemUser, useSystemUsers } from '@app/state';
@@ -53,21 +53,15 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
         }
     }, [upserting]);
 
-    const doCloseForm = React.useCallback(() => {
-        if (onClose) {
-            onClose();
-        }
-    }, [onClose]);
-
     React.useEffect(() => {
         if (!upserting && wasUpserting && !upsertingError) {
-            doCloseForm();
+            onClose && onClose();
         }
-    }, [dispatch, doCloseForm, upserting, upsertingError, wasUpserting]);
+    }, [dispatch, onClose, upserting, upsertingError, wasUpserting]);
 
-    const doSave = React.useCallback((params: UpdateSystemUserDto) => {
+    const doSave = useEventCallback((params: UpdateSystemUserDto) => {
         dispatch(upsertSystemUser({ userId: user?.id, params }));
-    }, [dispatch, user?.id]);
+    });
 
     const initialValues: any = React.useMemo(() => {
         const result: Partial<UpdateSystemUserDto> = Types.clone(user || { roles: [] });
@@ -76,11 +70,11 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
     }, [user]);
 
     return (
-        <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm}>
+        <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
             <Formik<UpdateSystemUserDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
+                        <ModalHeader toggle={onClose}>
                             {user ? texts.systemUsers.editHeader : texts.systemUsers.createHeader}
                         </ModalHeader>
 
@@ -102,7 +96,7 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
                             <FormError error={upsertingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={doCloseForm} disabled={upserting}>
+                            <Button type='button' color='none' onClick={onClose} disabled={upserting}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary' disabled={upserting}>

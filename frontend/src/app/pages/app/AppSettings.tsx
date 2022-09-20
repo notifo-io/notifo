@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, Form } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Loader } from '@app/framework';
+import { FormError, Loader, useEventCallback } from '@app/framework';
 import { AppDetailsDto, UpsertAppDto } from '@app/service';
 import { Forms } from '@app/shared/components';
 import { upsertApp, useApps, useCore } from '@app/state';
@@ -47,9 +47,9 @@ export const AppSettings = (props: AppSettingsProps) => {
         return languages.map(x => x.value);
     }, [languages]);
 
-    const doSave = React.useCallback((params: UpsertAppDto) => {
+    const doSave = useEventCallback((params: UpsertAppDto) => {
         dispatch(upsertApp({ appId: appDetails.id, params }));
-    }, [dispatch, appDetails.id]);
+    });
 
     return (
         <>

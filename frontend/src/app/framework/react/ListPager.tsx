@@ -20,7 +20,7 @@ export interface ListPagerProps {
     onChange: (request: Partial<Query>) => void;
 }
 
-export const ListPager = (props: ListPagerProps) => {
+export const ListPager = React.memo((props: ListPagerProps) => {
     const {
         hideWhenUseless,
         list,
@@ -38,21 +38,21 @@ export const ListPager = (props: ListPagerProps) => {
     const canGoNext = total > 0 ? page < pageCount - 1 : (items && items.length >= pageSize);
     const canGoPrev = page > 0;
 
-    const doGoFirst = React.useCallback(() => {
+    const doGoFirst = () => {
         onChange({ page: 0 });
-    }, [onChange]);
+    };
 
-    const doGoPrev = React.useCallback(() => {
+    const doGoPrev = () => {
         onChange({ page: page - 1 });
-    }, [onChange, page]);
+    };
 
-    const doGoNext = React.useCallback(() => {
+    const doGoNext = () => {
         onChange({ page: page + 1 });
-    }, [onChange, page]);
+    };
 
-    const doGoLast = React.useCallback(() => {
+    const doGoLast = () => {
         onChange({ page: pageCount - 1 });
-    }, [onChange, pageCount]);
+    };
 
     if (!canGoNext && !canGoPrev && hideWhenUseless) {
         return null;
@@ -92,4 +92,4 @@ export const ListPager = (props: ListPagerProps) => {
             </Col>
         </Row>
     );
-};
+});

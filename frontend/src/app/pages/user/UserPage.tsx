@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
-import { ApiValue, FormatDate, Icon, Loader, useDialog } from '@app/framework';
+import { ApiValue, FormatDate, Icon, Loader, useBooleanObj, useEventCallback } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
 import { loadUser, togglePublishDialog, useApp, useUsers } from '@app/state';
 import { texts } from '@app/texts';
@@ -22,24 +22,20 @@ export const UserPage = () => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
-    const [activeTab, setActiveTab] = React.useState('notifications');
+    const dialogEdit = useBooleanObj();
     const loading = useUsers(x => x.loadingUser);
     const match = useRouteMatch();
     const user = useUsers(x => x.user)!;
     const userId = match.params['userId'];
-    const dialogEdit = useDialog();
+    const [activeTab, setActiveTab] = React.useState('notifications');
 
     React.useEffect(() => {
         dispatch(loadUser({ appId, userId }));
     }, [dispatch, appId, userId]);
 
-    const doDemo = React.useCallback(() => {
-        window.open(`/demo.html?userToken=${user.apiKey}`);
-    }, [user]);
-
-    const doPublish = React.useCallback(() => {
+    const doPublish = useEventCallback(() => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${userId}` } }));
-    }, [dispatch, userId]);
+    });
 
     return (
         <div className='user'>
@@ -76,9 +72,9 @@ export const UserPage = () => {
                                         </Col>
 
                                         <Col xs='auto'>
-                                            <Button color='secondary-link' onClick={doDemo}>
+                                            <a className='btn btn-secondary-link' target='_blank' href={`/demo.html?userToken=${user.apiKey}`}>
                                                 <Icon type='code' /> {texts.common.demo}
-                                            </Button>
+                                            </a>
                                         </Col>
                                     </Row>
 
@@ -148,7 +144,7 @@ export const UserPage = () => {
                                         <ApiValue value={user.emailAddress} />
                                     </FormGroup>
 
-                                    <Button color='primary' onClick={dialogEdit.open}>
+                                    <Button color='primary' onClick={dialogEdit.on}>
                                         <Icon type='create' /> {texts.common.edit}
                                     </Button>
                                 </CardBody>
@@ -160,8 +156,8 @@ export const UserPage = () => {
                 <>{texts.users.userNotFound}</>
             ) : null}
 
-            {dialogEdit.isOpen &&
-                <UserDialog user={user} onClose={dialogEdit.close} />
+            {dialogEdit.value &&
+                <UserDialog user={user} onClose={dialogEdit.off} />
             }
         </div>
     );

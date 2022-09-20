@@ -91,5 +91,10 @@ namespace Notifo.SDK
         /// Provides the client to query and manage users.
         /// </summary>
         IUsersClient Users { get; }
+
+        /// <summary>
+        /// The raw HTTP client.
+        /// </summary>
+        HttpClient HttpClient { get; }
     }
 }

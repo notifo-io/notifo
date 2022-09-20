@@ -7,27 +7,21 @@
 
 import * as React from 'react';
 import { Button, Input, InputProps } from 'reactstrap';
+import { useBoolean } from './hooks';
 
 export const PasswordInput = (props: InputProps) => {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const { type: _, ...otherProps } = props;
+    const { type: unused, ...otherProps } = props;
 
-    const [isClear, setIsClear] = React.useState(false);
-
-    const doToggleClear = React.useCallback(() => {
-        setIsClear(!isClear);
-    }, [isClear]);
-
-    const type = isClear ? 'text' : 'password';
+    const [isClear, setIsClear] = useBoolean();
 
     return (
         <div className='input-container'>
-            <Input type={type} {...otherProps}
+            <Input type={isClear ? 'text' : 'password'} {...otherProps}
                 spellcheck='false'
                 autocorrect='off'
                 autocomplete='none' />
 
-            <Button size={otherProps.bsSize} color='link' className={`input-btn input-btn-${otherProps.bsSize}`} onClick={doToggleClear} tabIndex={-1}>
+            <Button size={otherProps.bsSize} color='link' className={`input-btn input-btn-${otherProps.bsSize}`} onClick={setIsClear.toggle} tabIndex={-1}>
                 {isClear ? (
                     <i className='icon-visibility_off' />
                 ) : (

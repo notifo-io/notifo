@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListSearch, Loader, Query, useDialog } from '@app/framework';
+import { FormError, Icon, ListSearch, Loader, Query, useBooleanObj, useEventCallback } from '@app/framework';
 import { SystemUserDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { deleteSystemUser, loadSystemUsers, lockSystemUser, unlockSystemUser, useSystemUsers } from '@app/state';
@@ -19,8 +19,8 @@ import { SystemUserRow } from './SystemUserRow';
 
 export const SystemUsersPage = () => {
     const dispatch = useDispatch();
-    const dialogEdit = useDialog();
-    const dialogNew = useDialog();
+    const dialogEdit = useBooleanObj();
+    const dialogNew = useBooleanObj();
     const systemUsers = useSystemUsers(x => x.systemUsers);
     const [currentSystemUser, setCurrentSystemUser] = React.useState<SystemUserDto>();
 
@@ -32,31 +32,31 @@ export const SystemUsersPage = () => {
         dispatch(loadSystemUsers({}));
     }, [dispatch]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadSystemUsers());
-    }, [dispatch]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadSystemUsers(q));
-    }, [dispatch]);
+    });
 
-    const doLock = React.useCallback((user: SystemUserDto) => {
+    const doLock = useEventCallback((user: SystemUserDto) => {
         dispatch(lockSystemUser({ userId: user.id }));
-    }, [dispatch]);
+    });
 
-    const doUnlock = React.useCallback((user: SystemUserDto) => {
+    const doUnlock = useEventCallback((user: SystemUserDto) => {
         dispatch(unlockSystemUser({ userId: user.id }));
-    }, [dispatch]);
+    });
 
-    const doDelete = React.useCallback((user: SystemUserDto) => {
+    const doDelete = useEventCallback((user: SystemUserDto) => {
         dispatch(deleteSystemUser({ userId: user.id }));
-    }, [dispatch]);
+    });
 
-    const doEdit = React.useCallback((systemUser: SystemUserDto) => {
+    const doEdit = useEventCallback((systemUser: SystemUserDto) => {
         setCurrentSystemUser(systemUser);
 
-        dialogEdit.open();
-    }, [dialogEdit]);
+        dialogEdit.on();
+    });
 
     return (
         <main className='pl-4'>
@@ -84,7 +84,7 @@ export const SystemUsersPage = () => {
                                 <ListSearch list={systemUsers} onSearch={doLoad} placeholder={texts.systemUsers.searchPlaceholder} />
                             </Col>
                             <Col xs='auto pl-2'>
-                                <Button color='success' onClick={dialogNew.open}>
+                                <Button color='success' onClick={dialogNew.on}>
                                     <Icon type='add' /> {texts.users.createButton}
                                 </Button>
                             </Col>
@@ -134,12 +134,12 @@ export const SystemUsersPage = () => {
                 <TableFooter noDetailButton list={systemUsers}
                     onChange={doLoad} />
 
-                {dialogNew.isOpen &&
-                    <SystemUserDialog onClose={dialogNew.close} />
+                {dialogNew.value &&
+                    <SystemUserDialog onClose={dialogNew.off} />
                 }
 
-                {dialogEdit.isOpen &&
-                    <SystemUserDialog user={currentSystemUser} onClose={dialogEdit.close} />
+                {dialogEdit.value &&
+                    <SystemUserDialog user={currentSystemUser} onClose={dialogEdit.off} />
                 }
             </div>
         </main>

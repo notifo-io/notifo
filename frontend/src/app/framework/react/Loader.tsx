@@ -8,6 +8,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import ExternalLoader from 'react-loader-spinner';
+import { useBoolean } from './hooks';
 
 export interface LoaderProps {
     // Optional class name.
@@ -29,21 +30,21 @@ export interface LoaderProps {
 export const Loader = React.memo((props: LoaderProps) => {
     const { className, light, small, text, visible } = props;
 
-    const [isVisible, setIsVisible] = React.useState(false);
+    const [isVisible, setIsVisible] = useBoolean();
 
     React.useEffect(() => {
         if (visible) {
-            setIsVisible(true);
+            setIsVisible.on();
 
             return undefined;
         } else {
             const timeout = setTimeout(() => {
-                setIsVisible(false);
+                setIsVisible.off();
             }, 300);
 
             return () => clearTimeout(timeout);
         }
-    }, [visible]);
+    }, [setIsVisible, visible]);
 
     if (!isVisible) {
         return null;

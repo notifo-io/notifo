@@ -7,6 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { useBoolean } from '@app/framework';
 import { loadTemplates, useApp, useTemplates } from '@app/state';
 import { TemplateForm } from './TemplateForm';
 import { TemplatesList } from './TemplatesList';
@@ -16,7 +17,7 @@ export const TemplatesPage = () => {
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useBoolean();
     const templates = useTemplates(x => x.templates);
     const templateCode = useTemplates(x => x.currentTemplateCode);
     const [language, setLanguage] = React.useState<string>(appLanguages[0]);
@@ -29,21 +30,13 @@ export const TemplatesPage = () => {
         dispatch(loadTemplates(appId));
     }, [dispatch, appId]);
 
-    const doOpen = React.useCallback(() => {
-        setIsOpen(true);
-    }, []);
-
-    const doClose = React.useCallback(() => {
-        setIsOpen(false);
-    }, []);
-
     return (
         <div className='templates'>
-            <TemplatesList onOpen={doOpen} />
+            <TemplatesList onOpen={setIsOpen.on} />
 
             {isOpen &&
                 <TemplateForm language={language}
-                    onClose={doClose}
+                    onClose={setIsOpen.off}
                     onLanguageSelect={setLanguage}
                     template={template} />
             }

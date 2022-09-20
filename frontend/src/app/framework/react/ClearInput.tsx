@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { Button, Input, InputProps } from 'reactstrap';
 import { Icon } from './Icon';
+import { useEventCallback } from './hooks';
 
 export interface ClearInputProps extends InputProps {
     // True when cleared.
@@ -18,14 +19,13 @@ export const ClearInput = (props: InputProps) => {
     const { bsSize, onClear, ...other } = props;
 
     const container = React.useRef<HTMLDivElement | null>(null);
-
     const [value, setValue] = React.useState(props.value);
 
     React.useEffect(() => {
         setValue(props.value);
     }, [props.value]);
 
-    const doClear = React.useCallback(() => {
+    const doClear = useEventCallback(() => {
         if (container.current) {
             setValue(undefined);
 
@@ -41,7 +41,7 @@ export const ClearInput = (props: InputProps) => {
                 onClear();
             }
         }
-    }, [onClear]);
+    });
 
     return (
         <div className='input-container' ref={container}>

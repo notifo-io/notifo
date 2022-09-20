@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
-import { FormError, Icon, Loader, useDialog } from '@app/framework';
+import { FormError, Icon, Loader, useBooleanObj } from '@app/framework';
 import { selectApp, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import { AppDialog } from './AppDialog';
@@ -17,7 +17,7 @@ import { AppDialog } from './AppDialog';
 export const AppsPage = () => {
     const dispatch = useDispatch();
     const apps = useApps(x => x.apps);
-    const dialogNew = useDialog();
+    const appDialog = useBooleanObj();
     const match = useRouteMatch();
 
     React.useEffect(() => {
@@ -34,7 +34,7 @@ export const AppsPage = () => {
                     <Loader visible={apps.isLoading} />
                 </Col>
                 <Col xs='auto'>
-                    <Button color='success' onClick={dialogNew.open}>
+                    <Button color='success' onClick={appDialog.on}>
                         <Icon type='add' /> {texts.apps.createButton}
                     </Button>
                 </Col>
@@ -42,8 +42,8 @@ export const AppsPage = () => {
 
             <FormError error={apps.error} />
 
-            {dialogNew.isOpen &&
-                <AppDialog onClose={dialogNew.close}></AppDialog>
+            {appDialog.value &&
+                <AppDialog onClose={appDialog.off}></AppDialog>
             }
 
             {apps.items &&

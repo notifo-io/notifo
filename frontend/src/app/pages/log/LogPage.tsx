@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
+import { FormError, Icon, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
 import { loadLog, useApp, useLog } from '@app/state';
 import { texts } from '@app/texts';
@@ -29,13 +29,13 @@ export const LogPage = () => {
         dispatch(loadLog(appId, {}));
     }, [dispatch, appId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadLog(appId));
-    }, [dispatch, appId]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadLog(appId, q));
-    }, [dispatch, appId]);
+    });
 
     return (
         <div className='log'>

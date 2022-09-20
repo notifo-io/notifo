@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { Button, Col, DropdownItem, DropdownMenu, DropdownToggle, Label, Row, UncontrolledButtonDropdown } from 'reactstrap';
-import { FormError, Icon, Loader } from '@app/framework';
+import { FormError, Icon, Loader, useEventCallback } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { createEmailTemplate, deleteEmailTemplate, loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -42,17 +42,17 @@ export const EmailTemplatesPage = () => {
         }
     }, [deletingError]);
 
-    const doCreate = React.useCallback(() => {
+    const doCreate = useEventCallback(() => {
         dispatch(createEmailTemplate({ appId }));
-    }, [dispatch, appId]);
+    });
 
-    const doCreateWithLiquid = React.useCallback(() => {
+    const doCreateWithLiquid = useEventCallback(() => {
         dispatch(createEmailTemplate({ appId, kind: 'Liquid' }));
-    }, [dispatch, appId]);
+    });
 
-    const doDelete = React.useCallback((template: ChannelTemplateDto) => {
+    const doDelete = useEventCallback((template: ChannelTemplateDto) => {
         dispatch(deleteEmailTemplate({ appId, id: template.id }));
-    }, [dispatch, appId]);
+    });
 
     return (
         <div className='email-templates'>

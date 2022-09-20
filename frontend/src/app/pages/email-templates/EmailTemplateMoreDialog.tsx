@@ -8,6 +8,7 @@
 import { Formik } from 'formik';
 import * as React from 'react';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { useEventCallback } from '@app/framework';
 import { EmailTemplateDto } from '@app/service';
 import { Forms } from '@app/shared/components';
 import { texts } from '@app/texts';
@@ -23,22 +24,18 @@ export interface EmailTemplateMoreDialogProps {
 export const EmailTemplateMoreDialog = (props: EmailTemplateMoreDialogProps) => {
     const { onClose, template } = props;
 
-    const doCloseForm = React.useCallback(() => {
-        onClose && onClose();
-    }, [onClose]);
-
-    const doSave = React.useCallback((params: any) => {
+    const doSave = useEventCallback((params: any) => {
         Object.assign(template, params);
 
-        doCloseForm();
-    }, [doCloseForm, template]);
+        onClose && onClose();
+    });
 
     return (
-        <Modal isOpen={true} toggle={doCloseForm}>
+        <Modal isOpen={true} toggle={onClose}>
             <Formik<EmailTemplateDto> initialValues={template} enableReinitialize onSubmit={doSave}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
+                        <ModalHeader toggle={onClose}>
                             {texts.common.settings}
                         </ModalHeader>
 
@@ -52,7 +49,7 @@ export const EmailTemplateMoreDialog = (props: EmailTemplateMoreDialogProps) => 
                             </fieldset>
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={doCloseForm}>
+                            <Button type='button' color='none' onClick={onClose}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary'>

@@ -4,7 +4,7 @@ import { flip, useFloating } from '@floating-ui/react-dom';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Button, DropdownItem, DropdownMenu } from 'reactstrap';
-import { ClickOutside, Icon, OverlayDropdown } from '@app/framework';
+import { ClickOutside, Icon, OverlayDropdown, useEventCallback } from '@app/framework';
 import { texts } from '@app/texts';
 import { MediaPicker } from './MediaPicker';
 
@@ -66,35 +66,35 @@ export const Picker = (props: PickerProps) => {
         update();
     }, [openPicker]);
 
-    const doSelectUrl = React.useCallback((url: string) => {
+    const doSelectUrl = useEventCallback((url: string) => {
         onPick(url);
 
         setOpenPicker(0);
-    }, [onPick]);
+    });
 
-    const doSelectArgument = React.useCallback(() => {
+    const doSelectArgument = useEventCallback(() => {
         onPick('{{ myVariable }}');
         
         setOpenPicker(0);
-    }, [onPick]);
+    });
 
-    const doSelectEmoji = React.useCallback((emoji: any) => {
+    const doSelectEmoji = useEventCallback((emoji: any) => {
         onPick(emoji.native);
         
         setOpenPicker(0);
-    }, [onPick]);
+    });
 
-    const doClose = React.useCallback(() => {
+    const doClose = useEventCallback(() => {
         setOpenPicker(0);
-    }, []);
+    });
 
-    const doPickMedia = React.useCallback(() => {
+    const doPickMedia = useEventCallback(() => {
         setOpenPicker(1);
-    }, []);
+    });
 
-    const doPickEmoji = React.useCallback(() => {
+    const doPickEmoji = useEventCallback(() => {
         setOpenPicker(2);
-    }, []);
+    });
     
     if (!pickArgument && !pickMedia) {
         return null;

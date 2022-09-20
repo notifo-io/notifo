@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+ */
+
 import * as React from 'react';
 
 export interface ClickOutsideProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
@@ -16,7 +23,7 @@ export const ClickOutside = React.memo((props: ClickOutsideProps) => {
 
     const container = React.useRef<HTMLDivElement>();
 
-    const setContainer = React.useCallback((div: HTMLDivElement) => {
+    const initContainer = React.useCallback((div: HTMLDivElement) => {
         container.current = div;
     }, []);
 
@@ -39,7 +46,7 @@ export const ClickOutside = React.memo((props: ClickOutsideProps) => {
     }, [isActive, onClickOutside]);
 
     return (
-        <div {...other} ref={setContainer}>
+        <div {...other} ref={initContainer}>
             {children}
         </div>
     );

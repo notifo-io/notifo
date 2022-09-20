@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Loader, Types } from '@app/framework';
+import { FormError, Loader, Types, useEventCallback } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { Forms, NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -51,20 +51,14 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     }, [upserting]);
 
     React.useEffect(() => {
-        if (!upserting && wasUpserting && !upsertingError && onClose) {
-            onClose();
+        if (!upserting && wasUpserting && !upsertingError) {
+            onClose && onClose();
         }
     }, [onClose, upserting, upsertingError, wasUpserting]);
 
-    const doCloseForm = React.useCallback(() => {
-        if (onClose) {
-            onClose();
-        }
-    }, [onClose]);
-
-    const doSave = React.useCallback((params: SubscriptionDto) => {
+    const doSave = useEventCallback((params: SubscriptionDto) => {
         dispatch(upsertSubscription({ appId, userId, params }));
-    }, [dispatch, appId, userId]);
+    });
 
     const initialValues: any = React.useMemo(() => {
         const result: Partial<SubscriptionDto> = Types.clone(subscription || { topicPrefix: '' });
@@ -79,11 +73,11 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     }, [subscription]);
 
     return (
-        <Modal isOpen={true} size='lg' toggle={doCloseForm}>
+        <Modal isOpen={true} size='lg' toggle={onClose}>
             <Formik<SubscriptionDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
+                        <ModalHeader toggle={onClose}>
                             {subscription ? texts.subscriptions.editHeader : texts.subscriptions.createHeader}
                         </ModalHeader>
 
@@ -98,7 +92,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
                             <FormError error={upsertingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={doCloseForm} disabled={upserting}>
+                            <Button type='button' color='none' onClick={onClose} disabled={upserting}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary' disabled={upserting}>

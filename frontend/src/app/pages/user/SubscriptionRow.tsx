@@ -26,24 +26,24 @@ export interface SubscriptionRowProps {
     onDelete?: (subscription: SubscriptionDto) => void;
 }
 
-export const SubscriptionRow = (props: SubscriptionRowProps) => {
+export const SubscriptionRow = React.memo((props: SubscriptionRowProps) => {
     const { onDelete, onEdit, onPublish, subscription } = props;
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
     });
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = () => {
         onDelete && onDelete(subscription);
-    }, [onDelete, subscription]);
+    };
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = () => {
         onEdit && onEdit(subscription);
-    }, [onEdit, subscription]);
+    };
 
-    const doPublish = React.useCallback(() => {
+    const doPublish = () => {
         onPublish && onPublish(subscription);
-    }, [onPublish, subscription]);
+    };
 
     return (
         <tr>
@@ -69,4 +69,4 @@ export const SubscriptionRow = (props: SubscriptionRowProps) => {
             </td>
         </tr>
     );
-};
+});

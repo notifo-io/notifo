@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import { FieldHelperProps, FieldInputProps, FieldMetaProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
-import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle } from '@app/framework';
+import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle, useEventCallback } from '@app/framework';
 import { isErrorVisible, Types } from '@app/framework/utils';
 import { Picker, PickerOptions } from './Picker';
 
@@ -274,9 +274,9 @@ const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { 
     const { submitCount } = useFormikContext();
     const [field, meta, helper] = useFieldNew(name);
 
-    const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         helper.setValue(parseInt(event.target.value, 10));
-    }, [helper]);
+    });
 
     return (
         <>
@@ -296,9 +296,9 @@ const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta, helper] = useFieldNew(name);
 
-    const doAddPick = React.useCallback((value: string) => {
+    const doAddPick = useEventCallback((value: string) => {
         helper.setValue((field.value || '') + value);
-    }, [field.value, helper]);
+    });
 
     return (
         <div className='input-container'>
@@ -319,9 +319,9 @@ const InputTextarea = ({ name, picker, placeholder }: FormEditorProps) => {
     const { submitCount } = useFormikContext();
     const [field, meta, helper] = useFieldNew(name);
 
-    const doAddPick = React.useCallback((value: string) => {
+    const doAddPick = useEventCallback((value: string) => {
         helper.setValue((field.value || '') + value);
-    }, [field.value, helper]);
+    });
 
     return (
         <div className='input-container textarea'>
@@ -437,13 +437,13 @@ const InputCheckboxOption = (props: { field: FieldInputProps<string[]>; form: Fo
     const valueArray: string[] = field.value || EMPTY_ARRAY;
     const valueExist = valueArray && valueArray.indexOf(option.value!) >= 0;
 
-    const doChange = React.useCallback(() => {
+    const doChange = useEventCallback(() => {
         if (valueExist) {
             form.setFieldValue(field.name, valueArray.filter(x => x !== option.value));
         } else {
             form.setFieldValue(field.name, [...valueArray, option.value]);
         }
-    }, [valueExist, form, field.name, valueArray, option.value]);
+    });
 
     return (
         <CustomInput type='checkbox' name={option.value} id={option.value || 'none'} checked={valueExist}
@@ -470,17 +470,17 @@ const InputArray = (props: ArrayFormProps<any>) => {
         setNewValue(newValues[0]);
     }, [newValues]);
 
-    const doRemove = React.useCallback((value: any) => {
+    const doRemove = useEventCallback((value: any) => {
         helpers.setValue(fieldValue.filter(x => x !== value));
-    }, [fieldValue, helpers]);
+    });
 
-    const doAdd = React.useCallback(() => {
+    const doAdd = useEventCallback(() => {
         helpers.setValue([...fieldValue, newValue]);
-    }, [fieldValue, helpers, newValue]);
+    });
 
-    const doSelectValue = React.useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+    const doSelectValue = useEventCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
         setNewValue(ev.target.value);
-    }, []);
+    });
 
     return (
         <div>

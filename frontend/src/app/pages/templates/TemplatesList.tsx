@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { Icon, Loader } from '@app/framework';
+import { Icon, Loader, useEventCallback } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { deleteTemplate, loadTemplates, selectTemplate, togglePublishDialog, useApp, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -32,29 +32,29 @@ export const TemplatesList = (props: TemplateListProps) => {
         dispatch(loadTemplates(appId));
     }, [dispatch, appId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadTemplates(appId));
-    }, [dispatch, appId]);
+    });
 
-    const doNew = React.useCallback(() => {
+    const doNew = useEventCallback(() => {
         onOpen();
 
         dispatch(selectTemplate({ code: undefined }));
-    }, [dispatch, onOpen]);
+    });
 
-    const doSelect = React.useCallback((template: TemplateDto) => {
+    const doSelect = useEventCallback((template: TemplateDto) => {
         onOpen();
 
         dispatch(selectTemplate({ code: template.code }));
-    }, [dispatch, onOpen]);
+    });
 
-    const doDelete = React.useCallback((template: TemplateDto) => {
+    const doDelete = useEventCallback((template: TemplateDto) => {
         dispatch(deleteTemplate({ appId, code: template.code }));
-    }, [dispatch, appId]);
+    });
 
-    const doPublish = React.useCallback((template: TemplateDto) => {
+    const doPublish = useEventCallback((template: TemplateDto) => {
         dispatch(togglePublishDialog({ open: true, values: { templateCode: template.code } }));
-    }, [dispatch]);
+    });
 
     return (
         <div className='templates-column templates-overview'>

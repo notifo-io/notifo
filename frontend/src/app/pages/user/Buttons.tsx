@@ -9,41 +9,23 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Popover, PopoverBody, Table } from 'reactstrap';
-import { ApiValue, ClickOutside, FormatDate, Icon } from '@app/framework';
+import { ApiValue, ClickOutside, FormatDate, Icon, useBoolean, useEventCallback } from '@app/framework';
 import { UserDto } from '@app/service';
 import { deleteUserMobilePushToken, deleteUserWebPushSubscription } from '@app/state';
 import { texts } from '@app/texts';
 
-function usePopover(): [boolean, () => void, () => void, () => void] {
-    const [isOpen, setIsOpen] = React.useState(false);
-
-    const toggle = () => {
-        setIsOpen(!isOpen);
-    };
-
-    const open = () => {
-        setIsOpen(true);
-    };
-
-    const close = () => {
-        setIsOpen(false);
-    };
-
-    return [isOpen, open, close, toggle];
-}
-
 export const ButtonSms = ({ user }: { user: UserDto }) => {
-    const [isOpen, open, close, toggle] = usePopover();
+    const [isOpen, setIsOpen] = useBoolean();
 
     const hasValue = !!user.phoneNumber;
 
     return (
         <>
-            <Button color='none' id='buttonSms' className={getButtonClass(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonSms' className={getButtonClass(hasValue)} block onClick={setIsOpen.on}>
                 <Icon type='sms' />
             </Button>
 
-            <Popover isOpen={isOpen && hasValue} target='buttonSms' placement='auto' toggle={toggle}>
+            <Popover isOpen={isOpen && hasValue} target='buttonSms' placement='auto' toggle={setIsOpen.toggle}>
                 <ClickOutside onClickOutside={close} isActive={true}>
                     <PopoverBody>
                         <h5>{texts.common.phoneNumber}</h5>
@@ -57,17 +39,17 @@ export const ButtonSms = ({ user }: { user: UserDto }) => {
 };
 
 export const ButtonEmail = ({ user }: { user: UserDto }) => {
-    const [isOpen, open, close, toggle] = usePopover();
+    const [isOpen, setIsOpen] = useBoolean();
 
     const hasValue = !!user.emailAddress;
 
     return (
         <>
-            <Button color='none' id='buttonEmail' className={getButtonClass(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonEmail' className={getButtonClass(hasValue)} block onClick={setIsOpen.on}>
                 <Icon type='mail_outline' />
             </Button>
 
-            <Popover isOpen={isOpen && hasValue} target='buttonEmail' placement='auto' toggle={toggle}>
+            <Popover isOpen={isOpen && hasValue} target='buttonEmail' placement='auto' toggle={setIsOpen.toggle}>
                 <ClickOutside onClickOutside={close} isActive={true}>
                     <PopoverBody>
                         <h5>{texts.common.emailAddress}</h5>
@@ -82,17 +64,17 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
 
 export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto }) => {
     const dispatch = useDispatch();
-    const [isOpen, open, close, toggle] = usePopover();
+    const [isOpen, setIsOpen] = useBoolean();
 
-    const doDelete = React.useCallback((endpoint: string) => {
+    const doDelete = useEventCallback((endpoint: string) => {
         dispatch(deleteUserWebPushSubscription({ appId, userId: user.id, endpoint }));
-    }, [appId, dispatch, user.id]);
+    });
 
     const hasValue = user.webPushSubscriptions.length > 0;
 
     return (
         <>
-            <Button color='none' id='buttonWebPush' className={getButtonClass(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonWebPush' className={getButtonClass(hasValue)} block onClick={setIsOpen.on}>
                 <Icon type='browser' />
 
                 {user.webPushSubscriptions.length > 0 &&
@@ -100,7 +82,7 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
                 }
             </Button>
 
-            <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={toggle} popperClassName='popper-lg'>
+            <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={setIsOpen.toggle} popperClassName='popper-lg'>
                 <ClickOutside onClickOutside={close} isActive={true}>
                     <PopoverBody>
                         <h5>{texts.common.webPush}</h5>
@@ -142,17 +124,17 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
 
 export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto }) => {
     const dispatch = useDispatch();
-    const [isOpen, open, close, toggle] = usePopover();
+    const [isOpen, setIsOpen] = useBoolean();
 
-    const doDelete = React.useCallback((token: string) => {
+    const doDelete = useEventCallback((token: string) => {
         dispatch(deleteUserMobilePushToken({ appId, userId: user.id, token }));
-    }, [appId, dispatch, user.id]);
+    });
 
     const hasValue = user.mobilePushTokens.length > 0;
 
     return (
         <>
-            <Button color='none' id='buttonMobilePush' className={getButtonClass(hasValue)} block onClick={open}>
+            <Button color='none' id='buttonMobilePush' className={getButtonClass(hasValue)} block onClick={setIsOpen.on}>
                 <Icon type='mobile' />
 
                 {user.mobilePushTokens.length > 0 &&
@@ -160,7 +142,7 @@ export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto
                 }
             </Button>
 
-            <Popover isOpen={isOpen && hasValue} target='buttonMobilePush' placement='auto' toggle={toggle} popperClassName='popper-lg'>
+            <Popover isOpen={isOpen && hasValue} target='buttonMobilePush' placement='auto' toggle={setIsOpen.toggle} popperClassName='popper-lg'>
                 <ClickOutside onClickOutside={close} isActive={true}>
                     <PopoverBody>
                         <h5>{texts.common.mobilePush}</h5>

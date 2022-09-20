@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, CardFooter } from 'reactstrap';
-import { Confirm, Icon } from '@app/framework';
+import { Confirm, Icon, useBoolean } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { texts } from '@app/texts';
 
@@ -35,34 +35,30 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
         selected,
     } = props;
 
-    const [visible, setVisible] = React.useState(false);
+    const [visible, setVisible] = useBoolean();
 
     React.useEffect(() => {
-        setVisible(true);
-    }, [media.url]);
+        setVisible.on();
+    }, [media.url, setVisible]);
 
     React.useEffect(() => {
         ReactTooltip.rebuild();
     });
 
-    const doHide = React.useCallback(() => {
-        setVisible(false);
-    }, []);
-
-    const doDelete = React.useCallback(() => {
+    const doDelete = () => {
         onDelete && onDelete(media);
-    }, [media, onDelete]);
+    };
 
-    const doClick = React.useCallback(() => {
+    const doClick = () => {
         onClick && onClick(media);
-    }, [media, onClick]);
+    };
 
     const image = `${media.url}?width=200&height=150&mode=Pad`;
 
     return (
         <Card className='media-card' onClick={doClick} color={selected ? 'primary' : undefined}>
             <CardBody>
-                <img className={classNames({ hidden: !visible })} src={image} onError={doHide} />
+                <img className={classNames({ hidden: !visible })} src={image} onError={setVisible.off} />
             </CardBody>
             <CardFooter>
                 <div className='truncate'>{media.fileName}</div>

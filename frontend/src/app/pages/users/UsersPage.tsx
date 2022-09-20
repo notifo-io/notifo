@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
+import { FormError, Icon, ListSearch, Loader, Query, useBooleanObj, useEventCallback, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { deleteUser, loadUsers, togglePublishDialog, useApp, useUsers } from '@app/state';
@@ -20,11 +20,11 @@ import { UserRow } from './UserRow';
 
 export const UsersPage = () => {
     const dispatch = useDispatch();
-    const match = useRouteMatch();
     const app = useApp()!;
     const appId = app.id;
-    const dialogEdit = useDialog();
-    const dialogNew = useDialog();
+    const dialogEdit = useBooleanObj();
+    const dialogNew = useBooleanObj();
+    const match = useRouteMatch();
     const users = useUsers(x => x.users);
     const [currentUser, setCurrentUser] = React.useState<UserDto>();
     const [showCounters, setShowCounters] = useSavedState(false, 'show.counters');
@@ -37,27 +37,27 @@ export const UsersPage = () => {
         dispatch(loadUsers(appId, {}));
     }, [dispatch, appId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadUsers(appId));
-    }, [dispatch, appId]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadUsers(appId, q));
-    }, [dispatch, appId]);
+    });
 
-    const doDelete = React.useCallback((user: UserDto) => {
+    const doDelete = useEventCallback((user: UserDto) => {
         dispatch(deleteUser({ appId, userId: user.id }));
-    }, [dispatch, appId]);
+    });
 
-    const doPublish = React.useCallback((user: UserDto) => {
+    const doPublish = useEventCallback((user: UserDto) => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${user.id}` } }));
-    }, [dispatch]);
+    });
 
-    const doEdit = React.useCallback((user: UserDto) => {
+    const doEdit = useEventCallback((user: UserDto) => {
         setCurrentUser(user);
 
-        dialogEdit.open();
-    }, [dialogEdit]);
+        dialogEdit.on();
+    });
 
     return (
         <div className='users'>
@@ -84,7 +84,7 @@ export const UsersPage = () => {
                             <ListSearch list={users} onSearch={doLoad} placeholder={texts.users.searchPlaceholder} />
                         </Col>
                         <Col xs='auto pl-2'>
-                            <Button color='success' onClick={dialogNew.open}>
+                            <Button color='success' onClick={dialogNew.on}>
                                 <Icon type='add' /> {texts.users.createButton}
                             </Button>
                         </Col>
@@ -152,12 +152,12 @@ export const UsersPage = () => {
                 onShowDetails={setShowCounters}
                 onChange={doLoad} />
 
-            {dialogNew.isOpen &&
-                <UserDialog onClose={dialogNew.close} />
+            {dialogNew.value &&
+                <UserDialog onClose={dialogNew.off} />
             }
 
-            {dialogEdit.isOpen &&
-                <UserDialog user={currentUser} onClose={dialogEdit.close} />
+            {dialogEdit.value &&
+                <UserDialog user={currentUser} onClose={dialogEdit.off} />
             }
         </div>
     );

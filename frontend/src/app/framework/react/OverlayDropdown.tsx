@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { ClickOutside } from './ClickOutside';
+import { useEventCallback } from './hooks';
 
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -122,25 +123,25 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
         }) || (() => { });
     }, [controller]);
 
-    const doClose = React.useCallback((event: MouseEvent) => {
+    const doClose = useEventCallback((event: MouseEvent) => {
         if (event.target && !refs.reference.current?.['contains'](event.target as any)) {
             setTimeout(() => {
                 setShow(false);
             });
         }
-    }, [refs.reference]);
+    });
 
-    const doCloseAuto = React.useCallback(() => {
+    const doCloseAuto = useEventCallback(() => {
         if (!closeManually) {
             setShow(false);
         }
-    }, [closeManually]);
+    });
 
-    const doOpen = React.useCallback(() => {
+    const doOpen = useEventCallback(() => {
         if (!openManually) {
-            setShow(!show);
+            setShow(x => !x);
         }
-    }, [show, update]);
+    });
 
     return (
         <>
