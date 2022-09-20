@@ -30,37 +30,6 @@ type BooleanSetter = {
     setValue: (value: boolean) => void;
 };
 
-class Boolean {
-    constructor(
-        private readonly setter: React.Dispatch<React.SetStateAction<boolean>>,
-        private readonly getter: React.MutableRefObject<boolean>,
-    ) {
-    }
-
-    public get value() {
-        return this.getter.current;
-    }
-
-    public toggle() { 
-        return this.setValue(!this.value);
-    }
-
-    public on() {
-        return this.setValue(true);
-    }
-
-    public off() { 
-        return this.setValue(false);
-    }
-
-    public setValue(value: boolean) {
-        this.setter(value);
-        this.getter.current = value;
-
-        return false;
-    }
-}
-
 export function useBoolean(initialValue = false): [boolean, BooleanSetter] {
     const [value, setValue] = React.useState(initialValue);
 
@@ -77,7 +46,7 @@ export function useBoolean(initialValue = false): [boolean, BooleanSetter] {
                 return false;
             },
             off: () => { 
-                setValue(true);
+                setValue(false);
                 
                 return false;
             },
@@ -92,12 +61,50 @@ export function useBoolean(initialValue = false): [boolean, BooleanSetter] {
     return [value, setter];
 }
 
-export function useBooleanObj(initialValue = false): Boolean {
+export function useBooleanObj(initialValue = false): BooleanSetter & { value: boolean } {
     const [, setValue] = React.useState(initialValue);
     const valueRef = React.useRef(initialValue);
-    const valueObj = React.useMemo(() => new Boolean(setValue, valueRef), []);
 
-    return valueObj;
+    const setter = React.useMemo(() => {
+        const setValueCore = (value: boolean) => {
+            setValue(value);
+
+            valueRef.current = value;
+        };
+
+        const result = {
+            toggle: () => { 
+                setValueCore(!valueRef.current);
+
+                return false;
+            },
+            on: () => { 
+                setValueCore(true);
+
+                return false;
+            },
+            off: () => { 
+                setValueCore(false);
+                
+                return false;
+            },
+            setValue: (value: boolean) => {
+                setValueCore(value);
+
+                return false;
+            },
+        };
+
+        Object.defineProperty(result, 'value', {
+            get: () => {
+                return valueRef.current;
+            },
+        });
+
+        return result as any;
+    }, []);
+
+    return setter;
 }
 
 export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => void] {
