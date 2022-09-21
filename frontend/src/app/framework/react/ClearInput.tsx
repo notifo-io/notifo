@@ -37,9 +37,7 @@ export const ClearInput = (props: InputProps) => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             }
 
-            if (onClear) {
-                onClear();
-            }
+            onClear && onClear();
         }
     });
 
@@ -62,11 +60,11 @@ export const ClearInput = (props: InputProps) => {
 function setNativeValue(element: HTMLInputElement, value: string) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')!.set;
 
-    const prototype = Object.getPrototypeOf(element);
-    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')!.set;
+    const prototypeInstance = Object.getPrototypeOf(element);
+    const prototypeSetter = Object.getOwnPropertyDescriptor(prototypeInstance, 'value')!.set;
 
-    if (valueSetter && valueSetter !== prototypeValueSetter) {
-        prototypeValueSetter!.call(element, value);
+    if (valueSetter && valueSetter !== prototypeSetter) {
+        prototypeSetter!.call(element, value);
     } else {
         valueSetter!.call(element, value);
     }

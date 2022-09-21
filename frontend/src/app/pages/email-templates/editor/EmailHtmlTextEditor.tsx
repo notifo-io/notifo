@@ -28,9 +28,6 @@ import * as React from 'react';
 import { EmailFormattingError } from '@app/service';
 import { completeAfter, completeIfAfterLt, completeIfInTag, tags } from './helpers';
 
-type OnChange = (value: string) => void;
-type OnBlur = () => void;
-
 export interface EmailHtmlTextEditorProps {
     // The value.
     value: string;
@@ -39,10 +36,10 @@ export interface EmailHtmlTextEditorProps {
     errors?: EmailFormattingError[];
 
     // When the html has changed.
-    onChange?: OnChange;
+    onChange?: (value: string) => void;
 
     // Called when the focus has been lost.
-    onBlur?: OnBlur;
+    onBlur?: () => void;
 }
 
 export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProps> {

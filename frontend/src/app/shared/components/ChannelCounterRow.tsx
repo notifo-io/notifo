@@ -17,11 +17,8 @@ export interface ChannelCounterRowProps {
     counters: { [key: string]: number };
 }
 
-export const ChannelCounterRow = (props: ChannelCounterRowProps) => {
-    const {
-        channel,
-        counters,
-    } = props;
+export const ChannelCounterRow = React.memo((props: ChannelCounterRowProps) => {
+    const { channel, counters } = props;
 
     const counterHandled = counters[`${channel}_handled`];
     const counterAttempt = counters[`${channel}_attempt`];
@@ -51,4 +48,4 @@ export const ChannelCounterRow = (props: ChannelCounterRowProps) => {
             </td>
         </tr>
     );
-};
+});

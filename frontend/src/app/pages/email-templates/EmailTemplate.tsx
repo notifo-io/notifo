@@ -65,8 +65,8 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
     const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
     const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
-    const moreDialog = useBooleanObj();
     const showHtml = useBooleanObj();
+    const updateDialog = useBooleanObj();
     const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
     const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);
     const [templateCopy, setTemplateCopy] = React.useState(template);
@@ -137,7 +137,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                                         </ButtonGroup>
                                     </Col>
                                     <Col>
-                                        <Button color='blank' onClick={moreDialog.on}>
+                                        <Button color='blank' onClick={updateDialog.on}>
                                             <Icon className='text-lg' type='create' />
                                         </Button>
                                     </Col>
@@ -163,8 +163,8 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                 )}
             </Formik>
 
-            {moreDialog.value &&
-                <EmailTemplateMoreDialog template={templateCopy} onClose={moreDialog.off} />
+            {updateDialog.value &&
+                <EmailTemplateMoreDialog template={templateCopy} onClose={updateDialog.off} />
             }
         </>
     ) : (
