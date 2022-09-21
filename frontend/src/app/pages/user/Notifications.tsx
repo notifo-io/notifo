@@ -151,7 +151,7 @@ export const Notifications = (props: NotificationsProps) => {
 
                             {notifications.isLoaded && notifications.items && notifications.items.length === 0 &&
                                 <tr>
-                                    <td colSpan={4}>{texts.notifications.notificationsNotFound}</td>
+                                    <td colSpan={7}>{texts.notifications.notificationsNotFound}</td>
                                 </tr>
                             }
                         </tbody>
