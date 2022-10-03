@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<NotifoIdentityOptions>(config, "identity");
 
             services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddClaimsPrincipalFactory<ClaimFactory>()
                 .AddDefaultTokenProviders();
 
             services.AddSingletonAs<UserCreator>()

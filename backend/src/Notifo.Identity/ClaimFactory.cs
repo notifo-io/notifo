@@ -25,13 +25,14 @@ namespace Notifo.Identity
 
             if (principal.Identity is ClaimsIdentity claimsIdentity)
             {
-                claimsIdentity.AddClaim(new Claim(Claims.Subject, user.Id));
-
                 var roles = await UserManager.GetRolesAsync(user);
 
                 foreach (var role in roles)
                 {
-                    claimsIdentity.AddClaim(new Claim(Claims.Role, role));
+                    if (!claimsIdentity.Claims.Any(x => x.Type == Claims.Role && x.Value == role))
+                    {
+                        claimsIdentity.AddClaim(new Claim(Claims.Role, role));
+                    }
                 }
             }
 
