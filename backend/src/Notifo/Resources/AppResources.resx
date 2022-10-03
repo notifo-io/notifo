@@ -328,7 +328,7 @@
     <value>Passwords are not  the same</value>
   </data>
   <data name="Permissions" xml:space="preserve">
-    <value>Squidex Permissions</value>
+    <value>Notifo Permissions</value>
   </data>
   <data name="PrivacyPolicy" xml:space="preserve">
     <value>Privacy policy</value>
@@ -388,13 +388,13 @@
     <value>You are using the &lt;strong&gt;FTP asset store&lt;/strong&gt;. It is not recommended to use this storage type because of bad performance.</value>
   </data>
   <data name="SetupRuleHttpsFailure" xml:space="preserve">
-    <value>You are not accessing the site over https. If this warning is not correct then Squidex cannot detect https mode, because your instance is behind a reverse proxy such as nginx. Ensure that http headers are forwarded properly, via the &lt;code&gt;X-Forwarded-*&lt;/code&gt; headers.</value>
+    <value>You are not accessing the site over https. If this warning is not correct then Notifo cannot detect https mode, because your instance is behind a reverse proxy such as nginx. Ensure that http headers are forwarded properly, via the &lt;code&gt;X-Forwarded-*&lt;/code&gt; headers.</value>
   </data>
   <data name="SetupRuleHttpsSuccess" xml:space="preserve">
-    <value>Congratulations, you are accessing your Squidex installation over a secure connection (https).</value>
+    <value>Congratulations, you are accessing your Notifo installation over a secure connection (https).</value>
   </data>
   <data name="SetupRuleUrlFailure" xml:space="preserve">
-    <value>You should access Squidex only over one canonical URL and configure this URL with the &lt;code&gt;URLS__BASEURL&lt;/code&gt; environment variable. The current base URL &lt;code&gt;{0}&lt;/code&gt; does not match to the base url &lt;code&gt;{1}&lt;/code&gt;.</value>
+    <value>You should access Notifo only over one canonical URL and configure this URL with the &lt;code&gt;URLS__BASEURL&lt;/code&gt; environment variable. The current base URL &lt;code&gt;{0}&lt;/code&gt; does not match to the base url &lt;code&gt;{1}&lt;/code&gt;.</value>
   </data>
   <data name="SetupRuleUrlSuccess" xml:space="preserve">
     <value>Congratulations, the &lt;code&gt;URLS__BASEURL&lt;/code&gt; environment variable is configured properly.</value>
