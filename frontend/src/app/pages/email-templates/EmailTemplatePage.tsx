@@ -11,7 +11,7 @@ import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Col, Label, Row } from 'reactstrap';
-import { Icon, Loader, Toggle } from '@app/framework';
+import { Icon, Loader, Toggle, useEventCallback } from '@app/framework';
 import { LanguageSelector } from '@app/framework/react/LanguageSelector';
 import { loadEmailTemplate, updateEmailTemplate, useApp, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -50,9 +50,9 @@ export const EmailTemplatePage = () => {
         }
     }, [updatingError]);
 
-    const doUpdatePrimary = React.useCallback((primary: any) => {
+    const doUpdatePrimary = useEventCallback((primary: any) => {
         dispatch(updateEmailTemplate({ appId, id: templateId, update: { primary } }));
-    }, [dispatch, appId, templateId]);
+    });
 
     const doSetLanguage = (language: string) => {
         if (!loadingTemplate && !upserting) {

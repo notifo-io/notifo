@@ -8,38 +8,30 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
-import { Button, Card, CardBody, Col, FormGroup, Label, Row } from 'reactstrap';
-import { ApiValue, FormatDate, Icon, Loader, useDialog } from '@app/framework';
+import { Button, Card, CardBody, Col, Row } from 'reactstrap';
+import { Icon, Loader, useBooleanObj } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
-import { loadUser, togglePublishDialog, useApp, useUsers } from '@app/state';
+import { loadUser, useApp, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 import { UserDialog } from './../users/UserDialog';
-import { ButtonEmail, ButtonMobilePush, ButtonSms, ButtonWebPush } from './Buttons';
 import { Notifications } from './Notifications';
 import { Subscriptions } from './Subscriptions';
+import { UserDetails } from './UserDetails';
 
 export const UserPage = () => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
-    const [activeTab, setActiveTab] = React.useState('notifications');
+    const dialogEdit = useBooleanObj();
     const loading = useUsers(x => x.loadingUser);
     const match = useRouteMatch();
     const user = useUsers(x => x.user)!;
     const userId = match.params['userId'];
-    const dialogEdit = useDialog();
+    const [activeTab, setActiveTab] = React.useState('notifications');
 
     React.useEffect(() => {
         dispatch(loadUser({ appId, userId }));
     }, [dispatch, appId, userId]);
-
-    const doDemo = React.useCallback(() => {
-        window.open(`/demo.html?userToken=${user.apiKey}`);
-    }, [user]);
-
-    const doPublish = React.useCallback(() => {
-        dispatch(togglePublishDialog({ open: true, values: { topic: `users/${userId}` } }));
-    }, [dispatch, userId]);
 
     return (
         <div className='user'>
@@ -68,87 +60,9 @@ export const UserPage = () => {
                         <Col xs='auto' className='user-info'>
                             <Card>
                                 <CardBody>
-                                    <Row>
-                                        <Col>
-                                            <Button color='info' onClick={doPublish}>
-                                                <Icon type='send' /> {texts.common.publish}
-                                            </Button>
-                                        </Col>
+                                    <UserDetails appId={appId} user={user} />
 
-                                        <Col xs='auto'>
-                                            <Button color='secondary-link' onClick={doDemo}>
-                                                <Icon type='code' /> {texts.common.demo}
-                                            </Button>
-                                        </Col>
-                                    </Row>
-
-                                    <hr />
-
-                                    <Row>
-                                        <Col xs={3}>
-                                            <ButtonWebPush appId={appId} user={user} />
-                                        </Col>
-                                        <Col xs={3}>
-                                            <ButtonMobilePush appId={appId} user={user} />
-                                        </Col>
-                                        <Col xs={3}>
-                                            <ButtonEmail user={user} />
-                                        </Col>
-                                        <Col xs={3}>
-                                            <ButtonSms user={user} />
-                                        </Col>
-                                    </Row>
-
-                                    <hr />
-
-                                    <FormGroup row>
-                                        <Col xs={5}>
-                                            <Label className='truncate'>{texts.common.created}</Label>
-                                        </Col>
-                                        <Col xs={7} className='text-right text-sm'>
-                                            <FormatDate date={user.created} />
-                                        </Col>
-                                    </FormGroup>
-
-                                    <FormGroup row>
-                                        <Col xs={5}>
-                                            <Label className='truncate'>{texts.common.lastUpdate}</Label>
-                                        </Col>
-                                        <Col xs={7} className='text-right text-sm'>
-                                            <FormatDate date={user.lastUpdate} />
-                                        </Col>
-                                    </FormGroup>
-
-                                    <FormGroup row>
-                                        <Col xs={5}>
-                                            <Label className='truncate'>{texts.common.lastNotification}</Label>
-                                        </Col>
-                                        <Col xs={7} className='text-right text-sm'>
-                                            <FormatDate date={user.lastNotification} />
-                                        </Col>
-                                    </FormGroup>
-
-                                    <hr />
-
-                                    <FormGroup>
-                                        <Label>{texts.common.id}</Label>
-
-                                        <ApiValue value={user.id} />
-                                    </FormGroup>
-
-                                    <FormGroup>
-                                        <Label>{texts.app.apiKey}</Label>
-
-                                        <ApiValue value={user.apiKey} />
-                                    </FormGroup>
-
-                                    <FormGroup>
-                                        <Label>{texts.common.emailAddress}</Label>
-
-                                        <ApiValue value={user.emailAddress} />
-                                    </FormGroup>
-
-                                    <Button color='primary' onClick={dialogEdit.open}>
+                                    <Button color='primary' onClick={dialogEdit.on}>
                                         <Icon type='create' /> {texts.common.edit}
                                     </Button>
                                 </CardBody>
@@ -160,8 +74,8 @@ export const UserPage = () => {
                 <>{texts.users.userNotFound}</>
             ) : null}
 
-            {dialogEdit.isOpen &&
-                <UserDialog user={user} onClose={dialogEdit.close} />
+            {dialogEdit.value &&
+                <UserDialog user={user} onClose={dialogEdit.off} />
             }
         </div>
     );

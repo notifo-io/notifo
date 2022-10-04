@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListSearch, Loader, Query, useDialog, useSavedState } from '@app/framework';
+import { FormError, Icon, ListSearch, Loader, Query, useBooleanObj, useEventCallback, useSavedState } from '@app/framework';
 import { TopicDto, TopicQueryScope } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { deleteTopic, loadTopics, useApp, useTopics } from '@app/state';
@@ -22,8 +22,8 @@ export const TopicsPage = () => {
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
-    const dialogEdit = useDialog();
-    const dialogNew = useDialog();
+    const dialogEdit = useBooleanObj();
+    const dialogNew = useBooleanObj();
     const topics = useTopics(x => x.topics);
     const [currentTopic, setCurrentTopic] = React.useState<TopicDto>();
     const [currentScope, setCurrentScope] = React.useState<TopicQueryScope>('All');
@@ -37,23 +37,23 @@ export const TopicsPage = () => {
         dispatch(loadTopics(appId, currentScope, {}));
     }, [dispatch, appId, currentScope]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadTopics(appId, currentScope));
-    }, [dispatch, appId, currentScope]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadTopics(appId, currentScope, q));
-    }, [dispatch, appId, currentScope]);
+    });
 
-    const doDelete = React.useCallback((topic: TopicDto) => {
+    const doDelete = useEventCallback((topic: TopicDto) => {
         dispatch(deleteTopic({ appId, path: topic.path, scope: currentScope }));
-    }, [dispatch, appId, currentScope]);
+    });
 
-    const doEdit = React.useCallback((topic: TopicDto) => {
+    const doEdit = useEventCallback((topic: TopicDto) => {
         setCurrentTopic(topic);
 
-        dialogEdit.open();
-    }, [dialogEdit]);
+        dialogEdit.on();
+    });
 
     return (
         <div className='topics'>
@@ -96,7 +96,7 @@ export const TopicsPage = () => {
                             <ListSearch list={topics} onSearch={doLoad} placeholder={texts.log.searchPlaceholder} />
                         </Col>
                         <Col xs='auto pl-2'>
-                            <Button color='success' onClick={dialogNew.open}>
+                            <Button color='success' onClick={dialogNew.on}>
                                 <Icon type='add' /> {texts.topics.createButton}
                             </Button>
                         </Col>
@@ -159,12 +159,12 @@ export const TopicsPage = () => {
                 onChange={doLoad}
                 onShowDetails={setShowCounters} />
 
-            {dialogNew.isOpen &&
-                <TopicDialog scope={currentScope} onClose={dialogNew.close} />
+            {dialogNew.value &&
+                <TopicDialog scope={currentScope} onClose={dialogNew.off} />
             }
 
-            {dialogEdit.isOpen &&
-                <TopicDialog topic={currentTopic} scope={currentScope} onClose={dialogEdit.close} />
+            {dialogEdit.value &&
+                <TopicDialog topic={currentTopic} scope={currentScope} onClose={dialogEdit.off} />
             }
         </div>
     );

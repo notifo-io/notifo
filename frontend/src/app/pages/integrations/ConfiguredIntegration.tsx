@@ -8,6 +8,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
+import { useEventCallback } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
 import { getSummaryProperties } from '@app/state';
 import { texts } from '@app/texts';
@@ -35,9 +36,9 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
         onEdit,
     } = props;
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = useEventCallback(() => {
         onEdit(definition, configured, configuredId);
-    }, [onEdit, definition, configured, configuredId]);
+    });
 
     const properties = React.useMemo(() => {
         return getSummaryProperties(definition, configured);

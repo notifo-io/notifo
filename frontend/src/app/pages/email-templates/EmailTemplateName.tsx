@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, FormGroup, Input } from 'reactstrap';
+import { useEventCallback } from '@app/framework';
 import { ChannelTemplateDetailsDtoOfEmailTemplateDto } from '@app/service';
 import { updateEmailTemplate } from '@app/state';
 import { texts } from '@app/texts';
@@ -26,25 +27,25 @@ export const EmailTemplateName = (props: EmailTemplateNameProps) => {
     const dispatch = useDispatch();
     const [name, setName] = React.useState<string>();
 
-    const doSave = React.useCallback((event: React.FormEvent) => {
+    React.useEffect(() => {
+        setName(template?.name || '');
+    }, [template]);
+
+    const doSave = useEventCallback((event: React.FormEvent) => {
         if (template?.id) {
             dispatch(updateEmailTemplate({ appId, id: template.id, update: { name } }));
         }
 
         event.preventDefault();
-    }, [appId, dispatch, name, template?.id]);
+    });
 
-    const doCancel = React.useCallback(() => {
+    const doCancel = useEventCallback(() => {
         setName(template?.name || '');
-    }, [template?.name]);
+    });
 
-    React.useEffect(() => {
-        setName(template?.name || '');
-    }, [template?.name]);
-
-    const doSetName = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doSetName = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
-    }, []);
+    });
 
     return (
         <Form inline onSubmit={doSave}>

@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
-import { Confirm, Icon } from '@app/framework';
+import { Confirm, Icon, useEventCallback } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { texts } from '@app/texts';
 
@@ -43,17 +43,17 @@ export const TemplateRow = React.memo((props: TemplateRowProps) => {
         ReactTooltip.rebuild();
     });
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = useEventCallback(() => {
         onDelete && onDelete(template);
-    }, [onDelete, template]);
+    });
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = useEventCallback(() => {
         onEdit && onEdit(template);
-    }, [onEdit, template]);
+    });
 
-    const doPublish = React.useCallback(() => {
+    const doPublish = useEventCallback(() => {
         onPublish && onPublish(template);
-    }, [onPublish, template]);
+    });
 
     return (
         <>

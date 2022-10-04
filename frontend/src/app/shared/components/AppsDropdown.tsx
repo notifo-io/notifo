@@ -8,41 +8,27 @@
 import * as React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle } from 'reactstrap';
+import { useBooleanObj } from '@app/framework';
 import { useApp, useApps } from '@app/state';
 
 export const AppsDropdown = () => {
     const app = useApp();
     const apps = useApps(x => x.apps);
+    const dropdown = useBooleanObj();
     const match = useRouteMatch();
-
-    const [isOpen, setOpen] = React.useState(false);
-
-    const doOpen = React.useCallback(() => {
-        setOpen(true);
-    }, []);
-
-    const doClose = React.useCallback(() => {
-        setOpen(false);
-    }, []);
-
-    const doToggle = React.useCallback(() => {
-        setOpen(!isOpen);
-
-        return false;
-    }, [isOpen]);
 
     if (!app || !apps.items) {
         return null;
     }
 
     return (
-        <Dropdown isOpen={isOpen} className='apps-dropdown' nav inNavbar toggle={doToggle}>
-            <DropdownToggle nav caret onClick={doOpen}>
+        <Dropdown isOpen={dropdown.value} className='apps-dropdown' nav inNavbar toggle={dropdown.toggle}>
+            <DropdownToggle nav caret>
                 <span className='apps-dropdown-name'>{app.name}</span>
             </DropdownToggle>
             <DropdownMenu>
                 {apps.items.map(app =>
-                    <Link key={app.id} to={`${match.path}/${app.id}`} className='dropdown-item' onClick={doClose}>
+                    <Link key={app.id} to={`${match.path}/${app.id}`} className='dropdown-item' onClick={dropdown.off}>
                         {app.name}
                     </Link>,
                 )}

@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Badge, Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { Confirm, FormError, Icon, Loader } from '@app/framework';
+import { Confirm, FormError, Icon, Loader, useEventCallback } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationPropertyDto, UpdateIntegrationDto } from '@app/service';
 import { Forms } from '@app/shared/components';
 import { createIntegration, deleteIntegration, updateIntegration, useIntegrations } from '@app/state';
@@ -60,15 +60,15 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         }
     }, [upserting, upsertingError, onClose]);
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = useEventCallback(() => {
         if (configuredId) {
             dispatch(deleteIntegration({ appId, id: configuredId }));
 
             onClose();
         }
-    }, [dispatch, appId, configuredId, onClose]);
+    });
 
-    const doUpsert = React.useCallback((params: UpdateIntegrationDto) => {
+    const doUpsert = useEventCallback((params: UpdateIntegrationDto) => {
         for (const key of Object.keys(params.properties)) {
             params.properties[key] = params.properties[key]?.toString();
         }
@@ -78,7 +78,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         } else {
             dispatch(createIntegration({ appId, params: { type, ...params } }));
         }
-    }, [dispatch, appId, configuredId, type]);
+    });
 
     const schema = React.useMemo(() => {
         const properties: { [name: string]: any } = {};

@@ -8,7 +8,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import { Button } from 'reactstrap';
-import { FormatDate, Icon, JsonDetails } from '@app/framework';
+import { FormatDate, Icon, JsonDetails, useBoolean } from '@app/framework';
 import { EventDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 
@@ -23,7 +23,7 @@ export interface EventRowProps {
 export const EventRow = React.memo((props: EventRowProps) => {
     const { event, showCounters } = props;
 
-    const [isOpen, setIsOpen] = React.useState(false);
+    const [isOpen, setIsOpen] = useBoolean();
 
     return (
         <>
@@ -31,7 +31,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
                 <>
                     <tr className={classNames('list-item-summary', { expanded: isOpen })}>
                         <td>
-                            <Button size='sm' color='link' onClick={() => setIsOpen(!isOpen)}>
+                            <Button size='sm' color='link' onClick={setIsOpen.toggle}>
                                 <Icon type={isOpen ? 'expand_less' : 'expand_more'} />
                             </Button>
                         </td>

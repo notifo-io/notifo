@@ -9,6 +9,7 @@ import * as React from 'react';
 import { Button, Input } from 'reactstrap';
 import { texts } from '@app/texts';
 import { Types } from './../utils';
+import { useEventCallback } from './hooks';
 
 export interface DropZoneFiles {
     // The allowed file types.
@@ -36,25 +37,25 @@ export const DropZone = (props: DropZoneProps) => {
     const { disabled, files, noPaste, onDrop } = props;
 
     const inputButton = React.useRef<HTMLInputElement | null>(null);
-    const [dragCounter, setDragCounter] = React.useState(0);
+    const [, setDragCounter] = React.useState(0);
 
-    const dragStart = React.useCallback(() => {
-        setDragCounter(dragCounter + 1);
-    }, [dragCounter]);
+    const startDrag = useEventCallback(() => {
+        setDragCounter(x => x + 1);
+    });
 
-    const dragEnd = React.useCallback((value?: number) => {
-        setDragCounter(value || (dragCounter - 1));
-    }, [dragCounter]);
+    const stopDrag = useEventCallback((value?: number) => {
+        setDragCounter(x => value || (x - 1));
+    });
 
-    const doPaste = React.useCallback((event: React.ClipboardEvent) => {
+    const doPaste = useEventCallback((event: React.ClipboardEvent) => {
         const result = getAllowedFiles(event.clipboardData, files);
 
         if (result && disabled && !noPaste) {
             onDrop && onDrop(result);
         }
-    }, [onDrop, disabled, files, noPaste]);
+    });
 
-    const doDrop = React.useCallback((event: React.DragEvent) => {
+    const doDrop = useEventCallback((event: React.DragEvent) => {
         if (hasFiles(event.dataTransfer)) {
             const result = getAllowedFiles(event.dataTransfer, files);
 
@@ -62,47 +63,46 @@ export const DropZone = (props: DropZoneProps) => {
                 onDrop && onDrop(result);
             }
 
-            dragEnd(0);
-
+            stopDrag(0);
             stopEvent(event);
         }
-    }, [onDrop, disabled, files, dragEnd]);
+    });
 
-    const doDragEnd = React.useCallback((event: React.DragEvent) => {
+    const doDragEnd = useEventCallback((event: React.DragEvent) => {
         const hasFile = hasAllowedFile(event.dataTransfer, files);
 
         if (hasFile) {
-            dragEnd();
+            stopDrag();
         }
-    }, [files, dragEnd]);
+    });
 
-    const doDragEnter = React.useCallback((event: React.DragEvent) => {
+    const doDragEnter = useEventCallback((event: React.DragEvent) => {
         const hasFile = hasAllowedFile(event.dataTransfer, files);
 
         if (hasFile) {
-            dragStart();
+            startDrag();
         }
-    }, [files, dragStart]);
+    });
 
-    const doDragOver = React.useCallback((event: React.DragEvent) => {
+    const doDragOver = useEventCallback((event: React.DragEvent) => {
         const hasFile = hasFiles(event.dataTransfer);
 
         if (hasFile) {
             stopEvent(event);
         }
-    }, []);
+    });
 
-    const doClick = React.useCallback(() => {
+    const doClick = useEventCallback(() => {
         if (inputButton.current) {
             inputButton.current.click();
         }
-    }, [inputButton]);
+    });
 
-    const doSelect = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doSelect = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         if (onDrop && event.target.files) {
             onDrop(getFiles(event.target.files, files));
         }
-    }, [files, onDrop]);
+    });
 
     return (
         <div className='file-drop'

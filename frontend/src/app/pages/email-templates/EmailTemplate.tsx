@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, ButtonGroup, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormControlError, Icon, Loader, useDialog } from '@app/framework';
+import { FormControlError, Icon, Loader, useBooleanObj, useEventCallback } from '@app/framework';
 import { EmailTemplateDto } from '@app/service';
 import { Forms, useFieldNew } from '@app/shared/components';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
@@ -65,11 +65,11 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
     const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
     const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
-    const moreDialog = useDialog();
+    const showHtml = useBooleanObj();
+    const updateDialog = useBooleanObj();
     const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
     const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);
     const [templateCopy, setTemplateCopy] = React.useState(template);
-    const [showHtml, setShowHtml] = React.useState(true);
 
     React.useEffect(() => {
         if (creatingLanguageError) {
@@ -97,23 +97,15 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         }
     }, [template]);
 
-    const doShowhtml = React.useCallback(() => {
-        setShowHtml(true);
-    }, []);
-
-    const doShowText = React.useCallback(() => {
-        setShowHtml(false);
-    }, []);
-
-    const doCreate = React.useCallback(() => {
+    const doCreate = useEventCallback(() => {
         dispatch(createEmailTemplateLanguage({ appId, id, language }));
-    }, [dispatch, appId, id, language]);
+    });
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = useEventCallback(() => {
         dispatch(deleteEmailTemplateLanguage({ appId, id, language }));
-    }, [dispatch, appId, id, language]);
+    });
 
-    const doUpdate = React.useCallback((params: EmailTemplateDto) => {
+    const doUpdate = useEventCallback((params: EmailTemplateDto) => {
         const template = {
             ...params,
             fromEmail: templateCopy?.fromEmail,
@@ -122,7 +114,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         };
 
         dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
-    }, [dispatch, appId, id, language, templateCopy]);
+    });
 
     const disabled = updatingLanguage || deletingLanguage;
 
@@ -136,16 +128,16 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                                 <Row className='align-items-center'>
                                     <Col xs='auto'>
                                         <ButtonGroup>
-                                            <Button color='secondary' className='btn-flat' outline={!showHtml} onClick={doShowhtml}>
+                                            <Button color='secondary' className='btn-flat' outline={!showHtml.value} onClick={showHtml.on}>
                                                 {texts.common.html}
                                             </Button>
-                                            <Button color='secondary' className='btn-flat' outline={showHtml} onClick={doShowText}>
+                                            <Button color='secondary' className='btn-flat' outline={showHtml.value} onClick={showHtml.off}>
                                                 {texts.common.text}
                                             </Button>
                                         </ButtonGroup>
                                     </Col>
                                     <Col>
-                                        <Button color='blank' onClick={moreDialog.open}>
+                                        <Button color='blank' onClick={updateDialog.on}>
                                             <Icon className='text-lg' type='create' />
                                         </Button>
                                     </Col>
@@ -164,15 +156,15 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                                 <Forms.Text name='subject' label={texts.common.subject} vertical />
                             </div>
 
-                            <BodyHtml appId={appId} kind={template?.kind} visible={showHtml} />
-                            <BodyText appId={appId} kind={template?.kind} visible={!showHtml} />
+                            <BodyHtml appId={appId} kind={template?.kind} visible={showHtml.value} />
+                            <BodyText appId={appId} kind={template?.kind} visible={!showHtml.value} />
                         </div>
                     </Form>
                 )}
             </Formik>
 
-            {moreDialog.isOpen &&
-                <EmailTemplateMoreDialog template={templateCopy} onClose={moreDialog.close} />
+            {updateDialog.value &&
+                <EmailTemplateMoreDialog template={templateCopy} onClose={updateDialog.off} />
             }
         </>
     ) : (
@@ -222,9 +214,9 @@ function useFieldContext(name: string, visible: boolean) {
     const { initialValues, submitCount } = useFormikContext<EmailTemplateDto>();
     const [, meta, helpers] = useFieldNew('bodyHtml');
 
-    const doTouch = React.useCallback(() => {
+    const doTouch = useEventCallback(() => {
         helpers.setTouched(true);
-    }, [helpers]);
+    });
 
     return {
         className: classNames('email-body', { hidden: !visible }),

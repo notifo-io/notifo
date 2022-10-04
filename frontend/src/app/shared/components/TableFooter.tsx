@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Col, CustomInput, Row } from 'reactstrap';
-import { ListPager, ListPagerProps } from '@app/framework';
+import { ListPager, ListPagerProps, useEventCallback } from '@app/framework';
 import { texts } from '@app/texts';
 
 export interface TableFooterProps extends ListPagerProps {
@@ -27,9 +27,9 @@ export interface TableFooterProps extends ListPagerProps {
 export const TableFooter = (props: TableFooterProps) => {
     const { showDetails, noDetailButton, onShowDetails, ...other } = props;
 
-    const doshowCounters = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doshowCounters = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         onShowDetails && onShowDetails(event.target.checked);
-    }, [onShowDetails]);
+    });
 
     return (
         <Row className='align-items-center table-footer'>

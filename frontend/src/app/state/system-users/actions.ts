@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { Middleware } from 'redux';
 import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { Clients, SystemUserDto, UpdateSystemUserDto } from '@app/service';
-import { createApiThunk, selectApp } from './../shared';
+import { createApiThunk } from './../shared';
 import { SystemUsersState } from './state';
 
 const list = listThunk<SystemUsersState, SystemUserDto>('systemUsers', 'systemUsers', async params => {
@@ -64,9 +64,6 @@ const initialState: SystemUsersState = {
 };
 
 export const systemUsersReducer = createReducer(initialState, builder => list.initialize(builder)
-    .addCase(selectApp, () => {
-        return initialState;
-    })
     .addCase(lockSystemUser.fulfilled, (state, action) => {
         state.systemUsers.items?.replaceBy('id', action.payload);
     })

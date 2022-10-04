@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Loader, Types } from '@app/framework';
+import { FormError, Loader, Types, useEventCallback } from '@app/framework';
 import { TopicDto, TopicQueryScope, UpsertTopicDto } from '@app/service';
 import { Forms } from '@app/shared/components';
 import { ALLOWED_MODES, CHANNELS } from '@app/shared/utils/model';
@@ -56,22 +56,16 @@ export const TopicDialog = (props: TopicDialogProps) => {
         }
     }, [upserting]);
 
-    const doCloseForm = React.useCallback(() => {
-        if (onClose) {
-            onClose();
-        }
-    }, [onClose]);
-
     React.useEffect(() => {
         if (!upserting && wasUpserting && !upsertingError) {
-            doCloseForm();
+            onClose && onClose();
         }
-    }, [dispatch, doCloseForm, upserting, upsertingError, wasUpserting]);
+    }, [dispatch, onClose, upserting, upsertingError, wasUpserting]);
 
-    const doSave = React.useCallback((params: UpsertTopicDto) => {
+    const doSave = useEventCallback((params: UpsertTopicDto) => {
         dispatch(upsertTopic({ appId, params, scope }));
-    }, [dispatch, appId, scope]);
-
+    });
+    
     const initialValues: any = React.useMemo(() => {
         const result: Partial<TopicDto> = Types.clone(topic || {});
 
@@ -85,11 +79,11 @@ export const TopicDialog = (props: TopicDialogProps) => {
     }, [topic]);
 
     return (
-        <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm}>
+        <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
             <Formik<UpsertTopicDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
+                        <ModalHeader toggle={onClose}>
                             {texts.topics.createHeader}
                         </ModalHeader>
 
@@ -128,7 +122,7 @@ export const TopicDialog = (props: TopicDialogProps) => {
                             <FormError error={upsertingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={doCloseForm} disabled={upserting}>
+                            <Button type='button' color='none' onClick={onClose} disabled={upserting}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary' disabled={upserting}>

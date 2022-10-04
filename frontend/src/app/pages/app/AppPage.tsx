@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
 import { match, NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
-import { combineUrl, Icon } from '@app/framework';
+import { combineUrl, Icon, useBoolean, useEventCallback } from '@app/framework';
 import { selectApp, togglePublishDialog, useApp, useApps } from '@app/state';
 import { texts } from '@app/texts';
 import { MessagingTemplatePage } from '../messaging-templates/MessagingTemplatePage';
@@ -32,15 +32,7 @@ import { AppDashboardPage } from './AppDashboardPage';
 import { AppSettingsPage } from './AppSettingsPage';
 
 const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-
-    const doToggle = React.useCallback(() => {
-        setIsOpen(prev => !prev);
-    }, []);
-
-    const doClose = React.useCallback(() => {
-        setIsOpen(false);
-    }, []);
+    const [isOpen, setIsOpen] = useBoolean();
 
     const urlToEmailTemplates = combineUrl(match.url, 'email-templates');
     const urlToMedia = combineUrl(match.url, 'media');
@@ -56,24 +48,24 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
         path.startsWith(urlToTemplates);
 
     return (
-        <Dropdown nav direction='right' isOpen={isOpen} toggle={doToggle} active={isActive}>
+        <Dropdown nav direction='right' isOpen={isOpen} toggle={setIsOpen.toggle} active={isActive}>
             <DropdownToggle nav caret>
                 <Icon type='create' /> <span>{texts.common.design}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToMedia} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToMedia} onClick={setIsOpen.off}>
                     <Icon type='photo_size_select_actual' /> <span>{texts.media.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToTemplates} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToTemplates} onClick={setIsOpen.off}>
                     <Icon type='file_copy' /> <span>{texts.templates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToSmsTemplates} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToSmsTemplates} onClick={setIsOpen.off}>
                     <Icon type='sms' /> <span>{texts.smsTemplates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToEmailTemplates} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToEmailTemplates} onClick={setIsOpen.off}>
                     <Icon type='mail_outline' /> <span>{texts.emailTemplates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToMessagingTemplates} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToMessagingTemplates} onClick={setIsOpen.off}>
                     <Icon type='messaging' /> <span>{texts.messagingTemplates.header}</span>
                 </NavLink>
             </DropdownMenu>
@@ -82,15 +74,7 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
 };
 
 const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-
-    const doToggle = React.useCallback(() => {
-        setIsOpen(prev => !prev);
-    }, []);
-
-    const doClose = React.useCallback(() => {
-        setIsOpen(false);
-    }, []);
+    const [isOpen, setIsOpen] = useBoolean();
 
     const urlToLog = combineUrl(match.url, 'log');
     const urlToIntegrations = combineUrl(match.url, 'integrations');
@@ -104,21 +88,21 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
         path.startsWith(urlToTopics);
 
     return (
-        <Dropdown nav direction='right' isOpen={isOpen} toggle={doToggle} active={isActive}>
+        <Dropdown nav direction='right' isOpen={isOpen} toggle={setIsOpen.toggle} active={isActive}>
             <DropdownToggle nav caret>
                 <Icon type='settings' /> <span>{texts.common.more}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToIntegrations} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToIntegrations} onClick={setIsOpen.off}>
                     <Icon type='extension' /> <span>{texts.integrations.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToTopics} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToTopics} onClick={setIsOpen.off}>
                     <Icon type='topic' /> <span>{texts.topics.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToSettings} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToSettings} onClick={setIsOpen.off}>
                     <Icon type='settings' /> <span>{texts.common.settings}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToLog} onClick={doClose}>
+                <NavLink activeClassName='active' className='dropdown-item' to={urlToLog} onClick={setIsOpen.off}>
                     <Icon type='history' /> <span>{texts.log.header}</span>
                 </NavLink>
             </DropdownMenu>
@@ -141,9 +125,9 @@ export const AppPage = () => {
         setAppSelected(true);
     }, [dispatch, appId]);
 
-    const doPublish = React.useCallback(() => {
+    const doPublish = useEventCallback(() => {
         dispatch(togglePublishDialog({ open: true }));
-    }, [dispatch]);
+    });
 
     if (loading || !appSelected) {
         return null;

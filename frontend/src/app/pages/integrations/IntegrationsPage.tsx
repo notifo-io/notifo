@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Col, Row } from 'reactstrap';
-import { FormError, Icon, Loader } from '@app/framework';
+import { FormError, Icon, Loader, useEventCallback } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
 import { getSortedIntegrations, loadIntegrations, useApp, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
@@ -39,21 +39,21 @@ export const IntegrationsPage = () => {
         dispatch(loadIntegrations({ appId }));
     }, [dispatch, appId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadIntegrations({ appId }));
-    }, [dispatch, appId]);
+    });
 
-    const doAdd = React.useCallback((definition: IntegrationDefinitionDto, type: string) => {
+    const doAdd = useEventCallback((definition: IntegrationDefinitionDto, type: string) => {
         setSelected(({ definition, type }));
-    }, []);
+    });
 
-    const doEdit = React.useCallback((definition: IntegrationDefinitionDto, defined: ConfiguredIntegrationDto, id: string) => {
+    const doEdit = useEventCallback((definition: IntegrationDefinitionDto, defined: ConfiguredIntegrationDto, id: string) => {
         setSelected(({ definition, configured: defined, configuredId: id, type: defined.type }));
-    }, []);
+    });
 
-    const doClose = React.useCallback(() => {
+    const doClose = useEventCallback(() => {
         setSelected(null!);
-    }, []);
+    });
 
     const integrations = React.useMemo(() => {
         return getSortedIntegrations(definitions, configured);

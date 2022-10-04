@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListPager, ListSearch, Loader, Query, useDialog } from '@app/framework';
+import { FormError, Icon, ListPager, ListSearch, Loader, Query, useBooleanObj, useEventCallback } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { deleteSubscription, loadSubscriptions, togglePublishDialog, useApp, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
@@ -30,8 +30,8 @@ export const Subscriptions = (props: SubscriptionsProps) => {
     const dispatch = useDispatch();
     const app = useApp()!;
     const appId = app.id;
-    const dialogEdit = useDialog();
-    const dialogNew = useDialog();
+    const dialogEdit = useBooleanObj();
+    const dialogNew = useBooleanObj();
     const subscriptions = useSubscriptions(x => x.subscriptions);
     const [editSubscription, setEditSubscription] = React.useState<SubscriptionDto>();
 
@@ -43,27 +43,27 @@ export const Subscriptions = (props: SubscriptionsProps) => {
         dispatch(loadSubscriptions(appId, userId, {}));
     }, [dispatch, appId, userId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadSubscriptions(appId, userId));
-    }, [dispatch, appId, userId]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadSubscriptions(appId, userId, q));
-    }, [dispatch, appId, userId]);
+    });
 
-    const doDelete = React.useCallback((subscription: SubscriptionDto) => {
+    const doDelete = useEventCallback((subscription: SubscriptionDto) => {
         dispatch(deleteSubscription({ appId, userId, topicPrefix: subscription.topicPrefix }));
-    }, [dispatch, appId, userId]);
+    });
 
-    const doPublish = React.useCallback((subscription: SubscriptionDto) => {
+    const doPublish = useEventCallback((subscription: SubscriptionDto) => {
         dispatch(togglePublishDialog({ open: true, values: { topic: subscription.topicPrefix } }));
-    }, [dispatch]);
+    });
 
-    const doEdit = React.useCallback((subscription: SubscriptionDto) => {
-        dialogEdit.open();
+    const doEdit = useEventCallback((subscription: SubscriptionDto) => {
+        dialogEdit.on();
 
         setEditSubscription(subscription);
-    }, [dialogEdit]);
+    });
 
     return (
         <>
@@ -101,7 +101,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
                             <ListSearch list={subscriptions} onSearch={doLoad} placeholder={texts.subscriptions.searchPlaceholder} />
                         </Col>
                         <Col xs='auto pl-2'>
-                            <Button color='success' onClick={dialogNew.open}>
+                            <Button color='success' onClick={dialogNew.on}>
                                 <Icon type='add' /> {texts.subscriptions.createButton}
                             </Button>
                         </Col>
@@ -111,8 +111,8 @@ export const Subscriptions = (props: SubscriptionsProps) => {
 
             <FormError error={subscriptions.error} />
 
-            {dialogNew.isOpen &&
-                <SubscriptionDialog userId={userId} onClose={dialogNew.close} />
+            {dialogNew.value &&
+                <SubscriptionDialog userId={userId} onClose={dialogNew.off} />
             }
 
             <Card className='card-table'>
@@ -149,7 +149,7 @@ export const Subscriptions = (props: SubscriptionsProps) => {
 
                             {subscriptions.isLoaded && subscriptions.items && subscriptions.items.length === 0 &&
                                 <tr>
-                                    <td colSpan={4}>{texts.subscriptions.subscriptionsNotFound}</td>
+                                    <td colSpan={2}>{texts.subscriptions.subscriptionsNotFound}</td>
                                 </tr>
                             }
                         </tbody>
@@ -159,8 +159,8 @@ export const Subscriptions = (props: SubscriptionsProps) => {
 
             <ListPager list={subscriptions} onChange={doLoad} />
 
-            {dialogEdit.isOpen &&
-                <SubscriptionDialog userId={userId} subscription={editSubscription} onClose={dialogEdit.close} />
+            {dialogEdit.value &&
+                <SubscriptionDialog userId={userId} subscription={editSubscription} onClose={dialogEdit.off} />
             }
         </>
     );

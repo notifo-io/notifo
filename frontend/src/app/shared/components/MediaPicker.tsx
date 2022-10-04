@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
+import { FormError, Icon, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { loadMedia, useApp, useMedia } from '@app/state';
 import { texts } from '@app/texts';
@@ -43,21 +43,21 @@ export const MediaPicker = (props: MediaPickerProps) => {
         dispatch(loadMedia(appId));
     }, [dispatch, appId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadMedia(appId));
-    }, [dispatch, appId]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadMedia(appId, q));
-    }, [dispatch, appId]);
+    });
 
-    const doSelectMedia = React.useCallback((media: MediaDto) => {
+    const doSelectMedia = useEventCallback((media: MediaDto) => {
         setSelection(media.url);
-    }, []);
+    });
 
-    const doSelect = React.useCallback(() => {
+    const doSelect = useEventCallback(() => {
         selection && onSelected && onSelected(selection);
-    }, [onSelected, selection]);
+    });
 
     const currentUrl = selection || selectedUrl;
 

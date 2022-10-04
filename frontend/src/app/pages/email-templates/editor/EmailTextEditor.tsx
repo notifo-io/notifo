@@ -5,11 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-// tslint:disable: quotemark
-
 import * as React from 'react';
 import Split from 'react-split';
 import { Alert, Input } from 'reactstrap';
+import { useEventCallback } from '@app/framework';
 import { usePreview } from './helpers';
 
 export interface EmailTextEditorProps {
@@ -40,11 +39,11 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
 
     React.useEffect(() => {
         setMarkup(initialValue || '');
-    }, [setMarkup, initialValue]);
+    });
 
-    const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setMarkup(event.target.value);
-    }, [setMarkup]);
+    });
 
     const error = emailPreview.rendering.errors?.find(x => !x.line || x.line < 0);
 

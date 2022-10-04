@@ -43,13 +43,13 @@ export const TopicRow = React.memo((props: TopicRowProps) => {
         ReactTooltip.rebuild();
     });
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = () => {
         onDelete && onDelete(topic);
-    }, [onDelete, topic]);
+    };
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = () => {
         onEdit && onEdit(topic);
-    }, [onEdit, topic]);
+    };
 
     return (
         <CounterRow counters={topic.counters} columnCount={5} showCounters={showCounters}>

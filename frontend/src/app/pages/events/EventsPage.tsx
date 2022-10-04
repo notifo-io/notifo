@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListSearch, Loader, Query, useSavedState } from '@app/framework';
+import { FormError, Icon, ListSearch, Loader, Query, useEventCallback, useSavedState } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
 import { loadEvents, useApp, useEvents } from '@app/state';
@@ -35,15 +35,15 @@ export const EventsPage = () => {
         dispatch(loadEvents(appId, {}, undefined, channels));
     }, [dispatch, appId, channels]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadEvents(appId, undefined, undefined, channels));
-    }, [dispatch, appId, channels]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadEvents(appId, q, undefined, channels));
-    }, [dispatch, appId, channels]);
+    });
 
-    const doToggleChannel = React.useCallback((channel: string) => {
+    const doToggleChannel = useEventCallback((channel: string) => {
         setChannels(channels => {
             let newChannels: string[];
 
@@ -55,7 +55,7 @@ export const EventsPage = () => {
 
             return newChannels.length >= NON_WEBHOOKS.length ? [] : newChannels;
         });
-    }, []);
+    });
 
     return (
         <div className='events'>

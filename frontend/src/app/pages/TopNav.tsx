@@ -10,6 +10,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar } from 'reactstrap';
+import { useBoolean, useEventCallback } from '@app/framework';
 import { AppsDropdown, Logo } from '@app/shared/components';
 import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
@@ -18,21 +19,7 @@ export const TopNav = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch();
     const user = useLogin(x => x.user)!;
-    const [isOpen, setOpen] = React.useState(false);
-
-    const doOpen = React.useCallback(() => {
-        setOpen(true);
-    }, []);
-
-    const doClose = React.useCallback(() => {
-        setOpen(false);
-    }, []);
-
-    const doToggle = React.useCallback(() => {
-        setOpen(!isOpen);
-
-        return false;
-    }, [isOpen]);
+    const [isOpen, setIsOpen] = useBoolean();
 
     React.useEffect(() => {
         dispatch(loadApps());
@@ -40,9 +27,9 @@ export const TopNav = () => {
         dispatch(loadTimezones());
     }, [dispatch]);
 
-    const doLogout = React.useCallback(() => {
+    const doLogout = useEventCallback(() => {
         dispatch(logoutStart());
-    }, [dispatch]);
+    });
 
     return (
         <Navbar dark fixed='top' color='primary'>
@@ -55,12 +42,12 @@ export const TopNav = () => {
             </Nav>
 
             <Nav navbar className='ml-auto'>
-                <Dropdown nav inNavbar isOpen={isOpen} toggle={doToggle}>
-                    <DropdownToggle nav caret onClick={doOpen}>
+                <Dropdown nav inNavbar isOpen={isOpen} toggle={setIsOpen.toggle}>
+                    <DropdownToggle nav caret>
                         {texts.common.profile}
                     </DropdownToggle>
                     <DropdownMenu right>
-                        <DropdownItem onClick={doClose} href='/account/profile' target='_blank'>
+                        <DropdownItem onClick={setIsOpen.off} href='/account/profile' target='_blank'>
                             <div>{texts.common.welcome},</div>
 
                             <strong>{user.name}</strong>
@@ -68,12 +55,12 @@ export const TopNav = () => {
 
                         <DropdownItem divider />
 
-                        <DropdownItem onClick={doClose} href='/account/profile' target='_blank'>
+                        <DropdownItem onClick={setIsOpen.off} href='/account/profile' target='_blank'>
                             {texts.common.profileSettings}
                         </DropdownItem>
 
                         {user.roles.find(x => x?.toUpperCase() === 'ADMIN') &&
-                            <NavLink onClick={doClose} to={`${match.path}/system-users`} className='dropdown-item'>
+                            <NavLink onClick={setIsOpen.off} to={`${match.path}/system-users`} className='dropdown-item'>
                                 {texts.systemUsers.header}
                             </NavLink>
                         }

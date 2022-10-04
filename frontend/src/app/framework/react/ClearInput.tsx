@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { Button, Input, InputProps } from 'reactstrap';
 import { Icon } from './Icon';
+import { useEventCallback } from './hooks';
 
 export interface ClearInputProps extends InputProps {
     // True when cleared.
@@ -18,14 +19,13 @@ export const ClearInput = (props: InputProps) => {
     const { bsSize, onClear, ...other } = props;
 
     const container = React.useRef<HTMLDivElement | null>(null);
-
     const [value, setValue] = React.useState(props.value);
 
     React.useEffect(() => {
         setValue(props.value);
     }, [props.value]);
 
-    const doClear = React.useCallback(() => {
+    const doClear = useEventCallback(() => {
         if (container.current) {
             setValue(undefined);
 
@@ -37,11 +37,9 @@ export const ClearInput = (props: InputProps) => {
                 input.dispatchEvent(new Event('input', { bubbles: true }));
             }
 
-            if (onClear) {
-                onClear();
-            }
+            onClear && onClear();
         }
-    }, [onClear]);
+    });
 
     return (
         <div className='input-container' ref={container}>
@@ -62,11 +60,11 @@ export const ClearInput = (props: InputProps) => {
 function setNativeValue(element: HTMLInputElement, value: string) {
     const valueSetter = Object.getOwnPropertyDescriptor(element, 'value')!.set;
 
-    const prototype = Object.getPrototypeOf(element);
-    const prototypeValueSetter = Object.getOwnPropertyDescriptor(prototype, 'value')!.set;
+    const prototypeInstance = Object.getPrototypeOf(element);
+    const prototypeSetter = Object.getOwnPropertyDescriptor(prototypeInstance, 'value')!.set;
 
-    if (valueSetter && valueSetter !== prototypeValueSetter) {
-        prototypeValueSetter!.call(element, value);
+    if (valueSetter && valueSetter !== prototypeSetter) {
+        prototypeSetter!.call(element, value);
     } else {
         valueSetter!.call(element, value);
     }

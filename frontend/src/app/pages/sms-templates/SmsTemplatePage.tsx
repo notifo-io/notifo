@@ -12,7 +12,7 @@ import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Row } from 'reactstrap';
-import { FormError, Icon, Loader, Types } from '@app/framework';
+import { FormError, Icon, Loader, Types, useEventCallback } from '@app/framework';
 import { Forms } from '@app/shared/components';
 import { loadSmsTemplate, updateSmsTemplate, useApp, useSmsTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -49,7 +49,7 @@ export const SmsTemplatePage = () => {
         }
     }, [updatingError]);
 
-    const doSave = React.useCallback((values: FormValues) => {
+    const doSave = useEventCallback((values: FormValues) => {
         const update = { ...values, languages: {} };
 
         if (values?.languages) {
@@ -59,7 +59,7 @@ export const SmsTemplatePage = () => {
         }
 
         dispatch(updateSmsTemplate({ appId, id: templateId, update }));
-    }, [dispatch, appId, templateId]);
+    });
 
     const initialValues = React.useMemo(() => {
         const result: any = { ...Types.clone(template), languages: {} };

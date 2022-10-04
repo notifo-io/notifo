@@ -8,8 +8,8 @@
 import * as React from 'react';
 import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
 import { texts } from '@app/texts';
-import { Types } from '../utils';
-import { useDialog } from './hooks';
+import { Types } from './../utils';
+import { useBoolean, useEventCallback } from './hooks';
 
 export interface ConfirmProps {
     // The confirm title.
@@ -28,17 +28,17 @@ export interface ConfirmProps {
 export const Confirm = (props: ConfirmProps) => {
     const { children, onConfirm, text, title } = props;
 
-    const dialog = useDialog();
+    const [isOpen, setIsOpen] = useBoolean();
 
-    const doConfirm = React.useCallback(() => {
+    const doConfirm = useEventCallback(() => {
         onConfirm();
 
-        dialog.close();
-    }, [dialog, onConfirm]);
+        setIsOpen.on();
+    });
 
     const doRender = React.useCallback(() => {
         const onClick = (event: any) => {
-            dialog.open();
+            setIsOpen.on();
 
             if (Types.isFunction(event.stopPropagation)) {
                 event.stopPropagation();
@@ -52,13 +52,13 @@ export const Confirm = (props: ConfirmProps) => {
         };
 
         return children({ onClick });
-    }, [children, dialog]);
+    }, [children, setIsOpen]);
 
     return (
         <>
             {doRender()}
 
-            {dialog.isOpen &&
+            {isOpen &&
                 <Modal size='sm' isOpen={true}>
                     <ModalBody>
                         {title &&
@@ -68,7 +68,7 @@ export const Confirm = (props: ConfirmProps) => {
                         <div>{text}</div>
                     </ModalBody>
                     <ModalFooter className='justify-content-between'>
-                        <Button color='danger' outline onClick={dialog.close}>
+                        <Button color='danger' outline onClick={setIsOpen.off}>
                             {texts.common.no}
                         </Button>
                         <Button color='success' onClick={doConfirm}>

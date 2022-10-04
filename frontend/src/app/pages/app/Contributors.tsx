@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, CardFooter, Col, Input, Row } from 'reactstrap';
-import { FormError, Icon } from '@app/framework';
+import { FormError, Icon, useEventCallback } from '@app/framework';
 import { AppDetailsDto } from '@app/service';
 import { addContributor, removeContributor, useApps, useLogin } from '@app/state';
 import { texts } from '@app/texts';
@@ -27,21 +27,21 @@ export const Contributors = (props: ContributorsProps) => {
     const contributorsUpdating = useApps(x => x.contributorsUpdating);
     const userId = useLogin(x => x.user?.sub);
 
-    const doSetEmail = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const doSetEmail = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value);
-    }, []);
+    });
 
-    const doInvite = React.useCallback(() => {
+    const doInvite = useEventCallback(() => {
         dispatch(addContributor({ appId: appDetails.id, params: { email, role: 'Admin' } }));
-    }, [dispatch, appDetails.id, email]);
+    });
 
-    const doChange = React.useCallback((id: string, role: string) => {
+    const doChange = useEventCallback((id: string, role: string) => {
         dispatch(addContributor({ appId: appDetails.id, params: { email: id, role } }));
-    }, [dispatch, appDetails.id]);
+    });
 
-    const doRemove = React.useCallback((id: string) => {
+    const doRemove = useEventCallback((id: string) => {
         dispatch(removeContributor({ appId: appDetails.id, id }));
-    }, [dispatch, appDetails.id]);
+    });
 
     const disabled = appDetails.role !== 'Owner' || contributorsUpdating;
 

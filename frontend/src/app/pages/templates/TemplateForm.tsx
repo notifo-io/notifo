@@ -11,7 +11,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, CardHeader, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Icon, Loader, Types } from '@app/framework';
+import { FormError, Icon, Loader, Types, useEventCallback } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { Forms, NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -60,13 +60,13 @@ export const TemplateForm = (props: TemplateFormProps) => {
     const upsertingError = useTemplates(x => x.upsertingError);
     const [viewFullscreen, setViewFullscreen] = React.useState<boolean>(false);
 
-    const doPublish = React.useCallback((params: TemplateDto) => {
+    const doPublish = useEventCallback((params: TemplateDto) => {
         dispatch(upsertTemplate({ appId, params }));
-    }, [dispatch, appId]);
+    });
 
-    const doToggleFullscreen = React.useCallback(() => {
+    const doToggleFullscreen = useEventCallback(() => {
         setViewFullscreen(x => !x);
-    }, []);
+    });
 
     const initialValues: any = React.useMemo(() => {
         const result: Partial<TemplateDto> = Types.clone(template || {});

@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Col, Row } from 'reactstrap';
-import { DropZone, FormError, Icon, ListSearch, Loader, Query } from '@app/framework';
+import { DropZone, FormError, Icon, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { MediaDto } from '@app/service';
 import { TableFooter } from '@app/shared/components';
 import { MediaCard } from '@app/shared/components/MediaCard';
@@ -25,23 +25,23 @@ export const MediaPage = () => {
         dispatch(loadMedia(appId));
     }, [dispatch, appId]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadMedia(appId));
-    }, [dispatch, appId]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadMedia(appId, q));
-    }, [dispatch, appId]);
+    });
 
-    const doDelete = React.useCallback((media: MediaDto) => {
+    const doDelete = useEventCallback((media: MediaDto) => {
         dispatch(deleteMedia({ appId, fileName: media.fileName }));
-    }, [dispatch, appId]);
+    });
 
-    const doUpload = React.useCallback((files: ReadonlyArray<File>) => {
+    const doUpload = useEventCallback((files: ReadonlyArray<File>) => {
         for (const file of files) {
             dispatch(uploadMedia({ appId, file }));
         }
-    }, [dispatch, appId]);
+    });
 
     return (
         <div className='medias'>

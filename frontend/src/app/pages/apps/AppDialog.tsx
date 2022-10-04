@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormAlert, FormError, Loader } from '@app/framework';
+import { FormAlert, FormError, Loader, useEventCallback } from '@app/framework';
 import { Forms } from '@app/shared/components';
 import { createApp, CreateAppParams, createAppReset, useApps } from '@app/state';
 import { texts } from '@app/texts';
@@ -50,22 +50,18 @@ export const AppDialog = (props: AppDialogProps) => {
         }
     }, [creating, creatingError, onClose, wasCreating]);
 
-    const doCloseForm = React.useCallback(() => {
-        onClose && onClose();
-    }, [onClose]);
-
-    const doSave = React.useCallback((params: CreateAppParams) => {
+    const doSave = useEventCallback((params: CreateAppParams) => {
         dispatch(createApp({ params }));
-    }, [dispatch]);
+    });
 
     const initialValues: any = {};
 
     return (
-        <Modal isOpen={true} toggle={doCloseForm}>
+        <Modal isOpen={true} toggle={onClose}>
             <Formik<CreateAppParams> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
+                        <ModalHeader toggle={onClose}>
                             {texts.apps.createHeader}
                         </ModalHeader>
 
@@ -80,7 +76,7 @@ export const AppDialog = (props: AppDialogProps) => {
                             <FormError error={creatingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={doCloseForm}>
+                            <Button type='button' color='none' onClick={onClose}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary'>

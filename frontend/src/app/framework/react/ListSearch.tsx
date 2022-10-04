@@ -9,6 +9,7 @@ import * as React from 'react';
 import { InputProps } from 'reactstrap';
 import { ListState, Query } from './../model';
 import { ClearInput } from './ClearInput';
+import { useEventCallback } from './hooks';
 
 export interface ListSearchProps extends Pick<InputProps, Exclude<keyof InputProps, 'list'>> {
     // The bootstrap size.
@@ -34,48 +35,42 @@ export const ListSearch = (props: ListSearchProps) => {
         ...other
     } = props;
 
-    const [value, setValue] = React.useState<string | null>();
-
-    const currentValue = React.useRef<string | null | undefined>();
+    const [search, setSearch] = React.useState<string | null>();
 
     React.useEffect(() => {
         const timer = setTimeout(() => {
-            if (hasChanged(list.search, value) && onSearch) {
-                onSearch({ search: value });
+            if (hasChanged(list.search, search) && onSearch) {
+                onSearch({ search: search });
             }
         }, 3000);
 
         return () => {
             clearInterval(timer);
         };
-    }, [list, value, onSearch]);
+    }, [list, search, onSearch]);
 
     React.useEffect(() => {
-        currentValue.current = list.search;
-
-        setValue(list.search);
+        setSearch(list.search);
     }, [list.search]);
 
-    const doChange = React.useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        currentValue.current = event.target.value;
+    const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(event.target.value);
+    });
 
-        setValue(event.target.value);
-    }, []);
-
-    const doPress = React.useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (hasChanged(list.search, currentValue.current) && onSearch && isEnter(event)) {
-            onSearch({ search: currentValue.current });
+    const doPress = useEventCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (hasChanged(list.search, search) && onSearch && isEnter(event)) {
+            onSearch({ search });
         }
-    }, [list.search, onSearch]);
+    });
 
-    const doClear = React.useCallback(() => {
+    const doClear = useEventCallback(() => {
         if (hasChanged(list.search, undefined) && onSearch) {
             onSearch({ search: undefined });
         }
-    }, [list.search, onSearch]);
+    });
 
     return (
-        <ClearInput {...other} value={value || ''} disabled={list.isLoading}
+        <ClearInput {...other} value={search || ''} disabled={list.isLoading}
             onClear={doClear}
             onChange={doChange}
             onKeyPress={doPress}

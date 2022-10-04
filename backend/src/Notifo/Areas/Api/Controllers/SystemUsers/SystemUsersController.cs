@@ -34,7 +34,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 200 => Users returned.
         /// </returns>
         [HttpGet("api/system-users/")]
-        [ProducesResponseType(typeof(ListResponseDto<SystemUserDto>), StatusCodes.Status200OK)]
+        [Produces(typeof(ListResponseDto<SystemUserDto>))]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> GetUsers([FromQuery] QueryDto q)
         {
@@ -57,7 +57,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 404 => User not found.
         /// </returns>
         [HttpGet("api/system-users/{id:notEmpty}/")]
-        [ProducesResponseType(typeof(SystemUserDto), 201)]
+        [Produces(typeof(SystemUserDto))]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> GetUser(string id)
         {
@@ -81,7 +81,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 201 => User created.
         /// </returns>
         [HttpPost("api/system-users/")]
-        [ProducesResponseType(typeof(SystemUserDto), 201)]
+        [ProducesResponseType(typeof(SystemUserDto), StatusCodes.Status201Created)]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> PostUser([FromBody] CreateSystemUserDto request)
         {
@@ -102,7 +102,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 403 => User cannot be updated.
         /// </returns>
         [HttpPut("api/system-users/{id:notEmpty}/")]
-        [ProducesResponseType(typeof(SystemUserDto), 200)]
+        [Produces(typeof(SystemUserDto))]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> PutUser(string id, [FromBody] UpdateSystemUserDto request)
         {
@@ -127,7 +127,7 @@ namespace Notifo.Areas.Api.Controllers.SystemUsers
         /// 403 => User cannot be locked.
         /// </returns>
         [HttpPut("api/system-users/{id:notEmpty}/lock/")]
-        [ProducesResponseType(typeof(SystemUserDto), 200)]
+        [Produces(typeof(SystemUserDto))]
         [AppPermission(NotifoRoles.HostAdmin)]
         public async Task<IActionResult> LockUser(string id)
         {

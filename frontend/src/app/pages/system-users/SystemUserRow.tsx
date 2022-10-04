@@ -45,21 +45,21 @@ export const SystemUserRow = React.memo((props: SystemUserRowProps) => {
         ReactTooltip.rebuild();
     });
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = () => {
         onDelete && onDelete(user);
-    }, [onDelete, user]);
+    };
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = () => {
         onEdit && onEdit(user);
-    }, [onEdit, user]);
+    };
 
-    const doLock = React.useCallback(() => {
+    const doLock = () => {
         onLock && onLock(user);
-    }, [onLock, user]);
+    };
 
-    const doUnlock = React.useCallback(() => {
+    const doUnlock = () => {
         onUnlock && onUnlock(user);
-    }, [onUnlock, user]);
+    };
 
     return (
         <>

@@ -10,7 +10,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListPager, ListSearch, Loader, Query } from '@app/framework';
+import { FormError, Icon, ListPager, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { CHANNELS } from '@app/shared/utils/model';
 import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
@@ -43,15 +43,15 @@ export const Notifications = (props: NotificationsProps) => {
         dispatch(loadNotifications(appId, userId, {}, undefined, channels));
     }, [dispatch, appId, userId, channels]);
 
-    const doRefresh = React.useCallback(() => {
+    const doRefresh = useEventCallback(() => {
         dispatch(loadNotifications(appId, userId, undefined, undefined, channels));
-    }, [dispatch, appId, userId, channels]);
+    });
 
-    const doLoad = React.useCallback((q?: Partial<Query>) => {
+    const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadNotifications(appId, userId, q, undefined, channels));
-    }, [dispatch, appId, userId, channels]);
+    });
 
-    const doToggleChannel = React.useCallback((channel: string) => {
+    const doToggleChannel = useEventCallback((channel: string) => {
         setChannels(channels => {
             let newChannels: string[];
 
@@ -63,7 +63,7 @@ export const Notifications = (props: NotificationsProps) => {
 
             return newChannels.length >= NON_WEBHOOKS.length ? [] : newChannels;
         });
-    }, []);
+    });
 
     return (
         <>
@@ -151,7 +151,7 @@ export const Notifications = (props: NotificationsProps) => {
 
                             {notifications.isLoaded && notifications.items && notifications.items.length === 0 &&
                                 <tr>
-                                    <td colSpan={4}>{texts.notifications.notificationsNotFound}</td>
+                                    <td colSpan={7}>{texts.notifications.notificationsNotFound}</td>
                                 </tr>
                             }
                         </tbody>

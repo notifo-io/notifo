@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { Button, Col, Label, Row } from 'reactstrap';
-import { FormError, Icon, Loader } from '@app/framework';
+import { FormError, Icon, Loader, useEventCallback } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { createSmsTemplate, deleteSmsTemplate, loadSmsTemplates, useApp, useSmsTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -42,13 +42,13 @@ export const SmsTemplatesPage = () => {
         }
     }, [deletingError]);
 
-    const doCreate = React.useCallback(() => {
+    const doCreate = useEventCallback(() => {
         dispatch(createSmsTemplate({ appId }));
-    }, [dispatch, appId]);
+    });
 
-    const doDelete = React.useCallback((template: ChannelTemplateDto) => {
+    const doDelete = useEventCallback((template: ChannelTemplateDto) => {
         dispatch(deleteSmsTemplate({ appId, id: template.id }));
-    }, [dispatch, appId]);
+    });
 
     return (
         <div className='sms-templates'>

@@ -9,26 +9,96 @@
 
 import * as React from 'react';
 
-export function useDialog() {
-    const [isOpen, setIsOpen] = React.useState(false);
+type Fn<ARGS extends any[], R> = (...args: ARGS) => R;
 
-    const open = React.useCallback(() => {
-        setIsOpen(true);
+export const useEventCallback = <A extends any[], R>(fn: Fn<A, R>): Fn<A, R> => {
+    let ref = React.useRef<Fn<A, R>>(fn);
+
+    React.useLayoutEffect(() => {
+        ref.current = fn;
+    });
+
+    return React.useMemo(() => (...args: A): R => {
+        return ref.current(...args);
+    }, []);
+};
+
+type BooleanSetter = {
+    toggle: () => void;
+    off: () => void;
+    on: () => void;
+    setValue: (value: boolean) => void;
+};
+
+export function useBoolean(initialValue = false): [boolean, BooleanSetter] {
+    const [value, setValue] = React.useState(initialValue);
+
+    const setter = React.useMemo(() => {
+        return {
+            toggle: () => { 
+                setValue(x => !x);
+                return false;
+            },
+            on: () => { 
+                setValue(true);
+                return false;
+            },
+            off: () => { 
+                setValue(false);
+                return false;
+            },
+            setValue: (value: boolean) => {
+                setValue(value);
+                return false;
+            },
+        };
     }, []);
 
-    const close = React.useCallback(() => {
-        setIsOpen(false);
+    return [value, setter];
+}
+
+export function useBooleanObj(initialValue = false): BooleanSetter & { value: boolean } {
+    const [, setValue] = React.useState(initialValue);
+    const valueRef = React.useRef(initialValue);
+
+    const setter = React.useMemo(() => {
+        const setValueCore = (value: boolean) => {
+            valueRef.current = value;
+            setValue(value);
+        };
+
+        const result = {
+            toggle: () => { 
+                setValueCore(!valueRef.current);
+                return false;
+            },
+            on: () => { 
+                setValueCore(true);
+                return false;
+            },
+            off: () => { 
+                setValueCore(false);
+                return false;
+            },
+            setValue: (value: boolean) => {
+                setValueCore(value);
+                return false;
+            },
+        };
+
+        Object.defineProperty(result, 'value', {
+            get: () => {
+                return valueRef.current;
+            },
+        });
+
+        return result as any;
     }, []);
 
-    return { isOpen, open, close };
+    return setter;
 }
 
 export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => void] {
-    if (!window.localStorage) {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return React.useState(initial);
-    }
-
     const factory = () => {
         try {
             const stored = window.localStorage.getItem(key);
@@ -43,11 +113,9 @@ export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => 
         return initial;
     };
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [value, setValue] = React.useState(factory);
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const valueSetter = React.useCallback((newValue: T) => {
+    const valueSetter = useEventCallback((newValue: T) => {
         try {
             if (newValue) {
                 const serialized = JSON.stringify(newValue);
@@ -61,7 +129,7 @@ export function useSavedState<T>(initial: T, key: string): [T, (newValue: T) => 
         }
 
         setValue(newValue);
-    }, [key]);
+    });
 
     return [value, valueSetter];
 }
@@ -74,16 +142,4 @@ export function usePrevious <T>(value: T) {
     });
 
     return ref.current;
-}
-
-export function useStateWithRef<T>(initial: T): [T, (value: T) => void, { current: T }] {
-    const [state, setState] = React.useState<T>(initial);
-    const snapshot = React.useRef(initial);
-
-    const update = React.useCallback((value: T) => {
-        snapshot.current = value;
-        setState(value);
-    }, []);
-
-    return [state, update, snapshot];
 }

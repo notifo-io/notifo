@@ -9,7 +9,7 @@ import { Formik } from 'formik';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink } from 'reactstrap';
-import { FormError, Loader, Types } from '@app/framework';
+import { FormError, Loader, Types, useEventCallback } from '@app/framework';
 import { Clients, UpsertUserDto, UserDto } from '@app/service';
 import { Forms, NotificationsForm } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -60,17 +60,15 @@ export const UserDialog = (props: UserDialogProps) => {
         }
     }, [upserting]);
 
-    const doCloseForm = React.useCallback(() => {
-        if (onClose) {
-            onClose();
-        }
-    }, [onClose]);
-
     React.useEffect(() => {
         if (!upserting && wasUpserting && !upsertingError) {
-            doCloseForm();
+            onClose && onClose();
         }
-    }, [dispatch, doCloseForm, upserting, upsertingError, wasUpserting]);
+    }, [dispatch, onClose, upserting, upsertingError, wasUpserting]);
+
+    const doSave = useEventCallback((params: UpsertUserDto) => {
+        dispatch(upsertUser({ appId, params }));
+    });
 
     const allProperties = React.useMemo(() => {
         const properties = [...dialogUser?.userProperties || []];
@@ -86,10 +84,6 @@ export const UserDialog = (props: UserDialogProps) => {
         return properties.sortByString(x => x.name);
     }, [dialogUser]);
 
-    const doSave = React.useCallback((params: UpsertUserDto) => {
-        dispatch(upsertUser({ appId, params }));
-    }, [dispatch, appId]);
-
     const initialValues: any = React.useMemo(() => {
         const result: Partial<UserDto> = Types.clone(dialogUser || {});
 
@@ -103,11 +97,11 @@ export const UserDialog = (props: UserDialogProps) => {
     }, [dialogUser]);
 
     return (
-        <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm}>
+        <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
             <Formik<UpsertUserDto> initialValues={initialValues} enableReinitialize onSubmit={doSave}>
                 {({ handleSubmit }) => (
                     <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
+                        <ModalHeader toggle={onClose}>
                             &nbsp;
                             
                             <Nav className='nav-tabs2'>
@@ -161,7 +155,7 @@ export const UserDialog = (props: UserDialogProps) => {
                             <FormError error={upsertingError} />
                         </ModalBody>
                         <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={doCloseForm} disabled={upserting}>
+                            <Button type='button' color='none' onClick={onClose} disabled={upserting}>
                                 {texts.common.cancel}
                             </Button>
                             <Button type='submit' color='primary' disabled={upserting}>

@@ -49,17 +49,17 @@ export const UserRow = React.memo((props: UserRowProps) => {
         ReactTooltip.rebuild();
     });
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = () => {
         onDelete && onDelete(user);
-    }, [onDelete, user]);
+    };
 
-    const doEdit = React.useCallback(() => {
+    const doEdit = () => {
         onEdit && onEdit(user);
-    }, [onEdit, user]);
+    };
 
-    const doPublish = React.useCallback(() => {
+    const doPublish = () => {
         onPublish && onPublish(user);
-    }, [onPublish, user]);
+    };
 
     const url = combineUrl(match.url, user.id);
 

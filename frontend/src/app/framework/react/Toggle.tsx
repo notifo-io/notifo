@@ -62,6 +62,7 @@ export const Toggle = (props: ToggleProps) => {
                 onChange(newValue);
             }
         }
+        
         setInternalValue(newValue);
     };
 

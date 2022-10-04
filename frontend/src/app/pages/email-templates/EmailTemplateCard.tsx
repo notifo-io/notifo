@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { match, NavLink } from 'react-router-dom';
 import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
-import { Confirm, FormatDate, Icon, IFrame, OverlayDropdown } from '@app/framework';
+import { Confirm, FormatDate, Icon, IFrame, OverlayDropdown, useEventCallback } from '@app/framework';
 import { ChannelTemplateDto, Clients } from '@app/service';
 import { texts } from '@app/texts';
 import { combineUrl } from '@sdk/shared';
@@ -42,9 +42,9 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
         loadPreview();
     }, [appId, template.id]);
 
-    const doDelete = React.useCallback(() => {
+    const doDelete = useEventCallback(() => {
         onDelete(template);
-    }, [onDelete, template]);
+    });
 
     const url = combineUrl(match.url, template.id);
 

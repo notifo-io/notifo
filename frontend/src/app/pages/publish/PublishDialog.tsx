@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Icon, Loader, usePrevious } from '@app/framework';
+import { FormError, Icon, Loader, useEventCallback, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { Forms, NotificationsForm, TemplateInput, TemplateVariantsInput } from '@app/shared/components';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -94,15 +94,15 @@ const PublishDialogInner = () => {
         }
     }, [appId, dispatch, templates.isLoaded]);
 
-    const doCloseForm = React.useCallback(() => {
+    const doCloseForm = useEventCallback(() => {
         dispatch(togglePublishDialog({ open: false }));
-    }, [dispatch]);
+    });
 
-    const doToggleFullscreen = React.useCallback(() => {
+    const doToggleFullscreen = useEventCallback(() => {
         setViewFullscreen(x => !x);
-    }, []);
+    });
 
-    const doPublish = React.useCallback((form: PublishForms) => {
+    const doPublish = useEventCallback((form: PublishForms) => {
         const { templateVariants, ...other } = form;
         const params: PublishDto = other;
 
@@ -115,7 +115,7 @@ const PublishDialogInner = () => {
         }
 
         dispatch(publish({ appId, params }));
-    }, [dispatch, appId]);
+    });
 
     const initialValues: any = React.useMemo(() => {
         const result = { ...dialogValues };
