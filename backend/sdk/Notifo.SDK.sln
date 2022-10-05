@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32126.317
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.SDK", "Notifo.SDK\Notifo.SDK.csproj", "{73C42B75-195C-4B45-863E-4EDCCB49C215}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestGenerator", "TestGenerator\TestGenerator.csproj", "{8DBC2D4C-BCDB-4BD1-BB8B-71807990D8DD}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{7920DD12-CF98-4992-8553-BFCBDCBA3F64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Notifo.SDK.Tests", "Notifo.SDK.Tests\Notifo.SDK.Tests.csproj", "{9FC94C21-E254-4622-9E4C-601413951E76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.SDK.Tests", "Notifo.SDK.Tests\Notifo.SDK.Tests.csproj", "{9FC94C21-E254-4622-9E4C-601413951E76}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		{73C42B75-195C-4B45-863E-4EDCCB49C215}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73C42B75-195C-4B45-863E-4EDCCB49C215}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73C42B75-195C-4B45-863E-4EDCCB49C215}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8DBC2D4C-BCDB-4BD1-BB8B-71807990D8DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DBC2D4C-BCDB-4BD1-BB8B-71807990D8DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8DBC2D4C-BCDB-4BD1-BB8B-71807990D8DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8DBC2D4C-BCDB-4BD1-BB8B-71807990D8DD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7920DD12-CF98-4992-8553-BFCBDCBA3F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7920DD12-CF98-4992-8553-BFCBDCBA3F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7920DD12-CF98-4992-8553-BFCBDCBA3F64}.Release|Any CPU.ActiveCfg = Release|Any CPU

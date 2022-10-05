@@ -64,9 +64,15 @@ namespace TestGenerator
 
                 foreach (var userId in users)
                 {
-                    var request = new SubscriptionDto { TopicPrefix = TopicPrefix };
+                    var request = new SubscribeManyDto
+                    {
+                        Subscribe = new List<SubscribeDto>
+                        {
+                            new SubscribeDto { TopicPrefix = TopicPrefix }
+                        }
+                    };
 
-                    await client.Users.PostSubscriptionAsync(AppId, userId, request);
+                    await client.Users.PostSubscriptionsAsync(AppId, userId, request);
                 }
 
                 Console.WriteLine("Generated Subscriptions...");
@@ -97,7 +103,7 @@ namespace TestGenerator
                         }
                     };
 
-                    request.Properties = new EventProperties
+                    request.Properties = new NotificationProperties
                     {
                         ["var"] = "123"
                     };

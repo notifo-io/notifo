@@ -40,7 +40,7 @@ namespace Notifo.Areas.Api.Controllers.Media
         /// </returns>
         [HttpGet("api/assets/proxy")]
         [AllowAnonymous]
-        public async Task<IActionResult> Download([FromQuery] string url, [FromQuery] MediaFileQueryDto? query = null)
+        public async Task<IActionResult> ProxyImage([FromQuery] string url, [FromQuery] MediaFileQueryDto? query = null)
         {
             if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {

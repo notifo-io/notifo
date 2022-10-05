@@ -16,7 +16,7 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations
 {
-    public sealed class IntegrationManager : IIntegrationManager, IInitializable
+    public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     {
         private readonly IEnumerable<IIntegration> appIntegrations;
         private readonly IAppStore appStore;
@@ -41,7 +41,7 @@ namespace Notifo.Domain.Integrations
             conditionEvaluator = new ConditionEvaluator(log);
         }
 
-        public Task InitializeAsync(
+        public Task StartAsync(
             CancellationToken ct)
         {
             timer = new CompletionTimer(5000, CheckAsync, 5000);
@@ -49,7 +49,7 @@ namespace Notifo.Domain.Integrations
             return Task.CompletedTask;
         }
 
-        public Task ReleaseAsync(
+        public Task StopAsync(
             CancellationToken ct)
         {
             return timer.StopAsync();
