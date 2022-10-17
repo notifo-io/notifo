@@ -7,6 +7,7 @@
 
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -85,6 +86,12 @@ namespace Notifo
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Configure(ConfigureJson);
+
+                    // Do not write null values.
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
+                    // Expose the json exceptions to the model state.
+                    options.AllowInputFormatterExceptionMessages = false;
                 })
                 .AddRazorRuntimeCompilation();
 

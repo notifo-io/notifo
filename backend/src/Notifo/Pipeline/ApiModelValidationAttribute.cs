@@ -42,7 +42,7 @@ namespace Notifo.Pipeline
                         {
                             foreach (var error in value.Errors)
                             {
-                                if (!string.IsNullOrWhiteSpace(error.ErrorMessage) && ShouldExpose(error))
+                                if (!string.IsNullOrWhiteSpace(error.ErrorMessage) && allErrors)
                                 {
                                     errors.Add(new ValidationError(error.ErrorMessage));
                                 }
