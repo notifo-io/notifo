@@ -222,9 +222,11 @@ namespace Notifo.Domain.Integrations.MessageBird
 
             foreach (var line in source.Split('\n'))
             {
-                if (line.Length > 5)
+                var number = PhoneNumberHelper.Trim(line);
+
+                if (number.Length > 5)
                 {
-                    var parts = line.Split(':');
+                    var parts = number.Split(':');
 
                     if (parts.Length == 2)
                     {
@@ -234,9 +236,9 @@ namespace Notifo.Domain.Integrations.MessageBird
                     }
                     else
                     {
-                        var countryCode = line[..2].Trim();
+                        var countryCode = number[..2].Trim();
 
-                        result[countryCode] = line;
+                        result[countryCode] = number;
                     }
                 }
             }

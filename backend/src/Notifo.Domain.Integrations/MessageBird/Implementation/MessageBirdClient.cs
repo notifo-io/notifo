@@ -18,7 +18,6 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
 {
     public sealed class MessageBirdClient : IMessageBirdClient
     {
-        private static readonly char[] TrimChars = { ' ', '+', '0' };
         private readonly Func<HttpClient> httpClientFactory;
 
         public MessageBirdClient(IHttpClientFactory httpClientFactory, IOptions<MessageBirdOptions> options)
@@ -61,7 +60,8 @@ namespace Notifo.Domain.Integrations.MessageBird.Implementation
                 ThrowHelper.ArgumentException("Text must not have more than 140 characters.", nameof(message));
             }
 
-            to = PhoneNumberUtil.Normalize(to).TrimStart(TrimChars);
+            to = PhoneNumberUtil.Normalize(to);
+            to = PhoneNumberHelper.Trim(to);
 
             if (!long.TryParse(to, NumberStyles.Integer, CultureInfo.InvariantCulture, out var recipient))
             {

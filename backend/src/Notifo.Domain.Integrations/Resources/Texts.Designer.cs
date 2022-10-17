@@ -376,7 +376,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Country specific phone numbers..
+        ///   Looks up a localized string similar to Country specific phone numbers. Each line is one phone number..
         /// </summary>
         internal static string MessageBird_PhoneNumbersDescription {
             get {

@@ -87,10 +87,12 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
             const label = property.editorLabel || property.name;
 
             if (property.type === 'Number') {
-                let propertyType = Yup.number().label(label);
+                let propertyType: Yup.NumberSchema<number | undefined | null> = Yup.number().label(label);
 
                 if (property.isRequired) {
                     propertyType = propertyType.requiredI18n();
+                } else {
+                    propertyType = propertyType.nullable();
                 }
 
                 if (property.minValue) {
@@ -103,10 +105,12 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
 
                 properties[property.name] = propertyType;
             } else if (property.type !== 'Boolean') {
-                let propertyType = Yup.string().label(label);
+                let propertyType: Yup.StringSchema<string | undefined | null> = Yup.string().label(label);
 
                 if (property.isRequired) {
                     propertyType = propertyType.requiredI18n();
+                } else {
+                    propertyType = propertyType.nullable();
                 }
 
                 if (property.minLength) {

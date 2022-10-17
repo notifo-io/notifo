@@ -12,6 +12,7 @@ using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
+using PhoneNumbers;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {
@@ -78,7 +79,7 @@ namespace Notifo.Domain.Integrations.MessageBird
         {
             if (phoneNumbers?.Count > 0 && to.Length > 2)
             {
-                // Use the country code of the phone number to not look as a spam SMS.
+                // Use the country code of the phone number to lookup up the phone number..
                 var countryCode = to[..2];
 
                 if (phoneNumbers.TryGetValue(countryCode, out var originator))
