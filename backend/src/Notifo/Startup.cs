@@ -66,6 +66,15 @@ namespace Notifo
             services.AddHttpClient();
             services.AddHttpContextAccessor();
 
+            services.AddHttpClient("Unsafe")
+                .ConfigurePrimaryHttpMessageHandler(() =>
+                {
+                    return new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
+                });
+
             services.AddRouting(options =>
             {
                 options.ConstraintMap.Add("notEmpty", typeof(NotEmptyRouteConstraint));

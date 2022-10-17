@@ -45,7 +45,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/MjmlToHtmlAsync"))
             {
-                var (html, mjmlErrors) = mjmlRenderer.Render(mjml, DefaultOptions);
+                var fixedHjml = mjmlRenderer.FixXML(mjml, DefaultOptions);
+
+                var (html, mjmlErrors) = mjmlRenderer.Render(fixedHjml, DefaultOptions);
 
                 if (mjmlErrors.Count > 0)
                 {

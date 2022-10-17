@@ -99,9 +99,11 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
             return Ok(response);
         }
 
-        private ValueTask<FormattedEmail> FormatAsync(EmailTemplate emailTemplate)
+        private async ValueTask<FormattedEmail> FormatAsync(EmailTemplate emailTemplate)
         {
-            return emailFormatter.FormatAsync(EmailJob.ForPreview, emailTemplate, App, EmailUser, true, HttpContext.RequestAborted);
+            emailTemplate = await emailFormatter.ParseAsync(emailTemplate, HttpContext.RequestAborted);
+
+            return await emailFormatter.FormatAsync(EmailJob.ForPreview, emailTemplate, App, EmailUser, true, HttpContext.RequestAborted);
         }
     }
 }

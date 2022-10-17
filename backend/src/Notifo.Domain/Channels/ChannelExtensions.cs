@@ -12,6 +12,14 @@ namespace Notifo.Domain.Channels
 {
     public static class ChannelExtensions
     {
+        public static string HtmlTrackingLink(this BaseUserNotification notification, string emailAddress)
+        {
+            var trackingUrl = notification.ComputeTrackSeenUrl(Providers.Email, emailAddress);
+            var trackingLink = $"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{trackingUrl}\" />";
+
+            return trackingLink;
+        }
+
         public static string? ConfirmText(this BaseUserNotification notification)
         {
             return notification.Formatting.ConfirmText;
@@ -22,18 +30,14 @@ namespace Notifo.Domain.Channels
             return notification.ConfirmUrl;
         }
 
-        public static string ImageSmall(this BaseUserNotification notification, IImageFormatter imageFormatter, string? preset, bool emptyFallback)
+        public static string? ImageSmall(this BaseUserNotification notification, IImageFormatter imageFormatter, string preset)
         {
-            var formatting = notification.Formatting;
-
-            return imageFormatter.Format(formatting.ImageSmall, preset, emptyFallback);
+            return imageFormatter.AddPreset(notification.Formatting.ImageSmall, preset);
         }
 
-        public static string ImageLarge(this BaseUserNotification notification, IImageFormatter imageFormatter, string? preset, bool emptyFallback)
+        public static string? ImageLarge(this BaseUserNotification notification, IImageFormatter imageFormatter, string preset)
         {
-            var formatting = notification.Formatting;
-
-            return imageFormatter.Format(formatting.ImageLarge, preset, emptyFallback);
+            return imageFormatter.AddPreset(notification.Formatting.ImageSmall, preset);
         }
 
         public static string Subject(this BaseUserNotification notification, bool asHtml = false)
@@ -50,7 +54,7 @@ namespace Notifo.Domain.Channels
             return subject;
         }
 
-        public static string? Body(this BaseUserNotification notification, bool asHtml = false)
+        public static string? BodyWithLink(this BaseUserNotification notification, bool asHtml = false)
         {
             var formatting = notification.Formatting;
 

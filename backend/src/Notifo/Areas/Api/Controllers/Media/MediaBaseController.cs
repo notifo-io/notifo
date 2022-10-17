@@ -42,7 +42,7 @@ namespace Notifo.Areas.Api.Controllers.Media
             this.assetThumbnailGenerator = assetThumbnailGenerator;
         }
 
-        protected IActionResult DeliverAsset(ResizeSource source, MediaFileQueryDto? query)
+        protected IActionResult DeliverAssetAsync(ResizeSource source, MediaFileQueryDto? query)
         {
             query ??= new MediaFileQueryDto();
 

@@ -60,11 +60,11 @@ namespace Notifo.Domain.Channels.Messaging
 
             var formattingProperties = new Dictionary<string, string?>
             {
-                ["notification.body"] = notification.Body(),
+                ["notification.body"] = notification.BodyWithLink(),
                 ["notification.confirmText"] = notification.ConfirmText(),
                 ["notification.confirmUrl"] = notification.ConfirmUrl(),
-                ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge", false),
-                ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall", false),
+                ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge"),
+                ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall"),
                 ["notification.subject"] = notification.Subject()
             };
 

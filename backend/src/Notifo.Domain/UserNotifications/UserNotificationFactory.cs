@@ -8,7 +8,6 @@
 using System.Globalization;
 using NodaTime;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
@@ -84,15 +83,8 @@ namespace Notifo.Domain.UserNotifications
 
         private void ConfigureImages(UserNotification notification)
         {
-            if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageSmall))
-            {
-                notification.Formatting.ImageSmall = notification.ImageSmall(imageFormatter, null, false);
-            }
-
-            if (!string.IsNullOrWhiteSpace(notification.Formatting.ImageLarge))
-            {
-                notification.Formatting.ImageLarge = notification.ImageLarge(imageFormatter, null, false);
-            }
+            notification.Formatting.ImageSmall = imageFormatter.AddProxy(notification.Formatting.ImageSmall);
+            notification.Formatting.ImageLarge = imageFormatter.AddProxy(notification.Formatting.ImageLarge);
         }
 
         private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)

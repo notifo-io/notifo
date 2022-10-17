@@ -48,28 +48,12 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string? ImageSmall
         {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(notification.Formatting.ImageSmall))
-                {
-                    return null;
-                }
-
-                return imageSmall ??= imageFormatter.Format(notification.Formatting.ImageSmall, "EmailSmall", true);
-            }
+            get => imageSmall ??= notification.ImageSmall(imageFormatter, "EmailSmall");
         }
 
         public string? ImageLarge
         {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(notification.Formatting.ImageLarge))
-                {
-                    return null;
-                }
-
-                return imageLarge ??= imageFormatter.Format(notification.Formatting.ImageLarge, "EmailLarge", true);
-            }
+            get => imageSmall ??= notification.ImageLarge(imageFormatter, "EmailSmall");
         }
 
         public EmailNotification(BaseUserNotification notification, string? emailAddress, IImageFormatter imageFormatter)

@@ -85,19 +85,27 @@ namespace Notifo.Areas.Api.Controllers.Media
                 return NotFound();
             }
 
-            var source = new ResizeSource
+            try
             {
-                FileId = $"{appId}_{media.FileName}",
-                FileName = media.FileName,
-                FileSize = media.FileSize,
-                MimeType = media.MimeType,
-                OpenRead = (stream, ct) =>
+                var source = new ResizeSource
                 {
-                    return mediaFileStore.DownloadAsync(appId, media, stream, default, ct);
-                }
-            };
+                    FileId = $"{appId}_{media.FileName}",
+                    FileName = media.FileName,
+                    FileSize = media.FileSize,
+                    MimeType = media.MimeType,
+                    OpenRead = (stream, ct) =>
+                    {
+                        return mediaFileStore.DownloadAsync(appId, media, stream, default, ct);
+                    }
+                };
 
-            return DeliverAsset(source, query);
+                return DeliverAssetAsync(source, query);
+
+            }
+            catch when (query?.EmptyOnFailure == true)
+            {
+                return Redirect("~/Empty.png");
+            }
         }
 
         /// <summary>

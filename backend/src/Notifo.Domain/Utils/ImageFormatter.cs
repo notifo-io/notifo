@@ -18,47 +18,50 @@ namespace Notifo.Domain.Utils
             this.urlGenerator = urlGenerator;
         }
 
-        public string Format(string? url, string? preset, bool emptyFallback)
+        public string? AddProxy(string? url)
         {
-            if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
+            if (url == null || !IsValidUrl(url))
             {
-                var baseUrl = urlGenerator.BuildUrl(string.Empty);
-
-                if (url.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
-                {
-                    var result = $"{url}";
-
-                    if (!string.IsNullOrEmpty(preset))
-                    {
-                        result += $"?preset={preset}";
-                    }
-
-                    return result;
-                }
-                else
-                {
-                    var result = $"{urlGenerator.BuildUrl("/api/assets/proxy")}?url={Uri.EscapeDataString(url)}";
-
-                    if (!string.IsNullOrEmpty(preset))
-                    {
-                        result += $"&preset={preset}";
-                    }
-
-                    return result;
-                }
+                return null;
             }
 
-            if (emptyFallback)
+            var baseUrl = urlGenerator.BuildUrl();
+
+            if (url.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
             {
-                return GetEmptyImage();
+                return AppendQuery(url, "emptyOnFailure", "true");
             }
 
-            return string.Empty;
+            var proxy = urlGenerator.BuildUrl("/api/assets/proxy", false);
+
+            return AppendQuery(proxy, "url", url);
         }
 
-        public string GetEmptyImage()
+        public string? AddPreset(string? url, string? preset)
         {
-            return urlGenerator.BuildUrl("/Empty.png");
+            if (url == null || string.IsNullOrWhiteSpace(preset) || !IsValidUrl(url))
+            {
+                return url;
+            }
+
+            return AppendQuery(url, "preset", preset);
+        }
+
+        private static string AppendQuery(string url, string key, string value)
+        {
+            var separator = '?';
+
+            if (url.Contains('?', StringComparison.Ordinal))
+            {
+                separator = '&';
+            }
+
+            return $"{url}{separator}{key}={Uri.EscapeDataString(value)}";
+        }
+
+        private static bool IsValidUrl(string url)
+        {
+            return Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https";
         }
     }
 }

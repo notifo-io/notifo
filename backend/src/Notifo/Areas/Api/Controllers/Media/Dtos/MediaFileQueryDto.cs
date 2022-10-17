@@ -19,7 +19,7 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
             {
                 TargetWidth = 192,
                 TargetHeight = 192,
-                Mode = ResizeMode.BoxPad
+                Mode = ResizeMode.Crop
             },
             ["WebLarge"] = new ResizeOptions
             {
@@ -31,7 +31,7 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
             {
                 TargetWidth = 192,
                 TargetHeight = 192,
-                Mode = ResizeMode.BoxPad
+                Mode = ResizeMode.Crop
             },
             ["WebPushLarge"] = new ResizeOptions
             {
@@ -100,6 +100,12 @@ namespace Notifo.Areas.Api.Controllers.Media.Dtos
         /// </summary>
         [FromQuery(Name = "force")]
         public bool ForceResize { get; set; }
+
+        /// <summary>
+        /// True, to return an empty image on failure.
+        /// </summary>
+        [FromQuery(Name = "emptyOnFailure")]
+        public bool EmptyOnFailure { get; set; }
 
         public ResizeOptions ToResizeOptions()
         {

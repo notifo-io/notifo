@@ -7,6 +7,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
@@ -20,6 +21,16 @@ namespace Notifo.Areas.Api.Controllers.Media
     [OpenApiTag("Media")]
     public sealed class MediaProxyController : MediaBaseController
     {
+        private static readonly HashSet<string> SafeHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            HeaderNames.Accept,
+            HeaderNames.AcceptCharset,
+            HeaderNames.AcceptEncoding,
+            HeaderNames.AcceptLanguage,
+            HeaderNames.CacheControl,
+            HeaderNames.UserAgent
+        };
+
         private readonly IHttpClientFactory httpClientFactory;
 
         public MediaProxyController(IAssetStore assetStore, IAssetThumbnailGenerator assetThumbnailGenerator,
@@ -42,36 +53,58 @@ namespace Notifo.Areas.Api.Controllers.Media
         [AllowAnonymous]
         public async Task<IActionResult> ProxyImage([FromQuery] string url, [FromQuery] MediaFileQueryDto? query = null)
         {
-            if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
             {
                 throw new ValidationException("Invalid URL.");
             }
 
-            using (var httpClient = httpClientFactory.CreateClient())
+            if (string.Equals(uri.Host, "via.placeholder.com", StringComparison.OrdinalIgnoreCase))
             {
-                var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, HttpContext.RequestAborted);
+                return Redirect(url);
+            }
 
-                if (!response.IsSuccessStatusCode)
+            using (var httpClient = httpClientFactory.CreateClient("Unsafe"))
+            {
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+                foreach (var (key, value) in Request.Headers)
                 {
-                    return StatusCode((int)response.StatusCode);
+                    if (SafeHeaders.Contains(key))
+                    {
+                        request.Headers.TryAddWithoutValidation(key, (IEnumerable<string?>)value);
+                    }
                 }
 
-                var source = new ResizeSource
+                try
                 {
-                    FileId = url.Sha256Base64(),
-                    FileName = (response.Content.Headers.ContentDisposition?.FileName).OrDefault("file"),
-                    FileSize = (response.Content.Headers.ContentLength) ?? 0,
-                    MimeType = (response.Content.Headers.ContentType?.ToString()).OrDefault("application/octet-stream"),
-                    OpenRead = async (stream, ct) =>
-                    {
-                        await using (var sourceStream = await response.Content.ReadAsStreamAsync(ct))
-                        {
-                            await sourceStream.CopyToAsync(stream, ct);
-                        }
-                    }
-                };
+                    var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, HttpContext.RequestAborted);
 
-                return DeliverAsset(source, query);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        return Redirect("~/Empty.png");
+                    }
+
+                    var source = new ResizeSource
+                    {
+                        FileId = url.Sha256Base64(),
+                        FileName = (response.Content.Headers.ContentDisposition?.FileName).OrDefault("file"),
+                        FileSize = (response.Content.Headers.ContentLength) ?? 0,
+                        MimeType = (response.Content.Headers.ContentType?.ToString()).OrDefault("application/octet-stream"),
+                        OpenRead = async (stream, ct) =>
+                        {
+                            await using (var sourceStream = await response.Content.ReadAsStreamAsync(ct))
+                            {
+                                await sourceStream.CopyToAsync(stream, ct);
+                            }
+                        }
+                    };
+
+                    return DeliverAssetAsync(source, query);
+                }
+                catch
+                {
+                    return Redirect("~/Empty.png");
+                }
             }
         }
     }

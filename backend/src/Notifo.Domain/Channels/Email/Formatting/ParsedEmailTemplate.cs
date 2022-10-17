@@ -70,11 +70,11 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     }
 
                     notificationProperties.Clear();
-                    notificationProperties["notification.body"] = notification.Body(asHtml);
+                    notificationProperties["notification.body"] = notification.BodyWithLink(asHtml);
                     notificationProperties["notification.confirmText"] = notification.ConfirmText();
                     notificationProperties["notification.confirmUrl"] = notification.ConfirmUrl();
-                    notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge", true);
-                    notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall", true);
+                    notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge");
+                    notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall");
                     notificationProperties["notification.subject"] = notification.Subject(asHtml);
 
                     inner = inner.Format(notificationProperties);
@@ -83,7 +83,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                     if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
                     {
-                        var trackingLink = Helpers.BuildTrackingLink(notification, emailAddress);
+                        var trackingLink = notification.HtmlTrackingLink(emailAddress);
 
                         stringBuilder.Append(trackingLink);
                     }

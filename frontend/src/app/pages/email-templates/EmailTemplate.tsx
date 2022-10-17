@@ -65,7 +65,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
     const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
     const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
-    const showHtml = useBooleanObj();
+    const showHtml = useBooleanObj(true);
     const updateDialog = useBooleanObj();
     const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
     const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);

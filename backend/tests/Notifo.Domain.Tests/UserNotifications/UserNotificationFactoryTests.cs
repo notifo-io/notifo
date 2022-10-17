@@ -42,8 +42,8 @@ namespace Notifo.Domain.UserNotifications
             A.CallTo(() => clock.GetCurrentInstant())
                 .Returns(now);
 
-            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._, false))
-                .ReturnsLazily(new Func<string, string, bool, string>((url, preset, _) => $"format/{url}/{preset}"));
+            A.CallTo(() => imageFormatter.AddProxy(A<string>._))
+                .ReturnsLazily(new Func<string, string>(url => $"proxy/{url}"));
 
             A.CallTo(() => notificationUrl.TrackConfirmed(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"confirm/{id}/?lang={lang}"));
@@ -221,32 +221,8 @@ namespace Notifo.Domain.UserNotifications
             Assert.Null(notification.Formatting.ConfirmText);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData(" ")]
-        public void Should_not_format_images_if_null_or_empty(string url)
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting.ImageLarge = new LocalizedText
-            {
-                ["en"] = url
-            };
-
-            userEvent.Formatting.ImageSmall = new LocalizedText
-            {
-                ["en"] = url
-            };
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            Assert.Equal(string.Empty, notification.Formatting.ImageLarge);
-            Assert.Equal(string.Empty, notification.Formatting.ImageSmall);
-        }
-
         [Fact]
-        public void Should_format_image_url()
+        public void Should_add_proxy_to_image_url()
         {
             var userEvent = CreateMinimumUserEvent();
 
@@ -262,8 +238,8 @@ namespace Notifo.Domain.UserNotifications
 
             var notification = sut.Create(app, user, userEvent)!;
 
-            Assert.Equal("format/image/large/", notification.Formatting.ImageLarge);
-            Assert.Equal("format/image/small/", notification.Formatting.ImageSmall);
+            Assert.Equal("proxy/image/large", notification.Formatting.ImageLarge);
+            Assert.Equal("proxy/image/small", notification.Formatting.ImageSmall);
         }
 
         [Fact]
