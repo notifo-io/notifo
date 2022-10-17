@@ -26,7 +26,7 @@ export const ButtonSms = ({ user }: { user: UserDto }) => {
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonSms' placement='auto' toggle={setIsOpen.toggle}>
-                <ClickOutside onClickOutside={close} isActive={true}>
+                <ClickOutside onClickOutside={setIsOpen.off} isActive={true}>
                     <PopoverBody>
                         <h5>{texts.common.phoneNumber}</h5>
 
@@ -50,7 +50,7 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
             </Button>
 
             <Popover isOpen={isOpen && hasValue} target='buttonEmail' placement='auto' toggle={setIsOpen.toggle}>
-                <ClickOutside onClickOutside={close} isActive={true}>
+                <ClickOutside onClickOutside={setIsOpen.off} isActive={true}>
                     <PopoverBody>
                         <h5>{texts.common.emailAddress}</h5>
 
@@ -84,7 +84,7 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
 
             <Popover isOpen={isOpen && hasValue} target='buttonWebPush' placement='auto' toggle={setIsOpen.toggle} popperClassName='popper-lg'>
                 {({ scheduleUpdate }) => 
-                    <ClickOutside onClickOutside={close} isActive={true}>
+                    <ClickOutside onClickOutside={setIsOpen.off} isActive={true}>
                         <PopoverBody>
                             <h5>{texts.common.webPush}</h5>
 
@@ -147,7 +147,7 @@ export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto
 
             <Popover isOpen={isOpen && hasValue} target='buttonMobilePush' placement='auto' toggle={setIsOpen.toggle} popperClassName='popper-lg'>
                 {({ scheduleUpdate }) => 
-                    <ClickOutside onClickOutside={close} isActive={true}>
+                    <ClickOutside onClickOutside={setIsOpen.off} isActive={true}>
                         <PopoverBody>
                             <h5>{texts.common.mobilePush}</h5>
 
