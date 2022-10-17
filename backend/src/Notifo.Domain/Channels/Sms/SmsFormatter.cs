@@ -47,30 +47,15 @@ namespace Notifo.Domain.Channels.Sms
 
             if (template == null)
             {
-                return MaxLength(text, 140);
+                return text;
             }
 
             var properties = new Dictionary<string, string?>
             {
-                ["notification.subject"] = string.Empty
+                ["notification.subject"] = text
             };
 
-            var lengthTemplate = template.Text.Format(properties).Length;
-            var lengthAllowed = 140 - lengthTemplate;
-
-            properties["notification.subject"] = MaxLength(text, lengthAllowed);
-
             return template.Text.Format(properties);
-        }
-
-        private static string MaxLength(string source, int maxLength)
-        {
-            if (source.Length > maxLength)
-            {
-                return source[..maxLength];
-            }
-
-            return source;
         }
     }
 }
