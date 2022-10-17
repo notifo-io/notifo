@@ -33,7 +33,7 @@ namespace Notifo.Domain.Channels.Email
 
             var imageFormatter = A.Fake<IImageFormatter>();
 
-            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._))
+            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._, true))
                 .ReturnsLazily(x => x.GetArgument<string>(0) ?? string.Empty);
 
             emailFormatter = CreateFormatter(emailUrl, imageFormatter);

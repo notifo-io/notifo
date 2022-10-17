@@ -73,8 +73,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     notificationProperties["notification.body"] = notification.Body(asHtml);
                     notificationProperties["notification.confirmText"] = notification.ConfirmText();
                     notificationProperties["notification.confirmUrl"] = notification.ConfirmUrl();
-                    notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge");
-                    notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall");
+                    notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge", true);
+                    notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall", true);
                     notificationProperties["notification.subject"] = notification.Subject(asHtml);
 
                     inner = inner.Format(notificationProperties);

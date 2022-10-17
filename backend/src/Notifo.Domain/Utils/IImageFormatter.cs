@@ -9,6 +9,8 @@ namespace Notifo.Domain.Utils
 {
     public interface IImageFormatter
     {
-        string Format(string? url, string? preset);
+        string Format(string? url, string? preset, bool fallback);
+
+        string GetEmptyImage();
     }
 }

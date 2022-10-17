@@ -42,8 +42,8 @@ namespace Notifo.Domain.UserNotifications
             A.CallTo(() => clock.GetCurrentInstant())
                 .Returns(now);
 
-            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._))
-                .ReturnsLazily(new Func<string, string, string>((url, preset) => $"format/{url}/{preset}"));
+            A.CallTo(() => imageFormatter.Format(A<string>._, A<string>._, false))
+                .ReturnsLazily(new Func<string, string, bool, string>((url, preset, _) => $"format/{url}/{preset}"));
 
             A.CallTo(() => notificationUrl.TrackConfirmed(A<Guid>._, A<string>._))
                 .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"confirm/{id}/?lang={lang}"));

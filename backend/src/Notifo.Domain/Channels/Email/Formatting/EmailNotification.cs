@@ -55,7 +55,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     return null;
                 }
 
-                return imageSmall ??= imageFormatter.Format(notification.Formatting.ImageSmall, "EmailSmall");
+                return imageSmall ??= imageFormatter.Format(notification.Formatting.ImageSmall, "EmailSmall", true);
             }
         }
 
@@ -68,7 +68,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     return null;
                 }
 
-                return imageLarge ??= imageFormatter.Format(notification.Formatting.ImageLarge, "EmailLarge");
+                return imageLarge ??= imageFormatter.Format(notification.Formatting.ImageLarge, "EmailLarge", true);
             }
         }
 

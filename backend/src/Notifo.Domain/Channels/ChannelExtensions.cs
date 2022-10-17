@@ -22,18 +22,18 @@ namespace Notifo.Domain.Channels
             return notification.ConfirmUrl;
         }
 
-        public static string ImageSmall(this BaseUserNotification notification, IImageFormatter imageFormatter, string preset)
+        public static string ImageSmall(this BaseUserNotification notification, IImageFormatter imageFormatter, string? preset, bool emptyFallback)
         {
             var formatting = notification.Formatting;
 
-            return imageFormatter.Format(formatting.ImageSmall, preset);
+            return imageFormatter.Format(formatting.ImageSmall, preset, emptyFallback);
         }
 
-        public static string ImageLarge(this BaseUserNotification notification, IImageFormatter imageFormatter, string preset)
+        public static string ImageLarge(this BaseUserNotification notification, IImageFormatter imageFormatter, string? preset, bool emptyFallback)
         {
             var formatting = notification.Formatting;
 
-            return imageFormatter.Format(formatting.ImageLarge, preset);
+            return imageFormatter.Format(formatting.ImageLarge, preset, emptyFallback);
         }
 
         public static string Subject(this BaseUserNotification notification, bool asHtml = false)

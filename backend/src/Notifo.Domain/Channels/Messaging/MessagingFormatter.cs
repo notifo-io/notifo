@@ -63,8 +63,8 @@ namespace Notifo.Domain.Channels.Messaging
                 ["notification.body"] = notification.Body(),
                 ["notification.confirmText"] = notification.ConfirmText(),
                 ["notification.confirmUrl"] = notification.ConfirmUrl(),
-                ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge"),
-                ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall"),
+                ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge", false),
+                ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall", false),
                 ["notification.subject"] = notification.Subject()
             };
 

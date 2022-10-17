@@ -18,7 +18,7 @@ namespace Notifo.Domain.Utils
             this.urlGenerator = urlGenerator;
         }
 
-        public string Format(string? url, string? preset)
+        public string Format(string? url, string? preset, bool emptyFallback)
         {
             if (Uri.IsWellFormedUriString(url, UriKind.Absolute))
             {
@@ -48,6 +48,16 @@ namespace Notifo.Domain.Utils
                 }
             }
 
+            if (emptyFallback)
+            {
+                return GetEmptyImage();
+            }
+
+            return string.Empty;
+        }
+
+        public string GetEmptyImage()
+        {
             return urlGenerator.BuildUrl("/Empty.png");
         }
     }
