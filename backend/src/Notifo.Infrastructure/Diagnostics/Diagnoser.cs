@@ -107,8 +107,10 @@ namespace Notifo.Infrastructure.Diagnostics
                 return false;
             }
 
-            using var cts = new CancellationTokenSource(DefaultTimeout);
-            using var ctl = CancellationTokenSource.CreateLinkedTokenSource(cts.Token, ct);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+            // Enforce a hard timeout.
+            cts.CancelAfter(DefaultTimeout);
 
             var tempPath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
 
@@ -121,7 +123,7 @@ namespace Notifo.Infrastructure.Diagnostics
                 process.StartInfo.UseShellExecute = false;
                 process.Start();
 
-                await process.WaitForExitAsync(ctl.Token);
+                await process.WaitForExitAsync(cts.Token);
 
                 if (process.ExitCode != 0)
                 {
@@ -132,7 +134,7 @@ namespace Notifo.Infrastructure.Diagnostics
                 {
                     var name = $"diagnostics/{extension}/{DateTime.UtcNow:yyyy-MM-dd-HH-mm-ss}.{extension}";
 
-                    await assetStore.UploadAsync(name, fs, true, ctl.Token);
+                    await assetStore.UploadAsync(name, fs, true, cts.Token);
                 }
             }
             finally
