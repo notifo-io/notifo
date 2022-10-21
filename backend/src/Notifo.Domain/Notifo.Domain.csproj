@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.2.1" />
-    <PackageReference Include="Fluid.Core" Version="2.2.15" />
+    <PackageReference Include="FluentValidation" Version="11.2.2" />
+    <PackageReference Include="Fluid.Core" Version="2.2.16" />
     <PackageReference Include="Jint" Version="3.0.0-beta-2037" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.12.54" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.720">
+    <PackageReference Include="libphonenumber-csharp" Version="8.12.57" />
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.734">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -29,8 +29,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="Mjml.Net" Version="1.10.0" />
-    <PackageReference Include="MongoDB.Driver" Version="2.17.1" />
-    <PackageReference Include="NodaTime" Version="3.1.2" />
+    <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+    <PackageReference Include="NodaTime" Version="3.1.4" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
