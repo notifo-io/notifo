@@ -6,8 +6,6 @@
     subject: Guid_2,
     silent: false,
     body: ,
-    imageSmall: ,
-    imageLarge: ,
     linkUrl: ,
     linkText: 
   }
