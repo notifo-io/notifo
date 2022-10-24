@@ -35,6 +35,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder.AddHttpClientInstrumentation();
                 builder.AddMongoDBInstrumentation();
 
+                var sampling = config.GetValue<double>("logging:otlp:sampling");
+
+                if (sampling > 0 && sampling < 1)
+                {
+                    builder.SetSampler(
+                        new ParentBasedSampler(
+                            new TraceIdRatioBasedSampler(sampling)));
+                }
+
                 if (config.GetValue<bool>("logging:stackdriver:enabled"))
                 {
                     var projectId = config.GetRequiredValue("logging:stackdriver:projectId");
