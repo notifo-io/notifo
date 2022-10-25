@@ -17,7 +17,7 @@ jobs:
           token: ${{ secrets.WORKFLOW_SECRET }}
 
       - name: Check for Update
-        uses: saadmk11/github-actions-version-updater
+        uses: saadmk11/github-actions-version-updater@v0.7.0
         with:
           token: ${{ secrets.WORKFLOW_SECRET }}
           release_types: 'major'
