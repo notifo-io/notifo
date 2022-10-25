@@ -11,19 +11,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
 
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
+        uses: rlespinasse/github-slug-action@v4.3.2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2.1.0
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2.2.1
 
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -31,7 +31,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: BUILD
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3.2.0
         with:
           push: false
           load: true
@@ -44,7 +44,7 @@ jobs:
         run: docker save notifo-tmp | gzip > notifo-tmp.tar.gz
 
       - name: Save Image to Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: notifo-tmp.tar.gz
           key: notifo-release-image-${{ github.sha }}
@@ -59,13 +59,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
 
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
+        uses: rlespinasse/github-slug-action@v4.3.2
 
       - name: Get Image From Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: notifo-tmp.tar.gz
           key: notifo-release-image-${{ github.sha }}
@@ -125,7 +125,7 @@ jobs:
        
       - name: Dump docker logs on failure
         if: failure()
-        uses: jwalton/gh-docker-logs@v1
+        uses: jwalton/gh-docker-logs@v2.2.1
         with:
          images: 'notifo-tmp,squidex/resizer'
          tail: '100'
@@ -140,10 +140,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
+        uses: rlespinasse/github-slug-action@v4.3.2
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2.1.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -156,7 +156,7 @@ jobs:
           split-by: "."
 
       - name: Get Image From Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: notifo-tmp.tar.gz
           key: notifo-release-image-${{ github.sha }}
@@ -181,13 +181,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.1.0
 
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
+        uses: rlespinasse/github-slug-action@v4.3.2
 
       - name: Get Image From Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: notifo-tmp.tar.gz
           key: notifo-release-image-${{ github.sha }}
