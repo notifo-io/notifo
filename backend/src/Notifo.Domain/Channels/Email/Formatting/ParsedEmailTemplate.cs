@@ -12,8 +12,6 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 
-#pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
-
 namespace Notifo.Domain.Channels.Email.Formatting
 {
     public sealed class ParsedEmailTemplate
@@ -29,7 +27,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public Dictionary<string, string> ItemTemplates { get; init; } = new Dictionary<string, string>();
 
-        public string Format(List<EmailJob> jobs, Dictionary<string, string?> properties, string emailAddress, bool asHtml, IImageFormatter imageFormatter)
+        public string Format(IReadOnlyList<EmailJob> jobs, Dictionary<string, string?> properties, string emailAddress, bool asHtml, IImageFormatter imageFormatter)
         {
             var notificationProperties = new Dictionary<string, string?>();
 

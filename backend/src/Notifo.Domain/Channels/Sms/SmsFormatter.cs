@@ -33,7 +33,7 @@ namespace Notifo.Domain.Channels.Sms
             return new ValueTask<SmsTemplate>(template);
         }
 
-        public ValueTask<SmsTemplate> ParseAsync(SmsTemplate input,
+        public ValueTask<SmsTemplate> ParseAsync(SmsTemplate input, bool strict,
             CancellationToken ct = default)
         {
             Validate<Validator>.It(input);

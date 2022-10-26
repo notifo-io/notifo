@@ -45,14 +45,14 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return default!;
         }
 
-        public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input,
+        public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input, bool strict,
             CancellationToken ct = default)
         {
             foreach (var formatter in inner)
             {
                 if (formatter.Accepts(input.Kind))
                 {
-                    return formatter.ParseAsync(input, ct);
+                    return formatter.ParseAsync(input, strict, ct);
                 }
             }
 
@@ -60,14 +60,14 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return default!;
         }
 
-        public ValueTask<FormattedEmail> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user, bool noCache = false,
+        public ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
             CancellationToken ct = default)
         {
             foreach (var formatter in inner)
             {
-                if (formatter.Accepts(template.Kind))
+                if (formatter.Accepts(input.Kind))
                 {
-                    return formatter.FormatAsync(jobs, template, app, user, noCache, ct);
+                    return formatter.FormatAsync(input, jobs, app, user, noCache, ct);
                 }
             }
 

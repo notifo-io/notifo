@@ -53,7 +53,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string? ImageLarge
         {
-            get => imageSmall ??= notification.ImageLarge(imageFormatter, "EmailSmall");
+            get => imageLarge ??= notification.ImageLarge(imageFormatter, "EmailSmall");
         }
 
         public EmailNotification(BaseUserNotification notification, string? emailAddress, IImageFormatter imageFormatter)

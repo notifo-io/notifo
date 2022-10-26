@@ -5,15 +5,26 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Xml;
 using Mjml.Net;
+using Mjml.Net.Validators;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Email.Formatting
 {
     public abstract class EmailFormatterBase
     {
-        private static readonly MjmlOptions DefaultOptions = new MjmlOptions
+        private static readonly MjmlOptions OptionsOptimized = new MjmlOptions
         {
+            // Always keep comments, because they are kept as control structures.
+            KeepComments = true,
+        };
+        private static readonly MjmlOptions OptionsStrict = new MjmlOptions
+        {
+            // Use a strict validator for preview.
+            ValidatorFactory = StrictValidatorFactory.Instance,
+
+            // Always keep comments, because they are kept as control structures.
             KeepComments = true
         };
         private readonly IMjmlRenderer mjmlRenderer;
@@ -36,25 +47,36 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
         }
 
-        protected string MjmlToHtml(string? mjml, List<EmailFormattingError> errors)
+        protected (string? Html, ValidationErrors? Errors) MjmlToHtml(string? mjml, bool strict)
         {
             if (string.IsNullOrWhiteSpace(mjml))
             {
-                return mjml!;
+                return (null, null);
             }
 
             using (Telemetry.Activities.StartActivity("MongoDbAppRepository/MjmlToHtmlAsync"))
             {
-                var fixedHjml = mjmlRenderer.FixXML(mjml, DefaultOptions);
-
-                var (html, mjmlErrors) = mjmlRenderer.Render(fixedHjml, DefaultOptions);
-
-                if (mjmlErrors.Count > 0)
+                try
                 {
-                    errors.AddRange(mjmlErrors.Select(x => new EmailFormattingError(x.Error, EmailTemplateType.BodyHtml, x.Line ?? 0)));
-                }
+                    var options = strict ?
+                        OptionsStrict :
+                        OptionsOptimized;
 
-                return html;
+                    var fixedHjml = mjmlRenderer.FixXML(mjml, options);
+
+                    var (html, errors) = mjmlRenderer.Render(fixedHjml, options);
+
+                    return (html, errors);
+                }
+                catch (XmlException ex)
+                {
+                    var errors = new ValidationErrors
+                    {
+                        new ValidationError(ex.Message, ValidationErrorType.Other, ex.LineNumber, ex.LinePosition)
+                    };
+
+                    return (null, errors);
+                }
             }
         }
     }

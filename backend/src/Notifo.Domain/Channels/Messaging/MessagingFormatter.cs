@@ -41,7 +41,7 @@ namespace Notifo.Domain.Channels.Messaging
             return new ValueTask<MessagingTemplate>(template);
         }
 
-        public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input,
+        public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input, bool strict,
             CancellationToken ct = default)
         {
             Validate<Validator>.It(input);
