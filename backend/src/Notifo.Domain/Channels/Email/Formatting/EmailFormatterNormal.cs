@@ -60,14 +60,14 @@ namespace Notifo.Domain.Channels.Email.Formatting
         {
             var context = Context.Create(PreviewData.Jobs, PreviewData.App, PreviewData.User, emailUrl);
 
-            Parse(input, context, strict);
+            var parsed = Parse(input, context, strict);
 
             if (context.Errors?.Count > 0)
             {
                 throw new EmailFormattingException(context.Errors);
             }
 
-            return new ValueTask<EmailTemplate>(input);
+            return new ValueTask<EmailTemplate>(parsed);
         }
 
         public ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
@@ -80,7 +80,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return new ValueTask<FormattedEmail>(new FormattedEmail(message, context.Errors));
         }
 
-        private void Parse(EmailTemplate template, Context context, bool strict)
+        private EmailTemplate Parse(EmailTemplate template, Context context, bool strict)
         {
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
             {
@@ -98,7 +98,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     context.AddError(error, EmailTemplateType.BodyHtml);
                 }
 
-                template.ParsedBodyHtml = body;
+                template = template with { ParsedBodyHtml = body };
             }
 
             if (!string.IsNullOrWhiteSpace(template.BodyText))
@@ -110,10 +110,12 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     context.AddError(error, EmailTemplateType.BodyText);
                 }
 
-                template.ParsedBodyText = body;
+                template = template with { ParsedBodyHtml = body };
             }
 
             Format(template, context);
+
+            return template;
         }
 
         private EmailMessage Format(EmailTemplate template, Context context)

@@ -37,11 +37,11 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
 
             if (Type == EmailPreviewType.Html)
             {
-                emailTemplate.BodyHtml = Template;
+                emailTemplate = emailTemplate with { BodyHtml = Template };
             }
             else
             {
-                emailTemplate.BodyText = Template;
+                emailTemplate = emailTemplate with { BodyText = Template };
             }
 
             return emailTemplate;

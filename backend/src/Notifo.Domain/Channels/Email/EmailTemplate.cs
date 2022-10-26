@@ -9,22 +9,22 @@ using Notifo.Domain.Channels.Email.Formatting;
 
 namespace Notifo.Domain.Channels.Email
 {
-    public sealed class EmailTemplate
+    public sealed record EmailTemplate
     {
-        public string Subject { get; set; }
+        public string Subject { get; init; }
 
-        public string BodyHtml { get; set; }
+        public string BodyHtml { get; init; }
 
-        public string? BodyText { get; set; }
+        public string? BodyText { get; init; }
 
-        public string? FromEmail { get; set; }
+        public string? FromEmail { get; init; }
 
-        public string? FromName { get; set; }
+        public string? FromName { get; init; }
 
-        public string? Kind { get; set; }
+        public string? Kind { get; init; }
 
-        public ParsedEmailTemplate? ParsedBodyText { get; set; }
+        public ParsedEmailTemplate? ParsedBodyText { get; init; }
 
-        public ParsedEmailTemplate? ParsedBodyHtml { get; set; }
+        public ParsedEmailTemplate? ParsedBodyHtml { get; init; }
     }
 }
