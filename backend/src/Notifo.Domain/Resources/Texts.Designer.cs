@@ -187,6 +187,15 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email template generates unknown error..
+        /// </summary>
+        internal static string EmailUnknownErrror {
+            get {
+                return ResourceManager.GetString("EmailUnknownErrror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Event with this id has already been processed..
         /// </summary>
         internal static string Events_AlreadyProcessed {

@@ -100,7 +100,6 @@ namespace Notifo.Areas.Api.Controllers.Media
                 };
 
                 return DeliverAssetAsync(source, query);
-
             }
             catch when (query?.EmptyOnFailure == true)
             {
