@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System;
 using System.IO;
 using NJsonSchema.CodeGeneration.TypeScript;
 using NSwag;
@@ -50,7 +51,7 @@ namespace CodeGenerator
 
             var code = codeGenerator.GenerateFile();
 
-            code = code.Replace("https://localhost:5002", "https://app.notifo.io");
+            code = code.Replace("https://localhost:5002", "https://app.notifo.io", StringComparison.OrdinalIgnoreCase);
 
             File.WriteAllText(@"..\..\..\..\Notifo.SDK\Generated.cs", code);
         }
@@ -71,8 +72,8 @@ namespace CodeGenerator
 
             var code = codeGenerator.GenerateFile();
 
-            code = code.Replace("file?: FileParameter", "file?: File");
-            code = code.Replace("file.data, file.fileName ? file.fileName : \"file\"", "file");
+            code = code.Replace("file?: FileParameter", "file?: File", StringComparison.OrdinalIgnoreCase);
+            code = code.Replace("file.data, file.fileName ? file.fileName : \"file\"", "file", StringComparison.OrdinalIgnoreCase);
 
             File.WriteAllText(@"..\..\..\..\..\..\frontend\src\app\service\service.ts", code);
         }

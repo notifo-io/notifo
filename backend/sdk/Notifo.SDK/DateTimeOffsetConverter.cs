@@ -30,7 +30,7 @@ namespace Notifo.SDK
         {
             if (reader.TokenType == JsonToken.String)
             {
-                return DateTimeOffset.Parse(reader.Value.ToString()!);
+                return DateTimeOffset.Parse(reader.Value.ToString()!, CultureInfo.InvariantCulture);
             }
 
             if (reader.TokenType == JsonToken.Date)
