@@ -222,5 +222,74 @@ namespace TestSuite.ApiTests
 
             Assert.Contains(logs, x => x.Message.Contains("Cannot find template", StringComparison.OrdinalIgnoreCase));
         }
+
+        [Theory]
+        [InlineData("Default")]
+        [InlineData("Liquid")]
+        public async Task Should_render_email_preview(string kind)
+        {
+            var appName = Guid.NewGuid().ToString();
+
+            // STEP 0: Create app
+            var createRequest = new UpsertAppDto
+            {
+                Name = appName
+            };
+
+            var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+
+
+            // STEP 1: Create email template.
+            var emailTemplateRequest = new CreateChannelTemplateDto
+            {
+                Kind = kind
+            };
+
+            var template_0 = await _.Client.EmailTemplates.PostTemplateAsync(app_0.Id, emailTemplateRequest);
+
+
+            // STEP 2: Render preview
+            var previewRequest = new EmailPreviewRequestDto
+            {
+                Kind = kind,
+                Template = template_0.Languages.First().Value.BodyHtml
+            };
+
+            var preview_0 = await _.Client.EmailTemplates.PostPreviewAsync(app_0.Id, previewRequest);
+
+            Assert.NotNull(preview_0.Result);
+            Assert.NotNull(preview_0.Errors);
+            Assert.Empty(preview_0.Errors);
+        }
+
+        [Theory]
+        [InlineData("Default")]
+        [InlineData("Liquid")]
+        public async Task Should_not_render_invalid_email_preview(string kind)
+        {
+            var appName = Guid.NewGuid().ToString();
+
+            // STEP 0: Create app
+            var createRequest = new UpsertAppDto
+            {
+                Name = appName
+            };
+
+            var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+
+
+            // STEP 1: Render preview
+            var previewRequest = new EmailPreviewRequestDto
+            {
+                Kind = kind,
+                Template = "invalid"
+            };
+
+            var preview_0 = await _.Client.EmailTemplates.PostPreviewAsync(app_0.Id, previewRequest);
+
+            Assert.Null(preview_0.Result);
+            Assert.NotNull(preview_0.Errors);
+            Assert.NotEmpty(preview_0.Errors);
+        }
     }
 }

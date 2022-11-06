@@ -12,7 +12,6 @@ using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
-using PhoneNumbers;
 
 namespace Notifo.Domain.Integrations.MessageBird
 {

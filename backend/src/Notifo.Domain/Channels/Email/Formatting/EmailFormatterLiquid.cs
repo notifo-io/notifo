@@ -9,14 +9,13 @@ using Fluid;
 using Mjml.Net;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
-using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Email.Formatting
 {
-    public sealed class EmailFormatterLiquid : EmailFormatterBase, IEmailFormatter
+    public sealed partial class EmailFormatterLiquid : EmailFormatterBase, IEmailFormatter
     {
         private static readonly TemplateOptions Options = new TemplateOptions();
         private static readonly string DefaultBodyHtml;
@@ -64,160 +63,129 @@ namespace Notifo.Domain.Channels.Email.Formatting
             return new ValueTask<EmailTemplate>(template);
         }
 
-        public async ValueTask<EmailTemplate> ParseAsync(EmailTemplate template,
+        public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input, bool strict,
             CancellationToken ct = default)
         {
-            var errors = new List<EmailFormattingError>();
+            var context = Context.Create(PreviewData.Jobs, PreviewData.App, PreviewData.User, imageFormatter, emailUrl);
 
-            await ParseCoreAsync(template, errors);
+            Format(input, context, true, strict);
 
-            if (errors.Count > 0)
+            if (context.Errors?.Count > 0)
             {
-                throw new EmailFormattingException(errors);
+                throw new EmailFormattingException(context.Errors);
             }
 
-            return template;
+            return new ValueTask<EmailTemplate>(input);
         }
 
-        private async ValueTask ParseCoreAsync(EmailTemplate template, List<EmailFormattingError> errors)
-        {
-            await FormatAsync(EmailJob.ForPreview, template, new App("1", default), new User("1", "1", default));
-
-            if (string.IsNullOrWhiteSpace(template.BodyHtml) && string.IsNullOrWhiteSpace(template.BodyText))
-            {
-                errors.Add(new EmailFormattingError(Texts.Email_TemplateUndefined, EmailTemplateType.General));
-            }
-        }
-
-        public ValueTask<FormattedEmail> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user, bool noCache = false,
+        public ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
             CancellationToken ct = default)
         {
-            var errors = new List<EmailFormattingError>();
+            var context = Context.Create(jobs, app, user, imageFormatter, emailUrl);
 
-            var message = Format(jobs, template, app, user, errors, noCache);
+            var message = Format(input, context, noCache, false);
 
-            return new ValueTask<FormattedEmail>(new FormattedEmail(message, errors));
+            return new ValueTask<FormattedEmail>(new FormattedEmail(message, context.Errors));
         }
 
-        private EmailMessage Format(List<EmailJob> jobs, EmailTemplate template, App app, User user,
-            List<EmailFormattingError> errors, bool noCache)
+        private EmailMessage Format(EmailTemplate template, Context context, bool noCache, bool strict)
         {
-            var context = CreateContext(jobs.Select(x => x.Notification), app, user);
-
             var subject = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(template.Subject))
             {
-                subject = FormatSubject(template.Subject, context, errors)!;
+                subject = FormatSubject(template.Subject, context)!;
             }
 
             string? bodyText = null;
 
             if (!string.IsNullOrWhiteSpace(template.BodyText))
             {
-                bodyText = FormatText(template.BodyText, context, jobs, errors)!;
+                bodyText = FormatText(template.BodyText, context);
             }
 
             string? bodyHtml = null;
 
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
             {
-                bodyHtml = FormatBodyHtml(template.BodyHtml, context, jobs, user.EmailAddress!, errors, noCache)!;
+                bodyHtml = FormatBodyHtml(template.BodyHtml, context, noCache, strict)!;
             }
+
+            var firstJob = context.Jobs[0];
 
             var message = new EmailMessage
             {
                 BodyHtml = bodyHtml,
                 BodyText = bodyText,
-                FromEmail = template.FromEmail.OrDefault(jobs[0].FromEmail!),
-                FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
+                FromEmail = template.FromEmail.OrDefault(firstJob.FromEmail!),
+                FromName = template.FromEmail.OrDefault(firstJob.FromName!),
                 Subject = subject,
-                ToEmail = user.EmailAddress!,
-                ToName = user.FullName
+                ToEmail = context.User.EmailAddress!,
+                ToName = context.User.FullName
             };
+
+            if (string.IsNullOrWhiteSpace(bodyHtml) && string.IsNullOrWhiteSpace(bodyText))
+            {
+                context.AddError(Texts.Email_TemplateUndefined, EmailTemplateType.General);
+            }
 
             return message;
         }
 
-        private static string? FormatSubject(string template, TemplateContext context,
-            List<EmailFormattingError> errors)
+        private static string? FormatSubject(string template, Context context)
         {
-            return RenderTemplate(template, context, errors, EmailTemplateType.Subject, false);
+            return RenderTemplate(template, context, EmailTemplateType.Subject, false);
         }
 
-        private static string? FormatText(string template, TemplateContext context, List<EmailJob> jobs,
-            List<EmailFormattingError> errors)
+        private static string? FormatText(string template, Context context)
         {
-            var result = RenderTemplate(template, context, errors, EmailTemplateType.BodyText, false);
+            var result = RenderTemplate(template, context, EmailTemplateType.BodyText, false);
 
-            ValidateResult(result, jobs, errors, EmailTemplateType.BodyText);
+            context.ValidateTemplate(result, EmailTemplateType.BodyText);
 
             return result;
         }
 
-        private string? FormatBodyHtml(string template, TemplateContext context, List<EmailJob> jobs, string emailAddress,
-            List<EmailFormattingError> errors, bool noCache)
+        private string? FormatBodyHtml(string template, Context context, bool noCache, bool strict)
         {
-            var result = RenderTemplate(template, context, errors, EmailTemplateType.BodyHtml, noCache);
+            var result = RenderTemplate(template, context, EmailTemplateType.BodyHtml, noCache);
 
-            ValidateResult(result, jobs, errors, EmailTemplateType.BodyHtml);
+            context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 
-            return AddTrackingLinks(MjmlToHtml(result, errors), emailAddress, jobs);
-        }
+            var (html, mjmlErrors) = MjmlToHtml(result, strict);
 
-        private static void ValidateResult(string? result, List<EmailJob> jobs,
-            List<EmailFormattingError> errors, EmailTemplateType type)
-        {
-            if (result == null)
+            foreach (var mjmlError in mjmlErrors.OrEmpty())
             {
-                return;
+                context.AddError(mjmlError.Error, EmailTemplateType.BodyHtml, mjmlError.Line, mjmlError.Column);
             }
 
-            if (jobs.Any(x => !result.Contains(x.Notification.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
-            {
-                errors.Add(new EmailFormattingError(Texts.Email_TemplateLiquidInvalid, type));
-            }
+            return AddTrackingLinks(html, context);
         }
 
-        private static string? RenderTemplate(string template, TemplateContext context,
-            List<EmailFormattingError> errors, EmailTemplateType type, bool noCache)
+        private static string? RenderTemplate(string template, Context context, EmailTemplateType type, bool noCache)
         {
             var (fluidTemplate, error) = TemplateCache.Parse(template, noCache);
 
             if (error != null)
             {
-                errors.Add(new EmailFormattingError(error.Message, type, error.Line, error.Column));
+                context.AddError(error.Message, type, error.Line, error.Column);
             }
 
-            return fluidTemplate?.Render(context);
+            return fluidTemplate?.Render(context.TemplateContext);
         }
 
-        private TemplateContext CreateContext(IEnumerable<BaseUserNotification> notifications, App app, User user)
-        {
-            var context = new TemplateContext(Options);
-
-            var emailNotifications = notifications.Select(x => new EmailNotification(x, user.EmailAddress, imageFormatter)).ToArray();
-
-            context.SetValue("app", app);
-            context.SetValue("user", user);
-            context.SetValue("notifications", emailNotifications);
-            context.SetValue("preferencesUrl", emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage));
-
-            return context;
-        }
-
-        private static string? AddTrackingLinks(string? html, string emailAddress, List<EmailJob> jobs)
+        private static string? AddTrackingLinks(string? html, Context context)
         {
             if (string.IsNullOrWhiteSpace(html))
             {
                 return html!;
             }
 
-            foreach (var job in jobs)
+            foreach (var job in context.Jobs)
             {
                 if (!string.IsNullOrEmpty(job.Notification.TrackSeenUrl))
                 {
-                    var trackingLink = job.Notification.HtmlTrackingLink(emailAddress);
+                    var trackingLink = job.Notification.HtmlTrackingLink(context.User.EmailAddress!);
 
                     html = html.Replace("</body>", $"{trackingLink}</body>", StringComparison.OrdinalIgnoreCase);
                 }

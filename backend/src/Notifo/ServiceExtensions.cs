@@ -11,8 +11,6 @@ using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Collections.Bson;
 using Notifo.Infrastructure.MongoDb;
 using Notifo.Pipeline;
-using Squidex.Caching;
-using Squidex.Messaging;
 using Squidex.Messaging.Implementation.Null;
 using Squidex.Messaging.Redis;
 using StackExchange.Redis;

@@ -14,7 +14,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Email.Formatting
 {
-    public sealed class EmailFormatterNormal : EmailFormatterBase, IEmailFormatter
+    public sealed partial class EmailFormatterNormal : EmailFormatterBase, IEmailFormatter
     {
         private static readonly string DefaultBodyHtml;
         private static readonly string DefaultBodyText;
@@ -52,40 +52,53 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 Subject = DefaultSubject
             };
 
-            return await ParseAsync(template, ct);
+            return await ParseAsync(template, false, ct);
         }
 
-        public ValueTask<EmailTemplate> ParseAsync(EmailTemplate template,
+        public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input, bool strict,
             CancellationToken ct = default)
         {
-            var errors = new List<EmailFormattingError>();
+            var context = Context.Create(PreviewData.Jobs, PreviewData.App, PreviewData.User, emailUrl);
 
-            Parse(template, errors);
+            var parsed = Parse(input, context, strict);
 
-            if (errors.Count > 0)
+            if (context.Errors?.Count > 0)
             {
-                throw new EmailFormattingException(errors);
+                throw new EmailFormattingException(context.Errors);
             }
 
-            return new ValueTask<EmailTemplate>(template);
+            return new ValueTask<EmailTemplate>(parsed);
         }
 
-        private void Parse(EmailTemplate template, List<EmailFormattingError> errors)
+        public ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
+            CancellationToken ct = default)
         {
-            Format(EmailJob.ForPreview, template, new App("1", default), new User("1", "1", default), errors);
+            var context = Context.Create(jobs, app, user, emailUrl);
 
+            var message = Format(input, context);
+
+            return new ValueTask<FormattedEmail>(new FormattedEmail(message, context.Errors));
+        }
+
+        private EmailTemplate Parse(EmailTemplate template, Context context, bool strict)
+        {
             if (!string.IsNullOrWhiteSpace(template.BodyHtml))
             {
-                var html = MjmlToHtml(template.BodyHtml, errors);
+                var (html, mjmlErrors) = MjmlToHtml(template.BodyHtml, strict);
+
+                foreach (var mjmlError in mjmlErrors.OrEmpty())
+                {
+                    context.AddError(mjmlError.Error, EmailTemplateType.BodyHtml, mjmlError.Line, mjmlError.Column);
+                }
 
                 var (body, error) = ParsedEmailTemplate.Create(html);
 
                 if (error != null)
                 {
-                    errors.Add(new EmailFormattingError(error, EmailTemplateType.BodyHtml));
+                    context.AddError(error, EmailTemplateType.BodyHtml);
                 }
 
-                template.ParsedBodyHtml = body;
+                template = template with { ParsedBodyHtml = body };
             }
 
             if (!string.IsNullOrWhiteSpace(template.BodyText))
@@ -94,133 +107,77 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                 if (error != null)
                 {
-                    errors.Add(new EmailFormattingError(error, EmailTemplateType.BodyText));
+                    context.AddError(error, EmailTemplateType.BodyText);
                 }
 
-                template.ParsedBodyText = body;
+                template = template with { ParsedBodyText = body };
             }
 
-            if (errors.Count == 0 && template.ParsedBodyHtml == null && template.ParsedBodyText == null)
-            {
-                errors.Add(new EmailFormattingError(Texts.Email_TemplateUndefined, EmailTemplateType.General));
-            }
+            Format(template, context);
+
+            return template;
         }
 
-        public ValueTask<FormattedEmail> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user, bool noCache = false,
-            CancellationToken ct = default)
+        private EmailMessage Format(EmailTemplate template, Context context)
         {
-            var errors = new List<EmailFormattingError>();
-
-            var message = Format(jobs, template, app, user, errors);
-
-            return new ValueTask<FormattedEmail>(new FormattedEmail(message, errors));
-        }
-
-        private EmailMessage Format(List<EmailJob> jobs, EmailTemplate template, App app, User user,
-            List<EmailFormattingError> errors)
-        {
-            var properties = CreateProperties(jobs, app, user, jobs[0]);
-
             var subject = string.Empty;
 
             if (!string.IsNullOrWhiteSpace(template.Subject))
             {
-                subject = FormatSubject(template.Subject, properties)!;
+                subject = template.Subject.Format(context.Properties);
             }
 
             string? bodyText = null;
 
             if (template.ParsedBodyText != null)
             {
-                bodyText = FormatBodyText(template.ParsedBodyText, properties, jobs, user.EmailAddress!, errors)!;
+                bodyText = FormatBodyText(template.ParsedBodyText, context)!;
             }
 
             string? bodyHtml = null;
 
             if (template.ParsedBodyHtml != null)
             {
-                bodyHtml = FormatBodyHtml(template.ParsedBodyHtml, properties, jobs, user.EmailAddress!, errors)!;
+                bodyHtml = FormatBodyHtml(template.ParsedBodyHtml, context)!;
             }
+
+            var firstJob = context.Jobs[0];
 
             var message = new EmailMessage
             {
                 BodyHtml = bodyHtml,
                 BodyText = bodyText,
-                FromEmail = template.FromEmail.OrDefault(jobs[0].FromEmail!),
-                FromName = template.FromEmail.OrDefault(jobs[0].FromName!),
+                FromEmail = template.FromEmail.OrDefault(firstJob.FromEmail!),
+                FromName = template.FromEmail.OrDefault(firstJob.FromName!),
                 Subject = subject,
-                ToEmail = user.EmailAddress!,
-                ToName = user.FullName
+                ToEmail = context.EmailAddress!,
+                ToName = context.User.FullName
             };
+
+            if (string.IsNullOrWhiteSpace(bodyHtml) && string.IsNullOrWhiteSpace(bodyText))
+            {
+                context.AddError(Texts.Email_TemplateUndefined, EmailTemplateType.General);
+            }
 
             return message;
         }
 
-        private static string FormatSubject(string template, Dictionary<string, string?> properties)
+        private string? FormatBodyText(ParsedEmailTemplate template, Context context)
         {
-            return template.Format(properties);
-        }
+            var result = template.Format(context.Jobs, context.Properties, context.EmailAddress!, false, imageFormatter);
 
-        private string? FormatBodyText(ParsedEmailTemplate template, Dictionary<string, string?> properties, List<EmailJob> jobs, string emailAddress,
-            List<EmailFormattingError> errors)
-        {
-            var result = template.Format(jobs, properties, emailAddress, false, imageFormatter);
-
-            ValidateResult(result, jobs, errors, EmailTemplateType.BodyText);
+            context.ValidateTemplate(result, EmailTemplateType.BodyText);
 
             return result;
         }
 
-        private string? FormatBodyHtml(ParsedEmailTemplate template, Dictionary<string, string?> properties, List<EmailJob> jobs, string emailAddress,
-            List<EmailFormattingError> errors)
+        private string? FormatBodyHtml(ParsedEmailTemplate template, Context context)
         {
-            var result = template.Format(jobs, properties, emailAddress, true, imageFormatter);
+            var result = template.Format(context.Jobs, context.Properties, context.EmailAddress!, true, imageFormatter);
 
-            ValidateResult(result, jobs, errors, EmailTemplateType.BodyHtml);
+            context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 
             return result;
-        }
-
-        private static void ValidateResult(string result, List<EmailJob> jobs,
-            List<EmailFormattingError> errors, EmailTemplateType type)
-        {
-            if (jobs.Any(x => !result.Contains(x.Notification.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
-            {
-                errors.Add(new EmailFormattingError(Texts.Email_TemplateNormalInvalid, type));
-            }
-        }
-
-        private Dictionary<string, string?> CreateProperties(List<EmailJob> jobs, App app, User user, EmailJob firstJob)
-        {
-            var notification = firstJob.Notification;
-
-            var formattingProperties = new Dictionary<string, string?>(StringComparer.InvariantCulture)
-            {
-                ["app.name"] = app.Name,
-                ["user.name"] = user.FullName,
-                ["user.nameFull"] = user.FullName,
-                ["user.fullName"] = user.FullName,
-                ["user.email"] = user.EmailAddress,
-                ["user.emailAddress"] = user.EmailAddress,
-                ["notification.subject"] = notification.Formatting.Subject,
-                ["notification.body"] = notification.Formatting.Body,
-                ["preferencesUrl"] = emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage)
-            };
-
-            foreach (var job in jobs)
-            {
-                var properties = job.Notification.Properties;
-
-                if (properties != null)
-                {
-                    foreach (var (key, value) in properties)
-                    {
-                        formattingProperties[$"notification.custom.{key}"] = value;
-                    }
-                }
-            }
-
-            return formattingProperties;
         }
     }
 }

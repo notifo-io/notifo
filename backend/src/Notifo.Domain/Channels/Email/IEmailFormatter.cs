@@ -15,7 +15,7 @@ namespace Notifo.Domain.Channels.Email
     {
         bool Accepts(string? kind);
 
-        ValueTask<FormattedEmail> FormatAsync(List<EmailJob> jobs, EmailTemplate template, App app, User user, bool noCache = false,
+        ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
             CancellationToken ct = default);
     }
 }

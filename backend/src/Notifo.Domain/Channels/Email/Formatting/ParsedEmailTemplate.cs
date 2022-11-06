@@ -11,12 +11,11 @@ using Microsoft.Extensions.ObjectPool;
 using Notifo.Domain.Resources;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
-
-#pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
+using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Channels.Email.Formatting
 {
-    public sealed class ParsedEmailTemplate
+    public sealed record ParsedEmailTemplate
     {
         private const string NotificationsPlaceholder = "<<<<Notifications>>>>";
         private const string ItemDefault = "NOTIFICATION";
@@ -25,11 +24,16 @@ namespace Notifo.Domain.Channels.Email.Formatting
         private const string ItemWithImage = "NOTIFICATION WITH IMAGE";
         private static readonly ObjectPool<StringBuilder> Pool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
 
-        public string Text { get; set; }
+        public string Text { get; init; }
 
-        public Dictionary<string, string> ItemTemplates { get; init; } = new Dictionary<string, string>();
+        public ReadonlyDictionary<string, string> ItemTemplates { get; init; }
 
-        public string Format(List<EmailJob> jobs, Dictionary<string, string?> properties, string emailAddress, bool asHtml, IImageFormatter imageFormatter)
+        public string Format(
+            IReadOnlyList<EmailJob> jobs,
+            Dictionary<string, string?> properties,
+            string emailAddress,
+            bool asHtml,
+            IImageFormatter imageFormatter)
         {
             var notificationProperties = new Dictionary<string, string?>();
 
@@ -104,9 +108,27 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 return default;
             }
 
-            var result = new ParsedEmailTemplate();
+            var itemTemplates = new Dictionary<string, string>();
 
-            result.Prepare(body);
+            while (true)
+            {
+                var (newTemplate, type, item) = Extract(body);
+
+                if (item == null || type == null)
+                {
+                    break;
+                }
+
+                itemTemplates[type.ToUpperInvariant()] = item;
+
+                body = newTemplate;
+            }
+
+            var result = new ParsedEmailTemplate
+            {
+                Text = body,
+                ItemTemplates = itemTemplates.ToReadonlyDictionary()
+            };
 
             if (!result.ItemTemplates.ContainsKey(ItemDefault))
             {
@@ -114,25 +136,6 @@ namespace Notifo.Domain.Channels.Email.Formatting
             }
 
             return (result, null);
-        }
-
-        private void Prepare(string template)
-        {
-            while (true)
-            {
-                var (newTemplate, type, item) = Extract(template);
-
-                if (item == null || type == null)
-                {
-                    break;
-                }
-
-                ItemTemplates[type.ToUpperInvariant()] = item;
-
-                template = newTemplate;
-            }
-
-            Text = template;
         }
 
         private static (string Template, string? Type, string? Inner) Extract(string template)

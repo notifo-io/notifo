@@ -196,10 +196,17 @@ namespace Notifo.Domain.Channels.Email
                             return;
                         }
 
-                        var (result, errors) = await emailFormatter.FormatAsync(jobs, template, app, user, false, ct);
+                        var (result, errors) = await emailFormatter.FormatAsync(template, jobs, app, user, false, ct);
 
-                        if (errors.Count > 0 || result == null)
+                        if (errors?.Count > 0 || result == null)
                         {
+                            errors ??= new List<EmailFormattingError>();
+
+                            if (errors.Count > 0)
+                            {
+                                errors.Add(new EmailFormattingError(Texts.EmailUnknownErrror, EmailTemplateType.General));
+                            }
+
                             throw new EmailFormattingException(errors);
                         }
 

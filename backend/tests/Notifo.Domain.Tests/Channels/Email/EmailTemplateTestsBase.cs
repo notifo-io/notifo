@@ -6,9 +6,8 @@
 // ==========================================================================
 
 using FakeItEasy;
-using Notifo.Domain.Apps;
+using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Xunit;
 
@@ -18,7 +17,6 @@ namespace Notifo.Domain.Channels.Email
 {
     public abstract class EmailTemplateTestsBase
     {
-        private readonly App app = new App("1", default);
         private readonly EmailTemplate emailTemplate;
         private readonly IEmailFormatter emailFormatter;
 
@@ -317,14 +315,14 @@ namespace Notifo.Domain.Channels.Email
 
         private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs)
         {
-            var formatted = await emailFormatter.FormatAsync(jobs, emailTemplate, app, new User("1", "1", default));
+            var formatted = await emailFormatter.FormatAsync(emailTemplate, jobs, PreviewData.App, PreviewData.User);
 
             return (formatted.Message?.BodyHtml, formatted.Message?.BodyText);
         }
 
         private static List<EmailJob> ToJobs(params UserNotification[] notifications)
         {
-            return notifications.Select(x => new EmailJob(x, new ChannelSetting(), "john.doe@email.com")).ToList();
+            return notifications.Select(x => new EmailJob(x, new ChannelSetting(), PreviewData.User.EmailAddress!)).ToList();
         }
     }
 }

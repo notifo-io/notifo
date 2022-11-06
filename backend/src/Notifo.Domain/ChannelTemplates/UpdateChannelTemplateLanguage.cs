@@ -34,7 +34,7 @@ namespace Notifo.Domain.ChannelTemplates
             Validate<Validator>.It(this);
 
             var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
-            var channelInstance = await channelFactory.ParseAsync(Template, ct);
+            var channelInstance = await channelFactory.ParseAsync(Template, true, ct);
 
             var newTemplate = template with
             {

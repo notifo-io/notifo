@@ -12,7 +12,7 @@ namespace Notifo.Domain.ChannelTemplates
         ValueTask<T> CreateInitialAsync(string? kind = null,
             CancellationToken ct = default);
 
-        ValueTask<T> ParseAsync(T input,
+        ValueTask<T> ParseAsync(T input, bool strict,
             CancellationToken ct = default);
     }
 }

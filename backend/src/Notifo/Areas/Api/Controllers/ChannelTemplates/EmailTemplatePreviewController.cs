@@ -8,8 +8,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Email;
+using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Identity;
-using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
@@ -21,8 +21,6 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
     [OpenApiTag("EmailTemplates")]
     public class EmailTemplatePreviewController : BaseController
     {
-        private static readonly User EmailUser = new User("1", "1", default);
-
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;
 
@@ -83,27 +81,38 @@ namespace Notifo.Areas.Api.Controllers.ChannelTemplates
         {
             var response = new EmailPreviewDto();
 
-            var formatted = await FormatAsync(request.ToEmailTemplate());
-
-            if (request.Type == EmailPreviewType.Html)
+            try
             {
-                response.Result = formatted.Message?.BodyHtml;
-            }
-            else
-            {
-                response.Result = formatted.Message?.BodyText;
-            }
+                var formatted = await FormatAsync(request.ToEmailTemplate());
 
-            response.Errors = formatted.Errors?.ToArray();
+                if (request.Type == EmailPreviewType.Html)
+                {
+                    response.Result = formatted.Message?.BodyHtml;
+                }
+                else
+                {
+                    response.Result = formatted.Message?.BodyText;
+                }
+
+                response.Errors = formatted.Errors?.ToArray();
+            }
+            catch (EmailFormattingException ex)
+            {
+                response.Errors = ex.Errors.ToArray();
+            }
 
             return Ok(response);
         }
 
         private async ValueTask<FormattedEmail> FormatAsync(EmailTemplate emailTemplate)
         {
-            emailTemplate = await emailFormatter.ParseAsync(emailTemplate, HttpContext.RequestAborted);
+            emailTemplate = await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
 
-            return await emailFormatter.FormatAsync(EmailJob.ForPreview, emailTemplate, App, EmailUser, true, HttpContext.RequestAborted);
+            return await emailFormatter.FormatAsync(emailTemplate,
+                PreviewData.Jobs, App,
+                PreviewData.User,
+                true,
+                HttpContext.RequestAborted);
         }
     }
 }

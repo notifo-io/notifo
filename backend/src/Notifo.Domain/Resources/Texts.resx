@@ -138,6 +138,9 @@
   <data name="ChannelTemplate_ResolvedWithFallback" xml:space="preserve">
     <value>Cannot find named template {0}, falling back to primary.</value>
   </data>
+  <data name="EmailUnknownErrror" xml:space="preserve">
+    <value>Email template generates unknown error.</value>
+  </data>
   <data name="Email_ConfigReset" xml:space="preserve">
     <value>Integration has been removed.</value>
   </data>
