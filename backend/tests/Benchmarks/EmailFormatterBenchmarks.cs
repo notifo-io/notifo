@@ -8,10 +8,8 @@
 using BenchmarkDotNet.Attributes;
 using FakeItEasy;
 using Mjml.Net;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
-using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 
 namespace Benchmarks

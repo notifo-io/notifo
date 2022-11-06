@@ -9,29 +9,33 @@ using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
 using Notifo.Domain.Users;
 
-#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-
 namespace Notifo.Domain.Channels.Email.Formatting
 {
     public sealed partial class EmailFormatterNormal
     {
-        private sealed record Context(Dictionary<string, string?> Properties, IReadOnlyList<EmailJob> Jobs, App App, User User)
+        private sealed class Context
         {
-            public List<EmailFormattingError>? Errors { get; private set; }
+            public App App { get; private init; }
 
-            public void AddError(string message, EmailTemplateType template, int? line = -1, int? column = -1)
+            public List<EmailFormattingError> Errors { get; } = new List<EmailFormattingError>();
+
+            public List<EmailJob> Jobs { get; private init; }
+
+            public Dictionary<string, string?> Properties { get; private init; }
+
+            public User User { get; private init; }
+
+            public string? EmailAddress => User.EmailAddress;
+
+            private Context()
             {
-                Errors ??= new List<EmailFormattingError>();
-                Errors.Add(new EmailFormattingError(message, template, line ?? -1, column ?? -1));
             }
 
-            public static Context Create(IReadOnlyList<EmailJob> jobs, App app, User user,
-                IEmailUrl emailUrl)
+            public static Context Create(IReadOnlyList<EmailJob> jobs, App app, User user, IEmailUrl emailUrl)
             {
                 var notification = jobs[0].Notification;
 
-                var formattingProperties = new Dictionary<string, string?>(StringComparer.InvariantCulture)
+                var properties = new Dictionary<string, string?>(StringComparer.InvariantCulture)
                 {
                     ["app.name"] = app.Name,
                     ["user.name"] = user.FullName,
@@ -46,18 +50,23 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                 foreach (var job in jobs)
                 {
-                    var properties = job.Notification.Properties;
+                    var jobProperties = job.Notification.Properties;
 
-                    if (properties != null)
+                    if (jobProperties != null)
                     {
-                        foreach (var (key, value) in properties)
+                        foreach (var (key, value) in jobProperties)
                         {
-                            formattingProperties[$"notification.custom.{key}"] = value;
+                            properties[$"notification.custom.{key}"] = value;
                         }
                     }
                 }
 
-                return new Context(formattingProperties, jobs, app, user);
+                return new Context { Properties = properties, App = app, User = user, Jobs = jobs.ToList() };
+            }
+
+            public void AddError(string message, EmailTemplateType template, int? line = -1, int? column = -1)
+            {
+                Errors.Add(new EmailFormattingError(message, template, line ?? -1, column ?? -1));
             }
 
             public void ValidateTemplate(string? template, EmailTemplateType type)

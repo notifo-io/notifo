@@ -16,7 +16,7 @@ namespace Notifo.Domain.Utils
         private static readonly Regex FormatPattern = new Regex(@"\{\{[\s]*(?<Path>[^\s]+)[\s]*(\|[\s]*(?<Transform>[^\?}]+))?(\?[\s]*(?<Fallback>[^\}\s]+))?[\s]*\}\}", RegexOptions.Compiled);
 #pragma warning restore MA0023 // Add RegexOptions.ExplicitCapture
 
-        public static string Format(this string text, Dictionary<string, string?>? properties)
+        public static string Format(this string text, IReadOnlyDictionary<string, string?>? properties)
         {
             if (text == null || string.IsNullOrWhiteSpace(text))
             {

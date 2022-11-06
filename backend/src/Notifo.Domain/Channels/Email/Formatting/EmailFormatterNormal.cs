@@ -110,7 +110,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                     context.AddError(error, EmailTemplateType.BodyText);
                 }
 
-                template = template with { ParsedBodyHtml = body };
+                template = template with { ParsedBodyText = body };
             }
 
             Format(template, context);
@@ -150,7 +150,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                 FromEmail = template.FromEmail.OrDefault(firstJob.FromEmail!),
                 FromName = template.FromEmail.OrDefault(firstJob.FromName!),
                 Subject = subject,
-                ToEmail = context.User.EmailAddress!,
+                ToEmail = context.EmailAddress!,
                 ToName = context.User.FullName
             };
 
@@ -164,7 +164,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private string? FormatBodyText(ParsedEmailTemplate template, Context context)
         {
-            var result = template.Format(context.Jobs, context.Properties, context.User.EmailAddress!, false, imageFormatter);
+            var result = template.Format(context.Jobs, context.Properties, context.EmailAddress!, false, imageFormatter);
 
             context.ValidateTemplate(result, EmailTemplateType.BodyText);
 
@@ -173,9 +173,9 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private string? FormatBodyHtml(ParsedEmailTemplate template, Context context)
         {
-            var result = template.Format(context.Jobs, context.Properties, context.User.EmailAddress!, true, imageFormatter);
+            var result = template.Format(context.Jobs, context.Properties, context.EmailAddress!, true, imageFormatter);
 
-            context.ValidateTemplate(result, EmailTemplateType.BodyText);
+            context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 
             return result;
         }

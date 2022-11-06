@@ -11,37 +11,46 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 
-#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-
 namespace Notifo.Domain.Channels.Email.Formatting
 {
     public sealed partial class EmailFormatterLiquid
     {
-        private sealed record Context(TemplateContext TemplateContext, IReadOnlyList<EmailJob> Jobs, App App, User User)
+        private sealed class Context
         {
-            public List<EmailFormattingError>? Errors { get; private set; }
+            public App App { get; private init; }
 
-            public void AddError(string message, EmailTemplateType template, int? line = -1, int? column = -1)
+            public List<EmailFormattingError> Errors { get; } = new List<EmailFormattingError>();
+
+            public List<EmailJob> Jobs { get; private init; }
+
+            public TemplateContext TemplateContext { get; private init; }
+
+            public User User { get; private init; }
+
+            public string? EmailAddress => User.EmailAddress;
+
+            private Context()
             {
-                Errors ??= new List<EmailFormattingError>();
-                Errors.Add(new EmailFormattingError(message, template, line ?? -1, column ?? -1));
             }
 
-            public static Context Create(IReadOnlyList<EmailJob> jobs, App app, User user,
-                IImageFormatter imageFormatter, IEmailUrl emailUrl)
+            public static Context Create(IReadOnlyList<EmailJob> jobs, App app, User user, IImageFormatter imageFormatter, IEmailUrl emailUrl)
             {
                 var templateContext = new TemplateContext(Options);
 
                 var emailNotifications = jobs.Select(x => new EmailNotification(x.Notification, x.EmailAddress, imageFormatter)).ToArray();
-                var emailPreferences = emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage);
+                var emailPreferencesUrl = emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage);
 
                 templateContext.SetValue("app", app);
                 templateContext.SetValue("user", user);
                 templateContext.SetValue("notifications", emailNotifications);
-                templateContext.SetValue("preferencesUrl", emailPreferences);
+                templateContext.SetValue("preferencesUrl", emailPreferencesUrl);
 
-                return new Context(templateContext, jobs, app, user);
+                return new Context { TemplateContext = templateContext, App = app, User = user, Jobs = jobs.ToList() };
+            }
+
+            public void AddError(string message, EmailTemplateType template, int? line = -1, int? column = -1)
+            {
+                Errors.Add(new EmailFormattingError(message, template, line ?? -1, column ?? -1));
             }
 
             public void ValidateTemplate(string? template, EmailTemplateType type)

@@ -6,10 +6,8 @@
 // ==========================================================================
 
 using FakeItEasy;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.UserNotifications;
-using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Xunit;
 

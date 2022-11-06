@@ -10,7 +10,6 @@ using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Identity;
-using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;

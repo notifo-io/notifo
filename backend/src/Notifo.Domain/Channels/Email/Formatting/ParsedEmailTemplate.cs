@@ -28,7 +28,12 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public ReadonlyDictionary<string, string> ItemTemplates { get; init; }
 
-        public string Format(IReadOnlyList<EmailJob> jobs, Dictionary<string, string?> properties, string emailAddress, bool asHtml, IImageFormatter imageFormatter)
+        public string Format(
+            IReadOnlyList<EmailJob> jobs,
+            Dictionary<string, string?> properties,
+            string emailAddress,
+            bool asHtml,
+            IImageFormatter imageFormatter)
         {
             var notificationProperties = new Dictionary<string, string?>();
 
