@@ -258,7 +258,8 @@ namespace TestSuite.ApiTests
             var preview_0 = await _.Client.EmailTemplates.PostPreviewAsync(app_0.Id, previewRequest);
 
             Assert.NotNull(preview_0.Result);
-            Assert.Null(preview_0.Errors);
+            Assert.NotNull(preview_0.Errors);
+            Assert.Empty(preview_0.Errors);
         }
 
         [Theory]
