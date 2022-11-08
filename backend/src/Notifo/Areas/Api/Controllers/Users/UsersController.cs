@@ -303,7 +303,7 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            var update = new RemoveUserMobileToken { Token = Uri.UnescapeDataString(token) };
+            var update = new RemoveUserMobileToken { Token = token };
 
             await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
 
@@ -331,7 +331,7 @@ namespace Notifo.Areas.Api.Controllers.Users
                 return NotFound();
             }
 
-            var update = new RemoveUserWebPushSubscription { Endpoint = Uri.UnescapeDataString(endpoint) };
+            var update = new RemoveUserWebPushSubscription { Endpoint = endpoint };
 
             await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
 

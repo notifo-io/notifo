@@ -99,5 +99,30 @@ namespace Notifo.Domain.Users
 
             Assert.Empty(updatedUser!.MobilePushTokens);
         }
+
+        [Fact]
+        public async Task Should_remove_token_if_encoding_differs()
+        {
+            var token1 = "test+token+1";
+
+            var sut = new RemoveUserMobileToken
+            {
+                Token = "test%2btoken%2b1"
+            };
+
+            var user = new User("1", "1", default)
+            {
+                MobilePushTokens = new List<string>
+                    {
+                        token1
+                    }
+                    .Select(t => new MobilePushToken { Token = t })
+                    .ToReadonlyList()
+            };
+
+            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
+
+            Assert.Empty(updatedUser!.MobilePushTokens);
+        }
     }
 }

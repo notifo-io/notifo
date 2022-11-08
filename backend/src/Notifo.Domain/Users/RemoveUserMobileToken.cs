@@ -29,17 +29,24 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            if (user.MobilePushTokens.All(x => x.Token != Token))
+            var token = Simplify(Token);
+
+            if (user.MobilePushTokens.All(x => Simplify(x.Token) != token))
             {
                 return default;
             }
 
             var newUser = user with
             {
-                MobilePushTokens = user.MobilePushTokens.RemoveAll(x => x.Token == Token)
+                MobilePushTokens = user.MobilePushTokens.RemoveAll(x => Simplify(x.Token) == token)
             };
 
             return new ValueTask<User?>(newUser);
+        }
+
+        private static string Simplify(string url)
+        {
+            return Uri.UnescapeDataString(url);
         }
     }
 }

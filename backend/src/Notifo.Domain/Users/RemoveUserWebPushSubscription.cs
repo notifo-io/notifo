@@ -29,17 +29,24 @@ namespace Notifo.Domain.Users
         {
             Validate<Validator>.It(this);
 
-            if (user.WebPushSubscriptions.All(x => x.Endpoint != Endpoint))
+            var endpoint = Simplify(Endpoint);
+
+            if (user.WebPushSubscriptions.All(x => Simplify(x.Endpoint) != endpoint))
             {
                 return default;
             }
 
             var newUser = user with
             {
-                WebPushSubscriptions = user.WebPushSubscriptions.RemoveAll(x => x.Endpoint == Endpoint)
+                WebPushSubscriptions = user.WebPushSubscriptions.RemoveAll(x => Simplify(x.Endpoint) == endpoint)
             };
 
             return new ValueTask<User?>(newUser);
+        }
+
+        private static string Simplify(string url)
+        {
+            return Uri.UnescapeDataString(url);
         }
     }
 }
