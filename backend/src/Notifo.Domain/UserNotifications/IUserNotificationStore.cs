@@ -44,7 +44,7 @@ namespace Notifo.Domain.UserNotifications
         Task TrackFailedAsync(UserEventMessage userEvent,
             CancellationToken ct = default);
 
-        Task TrackAsync(UserNotificationTrackingIdentifier identifier, ProcessStatus status, string? detail = null,
+        Task TrackAsync(UserNotificationIdentifier identifier, ProcessStatus status, string? detail = null,
             CancellationToken ct = default);
 
         Task InsertAsync(UserNotification notification,

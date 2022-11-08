@@ -7,7 +7,7 @@
 
 namespace Notifo.Domain.UserNotifications
 {
-    public record struct UserNotificationTrackingIdentifier
+    public record UserNotificationIdentifier
     {
         public Guid UserNotificationId { get; init; }
 
@@ -23,9 +23,9 @@ namespace Notifo.Domain.UserNotifications
 
         public Guid ConfigurationId { get; init; }
 
-        public static UserNotificationTrackingIdentifier ForNotification(BaseUserNotification notification, string? channel = null, Guid configurationId = default)
+        public static UserNotificationIdentifier ForNotification(BaseUserNotification notification, string? channel = null, Guid configurationId = default)
         {
-            return new UserNotificationTrackingIdentifier
+            return new UserNotificationIdentifier
             {
                 AppId = notification.AppId,
                 Channel = channel,

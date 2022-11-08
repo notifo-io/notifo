@@ -148,14 +148,14 @@ namespace Notifo.Domain.UserNotifications
             Guard.NotNull(notification);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Handled);
-            var counterKey = CounterKey.ForNotification(UserNotificationTrackingIdentifier.ForNotification(notification));
+            var counterKey = CounterKey.ForNotification(UserNotificationIdentifier.ForNotification(notification));
 
             return Task.WhenAll(
                 StoreCountersAsync(counterKey, counterMap, ct),
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task TrackAsync(UserNotificationTrackingIdentifier identifier, ProcessStatus status, string? detail = null,
+        public Task TrackAsync(UserNotificationIdentifier identifier, ProcessStatus status, string? detail = null,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(identifier.Channel);

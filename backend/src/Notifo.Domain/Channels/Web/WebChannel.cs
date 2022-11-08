@@ -40,7 +40,7 @@ namespace Notifo.Domain.Channels.Web
         {
             using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))
             {
-                var identifier = UserNotificationTrackingIdentifier.ForNotification(notification, Name, configurationId);
+                var identifier = UserNotificationIdentifier.ForNotification(notification, Name, configurationId);
                 try
                 {
                     await streamClient.SendAsync(notification);

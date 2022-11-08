@@ -61,10 +61,5 @@ namespace Notifo.Pipeline
                 }
             }
         }
-
-        private bool ShouldExpose(ModelError error)
-        {
-            return allErrors || error.Exception is JsonException;
-        }
     }
 }

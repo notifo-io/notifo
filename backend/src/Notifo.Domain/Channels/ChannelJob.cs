@@ -20,7 +20,7 @@ namespace Notifo.Domain.Channels
 
         public bool IsUpdate { get; init; }
 
-        public UserNotificationTrackingIdentifier Tracking { get; init; }
+        public UserNotificationIdentifier Tracking { get; init; }
 
         protected ChannelJob()
         {
@@ -32,7 +32,7 @@ namespace Notifo.Domain.Channels
             Condition = setting?.Condition ?? ChannelCondition.Always;
             ConfigurationId = configurationId;
             IsUpdate = isUpdate;
-            Tracking = UserNotificationTrackingIdentifier.ForNotification(notification, channel, configurationId);
+            Tracking = UserNotificationIdentifier.ForNotification(notification, channel, configurationId);
         }
     }
 }

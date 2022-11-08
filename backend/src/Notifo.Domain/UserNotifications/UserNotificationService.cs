@@ -223,7 +223,7 @@ namespace Notifo.Domain.UserNotifications
                                     Configuration = configuration
                                 };
 
-                                var identifier = UserNotificationTrackingIdentifier.ForNotification(notification, channel.Name, configurationId);
+                                var identifier = UserNotificationIdentifier.ForNotification(notification, channel.Name, configurationId);
 
                                 await userNotificationsStore.TrackAsync(identifier, ProcessStatus.Attempt);
                             }

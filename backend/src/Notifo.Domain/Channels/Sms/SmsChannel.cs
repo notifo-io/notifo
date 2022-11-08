@@ -104,7 +104,7 @@ namespace Notifo.Domain.Channels.Sms
 
             if (status.Status == ProcessStatus.Attempt)
             {
-                var identifier = UserNotificationTrackingIdentifier.ForNotification(notification, Name, configurationId);
+                var identifier = UserNotificationIdentifier.ForNotification(notification, Name, configurationId);
 
                 switch (result)
                 {

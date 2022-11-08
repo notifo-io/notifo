@@ -51,7 +51,7 @@ namespace Notifo.Domain.Counters
             return result;
         }
 
-        public static CounterKey ForNotification(UserNotificationTrackingIdentifier notification)
+        public static CounterKey ForNotification(UserNotificationIdentifier notification)
         {
             Guard.NotNull(notification);
 
