@@ -78,18 +78,18 @@ namespace Notifo.Domain.UserNotifications
             switch (job.Condition)
             {
                 case ChannelCondition.IfNotConfirmed:
-                    return repository.IsHandledOrConfirmedAsync(job.NotificationId, channel.Name, job.Configuration, ct);
+                    return repository.IsHandledOrConfirmedAsync(job.NotificationId, channel.Name, job.ConfigurationId, ct);
                 case ChannelCondition.IfNotSeen:
-                    return repository.IsHandledOrSeenAsync(job.NotificationId, channel.Name, job.Configuration, ct);
+                    return repository.IsHandledOrSeenAsync(job.NotificationId, channel.Name, job.ConfigurationId, ct);
                 default:
-                    return repository.IsHandledAsync(job.NotificationId, channel.Name, job.Configuration, ct);
+                    return repository.IsHandledAsync(job.NotificationId, channel.Name, job.ConfigurationId, ct);
             }
         }
 
-        public Task<bool> IsHandledOrSeenAsync(Guid id, string channel, string configuration,
+        public Task<bool> IsHandledOrSeenAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default)
         {
-            return repository.IsHandledOrSeenAsync(id, channel, configuration, ct);
+            return repository.IsHandledOrSeenAsync(id, channel, configurationId, ct);
         }
 
         public Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
@@ -151,7 +151,7 @@ namespace Notifo.Domain.UserNotifications
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail = null,
+        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, Guid configurationId, ProcessStatus status, string? detail = null,
             CancellationToken ct = default)
         {
             Guard.NotNull(notification);
@@ -162,7 +162,7 @@ namespace Notifo.Domain.UserNotifications
 
             return Task.WhenAll(
                 StoreCountersAsync(counterKey, counterMap, ct),
-                StoreInternalAsync(notification.Id, channel, configuration, status, detail));
+                StoreInternalAsync(notification.Id, channel, configurationId, status, detail));
         }
 
         public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,
@@ -189,11 +189,11 @@ namespace Notifo.Domain.UserNotifications
             return repository.InsertAsync(notification, ct);
         }
 
-        private async Task StoreInternalAsync(Guid id, string channel, string configuration, ProcessStatus status, string? detail)
+        private async Task StoreInternalAsync(Guid id, string channel, Guid configurationId, ProcessStatus status, string? detail)
         {
             var info = CreateInfo(status, detail);
 
-            await collector.AddAsync(id, channel, configuration, info);
+            await collector.AddAsync(id, channel, configurationId, info);
         }
 
         private ChannelSendInfo CreateInfo(ProcessStatus status, string? detail)

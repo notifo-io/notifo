@@ -38,7 +38,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
             SimpleMapper.Map(source, result);
             SimpleMapper.Map(source.Formatting, result);
 
-            result.TrackingToken = new TrackingToken(source.Id, Providers.Web, Providers.Web).ToParsableString();
+            result.TrackingToken = new TrackingToken(source.Id, Providers.Web).ToParsableString();
 
             return result;
         }

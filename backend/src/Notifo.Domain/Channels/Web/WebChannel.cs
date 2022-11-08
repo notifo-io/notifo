@@ -30,12 +30,12 @@ namespace Notifo.Domain.Channels.Web
             this.log = log;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
-            yield return Name;
+            yield return new ChannelProperties();
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting settings, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, ChannelProperties properties, SendOptions options,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))
@@ -44,11 +44,11 @@ namespace Notifo.Domain.Channels.Web
                 {
                     await streamClient.SendAsync(notification);
 
-                    await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Handled, ct: ct);
+                    await userNotificationStore.CollectAndUpdateAsync(notification, Name, configurationId, ProcessStatus.Handled, ct: ct);
                 }
                 catch (Exception ex)
                 {
-                    await userNotificationStore.CollectAndUpdateAsync(notification, Name, configuration, ProcessStatus.Failed, ct: ct);
+                    await userNotificationStore.CollectAndUpdateAsync(notification, Name, configurationId, ProcessStatus.Failed, ct: ct);
 
                     log.LogError(ex, "Failed to send web message.");
                 }

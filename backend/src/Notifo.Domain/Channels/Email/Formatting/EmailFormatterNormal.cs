@@ -164,7 +164,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private string? FormatBodyText(ParsedEmailTemplate template, Context context)
         {
-            var result = template.Format(context.Jobs, context.Properties, context.EmailAddress!, false, imageFormatter);
+            var result = template.Format(context.Jobs, context.Properties, false, imageFormatter);
 
             context.ValidateTemplate(result, EmailTemplateType.BodyText);
 
@@ -173,7 +173,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         private string? FormatBodyHtml(ParsedEmailTemplate template, Context context)
         {
-            var result = template.Format(context.Jobs, context.Properties, context.EmailAddress!, true, imageFormatter);
+            var result = template.Format(context.Jobs, context.Properties, true, imageFormatter);
 
             context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 

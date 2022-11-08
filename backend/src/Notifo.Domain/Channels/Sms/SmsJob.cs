@@ -44,6 +44,8 @@ namespace Notifo.Domain.Channels.Sms
 
         public bool Test { get; init; }
 
+        public Guid ConfigurationId { get; init; }
+
         public ChannelCondition Condition { get; init; }
 
         public Duration Delay { get; init; }
@@ -51,11 +53,6 @@ namespace Notifo.Domain.Channels.Sms
         Guid IChannelJob.NotificationId
         {
             get => Id;
-        }
-
-        public string Configuration
-        {
-            get => PhoneNumber;
         }
 
         public string ScheduleKey
@@ -80,11 +77,12 @@ namespace Notifo.Domain.Channels.Sms
         {
         }
 
-        public SmsJob(UserNotification notification, ChannelSetting setting, string phoneNumber)
+        public SmsJob(UserNotification notification, ChannelSetting setting, Guid configurationId, string phoneNumber)
         {
             SimpleMapper.Map(notification, this);
 
             Condition = setting.Condition;
+            ConfigurationId = configurationId;
             Delay = Duration.FromSeconds(setting.DelayInSeconds ?? 0);
             PhoneNumber = phoneNumber;
             PhoneText = notification.Formatting.Subject.Truncate(140);

@@ -17,11 +17,11 @@ namespace Notifo.Domain.Channels.Webhook
 
         public WebhookDefinition Webhook { get; init; }
 
-        public string WebhookId { get; init; }
-
         public bool IsConfirmed { get; init; }
 
         public bool IsUpdate { get; init; }
+
+        public Guid ConfigurationId { get; init; }
 
         public ChannelCondition Condition { get; init; }
 
@@ -30,11 +30,6 @@ namespace Notifo.Domain.Channels.Webhook
         Guid IChannelJob.NotificationId
         {
             get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => WebhookId;
         }
 
         public string ScheduleKey
@@ -46,15 +41,15 @@ namespace Notifo.Domain.Channels.Webhook
         {
         }
 
-        public WebhookJob(UserNotification notification, ChannelSetting setting, string webhookId, WebhookDefinition webhook, bool isUpdate)
+        public WebhookJob(UserNotification notification, ChannelSetting setting, Guid configurationId, WebhookDefinition webhook, bool isUpdate)
         {
             Condition = setting.Condition;
+            ConfigurationId = configurationId;
             Delay = Duration.FromSeconds(setting?.DelayInSeconds ?? 0);
             IsConfirmed = notification.FirstConfirmed != null;
             IsUpdate = isUpdate;
             Notification = notification;
             Webhook = webhook;
-            WebhookId = webhookId;
         }
     }
 }

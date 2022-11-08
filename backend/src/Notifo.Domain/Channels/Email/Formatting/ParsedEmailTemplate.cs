@@ -28,12 +28,8 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public ReadonlyDictionary<string, string> ItemTemplates { get; init; }
 
-        public string Format(
-            IReadOnlyList<EmailJob> jobs,
-            Dictionary<string, string?> properties,
-            string emailAddress,
-            bool asHtml,
-            IImageFormatter imageFormatter)
+        public string Format(IReadOnlyList<EmailJob> jobs,
+            Dictionary<string, string?> properties, bool asHtml, IImageFormatter imageFormatter)
         {
             var notificationProperties = new Dictionary<string, string?>();
 
@@ -87,7 +83,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
                     if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
                     {
-                        var trackingLink = notification.HtmlTrackingLink(emailAddress);
+                        var trackingLink = notification.HtmlTrackingLink(job.ConfigurationId);
 
                         stringBuilder.Append(trackingLink);
                     }

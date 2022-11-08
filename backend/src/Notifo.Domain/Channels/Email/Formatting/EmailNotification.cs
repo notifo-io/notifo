@@ -13,6 +13,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
     public sealed class EmailNotification
     {
         private readonly BaseUserNotification notification;
+        private readonly Guid configurationId;
         private readonly string? emailAddress;
         private readonly IImageFormatter imageFormatter;
         private string? confirmUrl;
@@ -33,17 +34,17 @@ namespace Notifo.Domain.Channels.Email.Formatting
 
         public string? TrackSeenUrl
         {
-            get => trackSeenUrl ??= notification.ComputeTrackSeenUrl(Providers.Email, emailAddress);
+            get => trackSeenUrl ??= notification.ComputeTrackSeenUrl(Providers.Email, configurationId);
         }
 
         public string? TrackDeliveredUrl
         {
-            get => trackDeliveredUrl ??= notification.ComputeTrackDeliveredUrl(Providers.Email, emailAddress);
+            get => trackDeliveredUrl ??= notification.ComputeTrackDeliveredUrl(Providers.Email, configurationId);
         }
 
         public string? ConfirmUrl
         {
-            get => confirmUrl ??= notification.ComputeConfirmUrl(Providers.Email, emailAddress);
+            get => confirmUrl ??= notification.ComputeConfirmUrl(Providers.Email, configurationId);
         }
 
         public string? ImageSmall
@@ -56,9 +57,10 @@ namespace Notifo.Domain.Channels.Email.Formatting
             get => imageLarge ??= notification.ImageLarge(imageFormatter, "EmailSmall");
         }
 
-        public EmailNotification(BaseUserNotification notification, string? emailAddress, IImageFormatter imageFormatter)
+        public EmailNotification(BaseUserNotification notification, Guid configurationId, string? emailAddress, IImageFormatter imageFormatter)
         {
             this.notification = notification;
+            this.configurationId = configurationId;
             this.emailAddress = emailAddress;
             this.imageFormatter = imageFormatter;
         }

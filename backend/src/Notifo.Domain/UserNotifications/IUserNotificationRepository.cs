@@ -12,13 +12,13 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationRepository
     {
-        Task<bool> IsHandledOrConfirmedAsync(Guid id, string channel, string configuration,
+        Task<bool> IsHandledOrConfirmedAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default);
 
-        Task<bool> IsHandledOrSeenAsync(Guid id, string channel, string configuration,
+        Task<bool> IsHandledOrSeenAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default);
 
-        Task<bool> IsHandledAsync(Guid id, string channel, string configuration,
+        Task<bool> IsHandledAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
@@ -45,7 +45,7 @@ namespace Notifo.Domain.UserNotifications
         Task InsertAsync(UserNotification notification,
             CancellationToken ct = default);
 
-        Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuration, ChannelSendInfo Info)> updates,
+        Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, Guid ConfigurationId, ChannelSendInfo Info)> updates,
             CancellationToken ct = default);
     }
 }

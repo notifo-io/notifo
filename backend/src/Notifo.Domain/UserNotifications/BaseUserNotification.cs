@@ -60,22 +60,22 @@ namespace Notifo.Domain.UserNotifications
             }
         }
 
-        public string? ComputeTrackDeliveredUrl(string channel, string? deviceIdentifier)
+        public string? ComputeTrackDeliveredUrl(string channel, Guid configurationId)
         {
-            return ComputeUrl(TrackDeliveredUrl, channel, deviceIdentifier);
+            return ComputeUrl(TrackDeliveredUrl, channel, configurationId);
         }
 
-        public string? ComputeTrackSeenUrl(string channel, string? deviceIdentifier)
+        public string? ComputeTrackSeenUrl(string channel, Guid configurationId)
         {
-            return ComputeUrl(TrackSeenUrl, channel, deviceIdentifier);
+            return ComputeUrl(TrackSeenUrl, channel, configurationId);
         }
 
-        public string? ComputeConfirmUrl(string channel, string? deviceIdentifier)
+        public string? ComputeConfirmUrl(string channel, Guid configurationId)
         {
-            return ComputeUrl(ConfirmUrl, channel, deviceIdentifier);
+            return ComputeUrl(ConfirmUrl, channel, configurationId);
         }
 
-        private static string? ComputeUrl(string? url, string channel, string? deviceIdentifier)
+        private static string? ComputeUrl(string? url, string channel, Guid configurationId)
         {
             if (!string.IsNullOrWhiteSpace(url))
             {
@@ -83,13 +83,8 @@ namespace Notifo.Domain.UserNotifications
 
                 var hasQuery = url.Contains('?', StringComparison.OrdinalIgnoreCase);
 
-                void Append(string key, string? value)
+                void Append(string key, string value)
                 {
-                    if (string.IsNullOrWhiteSpace(value))
-                    {
-                        return;
-                    }
-
                     if (hasQuery)
                     {
                         builder.Append('&');
@@ -106,8 +101,15 @@ namespace Notifo.Domain.UserNotifications
                     hasQuery = true;
                 }
 
-                Append(nameof(channel), channel);
-                Append(nameof(deviceIdentifier), deviceIdentifier);
+                if (channel != null)
+                {
+                    Append(nameof(channel), channel);
+                }
+
+                if (configurationId != default)
+                {
+                    Append(nameof(configurationId), configurationId.ToString());
+                }
 
                 return builder.ToString();
             }

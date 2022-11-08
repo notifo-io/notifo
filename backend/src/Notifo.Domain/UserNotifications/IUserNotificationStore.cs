@@ -47,7 +47,7 @@ namespace Notifo.Domain.UserNotifications
         Task InsertAsync(UserNotification notification,
             CancellationToken ct = default);
 
-        Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail = null,
+        Task CollectAndUpdateAsync(IUserNotification notification, string channel, Guid configurationId, ProcessStatus status, string? detail = null,
             CancellationToken ct = default);
 
         Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,

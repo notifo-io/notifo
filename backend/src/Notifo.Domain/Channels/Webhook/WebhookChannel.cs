@@ -42,13 +42,16 @@ namespace Notifo.Domain.Channels.Webhook
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting setting, SendOptions options)
+        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting setting, SendOptions options)
         {
             var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification);
 
             foreach (var (id, _) in webhooks)
             {
-                yield return id;
+                yield return new ChannelProperties
+                {
+                    ["WebhookId"] = id
+                };
             }
         }
 
@@ -57,12 +60,18 @@ namespace Notifo.Domain.Channels.Webhook
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
             CancellationToken ct)
         {
+            if (!properties.TryGetValue("WebhookId", out var webhookId))
+            {
+                // Old configuration without a mobile push token.
+                return;
+            }
+
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                var webhook = integrationManager.Resolve<WebhookDefinition>(configuration, options.App, notification);
+                var webhook = integrationManager.Resolve<WebhookDefinition>(webhookId, options.App, notification);
 
                 // The webhook must match the name or the conditions.
                 if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))
@@ -70,7 +79,7 @@ namespace Notifo.Domain.Channels.Webhook
                     return;
                 }
 
-                var job = new WebhookJob(notification, setting, configuration, webhook, options.IsUpdate);
+                var job = new WebhookJob(notification, setting, configurationId, webhook, options.IsUpdate);
 
                 // Do not use scheduling when the notification is an update.
                 if (job.IsUpdate)
@@ -154,7 +163,7 @@ namespace Notifo.Domain.Channels.Webhook
             // We only track the initial publication.
             if (!job.IsUpdate)
             {
-                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.WebhookId, status, reason);
+                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.ConfigurationId, status, reason);
             }
         }
 

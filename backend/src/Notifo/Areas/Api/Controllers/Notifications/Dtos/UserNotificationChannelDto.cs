@@ -24,7 +24,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// The status per token or configuration.
         /// </summary>
         [Required]
-        public Dictionary<string, ChannelSendInfoDto> Status { get; set; }
+        public Dictionary<Guid, ChannelSendInfoDto> Status { get; set; }
 
         /// <summary>
         /// The first time the notification has been marked as delivered for this channel.
@@ -45,7 +45,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         {
             var result = SimpleMapper.Map(source, new UserNotificationChannelDto
             {
-                Status = new Dictionary<string, ChannelSendInfoDto>()
+                Status = new Dictionary<Guid, ChannelSendInfoDto>()
             });
 
             if (source.Setting != null)

@@ -89,7 +89,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
                         LinkUrl = "/url/to/link"
                     }
                 }
-            }.Select(x => new EmailJob(x, new ChannelSetting(), User.EmailAddress)).ToList();
+            }.Select(x => new EmailJob(x, new ChannelSetting(), Guid.NewGuid(), User.EmailAddress)).ToList();
         }
     }
 }

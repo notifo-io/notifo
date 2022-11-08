@@ -39,6 +39,8 @@ namespace Notifo.Domain.Channels.WebPush
 
         public bool IsUpdate { get; init; }
 
+        public Guid ConfigurationId { get; init; }
+
         public ChannelCondition Condition { get; init; }
 
         public Duration Delay { get; init; }
@@ -46,11 +48,6 @@ namespace Notifo.Domain.Channels.WebPush
         Guid IChannelJob.NotificationId
         {
             get => Id;
-        }
-
-        public string Configuration
-        {
-            get => Subscription.Endpoint;
         }
 
         public string ScheduleKey
@@ -62,13 +59,14 @@ namespace Notifo.Domain.Channels.WebPush
         {
         }
 
-        public WebPushJob(UserNotification notification, ChannelSetting setting, WebPushSubscription subscription, IJsonSerializer serializer, bool isUpdate)
+        public WebPushJob(UserNotification notification, ChannelSetting setting, Guid configurationId, WebPushSubscription subscription, IJsonSerializer serializer, bool isUpdate)
         {
             SimpleMapper.Map(notification, this);
 
-            var payload = WebPushPayload.Create(notification, subscription.Endpoint);
+            var payload = WebPushPayload.Create(notification, configurationId);
 
             Condition = setting.Condition;
+            ConfigurationId = configurationId;
             Delay = Duration.FromSeconds(setting?.DelayInSeconds ?? 0);
             IsConfirmed = notification.FirstConfirmed != null;
             IsUpdate = isUpdate;

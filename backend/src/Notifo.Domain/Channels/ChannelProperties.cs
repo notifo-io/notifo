@@ -5,20 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
-
 namespace Notifo.Domain.Channels
 {
-    public interface IChannelJob
+    public sealed class ChannelProperties : Dictionary<string, string>
     {
-        Guid NotificationId { get; }
-
-        Duration Delay { get; }
-
-        ChannelCondition Condition { get; }
-
-        Guid ConfigurationId { get; }
-
-        bool IsUpdate => false;
+        public ChannelProperties()
+            : base(StringComparer.OrdinalIgnoreCase)
+        {
+        }
     }
 }

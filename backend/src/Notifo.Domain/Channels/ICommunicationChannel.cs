@@ -15,10 +15,10 @@ namespace Notifo.Domain.Channels
 
         bool IsSystem => false;
 
-        Task SendAsync(UserNotification notification, ChannelSetting settings, string configuration, SendOptions options,
+        Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, ChannelProperties configuration, SendOptions options,
             CancellationToken ct);
 
-        IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options);
+        IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options);
 
         Task HandleDeliveredAsync(TrackingToken token)
         {

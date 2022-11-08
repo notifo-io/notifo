@@ -22,6 +22,8 @@ namespace Notifo.Domain.Channels.MobilePush
 
         public bool IsUpdate { get; init; }
 
+        public Guid ConfigurationId { get; init; }
+
         public ChannelCondition Condition { get; init; }
 
         public Duration Delay { get; init; }
@@ -29,11 +31,6 @@ namespace Notifo.Domain.Channels.MobilePush
         Guid IChannelJob.NotificationId
         {
             get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => DeviceToken;
         }
 
         public string ScheduleKey
@@ -45,9 +42,10 @@ namespace Notifo.Domain.Channels.MobilePush
         {
         }
 
-        public MobilePushJob(UserNotification notification, ChannelSetting? setting, string token, MobileDeviceType deviceType, bool isUpdate)
+        public MobilePushJob(UserNotification notification, ChannelSetting? setting, Guid configurationId, string token, MobileDeviceType deviceType, bool isUpdate)
         {
             Condition = setting?.Condition ?? ChannelCondition.Always;
+            ConfigurationId = configurationId;
             Delay = Duration.FromSeconds(setting?.DelayInSeconds ?? 0);
             DeviceToken = token;
             DeviceType = deviceType;

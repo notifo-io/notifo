@@ -23,6 +23,8 @@ namespace Notifo.Domain.Channels.Email
 
         public string? FromName { get; init; }
 
+        public Guid ConfigurationId { get; init; }
+
         public ChannelCondition Condition { get; init; }
 
         public Duration Delay { get; init; }
@@ -30,11 +32,6 @@ namespace Notifo.Domain.Channels.Email
         Guid IChannelJob.NotificationId
         {
             get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => EmailAddress;
         }
 
         public string ScheduleKey
@@ -54,12 +51,13 @@ namespace Notifo.Domain.Channels.Email
         {
         }
 
-        public EmailJob(BaseUserNotification notification, ChannelSetting setting, string emailAddress)
+        public EmailJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId, string emailAddress)
         {
             Delay = Duration.FromSeconds(setting.DelayInSeconds ?? 0);
             EmailAddress = emailAddress;
             EmailTemplate = setting.Template;
             Condition = setting.Condition;
+            ConfigurationId = configurationId;
             FromEmail = setting.Properties?.GetOrDefault(nameof(FromEmail));
             FromName = setting.Properties?.GetOrDefault(nameof(FromName));
             Notification = notification;

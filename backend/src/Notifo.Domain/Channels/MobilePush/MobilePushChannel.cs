@@ -51,7 +51,7 @@ namespace Notifo.Domain.Channels.MobilePush
             this.clock = clock;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (!integrationManager.IsConfigured<IMobilePushSender>(options.App, notification))
             {
@@ -62,7 +62,10 @@ namespace Notifo.Domain.Channels.MobilePush
             {
                 if (!string.IsNullOrWhiteSpace(token.Token))
                 {
-                    yield return token.Token;
+                    yield return new ChannelProperties
+                    {
+                        ["MobilePushToken"] = token.Token
+                    };
                 }
             }
         }
@@ -71,10 +74,11 @@ namespace Notifo.Domain.Channels.MobilePush
         {
             using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
             {
-                var mobileToken = token.DeviceIdentifier;
+                var configurationId = token.ConfigurationId;
 
-                if (string.IsNullOrWhiteSpace(mobileToken))
+                if (configurationId == default)
                 {
+                    // Old tracking code.
                     return;
                 }
 
@@ -82,6 +86,25 @@ namespace Notifo.Domain.Channels.MobilePush
 
                 if (notification == null)
                 {
+                    // The notification does not exist anymore.
+                    return;
+                }
+
+                if (!notification.Channels.TryGetValue(Name, out var channel))
+                {
+                    // There is no activity on this channel.
+                    return;
+                }
+
+                if (!channel.Status.TryGetValue(configurationId, out var status))
+                {
+                    // The configuration ID does not match.
+                    return;
+                }
+
+                if (!status.Configuration.TryGetValue("MobilePushToken", out var mobileToken))
+                {
+                    // The configuration has no token.
                     return;
                 }
 
@@ -89,36 +112,47 @@ namespace Notifo.Domain.Channels.MobilePush
 
                 if (user == null)
                 {
+                    // The user or app does not exist anymore.
                     return;
                 }
 
                 var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == mobileToken && x.DeviceType == MobileDeviceType.iOS);
 
-                if (userToken != null)
+                if (userToken == null)
                 {
-                    await TryWakeupAsync(notification, userToken, default);
+                    // The token is not for iOS or has been removed.
+                    return;
                 }
+
+                await TryWakeupAsync(notification, configurationId, userToken, default);
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
             CancellationToken ct)
         {
+            if (!properties.TryGetValue("MobilePushToken", out var tokenString))
+            {
+                // Old configuration without a mobile push token.
+                return;
+            }
+
             using (Telemetry.Activities.StartActivity("MobilePushChannel/SendAsync"))
             {
-                var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == configuration);
+                var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == tokenString);
 
                 if (token == null)
                 {
+                    // Token has been deleted in the meantime.
                     return;
                 }
 
                 if (token.DeviceType == MobileDeviceType.iOS)
                 {
-                    await TryWakeupAsync(notification, token, ct);
+                    await TryWakeupAsync(notification, configurationId, token, ct);
                 }
 
-                var job = new MobilePushJob(notification, setting, configuration, token.DeviceType, options.IsUpdate);
+                var job = new MobilePushJob(notification, setting, configurationId, token.Token, token.DeviceType, options.IsUpdate);
 
                 if (options.IsUpdate)
                 {
@@ -139,7 +173,7 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        private async Task TryWakeupAsync(UserNotification notification, MobilePushToken token,
+        private async Task TryWakeupAsync(UserNotification notification, Guid configurationId, MobilePushToken token,
             CancellationToken ct)
         {
             var nextWakeup = token.GetNextWakeupTime(clock);
@@ -156,7 +190,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 UserLanguage = notification.UserLanguage
             };
 
-            var wakeupJob = new MobilePushJob(dummyNotification, null, token.Token, token.DeviceType, false);
+            var wakeupJob = new MobilePushJob(dummyNotification, null, configurationId, token.Token, token.DeviceType, false);
 
             await userNotificationQueue.ScheduleAsync(
                 wakeupJob.ScheduleKey,
@@ -306,7 +340,7 @@ namespace Notifo.Domain.Channels.MobilePush
             // We only track the initial publication.
             if (!job.IsUpdate)
             {
-                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.DeviceToken, status, reason);
+                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.ConfigurationId, status, reason);
             }
         }
 

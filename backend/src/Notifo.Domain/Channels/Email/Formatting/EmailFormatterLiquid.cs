@@ -185,7 +185,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 if (!string.IsNullOrEmpty(job.Notification.TrackSeenUrl))
                 {
-                    var trackingLink = job.Notification.HtmlTrackingLink(context.User.EmailAddress!);
+                    var trackingLink = job.Notification.HtmlTrackingLink(job.ConfigurationId);
 
                     html = html.Replace("</body>", $"{trackingLink}</body>", StringComparison.OrdinalIgnoreCase);
                 }

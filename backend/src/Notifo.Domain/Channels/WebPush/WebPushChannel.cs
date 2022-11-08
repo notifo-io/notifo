@@ -54,7 +54,7 @@ namespace Notifo.Domain.Channels.WebPush
             PublicKey = options.Value.VapidPublicKey;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (notification.Silent)
             {
@@ -67,24 +67,34 @@ namespace Notifo.Domain.Channels.WebPush
                     subscription.Keys.ContainsKey("p256dh") &&
                     subscription.Keys.ContainsKey("auth"))
                 {
-                    yield return subscription.Endpoint;
+                    yield return new ChannelProperties
+                    {
+                        ["Endpoint"] = subscription.Endpoint
+                    };
                 }
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
             CancellationToken ct)
         {
+            if (!properties.TryGetValue("Endpoint", out var endpoint))
+            {
+                // Old configuration without a mobile push token.
+                return;
+            }
+
             using (Telemetry.Activities.StartActivity("WebPushChannel/SendAsync"))
             {
-                var subscription = options.User.WebPushSubscriptions.FirstOrDefault(x => x.Endpoint == configuration);
+                var subscription = options.User.WebPushSubscriptions.FirstOrDefault(x => x.Endpoint == endpoint);
 
                 if (subscription == null)
                 {
+                    // Subscription has been removed in the meantime.
                     return;
                 }
 
-                var job = new WebPushJob(notification, setting, subscription, serializer, options.IsUpdate);
+                var job = new WebPushJob(notification, setting, configurationId, subscription, serializer, options.IsUpdate);
 
                 // Do not use scheduling when the notification is an update.
                 if (options.IsUpdate)
@@ -190,7 +200,7 @@ namespace Notifo.Domain.Channels.WebPush
             // We only track the initial publication.
             if (!job.IsUpdate)
             {
-                await userNotificationStore.CollectAndUpdateAsync(job, Name, job.Subscription.Endpoint, status, reason);
+                await userNotificationStore.CollectAndUpdateAsync(job, Name, job.ConfigurationId, status, reason);
             }
         }
     }

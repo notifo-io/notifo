@@ -136,9 +136,9 @@ namespace Notifo.Domain.UserNotifications
                     {
                         if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                         {
-                            foreach (var configuration in notificationChannel.Status.Keys)
+                            foreach (var (id, status) in notificationChannel.Status)
                             {
-                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
+                                await channel.SendAsync(notification, notificationChannel.Setting, id, status.Configuration, options, default);
                             }
                         }
                     }
@@ -206,9 +206,12 @@ namespace Notifo.Domain.UserNotifications
 
                         foreach (var configuration in configurations)
                         {
-                            if (!string.IsNullOrWhiteSpace(configuration))
+                            if (configuration != null)
                             {
-                                channelConfig.Status[configuration] = new ChannelSendInfo();
+                                channelConfig.Status[Guid.NewGuid()] = new ChannelSendInfo
+                                {
+                                    Configuration = configuration
+                                };
 
                                 await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
                             }
@@ -252,9 +255,9 @@ namespace Notifo.Domain.UserNotifications
                 {
                     if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                     {
-                        foreach (var configuration in notificationChannel.Status.Keys)
+                        foreach (var (id, status) in notificationChannel.Status)
                         {
-                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, ct);
+                            await channel.SendAsync(notification, notificationChannel.Setting, id, status.Configuration, options, ct);
                         }
                     }
                 }

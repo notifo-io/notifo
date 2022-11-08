@@ -49,7 +49,7 @@ namespace Notifo.Domain.Channels.WebPush
         [JsonPropertyName("nb")]
         public string? Body { get; init; }
 
-        public static WebPushPayload Create(UserNotification notification, string endpoint)
+        public static WebPushPayload Create(UserNotification notification, Guid configurationId)
         {
             var result = new WebPushPayload
             {
@@ -61,9 +61,9 @@ namespace Notifo.Domain.Channels.WebPush
 
             // Compute the tracking links afterwards because the mapping would override it.
             result.ConfirmText = notification.Formatting.ConfirmText;
-            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint);
-            result.TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, endpoint);
-            result.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, endpoint);
+            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, configurationId);
+            result.TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, configurationId);
+            result.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, configurationId);
 
             return result;
         }

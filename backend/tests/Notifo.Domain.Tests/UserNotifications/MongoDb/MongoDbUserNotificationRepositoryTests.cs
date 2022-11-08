@@ -20,8 +20,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
         private readonly string userId1 = Guid.NewGuid().ToString();
         private readonly string userId2 = Guid.NewGuid().ToString();
         private readonly string channel = "webpush";
-        private readonly string token1 = Guid.NewGuid().ToString();
-        private readonly string token2 = "https://fcm.googleapis.com/fcm/send/exarf3syWDE:APA91bHQB9m0XS_v8a5_ofmBu--2oJDBaDAYMjxCImhTfR2Jse6hbYSNf2WOlYsn4Jtuk9CrQpjm7Cxv29pTnl5Ou2HB3Y-EXSBT8yNvU7_pctzE3ruuWIM4r0mEO85jr5xYzIBl8Pc8";
+        private readonly Guid token1 = Guid.NewGuid();
+        private readonly Guid token2 = Guid.NewGuid();
 
         public MongoDbUserNotificationRepositoryFixture _ { get; }
 
@@ -114,7 +114,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                         {
                             Send = ChannelSend.Send
                         },
-                        Status = new Dictionary<string, ChannelSendInfo>
+                        Status = new Dictionary<Guid, ChannelSendInfo>
                         {
                             [token1] = new ChannelSendInfo(),
                             [token2] = new ChannelSendInfo()

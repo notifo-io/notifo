@@ -20,6 +20,8 @@ namespace Notifo.Domain.Channels.Messaging
 
         public Dictionary<string, string> Targets { get; init; } = new Dictionary<string, string>();
 
+        public Guid ConfigurationId { get; init; }
+
         public ChannelCondition Condition { get; init; }
 
         public Duration Delay { get; init; }
@@ -27,11 +29,6 @@ namespace Notifo.Domain.Channels.Messaging
         Guid IChannelJob.NotificationId
         {
             get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => DefaultToken;
         }
 
         public string ScheduleKey
@@ -43,12 +40,13 @@ namespace Notifo.Domain.Channels.Messaging
         {
         }
 
-        public MessagingJob(BaseUserNotification notification, ChannelSetting setting)
+        public MessagingJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId)
         {
             Delay = Duration.FromSeconds(setting.DelayInSeconds ?? 0);
             Notification = notification;
             NotificationTemplate = setting.Template;
             Condition = setting.Condition;
+            ConfigurationId = configurationId;
         }
 
         public static string ComputeScheduleKey(Guid notificationId)

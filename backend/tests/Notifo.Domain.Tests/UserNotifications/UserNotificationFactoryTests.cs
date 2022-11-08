@@ -278,7 +278,7 @@ namespace Notifo.Domain.UserNotifications
                         {
                             Send = ChannelSend.NotSending
                         },
-                        Status = new Dictionary<string, ChannelSendInfo>()
+                        Status = new Dictionary<Guid, ChannelSendInfo>()
                     },
 
                     [Providers.MobilePush] = new UserNotificationChannel
@@ -287,7 +287,7 @@ namespace Notifo.Domain.UserNotifications
                         {
                             DelayInSeconds = 100
                         },
-                        Status = new Dictionary<string, ChannelSendInfo>()
+                        Status = new Dictionary<Guid, ChannelSendInfo>()
                     }
                 });
         }

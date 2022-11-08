@@ -39,7 +39,11 @@ namespace Notifo.Domain.Integrations.Firebase
 
             try
             {
-                var message = userNotification.ToFirebaseMessage(options.DeviceToken, options.Wakeup, options.IsConfirmed);
+                var message = userNotification.ToFirebaseMessage(
+                    options.DeviceToken,
+                    options.ConfigurationId,
+                    options.Wakeup,
+                    options.IsConfirmed);
 
                 // Try a few attempts to get a non-disposed messaging service.
                 for (var i = 1; i <= Attempts; i++)

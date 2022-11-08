@@ -13,7 +13,7 @@ namespace Notifo.Domain.UserNotifications
     {
         public ChannelSetting Setting { get; init; } = new ChannelSetting();
 
-        public Dictionary<string, ChannelSendInfo> Status { get; init; } = new Dictionary<string, ChannelSendInfo>();
+        public Dictionary<Guid, ChannelSendInfo> Status { get; init; } = new Dictionary<Guid, ChannelSendInfo>();
 
         public Instant? FirstConfirmed { get; init; }
 
