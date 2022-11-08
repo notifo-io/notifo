@@ -17,10 +17,10 @@ namespace Notifo.Domain.Channels.WebPush
         public string Id { get; init; }
 
         [JsonPropertyName("cu")]
-        public string? ConfirmUrl { get; init; }
+        public string? ConfirmUrl { get; set; }
 
         [JsonPropertyName("ct")]
-        public string? ConfirmText { get; init; }
+        public string? ConfirmText { get; set; }
 
         [JsonPropertyName("is")]
         public string? ImageSmall { get; init; }
@@ -35,10 +35,10 @@ namespace Notifo.Domain.Channels.WebPush
         public string? LinkUrl { get; init; }
 
         [JsonPropertyName("td")]
-        public string? TrackDeliveredUrl { get; init; }
+        public string? TrackDeliveredUrl { get; set; }
 
         [JsonPropertyName("ts")]
-        public string? TrackSeenUrl { get; init; }
+        public string? TrackSeenUrl { get; set; }
 
         [JsonPropertyName("ci")]
         public bool IsConfirmed { get; init; }
@@ -53,15 +53,17 @@ namespace Notifo.Domain.Channels.WebPush
         {
             var result = new WebPushPayload
             {
-                ConfirmText = notification.Formatting.ConfirmText,
-                ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint),
                 IsConfirmed = notification.FirstConfirmed != null,
-                TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, endpoint),
-                TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, endpoint)
             };
 
             SimpleMapper.Map(notification, result);
             SimpleMapper.Map(notification.Formatting, result);
+
+            // Compute the tracking links afterwards because the mapping would override it.
+            result.ConfirmText = notification.Formatting.ConfirmText;
+            result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, endpoint);
+            result.TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, endpoint);
+            result.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, endpoint);
 
             return result;
         }

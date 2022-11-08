@@ -28,6 +28,21 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// </summary>
         public string? Detail { get; set; }
 
+        /// <summary>
+        /// The first time the notification has been marked as delivered for this identifier.
+        /// </summary>
+        public Instant? FirstDelivered { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as seen for this identifier.
+        /// </summary>
+        public Instant? FirstSeen { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as confirmed for this identifier.
+        /// </summary>
+        public Instant? FirstConfirmed { get; set; }
+
         public static ChannelSendInfoDto FromDomainObject(ChannelSendInfo source)
         {
             return SimpleMapper.Map(source, new ChannelSendInfoDto());
