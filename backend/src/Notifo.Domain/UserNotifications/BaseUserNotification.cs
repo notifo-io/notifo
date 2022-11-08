@@ -11,7 +11,7 @@ using Notifo.Domain.Integrations;
 
 namespace Notifo.Domain.UserNotifications
 {
-    public class BaseUserNotification : IUserNotification, IIntegrationTarget
+    public class BaseUserNotification : IIntegrationTarget
     {
         public Guid Id { get; set; }
 

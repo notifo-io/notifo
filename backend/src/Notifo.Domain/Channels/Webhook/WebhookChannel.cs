@@ -20,6 +20,7 @@ namespace Notifo.Domain.Channels.Webhook
 {
     public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<WebhookJob>
     {
+        private const string WebhookId = nameof(WebhookId);
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IUserNotificationStore userNotificationStore;
         private readonly IUserNotificationQueue userNotificationQueue;
@@ -50,7 +51,7 @@ namespace Notifo.Domain.Channels.Webhook
             {
                 yield return new ChannelConfiguration
                 {
-                    ["WebhookId"] = id
+                    [WebhookId] = id
                 };
             }
         }
@@ -163,7 +164,7 @@ namespace Notifo.Domain.Channels.Webhook
             // We only track the initial publication.
             if (!job.IsUpdate)
             {
-                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.ConfigurationId, status, reason);
+                await userNotificationStore.TrackAsync(job.Tracking, status, reason);
             }
         }
 

@@ -67,10 +67,14 @@ namespace Notifo.Domain.UserNotifications
             return repository.DeleteAsync(id, ct);
         }
 
-        public Task<bool> IsHandledAsync(IChannelJob job, ICommunicationChannel channel,
+        public Task<bool> IsHandledAsync(ChannelJob job, ICommunicationChannel channel,
             CancellationToken ct = default)
         {
-            if (job == null || job.IsUpdate || job.Delay <= Duration.Zero || job.NotificationId == default)
+            Guard.NotNull(job);
+
+            var notificationId = job.Tracking.UserNotificationId;
+
+            if (job.IsUpdate || job.Delay <= Duration.Zero || notificationId == default)
             {
                 return Task.FromResult(false);
             }
@@ -78,11 +82,11 @@ namespace Notifo.Domain.UserNotifications
             switch (job.Condition)
             {
                 case ChannelCondition.IfNotConfirmed:
-                    return repository.IsHandledOrConfirmedAsync(job.NotificationId, channel.Name, job.ConfigurationId, ct);
+                    return repository.IsHandledOrConfirmedAsync(notificationId, channel.Name, job.ConfigurationId, ct);
                 case ChannelCondition.IfNotSeen:
-                    return repository.IsHandledOrSeenAsync(job.NotificationId, channel.Name, job.ConfigurationId, ct);
+                    return repository.IsHandledOrSeenAsync(notificationId, channel.Name, job.ConfigurationId, ct);
                 default:
-                    return repository.IsHandledAsync(job.NotificationId, channel.Name, job.ConfigurationId, ct);
+                    return repository.IsHandledAsync(notificationId, channel.Name, job.ConfigurationId, ct);
             }
         }
 
@@ -144,37 +148,29 @@ namespace Notifo.Domain.UserNotifications
             Guard.NotNull(notification);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Handled);
-            var counterKey = CounterKey.ForNotification(notification);
+            var counterKey = CounterKey.ForNotification(UserNotificationTrackingIdentifier.ForNotification(notification));
 
             return Task.WhenAll(
                 StoreCountersAsync(counterKey, counterMap, ct),
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task CollectAndUpdateAsync(IUserNotification notification, string channel, Guid configurationId, ProcessStatus status, string? detail = null,
+        public Task TrackAsync(UserNotificationTrackingIdentifier identifier, ProcessStatus status, string? detail = null,
             CancellationToken ct = default)
         {
-            Guard.NotNull(notification);
-            Guard.NotNullOrEmpty(channel);
+            Guard.NotNullOrEmpty(identifier.Channel);
 
-            var counterMap = CounterMap.ForChannel(channel, status);
-            var counterKey = CounterKey.ForNotification(notification);
+            var counterMap = CounterMap.ForChannel(identifier.Channel!, status);
+            var counterKey = CounterKey.ForNotification(identifier);
+
+            if (identifier.ConfigurationId == default)
+            {
+                return StoreCountersAsync(counterKey, counterMap, ct);
+            }
 
             return Task.WhenAll(
                 StoreCountersAsync(counterKey, counterMap, ct),
-                StoreInternalAsync(notification.Id, channel, configurationId, status, detail));
-        }
-
-        public Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,
-            CancellationToken ct = default)
-        {
-            Guard.NotNull(notification);
-            Guard.NotNullOrEmpty(channel);
-
-            var counterMap = CounterMap.ForChannel(channel, status);
-            var counterKey = CounterKey.ForNotification(notification);
-
-            return StoreCountersAsync(counterKey, counterMap, ct);
+                StoreInternalAsync(identifier.UserNotificationId, identifier.Channel!, identifier.ConfigurationId, status, detail));
         }
 
         private Task StoreCountersAsync(CounterKey key, CounterMap counterValues,

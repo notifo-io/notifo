@@ -75,7 +75,7 @@ namespace Notifo.Domain
 
             var result = TrackingToken.Parse(sourceString, "push", configurationId);
 
-            Assert.Equal(result, new TrackingToken(sourceToken.Id, "push", configurationId));
+            Assert.Equal(result, new TrackingToken(sourceToken.NotificationId, "push", configurationId));
         }
 
         [Fact]

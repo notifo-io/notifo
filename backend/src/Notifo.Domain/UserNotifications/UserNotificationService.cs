@@ -134,11 +134,19 @@ namespace Notifo.Domain.UserNotifications
 
                     foreach (var channel in channels)
                     {
-                        if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                        if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                         {
-                            foreach (var (id, status) in notificationChannel.Status)
+                            continue;
+                        }
+
+                        foreach (var (id, status) in notificationChannel.Status)
+                        {
+                            var configuration = status.Configuration;
+
+                            // Can be null for old status values.
+                            if (configuration != null)
                             {
-                                await channel.SendAsync(notification, notificationChannel.Setting, id, status.Configuration, options, default);
+                                await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, options, default);
                             }
                         }
                     }
@@ -208,12 +216,16 @@ namespace Notifo.Domain.UserNotifications
                         {
                             if (configuration != null)
                             {
-                                channelConfig.Status[Guid.NewGuid()] = new ChannelSendInfo
+                                var configurationId = Guid.NewGuid();
+
+                                channelConfig.Status[configurationId] = new ChannelSendInfo
                                 {
                                     Configuration = configuration
                                 };
 
-                                await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
+                                var identifier = UserNotificationTrackingIdentifier.ForNotification(notification, channel.Name, configurationId);
+
+                                await userNotificationsStore.TrackAsync(identifier, ProcessStatus.Attempt);
                             }
                         }
                     }
@@ -253,11 +265,19 @@ namespace Notifo.Domain.UserNotifications
 
                 foreach (var channel in channels)
                 {
-                    if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                    if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                     {
-                        foreach (var (id, status) in notificationChannel.Status)
+                        continue;
+                    }
+
+                    foreach (var (id, status) in notificationChannel.Status)
+                    {
+                        var configuration = status.Configuration;
+
+                        // Can be null for old status values.
+                        if (configuration != null)
                         {
-                            await channel.SendAsync(notification, notificationChannel.Setting, id, status.Configuration, options, ct);
+                            await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, options, ct);
                         }
                     }
                 }

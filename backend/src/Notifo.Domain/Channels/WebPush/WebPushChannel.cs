@@ -23,6 +23,7 @@ namespace Notifo.Domain.Channels.WebPush
 {
     public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<WebPushJob>, IWebPushService
     {
+        private const string Endpoint = nameof(Endpoint);
         private readonly WebPushClient webPushClient = new WebPushClient();
         private readonly IJsonSerializer serializer;
         private readonly ILogStore logStore;
@@ -69,7 +70,7 @@ namespace Notifo.Domain.Channels.WebPush
                 {
                     yield return new ChannelConfiguration
                     {
-                        ["Endpoint"] = subscription.Endpoint
+                        [Endpoint] = subscription.Endpoint
                     };
                 }
             }
@@ -78,7 +79,7 @@ namespace Notifo.Domain.Channels.WebPush
         public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
             CancellationToken ct)
         {
-            if (!properties.TryGetValue("Endpoint", out var endpoint))
+            if (!properties.TryGetValue(Endpoint, out var endpoint))
             {
                 // Old configuration without a mobile push token.
                 return;
@@ -158,7 +159,7 @@ namespace Notifo.Domain.Channels.WebPush
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, Name, ex.Message);
+                    await logStore.LogAsync(job.Tracking.AppId, Name, ex.Message);
                     throw;
                 }
             }
@@ -180,14 +181,14 @@ namespace Notifo.Domain.Channels.WebPush
             }
             catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
             {
-                await logStore.LogAsync(job.AppId, Name, Texts.WebPush_TokenRemoved);
+                await logStore.LogAsync(job.Tracking.AppId, Name, Texts.WebPush_TokenRemoved);
 
                 var command = new RemoveUserWebPushSubscription
                 {
                     Endpoint = job.Subscription.Endpoint
                 };
 
-                await userStore.UpsertAsync(job.AppId, job.UserId, command, ct);
+                await userStore.UpsertAsync(job.Tracking.AppId, job.Tracking.UserId, command, ct);
             }
             catch (WebPushException ex)
             {
@@ -200,7 +201,7 @@ namespace Notifo.Domain.Channels.WebPush
             // We only track the initial publication.
             if (!job.IsUpdate)
             {
-                await userNotificationStore.CollectAndUpdateAsync(job, Name, job.ConfigurationId, status, reason);
+                await userNotificationStore.TrackAsync(job.Tracking, status, reason);
             }
         }
     }

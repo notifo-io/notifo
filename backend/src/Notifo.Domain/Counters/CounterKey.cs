@@ -14,7 +14,7 @@ namespace Notifo.Domain.Counters
 {
     public struct CounterKey
     {
-        public Guid NotificationId { get; private set; }
+        public Guid UserNotificationId { get; private set; }
 
         public string? EventId { get; private set; }
 
@@ -51,17 +51,17 @@ namespace Notifo.Domain.Counters
             return result;
         }
 
-        public static CounterKey ForNotification(IUserNotification notification)
+        public static CounterKey ForNotification(UserNotificationTrackingIdentifier notification)
         {
             Guard.NotNull(notification);
 
             var result = default(CounterKey);
 
-            result.NotificationId = notification.Id;
             result.EventId = notification.EventId;
             result.AppId = notification.AppId;
             result.Topic = notification.Topic;
             result.UserId = notification.UserId;
+            result.UserNotificationId = notification.UserNotificationId;
 
             return result;
         }

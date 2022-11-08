@@ -16,7 +16,6 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using TagLib;
 using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Sms.SmsTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Sms.SmsJob>;
 
@@ -24,6 +23,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ISmsCallback
     {
+        private const string PhoneNumber = nameof(PhoneNumber);
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
         private readonly ILogger<SmsChannel> log;
@@ -64,7 +64,7 @@ namespace Notifo.Domain.Channels.Sms
             {
                 yield return new ChannelConfiguration
                 {
-                    ["PhoneNumber"] = options.User.PhoneNumber
+                    [PhoneNumber] = options.User.PhoneNumber
                 };
             }
         }
@@ -104,13 +104,15 @@ namespace Notifo.Domain.Channels.Sms
 
             if (status.Status == ProcessStatus.Attempt)
             {
+                var identifier = UserNotificationTrackingIdentifier.ForNotification(notification, Name, configurationId);
+
                 switch (result)
                 {
                     case SmsResult.Delivered:
-                        await UpdateAsync(notification, configurationId, ProcessStatus.Handled);
+                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
                         break;
                     case SmsResult.Failed:
-                        await UpdateAsync(notification, configurationId, ProcessStatus.Failed);
+                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
                         break;
                 }
             }
@@ -124,7 +126,7 @@ namespace Notifo.Domain.Channels.Sms
                 return;
             }
 
-            if (!properties.TryGetValue("PhoneNumber", out var phoneNumber))
+            if (!properties.TryGetValue(PhoneNumber, out var phoneNumber))
             {
                 // Old configuration without a phone number.
                 return;
@@ -144,7 +146,7 @@ namespace Notifo.Domain.Channels.Sms
 
         public Task HandleExceptionAsync(SmsJob job, Exception ex)
         {
-            return UpdateAsync(job, job.ConfigurationId, ProcessStatus.Failed);
+            return UpdateAsync(job, ProcessStatus.Failed);
         }
 
         public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
@@ -158,7 +160,7 @@ namespace Notifo.Domain.Channels.Sms
             {
                 if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
-                    await UpdateAsync(job, job.ConfigurationId, ProcessStatus.Skipped);
+                    await UpdateAsync(job, ProcessStatus.Skipped);
                 }
                 else
                 {
@@ -174,19 +176,19 @@ namespace Notifo.Domain.Channels.Sms
         {
             using (Telemetry.Activities.StartActivity("Send"))
             {
-                var app = await appStore.GetCachedAsync(job.AppId, ct);
+                var app = await appStore.GetCachedAsync(job.Tracking.AppId, ct);
 
                 if (app == null)
                 {
                     log.LogWarning("Cannot send email: App not found.");
 
-                    await UpdateAsync(job, job.ConfigurationId, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                     return;
                 }
 
                 try
                 {
-                    await UpdateAsync(job, job.ConfigurationId, ProcessStatus.Attempt);
+                    await UpdateAsync(job, ProcessStatus.Attempt);
 
                     var senders = integrationManager.Resolve<ISmsSender>(app, job).Select(x => x.Target).ToList();
 
@@ -200,7 +202,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, Name, ex.Message);
+                    await logStore.LogAsync(job.Tracking.AppId, Name, ex.Message);
                     throw;
                 }
             }
@@ -216,7 +218,7 @@ namespace Notifo.Domain.Channels.Sms
                 try
                 {
                     var (skip, template) = await GetTemplateAsync(
-                        job.AppId,
+                        job.Tracking.AppId,
                         job.TemplateLanguage,
                         job.TemplateName,
                         ct);
@@ -228,12 +230,12 @@ namespace Notifo.Domain.Channels.Sms
 
                     var text = smsFormatter.Format(template, job.PhoneText);
 
-                    var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Id.ToString(), ct);
+                    var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Tracking.UserNotificationId.ToString(), ct);
 
                     // Some integrations provide the actual result via webhook at a later point.
                     if (result == SmsResult.Delivered)
                     {
-                        await UpdateAsync(job, job.ConfigurationId, ProcessStatus.Handled);
+                        await UpdateAsync(job, ProcessStatus.Handled);
                         return;
                     }
 
@@ -245,7 +247,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, sender.Name, ex.Message);
+                    await logStore.LogAsync(job.Tracking.AppId, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {
@@ -262,16 +264,16 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        private Task UpdateAsync(IUserNotification notification, Guid configurationId, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(SmsJob job, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, configurationId, status, reason);
+            return userNotificationStore.TrackAsync(job.Tracking, status, reason);
         }
 
         private async Task SkipAsync(SmsJob job, string reason)
         {
-            await logStore.LogAsync(job.AppId, Name, reason);
+            await logStore.LogAsync(job.Tracking.AppId, Name, reason);
 
-            await UpdateAsync(job, job.ConfigurationId, ProcessStatus.Skipped);
+            await UpdateAsync(job, ProcessStatus.Skipped, reason);
         }
 
         private async Task<(string? Skip, SmsTemplate?)> GetTemplateAsync(

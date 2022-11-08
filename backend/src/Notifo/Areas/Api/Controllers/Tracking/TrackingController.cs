@@ -64,7 +64,7 @@ namespace Notifo.Areas.Api.Controllers.Tracking
 
             await userNotificationService.TrackConfirmedAsync(token);
 
-            var notification = await userNotificationStore.FindAsync(token.Id, HttpContext.RequestAborted);
+            var notification = await userNotificationStore.FindAsync(token.NotificationId, HttpContext.RequestAborted);
 
             if (notification == null)
             {

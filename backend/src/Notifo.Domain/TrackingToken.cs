@@ -11,9 +11,9 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain
 {
-    public record struct TrackingToken(Guid Id, string? Channel = null, Guid ConfigurationId = default)
+    public record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
     {
-        public readonly bool IsValid => Id != default;
+        public readonly bool IsValid => NotificationId != default;
 
         public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default)
         {
@@ -79,8 +79,8 @@ namespace Notifo.Domain
         {
             var compound =
                 ConfigurationId == default ?
-                $"{Id}|{Channel}" :
-                $"{Id}|{Channel}|{ConfigurationId}";
+                $"{NotificationId}|{Channel}" :
+                $"{NotificationId}|{Channel}|{ConfigurationId}";
 
             return compound.ToBase64();
         }

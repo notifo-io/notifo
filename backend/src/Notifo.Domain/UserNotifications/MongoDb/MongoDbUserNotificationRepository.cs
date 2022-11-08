@@ -290,7 +290,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 var entity =
                     await Collection.FindOneAndUpdateAsync(
                         Filter.And(
-                            Filter.Eq(x => x.Id, token.Id),
+                            Filter.Eq(x => x.Id, token.NotificationId),
                             Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
                             Filter.Exists(x => x.FirstConfirmed, false)),
                         Update

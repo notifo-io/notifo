@@ -24,6 +24,7 @@ namespace Notifo.Domain.Channels.Email
 {
     public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<EmailJob>
     {
+        private const string EmailAddress = nameof(EmailAddress);
         private readonly IAppStore appStore;
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;
@@ -70,7 +71,7 @@ namespace Notifo.Domain.Channels.Email
 
             yield return new ChannelConfiguration
             {
-                ["EmailAddress"] = options.User.EmailAddress
+                [EmailAddress] = options.User.EmailAddress
             };
         }
 
@@ -82,7 +83,7 @@ namespace Notifo.Domain.Channels.Email
                 return;
             }
 
-            if (!configuration.TryGetValue("EmailAddress", out var email))
+            if (!configuration.TryGetValue(EmailAddress, out var email))
             {
                 // Old configuration without a email address.
                 return;
@@ -115,7 +116,7 @@ namespace Notifo.Domain.Channels.Email
                 {
                     if (await userNotificationStore.IsHandledAsync(job, this, ct))
                     {
-                        await UpdateAsync(job.Notification, job.ConfigurationId, ProcessStatus.Skipped);
+                        await UpdateAsync(job, ProcessStatus.Skipped);
                     }
                     else
                     {
@@ -265,9 +266,9 @@ namespace Notifo.Domain.Channels.Email
             }
         }
 
-        private Task UpdateAsync(IUserNotification notification, Guid configurationId, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(EmailJob notification, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, configurationId, status, reason);
+            return userNotificationStore.TrackAsync(notification.Tracking, status, reason);
         }
 
         private async Task SkipAsync(List<EmailJob> jobs, string reason)
@@ -281,7 +282,7 @@ namespace Notifo.Domain.Channels.Email
         {
             foreach (var job in jobs)
             {
-                await UpdateAsync(job.Notification, job.ConfigurationId, status, reason);
+                await UpdateAsync(job, status, reason);
             }
         }
 

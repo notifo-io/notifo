@@ -22,6 +22,7 @@ namespace Notifo.Domain.Channels.MobilePush
 {
     public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>
     {
+        private const string MobilePushToken = nameof(MobilePushToken);
         private readonly IAppStore appStore;
         private readonly IClock clock;
         private readonly IIntegrationManager integrationManager;
@@ -64,7 +65,7 @@ namespace Notifo.Domain.Channels.MobilePush
                 {
                     yield return new ChannelConfiguration
                     {
-                        ["MobilePushToken"] = token.Token
+                        [MobilePushToken] = token.Token
                     };
                 }
             }
@@ -82,7 +83,7 @@ namespace Notifo.Domain.Channels.MobilePush
                     return;
                 }
 
-                var notification = await userNotificationStore.FindAsync(token.Id);
+                var notification = await userNotificationStore.FindAsync(token.NotificationId);
 
                 if (notification == null)
                 {
@@ -102,7 +103,7 @@ namespace Notifo.Domain.Channels.MobilePush
                     return;
                 }
 
-                if (!status.Configuration.TryGetValue("MobilePushToken", out var mobileToken))
+                if (status.Configuration?.TryGetValue(MobilePushToken, out var mobileToken) != true)
                 {
                     // The configuration has no token.
                     return;
@@ -131,7 +132,7 @@ namespace Notifo.Domain.Channels.MobilePush
         public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
             CancellationToken ct)
         {
-            if (!properties.TryGetValue("MobilePushToken", out var tokenString))
+            if (!properties.TryGetValue(MobilePushToken, out var tokenString))
             {
                 // Old configuration without a mobile push token.
                 return;
@@ -340,7 +341,7 @@ namespace Notifo.Domain.Channels.MobilePush
             // We only track the initial publication.
             if (!job.IsUpdate)
             {
-                await userNotificationStore.CollectAndUpdateAsync(job.Notification, Name, job.ConfigurationId, status, reason);
+                await userNotificationStore.TrackAsync(job.Tracking, status, reason);
             }
         }
 

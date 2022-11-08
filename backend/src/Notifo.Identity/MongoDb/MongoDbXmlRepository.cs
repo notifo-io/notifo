@@ -39,10 +39,10 @@ namespace Notifo.Identity.MongoDb
         {
             var document = new MongoDbXmlEntity
             {
-                FriendlyName = friendlyName
+                FriendlyName = friendlyName,
+                // Serialize the XML to a string value.
+                Xml = element.ToString()
             };
-
-            document.Xml = element.ToString();
 
             Collection.ReplaceOne(x => x.FriendlyName == friendlyName, document, UpsertReplace);
         }
