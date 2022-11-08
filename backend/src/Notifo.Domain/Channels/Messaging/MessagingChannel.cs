@@ -52,7 +52,7 @@ namespace Notifo.Domain.Channels.Messaging
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             // Faster check because it does not allocate integrations.
             if (!integrationManager.IsConfigured<IMessagingSender>(options.App, notification))
@@ -65,7 +65,7 @@ namespace Notifo.Domain.Channels.Messaging
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
             if (senders.Any(x => x.Target.HasTarget(options.User)))
             {
-                yield return new ChannelProperties();
+                yield return new ChannelConfiguration();
             }
         }
 
@@ -121,7 +121,7 @@ namespace Notifo.Domain.Channels.Messaging
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration configuration, SendOptions options,
             CancellationToken ct)
         {
             if (options.IsUpdate)

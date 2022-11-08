@@ -7,9 +7,9 @@
 
 namespace Notifo.Domain.Channels
 {
-    public sealed class ChannelProperties : Dictionary<string, string>
+    public sealed class ChannelConfiguration : Dictionary<string, string>
     {
-        public ChannelProperties()
+        public ChannelConfiguration()
             : base(StringComparer.OrdinalIgnoreCase)
         {
         }

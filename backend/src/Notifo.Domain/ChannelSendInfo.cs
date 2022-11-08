@@ -12,7 +12,7 @@ namespace Notifo.Domain
 {
     public sealed class ChannelSendInfo
     {
-        public ChannelProperties? Configuration { get; init; }
+        public ChannelConfiguration? Configuration { get; init; }
 
         public ProcessStatus Status { get; init; }
 

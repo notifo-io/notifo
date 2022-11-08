@@ -53,7 +53,7 @@ namespace Notifo.Domain.Channels.Sms
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (!integrationManager.IsConfigured<ISmsSender>(options.App, notification))
             {
@@ -62,7 +62,7 @@ namespace Notifo.Domain.Channels.Sms
 
             if (!string.IsNullOrWhiteSpace(options.User.PhoneNumber))
             {
-                yield return new ChannelProperties
+                yield return new ChannelConfiguration
                 {
                     ["PhoneNumber"] = options.User.PhoneNumber
                 };
@@ -116,7 +116,7 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
             CancellationToken ct)
         {
             if (options.IsUpdate)

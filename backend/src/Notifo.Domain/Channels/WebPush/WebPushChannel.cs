@@ -54,7 +54,7 @@ namespace Notifo.Domain.Channels.WebPush
             PublicKey = options.Value.VapidPublicKey;
         }
 
-        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (notification.Silent)
             {
@@ -67,7 +67,7 @@ namespace Notifo.Domain.Channels.WebPush
                     subscription.Keys.ContainsKey("p256dh") &&
                     subscription.Keys.ContainsKey("auth"))
                 {
-                    yield return new ChannelProperties
+                    yield return new ChannelConfiguration
                     {
                         ["Endpoint"] = subscription.Endpoint
                     };
@@ -75,7 +75,7 @@ namespace Notifo.Domain.Channels.WebPush
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
             CancellationToken ct)
         {
             if (!properties.TryGetValue("Endpoint", out var endpoint))

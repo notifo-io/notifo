@@ -42,13 +42,13 @@ namespace Notifo.Domain.Channels.Webhook
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting setting, SendOptions options)
+        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting setting, SendOptions options)
         {
             var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification);
 
             foreach (var (id, _) in webhooks)
             {
-                yield return new ChannelProperties
+                yield return new ChannelConfiguration
                 {
                     ["WebhookId"] = id
                 };
@@ -60,7 +60,7 @@ namespace Notifo.Domain.Channels.Webhook
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
             CancellationToken ct)
         {
             if (!properties.TryGetValue("WebhookId", out var webhookId))

@@ -51,7 +51,7 @@ namespace Notifo.Domain.Channels.MobilePush
             this.clock = clock;
         }
 
-        public IEnumerable<ChannelProperties> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
         {
             if (!integrationManager.IsConfigured<IMobilePushSender>(options.App, notification))
             {
@@ -62,7 +62,7 @@ namespace Notifo.Domain.Channels.MobilePush
             {
                 if (!string.IsNullOrWhiteSpace(token.Token))
                 {
-                    yield return new ChannelProperties
+                    yield return new ChannelConfiguration
                     {
                         ["MobilePushToken"] = token.Token
                     };
@@ -128,7 +128,7 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelProperties properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
             CancellationToken ct)
         {
             if (!properties.TryGetValue("MobilePushToken", out var tokenString))
