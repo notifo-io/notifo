@@ -183,16 +183,18 @@ public sealed class MongoDbUserStore :
     {
         Guard.NotNullOrEmpty(email);
 
-        return new MongoDbUser { Email = email, UserName = email, Id = null };
+        return new MongoDbUser { Email = email, UserName = email, Id = null! };
     }
 
-    public async Task<IdentityUser> FindByIdAsync(string userId,
+    public async Task<IdentityUser?> FindByIdAsync(string userId,
         CancellationToken cancellationToken)
     {
-        return await Collection.Find(x => x.Id == userId).FirstOrDefaultAsync(cancellationToken);
+        var result = await Collection.Find(x => x.Id == userId).FirstOrDefaultAsync(cancellationToken);
+
+        return result;
     }
 
-    public async Task<IdentityUser> FindByEmailAsync(string normalizedEmail,
+    public async Task<IdentityUser?> FindByEmailAsync(string normalizedEmail,
         CancellationToken cancellationToken)
     {
         var result = await Collection.Find(x => x.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync(cancellationToken);
@@ -200,7 +202,7 @@ public sealed class MongoDbUserStore :
         return result;
     }
 
-    public async Task<IdentityUser> FindByNameAsync(string normalizedUserName,
+    public async Task<IdentityUser?> FindByNameAsync(string normalizedUserName,
         CancellationToken cancellationToken)
     {
         var result = await Collection.Find(x => x.NormalizedEmail == normalizedUserName).FirstOrDefaultAsync(cancellationToken);
@@ -208,7 +210,7 @@ public sealed class MongoDbUserStore :
         return result;
     }
 
-    public async Task<IdentityUser> FindByLoginAsync(string loginProvider, string providerKey,
+    public async Task<IdentityUser?> FindByLoginAsync(string loginProvider, string providerKey,
         CancellationToken cancellationToken)
     {
         var result = await Collection.Find(x => x.Logins.Any(y => y.LoginProvider == loginProvider && y.ProviderKey == providerKey)).FirstOrDefaultAsync(cancellationToken);
@@ -266,7 +268,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task<string> GetUserNameAsync(IdentityUser user,
+    public Task<string?> GetUserNameAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.UserName;
@@ -274,7 +276,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task<string> GetNormalizedUserNameAsync(IdentityUser user,
+    public Task<string?> GetNormalizedUserNameAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.NormalizedUserName;
@@ -282,7 +284,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task<string> GetPasswordHashAsync(IdentityUser user,
+    public Task<string?> GetPasswordHashAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.PasswordHash;
@@ -314,7 +316,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult<IList<UserLoginInfo>>(result);
     }
 
-    public Task<string> GetSecurityStampAsync(IdentityUser user,
+    public Task<string?> GetSecurityStampAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.SecurityStamp;
@@ -322,7 +324,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task<string> GetEmailAsync(IdentityUser user,
+    public Task<string?> GetEmailAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.Email;
@@ -338,7 +340,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task<string> GetNormalizedEmailAsync(IdentityUser user,
+    public Task<string?> GetNormalizedEmailAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.NormalizedEmail;
@@ -354,7 +356,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult<IList<Claim>>(result);
     }
 
-    public Task<string> GetPhoneNumberAsync(IdentityUser user,
+    public Task<string?> GetPhoneNumberAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = user.PhoneNumber;
@@ -402,20 +404,20 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task<string> GetTokenAsync(IdentityUser user, string loginProvider, string name,
+    public Task<string?> GetTokenAsync(IdentityUser user, string loginProvider, string name,
         CancellationToken cancellationToken)
     {
         var result = ((MongoDbUser)user).GetToken(loginProvider, name)!;
 
-        return Task.FromResult(result);
+        return Task.FromResult<string?>(result);
     }
 
-    public Task<string> GetAuthenticatorKeyAsync(IdentityUser user,
+    public Task<string?> GetAuthenticatorKeyAsync(IdentityUser user,
         CancellationToken cancellationToken)
     {
         var result = ((MongoDbUser)user).GetToken(InternalLoginProvider, AuthenticatorKeyTokenName)!;
 
-        return Task.FromResult(result);
+        return Task.FromResult<string?>(result);
     }
 
     public Task<bool> HasPasswordAsync(IdentityUser user,
@@ -434,7 +436,7 @@ public sealed class MongoDbUserStore :
         return Task.FromResult(result);
     }
 
-    public Task SetUserNameAsync(IdentityUser user, string userName,
+    public Task SetUserNameAsync(IdentityUser user, string? userName,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).UserName = userName;
@@ -442,7 +444,7 @@ public sealed class MongoDbUserStore :
         return Task.CompletedTask;
     }
 
-    public Task SetNormalizedUserNameAsync(IdentityUser user, string normalizedName,
+    public Task SetNormalizedUserNameAsync(IdentityUser user, string? normalizedName,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).NormalizedUserName = normalizedName;
@@ -450,7 +452,7 @@ public sealed class MongoDbUserStore :
         return Task.CompletedTask;
     }
 
-    public Task SetPasswordHashAsync(IdentityUser user, string passwordHash,
+    public Task SetPasswordHashAsync(IdentityUser user, string? passwordHash,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).PasswordHash = passwordHash;
@@ -498,7 +500,7 @@ public sealed class MongoDbUserStore :
         return Task.CompletedTask;
     }
 
-    public Task SetEmailAsync(IdentityUser user, string email,
+    public Task SetEmailAsync(IdentityUser user, string? email,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).Email = email;
@@ -514,7 +516,7 @@ public sealed class MongoDbUserStore :
         return Task.CompletedTask;
     }
 
-    public Task SetNormalizedEmailAsync(IdentityUser user, string normalizedEmail,
+    public Task SetNormalizedEmailAsync(IdentityUser user, string? normalizedEmail,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).NormalizedEmail = normalizedEmail;
@@ -546,7 +548,7 @@ public sealed class MongoDbUserStore :
         return Task.CompletedTask;
     }
 
-    public Task SetPhoneNumberAsync(IdentityUser user, string phoneNumber,
+    public Task SetPhoneNumberAsync(IdentityUser user, string? phoneNumber,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).PhoneNumber = phoneNumber;
@@ -602,7 +604,7 @@ public sealed class MongoDbUserStore :
         return Task.CompletedTask;
     }
 
-    public Task SetTokenAsync(IdentityUser user, string loginProvider, string name, string value,
+    public Task SetTokenAsync(IdentityUser user, string loginProvider, string name, string? value,
         CancellationToken cancellationToken)
     {
         ((MongoDbUser)user).ReplaceToken(loginProvider, name, value);

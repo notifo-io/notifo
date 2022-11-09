@@ -81,7 +81,7 @@ public class DefaultUserServiceTests
     {
         var identity = CreateIdentity(found: true);
 
-        var result = await sut.FindByEmailAsync(identity.Email, ct);
+        var result = await sut.FindByEmailAsync(identity.Email!, ct);
 
         Assert.Same(identity, result?.Identity);
     }
@@ -91,7 +91,7 @@ public class DefaultUserServiceTests
     {
         var identity = CreateIdentity(found: false);
 
-        var result = await sut.FindByEmailAsync(identity.Email, ct);
+        var result = await sut.FindByEmailAsync(identity.Email!, ct);
 
         Assert.Null(result);
     }
@@ -121,7 +121,7 @@ public class DefaultUserServiceTests
         CreateIdentity(found: false);
 
         A.CallTo(() => userManager.FindByLoginAsync(provider, providerKey))
-            .Returns(Task.FromResult<IdentityUser>(null!));
+            .Returns(Task.FromResult<IdentityUser?>(null));
 
         var result = await sut.FindByLoginAsync(provider, providerKey, ct);
 
@@ -173,12 +173,12 @@ public class DefaultUserServiceTests
 
         var values = new UserValues
         {
-            Email = identity.Email
+            Email = identity.Email!
         };
 
         SetupCreation(identity, 1);
 
-        await sut.CreateAsync(values.Email, values, ct: ct);
+        await sut.CreateAsync(values.Email!, values, ct: ct);
 
         A.CallTo(() => userEvents.OnUserRegisteredAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
             .MustHaveHappened();
@@ -208,7 +208,7 @@ public class DefaultUserServiceTests
 
         SetupCreation(identity, 1);
 
-        await sut.CreateAsync(identity.Email, values, ct: ct);
+        await sut.CreateAsync(identity.Email!, values, ct: ct);
 
         A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
             .MustHaveHappened();
@@ -226,7 +226,7 @@ public class DefaultUserServiceTests
 
         SetupCreation(identity, 0);
 
-        await sut.CreateAsync(identity.Email, values, ct: ct);
+        await sut.CreateAsync(identity.Email!, values, ct: ct);
 
         A.CallTo(() => userManager.AddToRoleAsync(identity, NotifoRoles.HostAdmin))
             .MustHaveHappened();
@@ -244,7 +244,7 @@ public class DefaultUserServiceTests
 
         SetupCreation(identity, 0);
 
-        await sut.CreateAsync(identity.Email, values, true, ct);
+        await sut.CreateAsync(identity.Email!, values, true, ct);
 
         A.CallTo(() => userManager.SetLockoutEndDateAsync(identity, A<DateTimeOffset>._))
             .MustNotHaveHappened();
@@ -262,7 +262,7 @@ public class DefaultUserServiceTests
 
         SetupCreation(identity, 1);
 
-        await sut.CreateAsync(identity.Email, values, true, ct);
+        await sut.CreateAsync(identity.Email!, values, true, ct);
 
         A.CallTo(() => userManager.SetLockoutEndDateAsync(identity, InFuture()))
             .MustHaveHappened();
@@ -280,7 +280,7 @@ public class DefaultUserServiceTests
 
         SetupCreation(identity, 1);
 
-        await sut.CreateAsync(identity.Email, values, ct: ct);
+        await sut.CreateAsync(identity.Email!, values, ct: ct);
 
         A.CallTo(() => userManager.AddPasswordAsync(identity, values.Password))
             .MustHaveHappened();
@@ -588,16 +588,16 @@ public class DefaultUserServiceTests
             A.CallTo(() => userManager.FindByIdAsync(identity.Id))
                 .Returns(identity);
 
-            A.CallTo(() => userManager.FindByEmailAsync(identity.Email))
+            A.CallTo(() => userManager.FindByEmailAsync(identity.Email!))
                 .Returns(identity);
         }
         else
         {
             A.CallTo(() => userManager.FindByIdAsync(identity.Id))
-                .Returns(Task.FromResult<IdentityUser>(null!));
+                .Returns(Task.FromResult<IdentityUser?>(null));
 
-            A.CallTo(() => userManager.FindByEmailAsync(identity.Email))
-                .Returns(Task.FromResult<IdentityUser>(null!));
+            A.CallTo(() => userManager.FindByEmailAsync(identity.Email!))
+                .Returns(Task.FromResult<IdentityUser?>(null));
         }
 
         return identity;
@@ -615,7 +615,7 @@ public class DefaultUserServiceTests
         A.CallTo(() => userManager.Users)
             .Returns(users.AsQueryable());
 
-        A.CallTo(() => userFactory.Create(identity.Email))
+        A.CallTo(() => userFactory.Create(identity.Email!))
             .Returns(identity);
     }
 

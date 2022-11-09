@@ -14,7 +14,6 @@ public sealed class EmailNotification
 {
     private readonly BaseUserNotification notification;
     private readonly Guid configurationId;
-    private readonly string? emailAddress;
     private readonly IImageFormatter imageFormatter;
     private string? confirmUrl;
     private string? imageLarge;
@@ -57,11 +56,10 @@ public sealed class EmailNotification
         get => imageLarge ??= notification.ImageLarge(imageFormatter, "EmailSmall");
     }
 
-    public EmailNotification(BaseUserNotification notification, Guid configurationId, string? emailAddress, IImageFormatter imageFormatter)
+    public EmailNotification(BaseUserNotification notification, Guid configurationId, IImageFormatter imageFormatter)
     {
         this.notification = notification;
         this.configurationId = configurationId;
-        this.emailAddress = emailAddress;
         this.imageFormatter = imageFormatter;
     }
 

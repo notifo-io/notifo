@@ -77,7 +77,7 @@ public static class AssetsServiceExtensions
             },
             ["AmazonS3"] = () =>
             {
-                var amazonS3Options = config.GetSection("assetStore:amazonS3").Get<AmazonS3AssetOptions>();
+                var amazonS3Options = config.GetSection("assetStore:amazonS3").Get<AmazonS3AssetOptions>() ?? new AmazonS3AssetOptions();
 
                 services.AddSingletonAs(c => new AmazonS3AssetStore(amazonS3Options))
                     .As<IAssetStore>();
@@ -109,12 +109,12 @@ public static class AssetsServiceExtensions
 
                 var options = new FTPAssetOptions
                 {
-                    Path = config.GetOptionalValue("assetStore:ftp:path", "/")
+                    Path = config.GetOptionalValue("assetStore:ftp:path", "/")!
                 };
 
                 services.AddSingletonAs(c =>
                 {
-                    var factory = new Func<FtpClient>(() => new FtpClient(serverHost, serverPort, username, password));
+                    var factory = new Func<AsyncFtpClient>(() => new AsyncFtpClient(serverHost, username, password, serverPort));
 
                     return new FTPAssetStore(factory, options, c.GetRequiredService<ILogger<FTPAssetStore>>());
                 })

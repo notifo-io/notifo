@@ -29,6 +29,6 @@ internal static class ConditionParser
             var parser = new JavaScriptParser(script, DefaultParserOptions);
 
             return parser.ParseScript();
-        });
+        })!;
     }
 }

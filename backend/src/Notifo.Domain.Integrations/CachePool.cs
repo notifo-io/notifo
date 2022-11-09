@@ -64,6 +64,6 @@ public abstract class CachePool<TItem>
             }
 
             return item;
-        });
+        })!;
     }
 }

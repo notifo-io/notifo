@@ -16,7 +16,7 @@ public class SmtpEmailServerTests : EmailSenderTestBase
 {
     protected override IEmailSender CreateSender()
     {
-        var options = TestHelpers.Configuration.GetSection("email:smtp").Get<SmtpOptions>();
+        var options = TestHelpers.Configuration.GetSection("email:smtp").Get<SmtpOptions>() ?? new SmtpOptions();
 
         return new SmtpEmailSender(() => new SmtpEmailServer(options), Address, Address);
     }

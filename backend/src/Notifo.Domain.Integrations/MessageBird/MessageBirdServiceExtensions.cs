@@ -18,7 +18,7 @@ public static class MessageBirdServiceExtensions
     {
         const string key = "sms:messageBird";
 
-        var options = config.GetSection(key).Get<MessageBirdOptions>();
+        var options = config.GetSection(key).Get<MessageBirdOptions>() ?? new MessageBirdOptions();
 
         if (options.IsValid())
         {

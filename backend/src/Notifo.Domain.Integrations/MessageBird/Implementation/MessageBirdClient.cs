@@ -186,27 +186,48 @@ public sealed class MessageBirdClient : IMessageBirdClient
 
         if (query.TryGetValue("id", out var id))
         {
-            result.Id = id;
+            string? value = id;
+
+            if (value != null)
+            {
+                result.Id = value;
+            }
         }
 
         if (query.TryGetValue("recipient", out var recipient))
         {
-            result.Recipient = recipient;
+            string? value = recipient;
+
+            if (value != null)
+            {
+                result.Recipient = value;
+            }
         }
 
         if (query.TryGetValue("reference", out var reference))
         {
-            result.Reference = reference;
+            string? value = reference;
+
+            if (value != null)
+            {
+                result.Reference = value;
+            }
         }
 
-        if (query.TryGetValue("status", out var statusString) && Enum.TryParse<MessageBirdStatus>(statusString, true, out var status))
+        if (query.TryGetValue("status", out var status))
         {
-            result.Status = status;
+            if (Enum.TryParse<MessageBirdStatus>(status, true, out var value))
+            {
+                result.Status = value;
+            }
         }
 
-        if (query.TryGetValue("statusErrorCode", out var codeString) && int.TryParse(codeString, NumberStyles.Integer, CultureInfo.InvariantCulture, out var code))
+        if (query.TryGetValue("statusErrorCode", out var code))
         {
-            result.StatusErrorCode = code;
+            if (int.TryParse(code, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value))
+            {
+                result.StatusErrorCode = value;
+            }
         }
 
         return Task.FromResult(result);
@@ -220,7 +241,12 @@ public sealed class MessageBirdClient : IMessageBirdClient
 
         foreach (var (key, value) in query)
         {
-            result.Query[key] = value;
+            string? valueString = value;
+
+            if (valueString != null)
+            {
+                result.Query[key] = valueString;
+            }
         }
 
         return result;
