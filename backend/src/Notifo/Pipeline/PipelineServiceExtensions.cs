@@ -11,62 +11,61 @@ using Microsoft.Net.Http.Headers;
 using Notifo.Infrastructure.Diagnostics;
 using Notifo.Infrastructure.Json;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+public static class PipelineServiceExtensions
 {
-    public static class PipelineServiceExtensions
+    public static void AddMyWebPipeline(this IServiceCollection services, IConfiguration config)
     {
-        public static void AddMyWebPipeline(this IServiceCollection services, IConfiguration config)
+        services.Configure<DiagnoserOptions>(config, "diagnostics");
+        services.Configure<GCHealthCheckOptions>(config, "diagnostics:gc");
+
+        services.AddHealthChecks()
+            .AddCheck<GCHealthCheck>("gc");
+
+        services.AddSingletonAs<Diagnoser>()
+            .AsSelf();
+
+        services.AddSingletonAs<FileCallbackResultExecutor>()
+            .AsSelf();
+    }
+
+    public static IApplicationBuilder UseMyHealthChecks(this IApplicationBuilder app)
+    {
+        var serializer = app.ApplicationServices.GetRequiredService<IJsonSerializer>();
+
+        var writer = new Func<HttpContext, HealthReport, Task>((httpContext, report) =>
         {
-            services.Configure<DiagnoserOptions>(config, "diagnostics");
-            services.Configure<GCHealthCheckOptions>(config, "diagnostics:gc");
-
-            services.AddHealthChecks()
-                .AddCheck<GCHealthCheck>("gc");
-
-            services.AddSingletonAs<Diagnoser>()
-                .AsSelf();
-
-            services.AddSingletonAs<FileCallbackResultExecutor>()
-                .AsSelf();
-        }
-
-        public static IApplicationBuilder UseMyHealthChecks(this IApplicationBuilder app)
-        {
-            var serializer = app.ApplicationServices.GetRequiredService<IJsonSerializer>();
-
-            var writer = new Func<HttpContext, HealthReport, Task>((httpContext, report) =>
+            var response = new
             {
-                var response = new
+                Entries = report.Entries.ToDictionary(x => x.Key, x =>
                 {
-                    Entries = report.Entries.ToDictionary(x => x.Key, x =>
+                    var value = x.Value;
+
+                    return new
                     {
-                        var value = x.Value;
+                        Data = value.Data.Count > 0 ? new Dictionary<string, object>(value.Data) : null,
+                        value.Description,
+                        value.Duration,
+                        value.Status
+                    };
+                }),
+                report.Status,
+                report.TotalDuration
+            };
 
-                        return new
-                        {
-                            Data = value.Data.Count > 0 ? new Dictionary<string, object>(value.Data) : null,
-                            value.Description,
-                            value.Duration,
-                            value.Status
-                        };
-                    }),
-                    report.Status,
-                    report.TotalDuration
-                };
+            var json = serializer.SerializeToString(response);
 
-                var json = serializer.SerializeToString(response);
+            httpContext.Response.Headers[HeaderNames.ContentType] = "text/json";
 
-                httpContext.Response.Headers[HeaderNames.ContentType] = "text/json";
+            return httpContext.Response.WriteAsync(json);
+        });
 
-                return httpContext.Response.WriteAsync(json);
-            });
+        app.UseHealthChecks("/healthz", new HealthCheckOptions
+        {
+            ResponseWriter = writer
+        });
 
-            app.UseHealthChecks("/healthz", new HealthCheckOptions
-            {
-                ResponseWriter = writer
-            });
-
-            return app;
-        }
+        return app;
     }
 }

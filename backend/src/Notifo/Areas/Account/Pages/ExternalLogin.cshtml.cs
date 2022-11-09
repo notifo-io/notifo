@@ -16,166 +16,165 @@ using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationExc
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Pages;
+
+public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
 {
-    public sealed class ExternalLoginModel : PageModelBase<ExternalLoginModel>
+    public string LoginProvider { get; set; }
+
+    public string TermsOfServiceUrl { get; set; }
+
+    public string PrivacyPolicyUrl { get; set; }
+
+    public bool MustAcceptsTermsOfService { get; set; } = true;
+
+    public bool MustAcceptsPrivacyPolicy { get; set; } = true;
+
+    [BindProperty]
+    public ConfirmationModel Model { get; set; } = new ConfirmationModel();
+
+    public IActionResult OnGet()
     {
-        public string LoginProvider { get; set; }
+        return RedirectToPage("./Login");
+    }
 
-        public string TermsOfServiceUrl { get; set; }
+    public async Task<IActionResult> OnGetCallback(string? remoteError = null)
+    {
+        if (remoteError != null)
+        {
+            ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
+            return default!;
+        }
 
-        public string PrivacyPolicyUrl { get; set; }
+        var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
 
-        public bool MustAcceptsTermsOfService { get; set; } = true;
-
-        public bool MustAcceptsPrivacyPolicy { get; set; } = true;
-
-        [BindProperty]
-        public ConfirmationModel Model { get; set; } = new ConfirmationModel();
-
-        public IActionResult OnGet()
+        if (loginInfo == null)
         {
             return RedirectToPage("./Login");
         }
 
-        public async Task<IActionResult> OnGetCallback(string? remoteError = null)
+        var result = await SignInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
+
+        if (result.Succeeded)
         {
-            if (remoteError != null)
-            {
-                ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
-                return default!;
-            }
+            return RedirectTo(ReturnUrl);
+        }
+        else if (result.IsLockedOut)
+        {
+            return RedirectToPage("./Lockout");
+        }
 
-            var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
+        LoginProvider = loginInfo.LoginProvider;
 
-            if (loginInfo == null)
-            {
-                return RedirectToPage("./Login");
-            }
+        var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
 
-            var result = await SignInManager.ExternalLoginSignInAsync(loginInfo.LoginProvider, loginInfo.ProviderKey, false);
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            var errorMessage = T["GithubEmailPrivateError"];
 
-            if (result.Succeeded)
-            {
-                return RedirectTo(ReturnUrl);
-            }
-            else if (result.IsLockedOut)
-            {
-                return RedirectToPage("./Lockout");
-            }
+            return RedirectToPage("./Login", new { errorMessage });
+        }
 
-            LoginProvider = loginInfo.LoginProvider;
+        loginInfo.ProviderDisplayName = email;
 
-            var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
+        var existingUser = await UserService.FindByEmailAsync(email, HttpContext.RequestAborted);
 
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                var errorMessage = T["GithubEmailPrivateError"];
+        if (existingUser != null && await HasLoginAsync(existingUser))
+        {
+            var errorMessage = T["ExternalLoginEmailUsed"];
 
-                return RedirectToPage("./Login", new { errorMessage });
-            }
+            return RedirectToPage("./Login", new { errorMessage });
+        }
 
-            loginInfo.ProviderDisplayName = email;
+        return Page();
+    }
 
-            var existingUser = await UserService.FindByEmailAsync(email, HttpContext.RequestAborted);
+    public IActionResult OnPost(string provider)
+    {
+        var challengeRedirectUrl = Url.Page(null, "Callback", new { ReturnUrl });
+        var challengeProperties = SignInManager.ConfigureExternalAuthenticationProperties(provider, challengeRedirectUrl);
 
-            if (existingUser != null && await HasLoginAsync(existingUser))
-            {
-                var errorMessage = T["ExternalLoginEmailUsed"];
+        return Challenge(challengeProperties, provider);
+    }
 
-                return RedirectToPage("./Login", new { errorMessage });
-            }
+    public async Task<IActionResult> OnPostConfirmation()
+    {
+        if (MustAcceptsPrivacyPolicy && !Model.AcceptPrivacyPolicy)
+        {
+            var field = nameof(Model.AcceptPrivacyPolicy);
 
+            ModelState.AddModelError($"{nameof(Model)}.{field}", T[$"{field}Error"]!);
+        }
+
+        if (MustAcceptsTermsOfService && !Model.AcceptTermsOfService)
+        {
+            var field = nameof(Model.AcceptTermsOfService);
+
+            ModelState.AddModelError($"{nameof(Model)}.{field}", T[$"{field}Error"]!);
+        }
+
+        if (!ModelState.IsValid)
+        {
             return Page();
         }
 
-        public IActionResult OnPost(string provider)
-        {
-            var challengeRedirectUrl = Url.Page(null, "Callback", new { ReturnUrl });
-            var challengeProperties = SignInManager.ConfigureExternalAuthenticationProperties(provider, challengeRedirectUrl);
+        var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
 
-            return Challenge(challengeProperties, provider);
+        if (loginInfo == null)
+        {
+            ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
+            return default!;
         }
 
-        public async Task<IActionResult> OnPostConfirmation()
+        var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrWhiteSpace(email))
         {
-            if (MustAcceptsPrivacyPolicy && !Model.AcceptPrivacyPolicy)
-            {
-                var field = nameof(Model.AcceptPrivacyPolicy);
+            var errorMessage = T["GithubEmailPrivateError"];
 
-                ModelState.AddModelError($"{nameof(Model)}.{field}", T[$"{field}Error"]!);
-            }
-
-            if (MustAcceptsTermsOfService && !Model.AcceptTermsOfService)
-            {
-                var field = nameof(Model.AcceptTermsOfService);
-
-                ModelState.AddModelError($"{nameof(Model)}.{field}", T[$"{field}Error"]!);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            var loginInfo = await SignInManager.GetExternalLoginInfoAsync();
-
-            if (loginInfo == null)
-            {
-                ThrowHelper.InvalidOperationException(T["ExternalLoginError"]);
-                return default!;
-            }
-
-            var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
-
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                var errorMessage = T["GithubEmailPrivateError"];
-
-                return RedirectToPage("./Login", new { errorMessage });
-            }
-
-            loginInfo.ProviderDisplayName = email;
-
-            IUser user;
-            try
-            {
-                user = await UserService.CreateAsync(email, ct: HttpContext.RequestAborted);
-
-                await UserService.AddLoginAsync(user.Id, loginInfo, HttpContext.RequestAborted);
-            }
-            catch (NotifoValidationException ex)
-            {
-                ModelState.AddModelError(string.Empty, ex.Errors[0].Message);
-                return Page();
-            }
-
-            await SignInManager.SignInAsync((IdentityUser)user.Identity, false);
-
-            return RedirectTo(ReturnUrl);
+            return RedirectToPage("./Login", new { errorMessage });
         }
 
-        private async Task<bool> HasLoginAsync(IUser user)
+        loginInfo.ProviderDisplayName = email;
+
+        IUser user;
+        try
         {
-            if (await UserService.HasPasswordAsync(user, HttpContext.RequestAborted))
-            {
-                return true;
-            }
+            user = await UserService.CreateAsync(email, ct: HttpContext.RequestAborted);
 
-            var logins = await UserService.GetLoginsAsync(user, HttpContext.RequestAborted);
-
-            return logins.Count > 0;
+            await UserService.AddLoginAsync(user.Id, loginInfo, HttpContext.RequestAborted);
         }
+        catch (NotifoValidationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Errors[0].Message);
+            return Page();
+        }
+
+        await SignInManager.SignInAsync((IdentityUser)user.Identity, false);
+
+        return RedirectTo(ReturnUrl);
     }
 
-    public sealed class ConfirmationModel
+    private async Task<bool> HasLoginAsync(IUser user)
     {
-        [Required]
-        [Display(Name = nameof(AcceptPrivacyPolicy))]
-        public bool AcceptPrivacyPolicy { get; set; }
+        if (await UserService.HasPasswordAsync(user, HttpContext.RequestAborted))
+        {
+            return true;
+        }
 
-        [Required]
-        [Display(Name = nameof(AcceptTermsOfService))]
-        public bool AcceptTermsOfService { get; set; }
+        var logins = await UserService.GetLoginsAsync(user, HttpContext.RequestAborted);
+
+        return logins.Count > 0;
     }
+}
+
+public sealed class ConfirmationModel
+{
+    [Required]
+    [Display(Name = nameof(AcceptPrivacyPolicy))]
+    public bool AcceptPrivacyPolicy { get; set; }
+
+    [Required]
+    [Display(Name = nameof(AcceptTermsOfService))]
+    public bool AcceptTermsOfService { get; set; }
 }

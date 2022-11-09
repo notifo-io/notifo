@@ -8,32 +8,31 @@
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
+
+public class UpdateChannelTemplateDto<TDto>
 {
-    public class UpdateChannelTemplateDto<TDto>
+    /// <summary>
+    /// The name of the template.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// True, when the template is the primary template.
+    /// </summary>
+    public bool? Primary { get; set; }
+
+    /// <summary>
+    /// The language specific templates.
+    /// </summary>
+    public Dictionary<string, TDto>? Languages { get; set; }
+
+    public UpdateChannelTemplate<T> ToUpdate<T>(Func<TDto, T> mapper)
     {
-        /// <summary>
-        /// The name of the template.
-        /// </summary>
-        public string? Name { get; set; }
+        var result = SimpleMapper.Map(this, new UpdateChannelTemplate<T>());
 
-        /// <summary>
-        /// True, when the template is the primary template.
-        /// </summary>
-        public bool? Primary { get; set; }
+        result.Languages = Languages?.ToDictionary(x => x.Key, x => mapper(x.Value));
 
-        /// <summary>
-        /// The language specific templates.
-        /// </summary>
-        public Dictionary<string, TDto>? Languages { get; set; }
-
-        public UpdateChannelTemplate<T> ToUpdate<T>(Func<TDto, T> mapper)
-        {
-            var result = SimpleMapper.Map(this, new UpdateChannelTemplate<T>());
-
-            result.Languages = Languages?.ToDictionary(x => x.Key, x => mapper(x.Value));
-
-            return result;
-        }
+        return result;
     }
 }

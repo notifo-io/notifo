@@ -11,67 +11,66 @@ using NSwag;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
 
-namespace Notifo.Areas.Api.OpenApi
+namespace Notifo.Areas.Api.OpenApi;
+
+public sealed class ErrorDtoProcessor : IDocumentProcessor
 {
-    public sealed class ErrorDtoProcessor : IDocumentProcessor
+    public void Process(DocumentProcessorContext context)
     {
-        public void Process(DocumentProcessorContext context)
+        var errorSchema = GetErrorSchema(context);
+
+        foreach (var operation in context.Document.Paths.Values.SelectMany(x => x.Values))
         {
-            var errorSchema = GetErrorSchema(context);
+            AddErrorResponses(operation, errorSchema);
 
-            foreach (var operation in context.Document.Paths.Values.SelectMany(x => x.Values))
-            {
-                AddErrorResponses(operation, errorSchema);
-
-                CleanupResponses(operation);
-            }
+            CleanupResponses(operation);
         }
+    }
 
-        private static void AddErrorResponses(OpenApiOperation operation, JsonSchema errorSchema)
+    private static void AddErrorResponses(OpenApiOperation operation, JsonSchema errorSchema)
+    {
+        operation.Responses.Add("500", new OpenApiResponse
         {
-            operation.Responses.Add("500", new OpenApiResponse
+            Description = "Operation failed"
+        });
+
+        if (!operation.Responses.ContainsKey("400"))
+        {
+            operation.Responses.Add("400", new OpenApiResponse
             {
-                Description = "Operation failed"
+                Description = "Validation error"
             });
+        }
 
-            if (!operation.Responses.ContainsKey("400"))
+        foreach (var (code, response) in operation.Responses)
+        {
+            if (response.Schema == null)
             {
-                operation.Responses.Add("400", new OpenApiResponse
+                if (!code.StartsWith("2", StringComparison.OrdinalIgnoreCase) && code != "404")
                 {
-                    Description = "Validation error"
-                });
-            }
-
-            foreach (var (code, response) in operation.Responses)
-            {
-                if (response.Schema == null)
-                {
-                    if (!code.StartsWith("2", StringComparison.OrdinalIgnoreCase) && code != "404")
-                    {
-                        response.Schema = errorSchema;
-                    }
+                    response.Schema = errorSchema;
                 }
             }
         }
+    }
 
-        private static void CleanupResponses(OpenApiOperation operation)
+    private static void CleanupResponses(OpenApiOperation operation)
+    {
+        foreach (var (code, response) in operation.Responses.ToList())
         {
-            foreach (var (code, response) in operation.Responses.ToList())
+            if (string.IsNullOrWhiteSpace(response.Description) ||
+                response.Description?.Contains("=&gt;", StringComparison.OrdinalIgnoreCase) == true ||
+                response.Description?.Contains("=>", StringComparison.OrdinalIgnoreCase) == true)
             {
-                if (string.IsNullOrWhiteSpace(response.Description) ||
-                    response.Description?.Contains("=&gt;", StringComparison.OrdinalIgnoreCase) == true ||
-                    response.Description?.Contains("=>", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    operation.Responses.Remove(code);
-                }
+                operation.Responses.Remove(code);
             }
         }
+    }
 
-        private static JsonSchema GetErrorSchema(DocumentProcessorContext context)
-        {
-            var errorType = typeof(ErrorDto).ToContextualType();
+    private static JsonSchema GetErrorSchema(DocumentProcessorContext context)
+    {
+        var errorType = typeof(ErrorDto).ToContextualType();
 
-            return context.SchemaGenerator.GenerateWithReference<JsonSchema>(errorType, context.SchemaResolver);
-        }
+        return context.SchemaGenerator.GenerateWithReference<JsonSchema>(errorType, context.SchemaResolver);
     }
 }

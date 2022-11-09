@@ -7,14 +7,13 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Subscriptions
+namespace Notifo.Domain.Subscriptions;
+
+public sealed record SubscriptionQuery : QueryBase
 {
-    public sealed record SubscriptionQuery : QueryBase
-    {
-        public string? UserId { get; set; }
+    public string? UserId { get; set; }
 
-        public string? Query { get; set; }
+    public string? Query { get; set; }
 
-        public string[]? Topics { get; set; }
-    }
+    public string[]? Topics { get; set; }
 }

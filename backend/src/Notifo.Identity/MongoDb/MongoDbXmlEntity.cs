@@ -7,14 +7,13 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Identity.MongoDb
-{
-    public sealed class MongoDbXmlEntity
-    {
-        [BsonId]
-        public string FriendlyName { get; set; }
+namespace Notifo.Identity.MongoDb;
 
-        [BsonRequired]
-        public string Xml { get; set; }
-    }
+public sealed class MongoDbXmlEntity
+{
+    [BsonId]
+    public string FriendlyName { get; set; }
+
+    [BsonRequired]
+    public string Xml { get; set; }
 }

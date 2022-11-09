@@ -11,74 +11,73 @@ using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Domain.Channels.Messaging;
+
+public sealed class MessagingFormatter : IMessagingFormatter
 {
-    public sealed class MessagingFormatter : IMessagingFormatter
+    private readonly IImageFormatter imageFormatter;
+
+    private sealed class Validator : AbstractValidator<MessagingTemplate>
     {
-        private readonly IImageFormatter imageFormatter;
-
-        private sealed class Validator : AbstractValidator<MessagingTemplate>
+        public Validator()
         {
-            public Validator()
+            RuleFor(x => x.Text).NotNull().NotEmpty();
+        }
+    }
+
+    public MessagingFormatter(IImageFormatter imageFormatter)
+    {
+        this.imageFormatter = imageFormatter;
+    }
+
+    public ValueTask<MessagingTemplate> CreateInitialAsync(string? kind = null,
+        CancellationToken ct = default)
+    {
+        var template = new MessagingTemplate
+        {
+            Text = "{{notification.subject}}"
+        };
+
+        return new ValueTask<MessagingTemplate>(template);
+    }
+
+    public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input, bool strict,
+        CancellationToken ct = default)
+    {
+        Validate<Validator>.It(input);
+
+        return new ValueTask<MessagingTemplate>(input);
+    }
+
+    public string Format(MessagingTemplate? template, BaseUserNotification notification)
+    {
+        Guard.NotNull(notification);
+
+        if (template == null)
+        {
+            return notification.Formatting.Subject;
+        }
+
+        var formattingProperties = new Dictionary<string, string?>
+        {
+            ["notification.body"] = notification.BodyWithLink(),
+            ["notification.confirmText"] = notification.ConfirmText(),
+            ["notification.confirmUrl"] = notification.ConfirmUrl(),
+            ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge"),
+            ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall"),
+            ["notification.subject"] = notification.Subject()
+        };
+
+        var properties = notification.Properties;
+
+        if (properties != null)
+        {
+            foreach (var (key, value) in properties)
             {
-                RuleFor(x => x.Text).NotNull().NotEmpty();
+                formattingProperties[$"notification.custom.{key}"] = value;
             }
         }
 
-        public MessagingFormatter(IImageFormatter imageFormatter)
-        {
-            this.imageFormatter = imageFormatter;
-        }
-
-        public ValueTask<MessagingTemplate> CreateInitialAsync(string? kind = null,
-            CancellationToken ct = default)
-        {
-            var template = new MessagingTemplate
-            {
-                Text = "{{notification.subject}}"
-            };
-
-            return new ValueTask<MessagingTemplate>(template);
-        }
-
-        public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input, bool strict,
-            CancellationToken ct = default)
-        {
-            Validate<Validator>.It(input);
-
-            return new ValueTask<MessagingTemplate>(input);
-        }
-
-        public string Format(MessagingTemplate? template, BaseUserNotification notification)
-        {
-            Guard.NotNull(notification);
-
-            if (template == null)
-            {
-                return notification.Formatting.Subject;
-            }
-
-            var formattingProperties = new Dictionary<string, string?>
-            {
-                ["notification.body"] = notification.BodyWithLink(),
-                ["notification.confirmText"] = notification.ConfirmText(),
-                ["notification.confirmUrl"] = notification.ConfirmUrl(),
-                ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge"),
-                ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall"),
-                ["notification.subject"] = notification.Subject()
-            };
-
-            var properties = notification.Properties;
-
-            if (properties != null)
-            {
-                foreach (var (key, value) in properties)
-                {
-                    formattingProperties[$"notification.custom.{key}"] = value;
-                }
-            }
-
-            return template.Text.Format(formattingProperties);
-        }
+        return template.Text.Format(formattingProperties);
     }
 }

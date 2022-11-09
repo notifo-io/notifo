@@ -14,25 +14,24 @@ using Notifo.Domain.Channels.Web;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class ApiServiceExtensions
-    {
-        public static void AddMyApi(this IServiceCollection services, SignalROptions signalROptions)
-        {
-            if (signalROptions.Enabled)
-            {
-                services.AddSingletonAs<NotificationHubAccessor>()
-                    .As<IStreamClient>();
-            }
-            else
-            {
-                services.AddSingletonAs<NoopStreamClient>()
-                    .As<IStreamClient>();
-            }
+namespace Microsoft.Extensions.DependencyInjection;
 
-            services.AddSingletonAs<UrlBuilder>()
-                .As<IEmailUrl>().As<IMessagingUrl>().As<ISmsUrl>().As<IUserNotificationUrl>();
+public static class ApiServiceExtensions
+{
+    public static void AddMyApi(this IServiceCollection services, SignalROptions signalROptions)
+    {
+        if (signalROptions.Enabled)
+        {
+            services.AddSingletonAs<NotificationHubAccessor>()
+                .As<IStreamClient>();
         }
+        else
+        {
+            services.AddSingletonAs<NoopStreamClient>()
+                .As<IStreamClient>();
+        }
+
+        services.AddSingletonAs<UrlBuilder>()
+            .As<IEmailUrl>().As<IMessagingUrl>().As<ISmsUrl>().As<IUserNotificationUrl>();
     }
 }

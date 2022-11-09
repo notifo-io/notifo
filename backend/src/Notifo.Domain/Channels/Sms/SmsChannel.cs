@@ -19,297 +19,296 @@ using Notifo.Infrastructure.Scheduling;
 using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Sms.SmsTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Sms.SmsJob>;
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Sms;
+
+public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ISmsCallback
 {
-    public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ISmsCallback
+    private const string PhoneNumber = nameof(PhoneNumber);
+    private readonly IAppStore appStore;
+    private readonly IIntegrationManager integrationManager;
+    private readonly ILogger<SmsChannel> log;
+    private readonly ILogStore logStore;
+    private readonly ISmsFormatter smsFormatter;
+    private readonly ISmsTemplateStore smsTemplateStore;
+    private readonly IUserNotificationQueue userNotificationQueue;
+    private readonly IUserNotificationStore userNotificationStore;
+
+    public string Name => Providers.Sms;
+
+    public SmsChannel(ILogger<SmsChannel> log, ILogStore logStore,
+        IAppStore appStore,
+        IIntegrationManager integrationManager,
+        ISmsFormatter smsFormatter,
+        ISmsTemplateStore smsTemplateStore,
+        IUserNotificationQueue userNotificationQueue,
+        IUserNotificationStore userNotificationStore)
     {
-        private const string PhoneNumber = nameof(PhoneNumber);
-        private readonly IAppStore appStore;
-        private readonly IIntegrationManager integrationManager;
-        private readonly ILogger<SmsChannel> log;
-        private readonly ILogStore logStore;
-        private readonly ISmsFormatter smsFormatter;
-        private readonly ISmsTemplateStore smsTemplateStore;
-        private readonly IUserNotificationQueue userNotificationQueue;
-        private readonly IUserNotificationStore userNotificationStore;
+        this.appStore = appStore;
+        this.integrationManager = integrationManager;
+        this.log = log;
+        this.logStore = logStore;
+        this.smsFormatter = smsFormatter;
+        this.smsTemplateStore = smsTemplateStore;
+        this.userNotificationQueue = userNotificationQueue;
+        this.userNotificationStore = userNotificationStore;
+    }
 
-        public string Name => Providers.Sms;
-
-        public SmsChannel(ILogger<SmsChannel> log, ILogStore logStore,
-            IAppStore appStore,
-            IIntegrationManager integrationManager,
-            ISmsFormatter smsFormatter,
-            ISmsTemplateStore smsTemplateStore,
-            IUserNotificationQueue userNotificationQueue,
-            IUserNotificationStore userNotificationStore)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    {
+        if (!integrationManager.IsConfigured<ISmsSender>(context.App, notification))
         {
-            this.appStore = appStore;
-            this.integrationManager = integrationManager;
-            this.log = log;
-            this.logStore = logStore;
-            this.smsFormatter = smsFormatter;
-            this.smsTemplateStore = smsTemplateStore;
-            this.userNotificationQueue = userNotificationQueue;
-            this.userNotificationStore = userNotificationStore;
+            yield break;
         }
 
-        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+        if (!string.IsNullOrWhiteSpace(context.User.PhoneNumber))
         {
-            if (!integrationManager.IsConfigured<ISmsSender>(context.App, notification))
+            yield return new SendConfiguration
             {
-                yield break;
-            }
-
-            if (!string.IsNullOrWhiteSpace(context.User.PhoneNumber))
-            {
-                yield return new SendConfiguration
-                {
-                    [PhoneNumber] = context.User.PhoneNumber
-                };
-            }
+                [PhoneNumber] = context.User.PhoneNumber
+            };
         }
+    }
 
-        public async Task HandleCallbackAsync(ISmsSender sender, SmsCallbackResponse response,
-            CancellationToken ct)
+    public async Task HandleCallbackAsync(ISmsSender sender, SmsCallbackResponse response,
+        CancellationToken ct)
+    {
+        using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
         {
-            using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
+            var (notificationId, to, result, details) = response;
+            var notification = await userNotificationStore.FindAsync(notificationId, ct);
+
+            if (notification != null)
             {
-                var (notificationId, to, result, details) = response;
-                var notification = await userNotificationStore.FindAsync(notificationId, ct);
+                await UpdateAsync(notification, result);
 
-                if (notification != null)
+                if (!string.IsNullOrEmpty(details))
                 {
-                    await UpdateAsync(notification, result);
-
-                    if (!string.IsNullOrEmpty(details))
-                    {
-                        await logStore.LogAsync(notification.AppId, sender.Name, details);
-                    }
+                    await logStore.LogAsync(notification.AppId, sender.Name, details);
                 }
-
-                userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
             }
+
+            userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
+        }
+    }
+
+    private async Task UpdateAsync(UserNotification notification, SmsResult result)
+    {
+        if (!notification.Channels.TryGetValue(Name, out var channel))
+        {
+            // There is no activity on this channel.
+            return;
         }
 
-        private async Task UpdateAsync(UserNotification notification, SmsResult result)
+        // We create only one configuration for this channel. Therefore it must be the first.
+        var (configurationId, status) = channel.Status.First();
+
+        if (status.Status == ProcessStatus.Attempt)
         {
-            if (!notification.Channels.TryGetValue(Name, out var channel))
+            var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
+
+            switch (result)
             {
-                // There is no activity on this channel.
+                case SmsResult.Delivered:
+                    await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
+                    break;
+                case SmsResult.Failed:
+                    await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
+                    break;
+            }
+        }
+    }
+
+    public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
+        CancellationToken ct)
+    {
+        if (context.IsUpdate)
+        {
+            return;
+        }
+
+        if (!properties.TryGetValue(PhoneNumber, out var phoneNumber))
+        {
+            // Old configuration without a phone number.
+            return;
+        }
+
+        using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
+        {
+            var job = new SmsJob(notification, setting, configurationId, phoneNumber);
+
+            await userNotificationQueue.ScheduleAsync(
+                job.ScheduleKey,
+                job,
+                job.Delay,
+                false, ct);
+        }
+    }
+
+    public Task HandleExceptionAsync(SmsJob job, Exception ex)
+    {
+        return UpdateAsync(job, ProcessStatus.Failed);
+    }
+
+    public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
+        CancellationToken ct)
+    {
+        var links = job.Links();
+
+        var parentContext = Activity.Current?.Context ?? default;
+
+        using (Telemetry.Activities.StartActivity("SmsChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+        {
+            if (await userNotificationStore.IsHandledAsync(job, this, ct))
+            {
+                await UpdateAsync(job, ProcessStatus.Skipped);
+            }
+            else
+            {
+                await SendJobAsync(job, ct);
+            }
+
+            return false;
+        }
+    }
+
+    private async Task SendJobAsync(SmsJob job,
+        CancellationToken ct)
+    {
+        using (Telemetry.Activities.StartActivity("Send"))
+        {
+            var app = await appStore.GetCachedAsync(job.Tracking.AppId!, ct);
+
+            if (app == null)
+            {
+                log.LogWarning("Cannot send email: App not found.");
+
+                await UpdateAsync(job, ProcessStatus.Handled);
                 return;
             }
 
-            // We create only one configuration for this channel. Therefore it must be the first.
-            var (configurationId, status) = channel.Status.First();
-
-            if (status.Status == ProcessStatus.Attempt)
+            try
             {
-                var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
+                await UpdateAsync(job, ProcessStatus.Attempt);
 
-                switch (result)
+                var senders = integrationManager.Resolve<ISmsSender>(app, job).Select(x => x.Target).ToList();
+
+                if (senders.Count == 0)
                 {
-                    case SmsResult.Delivered:
-                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
-                        break;
-                    case SmsResult.Failed:
-                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
-                        break;
-                }
-            }
-        }
-
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
-            CancellationToken ct)
-        {
-            if (context.IsUpdate)
-            {
-                return;
-            }
-
-            if (!properties.TryGetValue(PhoneNumber, out var phoneNumber))
-            {
-                // Old configuration without a phone number.
-                return;
-            }
-
-            using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
-            {
-                var job = new SmsJob(notification, setting, configurationId, phoneNumber);
-
-                await userNotificationQueue.ScheduleAsync(
-                    job.ScheduleKey,
-                    job,
-                    job.Delay,
-                    false, ct);
-            }
-        }
-
-        public Task HandleExceptionAsync(SmsJob job, Exception ex)
-        {
-            return UpdateAsync(job, ProcessStatus.Failed);
-        }
-
-        public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
-            CancellationToken ct)
-        {
-            var links = job.Links();
-
-            var parentContext = Activity.Current?.Context ?? default;
-
-            using (Telemetry.Activities.StartActivity("SmsChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
-            {
-                if (await userNotificationStore.IsHandledAsync(job, this, ct))
-                {
-                    await UpdateAsync(job, ProcessStatus.Skipped);
-                }
-                else
-                {
-                    await SendJobAsync(job, ct);
+                    await SkipAsync(job, Texts.Sms_ConfigReset);
+                    return;
                 }
 
-                return false;
+                await SendCoreAsync(app, job, senders, ct);
+            }
+            catch (DomainException ex)
+            {
+                await logStore.LogAsync(job.Tracking.AppId!, Name, ex.Message);
+                throw;
             }
         }
+    }
 
-        private async Task SendJobAsync(SmsJob job,
-            CancellationToken ct)
+    private async Task SendCoreAsync(App app, SmsJob job, List<ISmsSender> senders,
+        CancellationToken ct)
+    {
+        var lastSender = senders[^1];
+
+        foreach (var sender in senders)
         {
-            using (Telemetry.Activities.StartActivity("Send"))
+            try
             {
-                var app = await appStore.GetCachedAsync(job.Tracking.AppId, ct);
+                var (skip, template) = await GetTemplateAsync(
+                    job.Tracking.AppId!,
+                    job.TemplateLanguage,
+                    job.TemplateName,
+                    ct);
 
-                if (app == null)
+                if (skip != null)
                 {
-                    log.LogWarning("Cannot send email: App not found.");
+                    await SkipAsync(job, skip);
+                }
 
+                var text = smsFormatter.Format(template, job.PhoneText);
+
+                var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Tracking.UserNotificationId.ToString(), ct);
+
+                // Some integrations provide the actual result via webhook at a later point.
+                if (result == SmsResult.Delivered)
+                {
                     await UpdateAsync(job, ProcessStatus.Handled);
                     return;
                 }
 
-                try
+                // If the SMS has been sent, but not delivered yet, we also do not try other integrations.
+                if (result == SmsResult.Sent)
                 {
-                    await UpdateAsync(job, ProcessStatus.Attempt);
-
-                    var senders = integrationManager.Resolve<ISmsSender>(app, job).Select(x => x.Target).ToList();
-
-                    if (senders.Count == 0)
-                    {
-                        await SkipAsync(job, Texts.Sms_ConfigReset);
-                        return;
-                    }
-
-                    await SendCoreAsync(app, job, senders, ct);
+                    return;
                 }
-                catch (DomainException ex)
+            }
+            catch (DomainException ex)
+            {
+                await logStore.LogAsync(job.Tracking.AppId!, sender.Name, ex.Message);
+
+                if (sender == lastSender)
                 {
-                    await logStore.LogAsync(job.Tracking.AppId, Name, ex.Message);
+                    throw;
+                }
+            }
+            catch (Exception)
+            {
+                if (sender == lastSender)
+                {
                     throw;
                 }
             }
         }
+    }
 
-        private async Task SendCoreAsync(App app, SmsJob job, List<ISmsSender> senders,
-            CancellationToken ct)
+    private Task UpdateAsync(SmsJob job, ProcessStatus status, string? reason = null)
+    {
+        return userNotificationStore.TrackAsync(job.Tracking, status, reason);
+    }
+
+    private async Task SkipAsync(SmsJob job, string reason)
+    {
+        await logStore.LogAsync(job.Tracking.AppId!, Name, reason);
+
+        await UpdateAsync(job, ProcessStatus.Skipped, reason);
+    }
+
+    private async Task<(string? Skip, SmsTemplate?)> GetTemplateAsync(
+        string appId,
+        string language,
+        string? name,
+        CancellationToken ct)
+    {
+        var (status, template) = await smsTemplateStore.GetBestAsync(appId, name, language, ct);
+
+        switch (status)
         {
-            var lastSender = senders[^1];
-
-            foreach (var sender in senders)
-            {
-                try
+            case TemplateResolveStatus.ResolvedWithFallback:
                 {
-                    var (skip, template) = await GetTemplateAsync(
-                        job.Tracking.AppId,
-                        job.TemplateLanguage,
-                        job.TemplateName,
-                        ct);
+                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
 
-                    if (skip != null)
-                    {
-                        await SkipAsync(job, skip);
-                    }
-
-                    var text = smsFormatter.Format(template, job.PhoneText);
-
-                    var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Tracking.UserNotificationId.ToString(), ct);
-
-                    // Some integrations provide the actual result via webhook at a later point.
-                    if (result == SmsResult.Delivered)
-                    {
-                        await UpdateAsync(job, ProcessStatus.Handled);
-                        return;
-                    }
-
-                    // If the SMS has been sent, but not delivered yet, we also do not try other integrations.
-                    if (result == SmsResult.Sent)
-                    {
-                        return;
-                    }
+                    await logStore.LogAsync(appId, Name, error);
+                    break;
                 }
-                catch (DomainException ex)
+
+            case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
                 {
-                    await logStore.LogAsync(job.Tracking.AppId, sender.Name, ex.Message);
+                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
 
-                    if (sender == lastSender)
-                    {
-                        throw;
-                    }
+                    return (error, null);
                 }
-                catch (Exception)
+
+            case TemplateResolveStatus.LanguageNotFound:
                 {
-                    if (sender == lastSender)
-                    {
-                        throw;
-                    }
+                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
+
+                    return (error, null);
                 }
-            }
         }
 
-        private Task UpdateAsync(SmsJob job, ProcessStatus status, string? reason = null)
-        {
-            return userNotificationStore.TrackAsync(job.Tracking, status, reason);
-        }
-
-        private async Task SkipAsync(SmsJob job, string reason)
-        {
-            await logStore.LogAsync(job.Tracking.AppId, Name, reason);
-
-            await UpdateAsync(job, ProcessStatus.Skipped, reason);
-        }
-
-        private async Task<(string? Skip, SmsTemplate?)> GetTemplateAsync(
-            string appId,
-            string language,
-            string? name,
-            CancellationToken ct)
-        {
-            var (status, template) = await smsTemplateStore.GetBestAsync(appId, name, language, ct);
-
-            switch (status)
-            {
-                case TemplateResolveStatus.ResolvedWithFallback:
-                    {
-                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
-
-                        await logStore.LogAsync(appId, Name, error);
-                        break;
-                    }
-
-                case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
-                    {
-                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
-
-                        return (error, null);
-                    }
-
-                case TemplateResolveStatus.LanguageNotFound:
-                    {
-                        var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
-
-                        return (error, null);
-                    }
-            }
-
-            return (null, template);
-        }
+        return (null, template);
     }
 }

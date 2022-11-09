@@ -5,79 +5,78 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Collections
+namespace Notifo.Infrastructure.Collections;
+
+public static class ReadonlyList
 {
-    public static class ReadonlyList
+    private static class Empties<T>
     {
-        private static class Empties<T>
-        {
 #pragma warning disable SA1401 // Fields should be private
-            public static readonly ReadonlyList<T> Instance = new ReadonlyList<T>();
+        public static readonly ReadonlyList<T> Instance = new ReadonlyList<T>();
 #pragma warning restore SA1401 // Fields should be private
-        }
+    }
 
-        public static ReadonlyList<T> Empty<T>()
+    public static ReadonlyList<T> Empty<T>()
+    {
+        return Empties<T>.Instance;
+    }
+
+    public static ReadonlyList<T> Create<T>(params T[]? items)
+    {
+        if (items == null || items.Length == 0)
         {
-            return Empties<T>.Instance;
+            return Empty<T>();
         }
 
-        public static ReadonlyList<T> Create<T>(params T[]? items)
+        return new ReadonlyList<T>(items.ToList());
+    }
+
+    public static ReadonlyList<T> ToReadonlyList<T>(this IEnumerable<T> source)
+    {
+        var inner = new List<T>(source);
+
+        if (inner.Count == 0)
         {
-            if (items == null || items.Length == 0)
-            {
-                return Empty<T>();
-            }
-
-            return new ReadonlyList<T>(items.ToList());
+            return Empty<T>();
         }
 
-        public static ReadonlyList<T> ToReadonlyList<T>(this IEnumerable<T> source)
+        return new ReadonlyList<T>(inner);
+    }
+
+    public static List<T> ToMutable<T>(this ReadonlyList<T>? source)
+    {
+        if (source == null)
         {
-            var inner = new List<T>(source);
-
-            if (inner.Count == 0)
-            {
-                return Empty<T>();
-            }
-
-            return new ReadonlyList<T>(inner);
+            return new List<T>();
         }
 
-        public static List<T> ToMutable<T>(this ReadonlyList<T>? source)
-        {
-            if (source == null)
-            {
-                return new List<T>();
-            }
+        return new List<T>(source);
+    }
 
-            return new List<T>(source);
-        }
+    public static ReadonlyList<T> Set<T>(this ReadonlyList<T>? source, T item)
+    {
+        var mutable = source.ToMutable();
 
-        public static ReadonlyList<T> Set<T>(this ReadonlyList<T>? source, T item)
-        {
-            var mutable = source.ToMutable();
+        mutable.Add(item);
 
-            mutable.Add(item);
+        return mutable.ToReadonlyList();
+    }
 
-            return mutable.ToReadonlyList();
-        }
+    public static ReadonlyList<T> Remove<T>(this ReadonlyList<T>? source, T item)
+    {
+        var mutable = source.ToMutable();
 
-        public static ReadonlyList<T> Remove<T>(this ReadonlyList<T>? source, T item)
-        {
-            var mutable = source.ToMutable();
+        mutable.Remove(item);
 
-            mutable.Remove(item);
+        return mutable.ToReadonlyList();
+    }
 
-            return mutable.ToReadonlyList();
-        }
+    public static ReadonlyList<T> RemoveAll<T>(this ReadonlyList<T>? source, Predicate<T> match)
+    {
+        var mutable = source.ToMutable();
 
-        public static ReadonlyList<T> RemoveAll<T>(this ReadonlyList<T>? source, Predicate<T> match)
-        {
-            var mutable = source.ToMutable();
+        mutable.RemoveAll(match);
 
-            mutable.RemoveAll(match);
-
-            return mutable.ToReadonlyList();
-        }
+        return mutable.ToReadonlyList();
     }
 }

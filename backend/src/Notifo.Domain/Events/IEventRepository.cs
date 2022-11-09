@@ -8,14 +8,13 @@
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Events
-{
-    public interface IEventRepository : ICounterStore<(string AppId, string EventId)>
-    {
-        Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
-            CancellationToken ct = default);
+namespace Notifo.Domain.Events;
 
-        Task InsertAsync(Event @event,
-            CancellationToken ct = default);
-    }
+public interface IEventRepository : ICounterStore<(string AppId, string EventId)>
+{
+    Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
+        CancellationToken ct = default);
+
+    Task InsertAsync(Event @event,
+        CancellationToken ct = default);
 }

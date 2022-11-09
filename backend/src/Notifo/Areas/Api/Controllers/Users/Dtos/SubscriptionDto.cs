@@ -8,41 +8,40 @@
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Subscriptions;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+
+public sealed class SubscriptionDto
 {
-    public sealed class SubscriptionDto
+    /// <summary>
+    /// The topic to add.
+    /// </summary>
+    [Required]
+    public string TopicPrefix { get; set; }
+
+    /// <summary>
+    /// Notification settings per channel.
+    /// </summary>
+    [Required]
+    public Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new Dictionary<string, ChannelSettingDto>();
+
+    public static SubscriptionDto FromDomainObject(Subscription subscription)
     {
-        /// <summary>
-        /// The topic to add.
-        /// </summary>
-        [Required]
-        public string TopicPrefix { get; set; }
-
-        /// <summary>
-        /// Notification settings per channel.
-        /// </summary>
-        [Required]
-        public Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new Dictionary<string, ChannelSettingDto>();
-
-        public static SubscriptionDto FromDomainObject(Subscription subscription)
+        var result = new SubscriptionDto
         {
-            var result = new SubscriptionDto
-            {
-                TopicPrefix = subscription.TopicPrefix
-            };
+            TopicPrefix = subscription.TopicPrefix
+        };
 
-            if (subscription.TopicSettings != null)
+        if (subscription.TopicSettings != null)
+        {
+            foreach (var (key, value) in subscription.TopicSettings)
             {
-                foreach (var (key, value) in subscription.TopicSettings)
+                if (value != null)
                 {
-                    if (value != null)
-                    {
-                        result.TopicSettings[key] = ChannelSettingDto.FromDomainObject(value);
-                    }
+                    result.TopicSettings[key] = ChannelSettingDto.FromDomainObject(value);
                 }
             }
-
-            return result;
         }
+
+        return result;
     }
 }

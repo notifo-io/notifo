@@ -7,11 +7,10 @@
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Integrations.MessageBird.Implementation
-{
-    public sealed record WhatsAppTextMessage(
-        string From,
-        string To,
-        string Message,
-        string? ReportUrl);
-}
+namespace Notifo.Domain.Integrations.MessageBird.Implementation;
+
+public sealed record WhatsAppTextMessage(
+    string From,
+    string To,
+    string Message,
+    string? ReportUrl);

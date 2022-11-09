@@ -7,12 +7,11 @@
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 
-namespace Notifo.Domain.Channels.MobilePush
+namespace Notifo.Domain.Channels.MobilePush;
+
+public enum MobileDeviceType
 {
-    public enum MobileDeviceType
-    {
-        Unknown,
-        Android,
-        iOS
-    }
+    Unknown,
+    Android,
+    iOS
 }

@@ -9,41 +9,40 @@ using Microsoft.Extensions.DependencyInjection;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
-namespace Notifo.Domain.ChannelTemplates
+namespace Notifo.Domain.ChannelTemplates;
+
+public sealed class CreateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
 {
-    public sealed class CreateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
+    public string? Language { get; set; }
+
+    public string? Kind { get; set; }
+
+    public bool CanCreate => true;
+
+    public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        CancellationToken ct)
     {
-        public string? Language { get; set; }
+        var newTemplate = template;
 
-        public string? Kind { get; set; }
-
-        public bool CanCreate => true;
-
-        public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        if (Kind != null && !string.Equals(Kind, template.Name, StringComparison.Ordinal))
         {
-            var newTemplate = template;
-
-            if (Kind != null && !string.Equals(Kind, template.Name, StringComparison.Ordinal))
+            newTemplate = newTemplate with
             {
-                newTemplate = newTemplate with
-                {
-                    Kind = Kind.Trim()
-                };
-            }
-
-            if (Language != null)
-            {
-                var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
-                var channelInstance = await channelFactory.CreateInitialAsync(newTemplate.Kind, ct);
-
-                newTemplate = newTemplate with
-                {
-                    Languages = template.Languages.Set(Language, channelInstance)
-                };
-            }
-
-            return newTemplate;
+                Kind = Kind.Trim()
+            };
         }
+
+        if (Language != null)
+        {
+            var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+            var channelInstance = await channelFactory.CreateInitialAsync(newTemplate.Kind, ct);
+
+            newTemplate = newTemplate with
+            {
+                Languages = template.Languages.Set(Language, channelInstance)
+            };
+        }
+
+        return newTemplate;
     }
 }

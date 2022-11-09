@@ -10,24 +10,23 @@ using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Scheduling;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class MessagingServiceExtensions
 {
-    public static class MessagingServiceExtensions
+    public static void AddMyMessagingChannel(this IServiceCollection services)
     {
-        public static void AddMyMessagingChannel(this IServiceCollection services)
+        services.AddSingletonAs<MessagingChannel>()
+            .As<ICommunicationChannel>().As<IScheduleHandler<MessagingJob>>().As<IMessagingCallback>();
+
+        services.AddSingletonAs<MessagingFormatter>()
+            .As<IMessagingFormatter>().As<IChannelTemplateFactory<MessagingTemplate>>();
+
+        services.AddChannelTemplates<MessagingTemplate>();
+
+        services.AddScheduler<MessagingJob>(Providers.Messaging, new SchedulerOptions
         {
-            services.AddSingletonAs<MessagingChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<MessagingJob>>().As<IMessagingCallback>();
-
-            services.AddSingletonAs<MessagingFormatter>()
-                .As<IMessagingFormatter>().As<IChannelTemplateFactory<MessagingTemplate>>();
-
-            services.AddChannelTemplates<MessagingTemplate>();
-
-            services.AddScheduler<MessagingJob>(Providers.Messaging, new SchedulerOptions
-            {
-                ExecutionRetries = Array.Empty<int>()
-            });
-        }
+            ExecutionRetries = Array.Empty<int>()
+        });
     }
 }

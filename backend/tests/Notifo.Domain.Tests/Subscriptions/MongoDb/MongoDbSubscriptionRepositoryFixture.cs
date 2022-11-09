@@ -7,23 +7,22 @@
 
 using MongoDB.Driver;
 
-namespace Notifo.Domain.Subscriptions.MongoDb
+namespace Notifo.Domain.Subscriptions.MongoDb;
+
+public sealed class MongoDbSubscriptionRepositoryFixture : IDisposable
 {
-    public sealed class MongoDbSubscriptionRepositoryFixture : IDisposable
+    public MongoDbSubscriptionRepository Repository { get; }
+
+    public MongoDbSubscriptionRepositoryFixture()
     {
-        public MongoDbSubscriptionRepository Repository { get; }
+        var mongoClient = new MongoClient("mongodb://localhost");
+        var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
 
-        public MongoDbSubscriptionRepositoryFixture()
-        {
-            var mongoClient = new MongoClient("mongodb://localhost");
-            var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
+        Repository = new MongoDbSubscriptionRepository(mongoDatabase);
+        Repository.InitializeAsync(default).Wait();
+    }
 
-            Repository = new MongoDbSubscriptionRepository(mongoDatabase);
-            Repository.InitializeAsync(default).Wait();
-        }
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }

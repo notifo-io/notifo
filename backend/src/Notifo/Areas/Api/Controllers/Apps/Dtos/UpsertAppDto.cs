@@ -8,67 +8,66 @@
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Apps.Dtos
+namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
+
+public sealed class UpsertAppDto
 {
-    public sealed class UpsertAppDto
+    /// <summary>
+    /// The app name.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// The supported languages.
+    /// </summary>
+    public string[]? Languages { get; set; }
+
+    /// <summary>
+    /// The sender email address.
+    /// </summary>
+    public string? EmailAddress { get; set; }
+
+    /// <summary>
+    /// The sender email name.
+    /// </summary>
+    public string? EmailName { get; set; }
+
+    /// <summary>
+    /// The firebase project ID.
+    /// </summary>
+    public string? FirebaseProject { get; set; }
+
+    /// <summary>
+    /// The firebase credentials.
+    /// </summary>
+    public string? FirebaseCredential { get; set; }
+
+    /// <summary>
+    /// The webhook URL.
+    /// </summary>
+    public string? WebhookUrl { get; set; }
+
+    /// <summary>
+    /// The confirm URL.
+    /// </summary>
+    public string? ConfirmUrl { get; set; }
+
+    /// <summary>
+    /// True, when emails are allowed.
+    /// </summary>
+    public bool? AllowEmail { get; set; }
+
+    /// <summary>
+    /// True, when SMS are allowed.
+    /// </summary>
+    public bool? AllowSms { get; set; }
+
+    public UpsertApp ToUpsert(string userId)
     {
-        /// <summary>
-        /// The app name.
-        /// </summary>
-        public string? Name { get; set; }
+        var result = SimpleMapper.Map(this, new UpsertApp());
 
-        /// <summary>
-        /// The supported languages.
-        /// </summary>
-        public string[]? Languages { get; set; }
+        result.UserId = userId;
 
-        /// <summary>
-        /// The sender email address.
-        /// </summary>
-        public string? EmailAddress { get; set; }
-
-        /// <summary>
-        /// The sender email name.
-        /// </summary>
-        public string? EmailName { get; set; }
-
-        /// <summary>
-        /// The firebase project ID.
-        /// </summary>
-        public string? FirebaseProject { get; set; }
-
-        /// <summary>
-        /// The firebase credentials.
-        /// </summary>
-        public string? FirebaseCredential { get; set; }
-
-        /// <summary>
-        /// The webhook URL.
-        /// </summary>
-        public string? WebhookUrl { get; set; }
-
-        /// <summary>
-        /// The confirm URL.
-        /// </summary>
-        public string? ConfirmUrl { get; set; }
-
-        /// <summary>
-        /// True, when emails are allowed.
-        /// </summary>
-        public bool? AllowEmail { get; set; }
-
-        /// <summary>
-        /// True, when SMS are allowed.
-        /// </summary>
-        public bool? AllowSms { get; set; }
-
-        public UpsertApp ToUpsert(string userId)
-        {
-            var result = SimpleMapper.Map(this, new UpsertApp());
-
-            result.UserId = userId;
-
-            return result;
-        }
+        return result;
     }
 }

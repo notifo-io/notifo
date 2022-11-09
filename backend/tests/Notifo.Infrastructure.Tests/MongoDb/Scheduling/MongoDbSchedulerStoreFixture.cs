@@ -9,26 +9,25 @@ using MongoDB.Driver;
 using Notifo.Infrastructure.Scheduling;
 using Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
 
-namespace Notifo.Infrastructure.MongoDb.Scheduling
+namespace Notifo.Infrastructure.MongoDb.Scheduling;
+
+public sealed class MongoDbSchedulerStoreFixture : IDisposable
 {
-    public sealed class MongoDbSchedulerStoreFixture : IDisposable
+    public MongoDbSchedulerStore<int> Store { get; }
+
+    public MongoDbSchedulerStoreFixture()
     {
-        public MongoDbSchedulerStore<int> Store { get; }
+        InstantSerializer.Register();
 
-        public MongoDbSchedulerStoreFixture()
-        {
-            InstantSerializer.Register();
+        var mongoClient = new MongoClient("mongodb://localhost");
+        var mongoDatabase = mongoClient.GetDatabase("Testing");
 
-            var mongoClient = new MongoClient("mongodb://localhost");
-            var mongoDatabase = mongoClient.GetDatabase("Testing");
+        Store = new MongoDbSchedulerStore<int>(mongoDatabase, new SchedulerOptions { QueueName = "Numbers" });
+        Store.InitializeAsync(default).Wait();
+        Store.ClearAsync().Wait();
+    }
 
-            Store = new MongoDbSchedulerStore<int>(mongoDatabase, new SchedulerOptions { QueueName = "Numbers" });
-            Store.InitializeAsync(default).Wait();
-            Store.ClearAsync().Wait();
-        }
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }

@@ -12,65 +12,64 @@ using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.UserNotifications;
 using Squidex.Hosting;
 
-namespace Notifo.Areas.Api.Utils
+namespace Notifo.Areas.Api.Utils;
+
+public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotificationUrl
 {
-    public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotificationUrl
+    private readonly IUrlGenerator urlGenerator;
+
+    public UrlBuilder(IUrlGenerator urlGenerator)
     {
-        private readonly IUrlGenerator urlGenerator;
+        this.urlGenerator = urlGenerator;
+    }
 
-        public UrlBuilder(IUrlGenerator urlGenerator)
+    public string EmailPreferences(string apiKey, string language)
+    {
+        return urlGenerator.BuildUrl($"api/email-preferences?access_token={apiKey}&amp;culture={language}");
+    }
+
+    public string TrackConfirmed(Guid notificationId, string language)
+    {
+        return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/confirm?culture={language}");
+    }
+
+    public string TrackDelivered(Guid notificationId, string language)
+    {
+        return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/delivered?culture={language}");
+    }
+
+    public string TrackSeen(Guid notificationId, string language)
+    {
+        return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
+    }
+
+    public string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
+    {
+        return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}{Query(query)}");
+    }
+
+    public string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
+    {
+        return urlGenerator.BuildCallbackUrl($"api/callback/messaging?appId={appId}&integrationId={integrationId}{Query(query)}");
+    }
+
+    private static string Query(Dictionary<string, string>? query = null)
+    {
+        if (query == null || query.Count == 0)
         {
-            this.urlGenerator = urlGenerator;
+            return string.Empty;
         }
 
-        public string EmailPreferences(string apiKey, string language)
+        var sb = new StringBuilder(10);
+
+        foreach (var (key, value) in query)
         {
-            return urlGenerator.BuildUrl($"api/email-preferences?access_token={apiKey}&amp;culture={language}");
+            sb.Append('&');
+            sb.Append(key);
+            sb.Append('=');
+            sb.Append(Uri.EscapeDataString(value));
         }
 
-        public string TrackConfirmed(Guid notificationId, string language)
-        {
-            return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/confirm?culture={language}");
-        }
-
-        public string TrackDelivered(Guid notificationId, string language)
-        {
-            return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/delivered?culture={language}");
-        }
-
-        public string TrackSeen(Guid notificationId, string language)
-        {
-            return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
-        }
-
-        public string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
-        {
-            return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}{Query(query)}");
-        }
-
-        public string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
-        {
-            return urlGenerator.BuildCallbackUrl($"api/callback/messaging?appId={appId}&integrationId={integrationId}{Query(query)}");
-        }
-
-        private static string Query(Dictionary<string, string>? query = null)
-        {
-            if (query == null || query.Count == 0)
-            {
-                return string.Empty;
-            }
-
-            var sb = new StringBuilder(10);
-
-            foreach (var (key, value) in query)
-            {
-                sb.Append('&');
-                sb.Append(key);
-                sb.Append('=');
-                sb.Append(Uri.EscapeDataString(value));
-            }
-
-            return sb.ToString();
-        }
+        return sb.ToString();
     }
 }

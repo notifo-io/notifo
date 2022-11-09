@@ -7,12 +7,11 @@
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Integrations
-{
-    public sealed record UserProperty(string Name, PropertyType Type) : PropertyBase(Name, Type)
-    {
-        public string? EditorDescription { get; init; }
+namespace Notifo.Domain.Integrations;
 
-        public string? EditorLabel { get; init; }
-    }
+public sealed record UserProperty(string Name, PropertyType Type) : PropertyBase(Name, Type)
+{
+    public string? EditorDescription { get; init; }
+
+    public string? EditorLabel { get; init; }
 }

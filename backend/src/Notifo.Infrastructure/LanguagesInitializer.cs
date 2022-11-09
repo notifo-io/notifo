@@ -8,31 +8,30 @@
 using Microsoft.Extensions.Options;
 using Squidex.Hosting;
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+public sealed class LanguagesInitializer : IInitializable
 {
-    public sealed class LanguagesInitializer : IInitializable
+    private readonly LanguagesOptions options;
+
+    public LanguagesInitializer(IOptions<LanguagesOptions> options)
     {
-        private readonly LanguagesOptions options;
+        Guard.NotNull(options);
 
-        public LanguagesInitializer(IOptions<LanguagesOptions> options)
+        this.options = options.Value;
+    }
+
+    public Task InitializeAsync(
+        CancellationToken ct)
+    {
+        foreach (var (key, value) in options)
         {
-            Guard.NotNull(options);
-
-            this.options = options.Value;
-        }
-
-        public Task InitializeAsync(
-            CancellationToken ct)
-        {
-            foreach (var (key, value) in options)
+            if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
             {
-                if (!string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(value))
-                {
-                    Language.AddLanguage(key, value);
-                }
+                Language.AddLanguage(key, value);
             }
-
-            return Task.CompletedTask;
         }
+
+        return Task.CompletedTask;
     }
 }

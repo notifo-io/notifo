@@ -10,117 +10,116 @@ using NodaTime;
 using Notifo.Infrastructure.Tasks;
 using Squidex.Hosting;
 
-namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased
+namespace Notifo.Infrastructure.Scheduling.Implementation.TimerBased;
+
+public sealed class TimerScheduling<T> : IScheduling<T>
 {
-    public sealed class TimerScheduling<T> : IScheduling<T>
+    private readonly ISchedulerStore<T> schedulerStore;
+    private readonly SchedulerOptions schedulerOptions;
+    private readonly IClock clock;
+    private readonly ILogger<TimerScheduling<T>> log;
+    private TimerConsumer<T>? consumer;
+
+    public int Order => 1000;
+
+    public string Name => $"TimerScheduler({schedulerOptions.QueueName})";
+
+    public TimerScheduling(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
+        ILogger<TimerScheduling<T>> log, IClock clock)
     {
-        private readonly ISchedulerStore<T> schedulerStore;
-        private readonly SchedulerOptions schedulerOptions;
-        private readonly IClock clock;
-        private readonly ILogger<TimerScheduling<T>> log;
-        private TimerConsumer<T>? consumer;
+        this.schedulerStore = schedulerStore;
+        this.schedulerOptions = schedulerOptions;
+        this.clock = clock;
 
-        public int Order => 1000;
+        this.log = log;
+    }
 
-        public string Name => $"TimerScheduler({schedulerOptions.QueueName})";
-
-        public TimerScheduling(ISchedulerStore<T> schedulerStore, SchedulerOptions schedulerOptions,
-            ILogger<TimerScheduling<T>> log, IClock clock)
+    public async Task InitializeAsync(
+        CancellationToken ct)
+    {
+        if (schedulerStore is IInitializable initializable)
         {
-            this.schedulerStore = schedulerStore;
-            this.schedulerOptions = schedulerOptions;
-            this.clock = clock;
+            await initializable.InitializeAsync(ct);
+        }
+    }
 
-            this.log = log;
+    public async Task ReleaseAsync(
+        CancellationToken ct)
+    {
+        if (schedulerStore is IInitializable initializable)
+        {
+            await initializable.ReleaseAsync(ct);
         }
 
-        public async Task InitializeAsync(
-            CancellationToken ct)
+        if (consumer != null)
         {
-            if (schedulerStore is IInitializable initializable)
-            {
-                await initializable.InitializeAsync(ct);
-            }
+            await consumer.StopAsync();
         }
+    }
 
-        public async Task ReleaseAsync(
-            CancellationToken ct)
+    public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+        CancellationToken ct = default)
+    {
+        var now = clock.GetCurrentInstant();
+
+        return ScheduleAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
+    }
+
+    public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+        CancellationToken ct = default)
+    {
+        var now = clock.GetCurrentInstant();
+
+        return ScheduleAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
+    }
+
+    public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
+        CancellationToken ct = default)
+    {
+        var now = clock.GetCurrentInstant();
+
+        if (dueTime <= now && canInline && schedulerOptions.ExecuteInline)
         {
-            if (schedulerStore is IInitializable initializable)
-            {
-                await initializable.ReleaseAsync(ct);
-            }
-
             if (consumer != null)
             {
-                await consumer.StopAsync();
+                await consumer.ExecuteInlineAsync(key, job);
             }
         }
-
-        public Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct = default)
+        else
         {
-            var now = clock.GetCurrentInstant();
-
-            return ScheduleAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
+            await schedulerStore.EnqueueScheduledAsync(key, job, dueTime, 0, ct);
         }
+    }
 
-        public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
-            CancellationToken ct = default)
+    public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
+        CancellationToken ct = default)
+    {
+        var now = clock.GetCurrentInstant();
+
+        if (dueTime <= now && canInline && schedulerOptions.ExecuteInline)
         {
-            var now = clock.GetCurrentInstant();
-
-            return ScheduleAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
-        }
-
-        public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct = default)
-        {
-            var now = clock.GetCurrentInstant();
-
-            if (dueTime <= now && canInline && schedulerOptions.ExecuteInline)
+            if (consumer != null)
             {
-                if (consumer != null)
-                {
-                    await consumer.ExecuteInlineAsync(key, job);
-                }
-            }
-            else
-            {
-                await schedulerStore.EnqueueScheduledAsync(key, job, dueTime, 0, ct);
+                await consumer.ExecuteInlineAsync(key, job);
             }
         }
-
-        public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
-            CancellationToken ct = default)
+        else
         {
-            var now = clock.GetCurrentInstant();
-
-            if (dueTime <= now && canInline && schedulerOptions.ExecuteInline)
-            {
-                if (consumer != null)
-                {
-                    await consumer.ExecuteInlineAsync(key, job);
-                }
-            }
-            else
-            {
-                await schedulerStore.EnqueueGroupedAsync(key, job, dueTime, 0, ct);
-            }
+            await schedulerStore.EnqueueGroupedAsync(key, job, dueTime, 0, ct);
         }
+    }
 
-        public void Complete(string key)
-        {
-            schedulerStore.CompleteByKeyAsync(key).Forget();
-        }
+    public void Complete(string key)
+    {
+        schedulerStore.CompleteByKeyAsync(key).Forget();
+    }
 
-        public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError,
-            CancellationToken ct = default)
-        {
-            consumer = new TimerConsumer<T>(schedulerStore, schedulerOptions, onSuccess, onError, log, clock);
-            consumer.Subscribe();
+    public Task SubscribeAsync(ScheduleSuccessCallback<T> onSuccess, ScheduleErrorCallback<T> onError,
+        CancellationToken ct = default)
+    {
+        consumer = new TimerConsumer<T>(schedulerStore, schedulerOptions, onSuccess, onError, log, clock);
+        consumer.Subscribe();
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

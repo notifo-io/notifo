@@ -7,78 +7,77 @@
 
 using System.Reflection;
 
-namespace Notifo.Infrastructure.Reflection.Internal
+namespace Notifo.Infrastructure.Reflection.Internal;
+
+public sealed class PropertyAccessor
 {
-    public sealed class PropertyAccessor
+    private interface IPropertyAccessor
     {
-        private interface IPropertyAccessor
+        object? Get(object target);
+
+        void Set(object target, object? value);
+    }
+
+    private sealed class PropertyWrapper<TObject, TValue> : IPropertyAccessor
+    {
+        private readonly Func<TObject, TValue> getMethod;
+        private readonly Action<TObject, TValue> setMethod;
+
+        public PropertyWrapper(PropertyInfo propertyInfo)
         {
-            object? Get(object target);
-
-            void Set(object target, object? value);
-        }
-
-        private sealed class PropertyWrapper<TObject, TValue> : IPropertyAccessor
-        {
-            private readonly Func<TObject, TValue> getMethod;
-            private readonly Action<TObject, TValue> setMethod;
-
-            public PropertyWrapper(PropertyInfo propertyInfo)
+            if (propertyInfo.CanRead)
             {
-                if (propertyInfo.CanRead)
-                {
-                    getMethod = (Func<TObject, TValue>)propertyInfo.GetGetMethod(true)!.CreateDelegate(typeof(Func<TObject, TValue>));
-                }
-                else
-                {
-                    getMethod = x => throw new NotSupportedException();
-                }
-
-                if (propertyInfo.CanWrite)
-                {
-                    setMethod = (Action<TObject, TValue>)propertyInfo.GetSetMethod(true)!.CreateDelegate(typeof(Action<TObject, TValue>));
-                }
-                else
-                {
-                    setMethod = (x, y) => throw new NotSupportedException();
-                }
+                getMethod = (Func<TObject, TValue>)propertyInfo.GetGetMethod(true)!.CreateDelegate(typeof(Func<TObject, TValue>));
+            }
+            else
+            {
+                getMethod = x => throw new NotSupportedException();
             }
 
-            public object? Get(object source)
+            if (propertyInfo.CanWrite)
             {
-                return getMethod((TObject)source);
+                setMethod = (Action<TObject, TValue>)propertyInfo.GetSetMethod(true)!.CreateDelegate(typeof(Action<TObject, TValue>));
             }
-
-            public void Set(object source, object? value)
+            else
             {
-                setMethod((TObject)source, (TValue)value!);
+                setMethod = (x, y) => throw new NotSupportedException();
             }
         }
 
-        private readonly IPropertyAccessor internalAccessor;
-
-        public PropertyAccessor(Type targetType, PropertyInfo propertyInfo)
+        public object? Get(object source)
         {
-            Guard.NotNull(targetType);
-            Guard.NotNull(propertyInfo);
-
-            var type = typeof(PropertyWrapper<,>).MakeGenericType(propertyInfo.DeclaringType!, propertyInfo.PropertyType);
-
-            internalAccessor = (IPropertyAccessor)Activator.CreateInstance(type, propertyInfo)!;
+            return getMethod((TObject)source);
         }
 
-        public object? Get(object target)
+        public void Set(object source, object? value)
         {
-            Guard.NotNull(target);
-
-            return internalAccessor.Get(target);
+            setMethod((TObject)source, (TValue)value!);
         }
+    }
 
-        public void Set(object target, object? value)
-        {
-            Guard.NotNull(target);
+    private readonly IPropertyAccessor internalAccessor;
 
-            internalAccessor.Set(target, value);
-        }
+    public PropertyAccessor(Type targetType, PropertyInfo propertyInfo)
+    {
+        Guard.NotNull(targetType);
+        Guard.NotNull(propertyInfo);
+
+        var type = typeof(PropertyWrapper<,>).MakeGenericType(propertyInfo.DeclaringType!, propertyInfo.PropertyType);
+
+        internalAccessor = (IPropertyAccessor)Activator.CreateInstance(type, propertyInfo)!;
+    }
+
+    public object? Get(object target)
+    {
+        Guard.NotNull(target);
+
+        return internalAccessor.Get(target);
+    }
+
+    public void Set(object target, object? value)
+    {
+        Guard.NotNull(target);
+
+        internalAccessor.Set(target, value);
     }
 }

@@ -7,14 +7,13 @@
 
 using Notifo.Domain.Integrations;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class IntegrationsServiceExtensions
 {
-    public static class IntegrationsServiceExtensions
+    public static void AddMyIntegrations(this IServiceCollection services)
     {
-        public static void AddMyIntegrations(this IServiceCollection services)
-        {
-            services.AddSingletonAs<IntegrationManager>()
-                .As<IIntegrationManager>();
-        }
+        services.AddSingletonAs<IntegrationManager>()
+            .As<IIntegrationManager>();
     }
 }

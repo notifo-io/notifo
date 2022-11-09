@@ -10,24 +10,23 @@ using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain.Channels.Web;
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Areas.Api.Controllers.Notifications
+namespace Notifo.Areas.Api.Controllers.Notifications;
+
+public sealed class NotificationHubAccessor : IStreamClient
 {
-    public sealed class NotificationHubAccessor : IStreamClient
+    private readonly IHubContext<NotificationHub> hubContext;
+
+    public NotificationHubAccessor(IHubContext<NotificationHub> hubContext)
     {
-        private readonly IHubContext<NotificationHub> hubContext;
+        this.hubContext = hubContext;
+    }
 
-        public NotificationHubAccessor(IHubContext<NotificationHub> hubContext)
-        {
-            this.hubContext = hubContext;
-        }
+    public Task SendAsync(UserNotification userNotification)
+    {
+        var dto = UserNotificationDto.FromDomainObject(userNotification);
 
-        public Task SendAsync(UserNotification userNotification)
-        {
-            var dto = UserNotificationDto.FromDomainObject(userNotification);
+        var userId = $"{userNotification.AppId}_{userNotification.UserId}";
 
-            var userId = $"{userNotification.AppId}_{userNotification.UserId}";
-
-            return hubContext.Clients.User(userId).SendAsync("notification", dto);
-        }
+        return hubContext.Clients.User(userId).SendAsync("notification", dto);
     }
 }

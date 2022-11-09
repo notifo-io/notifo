@@ -11,188 +11,187 @@ using Newtonsoft.Json;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.SDK
+namespace Notifo.SDK;
+
+public partial class ErrorDto
 {
-    public partial class ErrorDto
+    /// <inheritdoc />
+    public override string ToString()
     {
-        /// <inheritdoc />
-        public override string ToString()
+        var sb = new StringBuilder();
+
+        var message = Message.Trim();
+
+        if (!string.IsNullOrWhiteSpace(message))
         {
-            var sb = new StringBuilder();
+            sb.Append(message);
+        }
 
-            var message = Message.Trim();
+        var detailAdded = false;
 
-            if (!string.IsNullOrWhiteSpace(message))
+        if (Details != null)
+        {
+            var validDetails = Details.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim());
+
+            if (validDetails.Any())
             {
-                sb.Append(message);
-            }
-
-            var detailAdded = false;
-
-            if (Details != null)
-            {
-                var validDetails = Details.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim());
-
-                if (validDetails.Any())
+                if (!message.EndsWith('.') &&
+                    !message.EndsWith(':') &&
+                    !message.EndsWith(','))
                 {
-                    if (!message.EndsWith('.') &&
-                        !message.EndsWith(':') &&
-                        !message.EndsWith(','))
+                    sb.Append(':');
+                }
+
+                foreach (var detail in validDetails)
+                {
+                    sb.Append(detail);
+
+                    if (!detail.EndsWith('.'))
                     {
-                        sb.Append(':');
+                        sb.Append('.');
                     }
 
-                    foreach (var detail in validDetails)
-                    {
-                        sb.Append(detail);
-
-                        if (!detail.EndsWith('.'))
-                        {
-                            sb.Append('.');
-                        }
-
-                        detailAdded = true;
-                    }
+                    detailAdded = true;
                 }
             }
-
-            if (!detailAdded && !message.EndsWith('.'))
-            {
-                sb.Append('.');
-            }
-
-            return sb.ToString();
         }
+
+        if (!detailAdded && !message.EndsWith('.'))
+        {
+            sb.Append('.');
+        }
+
+        return sb.ToString();
     }
+}
 
 #pragma warning disable RECS0096 // Type parameter is never used
-    public partial class NotifoException<TResult>
+public partial class NotifoException<TResult>
 #pragma warning restore RECS0096 // Type parameter is never used
+{
+    /// <inheritdoc />
+    public override string ToString()
     {
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"{Result}\n{base.ToString()}";
-        }
+        return $"{Result}\n{base.ToString()}";
     }
+}
 
-    public partial class AppsClient
+public partial class AppsClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class ConfigsClient
+public partial class ConfigsClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class EmailTemplatesClient
+public partial class EmailTemplatesClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class EventsClient
+public partial class EventsClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class LogsClient
+public partial class LogsClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class MobilePushClient
+public partial class MobilePushClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class MediaClient
+public partial class MediaClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class NotificationsClient
+public partial class NotificationsClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class PingClient
+public partial class PingClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class SmsTemplatesClient
+public partial class SmsTemplatesClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class SystemUsersClient
+public partial class SystemUsersClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class TemplatesClient
+public partial class TemplatesClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class TopicsClient
+public partial class TopicsClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class UserClient
+public partial class UserClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
+}
 
-    public partial class UsersClient
+public partial class UsersClient
+{
+    partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
     {
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            settings.Configure();
-        }
+        settings.Configure();
     }
 }

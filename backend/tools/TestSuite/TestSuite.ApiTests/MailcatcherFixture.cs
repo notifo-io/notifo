@@ -7,17 +7,16 @@
 
 using TestSuite.Utils;
 
-namespace TestSuite.ApiTests
-{
-    public sealed class MailcatcherFixture
-    {
-        internal MailcatcherClient Client { get; }
+namespace TestSuite.ApiTests;
 
-        public MailcatcherFixture()
-        {
-            Client = new MailcatcherClient(
-                TestHelpers.GetAndPrintValue("mailcatcher:host:api", "localhost"), 1080,
-                TestHelpers.GetAndPrintValue("mailcatcher:host:smtp", "localhost"), 1025);
-        }
+public sealed class MailcatcherFixture
+{
+    internal MailcatcherClient Client { get; }
+
+    public MailcatcherFixture()
+    {
+        Client = new MailcatcherClient(
+            TestHelpers.GetAndPrintValue("mailcatcher:host:api", "localhost"), 1080,
+            TestHelpers.GetAndPrintValue("mailcatcher:host:smtp", "localhost"), 1025);
     }
 }

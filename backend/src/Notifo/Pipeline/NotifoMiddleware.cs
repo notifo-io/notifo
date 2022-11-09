@@ -7,31 +7,30 @@
 
 using Microsoft.Net.Http.Headers;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+public class NotifoMiddleware
 {
-    public class NotifoMiddleware
+    private readonly RequestDelegate next;
+
+    public NotifoMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate next;
+        this.next = next;
+    }
 
-        public NotifoMiddleware(RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context)
+    {
+        if (context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase))
         {
-            this.next = next;
+            context.Response.Headers[HeaderNames.ContentType] = "text/javascript";
+
+            var script = "importScripts('https://app.notifo.io/notifo-sdk-worker.js')";
+
+            await context.Response.WriteAsync(script, context.RequestAborted);
         }
-
-        public async Task InvokeAsync(HttpContext context)
+        else
         {
-            if (context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase))
-            {
-                context.Response.Headers[HeaderNames.ContentType] = "text/javascript";
-
-                var script = "importScripts('https://app.notifo.io/notifo-sdk-worker.js')";
-
-                await context.Response.WriteAsync(script, context.RequestAborted);
-            }
-            else
-            {
-                await next(context);
-            }
+            await next(context);
         }
     }
 }

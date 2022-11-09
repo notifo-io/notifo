@@ -7,14 +7,13 @@
 
 using Notifo.Domain.Counters;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class CountersServiceExtensions
 {
-    public static class CountersServiceExtensions
+    public static void AddMyCounters(this IServiceCollection services)
     {
-        public static void AddMyCounters(this IServiceCollection services)
-        {
-            services.AddSingletonAs<CounterService>()
-                .As<ICounterService>();
-        }
+        services.AddSingletonAs<CounterService>()
+            .As<ICounterService>();
     }
 }

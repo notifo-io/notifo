@@ -7,13 +7,12 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Web
+namespace Notifo.Domain.Channels.Web;
+
+public sealed class NoopStreamClient : IStreamClient
 {
-    public sealed class NoopStreamClient : IStreamClient
+    public Task SendAsync(UserNotification userNotification)
     {
-        public Task SendAsync(UserNotification userNotification)
-        {
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

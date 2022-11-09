@@ -11,36 +11,35 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
+namespace Notifo.Areas.Api.Controllers.Notifications.Dtos;
+
+public sealed class UserNotificationDto : UserNotificationBaseDto
 {
-    public sealed class UserNotificationDto : UserNotificationBaseDto
+    /// <summary>
+    /// True when the notification has been seen at least once.
+    /// </summary>
+    [Required]
+    public bool IsSeen { get; set; }
+
+    /// <summary>
+    /// True when the notification has been confirmed at least once.
+    /// </summary>
+    [Required]
+    public bool IsConfirmed { get; set; }
+
+    public static UserNotificationDto FromDomainObject(UserNotification source)
     {
-        /// <summary>
-        /// True when the notification has been seen at least once.
-        /// </summary>
-        [Required]
-        public bool IsSeen { get; set; }
-
-        /// <summary>
-        /// True when the notification has been confirmed at least once.
-        /// </summary>
-        [Required]
-        public bool IsConfirmed { get; set; }
-
-        public static UserNotificationDto FromDomainObject(UserNotification source)
+        var result = new UserNotificationDto
         {
-            var result = new UserNotificationDto
-            {
-                IsConfirmed = source.FirstConfirmed != null,
-                IsSeen = source.FirstSeen != null
-            };
+            IsConfirmed = source.FirstConfirmed != null,
+            IsSeen = source.FirstSeen != null
+        };
 
-            SimpleMapper.Map(source, result);
-            SimpleMapper.Map(source.Formatting, result);
+        SimpleMapper.Map(source, result);
+        SimpleMapper.Map(source.Formatting, result);
 
-            result.TrackingToken = new TrackingToken(source.Id, Providers.Web).ToParsableString();
+        result.TrackingToken = new TrackingToken(source.Id, Providers.Web).ToParsableString();
 
-            return result;
-        }
+        return result;
     }
 }

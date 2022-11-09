@@ -12,108 +12,107 @@ using Notifo.Domain.Apps;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure.Security;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+public sealed class AppResolver : IAsyncActionFilter
 {
-    public sealed class AppResolver : IAsyncActionFilter
+    private sealed class AppFeature : IAppFeature
     {
-        private sealed class AppFeature : IAppFeature
+        public App App { get; init; }
+    }
+
+    public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+    {
+        var appPermission = context.ActionDescriptor.EndpointMetadata.OfType<AppPermissionAttribute>().FirstOrDefault();
+
+        if (appPermission != null && appPermission.RequiredAppRoles.Length > 0)
         {
-            public App App { get; init; }
+            string? appId;
+
+            if (context.RouteData.Values.TryGetValue("appId", out var appIdValue))
+            {
+                appId = appIdValue?.ToString();
+
+                if (string.IsNullOrWhiteSpace(appId))
+                {
+                    context.Result = new NotFoundResult();
+                    return;
+                }
+            }
+            else
+            {
+                appId = context.HttpContext.User.AppId();
+            }
+
+            if (!string.IsNullOrWhiteSpace(appId))
+            {
+                var appStore = context.HttpContext.RequestServices.GetRequiredService<IAppStore>();
+
+                var app = await appStore.GetAsync(appId, context.HttpContext.RequestAborted);
+
+                if (app == null)
+                {
+                    context.Result = new NotFoundResult();
+                    return;
+                }
+
+                var currentRoles = GetRoles(app, context.HttpContext.User);
+
+                if (currentRoles.Count == 0 || !appPermission.RequiredAppRoles.Any(x => currentRoles.Contains(x)))
+                {
+                    context.Result = new ForbidResult();
+                    return;
+                }
+
+                context.HttpContext.Features.Set<IAppFeature>(new AppFeature { App = app });
+            }
         }
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        await next();
+    }
+
+    private static HashSet<string> GetRoles(App app, ClaimsPrincipal user)
+    {
+        var roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        var subject = user.Sub();
+
+        if (subject != null)
         {
-            var appPermission = context.ActionDescriptor.EndpointMetadata.OfType<AppPermissionAttribute>().FirstOrDefault();
-
-            if (appPermission != null && appPermission.RequiredAppRoles.Length > 0)
+            if (app.Contributors.TryGetValue(subject, out var role) && !string.IsNullOrWhiteSpace(role))
             {
-                string? appId;
-
-                if (context.RouteData.Values.TryGetValue("appId", out var appIdValue))
-                {
-                    appId = appIdValue?.ToString();
-
-                    if (string.IsNullOrWhiteSpace(appId))
-                    {
-                        context.Result = new NotFoundResult();
-                        return;
-                    }
-                }
-                else
-                {
-                    appId = context.HttpContext.User.AppId();
-                }
-
-                if (!string.IsNullOrWhiteSpace(appId))
-                {
-                    var appStore = context.HttpContext.RequestServices.GetRequiredService<IAppStore>();
-
-                    var app = await appStore.GetAsync(appId, context.HttpContext.RequestAborted);
-
-                    if (app == null)
-                    {
-                        context.Result = new NotFoundResult();
-                        return;
-                    }
-
-                    var currentRoles = GetRoles(app, context.HttpContext.User);
-
-                    if (currentRoles.Count == 0 || !appPermission.RequiredAppRoles.Any(x => currentRoles.Contains(x)))
-                    {
-                        context.Result = new ForbidResult();
-                        return;
-                    }
-
-                    context.HttpContext.Features.Set<IAppFeature>(new AppFeature { App = app });
-                }
+                roles.Add(role);
             }
-
-            await next();
-        }
-
-        private static HashSet<string> GetRoles(App app, ClaimsPrincipal user)
-        {
-            var roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            var subject = user.Sub();
-
-            if (subject != null)
-            {
-                if (app.Contributors.TryGetValue(subject, out var role) && !string.IsNullOrWhiteSpace(role))
-                {
-                    roles.Add(role);
-                }
-                else if (string.Equals(app.Id, user.AppId(), StringComparison.OrdinalIgnoreCase))
-                {
-                    roles.Add(NotifoRoles.AppUser);
-                }
-            }
-
-            foreach (var claim in user.Claims)
-            {
-                if (claim.Type == DefaultClaimTypes.AppRole)
-                {
-                    roles.Add(claim.Value);
-                }
-            }
-
-            if (roles.Contains(NotifoRoles.HostAdmin))
-            {
-                roles.Add(NotifoRoles.AppOwner);
-            }
-
-            if (roles.Contains(NotifoRoles.AppOwner))
-            {
-                roles.Add(NotifoRoles.AppAdmin);
-            }
-
-            if (roles.Contains(NotifoRoles.AppAdmin))
+            else if (string.Equals(app.Id, user.AppId(), StringComparison.OrdinalIgnoreCase))
             {
                 roles.Add(NotifoRoles.AppUser);
-                roles.Add(NotifoRoles.AppWebManager);
             }
-
-            return roles;
         }
+
+        foreach (var claim in user.Claims)
+        {
+            if (claim.Type == DefaultClaimTypes.AppRole)
+            {
+                roles.Add(claim.Value);
+            }
+        }
+
+        if (roles.Contains(NotifoRoles.HostAdmin))
+        {
+            roles.Add(NotifoRoles.AppOwner);
+        }
+
+        if (roles.Contains(NotifoRoles.AppOwner))
+        {
+            roles.Add(NotifoRoles.AppAdmin);
+        }
+
+        if (roles.Contains(NotifoRoles.AppAdmin))
+        {
+            roles.Add(NotifoRoles.AppUser);
+            roles.Add(NotifoRoles.AppWebManager);
+        }
+
+        return roles;
     }
 }

@@ -5,9 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo
+namespace Notifo;
+
+public sealed class AppResources
 {
-    public sealed class AppResources
-    {
-    }
 }

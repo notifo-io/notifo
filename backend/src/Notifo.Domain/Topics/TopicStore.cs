@@ -10,101 +10,100 @@ using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Topics
+namespace Notifo.Domain.Topics;
+
+public sealed class TopicStore : ITopicStore, ICounterTarget, IDisposable
 {
-    public sealed class TopicStore : ITopicStore, ICounterTarget, IDisposable
+    private readonly ITopicRepository repository;
+    private readonly IServiceProvider services;
+    private readonly IClock clock;
+    private readonly CounterCollector<(string AppId, string Path)> collector;
+
+    public TopicStore(ITopicRepository repository,
+        IServiceProvider services, IClock clock, ILogger<TopicStore> log)
     {
-        private readonly ITopicRepository repository;
-        private readonly IServiceProvider services;
-        private readonly IClock clock;
-        private readonly CounterCollector<(string AppId, string Path)> collector;
+        this.repository = repository;
+        this.services = services;
+        this.clock = clock;
 
-        public TopicStore(ITopicRepository repository,
-            IServiceProvider services, IClock clock, ILogger<TopicStore> log)
+        collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
+    }
+
+    public void Dispose()
+    {
+        collector.DisposeAsync().AsTask().Wait();
+    }
+
+    public async Task CollectAsync(TrackingKey key, CounterMap counters,
+        CancellationToken ct = default)
+    {
+        if (key.AppId != null && key.Topic != null)
         {
-            this.repository = repository;
-            this.services = services;
-            this.clock = clock;
-
-            collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
+            await collector.AddAsync((key.AppId, key.Topic), counters, ct);
         }
+    }
 
-        public void Dispose()
-        {
-            collector.DisposeAsync().AsTask().Wait();
-        }
+    public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNull(query);
 
-        public async Task CollectAsync(TrackingKey key, CounterMap counters,
-            CancellationToken ct = default)
+        var topics = await repository.QueryAsync(appId, query, ct);
+
+        CounterMap.Cleanup(topics.Select(x => x.Counters));
+
+        return topics;
+    }
+
+    public Task<Topic> UpsertAsync(string appId, TopicId path, ICommand<Topic> command,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(path);
+        Guard.NotNull(command);
+
+        return Updater.UpdateRetriedAsync(5, async () =>
         {
-            if (key.AppId != null && key.Topic != null)
+            var (topic, etag) = await repository.GetAsync(appId, path, ct);
+
+            // Calculate once to have some timestamp for created and updated when new entity is created.
+            var now = clock.GetCurrentInstant();
+
+            if (topic == null)
             {
-                await collector.AddAsync((key.AppId, key.Topic), counters, ct);
+                if (!command.CanCreate)
+                {
+                    throw new DomainObjectNotFoundException(path);
+                }
+
+                topic = new Topic(appId, path, now);
             }
-        }
 
-        public async Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNull(query);
+            var newTopic = await command.ExecuteAsync(topic, services, ct);
 
-            var topics = await repository.QueryAsync(appId, query, ct);
-
-            CounterMap.Cleanup(topics.Select(x => x.Counters));
-
-            return topics;
-        }
-
-        public Task<Topic> UpsertAsync(string appId, TopicId path, ICommand<Topic> command,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNullOrEmpty(path);
-            Guard.NotNull(command);
-
-            return Updater.UpdateRetriedAsync(5, async () =>
+            if (newTopic == null || ReferenceEquals(newTopic, topic))
             {
-                var (topic, etag) = await repository.GetAsync(appId, path, ct);
+                return topic;
+            }
 
-                // Calculate once to have some timestamp for created and updated when new entity is created.
-                var now = clock.GetCurrentInstant();
+            newTopic = newTopic with
+            {
+                LastUpdate = now
+            };
 
-                if (topic == null)
-                {
-                    if (!command.CanCreate)
-                    {
-                        throw new DomainObjectNotFoundException(path);
-                    }
+            await repository.UpsertAsync(newTopic, etag, ct);
 
-                    topic = new Topic(appId, path, now);
-                }
+            return newTopic;
+        });
+    }
 
-                var newTopic = await command.ExecuteAsync(topic, services, ct);
+    public Task DeleteAsync(string appId, TopicId path,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(path);
 
-                if (newTopic == null || ReferenceEquals(newTopic, topic))
-                {
-                    return topic;
-                }
-
-                newTopic = newTopic with
-                {
-                    LastUpdate = now
-                };
-
-                await repository.UpsertAsync(newTopic, etag, ct);
-
-                return newTopic;
-            });
-        }
-
-        public Task DeleteAsync(string appId, TopicId path,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNullOrEmpty(path);
-
-            return repository.DeleteAsync(appId, path, ct);
-        }
+        return repository.DeleteAsync(appId, path, ct);
     }
 }

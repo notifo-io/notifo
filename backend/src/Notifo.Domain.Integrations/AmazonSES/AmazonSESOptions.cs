@@ -8,39 +8,38 @@
 using Notifo.Domain.Integrations.Smtp;
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Domain.Integrations.AmazonSES
+namespace Notifo.Domain.Integrations.AmazonSES;
+
+public sealed class AmazonSESOptions : SmtpOptions
 {
-    public sealed class AmazonSESOptions : SmtpOptions
+    public string Region { get; set; } = "eu-central-1";
+
+    public string AwsAccessKeyId { get; set; }
+
+    public string AwsSecretAccessKey { get; set; }
+
+    public bool BindEmailAddresses { get; set; }
+
+    public override IEnumerable<ConfigurationError> Validate()
     {
-        public string Region { get; set; } = "eu-central-1";
-
-        public string AwsAccessKeyId { get; set; }
-
-        public string AwsSecretAccessKey { get; set; }
-
-        public bool BindEmailAddresses { get; set; }
-
-        public override IEnumerable<ConfigurationError> Validate()
+        foreach (var error in base.Validate())
         {
-            foreach (var error in base.Validate())
-            {
-                yield return error;
-            }
+            yield return error;
+        }
 
-            if (string.IsNullOrWhiteSpace(Region))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(Region));
-            }
+        if (string.IsNullOrWhiteSpace(Region))
+        {
+            yield return new ConfigurationError("Value is required.", nameof(Region));
+        }
 
-            if (string.IsNullOrWhiteSpace(AwsAccessKeyId))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(AwsAccessKeyId));
-            }
+        if (string.IsNullOrWhiteSpace(AwsAccessKeyId))
+        {
+            yield return new ConfigurationError("Value is required.", nameof(AwsAccessKeyId));
+        }
 
-            if (string.IsNullOrWhiteSpace(AwsSecretAccessKey))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(AwsSecretAccessKey));
-            }
+        if (string.IsNullOrWhiteSpace(AwsSecretAccessKey))
+        {
+            yield return new ConfigurationError("Value is required.", nameof(AwsSecretAccessKey));
         }
     }
 }

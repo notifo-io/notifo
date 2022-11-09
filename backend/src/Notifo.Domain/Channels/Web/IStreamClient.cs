@@ -7,10 +7,9 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Web
+namespace Notifo.Domain.Channels.Web;
+
+public interface IStreamClient
 {
-    public interface IStreamClient
-    {
-        Task SendAsync(UserNotification userNotification);
-    }
+    Task SendAsync(UserNotification userNotification);
 }

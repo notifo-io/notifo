@@ -9,46 +9,45 @@ using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Apps.MongoDb
+namespace Notifo.Domain.Apps.MongoDb;
+
+public sealed class MongoDbApp : MongoDbEntity<App>
 {
-    public sealed class MongoDbApp : MongoDbEntity<App>
+    [BsonIgnoreIfNull]
+    public List<string> ContributorIds { get; set; }
+
+    [BsonIgnoreIfNull]
+    public List<string> ApiKeys { get; set; }
+
+    [BsonIgnoreIfDefault]
+    public bool IsPending { get; set; }
+
+    public static MongoDbApp FromApp(App app)
     {
-        [BsonIgnoreIfNull]
-        public List<string> ContributorIds { get; set; }
-
-        [BsonIgnoreIfNull]
-        public List<string> ApiKeys { get; set; }
-
-        [BsonIgnoreIfDefault]
-        public bool IsPending { get; set; }
-
-        public static MongoDbApp FromApp(App app)
+        var result = new MongoDbApp
         {
-            var result = new MongoDbApp
-            {
-                DocId = app.Id,
-                Doc = app,
-                Etag = GenerateEtag()
-            };
+            DocId = app.Id,
+            Doc = app,
+            Etag = GenerateEtag()
+        };
 
-            if (app.Contributors?.Count > 0)
-            {
-                result.ContributorIds = app.Contributors.Keys.ToList();
-            }
-
-            if (app.ApiKeys?.Count > 0)
-            {
-                result.ApiKeys = app.ApiKeys.Keys.ToList();
-            }
-
-            result.IsPending = app.Integrations.Values.Any(x => x.Status == IntegrationStatus.Pending);
-
-            return result;
+        if (app.Contributors?.Count > 0)
+        {
+            result.ContributorIds = app.Contributors.Keys.ToList();
         }
 
-        public App ToApp()
+        if (app.ApiKeys?.Count > 0)
         {
-            return Doc;
+            result.ApiKeys = app.ApiKeys.Keys.ToList();
         }
+
+        result.IsPending = app.Integrations.Values.Any(x => x.Status == IntegrationStatus.Pending);
+
+        return result;
+    }
+
+    public App ToApp()
+    {
+        return Doc;
     }
 }

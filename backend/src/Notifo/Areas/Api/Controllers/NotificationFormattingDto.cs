@@ -12,64 +12,63 @@ using Notifo.Domain.Utils;
 using Notifo.Infrastructure.Reflection;
 using Notifo.Infrastructure.Texts;
 
-namespace Notifo.Areas.Api.Controllers
+namespace Notifo.Areas.Api.Controllers;
+
+public sealed class NotificationFormattingDto
 {
-    public sealed class NotificationFormattingDto
+    /// <summary>
+    /// The required subject with one entry per language.
+    /// </summary>
+    [Required]
+    public LocalizedText Subject { get; set; }
+
+    /// <summary>
+    /// The optional body with one entry per language.
+    /// </summary>
+    public LocalizedText? Body { get; set; }
+
+    /// <summary>
+    /// The optional confirm text with one entry per language.
+    /// </summary>
+    public LocalizedText? ConfirmText { get; set; }
+
+    /// <summary>
+    /// The optional small image with one entry per language.
+    /// </summary>
+    public LocalizedText? ImageSmall { get; set; }
+
+    /// <summary>
+    /// The optional large image with one entry per language.
+    /// </summary>
+    public LocalizedText? ImageLarge { get; set; }
+
+    /// <summary>
+    /// The optional link url with one entry per language.
+    /// </summary>
+    public LocalizedText? LinkUrl { get; set; }
+
+    /// <summary>
+    /// The optional link name with one entry per language.
+    /// </summary>
+    public LocalizedText? LinkText { get; set; }
+
+    /// <summary>
+    /// The confirmation mode.
+    /// </summary>
+    [JsonConverter(typeof(JsonSoftEnumConverter<ConfirmMode>))]
+    public ConfirmMode? ConfirmMode { get; set; }
+
+    public static NotificationFormattingDto FromDomainObject(NotificationFormatting<LocalizedText> source)
     {
-        /// <summary>
-        /// The required subject with one entry per language.
-        /// </summary>
-        [Required]
-        public LocalizedText Subject { get; set; }
+        var result = SimpleMapper.Map(source, new NotificationFormattingDto());
 
-        /// <summary>
-        /// The optional body with one entry per language.
-        /// </summary>
-        public LocalizedText? Body { get; set; }
+        return result;
+    }
 
-        /// <summary>
-        /// The optional confirm text with one entry per language.
-        /// </summary>
-        public LocalizedText? ConfirmText { get; set; }
+    public NotificationFormatting<LocalizedText> ToDomainObject()
+    {
+        var result = SimpleMapper.Map(this, new NotificationFormatting<LocalizedText>());
 
-        /// <summary>
-        /// The optional small image with one entry per language.
-        /// </summary>
-        public LocalizedText? ImageSmall { get; set; }
-
-        /// <summary>
-        /// The optional large image with one entry per language.
-        /// </summary>
-        public LocalizedText? ImageLarge { get; set; }
-
-        /// <summary>
-        /// The optional link url with one entry per language.
-        /// </summary>
-        public LocalizedText? LinkUrl { get; set; }
-
-        /// <summary>
-        /// The optional link name with one entry per language.
-        /// </summary>
-        public LocalizedText? LinkText { get; set; }
-
-        /// <summary>
-        /// The confirmation mode.
-        /// </summary>
-        [JsonConverter(typeof(JsonSoftEnumConverter<ConfirmMode>))]
-        public ConfirmMode? ConfirmMode { get; set; }
-
-        public static NotificationFormattingDto FromDomainObject(NotificationFormatting<LocalizedText> source)
-        {
-            var result = SimpleMapper.Map(source, new NotificationFormattingDto());
-
-            return result;
-        }
-
-        public NotificationFormatting<LocalizedText> ToDomainObject()
-        {
-            var result = SimpleMapper.Map(this, new NotificationFormatting<LocalizedText>());
-
-            return result;
-        }
+        return result;
     }
 }

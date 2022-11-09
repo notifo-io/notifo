@@ -17,128 +17,127 @@ using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Security;
 
-namespace Notifo.Identity.ApiKey
+namespace Notifo.Identity.ApiKey;
+
+public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
 {
-    public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
+    private const string ApiKeyPrefix = "ApiKey ";
+    private const string ApiKeyHeader = "ApiKey";
+    private const string ApiKeyHeaderX = "X-ApiKey";
+    private const string AccessTokenQuery = "access_token";
+    private readonly IAppStore appStore;
+    private readonly IUserStore userStore;
+
+    public ApiKeyHandler(IAppStore appStore, IUserStore userStore,
+            IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
+        : base(options, logger, encoder, clock)
     {
-        private const string ApiKeyPrefix = "ApiKey ";
-        private const string ApiKeyHeader = "ApiKey";
-        private const string ApiKeyHeaderX = "X-ApiKey";
-        private const string AccessTokenQuery = "access_token";
-        private readonly IAppStore appStore;
-        private readonly IUserStore userStore;
+        this.appStore = appStore;
+        this.userStore = userStore;
+    }
 
-        public ApiKeyHandler(IAppStore appStore, IUserStore userStore,
-                IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-            : base(options, logger, encoder, clock)
+    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        try
         {
-            this.appStore = appStore;
-            this.userStore = userStore;
-        }
-
-        protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
-        {
-            try
+            if (!IsApiKey(Request, out var apiKey))
             {
-                if (!IsApiKey(Request, out var apiKey))
-                {
-                    return AuthenticateResult.NoResult();
-                }
-
-                var app = await appStore.GetByApiKeyAsync(apiKey, Context.RequestAborted);
-
-                if (app != null && app.ApiKeys.TryGetValue(apiKey, out var role))
-                {
-                    var identity = new ClaimsIdentity(new[]
-                    {
-                        new Claim(DefaultClaimTypes.AppId, app.Id),
-                        new Claim(DefaultClaimTypes.AppName, app.Name),
-                        new Claim(DefaultClaimTypes.AppRole, role)
-                    }, ApiKeyDefaults.AuthenticationScheme);
-
-                    return Success(identity);
-                }
-
-                var user = await userStore.GetByApiKeyAsync(apiKey, Context.RequestAborted);
-
-                if (user != null)
-                {
-                    var identity = new ClaimsIdentity(new[]
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, user.UniqueId),
-                        new Claim(DefaultClaimTypes.AppId, user.AppId),
-                        new Claim(DefaultClaimTypes.AppName, user.AppId),
-                        new Claim(DefaultClaimTypes.UserId, user.Id)
-                    }, ApiKeyDefaults.AuthenticationScheme);
-
-                    return Success(identity);
-                }
-
-                return AuthenticateResult.Fail("Invalid API Key");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Error while handling api key.");
-
-                throw;
-            }
-        }
-
-        private AuthenticateResult Success(ClaimsIdentity identity)
-        {
-            var principal = new ClaimsPrincipal(identity);
-
-            var ticket = new AuthenticationTicket(principal, Scheme.Name);
-
-            return AuthenticateResult.Success(ticket);
-        }
-
-        public static bool IsApiKey(HttpRequest request, [MaybeNullWhen(false)] out string apiKey)
-        {
-            apiKey = null!;
-
-            string authorizationHeader = request.Headers[HeaderNames.Authorization];
-
-            if (authorizationHeader?.StartsWith(ApiKeyPrefix, StringComparison.OrdinalIgnoreCase) == true)
-            {
-                var key = authorizationHeader[ApiKeyPrefix.Length..].Trim();
-
-                if (!string.IsNullOrWhiteSpace(key))
-                {
-                    apiKey = key;
-
-                    return true;
-                }
+                return AuthenticateResult.NoResult();
             }
 
-            string apiKeyHeader1 = request.Headers[ApiKeyHeader];
+            var app = await appStore.GetByApiKeyAsync(apiKey, Context.RequestAborted);
 
-            if (!string.IsNullOrWhiteSpace(apiKeyHeader1))
+            if (app != null && app.ApiKeys.TryGetValue(apiKey, out var role))
             {
-                apiKey = apiKeyHeader1;
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(DefaultClaimTypes.AppId, app.Id),
+                    new Claim(DefaultClaimTypes.AppName, app.Name),
+                    new Claim(DefaultClaimTypes.AppRole, role)
+                }, ApiKeyDefaults.AuthenticationScheme);
+
+                return Success(identity);
+            }
+
+            var user = await userStore.GetByApiKeyAsync(apiKey, Context.RequestAborted);
+
+            if (user != null)
+            {
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UniqueId),
+                    new Claim(DefaultClaimTypes.AppId, user.AppId),
+                    new Claim(DefaultClaimTypes.AppName, user.AppId),
+                    new Claim(DefaultClaimTypes.UserId, user.Id)
+                }, ApiKeyDefaults.AuthenticationScheme);
+
+                return Success(identity);
+            }
+
+            return AuthenticateResult.Fail("Invalid API Key");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while handling api key.");
+
+            throw;
+        }
+    }
+
+    private AuthenticateResult Success(ClaimsIdentity identity)
+    {
+        var principal = new ClaimsPrincipal(identity);
+
+        var ticket = new AuthenticationTicket(principal, Scheme.Name);
+
+        return AuthenticateResult.Success(ticket);
+    }
+
+    public static bool IsApiKey(HttpRequest request, [MaybeNullWhen(false)] out string apiKey)
+    {
+        apiKey = null!;
+
+        string authorizationHeader = request.Headers[HeaderNames.Authorization];
+
+        if (authorizationHeader?.StartsWith(ApiKeyPrefix, StringComparison.OrdinalIgnoreCase) == true)
+        {
+            var key = authorizationHeader[ApiKeyPrefix.Length..].Trim();
+
+            if (!string.IsNullOrWhiteSpace(key))
+            {
+                apiKey = key;
 
                 return true;
             }
-
-            string apiKeyHeader2 = request.Headers[ApiKeyHeaderX];
-
-            if (!string.IsNullOrWhiteSpace(apiKeyHeader2))
-            {
-                apiKey = apiKeyHeader2;
-
-                return true;
-            }
-
-            string tokenQuery = request.Query[AccessTokenQuery];
-
-            if (!string.IsNullOrWhiteSpace(tokenQuery))
-            {
-                apiKey = tokenQuery;
-
-                return true;
-            }
-
-            return false;
         }
+
+        string apiKeyHeader1 = request.Headers[ApiKeyHeader];
+
+        if (!string.IsNullOrWhiteSpace(apiKeyHeader1))
+        {
+            apiKey = apiKeyHeader1;
+
+            return true;
+        }
+
+        string apiKeyHeader2 = request.Headers[ApiKeyHeaderX];
+
+        if (!string.IsNullOrWhiteSpace(apiKeyHeader2))
+        {
+            apiKey = apiKeyHeader2;
+
+            return true;
+        }
+
+        string tokenQuery = request.Query[AccessTokenQuery];
+
+        if (!string.IsNullOrWhiteSpace(tokenQuery))
+        {
+            apiKey = tokenQuery;
+
+            return true;
+        }
+
+        return false;
     }
 }

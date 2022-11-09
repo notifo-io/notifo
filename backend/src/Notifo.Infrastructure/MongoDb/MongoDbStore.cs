@@ -7,75 +7,74 @@
 
 using MongoDB.Driver;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public class MongoDbStore<T> : MongoDbRepository<T> where T : MongoDbEntity
 {
-    public class MongoDbStore<T> : MongoDbRepository<T> where T : MongoDbEntity
+    public MongoDbStore(IMongoDatabase database)
+        : base(database)
     {
-        public MongoDbStore(IMongoDatabase database)
-            : base(database)
+    }
+
+    protected async Task<T?> GetDocumentAsync(string id,
+        CancellationToken ct)
+    {
+        Guard.NotNullOrEmpty(id);
+
+        var existing =
+            await Collection.Find(x => x.DocId == id)
+                .FirstOrDefaultAsync(ct);
+
+        return existing;
+    }
+
+    protected async Task UpsertDocumentAsync(string id, T value, string? oldEtag,
+        CancellationToken ct)
+    {
+        Guard.NotNullOrEmpty(id);
+        Guard.NotNull(value);
+
+        try
         {
-        }
-
-        protected async Task<T?> GetDocumentAsync(string id,
-            CancellationToken ct)
-        {
-            Guard.NotNullOrEmpty(id);
-
-            var existing =
-                await Collection.Find(x => x.DocId == id)
-                    .FirstOrDefaultAsync(ct);
-
-            return existing;
-        }
-
-        protected async Task UpsertDocumentAsync(string id, T value, string? oldEtag,
-            CancellationToken ct)
-        {
-            Guard.NotNullOrEmpty(id);
-            Guard.NotNull(value);
-
-            try
+            if (!string.IsNullOrWhiteSpace(oldEtag))
             {
-                if (!string.IsNullOrWhiteSpace(oldEtag))
-                {
-                    await Collection.ReplaceOneAsync(x => x.DocId == id && x.Etag == oldEtag, value, UpsertReplace, ct);
-                }
-                else
-                {
-                    await Collection.ReplaceOneAsync(x => x.DocId == id, value, UpsertReplace, ct);
-                }
+                await Collection.ReplaceOneAsync(x => x.DocId == id && x.Etag == oldEtag, value, UpsertReplace, ct);
             }
-            catch (MongoWriteException ex)
+            else
             {
-                if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+                await Collection.ReplaceOneAsync(x => x.DocId == id, value, UpsertReplace, ct);
+            }
+        }
+        catch (MongoWriteException ex)
+        {
+            if (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+            {
+                if (oldEtag != null)
                 {
-                    if (oldEtag != null)
+                    var existingVersion =
+                        await Collection.Find(x => x.DocId == id).Only(x => x.DocId, x => x.Etag)
+                            .FirstOrDefaultAsync(ct);
+
+                    if (existingVersion != null)
                     {
-                        var existingVersion =
-                            await Collection.Find(x => x.DocId == id).Only(x => x.DocId, x => x.Etag)
-                                .FirstOrDefaultAsync(ct);
-
-                        if (existingVersion != null)
-                        {
-                            throw new InconsistentStateException(existingVersion["e"].AsString, oldEtag, ex);
-                        }
+                        throw new InconsistentStateException(existingVersion["e"].AsString, oldEtag, ex);
                     }
+                }
 
-                    throw new UniqueConstraintException();
-                }
-                else
-                {
-                    throw;
-                }
+                throw new UniqueConstraintException();
+            }
+            else
+            {
+                throw;
             }
         }
+    }
 
-        public Task DeleteAsync(string id,
-            CancellationToken ct)
-        {
-            Guard.NotNullOrEmpty(id);
+    public Task DeleteAsync(string id,
+        CancellationToken ct)
+    {
+        Guard.NotNullOrEmpty(id);
 
-            return Collection.DeleteOneAsync(x => x.DocId == id, ct);
-        }
+        return Collection.DeleteOneAsync(x => x.DocId == id, ct);
     }
 }

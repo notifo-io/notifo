@@ -7,54 +7,53 @@
 
 using Notifo.Domain.Channels.Email;
 
-namespace Notifo.Domain.Integrations.Mailjet
+namespace Notifo.Domain.Integrations.Mailjet;
+
+public sealed class MailjetEmailSender : IEmailSender
 {
-    public sealed class MailjetEmailSender : IEmailSender
+    private const int Attempts = 5;
+    private readonly Func<MailjetEmailServer> server;
+    private readonly string fromEmail;
+    private readonly string fromName;
+
+    public string Name => "Mailjet";
+
+    public MailjetEmailSender(Func<MailjetEmailServer> server,
+        string fromEmail,
+        string fromName)
     {
-        private const int Attempts = 5;
-        private readonly Func<MailjetEmailServer> server;
-        private readonly string fromEmail;
-        private readonly string fromName;
+        this.server = server;
 
-        public string Name => "Mailjet";
+        this.fromEmail = fromEmail;
+        this.fromName = fromName;
+    }
 
-        public MailjetEmailSender(Func<MailjetEmailServer> server,
-            string fromEmail,
-            string fromName)
+    public async Task SendAsync(EmailMessage message,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(message.FromEmail))
         {
-            this.server = server;
-
-            this.fromEmail = fromEmail;
-            this.fromName = fromName;
+            message.FromEmail = fromEmail;
         }
 
-        public async Task SendAsync(EmailMessage message,
-            CancellationToken ct = default)
+        if (string.IsNullOrWhiteSpace(message.FromName))
         {
-            if (string.IsNullOrWhiteSpace(message.FromEmail))
-            {
-                message.FromEmail = fromEmail;
-            }
+            message.FromName = fromName;
+        }
 
-            if (string.IsNullOrWhiteSpace(message.FromName))
+        // Try a few attempts to get a non-disposed server instance.
+        for (var i = 1; i <= Attempts; i++)
+        {
+            try
             {
-                message.FromName = fromName;
+                await server().SendAsync(message);
+                break;
             }
-
-            // Try a few attempts to get a non-disposed server instance.
-            for (var i = 1; i <= Attempts; i++)
+            catch (ObjectDisposedException)
             {
-                try
+                if (i == Attempts)
                 {
-                    await server().SendAsync(message);
-                    break;
-                }
-                catch (ObjectDisposedException)
-                {
-                    if (i == Attempts)
-                    {
-                        throw;
-                    }
+                    throw;
                 }
             }
         }

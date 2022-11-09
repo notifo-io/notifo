@@ -14,42 +14,41 @@ using Notifo.Infrastructure.Json;
 using Squidex.Messaging;
 using Squidex.Messaging.Implementation;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class JsonServiceExtensions
 {
-    public static class JsonServiceExtensions
+    public static void AddMyJson(this IServiceCollection services, Action<JsonSerializerOptions> configure)
     {
-        public static void AddMyJson(this IServiceCollection services, Action<JsonSerializerOptions> configure)
-        {
-            var options =
-                new JsonSerializerOptions()
-                    .Configure(configure);
+        var options =
+            new JsonSerializerOptions()
+                .Configure(configure);
 
-            services.AddSingleton(options);
+        services.AddSingleton(options);
 
-            services.AddSingletonAs(c => new SystemTextJsonMessagingSerializer(c => Configure(c, configure)))
-                .As<IMessagingSerializer>();
+        services.AddSingletonAs(c => new SystemTextJsonMessagingSerializer(c => Configure(c, configure)))
+            .As<IMessagingSerializer>();
 
-            services.AddSingletonAs<SystemTextJsonSerializer>()
-                .As<IJsonSerializer>();
-        }
+        services.AddSingletonAs<SystemTextJsonSerializer>()
+            .As<IJsonSerializer>();
+    }
 
-        public static JsonSerializerOptions Configure(this JsonSerializerOptions options, Action<JsonSerializerOptions> configure)
-        {
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    public static JsonSerializerOptions Configure(this JsonSerializerOptions options, Action<JsonSerializerOptions> configure)
+    {
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
-            options.Converters.Add(new JsonActivityContextConverter());
-            options.Converters.Add(new JsonActivitySpanIdConverter());
-            options.Converters.Add(new JsonActivityTraceIdConverter());
-            options.Converters.Add(new JsonInstantConverter());
-            options.Converters.Add(new JsonReadonlyDictionaryConverterFactory());
-            options.Converters.Add(new JsonReadonlyListConverterFactory());
-            options.Converters.Add(new JsonStringEnumConverter());
-            options.Converters.Add(new JsonTimeSpanConverter());
-            options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+        options.Converters.Add(new JsonActivityContextConverter());
+        options.Converters.Add(new JsonActivitySpanIdConverter());
+        options.Converters.Add(new JsonActivityTraceIdConverter());
+        options.Converters.Add(new JsonInstantConverter());
+        options.Converters.Add(new JsonReadonlyDictionaryConverterFactory());
+        options.Converters.Add(new JsonReadonlyListConverterFactory());
+        options.Converters.Add(new JsonStringEnumConverter());
+        options.Converters.Add(new JsonTimeSpanConverter());
+        options.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
 
-            configure(options);
+        configure(options);
 
-            return options;
-        }
+        return options;
     }
 }

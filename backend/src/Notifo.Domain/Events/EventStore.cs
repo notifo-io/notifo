@@ -10,58 +10,57 @@ using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Domain.Events
+namespace Notifo.Domain.Events;
+
+public sealed class EventStore : IEventStore, ICounterTarget, IDisposable
 {
-    public sealed class EventStore : IEventStore, ICounterTarget, IDisposable
+    private readonly CounterCollector<(string, string)> collector;
+    private readonly IEventRepository eventRepository;
+
+    public EventStore(IEventRepository eventRepository,
+        ILogger<EventStore> log)
     {
-        private readonly CounterCollector<(string, string)> collector;
-        private readonly IEventRepository eventRepository;
+        this.eventRepository = eventRepository;
 
-        public EventStore(IEventRepository eventRepository,
-            ILogger<EventStore> log)
+        collector = new CounterCollector<(string, string)>(eventRepository, log, 5000);
+    }
+
+    public void Dispose()
+    {
+        collector.DisposeAsync().AsTask().Wait();
+    }
+
+    public async Task CollectAsync(TrackingKey key, CounterMap counters,
+        CancellationToken ct = default)
+    {
+        if (key.AppId != null && key.EventId != null)
         {
-            this.eventRepository = eventRepository;
-
-            collector = new CounterCollector<(string, string)>(eventRepository, log, 5000);
+            await collector.AddAsync((key.AppId, key.EventId), counters, ct);
         }
+    }
 
-        public void Dispose()
-        {
-            collector.DisposeAsync().AsTask().Wait();
-        }
+    public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNull(query);
 
-        public async Task CollectAsync(TrackingKey key, CounterMap counters,
-            CancellationToken ct = default)
-        {
-            if (key.AppId != null && key.EventId != null)
-            {
-                await collector.AddAsync((key.AppId, key.EventId), counters, ct);
-            }
-        }
+        var events = await eventRepository.QueryAsync(appId, query, ct);
 
-        public async Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNull(query);
+        CounterMap.Cleanup(events.Select(x => x.Counters));
 
-            var events = await eventRepository.QueryAsync(appId, query, ct);
+        return events;
+    }
 
-            CounterMap.Cleanup(events.Select(x => x.Counters));
+    public Task InsertAsync(EventMessage request,
+        CancellationToken ct = default)
+    {
+        Guard.NotNull(request);
 
-            return events;
-        }
+        var @event = SimpleMapper.Map(request, new Event());
 
-        public Task InsertAsync(EventMessage request,
-            CancellationToken ct = default)
-        {
-            Guard.NotNull(request);
+        @event.Counters = new CounterMap();
 
-            var @event = SimpleMapper.Map(request, new Event());
-
-            @event.Counters = new CounterMap();
-
-            return eventRepository.InsertAsync(@event, ct);
-        }
+        return eventRepository.InsertAsync(@event, ct);
     }
 }

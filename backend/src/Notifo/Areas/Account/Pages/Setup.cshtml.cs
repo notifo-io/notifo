@@ -17,119 +17,118 @@ using NotifoValidationException = Notifo.Infrastructure.Validation.ValidationExc
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Pages;
+
+public sealed class SetupModel : PageModelBase<SetupModel>
 {
-    public sealed class SetupModel : PageModelBase<SetupModel>
+    private readonly IAssetStore assetStore;
+
+    public string Email { get; set; }
+
+    public string BaseUrlCurrent { get; set; }
+
+    public string BaseUrlConfigured { get; set; }
+
+    public bool IsValidHttps { get; set; }
+
+    public bool IsAssetStoreFtp { get; set; }
+
+    public bool IsAssetStoreFile { get; set; }
+
+    public bool HasExternalLogin { get; set; }
+
+    public SetupModel(IAssetStore assetStore)
     {
-        private readonly IAssetStore assetStore;
+        this.assetStore = assetStore;
+    }
 
-        public string Email { get; set; }
+    public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+    {
+        await next();
 
-        public string BaseUrlCurrent { get; set; }
+        var externalProviders = await SignInManager.GetExternalAuthenticationSchemesAsync();
 
-        public string BaseUrlConfigured { get; set; }
+        BaseUrlConfigured = UrlGenerator.BuildUrl(string.Empty, false);
+        BaseUrlCurrent = GetCurrentUrl();
+        IsValidHttps = HttpContext.Request.IsHttps;
+        IsAssetStoreFile = assetStore is FolderAssetStore;
+        IsAssetStoreFtp = assetStore is FTPAssetStore;
+        HasExternalLogin = externalProviders.Any();
+    }
 
-        public bool IsValidHttps { get; set; }
-
-        public bool IsAssetStoreFtp { get; set; }
-
-        public bool IsAssetStoreFile { get; set; }
-
-        public bool HasExternalLogin { get; set; }
-
-        public SetupModel(IAssetStore assetStore)
+    public async Task<IActionResult> OnGet()
+    {
+        if (!await UserService.IsEmptyAsync(HttpContext.RequestAborted))
         {
-            this.assetStore = assetStore;
+            return RedirectTo("~/");
         }
 
-        public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+        return Page();
+    }
+
+    public async Task<IActionResult> OnPost(CreateUserModel model)
+    {
+        if (!await UserService.IsEmptyAsync(HttpContext.RequestAborted))
         {
-            await next();
-
-            var externalProviders = await SignInManager.GetExternalAuthenticationSchemesAsync();
-
-            BaseUrlConfigured = UrlGenerator.BuildUrl(string.Empty, false);
-            BaseUrlCurrent = GetCurrentUrl();
-            IsValidHttps = HttpContext.Request.IsHttps;
-            IsAssetStoreFile = assetStore is FolderAssetStore;
-            IsAssetStoreFtp = assetStore is FTPAssetStore;
-            HasExternalLogin = externalProviders.Any();
+            return RedirectTo("~/");
         }
 
-        public async Task<IActionResult> OnGet()
+        if (!ModelState.IsValid)
         {
-            if (!await UserService.IsEmptyAsync(HttpContext.RequestAborted))
-            {
-                return RedirectTo("~/");
-            }
-
             return Page();
         }
 
-        public async Task<IActionResult> OnPost(CreateUserModel model)
+        try
         {
-            if (!await UserService.IsEmptyAsync(HttpContext.RequestAborted))
+            var user = await UserService.CreateAsync(model.Email, new UserValues
             {
-                return RedirectTo("~/");
-            }
+                Password = model.Password
+            }, ct: HttpContext.RequestAborted);
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            await SignInManager.SignInAsync((IdentityUser)user.Identity, true);
 
-            try
-            {
-                var user = await UserService.CreateAsync(model.Email, new UserValues
-                {
-                    Password = model.Password
-                }, ct: HttpContext.RequestAborted);
-
-                await SignInManager.SignInAsync((IdentityUser)user.Identity, true);
-
-                return RedirectTo("~/");
-            }
-            catch (NotifoValidationException ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            catch (ValidationException ex)
-            {
-                ErrorMessage = ex.Message;
-            }
-            catch (Exception)
-            {
-                ErrorMessage = T["SetupError"];
-            }
-
-            SimpleMapper.Map(model, this);
-
-            return Page();
+            return RedirectTo("~/");
+        }
+        catch (NotifoValidationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (ValidationException ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception)
+        {
+            ErrorMessage = T["SetupError"];
         }
 
-        private string GetCurrentUrl()
-        {
-            var request = HttpContext.Request;
+        SimpleMapper.Map(model, this);
 
-            var url = $"{request.Scheme}://{request.Host}{request.PathBase}";
-
-            return url.TrimEnd('/');
-        }
+        return Page();
     }
 
-    public sealed class CreateUserModel
+    private string GetCurrentUrl()
     {
-        [Required]
-        [EmailAddress]
-        [Display(Name = nameof(Email))]
-        public string Email { get; set; }
+        var request = HttpContext.Request;
 
-        [Required]
-        [Display(Name = nameof(Password))]
-        public string Password { get; set; }
+        var url = $"{request.Scheme}://{request.Host}{request.PathBase}";
 
-        [Required]
-        [Display(Name = nameof(PasswordConfirm))]
-        public string PasswordConfirm { get; set; }
+        return url.TrimEnd('/');
     }
+}
+
+public sealed class CreateUserModel
+{
+    [Required]
+    [EmailAddress]
+    [Display(Name = nameof(Email))]
+    public string Email { get; set; }
+
+    [Required]
+    [Display(Name = nameof(Password))]
+    public string Password { get; set; }
+
+    [Required]
+    [Display(Name = nameof(PasswordConfirm))]
+    public string PasswordConfirm { get; set; }
 }

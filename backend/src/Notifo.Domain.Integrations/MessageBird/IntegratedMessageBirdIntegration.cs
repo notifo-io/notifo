@@ -12,46 +12,45 @@ using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird;
+
+public sealed class IntegratedMessageBirdIntegration : IIntegration
 {
-    public sealed class IntegratedMessageBirdIntegration : IIntegration
+    public IntegrationDefinition Definition { get; } =
+        new IntegrationDefinition(
+            "MessageBirdIntegrated",
+            Texts.MessageBirdIntegrated_Name,
+            "./integrations/messagebird.svg",
+            new List<IntegrationProperty>(),
+            new List<UserProperty>(),
+            new HashSet<string>
+            {
+                Providers.Sms
+            })
+        {
+            Description = Texts.MessageBirdIntegrated_Description
+        };
+
+    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
     {
-        public IntegrationDefinition Definition { get; } =
-            new IntegrationDefinition(
-                "MessageBirdIntegrated",
-                Texts.MessageBirdIntegrated_Name,
-                "./integrations/messagebird.svg",
-                new List<IntegrationProperty>(),
-                new List<UserProperty>(),
-                new HashSet<string>
-                {
-                    Providers.Sms
-                })
-            {
-                Description = Texts.MessageBirdIntegrated_Description
-            };
+        return serviceType == typeof(ISmsSender);
+    }
 
-        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    {
+        if (CanCreate(serviceType, id, configured))
         {
-            return serviceType == typeof(ISmsSender);
+            var options = serviceProvider.GetRequiredService<IOptions<MessageBirdOptions>>();
+
+            return new MessageBirdSmsSender(
+                serviceProvider.GetRequiredService<IMessageBirdClient>(),
+                serviceProvider.GetRequiredService<ISmsCallback>(),
+                serviceProvider.GetRequiredService<ISmsUrl>(),
+                id,
+                options.Value.PhoneNumber,
+                options.Value.PhoneNumbers);
         }
 
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
-        {
-            if (CanCreate(serviceType, id, configured))
-            {
-                var options = serviceProvider.GetRequiredService<IOptions<MessageBirdOptions>>();
-
-                return new MessageBirdSmsSender(
-                    serviceProvider.GetRequiredService<IMessageBirdClient>(),
-                    serviceProvider.GetRequiredService<ISmsCallback>(),
-                    serviceProvider.GetRequiredService<ISmsUrl>(),
-                    id,
-                    options.Value.PhoneNumber,
-                    options.Value.PhoneNumbers);
-            }
-
-            return null;
-        }
+        return null;
     }
 }

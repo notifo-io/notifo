@@ -10,37 +10,36 @@ using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
-namespace Notifo.Domain.Users
+namespace Notifo.Domain.Users;
+
+public sealed class UpdateMobileWakeupTime : ICommand<User>
 {
-    public sealed class UpdateMobileWakeupTime : ICommand<User>
+    public string Token { get; set; }
+
+    public Instant Timestamp { get; set; }
+
+    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        CancellationToken ct)
     {
-        public string Token { get; set; }
+        var index = user.MobilePushTokens.IndexOf(x => x.Token == Token);
 
-        public Instant Timestamp { get; set; }
-
-        public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        if (index < 0)
         {
-            var index = user.MobilePushTokens.IndexOf(x => x.Token == Token);
-
-            if (index < 0)
-            {
-                return default;
-            }
-
-            var newTokens = new List<MobilePushToken>(user.MobilePushTokens);
-
-            newTokens[index] = newTokens[index] with
-            {
-                LastWakeup = Timestamp
-            };
-
-            var newUser = user with
-            {
-                MobilePushTokens = newTokens.ToReadonlyList()
-            };
-
-            return new ValueTask<User?>(newUser);
+            return default;
         }
+
+        var newTokens = new List<MobilePushToken>(user.MobilePushTokens);
+
+        newTokens[index] = newTokens[index] with
+        {
+            LastWakeup = Timestamp
+        };
+
+        var newUser = user with
+        {
+            MobilePushTokens = newTokens.ToReadonlyList()
+        };
+
+        return new ValueTask<User?>(newUser);
     }
 }

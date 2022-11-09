@@ -10,45 +10,44 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Registration.Dtos
+namespace Notifo.Areas.Api.Controllers.Registration.Dtos;
+
+public sealed class RegisterUserDto
 {
-    public sealed class RegisterUserDto
+    public bool CreateUser { get; set; }
+
+    public string? EmailAddress { get; set; }
+
+    public string? DisplayName { get; set; }
+
+    public string? PreferredLanguage { get; set; }
+
+    public string? PreferredTimezone { get; set; }
+
+    public TopicId[]? Topics { get; set; }
+
+    public UpsertUser ToUpsert()
     {
-        public bool CreateUser { get; set; }
+        var result = SimpleMapper.Map(this, new UpsertUser());
 
-        public string? EmailAddress { get; set; }
+        result.FullName = DisplayName;
 
-        public string? DisplayName { get; set; }
-
-        public string? PreferredLanguage { get; set; }
-
-        public string? PreferredTimezone { get; set; }
-
-        public TopicId[]? Topics { get; set; }
-
-        public UpsertUser ToUpsert()
+        result.Settings = new ChannelSettings
         {
-            var result = SimpleMapper.Map(this, new UpsertUser());
-
-            result.FullName = DisplayName;
-
-            result.Settings = new ChannelSettings
+            [Providers.WebPush] = new ChannelSetting
             {
-                [Providers.WebPush] = new ChannelSetting
-                {
-                    Send = ChannelSend.Send
-                }
-            };
-
-            if (!string.IsNullOrWhiteSpace(result.EmailAddress))
-            {
-                result.Settings[Providers.Email] = new ChannelSetting
-                {
-                    Send = ChannelSend.Send
-                };
+                Send = ChannelSend.Send
             }
+        };
 
-            return result;
+        if (!string.IsNullOrWhiteSpace(result.EmailAddress))
+        {
+            result.Settings[Providers.Email] = new ChannelSetting
+            {
+                Send = ChannelSend.Send
+            };
         }
+
+        return result;
     }
 }

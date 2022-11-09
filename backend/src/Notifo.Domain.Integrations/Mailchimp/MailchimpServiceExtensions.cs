@@ -8,19 +8,18 @@
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.Mailchimp;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class MailchimpServiceExtensions
-    {
-        public static void IntegrateMailchimp(this IServiceCollection services)
-        {
-            services.AddHttpClient("Mailchimp", options =>
-            {
-                options.BaseAddress = new Uri("https://mandrillapp.com/api/1.0/");
-            });
+namespace Microsoft.Extensions.DependencyInjection;
 
-            services.AddSingletonAs<MailchimpIntegration>()
-                .As<IIntegration>();
-        }
+public static class MailchimpServiceExtensions
+{
+    public static void IntegrateMailchimp(this IServiceCollection services)
+    {
+        services.AddHttpClient("Mailchimp", options =>
+        {
+            options.BaseAddress = new Uri("https://mandrillapp.com/api/1.0/");
+        });
+
+        services.AddSingletonAs<MailchimpIntegration>()
+            .As<IIntegration>();
     }
 }

@@ -10,22 +10,21 @@ using Microsoft.Extensions.Logging;
 using Notifo.Infrastructure.Log;
 using Squidex.Log;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class LogServiceExtensions
 {
-    public static class LogServiceExtensions
+    public static void ConfigureForMe(this ILoggingBuilder builder, IConfiguration config)
     {
-        public static void ConfigureForMe(this ILoggingBuilder builder, IConfiguration config)
-        {
-            builder.ClearProviders();
-            builder.ConfigureSemanticLog(config);
+        builder.ClearProviders();
+        builder.ConfigureSemanticLog(config);
 
-            builder.Services.AddServices();
-        }
+        builder.Services.AddServices();
+    }
 
-        private static void AddServices(this IServiceCollection services)
-        {
-            services.AddSingletonAs<StackdriverSeverityLogAppender>()
-                .As<ILogAppender>();
-        }
+    private static void AddServices(this IServiceCollection services)
+    {
+        services.AddSingletonAs<StackdriverSeverityLogAppender>()
+            .As<ILogAppender>();
     }
 }

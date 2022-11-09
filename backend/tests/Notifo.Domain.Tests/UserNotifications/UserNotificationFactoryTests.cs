@@ -19,300 +19,299 @@ using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
 using Xunit;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public sealed class UserNotificationFactoryTests
 {
-    public sealed class UserNotificationFactoryTests
+    private readonly IClock clock = A.Fake<IClock>();
+    private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();
+    private readonly IImageFormatter imageFormatter = A.Fake<IImageFormatter>();
+    private readonly ILogStore logStore = A.Fake<ILogStore>();
+    private readonly App app;
+    private readonly User user = new User("1", "1", default);
+    private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
+    private readonly IUserNotificationFactory sut;
+
+    public UserNotificationFactoryTests()
     {
-        private readonly IClock clock = A.Fake<IClock>();
-        private readonly IUserNotificationUrl notificationUrl = A.Fake<IUserNotificationUrl>();
-        private readonly IImageFormatter imageFormatter = A.Fake<IImageFormatter>();
-        private readonly ILogStore logStore = A.Fake<ILogStore>();
-        private readonly App app;
-        private readonly User user = new User("1", "1", default);
-        private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
-        private readonly IUserNotificationFactory sut;
-
-        public UserNotificationFactoryTests()
+        app = new App("1", default)
         {
-            app = new App("1", default)
+            Languages = ReadonlyList.Create("en", "de")
+        };
+
+        A.CallTo(() => clock.GetCurrentInstant())
+            .Returns(now);
+
+        A.CallTo(() => imageFormatter.AddProxy(A<string>._))
+            .ReturnsLazily(new Func<string, string>(url => $"proxy/{url}"));
+
+        A.CallTo(() => notificationUrl.TrackConfirmed(A<Guid>._, A<string>._))
+            .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"confirm/{id}/?lang={lang}"));
+
+        A.CallTo(() => notificationUrl.TrackSeen(A<Guid>._, A<string>._))
+            .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"seen/{id}/?lang={lang}"));
+
+        A.CallTo(() => notificationUrl.TrackDelivered(A<Guid>._, A<string>._))
+            .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"delivered/{id}/?lang={lang}"));
+
+        sut = new UserNotificationFactory(logStore, notificationUrl, imageFormatter, clock);
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_app_id_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.AppId = null!;
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_user_id_not_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.UserId = null!;
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_topic_not_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Topic = null!;
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_event_id_not_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.EventId = null!;
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_formatting_not_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Formatting = null!;
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_subject_not_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Formatting.Subject = null!;
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_not_create_notification_when_subject_text_not_set()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Formatting.Subject.Clear();
+
+        Assert.Null(sut.Create(app, user, userEvent));
+    }
+
+    [Fact]
+    public void Should_map_base_properties()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        var notification = sut.Create(app, user, userEvent)!;
+
+        Assert.Equal(userEvent.AppId, notification.AppId);
+        Assert.Equal(userEvent.Created, notification.Created);
+        Assert.Equal(userEvent.EventId, notification.EventId);
+        Assert.Equal(userEvent.UserId, notification.UserId);
+        Assert.Equal(userEvent.Topic, notification.Topic);
+
+        Assert.Equal(now, notification.Updated);
+    }
+
+    [Fact]
+    public void Should_use_language_from_user_if_supported()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        var germanUser = user with
+        {
+            PreferredLanguage = "de"
+        };
+
+        var notification = sut.Create(app, germanUser, userEvent)!;
+
+        Assert.Equal("deText", notification.Formatting.Subject);
+        Assert.Equal("de", notification.UserLanguage);
+
+        A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
+            .MustNotHaveHappened();
+    }
+
+    [Fact]
+    public void Should_use_language_from_app_if_user_language_not_supported()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        var danishUser = user with
+        {
+            PreferredLanguage = "it"
+        };
+
+        var notification = sut.Create(app, danishUser, userEvent)!;
+
+        Assert.Equal("enText", notification.Formatting.Subject);
+        Assert.Equal("en", notification.UserLanguage);
+
+        A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
+            .MustHaveHappened();
+    }
+
+    [Fact]
+    public void Should_create_confirm_url_with_default_text_when_explicit_mode()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Formatting.ConfirmMode = ConfirmMode.Explicit;
+
+        var notification = sut.Create(app, user, userEvent)!;
+
+        Assert.Equal($"confirm/{notification.Id}/?lang=en", notification.ConfirmUrl);
+        Assert.Equal($"Confirm", notification.Formatting.ConfirmText);
+    }
+
+    [Fact]
+    public void Should_create_confirm_url_with_custom_text_when_explicit_mode()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Formatting.ConfirmMode = ConfirmMode.Explicit;
+        userEvent.Formatting.ConfirmText = new LocalizedText
+        {
+            ["en"] = "Confirmed"
+        };
+
+        var notification = sut.Create(app, user, userEvent)!;
+
+        Assert.Equal($"confirm/{notification.Id}/?lang=en", notification.ConfirmUrl);
+        Assert.Equal($"Confirmed", notification.Formatting.ConfirmText);
+    }
+
+    [Fact]
+    public void Should_not_create_confirm_mode_when_not_explicit()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        var notification = sut.Create(app, user, userEvent)!;
+
+        Assert.Null(notification.Formatting.ConfirmText);
+    }
+
+    [Fact]
+    public void Should_add_proxy_to_image_url()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        userEvent.Formatting.ImageLarge = new LocalizedText
+        {
+            ["en"] = "image/large"
+        };
+
+        userEvent.Formatting.ImageSmall = new LocalizedText
+        {
+            ["en"] = "image/small"
+        };
+
+        var notification = sut.Create(app, user, userEvent)!;
+
+        Assert.Equal("proxy/image/large", notification.Formatting.ImageLarge);
+        Assert.Equal("proxy/image/small", notification.Formatting.ImageSmall);
+    }
+
+    [Fact]
+    public void Should_merge_settings()
+    {
+        var userEvent = CreateMinimumUserEvent();
+
+        user.Settings.CopyFrom(new ChannelSettings
+        {
+            [Providers.Email] = new ChannelSetting
             {
-                Languages = ReadonlyList.Create("en", "de")
-            };
-
-            A.CallTo(() => clock.GetCurrentInstant())
-                .Returns(now);
-
-            A.CallTo(() => imageFormatter.AddProxy(A<string>._))
-                .ReturnsLazily(new Func<string, string>(url => $"proxy/{url}"));
-
-            A.CallTo(() => notificationUrl.TrackConfirmed(A<Guid>._, A<string>._))
-                .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"confirm/{id}/?lang={lang}"));
-
-            A.CallTo(() => notificationUrl.TrackSeen(A<Guid>._, A<string>._))
-                .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"seen/{id}/?lang={lang}"));
-
-            A.CallTo(() => notificationUrl.TrackDelivered(A<Guid>._, A<string>._))
-                .ReturnsLazily(new Func<Guid, string, string>((id, lang) => $"delivered/{id}/?lang={lang}"));
-
-            sut = new UserNotificationFactory(logStore, notificationUrl, imageFormatter, clock);
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_app_id_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.AppId = null!;
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_user_id_not_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.UserId = null!;
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_topic_not_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Topic = null!;
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_event_id_not_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.EventId = null!;
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_formatting_not_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting = null!;
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_subject_not_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting.Subject = null!;
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_not_create_notification_when_subject_text_not_set()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting.Subject.Clear();
-
-            Assert.Null(sut.Create(app, user, userEvent));
-        }
-
-        [Fact]
-        public void Should_map_base_properties()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            Assert.Equal(userEvent.AppId, notification.AppId);
-            Assert.Equal(userEvent.Created, notification.Created);
-            Assert.Equal(userEvent.EventId, notification.EventId);
-            Assert.Equal(userEvent.UserId, notification.UserId);
-            Assert.Equal(userEvent.Topic, notification.Topic);
-
-            Assert.Equal(now, notification.Updated);
-        }
-
-        [Fact]
-        public void Should_use_language_from_user_if_supported()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            var germanUser = user with
+                Send = ChannelSend.Send
+            },
+            [Providers.MobilePush] = new ChannelSetting
             {
-                PreferredLanguage = "de"
-            };
+                DelayInSeconds = 100
+            }
+        });
 
-            var notification = sut.Create(app, germanUser, userEvent)!;
-
-            Assert.Equal("deText", notification.Formatting.Subject);
-            Assert.Equal("de", notification.UserLanguage);
-
-            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
-                .MustNotHaveHappened();
-        }
-
-        [Fact]
-        public void Should_use_language_from_app_if_user_language_not_supported()
+        userEvent.Settings = new ChannelSettings
         {
-            var userEvent = CreateMinimumUserEvent();
-
-            var danishUser = user with
+            [Providers.Email] = new ChannelSetting
             {
-                PreferredLanguage = "it"
-            };
+                Send = ChannelSend.NotSending
+            }
+        };
 
-            var notification = sut.Create(app, danishUser, userEvent)!;
+        var notification = sut.Create(app, user, userEvent)!;
 
-            Assert.Equal("enText", notification.Formatting.Subject);
-            Assert.Equal("en", notification.UserLanguage);
-
-            A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
-                .MustHaveHappened();
-        }
-
-        [Fact]
-        public void Should_create_confirm_url_with_default_text_when_explicit_mode()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting.ConfirmMode = ConfirmMode.Explicit;
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            Assert.Equal($"confirm/{notification.Id}/?lang=en", notification.ConfirmUrl);
-            Assert.Equal($"Confirm", notification.Formatting.ConfirmText);
-        }
-
-        [Fact]
-        public void Should_create_confirm_url_with_custom_text_when_explicit_mode()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting.ConfirmMode = ConfirmMode.Explicit;
-            userEvent.Formatting.ConfirmText = new LocalizedText
+        notification.Channels.Should().BeEquivalentTo(
+            new Dictionary<string, UserNotificationChannel>
             {
-                ["en"] = "Confirmed"
-            };
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            Assert.Equal($"confirm/{notification.Id}/?lang=en", notification.ConfirmUrl);
-            Assert.Equal($"Confirmed", notification.Formatting.ConfirmText);
-        }
-
-        [Fact]
-        public void Should_not_create_confirm_mode_when_not_explicit()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            Assert.Null(notification.Formatting.ConfirmText);
-        }
-
-        [Fact]
-        public void Should_add_proxy_to_image_url()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            userEvent.Formatting.ImageLarge = new LocalizedText
-            {
-                ["en"] = "image/large"
-            };
-
-            userEvent.Formatting.ImageSmall = new LocalizedText
-            {
-                ["en"] = "image/small"
-            };
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            Assert.Equal("proxy/image/large", notification.Formatting.ImageLarge);
-            Assert.Equal("proxy/image/small", notification.Formatting.ImageSmall);
-        }
-
-        [Fact]
-        public void Should_merge_settings()
-        {
-            var userEvent = CreateMinimumUserEvent();
-
-            user.Settings.CopyFrom(new ChannelSettings
-            {
-                [Providers.Email] = new ChannelSetting
+                [Providers.Email] = new UserNotificationChannel
                 {
-                    Send = ChannelSend.Send
+                    Setting = new ChannelSetting
+                    {
+                        Send = ChannelSend.NotSending
+                    },
+                    Status = new Dictionary<Guid, ChannelSendInfo>()
                 },
-                [Providers.MobilePush] = new ChannelSetting
+
+                [Providers.MobilePush] = new UserNotificationChannel
                 {
-                    DelayInSeconds = 100
+                    Setting = new ChannelSetting
+                    {
+                        DelayInSeconds = 100
+                    },
+                    Status = new Dictionary<Guid, ChannelSendInfo>()
                 }
             });
+    }
 
-            userEvent.Settings = new ChannelSettings
-            {
-                [Providers.Email] = new ChannelSetting
-                {
-                    Send = ChannelSend.NotSending
-                }
-            };
-
-            var notification = sut.Create(app, user, userEvent)!;
-
-            notification.Channels.Should().BeEquivalentTo(
-                new Dictionary<string, UserNotificationChannel>
-                {
-                    [Providers.Email] = new UserNotificationChannel
-                    {
-                        Setting = new ChannelSetting
-                        {
-                            Send = ChannelSend.NotSending
-                        },
-                        Status = new Dictionary<Guid, ChannelSendInfo>()
-                    },
-
-                    [Providers.MobilePush] = new UserNotificationChannel
-                    {
-                        Setting = new ChannelSetting
-                        {
-                            DelayInSeconds = 100
-                        },
-                        Status = new Dictionary<Guid, ChannelSendInfo>()
-                    }
-                });
-        }
-
-        private UserEventMessage CreateMinimumUserEvent()
+    private UserEventMessage CreateMinimumUserEvent()
+    {
+        var userEvent = new UserEventMessage
         {
-            var userEvent = new UserEventMessage
+            Formatting = new NotificationFormatting<LocalizedText>
             {
-                Formatting = new NotificationFormatting<LocalizedText>
+                Subject = new LocalizedText
                 {
-                    Subject = new LocalizedText
-                    {
-                        ["en"] = "enText",
-                        ["de"] = "deText"
-                    }
+                    ["en"] = "enText",
+                    ["de"] = "deText"
                 }
-            };
+            }
+        };
 
-            userEvent.AppId = "app";
-            userEvent.Created = now;
-            userEvent.EventId = "eventId";
-            userEvent.Topic = "topic";
-            userEvent.UserId = "user";
+        userEvent.AppId = "app";
+        userEvent.Created = now;
+        userEvent.EventId = "eventId";
+        userEvent.Topic = "topic";
+        userEvent.UserId = "user";
 
-            return userEvent;
-        }
+        return userEvent;
     }
 }

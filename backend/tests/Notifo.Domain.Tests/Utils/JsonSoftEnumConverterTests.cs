@@ -8,27 +8,26 @@
 using Notifo.Infrastructure.TestHelpers;
 using Xunit;
 
-namespace Notifo.Domain.Utils
+namespace Notifo.Domain.Utils;
+
+public class JsonSoftEnumConverterTests
 {
-    public class JsonSoftEnumConverterTests
+    public enum MyEnum
     {
-        public enum MyEnum
-        {
-            A,
-            B
-        }
+        A,
+        B
+    }
 
-        [Theory]
-        [InlineData(null, MyEnum.A)]
-        [InlineData("A", MyEnum.A)]
-        [InlineData("B", MyEnum.B)]
-        [InlineData("C", MyEnum.A)]
-        [InlineData("", MyEnum.A)]
-        public void Should_deserialize_from_string(string source, MyEnum expected)
-        {
-            var serialized = TestUtils.Deserialize<MyEnum>(source, new JsonSoftEnumConverter<MyEnum>());
+    [Theory]
+    [InlineData(null, MyEnum.A)]
+    [InlineData("A", MyEnum.A)]
+    [InlineData("B", MyEnum.B)]
+    [InlineData("C", MyEnum.A)]
+    [InlineData("", MyEnum.A)]
+    public void Should_deserialize_from_string(string source, MyEnum expected)
+    {
+        var serialized = TestUtils.Deserialize<MyEnum>(source, new JsonSoftEnumConverter<MyEnum>());
 
-            Assert.Equal(expected, serialized);
-        }
+        Assert.Equal(expected, serialized);
     }
 }

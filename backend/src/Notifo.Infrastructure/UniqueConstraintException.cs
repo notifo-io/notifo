@@ -7,28 +7,27 @@
 
 using System.Runtime.Serialization;
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+[Serializable]
+public class UniqueConstraintException : Exception
 {
-    [Serializable]
-    public class UniqueConstraintException : Exception
+    public UniqueConstraintException()
     {
-        public UniqueConstraintException()
-        {
-        }
+    }
 
-        public UniqueConstraintException(string message)
-            : base(message)
-        {
-        }
+    public UniqueConstraintException(string message)
+        : base(message)
+    {
+    }
 
-        public UniqueConstraintException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public UniqueConstraintException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 
-        protected UniqueConstraintException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected UniqueConstraintException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

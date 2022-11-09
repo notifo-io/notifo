@@ -5,10 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Identity.ApiKey
+namespace Notifo.Identity.ApiKey;
+
+public static class ApiKeyDefaults
 {
-    public static class ApiKeyDefaults
-    {
-        public const string AuthenticationScheme = "ApiKey";
-    }
+    public const string AuthenticationScheme = "ApiKey";
 }

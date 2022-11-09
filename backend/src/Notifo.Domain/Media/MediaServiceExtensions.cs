@@ -8,26 +8,25 @@
 using Notifo.Domain.Media;
 using Notifo.Domain.Media.MongoDb;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class MediaServiceExtensions
 {
-    public static class MediaServiceExtensions
+    public static void AddMyMedia(this IServiceCollection services)
     {
-        public static void AddMyMedia(this IServiceCollection services)
-        {
-            services.AddSingletonAs<DefaultMediaFileStore>()
-                .As<IMediaFileStore>();
+        services.AddSingletonAs<DefaultMediaFileStore>()
+            .As<IMediaFileStore>();
 
-            services.AddSingletonAs<MediaStore>()
-                .As<IMediaStore>();
+        services.AddSingletonAs<MediaStore>()
+            .As<IMediaStore>();
 
-            services.AddSingletonAs<ImageMediaMetadataSource>()
-                .As<IMediaMetadataSource>();
-        }
+        services.AddSingletonAs<ImageMediaMetadataSource>()
+            .As<IMediaMetadataSource>();
+    }
 
-        public static void AddMyMongoMedia(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbMediaRepository>()
-                .As<IMediaRepository>();
-        }
+    public static void AddMyMongoMedia(this IServiceCollection services)
+    {
+        services.AddSingletonAs<MongoDbMediaRepository>()
+            .As<IMediaRepository>();
     }
 }

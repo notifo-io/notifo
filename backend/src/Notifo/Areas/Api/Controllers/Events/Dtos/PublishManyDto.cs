@@ -7,14 +7,13 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Notifo.Areas.Api.Controllers.Events.Dtos
+namespace Notifo.Areas.Api.Controllers.Events.Dtos;
+
+public sealed class PublishManyDto
 {
-    public sealed class PublishManyDto
-    {
-        /// <summary>
-        /// The publish requests.
-        /// </summary>
-        [Required]
-        public PublishDto[] Requests { get; set; }
-    }
+    /// <summary>
+    /// The publish requests.
+    /// </summary>
+    [Required]
+    public PublishDto[] Requests { get; set; }
 }

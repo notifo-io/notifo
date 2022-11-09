@@ -8,71 +8,70 @@
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
 
-namespace Notifo.Domain.Channels.Email.Formatting
+namespace Notifo.Domain.Channels.Email.Formatting;
+
+public sealed class EmailNotification
 {
-    public sealed class EmailNotification
+    private readonly BaseUserNotification notification;
+    private readonly Guid configurationId;
+    private readonly string? emailAddress;
+    private readonly IImageFormatter imageFormatter;
+    private string? confirmUrl;
+    private string? imageLarge;
+    private string? imageSmall;
+    private string? trackDeliveredUrl;
+    private string? trackSeenUrl;
+
+    public string Subject => notification.Formatting.Subject;
+
+    public string? Body => OrNull(notification.Formatting.Body);
+
+    public string? LinkUrl => OrNull(notification.Formatting.LinkUrl);
+
+    public string? LinkText => OrNull(notification.Formatting.LinkText);
+
+    public string? ConfirmText => OrNull(notification.Formatting.ConfirmText);
+
+    public string? TrackSeenUrl
     {
-        private readonly BaseUserNotification notification;
-        private readonly Guid configurationId;
-        private readonly string? emailAddress;
-        private readonly IImageFormatter imageFormatter;
-        private string? confirmUrl;
-        private string? imageLarge;
-        private string? imageSmall;
-        private string? trackDeliveredUrl;
-        private string? trackSeenUrl;
+        get => trackSeenUrl ??= notification.ComputeTrackSeenUrl(Providers.Email, configurationId);
+    }
 
-        public string Subject => notification.Formatting.Subject;
+    public string? TrackDeliveredUrl
+    {
+        get => trackDeliveredUrl ??= notification.ComputeTrackDeliveredUrl(Providers.Email, configurationId);
+    }
 
-        public string? Body => OrNull(notification.Formatting.Body);
+    public string? ConfirmUrl
+    {
+        get => confirmUrl ??= notification.ComputeConfirmUrl(Providers.Email, configurationId);
+    }
 
-        public string? LinkUrl => OrNull(notification.Formatting.LinkUrl);
+    public string? ImageSmall
+    {
+        get => imageSmall ??= notification.ImageSmall(imageFormatter, "EmailSmall");
+    }
 
-        public string? LinkText => OrNull(notification.Formatting.LinkText);
+    public string? ImageLarge
+    {
+        get => imageLarge ??= notification.ImageLarge(imageFormatter, "EmailSmall");
+    }
 
-        public string? ConfirmText => OrNull(notification.Formatting.ConfirmText);
+    public EmailNotification(BaseUserNotification notification, Guid configurationId, string? emailAddress, IImageFormatter imageFormatter)
+    {
+        this.notification = notification;
+        this.configurationId = configurationId;
+        this.emailAddress = emailAddress;
+        this.imageFormatter = imageFormatter;
+    }
 
-        public string? TrackSeenUrl
+    private static string? OrNull(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
         {
-            get => trackSeenUrl ??= notification.ComputeTrackSeenUrl(Providers.Email, configurationId);
+            return null;
         }
 
-        public string? TrackDeliveredUrl
-        {
-            get => trackDeliveredUrl ??= notification.ComputeTrackDeliveredUrl(Providers.Email, configurationId);
-        }
-
-        public string? ConfirmUrl
-        {
-            get => confirmUrl ??= notification.ComputeConfirmUrl(Providers.Email, configurationId);
-        }
-
-        public string? ImageSmall
-        {
-            get => imageSmall ??= notification.ImageSmall(imageFormatter, "EmailSmall");
-        }
-
-        public string? ImageLarge
-        {
-            get => imageLarge ??= notification.ImageLarge(imageFormatter, "EmailSmall");
-        }
-
-        public EmailNotification(BaseUserNotification notification, Guid configurationId, string? emailAddress, IImageFormatter imageFormatter)
-        {
-            this.notification = notification;
-            this.configurationId = configurationId;
-            this.emailAddress = emailAddress;
-            this.imageFormatter = imageFormatter;
-        }
-
-        private static string? OrNull(string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                return null;
-            }
-
-            return value;
-        }
+        return value;
     }
 }

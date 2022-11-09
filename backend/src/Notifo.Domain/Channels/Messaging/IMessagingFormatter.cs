@@ -8,10 +8,9 @@
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Domain.Channels.Messaging;
+
+public interface IMessagingFormatter : IChannelTemplateFactory<MessagingTemplate>
 {
-    public interface IMessagingFormatter : IChannelTemplateFactory<MessagingTemplate>
-    {
-        string Format(MessagingTemplate? template, BaseUserNotification notification);
-    }
+    string Format(MessagingTemplate? template, BaseUserNotification notification);
 }

@@ -8,59 +8,58 @@
 using System.Text.RegularExpressions;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public readonly record struct TopicId
 {
-    public readonly record struct TopicId
-    {
 #pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
-        private static readonly Regex Regex = new Regex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled);
+    private static readonly Regex Regex = new Regex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled);
 #pragma warning restore MA0023 // Add RegexOptions.ExplicitCapture
 
-        public readonly string Id;
+    public readonly string Id;
 
-        public TopicId(string id)
+    public TopicId(string id)
+    {
+        if (!IsValid(id))
         {
-            if (!IsValid(id))
-            {
-                ThrowHelper.ArgumentException("Invalid id", nameof(id));
-            }
-
-            Id = id;
+            ThrowHelper.ArgumentException("Invalid id", nameof(id));
         }
 
-        public static bool IsValid(string? id)
-        {
-            return !string.IsNullOrWhiteSpace(id) && Regex.IsMatch(id);
-        }
+        Id = id;
+    }
 
-        public string[] GetParts()
-        {
-            return Id.Split('/');
-        }
+    public static bool IsValid(string? id)
+    {
+        return !string.IsNullOrWhiteSpace(id) && Regex.IsMatch(id);
+    }
 
-        public bool StartsWith(TopicId id)
-        {
-            return Id.StartsWith(id, StringComparison.OrdinalIgnoreCase);
-        }
+    public string[] GetParts()
+    {
+        return Id.Split('/');
+    }
 
-        public bool StartsWith(string id)
-        {
-            return Id.StartsWith(id, StringComparison.OrdinalIgnoreCase);
-        }
+    public bool StartsWith(TopicId id)
+    {
+        return Id.StartsWith(id, StringComparison.OrdinalIgnoreCase);
+    }
 
-        public static implicit operator string(TopicId topicId)
-        {
-            return topicId.Id;
-        }
+    public bool StartsWith(string id)
+    {
+        return Id.StartsWith(id, StringComparison.OrdinalIgnoreCase);
+    }
 
-        public static implicit operator TopicId(string value)
-        {
-            return new TopicId(value);
-        }
+    public static implicit operator string(TopicId topicId)
+    {
+        return topicId.Id;
+    }
 
-        public override string ToString()
-        {
-            return Id;
-        }
+    public static implicit operator TopicId(string value)
+    {
+        return new TopicId(value);
+    }
+
+    public override string ToString()
+    {
+        return Id;
     }
 }

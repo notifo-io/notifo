@@ -7,13 +7,12 @@
 
 using Newtonsoft.Json;
 
-namespace Notifo.SDK
+namespace Notifo.SDK;
+
+internal static class Extensions
 {
-    internal static class Extensions
+    public static void Configure(this JsonSerializerSettings settings)
     {
-        public static void Configure(this JsonSerializerSettings settings)
-        {
-            settings.Converters.Add(DateTimeOffsetConverter.Instance);
-        }
+        settings.Converters.Add(DateTimeOffsetConverter.Instance);
     }
 }

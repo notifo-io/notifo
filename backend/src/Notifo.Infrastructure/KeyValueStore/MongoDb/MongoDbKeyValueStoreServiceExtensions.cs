@@ -8,14 +8,13 @@
 using Notifo.Infrastructure.KeyValueStore;
 using Notifo.Infrastructure.KeyValueStore.MongoDb;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class MongoDbKeyValueStoreServiceExtensions
 {
-    public static class MongoDbKeyValueStoreServiceExtensions
+    public static void AddMyMongoDbKeyValueStore(this IServiceCollection services)
     {
-        public static void AddMyMongoDbKeyValueStore(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbKeyValueStore>()
-                .As<IKeyValueStore>();
-        }
+        services.AddSingletonAs<MongoDbKeyValueStore>()
+            .As<IKeyValueStore>();
     }
 }

@@ -11,103 +11,102 @@ using TestSuite.Fixtures;
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
 
-namespace TestSuite.ApiTests
+namespace TestSuite.ApiTests;
+
+public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookCatcherFixture>
 {
-    public class WebhookTests : IClassFixture<ClientFixture>, IClassFixture<WebhookCatcherFixture>
+    private readonly WebhookCatcherClient webhookCatcher;
+
+    public ClientFixture _ { get; }
+
+    public WebhookTests(ClientFixture fixture, WebhookCatcherFixture webhookCatcher)
     {
-        private readonly WebhookCatcherClient webhookCatcher;
+        _ = fixture;
 
-        public ClientFixture _ { get; }
+        this.webhookCatcher = webhookCatcher.Client;
+    }
 
-        public WebhookTests(ClientFixture fixture, WebhookCatcherFixture webhookCatcher)
+    [Fact]
+    public async Task Should_send_webhook()
+    {
+        var appName = Guid.NewGuid().ToString();
+
+        // STEP 0: Create app
+        var createRequest = new UpsertAppDto
         {
-            _ = fixture;
+            Name = appName
+        };
 
-            this.webhookCatcher = webhookCatcher.Client;
-        }
+        var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
 
-        [Fact]
-        public async Task Should_send_webhook()
+
+        // STEP 1: Start webhook session
+        var (url, sessionId) = await webhookCatcher.CreateSessionAsync();
+
+
+        // STEP 2: Create integration
+        var emailIntegrationRequest = new CreateIntegrationDto
         {
-            var appName = Guid.NewGuid().ToString();
-
-            // STEP 0: Create app
-            var createRequest = new UpsertAppDto
+            Type = "Webhook",
+            Properties = new Dictionary<string, string>
             {
-                Name = appName
-            };
+                ["Url"] = url,
+                ["SendAlways"] = "true",
+                ["SendConfirm"] = "true"
+            },
+            Enabled = true
+        };
 
-            var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+        await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
 
 
-            // STEP 1: Start webhook session
-            var (url, sessionId) = await webhookCatcher.CreateSessionAsync();
-
-
-            // STEP 2: Create integration
-            var emailIntegrationRequest = new CreateIntegrationDto
+        // STEP 3: Create user
+        var userRequest = new UpsertUsersDto
+        {
+            Requests = new List<UpsertUserDto>
             {
-                Type = "Webhook",
-                Properties = new Dictionary<string, string>
+                new UpsertUserDto()
+            }
+        };
+
+        var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+        var user_0 = users_0.First();
+
+
+        // STEP 4: Send webhook
+        var subjectId = Guid.NewGuid().ToString();
+
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
                 {
-                    ["Url"] = url,
-                    ["SendAlways"] = "true",
-                    ["SendConfirm"] = "true"
-                },
-                Enabled = true
-            };
-
-            await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
-
-
-            // STEP 3: Create user
-            var userRequest = new UpsertUsersDto
-            {
-                Requests = new List<UpsertUserDto>
-                {
-                    new UpsertUserDto()
-                }
-            };
-
-            var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
-            var user_0 = users_0.First();
-
-
-            // STEP 4: Send webhook
-            var subjectId = Guid.NewGuid().ToString();
-
-            var publishRequest = new PublishManyDto
-            {
-                Requests = new List<PublishDto>
-                {
-                    new PublishDto
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
                     {
-                        Topic = $"users/{user_0.Id}",
-                        Preformatted = new NotificationFormattingDto
+                        Subject = new LocalizedText
                         {
-                            Subject = new LocalizedText
-                            {
-                                ["en"] = subjectId
-                            }
-                        },
-                        Settings = new Dictionary<string, ChannelSettingDto>
+                            ["en"] = subjectId
+                        }
+                    },
+                    Settings = new Dictionary<string, ChannelSettingDto>
+                    {
+                        [Providers.WebHook] = new ChannelSettingDto
                         {
-                            [Providers.WebHook] = new ChannelSettingDto
-                            {
-                                Send = ChannelSend.Send
-                            }
+                            Send = ChannelSend.Send
                         }
                     }
                 }
-            };
+            }
+        };
 
-            await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
+        await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
 
-            // Get webhook status
-            var requests = await webhookCatcher.WaitForRequestsAsync(sessionId, TimeSpan.FromSeconds(30));
+        // Get webhook status
+        var requests = await webhookCatcher.WaitForRequestsAsync(sessionId, TimeSpan.FromSeconds(30));
 
-            Assert.Contains(requests, x => x.Method == "POST" && x.Content.Contains(subjectId, StringComparison.OrdinalIgnoreCase));
-        }
+        Assert.Contains(requests, x => x.Method == "POST" && x.Content.Contains(subjectId, StringComparison.OrdinalIgnoreCase));
     }
 }

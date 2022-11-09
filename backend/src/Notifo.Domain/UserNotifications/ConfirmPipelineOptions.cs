@@ -5,10 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public sealed class ConfirmPipelineOptions
 {
-    public sealed class ConfirmPipelineOptions
-    {
-        public string ChannelName { get; init; } = "confirms";
-    }
+    public string ChannelName { get; init; } = "confirms";
 }

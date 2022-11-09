@@ -11,42 +11,41 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Users
+namespace Notifo.Domain.Users;
+
+public sealed class AddUserWebPushSubscription : ICommand<User>
 {
-    public sealed class AddUserWebPushSubscription : ICommand<User>
+    public WebPushSubscription Subscription { get; set; }
+
+    private sealed class Validator : AbstractValidator<AddUserWebPushSubscription>
     {
-        public WebPushSubscription Subscription { get; set; }
-
-        private sealed class Validator : AbstractValidator<AddUserWebPushSubscription>
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(x => x.Subscription).NotNull();
-                RuleFor(x => x.Subscription.Endpoint).NotNull().NotEmpty();
-            }
+            RuleFor(x => x.Subscription).NotNull();
+            RuleFor(x => x.Subscription.Endpoint).NotNull().NotEmpty();
+        }
+    }
+
+    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        if (user.WebPushSubscriptions.Any(x => x.Endpoint == Subscription.Endpoint))
+        {
+            return default;
         }
 
-        public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        var newWebPushSubscriptions = new List<WebPushSubscription>(user.WebPushSubscriptions)
         {
-            Validate<Validator>.It(this);
+            Subscription
+        };
 
-            if (user.WebPushSubscriptions.Any(x => x.Endpoint == Subscription.Endpoint))
-            {
-                return default;
-            }
+        var newUser = user with
+        {
+            WebPushSubscriptions = newWebPushSubscriptions.ToReadonlyList()
+        };
 
-            var newWebPushSubscriptions = new List<WebPushSubscription>(user.WebPushSubscriptions)
-            {
-                Subscription
-            };
-
-            var newUser = user with
-            {
-                WebPushSubscriptions = newWebPushSubscriptions.ToReadonlyList()
-            };
-
-            return new ValueTask<User?>(newUser);
-        }
+        return new ValueTask<User?>(newUser);
     }
 }

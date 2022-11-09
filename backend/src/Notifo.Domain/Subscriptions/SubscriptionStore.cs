@@ -8,110 +8,109 @@
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Subscriptions
+namespace Notifo.Domain.Subscriptions;
+
+public sealed class SubscriptionStore : ISubscriptionStore
 {
-    public sealed class SubscriptionStore : ISubscriptionStore
+    private readonly ISubscriptionRepository repository;
+    private readonly IServiceProvider serviceProvider;
+    private readonly IUserStore userStore;
+
+    public SubscriptionStore(ISubscriptionRepository repository,
+        IServiceProvider serviceProvider, IUserStore userStore)
     {
-        private readonly ISubscriptionRepository repository;
-        private readonly IServiceProvider serviceProvider;
-        private readonly IUserStore userStore;
+        this.repository = repository;
+        this.serviceProvider = serviceProvider;
+        this.userStore = userStore;
+    }
 
-        public SubscriptionStore(ISubscriptionRepository repository,
-            IServiceProvider serviceProvider, IUserStore userStore)
+    public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+
+        return repository.QueryAsync(appId, topic, userId, ct);
+    }
+
+    public Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+
+        return repository.QueryAsync(appId, query, ct);
+    }
+
+    public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+
+        var (subscription, _) = await repository.GetAsync(appId, userId, prefix, ct);
+
+        return subscription;
+    }
+
+    public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command,
+        CancellationToken ct = default)
+    {
+        Guard.NotNull(command);
+
+        return Updater.UpdateRetriedAsync(5, async () =>
         {
-            this.repository = repository;
-            this.serviceProvider = serviceProvider;
-            this.userStore = userStore;
-        }
+            var (subscription, etag) = await repository.GetAsync(appId, userId, prefix, ct);
 
-        public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-
-            return repository.QueryAsync(appId, topic, userId, ct);
-        }
-
-        public Task<IResultList<Subscription>> QueryAsync(string appId, SubscriptionQuery query,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-
-            return repository.QueryAsync(appId, query, ct);
-        }
-
-        public async Task<Subscription?> GetAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-
-            var (subscription, _) = await repository.GetAsync(appId, userId, prefix, ct);
-
-            return subscription;
-        }
-
-        public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command,
-            CancellationToken ct = default)
-        {
-            Guard.NotNull(command);
-
-            return Updater.UpdateRetriedAsync(5, async () =>
+            if (subscription == null)
             {
-                var (subscription, etag) = await repository.GetAsync(appId, userId, prefix, ct);
-
-                if (subscription == null)
+                if (!command.CanCreate)
                 {
-                    if (!command.CanCreate)
-                    {
-                        throw new DomainObjectNotFoundException(prefix.ToString());
-                    }
-
-                    subscription = Subscription.Create(appId, userId, prefix);
+                    throw new DomainObjectNotFoundException(prefix.ToString());
                 }
 
-                var newSubscription = await command.ExecuteAsync(subscription, serviceProvider, ct);
+                subscription = Subscription.Create(appId, userId, prefix);
+            }
 
-                if (newSubscription == null || ReferenceEquals(subscription, newSubscription))
-                {
-                    return subscription;
-                }
+            var newSubscription = await command.ExecuteAsync(subscription, serviceProvider, ct);
 
-                await repository.UpsertAsync(newSubscription, etag, ct);
-
-                return newSubscription;
-            });
-        }
-
-        public async Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct = default)
-        {
-            var command = new AddUserAllowedTopic
+            if (newSubscription == null || ReferenceEquals(subscription, newSubscription))
             {
-                Prefix = prefix
-            };
+                return subscription;
+            }
 
-            await userStore.UpsertAsync(appId, userId, command, ct);
+            await repository.UpsertAsync(newSubscription, etag, ct);
 
-            await repository.DeletePrefixAsync(appId, userId, prefix, ct);
-        }
+            return newSubscription;
+        });
+    }
 
-        public async Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct = default)
+    public async Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix,
+        CancellationToken ct = default)
+    {
+        var command = new AddUserAllowedTopic
         {
-            var command = new RemoveUserAllowedTopic
-            {
-                Prefix = prefix
-            };
+            Prefix = prefix
+        };
 
-            await userStore.UpsertAsync(appId, userId, command, ct);
+        await userStore.UpsertAsync(appId, userId, command, ct);
 
-            await repository.DeletePrefixAsync(appId, userId, prefix, ct);
-        }
+        await repository.DeletePrefixAsync(appId, userId, prefix, ct);
+    }
 
-        public Task DeleteAsync(string appId, string userId, TopicId prefix,
-            CancellationToken ct = default)
+    public async Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix,
+        CancellationToken ct = default)
+    {
+        var command = new RemoveUserAllowedTopic
         {
-            return repository.DeleteAsync(appId, userId, prefix, ct);
-        }
+            Prefix = prefix
+        };
+
+        await userStore.UpsertAsync(appId, userId, command, ct);
+
+        await repository.DeletePrefixAsync(appId, userId, prefix, ct);
+    }
+
+    public Task DeleteAsync(string appId, string userId, TopicId prefix,
+        CancellationToken ct = default)
+    {
+        return repository.DeleteAsync(appId, userId, prefix, ct);
     }
 }

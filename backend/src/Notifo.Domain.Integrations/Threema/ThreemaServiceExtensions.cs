@@ -8,14 +8,13 @@
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.Threema;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class ThreemaServiceExtensions
 {
-    public static class ThreemaServiceExtensions
+    public static void IntegrateThreema(this IServiceCollection services)
     {
-        public static void IntegrateThreema(this IServiceCollection services)
-        {
-            services.AddSingletonAs<ThreemaSimpleIntegration>()
-                .As<IIntegration>();
-        }
+        services.AddSingletonAs<ThreemaSimpleIntegration>()
+            .As<IIntegration>();
     }
 }

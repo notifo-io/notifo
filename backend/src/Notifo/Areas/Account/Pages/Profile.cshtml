@@ -6,15 +6,15 @@
 @{
     ViewBag.Title = T["UsersProfileTitle"];
 
-    void RenderValidation(string field)
+void RenderValidation(string field)
+{
+    @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
     {
-        @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
-        {
-            <div class="errors-container">
+        <div class="errors-container">
                 <span class="errors">@Html.ValidationMessage(field)</span>
             </div>
-        }
     }
+}
 }
 
 <h1>@T["UsersProfileHeadline"]</h1>
@@ -61,8 +61,8 @@
                 <col style="width: 100px;" />
             </colgroup>
             @foreach (var login in Model!.ExternalLogins)
-            {
-                <tr>
+        {
+            <tr>
                     <td>
                         <span>@login.LoginProvider</span>
                     </td>
@@ -71,8 +71,8 @@
                     </td>
                     <td class="text-right">
                         @if (Model!.ExternalLogins.Count > 1 || Model!.HasPassword)
-                        {
-                            <form asp-page-handler="RemoveLogin" method="post">
+                    {
+                        <form asp-page-handler="RemoveLogin" method="post">
                                 <input asp-for="RemoveLoginModel.LoginProvider" type="hidden" value="@login.LoginProvider"/>
                                 <input asp-for="RemoveLoginModel.ProviderKey" type="hidden" value="@login.ProviderKey" />
 
@@ -80,21 +80,21 @@
                                     @T["CommonRemove"]
                                 </button>
                             </form>
-                        }
+                    }
                     </td>
                 </tr>
-            }
+        }
         </table>
 
         <form asp-page-handler="AddLogin" method="post">
             @foreach (var provider in Model!.ExternalProviders.Where(x => Model!.ExternalLogins.All(y => x.Name != y.LoginProvider)))
-            {
-                var lowerName = provider.Name.ToLowerInvariant();
+        {
+            var lowerName = provider.Name.ToLowerInvariant();
 
-                <button type="submit"  class="btn btn-social btn-dark btn-@lowerName"name="provider" value="@provider.Name">
+            <button type="submit"  class="btn btn-social btn-dark btn-@lowerName"name="provider" value="@provider.Name">
                     @provider.DisplayName
                 </button>
-            }
+        }
         </form>
     </div>
 }
@@ -107,8 +107,8 @@
         <h2>@T["UsersProfilePasswordTitle"]</h2>
 
         @if (Model!.HasPassword)
-        {
-            <form class="profile-form" asp-page-handler="ChangePassword" method="post">
+    {
+        <form class="profile-form" asp-page-handler="ChangePassword" method="post">
                 <div class="form-group">
                     <label asp-for="ChangePasswordModel.OldPassword" for="oldPassword">@T["OldPasswordLabel"]</label>
 
@@ -137,10 +137,10 @@
                     <button type="submit" class="btn btn-primary">@T["UsersProfileChangePassword"]</button>
                 </div>
             </form>
-        }
-        else
-        {
-            <form class="profile-form" asp-page-handler="SetPassword" method="post">
+    }
+    else
+    {
+        <form class="profile-form" asp-page-handler="SetPassword" method="post">
                 <div class="form-group">
                     <label asp-for="SetPasswordModel.Password" for="password">@T["PasswordLabel"]</label>
 
@@ -161,7 +161,7 @@
                     <button type="submit" class="btn btn-primary">@T["UsersProfileSetPassword"]</button>
                 </div>
             </form>
-        }
+    }
     </div>
 }
 

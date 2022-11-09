@@ -11,64 +11,63 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Sms;
+
+public sealed class SmsJob : ChannelJob, IIntegrationTarget
 {
-    public sealed class SmsJob : ChannelJob, IIntegrationTarget
+    public string PhoneNumber { get; init; }
+
+    public string PhoneText { get; init; }
+
+    public string TemplateLanguage { get; init; }
+
+    public string? TemplateName { get; init; }
+
+    public NotificationProperties? Properties { get; init; }
+
+    public ActivityContext EventActivity { get; init; }
+
+    public ActivityContext UserEventActivity { get; init; }
+
+    public ActivityContext UserNotificationActivity { get; init; }
+
+    public bool Test { get; init; }
+
+    public string ScheduleKey
     {
-        public string PhoneNumber { get; init; }
+        get => ComputeScheduleKey(Tracking.UserNotificationId, PhoneNumber);
+    }
 
-        public string PhoneText { get; init; }
-
-        public string TemplateLanguage { get; init; }
-
-        public string? TemplateName { get; init; }
-
-        public NotificationProperties? Properties { get; init; }
-
-        public ActivityContext EventActivity { get; init; }
-
-        public ActivityContext UserEventActivity { get; init; }
-
-        public ActivityContext UserNotificationActivity { get; init; }
-
-        public bool Test { get; init; }
-
-        public string ScheduleKey
+    IEnumerable<KeyValuePair<string, object>>? IIntegrationTarget.Properties
+    {
+        get
         {
-            get => ComputeScheduleKey(Tracking.UserNotificationId, PhoneNumber);
-        }
-
-        IEnumerable<KeyValuePair<string, object>>? IIntegrationTarget.Properties
-        {
-            get
+            if (Properties != null)
             {
-                if (Properties != null)
-                {
-                    yield return new KeyValuePair<string, object>("properties", Properties);
-                }
-
-                yield return new KeyValuePair<string, object>("phoneNumber", PhoneNumber);
+                yield return new KeyValuePair<string, object>("properties", Properties);
             }
-        }
 
-        public SmsJob()
-        {
+            yield return new KeyValuePair<string, object>("phoneNumber", PhoneNumber);
         }
+    }
 
-        public SmsJob(UserNotification notification, ChannelSetting setting, Guid configurationId, string phoneNumber)
-            : base(notification, setting, configurationId, false, Providers.Sms)
-        {
-            SimpleMapper.Map(notification, this);
+    public SmsJob()
+    {
+    }
 
-            PhoneNumber = phoneNumber;
-            PhoneText = notification.Formatting.Subject.Truncate(140);
-            TemplateLanguage = notification.UserLanguage;
-            TemplateName = setting.Template;
-        }
+    public SmsJob(UserNotification notification, ChannelSetting setting, Guid configurationId, string phoneNumber)
+        : base(notification, setting, configurationId, false, Providers.Sms)
+    {
+        SimpleMapper.Map(notification, this);
 
-        public static string ComputeScheduleKey(Guid notificationId, string phoneNumber)
-        {
-            return $"{notificationId}_{phoneNumber}";
-        }
+        PhoneNumber = phoneNumber;
+        PhoneText = notification.Formatting.Subject.Truncate(140);
+        TemplateLanguage = notification.UserLanguage;
+        TemplateName = setting.Template;
+    }
+
+    public static string ComputeScheduleKey(Guid notificationId, string phoneNumber)
+    {
+        return $"{notificationId}_{phoneNumber}";
     }
 }

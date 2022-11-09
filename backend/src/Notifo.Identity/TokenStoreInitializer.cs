@@ -14,70 +14,69 @@ using OpenIddict.MongoDb;
 using OpenIddict.MongoDb.Models;
 using Squidex.Hosting;
 
-namespace Notifo.Identity
+namespace Notifo.Identity;
+
+public sealed class TokenStoreInitializer : IInitializable
 {
-    public sealed class TokenStoreInitializer : IInitializable
+    private readonly OpenIddictMongoDbOptions options;
+    private readonly IServiceProvider serviceProvider;
+    private CompletionTimer timer;
+
+    public TokenStoreInitializer(IOptions<OpenIddictMongoDbOptions> options,
+        IServiceProvider serviceProvider)
     {
-        private readonly OpenIddictMongoDbOptions options;
-        private readonly IServiceProvider serviceProvider;
-        private CompletionTimer timer;
+        this.options = options.Value;
 
-        public TokenStoreInitializer(IOptions<OpenIddictMongoDbOptions> options,
-            IServiceProvider serviceProvider)
+        this.serviceProvider = serviceProvider;
+    }
+
+    public async Task InitializeAsync(
+        CancellationToken ct)
+    {
+        await SetupIndexAsync(ct);
+
+        await PruneAsync(ct);
+
+        timer = new CompletionTimer((int)TimeSpan.FromHours(6).TotalMilliseconds, async ct =>
         {
-            this.options = options.Value;
-
-            this.serviceProvider = serviceProvider;
-        }
-
-        public async Task InitializeAsync(
-            CancellationToken ct)
-        {
-            await SetupIndexAsync(ct);
-
             await PruneAsync(ct);
+        });
+    }
 
-            timer = new CompletionTimer((int)TimeSpan.FromHours(6).TotalMilliseconds, async ct =>
-            {
-                await PruneAsync(ct);
-            });
-        }
-
-        public async Task ReleaseAsync(
-            CancellationToken ct)
+    public async Task ReleaseAsync(
+        CancellationToken ct)
+    {
+        if (timer != null)
         {
-            if (timer != null)
-            {
-                await timer.StopAsync();
-            }
+            await timer.StopAsync();
         }
+    }
 
-        private async Task PruneAsync(
-            CancellationToken ct)
+    private async Task PruneAsync(
+        CancellationToken ct)
+    {
+        await using (var scope = serviceProvider.CreateAsyncScope())
         {
-            await using (var scope = serviceProvider.CreateAsyncScope())
-            {
-                var tokenManager = scope.ServiceProvider.GetRequiredService<IOpenIddictTokenManager>();
+            var tokenManager = scope.ServiceProvider.GetRequiredService<IOpenIddictTokenManager>();
 
-                await tokenManager.PruneAsync(DateTimeOffset.UtcNow.AddDays(-40), ct);
-            }
+            await tokenManager.PruneAsync(DateTimeOffset.UtcNow.AddDays(-40), ct);
         }
+    }
 
-        private async Task SetupIndexAsync(
-            CancellationToken ct)
+    private async Task SetupIndexAsync(
+        CancellationToken ct)
+    {
+        await using (var scope = serviceProvider.CreateAsyncScope())
         {
-            await using (var scope = serviceProvider.CreateAsyncScope())
-            {
-                var database = await scope.ServiceProvider.GetRequiredService<IOpenIddictMongoDbContext>().GetDatabaseAsync(ct);
+            var database = await scope.ServiceProvider.GetRequiredService<IOpenIddictMongoDbContext>().GetDatabaseAsync(ct);
 
-                var collection = database.GetCollection<OpenIddictMongoDbToken<string>>(options.TokensCollectionName);
+            var collection = database.GetCollection<OpenIddictMongoDbToken<string>>(options.TokensCollectionName);
 
-                await collection.Indexes.CreateOneAsync(
-                    new CreateIndexModel<OpenIddictMongoDbToken<string>>(
-                        Builders<OpenIddictMongoDbToken<string>>.IndexKeys
-                            .Ascending(x => x.ReferenceId)),
-                    cancellationToken: ct);
-            }
+            await collection.Indexes.CreateOneAsync(
+                new CreateIndexModel<OpenIddictMongoDbToken<string>>(
+                    Builders<OpenIddictMongoDbToken<string>>.IndexKeys
+                        .Ascending(x => x.ReferenceId)),
+                cancellationToken: ct);
         }
     }
 }

@@ -7,25 +7,24 @@
 
 using Notifo.Domain.Apps;
 
-namespace Notifo.Domain.Integrations
+namespace Notifo.Domain.Integrations;
+
+public interface IIntegrationManager
 {
-    public interface IIntegrationManager
-    {
-        IEnumerable<IntegrationDefinition> Definitions { get; }
+    IEnumerable<IntegrationDefinition> Definitions { get; }
 
-        bool IsConfigured<T>(App app, IIntegrationTarget? target = null);
+    bool IsConfigured<T>(App app, IIntegrationTarget? target = null);
 
-        Task ValidateAsync(ConfiguredIntegration configured,
-            CancellationToken ct = default);
+    Task ValidateAsync(ConfiguredIntegration configured,
+        CancellationToken ct = default);
 
-        Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
-            CancellationToken ct = default);
+    Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+        CancellationToken ct = default);
 
-        Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
-            CancellationToken ct = default);
+    Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+        CancellationToken ct = default);
 
-        T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class;
+    T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class;
 
-        IEnumerable<(string Id, T Target)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class;
-    }
+    IEnumerable<(string Id, T Target)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class;
 }

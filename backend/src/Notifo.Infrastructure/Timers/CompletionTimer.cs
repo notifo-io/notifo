@@ -5,81 +5,80 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Timers
+namespace Notifo.Infrastructure.Timers;
+
+public sealed class CompletionTimer
 {
-    public sealed class CompletionTimer
+    private const int OneCallNotExecuted = 0;
+    private const int OneCallExecuted = 1;
+    private const int OneCallRequested = 2;
+    private readonly CancellationTokenSource stopToken = new CancellationTokenSource();
+    private readonly Task runTask;
+    private int oneCallState;
+    private CancellationTokenSource? wakeupToken;
+
+    public CompletionTimer(int delayInMs, Func<CancellationToken, Task> callback, int initialDelay = 0)
     {
-        private const int OneCallNotExecuted = 0;
-        private const int OneCallExecuted = 1;
-        private const int OneCallRequested = 2;
-        private readonly CancellationTokenSource stopToken = new CancellationTokenSource();
-        private readonly Task runTask;
-        private int oneCallState;
-        private CancellationTokenSource? wakeupToken;
+        Guard.NotNull(callback);
+        Guard.GreaterThan(delayInMs, 0);
 
-        public CompletionTimer(int delayInMs, Func<CancellationToken, Task> callback, int initialDelay = 0)
+        runTask = RunInternalAsync(delayInMs, initialDelay, callback);
+    }
+
+    public Task StopAsync()
+    {
+        stopToken.Cancel();
+
+        return runTask;
+    }
+
+    public void SkipCurrentDelay()
+    {
+        if (!stopToken.IsCancellationRequested)
         {
-            Guard.NotNull(callback);
-            Guard.GreaterThan(delayInMs, 0);
+            Interlocked.CompareExchange(ref oneCallState, OneCallRequested, OneCallNotExecuted);
 
-            runTask = RunInternalAsync(delayInMs, initialDelay, callback);
+            wakeupToken?.Cancel();
         }
+    }
 
-        public Task StopAsync()
+    private async Task RunInternalAsync(int delay, int initialDelay, Func<CancellationToken, Task> callback)
+    {
+        try
         {
-            stopToken.Cancel();
-
-            return runTask;
-        }
-
-        public void SkipCurrentDelay()
-        {
-            if (!stopToken.IsCancellationRequested)
+            if (initialDelay > 0)
             {
-                Interlocked.CompareExchange(ref oneCallState, OneCallRequested, OneCallNotExecuted);
-
-                wakeupToken?.Cancel();
+                await WaitAsync(initialDelay).ConfigureAwait(false);
             }
-        }
 
-        private async Task RunInternalAsync(int delay, int initialDelay, Func<CancellationToken, Task> callback)
-        {
-            try
+            while (oneCallState == OneCallRequested || !stopToken.IsCancellationRequested)
             {
-                if (initialDelay > 0)
-                {
-                    await WaitAsync(initialDelay).ConfigureAwait(false);
-                }
+                await callback(stopToken.Token).ConfigureAwait(false);
 
-                while (oneCallState == OneCallRequested || !stopToken.IsCancellationRequested)
-                {
-                    await callback(stopToken.Token).ConfigureAwait(false);
+                oneCallState = OneCallExecuted;
 
-                    oneCallState = OneCallExecuted;
-
-                    await WaitAsync(delay).ConfigureAwait(false);
-                }
-            }
-            catch
-            {
-                return;
+                await WaitAsync(delay).ConfigureAwait(false);
             }
         }
-
-        private async Task WaitAsync(int intervall)
+        catch
         {
-            try
-            {
-                wakeupToken = new CancellationTokenSource();
+            return;
+        }
+    }
 
-                using (var cts = CancellationTokenSource.CreateLinkedTokenSource(stopToken.Token, wakeupToken.Token))
-                {
-                    await Task.Delay(intervall, cts.Token).ConfigureAwait(false);
-                }
-            }
-            catch (OperationCanceledException)
+    private async Task WaitAsync(int intervall)
+    {
+        try
+        {
+            wakeupToken = new CancellationTokenSource();
+
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(stopToken.Token, wakeupToken.Token))
             {
+                await Task.Delay(intervall, cts.Token).ConfigureAwait(false);
             }
+        }
+        catch (OperationCanceledException)
+        {
         }
     }
 }

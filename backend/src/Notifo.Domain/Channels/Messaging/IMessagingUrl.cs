@@ -7,10 +7,9 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Domain.Channels.Messaging;
+
+public interface IMessagingUrl : IUserNotificationUrl
 {
-    public interface IMessagingUrl : IUserNotificationUrl
-    {
-        string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
-    }
+    string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
 }

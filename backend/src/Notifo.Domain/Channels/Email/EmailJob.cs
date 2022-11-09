@@ -8,45 +8,44 @@
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Channels.Email;
+
+public sealed class EmailJob : ChannelJob
 {
-    public sealed class EmailJob : ChannelJob
+    public BaseUserNotification Notification { get; init; }
+
+    public string EmailAddress { get; init; }
+
+    public string? EmailTemplate { get; init; }
+
+    public string? FromEmail { get; init; }
+
+    public string? FromName { get; init; }
+
+    public string ScheduleKey
     {
-        public BaseUserNotification Notification { get; init; }
+        get => string.Join("_",
+            Notification.AppId,
+            Notification.UserId,
+            Notification.UserLanguage,
+            Notification.Test,
+            EmailAddress,
+            EmailTemplate,
+            FromEmail,
+            FromName);
+    }
 
-        public string EmailAddress { get; init; }
+    public EmailJob()
+    {
+    }
 
-        public string? EmailTemplate { get; init; }
-
-        public string? FromEmail { get; init; }
-
-        public string? FromName { get; init; }
-
-        public string ScheduleKey
-        {
-            get => string.Join("_",
-                Notification.AppId,
-                Notification.UserId,
-                Notification.UserLanguage,
-                Notification.Test,
-                EmailAddress,
-                EmailTemplate,
-                FromEmail,
-                FromName);
-        }
-
-        public EmailJob()
-        {
-        }
-
-        public EmailJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId, string emailAddress)
-            : base(notification, setting, configurationId, false, Providers.Email)
-        {
-            EmailAddress = emailAddress;
-            EmailTemplate = setting.Template;
-            FromEmail = setting.Properties?.GetOrDefault(nameof(FromEmail));
-            FromName = setting.Properties?.GetOrDefault(nameof(FromName));
-            Notification = notification;
-        }
+    public EmailJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId, string emailAddress)
+        : base(notification, setting, configurationId, false, Providers.Email)
+    {
+        EmailAddress = emailAddress;
+        EmailTemplate = setting.Template;
+        FromEmail = setting.Properties?.GetOrDefault(nameof(FromEmail));
+        FromName = setting.Properties?.GetOrDefault(nameof(FromName));
+        Notification = notification;
     }
 }

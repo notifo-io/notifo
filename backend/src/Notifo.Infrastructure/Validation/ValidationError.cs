@@ -5,31 +5,30 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Validation
+namespace Notifo.Infrastructure.Validation;
+
+[Serializable]
+public sealed class ValidationError
 {
-    [Serializable]
-    public sealed class ValidationError
+    private readonly string message;
+    private readonly string[] propertyNames;
+
+    public string Message
     {
-        private readonly string message;
-        private readonly string[] propertyNames;
+        get => message;
+    }
 
-        public string Message
-        {
-            get => message;
-        }
+    public IEnumerable<string> PropertyNames
+    {
+        get => propertyNames;
+    }
 
-        public IEnumerable<string> PropertyNames
-        {
-            get => propertyNames;
-        }
+    public ValidationError(string message, params string[] propertyNames)
+    {
+        Guard.NotNullOrEmpty(message);
 
-        public ValidationError(string message, params string[] propertyNames)
-        {
-            Guard.NotNullOrEmpty(message);
+        this.message = message;
 
-            this.message = message;
-
-            this.propertyNames = propertyNames ?? Array.Empty<string>();
-        }
+        this.propertyNames = propertyNames ?? Array.Empty<string>();
     }
 }

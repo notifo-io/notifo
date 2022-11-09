@@ -7,36 +7,35 @@
 
 using Squidex.Assets;
 
-namespace Notifo.Domain.Media
+namespace Notifo.Domain.Media;
+
+public sealed class DefaultMediaFileStore : IMediaFileStore
 {
-    public sealed class DefaultMediaFileStore : IMediaFileStore
+    private readonly IAssetStore assetStore;
+
+    public DefaultMediaFileStore(IAssetStore assetStore)
     {
-        private readonly IAssetStore assetStore;
+        this.assetStore = assetStore;
+    }
 
-        public DefaultMediaFileStore(IAssetStore assetStore)
-        {
-            this.assetStore = assetStore;
-        }
+    public Task DownloadAsync(string appId, Media media, Stream stream, BytesRange range,
+        CancellationToken ct = default)
+    {
+        var fileName = CreateFileName(appId, media);
 
-        public Task DownloadAsync(string appId, Media media, Stream stream, BytesRange range,
-            CancellationToken ct = default)
-        {
-            var fileName = CreateFileName(appId, media);
+        return assetStore.DownloadAsync(fileName, stream, range, ct);
+    }
 
-            return assetStore.DownloadAsync(fileName, stream, range, ct);
-        }
+    public Task UploadAsync(string appId, Media media, Stream stream,
+        CancellationToken ct = default)
+    {
+        var fileName = CreateFileName(appId, media);
 
-        public Task UploadAsync(string appId, Media media, Stream stream,
-            CancellationToken ct = default)
-        {
-            var fileName = CreateFileName(appId, media);
+        return assetStore.UploadAsync(fileName, stream, true, ct);
+    }
 
-            return assetStore.UploadAsync(fileName, stream, true, ct);
-        }
-
-        private static string CreateFileName(string appId, Media media)
-        {
-            return $"{appId}_{media.FileName}";
-        }
+    private static string CreateFileName(string appId, Media media)
+    {
+        return $"{appId}_{media.FileName}";
     }
 }

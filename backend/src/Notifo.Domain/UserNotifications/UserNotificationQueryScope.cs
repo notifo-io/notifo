@@ -5,12 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public enum UserNotificationQueryScope
 {
-    public enum UserNotificationQueryScope
-    {
-        NonDeleted,
-        Deleted,
-        All
-    }
+    NonDeleted,
+    Deleted,
+    All
 }

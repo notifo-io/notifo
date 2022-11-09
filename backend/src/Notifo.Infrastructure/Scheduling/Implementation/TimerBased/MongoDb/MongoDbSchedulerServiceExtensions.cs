@@ -8,14 +8,13 @@
 using Notifo.Infrastructure.Scheduling.Implementation;
 using Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class MongoDbSchedulerServiceExtensions
 {
-    public static class MongoDbSchedulerServiceExtensions
+    public static void AddMyMongoDbScheduler(this IServiceCollection services)
     {
-        public static void AddMyMongoDbScheduler(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbSchedulingProvider>()
-                .As<ISchedulingProvider>();
-        }
+        services.AddSingletonAs<MongoDbSchedulingProvider>()
+            .As<ISchedulingProvider>();
     }
 }

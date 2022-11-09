@@ -5,19 +5,19 @@
 @{
     ViewData["Title"] = T["LoginTitle"];
 
-    Layout = "_LayoutLogin";
+Layout = "_LayoutLogin";
 
-    void RenderValidation(string field)
+void RenderValidation(string field)
+{
+    @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
     {
-        @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
-        {
-            <div class="errors-container">
+        <div class="errors-container">
                 <span class="errors">@Html.ValidationMessage(field)</span>
             </div>
-        }
     }
+}
 
-    var loginText = Model.Signup ? "SignupWith" : "LoginWith";
+var loginText = Model.Signup ? "SignupWith" : "LoginWith";
 }
 
 @if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
@@ -30,36 +30,36 @@
 <div class="text-center mb-6">
     <div class="btn-group">
         @if (Model!.Signup)
-        {
-            <a class="btn btn-toggle" asp-page="Login" asp-route-returnurl="@Model.ReturnUrl">@T["Login"]</a>
-        }
-        else
-        {
-            <a class="btn btn-toggle btn-primary">@T["Login"]</a>
-        }
+    {
+        <a class="btn btn-toggle" asp-page="Login" asp-route-returnurl="@Model.ReturnUrl">@T["Login"]</a>
+    }
+    else
+    {
+        <a class="btn btn-toggle btn-primary">@T["Login"]</a>
+    }
 
         @if (!Model!.Signup)
-        {
-            <a class="btn btn-toggle" asp-page="Login" asp-route-returnurl="@Model.ReturnUrl" asp-route-signup="true">@T["Signup"]</a>
-        }
-        else
-        {
-            <a class="btn btn-toggle btn-primary">@T["Signup"]</a>
-        }
+    {
+        <a class="btn btn-toggle" asp-page="Login" asp-route-returnurl="@Model.ReturnUrl" asp-route-signup="true">@T["Signup"]</a>
+    }
+    else
+    {
+        <a class="btn btn-toggle btn-primary">@T["Signup"]</a>
+    }
     </div>
 </div>
 
 @if (Model!.HasPasswordAuth)
 {
-    if (Model.Signup)
-    {
-        <div class="text-muted mt-5">
+if (Model.Signup)
+{
+    <div class="text-muted mt-5">
             <small>@T["NoAccount"]</small>
         </div>
-    }
-    else
-    {
-        <section>
+}
+else
+{
+    <section>
             <form method="post">
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
@@ -91,7 +91,7 @@
                 </div>
             </form>
         </section>
-    }
+}
 }
 
 @if (Model!.HasPasswordAuth && Model?.ExternalLogins?.Count > 0)
@@ -108,13 +108,13 @@
             <div>
                 <p>
                     @foreach (var provider in Model.ExternalLogins)
-                    {
-                        var lowerName = provider.DisplayName!.ToLowerInvariant();
+                {
+                    var lowerName = provider.DisplayName!.ToLowerInvariant();
 
-                        <button type="submit" class="btn btn-block btn-social btn-dark btn-@lowerName" name="provider" value="@provider.Name">
+                    <button type="submit" class="btn btn-block btn-social btn-dark btn-@lowerName" name="provider" value="@provider.Name">
                             @T[loginText, provider.DisplayName]
                         </button>
-                    }
+                }
                 </p>
             </div>
         </form>

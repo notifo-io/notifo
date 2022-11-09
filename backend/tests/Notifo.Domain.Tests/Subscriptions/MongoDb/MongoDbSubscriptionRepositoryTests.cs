@@ -12,219 +12,218 @@ using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 
-namespace Notifo.Domain.Subscriptions.MongoDb
+namespace Notifo.Domain.Subscriptions.MongoDb;
+
+[Trait("Category", "Dependencies")]
+public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscriptionRepositoryFixture>
 {
-    [Trait("Category", "Dependencies")]
-    public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscriptionRepositoryFixture>
+    private readonly string topic = Guid.NewGuid().ToString();
+    private readonly string appId = "my-app";
+    private readonly string userId1 = Guid.NewGuid().ToString();
+    private readonly string userId2 = Guid.NewGuid().ToString();
+
+    public MongoDbSubscriptionRepositoryFixture _ { get; }
+
+    public MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFixture fixture)
     {
-        private readonly string topic = Guid.NewGuid().ToString();
-        private readonly string appId = "my-app";
-        private readonly string userId1 = Guid.NewGuid().ToString();
-        private readonly string userId2 = Guid.NewGuid().ToString();
+        _ = fixture;
+    }
 
-        public MongoDbSubscriptionRepositoryFixture _ { get; }
+    [Fact]
+    public async Task Should_be_fast()
+    {
+        var empty = Guid.Empty.ToString();
 
-        public MongoDbSubscriptionRepositoryTests(MongoDbSubscriptionRepositoryFixture fixture)
+        var count = await _.Repository.Collection.CountDocumentsAsync(new BsonDocument());
+
+        var random = new Random();
+
+        const int Count = 1_000_000;
+
+        if (count < Count)
         {
-            _ = fixture;
-        }
+            var inserts = new List<MongoDbSubscription>();
 
-        [Fact]
-        public async Task Should_be_fast()
-        {
-            var empty = Guid.Empty.ToString();
-
-            var count = await _.Repository.Collection.CountDocumentsAsync(new BsonDocument());
-
-            var random = new Random();
-
-            const int Count = 1_000_000;
-
-            if (count < Count)
+            for (var i = 0; i < Count; i++)
             {
-                var inserts = new List<MongoDbSubscription>();
+                TopicId randomTopic = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}a";
 
-                for (var i = 0; i < Count; i++)
+                inserts.Add(new MongoDbSubscription
                 {
-                    TopicId randomTopic = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}a";
-
-                    inserts.Add(new MongoDbSubscription
-                    {
-                        DocId = Guid.NewGuid().ToString(),
-                        AppId = empty,
-                        TopicArray = randomTopic.GetParts(),
-                        TopicPrefix = randomTopic,
-                        UserId = empty
-                    });
-                }
-
-                await _.Repository.Collection.InsertManyAsync(inserts);
+                    DocId = Guid.NewGuid().ToString(),
+                    AppId = empty,
+                    TopicArray = randomTopic.GetParts(),
+                    TopicPrefix = randomTopic,
+                    UserId = empty
+                });
             }
 
-            var topicToSearch = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}a";
-
-            await ToList(_.Repository.QueryAsync(empty, topicToSearch));
-            await ToList(_.Repository.QueryAsync(empty, topicToSearch));
-
-            var watch = Stopwatch.StartNew();
-
-            await ToList(_.Repository.QueryAsync(empty, topicToSearch));
-
-            watch.Stop();
-
-            Assert.InRange(watch.ElapsedMilliseconds, 0, 20);
+            await _.Repository.Collection.InsertManyAsync(inserts);
         }
 
-        [Fact]
-        public async Task Should_find_most_concrete_subscriptions()
+        var topicToSearch = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}a";
+
+        await ToList(_.Repository.QueryAsync(empty, topicToSearch));
+        await ToList(_.Repository.QueryAsync(empty, topicToSearch));
+
+        var watch = Stopwatch.StartNew();
+
+        await ToList(_.Repository.QueryAsync(empty, topicToSearch));
+
+        watch.Stop();
+
+        Assert.InRange(watch.ElapsedMilliseconds, 0, 20);
+    }
+
+    [Fact]
+    public async Task Should_find_most_concrete_subscriptions()
+    {
+        var eventTopic = $"{topic}/child";
+
+        var subscriptionTopic1 = topic;
+        var subscriptionTopic2 = $"{topic}/child";
+
+        await SubscribeAsync(userId1, subscriptionTopic1);
+        await SubscribeAsync(userId1, subscriptionTopic2, true);
+
+        await SubscribeAsync(userId2, subscriptionTopic1);
+        await SubscribeAsync(userId2, subscriptionTopic2, true);
+
+        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+
+        Assert.Equal(2, subscriptions.Count);
+        Assert.Equal(subscriptionTopic2, subscriptions[0].TopicPrefix);
+        Assert.Equal(subscriptionTopic2, subscriptions[1].TopicPrefix);
+    }
+
+    [Fact]
+    public async Task Should_find_same_subscription()
+    {
+        string eventTopic = topic, subscriptionTopic = topic;
+
+        await SubscribeAsync(userId1, subscriptionTopic);
+
+        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+
+        Assert.Single(subscriptions);
+        Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
+    }
+
+    [Fact]
+    public async Task Should_find_parent_subscription()
+    {
+        string eventTopic = $"{topic}/child", subscriptionTopic = topic;
+
+        await SubscribeAsync(userId1, subscriptionTopic);
+
+        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+
+        Assert.Single(subscriptions);
+        Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
+    }
+
+    [Fact]
+    public async Task Should_not_find_child_subscription()
+    {
+        string eventTopic = topic, subscriptionTopic = $"{topic}/child";
+
+        await SubscribeAsync(userId1, subscriptionTopic);
+
+        var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+
+        Assert.Empty(subscriptions);
+    }
+
+    [Fact]
+    public async Task Should_unsubscribe_by_topic()
+    {
+        await SubscribeAsync(userId1, "tenant1/updates");
+        await SubscribeAsync(userId1, "tenant1/updates/news");
+
+        var subscriptions_0 = await QuerySubscriptionTopics(userId1);
+
+        Assert.Equal(new[]
         {
-            var eventTopic = $"{topic}/child";
+            "tenant1/updates",
+            "tenant1/updates/news"
+        }, subscriptions_0);
 
-            var subscriptionTopic1 = topic;
-            var subscriptionTopic2 = $"{topic}/child";
+        await _.Repository.DeleteAsync(appId, userId1, "tenant1/updates", default);
 
-            await SubscribeAsync(userId1, subscriptionTopic1);
-            await SubscribeAsync(userId1, subscriptionTopic2, true);
+        var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
-            await SubscribeAsync(userId2, subscriptionTopic1);
-            await SubscribeAsync(userId2, subscriptionTopic2, true);
-
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
-
-            Assert.Equal(2, subscriptions.Count);
-            Assert.Equal(subscriptionTopic2, subscriptions[0].TopicPrefix);
-            Assert.Equal(subscriptionTopic2, subscriptions[1].TopicPrefix);
-        }
-
-        [Fact]
-        public async Task Should_find_same_subscription()
+        Assert.Equal(new[]
         {
-            string eventTopic = topic, subscriptionTopic = topic;
+            "tenant1/updates/news"
+        }, subscriptions_1);
+    }
 
-            await SubscribeAsync(userId1, subscriptionTopic);
+    [Fact]
+    public async Task Should_unsubscribe_by_prefix()
+    {
+        await SubscribeAsync(userId1, "tenant1/updates");
+        await SubscribeAsync(userId1, "tenant1/updates/news");
+        await SubscribeAsync(userId1, "tenant2/updates");
+        await SubscribeAsync(userId1, "tenant2/updates/news");
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        var subscriptions_0 = await QuerySubscriptionTopics(userId1);
 
-            Assert.Single(subscriptions);
-            Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
-        }
-
-        [Fact]
-        public async Task Should_find_parent_subscription()
+        Assert.Equal(new[]
         {
-            string eventTopic = $"{topic}/child", subscriptionTopic = topic;
+            "tenant1/updates",
+            "tenant1/updates/news",
+            "tenant2/updates",
+            "tenant2/updates/news"
+        }, subscriptions_0);
 
-            await SubscribeAsync(userId1, subscriptionTopic);
+        await _.Repository.DeletePrefixAsync(appId, userId1, "tenant2", default);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        var subscriptions_1 = await QuerySubscriptionTopics(userId1);
 
-            Assert.Single(subscriptions);
-            Assert.Equal(subscriptionTopic, subscriptions[0].TopicPrefix);
-        }
-
-        [Fact]
-        public async Task Should_not_find_child_subscription()
+        Assert.Equal(new[]
         {
-            string eventTopic = topic, subscriptionTopic = $"{topic}/child";
+            "tenant1/updates",
+            "tenant1/updates/news"
+        }, subscriptions_1);
+    }
 
-            await SubscribeAsync(userId1, subscriptionTopic);
+    private async Task<string[]> QuerySubscriptionTopics(string userId)
+    {
+        var subscriptions = await _.Repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
 
-            var subscriptions = await ToList(_.Repository.QueryAsync(appId, eventTopic));
+        return subscriptions.Select(x => x.TopicPrefix.ToString()).OrderBy(x => x).ToArray();
+    }
 
-            Assert.Empty(subscriptions);
-        }
-
-        [Fact]
-        public async Task Should_unsubscribe_by_topic()
+    private Task SubscribeAsync(string userId, string topicPrefix, bool sendEmail = false)
+    {
+        var subscription = new Subscription
         {
-            await SubscribeAsync(userId1, "tenant1/updates");
-            await SubscribeAsync(userId1, "tenant1/updates/news");
+            AppId = appId,
+            UserId = userId,
+            TopicPrefix = topicPrefix,
+            TopicSettings = new ChannelSettings()
+        };
 
-            var subscriptions_0 = await QuerySubscriptionTopics(userId1);
-
-            Assert.Equal(new[]
+        if (sendEmail)
+        {
+            subscription.TopicSettings[Providers.Email] = new ChannelSetting
             {
-                "tenant1/updates",
-                "tenant1/updates/news"
-            }, subscriptions_0);
-
-            await _.Repository.DeleteAsync(appId, userId1, "tenant1/updates", default);
-
-            var subscriptions_1 = await QuerySubscriptionTopics(userId1);
-
-            Assert.Equal(new[]
-            {
-                "tenant1/updates/news"
-            }, subscriptions_1);
-        }
-
-        [Fact]
-        public async Task Should_unsubscribe_by_prefix()
-        {
-            await SubscribeAsync(userId1, "tenant1/updates");
-            await SubscribeAsync(userId1, "tenant1/updates/news");
-            await SubscribeAsync(userId1, "tenant2/updates");
-            await SubscribeAsync(userId1, "tenant2/updates/news");
-
-            var subscriptions_0 = await QuerySubscriptionTopics(userId1);
-
-            Assert.Equal(new[]
-            {
-                "tenant1/updates",
-                "tenant1/updates/news",
-                "tenant2/updates",
-                "tenant2/updates/news"
-            }, subscriptions_0);
-
-            await _.Repository.DeletePrefixAsync(appId, userId1, "tenant2", default);
-
-            var subscriptions_1 = await QuerySubscriptionTopics(userId1);
-
-            Assert.Equal(new[]
-            {
-                "tenant1/updates",
-                "tenant1/updates/news"
-            }, subscriptions_1);
-        }
-
-        private async Task<string[]> QuerySubscriptionTopics(string userId)
-        {
-            var subscriptions = await _.Repository.QueryAsync(appId, new SubscriptionQuery { UserId = userId }, default);
-
-            return subscriptions.Select(x => x.TopicPrefix.ToString()).OrderBy(x => x).ToArray();
-        }
-
-        private Task SubscribeAsync(string userId, string topicPrefix, bool sendEmail = false)
-        {
-            var subscription = new Subscription
-            {
-                AppId = appId,
-                UserId = userId,
-                TopicPrefix = topicPrefix,
-                TopicSettings = new ChannelSettings()
+                Send = ChannelSend.Send
             };
-
-            if (sendEmail)
-            {
-                subscription.TopicSettings[Providers.Email] = new ChannelSetting
-                {
-                    Send = ChannelSend.Send
-                };
-            }
-
-            return _.Repository.UpsertAsync(subscription);
         }
 
-        private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)
+        return _.Repository.UpsertAsync(subscription);
+    }
+
+    private static async Task<List<T>> ToList<T>(IAsyncEnumerable<T> enumerable)
+    {
+        var list = new List<T>();
+
+        await foreach (var item in enumerable)
         {
-            var list = new List<T>();
-
-            await foreach (var item in enumerable)
-            {
-                list.Add(item);
-            }
-
-            return list;
+            list.Add(item);
         }
+
+        return list;
     }
 }

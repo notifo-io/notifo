@@ -7,32 +7,31 @@
 
 using Notifo.Domain.Apps;
 
-namespace Notifo.Domain.Integrations
+namespace Notifo.Domain.Integrations;
+
+public interface IIntegration
 {
-    public interface IIntegration
+    IntegrationDefinition Definition { get; }
+
+    object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider);
+
+    bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured);
+
+    Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+        CancellationToken ct)
     {
-        IntegrationDefinition Definition { get; }
+        return Task.CompletedTask;
+    }
 
-        object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider);
+    Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
+        CancellationToken ct)
+    {
+        return Task.CompletedTask;
+    }
 
-        bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured);
-
-        Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
-            CancellationToken ct)
-        {
-            return Task.CompletedTask;
-        }
-
-        Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
-            CancellationToken ct)
-        {
-            return Task.CompletedTask;
-        }
-
-        Task CheckStatusAsync(App app, string id, ConfiguredIntegration configured,
-            CancellationToken ct)
-        {
-            return Task.CompletedTask;
-        }
+    Task CheckStatusAsync(App app, string id, ConfiguredIntegration configured,
+        CancellationToken ct)
+    {
+        return Task.CompletedTask;
     }
 }

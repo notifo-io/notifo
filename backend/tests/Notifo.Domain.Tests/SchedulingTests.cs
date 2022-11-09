@@ -9,159 +9,158 @@ using FakeItEasy;
 using NodaTime;
 using Xunit;
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public sealed class SchedulingTests
 {
-    public sealed class SchedulingTests
+    private readonly IClock clock = A.Fake<IClock>();
+    private readonly Instant now;
+
+    public SchedulingTests()
     {
-        private readonly IClock clock = A.Fake<IClock>();
-        private readonly Instant now;
+        now = Instant.FromUtc(2010, 2, 10, 14, 30, 10);
 
-        public SchedulingTests()
+        A.CallTo(() => clock.GetCurrentInstant())
+            .Returns(now);
+    }
+
+    [Fact]
+    public void Should_return_now_for_null_scheduling()
+    {
+        Scheduling? sut = null;
+
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+
+        Assert.Equal(now, actual);
+    }
+
+    [Fact]
+    public void Should_return_now_for_undefined_scheduling()
+    {
+        var sut = new Scheduling();
+
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+
+        Assert.Equal(now, actual);
+    }
+
+    [Fact]
+    public void Should_return_concrete_utc_datetime()
+    {
+        var time = new LocalTime(15, 13, 12);
+
+        var sut = new Scheduling
         {
-            now = Instant.FromUtc(2010, 2, 10, 14, 30, 10);
+            Type = SchedulingType.UTC,
+            Time = time,
+            Date = new LocalDate(2010, 2, 14)
+        };
 
-            A.CallTo(() => clock.GetCurrentInstant())
-                .Returns(now);
-        }
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
 
-        [Fact]
-        public void Should_return_now_for_null_scheduling()
+        // Global time is UTC time.
+        var expected = Instant.FromUtc(2010, 2, 14, 15, 13, 12);
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Should_return_concrete_user_datetime()
+    {
+        var time = new LocalTime(15, 13, 12);
+
+        var sut = new Scheduling
         {
-            Scheduling? sut = null;
+            Type = SchedulingType.UserTime,
+            Time = time,
+            Date = new LocalDate(2010, 2, 14)
+        };
 
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
 
-            Assert.Equal(now, actual);
-        }
+        // Berlin is UTC+1 in winter.
+        var expected = Instant.FromUtc(2010, 2, 14, 14, 13, 12);
 
-        [Fact]
-        public void Should_return_now_for_undefined_scheduling()
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Should_return_weekday_utc_datetime()
+    {
+        var time = new LocalTime(15, 13, 12);
+
+        var sut = new Scheduling
         {
-            var sut = new Scheduling();
+            Type = SchedulingType.UTC,
+            Time = time,
+            NextWeekDay = IsoDayOfWeek.Friday
+        };
 
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
 
-            Assert.Equal(now, actual);
-        }
+        // Global time is UTC time.
+        var expected = Instant.FromUtc(2010, 2, 12, 15, 13, 12);
 
-        [Fact]
-        public void Should_return_concrete_utc_datetime()
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public void Should_return_weekday_utc_datetime_if_day_is_the_same_day()
+    {
+        var time = new LocalTime(15, 13, 12);
+
+        var sut = new Scheduling
         {
-            var time = new LocalTime(15, 13, 12);
+            Type = SchedulingType.UTC,
+            Time = time,
+            NextWeekDay = IsoDayOfWeek.Wednesday
+        };
 
-            var sut = new Scheduling
-            {
-                Type = SchedulingType.UTC,
-                Time = time,
-                Date = new LocalDate(2010, 2, 14)
-            };
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
 
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+        // Global time is UTC time.
+        var expected = Instant.FromUtc(2010, 2, 10, 15, 13, 12);
 
-            // Global time is UTC time.
-            var expected = Instant.FromUtc(2010, 2, 14, 15, 13, 12);
+        Assert.Equal(expected, actual);
+    }
 
-            Assert.Equal(expected, actual);
-        }
+    [Fact]
+    public void Should_return_weekday_user_datetime()
+    {
+        var time = new LocalTime(15, 13, 12);
 
-        [Fact]
-        public void Should_return_concrete_user_datetime()
+        var sut = new Scheduling
         {
-            var time = new LocalTime(15, 13, 12);
+            Type = SchedulingType.UserTime,
+            Time = time,
+            NextWeekDay = IsoDayOfWeek.Friday
+        };
 
-            var sut = new Scheduling
-            {
-                Type = SchedulingType.UserTime,
-                Time = time,
-                Date = new LocalDate(2010, 2, 14)
-            };
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
 
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+        // Berlin is UTC+1 in winter.
+        var expected = Instant.FromUtc(2010, 2, 12, 14, 13, 12);
 
-            // Berlin is UTC+1 in winter.
-            var expected = Instant.FromUtc(2010, 2, 14, 14, 13, 12);
+        Assert.Equal(expected, actual);
+    }
 
-            Assert.Equal(expected, actual);
-        }
+    [Fact]
+    public void Should_return_weekday_user_datetime_if_day_is_the_same_day()
+    {
+        var time = new LocalTime(15, 13, 12);
 
-        [Fact]
-        public void Should_return_weekday_utc_datetime()
+        var sut = new Scheduling
         {
-            var time = new LocalTime(15, 13, 12);
+            Type = SchedulingType.UserTime,
+            Time = time,
+            NextWeekDay = IsoDayOfWeek.Wednesday
+        };
 
-            var sut = new Scheduling
-            {
-                Type = SchedulingType.UTC,
-                Time = time,
-                NextWeekDay = IsoDayOfWeek.Friday
-            };
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
 
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+        // Berlin is UTC+1 in winter.
+        var expected = Instant.FromUtc(2010, 2, 10, 14, 13, 12);
 
-            // Global time is UTC time.
-            var expected = Instant.FromUtc(2010, 2, 12, 15, 13, 12);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Should_return_weekday_utc_datetime_if_day_is_the_same_day()
-        {
-            var time = new LocalTime(15, 13, 12);
-
-            var sut = new Scheduling
-            {
-                Type = SchedulingType.UTC,
-                Time = time,
-                NextWeekDay = IsoDayOfWeek.Wednesday
-            };
-
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
-
-            // Global time is UTC time.
-            var expected = Instant.FromUtc(2010, 2, 10, 15, 13, 12);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Should_return_weekday_user_datetime()
-        {
-            var time = new LocalTime(15, 13, 12);
-
-            var sut = new Scheduling
-            {
-                Type = SchedulingType.UserTime,
-                Time = time,
-                NextWeekDay = IsoDayOfWeek.Friday
-            };
-
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
-
-            // Berlin is UTC+1 in winter.
-            var expected = Instant.FromUtc(2010, 2, 12, 14, 13, 12);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Should_return_weekday_user_datetime_if_day_is_the_same_day()
-        {
-            var time = new LocalTime(15, 13, 12);
-
-            var sut = new Scheduling
-            {
-                Type = SchedulingType.UserTime,
-                Time = time,
-                NextWeekDay = IsoDayOfWeek.Wednesday
-            };
-
-            var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
-
-            // Berlin is UTC+1 in winter.
-            var expected = Instant.FromUtc(2010, 2, 10, 14, 13, 12);
-
-            Assert.Equal(expected, actual);
-        }
+        Assert.Equal(expected, actual);
     }
 }

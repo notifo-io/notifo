@@ -11,27 +11,26 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Pages;
+
+public sealed class ErrorModel : PageModel
 {
-    public sealed class ErrorModel : PageModel
+    public string? ErrorMessage { get; set; }
+
+    public string? ErrorCode { get; set; } = "400";
+
+    public void OnGet()
     {
-        public string? ErrorMessage { get; set; }
+        var response = HttpContext.GetOpenIddictServerResponse();
 
-        public string? ErrorCode { get; set; } = "400";
+        ErrorMessage = response?.ErrorDescription;
+        ErrorCode = response?.Error;
 
-        public void OnGet()
+        if (string.IsNullOrWhiteSpace(ErrorMessage))
         {
-            var response = HttpContext.GetOpenIddictServerResponse();
+            var exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
 
-            ErrorMessage = response?.ErrorDescription;
-            ErrorCode = response?.Error;
-
-            if (string.IsNullOrWhiteSpace(ErrorMessage))
-            {
-                var exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
-
-                ErrorMessage = exception?.Message;
-            }
+            ErrorMessage = exception?.Message;
         }
     }
 }

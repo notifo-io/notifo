@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Email
-{
-    public interface IEmailSender
-    {
-        string Name { get; }
+namespace Notifo.Domain.Channels.Email;
 
-        Task SendAsync(EmailMessage message,
-            CancellationToken ct = default);
-    }
+public interface IEmailSender
+{
+    string Name { get; }
+
+    Task SendAsync(EmailMessage message,
+        CancellationToken ct = default);
 }

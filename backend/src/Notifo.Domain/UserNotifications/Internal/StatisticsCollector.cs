@@ -8,80 +8,79 @@
 using System.Collections.Concurrent;
 using Notifo.Infrastructure.Timers;
 
-namespace Notifo.Domain.UserNotifications.Internal
+namespace Notifo.Domain.UserNotifications.Internal;
+
+public sealed class StatisticsCollector
 {
-    public sealed class StatisticsCollector
+    private readonly CompletionTimer timer;
+    private readonly IUserNotificationRepository repository;
+    private readonly int updatesCapacity;
+    private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
+    private readonly ConcurrentDictionary<(Guid Id, string Channel, Guid ConfigurationId), ChannelSendInfo> updates;
+
+    public StatisticsCollector(IUserNotificationRepository repository, int updateInterval, int capacity = 2000)
     {
-        private readonly CompletionTimer timer;
-        private readonly IUserNotificationRepository repository;
-        private readonly int updatesCapacity;
-        private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-        private readonly ConcurrentDictionary<(Guid Id, string Channel, Guid ConfigurationId), ChannelSendInfo> updates;
+        this.repository = repository;
 
-        public StatisticsCollector(IUserNotificationRepository repository, int updateInterval, int capacity = 2000)
+        updatesCapacity = capacity;
+        updates = new ConcurrentDictionary<(Guid Id, string Channel, Guid ConfigurationId), ChannelSendInfo>(Environment.ProcessorCount, capacity);
+
+        timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
+    }
+
+    public async Task AddAsync(Guid id, string channel, Guid configurationId, ChannelSendInfo info)
+    {
+        readerWriterLock.EnterReadLock();
+        try
         {
-            this.repository = repository;
-
-            updatesCapacity = capacity;
-            updates = new ConcurrentDictionary<(Guid Id, string Channel, Guid ConfigurationId), ChannelSendInfo>(Environment.ProcessorCount, capacity);
-
-            timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
+            updates[(id, channel, configurationId)] = info;
+        }
+        finally
+        {
+            readerWriterLock.ExitReadLock();
         }
 
-        public async Task AddAsync(Guid id, string channel, Guid configurationId, ChannelSendInfo info)
+        if (updates.Count >= updatesCapacity)
         {
-            readerWriterLock.EnterReadLock();
-            try
-            {
-                updates[(id, channel, configurationId)] = info;
-            }
-            finally
-            {
-                readerWriterLock.ExitReadLock();
-            }
+            await StoreAsync(default);
+        }
+    }
 
-            if (updates.Count >= updatesCapacity)
-            {
-                await StoreAsync(default);
-            }
+    public Task StopAsync()
+    {
+        return timer.StopAsync();
+    }
+
+    private async Task StoreAsync(
+        CancellationToken ct)
+    {
+        if (updates.IsEmpty)
+        {
+            return;
         }
 
-        public Task StopAsync()
-        {
-            return timer.StopAsync();
-        }
+        List<(Guid, string, Guid, ChannelSendInfo)> commands;
 
-        private async Task StoreAsync(
-            CancellationToken ct)
+        readerWriterLock.EnterWriteLock();
+        try
         {
             if (updates.IsEmpty)
             {
                 return;
             }
 
-            List<(Guid, string, Guid, ChannelSendInfo)> commands;
+            commands = updates.Select(x => (x.Key.Id, x.Key.Channel, x.Key.ConfigurationId, x.Value)).ToList();
+        }
+        finally
+        {
+            updates.Clear();
 
-            readerWriterLock.EnterWriteLock();
-            try
-            {
-                if (updates.IsEmpty)
-                {
-                    return;
-                }
+            readerWriterLock.ExitWriteLock();
+        }
 
-                commands = updates.Select(x => (x.Key.Id, x.Key.Channel, x.Key.ConfigurationId, x.Value)).ToList();
-            }
-            finally
-            {
-                updates.Clear();
-
-                readerWriterLock.ExitWriteLock();
-            }
-
-            if (commands.Count > 0)
-            {
-                await repository.BatchWriteAsync(commands, ct);
-            }
+        if (commands.Count > 0)
+        {
+            await repository.BatchWriteAsync(commands, ct);
         }
     }
 }

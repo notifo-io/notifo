@@ -10,51 +10,50 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public sealed class ActivitySpanIdSerializer : SerializerBase<ActivitySpanId>
 {
-    public sealed class ActivitySpanIdSerializer : SerializerBase<ActivitySpanId>
+    private static volatile int isRegistered;
+
+    public static void Register()
     {
-        private static volatile int isRegistered;
-
-        public static void Register()
+        if (Interlocked.Increment(ref isRegistered) == 1)
         {
-            if (Interlocked.Increment(ref isRegistered) == 1)
-            {
-                BsonSerializer.RegisterSerializer(new ActivitySpanIdSerializer());
-            }
+            BsonSerializer.RegisterSerializer(new ActivitySpanIdSerializer());
         }
+    }
 
-        public override ActivitySpanId Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    public override ActivitySpanId Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        var reader = context.Reader;
+
+        switch (reader.CurrentBsonType)
         {
-            var reader = context.Reader;
+            case BsonType.Null:
+                reader.ReadNull();
+                return default;
+            case BsonType.String:
+                var text = context.Reader.ReadString();
 
-            switch (reader.CurrentBsonType)
-            {
-                case BsonType.Null:
-                    reader.ReadNull();
-                    return default;
-                case BsonType.String:
-                    var text = context.Reader.ReadString();
-
-                    return ActivitySpanId.CreateFromString(text);
-                default:
-                    ThrowHelper.BsonSerializationException($"Expected BsonType.String or JsonTokenType.Null, got {reader.CurrentBsonType}.");
-                    return default;
-            }
+                return ActivitySpanId.CreateFromString(text);
+            default:
+                ThrowHelper.BsonSerializationException($"Expected BsonType.String or JsonTokenType.Null, got {reader.CurrentBsonType}.");
+                return default;
         }
+    }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, ActivitySpanId value)
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, ActivitySpanId value)
+    {
+        var writer = context.Writer;
+
+        if (value == default)
         {
-            var writer = context.Writer;
-
-            if (value == default)
-            {
-                writer.WriteNull();
-            }
-            else
-            {
-                writer.WriteString(value.ToString());
-            }
+            writer.WriteNull();
+        }
+        else
+        {
+            writer.WriteString(value.ToString());
         }
     }
 }

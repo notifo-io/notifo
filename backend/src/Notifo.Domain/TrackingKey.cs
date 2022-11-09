@@ -10,66 +10,65 @@ using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public sealed record TrackingKey
 {
-    public sealed record TrackingKey
+    public Guid UserNotificationId { get; init; }
+
+    public string? EventId { get; init; }
+
+    public string? AppId { get; init; }
+
+    public string? UserId { get; init; }
+
+    public string? Topic { get; init; }
+
+    public string? Channel { get; init; }
+
+    public Guid ConfigurationId { get; init; }
+
+    public static TrackingKey ForEvent(EventMessage @event)
     {
-        public Guid UserNotificationId { get; init; }
+        Guard.NotNull(@event, nameof(@event));
 
-        public string? EventId { get; init; }
-
-        public string? AppId { get; init; }
-
-        public string? UserId { get; init; }
-
-        public string? Topic { get; init; }
-
-        public string? Channel { get; init; }
-
-        public Guid ConfigurationId { get; init; }
-
-        public static TrackingKey ForEvent(EventMessage @event)
+        return new TrackingKey
         {
-            Guard.NotNull(@event, nameof(@event));
+            AppId = @event.AppId,
+            EventId = @event.Id,
+            UserId = null,
+            UserNotificationId = default,
+            Topic = @event.Topic,
+        };
+    }
 
-            return new TrackingKey
-            {
-                AppId = @event.AppId,
-                EventId = @event.Id,
-                UserId = null,
-                UserNotificationId = default,
-                Topic = @event.Topic,
-            };
-        }
+    public static TrackingKey ForUserEvent(UserEventMessage @event)
+    {
+        Guard.NotNull(@event, nameof(@event));
 
-        public static TrackingKey ForUserEvent(UserEventMessage @event)
+        return new TrackingKey
         {
-            Guard.NotNull(@event, nameof(@event));
+            AppId = @event.AppId,
+            EventId = @event.EventId,
+            UserId = @event.UserId,
+            UserNotificationId = default,
+            Topic = @event.Topic,
+        };
+    }
 
-            return new TrackingKey
-            {
-                AppId = @event.AppId,
-                EventId = @event.EventId,
-                UserId = @event.UserId,
-                UserNotificationId = default,
-                Topic = @event.Topic,
-            };
-        }
+    public static TrackingKey ForNotification(BaseUserNotification notification, string? channel = null, Guid configurationId = default)
+    {
+        Guard.NotNull(notification);
 
-        public static TrackingKey ForNotification(BaseUserNotification notification, string? channel = null, Guid configurationId = default)
+        return new TrackingKey
         {
-            Guard.NotNull(notification);
-
-            return new TrackingKey
-            {
-                AppId = notification.AppId,
-                Channel = channel,
-                ConfigurationId = configurationId,
-                EventId = notification.EventId,
-                UserId = notification.UserId,
-                UserNotificationId = notification.Id,
-                Topic = notification.Topic,
-            };
-        }
+            AppId = notification.AppId,
+            Channel = channel,
+            ConfigurationId = configurationId,
+            EventId = notification.EventId,
+            UserId = notification.UserId,
+            UserNotificationId = notification.Id,
+            Topic = notification.Topic,
+        };
     }
 }

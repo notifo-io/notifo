@@ -11,49 +11,48 @@ using TestSuite.Fixtures;
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
 
-namespace TestSuite.ApiTests
+namespace TestSuite.ApiTests;
+
+[UsesVerify]
+public class AppTests : IClassFixture<ClientFixture>
 {
-    [UsesVerify]
-    public class AppTests : IClassFixture<ClientFixture>
+    public ClientFixture _ { get; }
+
+    public AppTests(ClientFixture fixture)
     {
-        public ClientFixture _ { get; }
+        _ = fixture;
+    }
 
-        public AppTests(ClientFixture fixture)
+    [Fact]
+    public async Task Should_create_app()
+    {
+        var appName = Guid.NewGuid().ToString();
+
+        // STEP 0: Create app
+        var createRequest = new UpsertAppDto
         {
-            _ = fixture;
-        }
+            Name = appName
+        };
 
-        [Fact]
-        public async Task Should_create_app()
-        {
-            var appName = Guid.NewGuid().ToString();
+        var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
 
-            // STEP 0: Create app
-            var createRequest = new UpsertAppDto
-            {
-                Name = appName
-            };
-
-            var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
-
-            Assert.Equal(app_0.Name, appName);
+        Assert.Equal(app_0.Name, appName);
 
 
-            // STEP 1: Query apps.
-            var apps = await _.Client.Apps.GetAppsAsync();
+        // STEP 1: Query apps.
+        var apps = await _.Client.Apps.GetAppsAsync();
 
-            Assert.Equal(appName, apps.FirstOrDefault(x => x.Name == appName)?.Name);
+        Assert.Equal(appName, apps.FirstOrDefault(x => x.Name == appName)?.Name);
 
 
-            // STEP 2: Query app.
-            var app_1 = await _.Client.Apps.GetAppAsync(app_0.Id);
+        // STEP 2: Query app.
+        var app_1 = await _.Client.Apps.GetAppAsync(app_0.Id);
 
-            Assert.Equal(app_1.Name, appName);
+        Assert.Equal(app_1.Name, appName);
 
-            await Verify(app_1)
-                .IgnoreMembersWithType<DateTimeOffset>()
-                .IgnoreMembers<AppDto>(x => x.ApiKeys)
-                .IgnoreMembers<AppDetailsDto>(x => x.ApiKeys);
-        }
+        await Verify(app_1)
+            .IgnoreMembersWithType<DateTimeOffset>()
+            .IgnoreMembers<AppDto>(x => x.ApiKeys)
+            .IgnoreMembers<AppDetailsDto>(x => x.ApiKeys);
     }
 }

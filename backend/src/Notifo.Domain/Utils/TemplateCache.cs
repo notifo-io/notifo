@@ -12,58 +12,57 @@ using Squidex.Caching;
 #pragma warning disable MA0048 // File name must match type name
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Utils
+namespace Notifo.Domain.Utils;
+
+public readonly record struct CachedTemplate(IFluidTemplate? Template, TemplateError? Error);
+
+public static class TemplateCache
 {
-    public readonly record struct CachedTemplate(IFluidTemplate? Template, TemplateError? Error);
+    private static readonly LRUCache<string, CachedTemplate> Cache = new LRUCache<string, CachedTemplate>(1000);
+    private static readonly FluidParser Parser = new FluidParser();
+    private static readonly ReaderWriterLockSlim LockObject = new ReaderWriterLockSlim();
 
-    public static class TemplateCache
+    public static CachedTemplate Parse(string input, bool bypass = false)
     {
-        private static readonly LRUCache<string, CachedTemplate> Cache = new LRUCache<string, CachedTemplate>(1000);
-        private static readonly FluidParser Parser = new FluidParser();
-        private static readonly ReaderWriterLockSlim LockObject = new ReaderWriterLockSlim();
+        Guard.NotNull(input);
 
-        public static CachedTemplate Parse(string input, bool bypass = false)
+        CachedTemplate result;
+
+        if (!bypass)
         {
-            Guard.NotNull(input);
-
-            CachedTemplate result;
-
-            if (!bypass)
+            LockObject.EnterWriteLock();
+            try
             {
-                LockObject.EnterWriteLock();
-                try
+                if (Cache.TryGetValue(input, out result))
                 {
-                    if (Cache.TryGetValue(input, out result))
-                    {
-                        return result;
-                    }
-                }
-                finally
-                {
-                    LockObject.ExitWriteLock();
+                    return result;
                 }
             }
-
-            Parser.TryParse(input, out var template, out var errorMessage);
-
-            var error = TemplateError.Parse(errorMessage);
-
-            result = new CachedTemplate(template, error);
-
-            if (!bypass)
+            finally
             {
-                LockObject.EnterWriteLock();
-                try
-                {
-                    Cache.Set(input, result);
-                }
-                finally
-                {
-                    LockObject.ExitWriteLock();
-                }
+                LockObject.ExitWriteLock();
             }
-
-            return result;
         }
+
+        Parser.TryParse(input, out var template, out var errorMessage);
+
+        var error = TemplateError.Parse(errorMessage);
+
+        result = new CachedTemplate(template, error);
+
+        if (!bypass)
+        {
+            LockObject.EnterWriteLock();
+            try
+            {
+                Cache.Set(input, result);
+            }
+            finally
+            {
+                LockObject.ExitWriteLock();
+            }
+        }
+
+        return result;
     }
 }

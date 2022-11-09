@@ -8,20 +8,19 @@
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Subscriptions.MongoDb;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class SubscriptionsServiceExtensions
-    {
-        public static void AddMySubscriptions(this IServiceCollection services)
-        {
-            services.AddSingletonAs<SubscriptionStore>()
-                .As<ISubscriptionStore>();
-        }
+namespace Microsoft.Extensions.DependencyInjection;
 
-        public static void AddMyMongoSubscriptions(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbSubscriptionRepository>()
-                .As<ISubscriptionRepository>();
-        }
+public static class SubscriptionsServiceExtensions
+{
+    public static void AddMySubscriptions(this IServiceCollection services)
+    {
+        services.AddSingletonAs<SubscriptionStore>()
+            .As<ISubscriptionStore>();
+    }
+
+    public static void AddMyMongoSubscriptions(this IServiceCollection services)
+    {
+        services.AddSingletonAs<MongoDbSubscriptionRepository>()
+            .As<ISubscriptionRepository>();
     }
 }

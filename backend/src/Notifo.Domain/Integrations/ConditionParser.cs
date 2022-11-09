@@ -10,26 +10,25 @@ using Esprima.Ast;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace Notifo.Domain.Integrations
+namespace Notifo.Domain.Integrations;
+
+internal static class ConditionParser
 {
-    internal static class ConditionParser
+    private static readonly ParserOptions DefaultParserOptions = new ParserOptions { Tolerant = true };
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
+    private static readonly IMemoryCache Cache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+
+    public static Script Parse(string script)
     {
-        private static readonly ParserOptions DefaultParserOptions = new ParserOptions { Tolerant = true };
-        private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(10);
-        private static readonly IMemoryCache Cache = new MemoryCache(Options.Create(new MemoryCacheOptions()));
+        var cacheKey = $"{typeof(ConditionEvaluator)}_Script_{script}";
 
-        public static Script Parse(string script)
+        return Cache.GetOrCreate(cacheKey, entry =>
         {
-            var cacheKey = $"{typeof(ConditionEvaluator)}_Script_{script}";
+            entry.AbsoluteExpirationRelativeToNow = CacheDuration;
 
-            return Cache.GetOrCreate(cacheKey, entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = CacheDuration;
+            var parser = new JavaScriptParser(script, DefaultParserOptions);
 
-                var parser = new JavaScriptParser(script, DefaultParserOptions);
-
-                return parser.ParseScript();
-            });
-        }
+            return parser.ParseScript();
+        });
     }
 }

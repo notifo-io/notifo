@@ -7,38 +7,37 @@
 
 using System.Security.Claims;
 
-namespace Notifo.Domain.Identity
+namespace Notifo.Domain.Identity;
+
+public static class NotifoClaimsExtensions
 {
-    public static class NotifoClaimsExtensions
+    public static bool HasConsent(this IEnumerable<Claim> user)
     {
-        public static bool HasConsent(this IEnumerable<Claim> user)
-        {
-            return user.HasClaimValue(NotifoClaimTypes.Consent, "true");
-        }
+        return user.HasClaimValue(NotifoClaimTypes.Consent, "true");
+    }
 
-        public static bool HasConsentForEmails(this IEnumerable<Claim> user)
-        {
-            return user.HasClaimValue(NotifoClaimTypes.ConsentForEmails, "true");
-        }
+    public static bool HasConsentForEmails(this IEnumerable<Claim> user)
+    {
+        return user.HasClaimValue(NotifoClaimTypes.ConsentForEmails, "true");
+    }
 
-        public static bool HasClaim(this IEnumerable<Claim> user, string type)
-        {
-            return user.GetClaims(type).Any();
-        }
+    public static bool HasClaim(this IEnumerable<Claim> user, string type)
+    {
+        return user.GetClaims(type).Any();
+    }
 
-        public static bool HasClaimValue(this IEnumerable<Claim> user, string type, string value)
-        {
-            return user.GetClaims(type).Any(x => string.Equals(x.Value, value, StringComparison.OrdinalIgnoreCase));
-        }
+    public static bool HasClaimValue(this IEnumerable<Claim> user, string type, string value)
+    {
+        return user.GetClaims(type).Any(x => string.Equals(x.Value, value, StringComparison.OrdinalIgnoreCase));
+    }
 
-        private static IEnumerable<Claim> GetClaims(this IEnumerable<Claim> user, string request)
+    private static IEnumerable<Claim> GetClaims(this IEnumerable<Claim> user, string request)
+    {
+        foreach (var claim in user)
         {
-            foreach (var claim in user)
+            if (claim.Type.Equals(request, StringComparison.OrdinalIgnoreCase))
             {
-                if (claim.Type.Equals(request, StringComparison.OrdinalIgnoreCase))
-                {
-                    yield return claim;
-                }
+                yield return claim;
             }
         }
     }

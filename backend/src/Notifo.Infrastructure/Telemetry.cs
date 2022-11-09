@@ -7,10 +7,9 @@
 
 using System.Diagnostics;
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+public static class Telemetry
 {
-    public static class Telemetry
-    {
-        public static readonly ActivitySource Activities = new ActivitySource("Notifo");
-    }
+    public static readonly ActivitySource Activities = new ActivitySource("Notifo");
 }

@@ -10,56 +10,55 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Events.MongoDb
+namespace Notifo.Domain.Events.MongoDb;
+
+public sealed class NotificationSendSerializer : SerializerBase<ChannelSend>
 {
-    public sealed class NotificationSendSerializer : SerializerBase<ChannelSend>
+    private static volatile int isRegistered;
+
+    public static void Register()
     {
-        private static volatile int isRegistered;
-
-        public static void Register()
+        if (Interlocked.Increment(ref isRegistered) == 1)
         {
-            if (Interlocked.Increment(ref isRegistered) == 1)
-            {
-                BsonSerializer.RegisterSerializer(new NotificationSendSerializer());
-            }
+            BsonSerializer.RegisterSerializer(new NotificationSendSerializer());
         }
+    }
 
-        public override ChannelSend Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    public override ChannelSend Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        var reader = context.Reader;
+
+        switch (reader.CurrentBsonType)
         {
-            var reader = context.Reader;
+            case BsonType.Null:
+                reader.ReadNull();
+                return ChannelSend.Inherit;
+            case BsonType.Boolean:
+                {
+                    var value = reader.ReadBoolean();
 
-            switch (reader.CurrentBsonType)
-            {
-                case BsonType.Null:
-                    reader.ReadNull();
-                    return ChannelSend.Inherit;
-                case BsonType.Boolean:
+                    return value ? ChannelSend.Send : ChannelSend.NotSending;
+                }
+
+            case BsonType.String:
+                {
+                    var value = reader.ReadString();
+
+                    if (Enum.TryParse<ChannelSend>(value, true, out var result))
                     {
-                        var value = reader.ReadBoolean();
-
-                        return value ? ChannelSend.Send : ChannelSend.NotSending;
+                        return result;
                     }
 
-                case BsonType.String:
-                    {
-                        var value = reader.ReadString();
-
-                        if (Enum.TryParse<ChannelSend>(value, true, out var result))
-                        {
-                            return result;
-                        }
-
-                        break;
-                    }
-            }
-
-            ThrowHelper.NotSupportedException();
-            return default;
+                    break;
+                }
         }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, ChannelSend value)
-        {
-            context.Writer.WriteString(value.ToString());
-        }
+        ThrowHelper.NotSupportedException();
+        return default;
+    }
+
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, ChannelSend value)
+    {
+        context.Writer.WriteString(value.ToString());
     }
 }

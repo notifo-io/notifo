@@ -10,41 +10,40 @@ using NodaTime;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+
+public sealed class MobilePushTokenDto
 {
-    public sealed class MobilePushTokenDto
+    /// <summary>
+    /// The token.
+    /// </summary>
+    [Required]
+    public string Token { get; set; }
+
+    /// <summary>
+    /// The device type.
+    /// </summary>
+    [Required]
+    public MobileDeviceType DeviceType { get; set; }
+
+    /// <summary>
+    /// The last time the device was woken up.
+    /// </summary>
+    public Instant? LastWakeup { get; set; }
+
+    public static MobilePushTokenDto FromDomainObject(MobilePushToken source)
     {
-        /// <summary>
-        /// The token.
-        /// </summary>
-        [Required]
-        public string Token { get; set; }
+        var result = SimpleMapper.Map(source, new MobilePushTokenDto());
 
-        /// <summary>
-        /// The device type.
-        /// </summary>
-        [Required]
-        public MobileDeviceType DeviceType { get; set; }
-
-        /// <summary>
-        /// The last time the device was woken up.
-        /// </summary>
-        public Instant? LastWakeup { get; set; }
-
-        public static MobilePushTokenDto FromDomainObject(MobilePushToken source)
+        if (source.LastWakeup != default)
         {
-            var result = SimpleMapper.Map(source, new MobilePushTokenDto());
-
-            if (source.LastWakeup != default)
-            {
-                result.LastWakeup = source.LastWakeup;
-            }
-            else
-            {
-                result.LastWakeup = null;
-            }
-
-            return result;
+            result.LastWakeup = source.LastWakeup;
         }
+        else
+        {
+            result.LastWakeup = null;
+        }
+
+        return result;
     }
 }

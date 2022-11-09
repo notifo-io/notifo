@@ -5,12 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Media
-{
-    public interface IMediaMetadataSource
-    {
-        Task EnhanceAsync(MetadataRequest request);
+namespace Notifo.Domain.Media;
 
-        IEnumerable<string> Format(MetadataRequest request);
-    }
+public interface IMediaMetadataSource
+{
+    Task EnhanceAsync(MetadataRequest request);
+
+    IEnumerable<string> Format(MetadataRequest request);
 }

@@ -7,14 +7,13 @@
 
 using Notifo.Infrastructure;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class InfrastructureServiceExtensions
 {
-    public static class InfrastructureServiceExtensions
+    public static void AddMyInfrastructure(this IServiceCollection services)
     {
-        public static void AddMyInfrastructure(this IServiceCollection services)
-        {
-            services.AddSingletonAs<Randomizer>()
-                .AsSelf();
-        }
+        services.AddSingletonAs<Randomizer>()
+            .AsSelf();
     }
 }

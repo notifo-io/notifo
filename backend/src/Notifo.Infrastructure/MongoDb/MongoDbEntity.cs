@@ -7,28 +7,27 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public abstract class MongoDbEntity
 {
-    public abstract class MongoDbEntity
+    [BsonId]
+    [BsonElement]
+    public string DocId { get; set; }
+
+    [BsonElement("e")]
+    [BsonIgnoreIfNull]
+    public string Etag { get; set; }
+
+    public static string GenerateEtag()
     {
-        [BsonId]
-        [BsonElement]
-        public string DocId { get; set; }
-
-        [BsonElement("e")]
-        [BsonIgnoreIfNull]
-        public string Etag { get; set; }
-
-        public static string GenerateEtag()
-        {
-            return Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
-        }
+        return Guid.NewGuid().ToString().Replace("-", string.Empty, StringComparison.OrdinalIgnoreCase);
     }
+}
 
-    public abstract class MongoDbEntity<T> : MongoDbEntity
-    {
-        [BsonElement("d")]
-        [BsonRequired]
-        public T Doc { get; set; }
-    }
+public abstract class MongoDbEntity<T> : MongoDbEntity
+{
+    [BsonElement("d")]
+    [BsonRequired]
+    public T Doc { get; set; }
 }

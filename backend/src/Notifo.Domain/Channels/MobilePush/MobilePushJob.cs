@@ -7,34 +7,33 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.MobilePush
+namespace Notifo.Domain.Channels.MobilePush;
+
+public sealed class MobilePushJob : ChannelJob
 {
-    public sealed class MobilePushJob : ChannelJob
+    public BaseUserNotification Notification { get; init; }
+
+    public string DeviceToken { get; init; }
+
+    public MobileDeviceType DeviceType { get; init; }
+
+    public bool IsConfirmed { get; init; }
+
+    public string ScheduleKey
     {
-        public BaseUserNotification Notification { get; init; }
+        get => $"{Notification.Id}_{DeviceToken}";
+    }
 
-        public string DeviceToken { get; init; }
+    public MobilePushJob()
+    {
+    }
 
-        public MobileDeviceType DeviceType { get; init; }
-
-        public bool IsConfirmed { get; init; }
-
-        public string ScheduleKey
-        {
-            get => $"{Notification.Id}_{DeviceToken}";
-        }
-
-        public MobilePushJob()
-        {
-        }
-
-        public MobilePushJob(UserNotification notification, ChannelSetting? setting, Guid configurationId, string token, MobileDeviceType type, bool isUpdate)
-            : base(notification, setting, configurationId, isUpdate, Providers.MobilePush)
-        {
-            DeviceToken = token;
-            DeviceType = type;
-            IsConfirmed = notification.FirstConfirmed != null;
-            Notification = notification;
-        }
+    public MobilePushJob(UserNotification notification, ChannelSetting? setting, Guid configurationId, string token, MobileDeviceType type, bool isUpdate)
+        : base(notification, setting, configurationId, isUpdate, Providers.MobilePush)
+    {
+        DeviceToken = token;
+        DeviceType = type;
+        IsConfirmed = notification.FirstConfirmed != null;
+        Notification = notification;
     }
 }

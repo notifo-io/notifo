@@ -2551,9 +2551,10 @@ export class MediaClient {
      * @param focusX (optional) The x position of the focues point.
      * @param focusY (optional) The y position of the focues point.
      * @param force (optional) True to resize it and clear the cache.
+     * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined): Promise<FileResponse> {
+    download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2587,6 +2588,10 @@ export class MediaClient {
             throw new Error("The parameter 'force' cannot be null.");
         else if (force !== undefined)
             url_ += "force=" + encodeURIComponent("" + force) + "&";
+        if (emptyOnFailure === null)
+            throw new Error("The parameter 'emptyOnFailure' cannot be null.");
+        else if (emptyOnFailure !== undefined)
+            url_ += "emptyOnFailure=" + encodeURIComponent("" + emptyOnFailure) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -2705,9 +2710,10 @@ export class MediaClient {
      * @param focusX (optional) The x position of the focues point.
      * @param focusY (optional) The y position of the focues point.
      * @param force (optional) True to resize it and clear the cache.
+     * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined): Promise<FileResponse> {
+    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/asset/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2741,6 +2747,10 @@ export class MediaClient {
             throw new Error("The parameter 'force' cannot be null.");
         else if (force !== undefined)
             url_ += "force=" + encodeURIComponent("" + force) + "&";
+        if (emptyOnFailure === null)
+            throw new Error("The parameter 'emptyOnFailure' cannot be null.");
+        else if (emptyOnFailure !== undefined)
+            url_ += "emptyOnFailure=" + encodeURIComponent("" + emptyOnFailure) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -2801,9 +2811,10 @@ export class MediaClient {
      * @param focusX (optional) The x position of the focues point.
      * @param focusY (optional) The y position of the focues point.
      * @param force (optional) True to resize it and clear the cache.
+     * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download3(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined): Promise<FileResponse> {
+    download3(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2837,6 +2848,10 @@ export class MediaClient {
             throw new Error("The parameter 'force' cannot be null.");
         else if (force !== undefined)
             url_ += "force=" + encodeURIComponent("" + force) + "&";
+        if (emptyOnFailure === null)
+            throw new Error("The parameter 'emptyOnFailure' cannot be null.");
+        else if (emptyOnFailure !== undefined)
+            url_ += "emptyOnFailure=" + encodeURIComponent("" + emptyOnFailure) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -2896,9 +2911,10 @@ export class MediaClient {
      * @param focusX (optional) The x position of the focues point.
      * @param focusY (optional) The y position of the focues point.
      * @param force (optional) True to resize it and clear the cache.
+     * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    proxyImage(url?: string | null | undefined, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined): Promise<FileResponse> {
+    proxyImage(url?: string | null | undefined, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/proxy?";
         if (url !== undefined && url !== null)
             url_ += "url=" + encodeURIComponent("" + url) + "&";
@@ -2928,6 +2944,10 @@ export class MediaClient {
             throw new Error("The parameter 'force' cannot be null.");
         else if (force !== undefined)
             url_ += "force=" + encodeURIComponent("" + force) + "&";
+        if (emptyOnFailure === null)
+            throw new Error("The parameter 'emptyOnFailure' cannot be null.");
+        else if (emptyOnFailure !== undefined)
+            url_ += "emptyOnFailure=" + encodeURIComponent("" + emptyOnFailure) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -6174,13 +6194,26 @@ export interface UserNotificationChannelDto {
 export interface ChannelSendInfoDto {
     /** The send status. */
     status?: ProcessStatus;
+    /** The configuration for the device. */
+    configuration?: SendConfiguration;
     /** The last update. */
     lastUpdate?: string;
     /** The details. */
     detail?: string | undefined;
+    /** The first time the notification has been marked as delivered for this identifier. */
+    firstDelivered?: string | undefined;
+    /** The first time the notification has been marked as seen for this identifier. */
+    firstSeen?: string | undefined;
+    /** The first time the notification has been marked as confirmed for this identifier. */
+    firstConfirmed?: string | undefined;
 }
 
 export type ProcessStatus = "None" | "Attempt" | "Handled" | "Failed" | "Skipped";
+
+export interface SendConfiguration {
+
+    [key: string]: string | any;
+}
 
 export interface HandledInfoDto {
     /** The timestamp. */
@@ -6210,8 +6243,8 @@ export interface TrackNotificationDto {
     seen?: string[] | undefined;
     /** The channel name. */
     channel?: string | undefined;
-    /** The device identifier. */
-    deviceIdentifier?: string | undefined;
+    /** The configuration ID. */
+    configurationId?: string;
 }
 
 export interface ListResponseDtoOfMobilePushTokenDto {

@@ -18,75 +18,74 @@ using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.Registration
+namespace Notifo.Areas.Api.Controllers.Registration;
+
+[OpenApiIgnore]
+public sealed class RegistrationController : BaseController
 {
-    [OpenApiIgnore]
-    public sealed class RegistrationController : BaseController
+    private readonly IUserStore userStore;
+    private readonly ISubscriptionStore subscriptionStore;
+    private readonly IWebPushService webPushService;
+
+    public RegistrationController(IUserStore userStore, ISubscriptionStore subscriptionStore, IWebPushService webPushService)
     {
-        private readonly IUserStore userStore;
-        private readonly ISubscriptionStore subscriptionStore;
-        private readonly IWebPushService webPushService;
+        this.userStore = userStore;
+        this.subscriptionStore = subscriptionStore;
+        this.webPushService = webPushService;
+    }
 
-        public RegistrationController(IUserStore userStore, ISubscriptionStore subscriptionStore, IWebPushService webPushService)
+    [HttpPost("api/web/register")]
+    [AppPermission(NotifoRoles.AppWebManager, NotifoRoles.AppUser)]
+    public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
+    {
+        string? userId = null;
+        string? userToken = null;
+
+        if (request.CreateUser)
         {
-            this.userStore = userStore;
-            this.subscriptionStore = subscriptionStore;
-            this.webPushService = webPushService;
-        }
+            userId = Guid.NewGuid().ToString();
 
-        [HttpPost("api/web/register")]
-        [AppPermission(NotifoRoles.AppWebManager, NotifoRoles.AppUser)]
-        public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
-        {
-            string? userId = null;
-            string? userToken = null;
+            var update = request.ToUpsert();
 
-            if (request.CreateUser)
+            var user = await userStore.UpsertAsync(App.Id, userId, update, HttpContext.RequestAborted);
+
+            if (request.Topics?.Any() == true)
             {
-                userId = Guid.NewGuid().ToString();
-
-                var update = request.ToUpsert();
-
-                var user = await userStore.UpsertAsync(App.Id, userId, update, HttpContext.RequestAborted);
-
-                if (request.Topics?.Any() == true)
+                var command = new Subscribe
                 {
-                    var command = new Subscribe
+                    TopicSettings = new ChannelSettings
                     {
-                        TopicSettings = new ChannelSettings
-                        {
-                            [Providers.WebPush] = new ChannelSetting
-                            {
-                                Send = ChannelSend.Send
-                            }
-                        }
-                    };
-
-                    if (!string.IsNullOrEmpty(request.EmailAddress))
-                    {
-                        command.TopicSettings[Providers.Email] = new ChannelSetting
+                        [Providers.WebPush] = new ChannelSetting
                         {
                             Send = ChannelSend.Send
-                        };
+                        }
                     }
+                };
 
-                    foreach (var topic in request.Topics.OrEmpty())
+                if (!string.IsNullOrEmpty(request.EmailAddress))
+                {
+                    command.TopicSettings[Providers.Email] = new ChannelSetting
                     {
-                        await subscriptionStore.UpsertAsync(App.Id, userId, topic, command, HttpContext.RequestAborted);
-                    }
+                        Send = ChannelSend.Send
+                    };
                 }
 
-                userToken = user.ApiKey;
+                foreach (var topic in request.Topics.OrEmpty())
+                {
+                    await subscriptionStore.UpsertAsync(App.Id, userId, topic, command, HttpContext.RequestAborted);
+                }
             }
 
-            var response = new RegisteredUserDto
-            {
-                PublicKey = webPushService.PublicKey,
-                UserId = userId,
-                UserToken = userToken
-            };
-
-            return Ok(response);
+            userToken = user.ApiKey;
         }
+
+        var response = new RegisteredUserDto
+        {
+            PublicKey = webPushService.PublicKey,
+            UserId = userId,
+            UserToken = userToken
+        };
+
+        return Ok(response);
     }
 }

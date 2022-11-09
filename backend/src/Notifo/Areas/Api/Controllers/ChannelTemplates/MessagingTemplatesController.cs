@@ -11,15 +11,14 @@ using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.ChannelTemplates;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
+
+[Route("api/apps/{appId:notEmpty}/messaging-templates")]
+[OpenApiTag("MessagingTemplates")]
+public sealed class MessagingTemplatesController : ChannelTemplatesController<MessagingTemplate, MessagingTemplateDto>
 {
-    [Route("api/apps/{appId:notEmpty}/messaging-templates")]
-    [OpenApiTag("MessagingTemplates")]
-    public sealed class MessagingTemplatesController : ChannelTemplatesController<MessagingTemplate, MessagingTemplateDto>
+    public MessagingTemplatesController(IChannelTemplateStore<MessagingTemplate> channelTemplateStore)
+        : base(channelTemplateStore)
     {
-        public MessagingTemplatesController(IChannelTemplateStore<MessagingTemplate> channelTemplateStore)
-            : base(channelTemplateStore)
-        {
-        }
     }
 }

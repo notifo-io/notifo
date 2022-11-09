@@ -8,17 +8,16 @@
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.Twilio;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class TwiliioServiceExtensions
-    {
-        public static void IntegrateTwilio(this IServiceCollection services)
-        {
-            services.AddSingletonAs<TwilioIntegration>()
-                .As<IIntegration>();
+namespace Microsoft.Extensions.DependencyInjection;
 
-            services.AddSingletonAs<TwilioClientPool>()
-                .AsSelf();
-        }
+public static class TwiliioServiceExtensions
+{
+    public static void IntegrateTwilio(this IServiceCollection services)
+    {
+        services.AddSingletonAs<TwilioIntegration>()
+            .As<IIntegration>();
+
+        services.AddSingletonAs<TwilioClientPool>()
+            .AsSelf();
     }
 }

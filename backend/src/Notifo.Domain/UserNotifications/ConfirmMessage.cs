@@ -5,10 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public sealed class ConfirmMessage
 {
-    public sealed class ConfirmMessage
-    {
-        public TrackingToken Token { get; init; }
-    }
+    public TrackingToken Token { get; init; }
 }

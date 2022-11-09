@@ -9,12 +9,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Pages;
+
+public class LockoutModel : PageModel
 {
-    public class LockoutModel : PageModel
+    public void OnGet()
     {
-        public void OnGet()
-        {
-        }
     }
 }

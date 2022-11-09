@@ -11,100 +11,99 @@ using System.Text.Json.Serialization;
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace TestSuite.ApiTests
+namespace TestSuite.ApiTests;
+
+internal sealed class WebhookSession
 {
-    internal sealed class WebhookSession
+    public string Uuid { get; set; }
+}
+
+internal sealed class WebhookRequest
+{
+    public string Uuid { get; set; }
+
+    public string Method { get; set; }
+
+    [JsonPropertyName("content_base64")]
+    public string Content { get; set; }
+}
+
+internal sealed class WebhookCatcherClient
+{
+    private readonly HttpClient httpClient;
+
+    public string EndpointHost { get; }
+
+    public int EndpointPort { get; }
+
+    public WebhookCatcherClient(string apiHost, int apiPort, string endpointHost, int endpointPort)
     {
-        public string Uuid { get; set; }
+        if (string.IsNullOrWhiteSpace(apiHost))
+        {
+            apiHost = "localhost";
+        }
+
+        if (string.IsNullOrWhiteSpace(endpointHost))
+        {
+            endpointHost = "localhost";
+        }
+
+        EndpointHost = endpointHost;
+        EndpointPort = endpointPort;
+
+        httpClient = new HttpClient
+        {
+            BaseAddress = new Uri($"http://{apiHost}:{apiPort}")
+        };
     }
 
-    internal sealed class WebhookRequest
+    public async Task<(string, string)> CreateSessionAsync(
+        CancellationToken ct = default)
     {
-        public string Uuid { get; set; }
+        var response = await httpClient.PostAsJsonAsync("/api/session", new { }, ct);
 
-        public string Method { get; set; }
+        response.EnsureSuccessStatusCode();
 
-        [JsonPropertyName("content_base64")]
-        public string Content { get; set; }
+        var responseObj = await response.Content.ReadFromJsonAsync<WebhookSession>(cancellationToken: ct);
+
+        return ($"http://{EndpointHost}:{EndpointPort}/{responseObj.Uuid}", responseObj.Uuid);
     }
 
-    internal class WebhookCatcherClient
+    public async Task<WebhookRequest[]> GetRequestsAsync(string sessionId,
+        CancellationToken ct = default)
     {
-        private readonly HttpClient httpClient;
+        var result = await httpClient.GetFromJsonAsync<WebhookRequest[]>($"/api/session/{sessionId}/requests", ct);
 
-        public string EndpointHost { get; }
-
-        public int EndpointPort { get; }
-
-        public WebhookCatcherClient(string apiHost, int apiPort, string endpointHost, int endpointPort)
+        foreach (var request in result)
         {
-            if (string.IsNullOrWhiteSpace(apiHost))
+            if (request.Content != null)
             {
-                apiHost = "localhost";
+                request.Content = Encoding.Default.GetString(Convert.FromBase64String(request.Content));
             }
-
-            if (string.IsNullOrWhiteSpace(endpointHost))
-            {
-                endpointHost = "localhost";
-            }
-
-            EndpointHost = endpointHost;
-            EndpointPort = endpointPort;
-
-            httpClient = new HttpClient
-            {
-                BaseAddress = new Uri($"http://{apiHost}:{apiPort}")
-            };
         }
 
-        public async Task<(string, string)> CreateSessionAsync(
-            CancellationToken ct = default)
+        return result;
+    }
+
+    public async Task<WebhookRequest[]> WaitForRequestsAsync(string sessionId, TimeSpan timeout)
+    {
+        var requests = Array.Empty<WebhookRequest>();
+
+        using (var cts = new CancellationTokenSource(timeout))
         {
-            var response = await httpClient.PostAsJsonAsync("/api/session", new { }, ct);
-
-            response.EnsureSuccessStatusCode();
-
-            var responseObj = await response.Content.ReadFromJsonAsync<WebhookSession>(cancellationToken: ct);
-
-            return ($"http://{EndpointHost}:{EndpointPort}/{responseObj.Uuid}", responseObj.Uuid);
-        }
-
-        public async Task<WebhookRequest[]> GetRequestsAsync(string sessionId,
-            CancellationToken ct = default)
-        {
-            var result = await httpClient.GetFromJsonAsync<WebhookRequest[]>($"/api/session/{sessionId}/requests", ct);
-
-            foreach (var request in result)
+            while (!cts.IsCancellationRequested)
             {
-                if (request.Content != null)
+                requests = await GetRequestsAsync(sessionId, cts.Token);
+
+                if (requests.Length > 0)
                 {
-                    request.Content = Encoding.Default.GetString(Convert.FromBase64String(request.Content));
+                    break;
                 }
-            }
 
-            return result;
+                await Task.Delay(50, cts.Token);
+            }
         }
 
-        public async Task<WebhookRequest[]> WaitForRequestsAsync(string sessionId, TimeSpan timeout)
-        {
-            var requests = Array.Empty<WebhookRequest>();
-
-            using (var cts = new CancellationTokenSource(timeout))
-            {
-                while (!cts.IsCancellationRequested)
-                {
-                    requests = await GetRequestsAsync(sessionId, cts.Token);
-
-                    if (requests.Length > 0)
-                    {
-                        break;
-                    }
-
-                    await Task.Delay(50, cts.Token);
-                }
-            }
-
-            return requests;
-        }
+        return requests;
     }
 }

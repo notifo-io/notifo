@@ -7,11 +7,10 @@
 
 using Notifo.Domain.Events;
 
-namespace Notifo.Domain.UserEvents
+namespace Notifo.Domain.UserEvents;
+
+public interface IUserEventPublisher
 {
-    public interface IUserEventPublisher
-    {
-        Task PublishAsync(EventMessage @event,
-            CancellationToken ct);
-    }
+    Task PublishAsync(EventMessage @event,
+        CancellationToken ct);
 }

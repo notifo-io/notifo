@@ -7,10 +7,9 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Log
+namespace Notifo.Domain.Log;
+
+public sealed record LogQuery : QueryBase
 {
-    public sealed record LogQuery : QueryBase
-    {
-        public string? Query { get; set; }
-    }
+    public string? Query { get; set; }
 }

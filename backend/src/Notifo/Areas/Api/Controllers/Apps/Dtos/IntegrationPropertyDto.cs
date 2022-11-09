@@ -9,82 +9,81 @@ using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Apps.Dtos
+namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
+
+public sealed class IntegrationPropertyDto
 {
-    public sealed class IntegrationPropertyDto
+    /// <summary>
+    /// The field name for the property.
+    /// </summary>
+    [Required]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// The editor type.
+    /// </summary>
+    [Required]
+    public PropertyType Type { get; set; }
+
+    /// <summary>
+    /// The optional description.
+    /// </summary>
+    public string? EditorDescription { get; set; }
+
+    /// <summary>
+    /// The optional label.
+    /// </summary>
+    public string? EditorLabel { get; set; }
+
+    /// <summary>
+    /// True to show this property in the summary.
+    /// </summary>
+    public bool Summary { get; set; }
+
+    /// <summary>
+    /// The allowed values.
+    /// </summary>
+    public string[]? AllowedValues { get; init; }
+
+    /// <summary>
+    /// True when required.
+    /// </summary>
+    public bool IsRequired { get; set; }
+
+    /// <summary>
+    /// The min value (for numbers).
+    /// </summary>
+    public long? MinValue { get; set; }
+
+    /// <summary>
+    /// The max value (for numbers).
+    /// </summary>
+    public long? MaxValue { get; set; }
+
+    /// <summary>
+    /// The min length (for strings).
+    /// </summary>
+    public long? MinLength { get; set; }
+
+    /// <summary>
+    /// The min length (for strings).
+    /// </summary>
+    public long? MaxLength { get; set; }
+
+    /// <summary>
+    /// The pattern (for strings).
+    /// </summary>
+    public string? Pattern { get; set; }
+
+    /// <summary>
+    /// The default value.
+    /// </summary>
+    public object? DefaultValue { get; set; }
+
+    public static IntegrationPropertyDto FromDomainObject(IntegrationProperty property)
     {
-        /// <summary>
-        /// The field name for the property.
-        /// </summary>
-        [Required]
-        public string Name { get; set; }
+        var result = SimpleMapper.Map(property, new IntegrationPropertyDto());
 
-        /// <summary>
-        /// The editor type.
-        /// </summary>
-        [Required]
-        public PropertyType Type { get; set; }
-
-        /// <summary>
-        /// The optional description.
-        /// </summary>
-        public string? EditorDescription { get; set; }
-
-        /// <summary>
-        /// The optional label.
-        /// </summary>
-        public string? EditorLabel { get; set; }
-
-        /// <summary>
-        /// True to show this property in the summary.
-        /// </summary>
-        public bool Summary { get; set; }
-
-        /// <summary>
-        /// The allowed values.
-        /// </summary>
-        public string[]? AllowedValues { get; init; }
-
-        /// <summary>
-        /// True when required.
-        /// </summary>
-        public bool IsRequired { get; set; }
-
-        /// <summary>
-        /// The min value (for numbers).
-        /// </summary>
-        public long? MinValue { get; set; }
-
-        /// <summary>
-        /// The max value (for numbers).
-        /// </summary>
-        public long? MaxValue { get; set; }
-
-        /// <summary>
-        /// The min length (for strings).
-        /// </summary>
-        public long? MinLength { get; set; }
-
-        /// <summary>
-        /// The min length (for strings).
-        /// </summary>
-        public long? MaxLength { get; set; }
-
-        /// <summary>
-        /// The pattern (for strings).
-        /// </summary>
-        public string? Pattern { get; set; }
-
-        /// <summary>
-        /// The default value.
-        /// </summary>
-        public object? DefaultValue { get; set; }
-
-        public static IntegrationPropertyDto FromDomainObject(IntegrationProperty property)
-        {
-            var result = SimpleMapper.Map(property, new IntegrationPropertyDto());
-
-            return result;
-        }
+        return result;
     }
 }

@@ -5,11 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public enum SchedulingType
 {
-    public enum SchedulingType
-    {
-        UTC,
-        UserTime
-    }
+    UTC,
+    UserTime
 }

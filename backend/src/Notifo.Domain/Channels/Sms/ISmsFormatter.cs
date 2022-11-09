@@ -7,10 +7,9 @@
 
 using Notifo.Domain.ChannelTemplates;
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Sms;
+
+public interface ISmsFormatter : IChannelTemplateFactory<SmsTemplate>
 {
-    public interface ISmsFormatter : IChannelTemplateFactory<SmsTemplate>
-    {
-        string Format(SmsTemplate? template, string text);
-    }
+    string Format(SmsTemplate? template, string text);
 }

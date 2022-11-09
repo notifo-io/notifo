@@ -5,12 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.Web.Dtos
+namespace Notifo.Areas.Api.Controllers.Web.Dtos;
+
+public enum ConnectionMode
 {
-    public enum ConnectionMode
-    {
-        SignalR,
-        SignalRSockets,
-        Polling
-    }
+    SignalR,
+    SignalRSockets,
+    Polling
 }

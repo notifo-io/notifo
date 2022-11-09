@@ -11,37 +11,36 @@ using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Xunit;
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird;
+
+[Trait("Category", "Dependencies")]
+public class MessageBirdTests
 {
-    [Trait("Category", "Dependencies")]
-    public class MessageBirdTests
+    private readonly string phoneNumber = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumber");
+    private readonly MessageBirdClient sut;
+
+    public MessageBirdTests()
     {
-        private readonly string phoneNumber = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumber");
-        private readonly MessageBirdClient sut;
+        var clientFactory = A.Fake<IHttpClientFactory>();
 
-        public MessageBirdTests()
+        A.CallTo(() => clientFactory.CreateClient(A<string>._))
+            .ReturnsLazily(() => new HttpClient());
+
+        sut = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
         {
-            var clientFactory = A.Fake<IHttpClientFactory>();
+            PhoneNumber = phoneNumber,
+            PhoneNumbers = null,
+            AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")
+        }));
+    }
 
-            A.CallTo(() => clientFactory.CreateClient(A<string>._))
-                .ReturnsLazily(() => new HttpClient());
+    [Fact]
+    public async Task Should_send_sms()
+    {
+        var sms = new SmsMessage(phoneNumber, "4917683297281", "Hello");
 
-            sut = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
-            {
-                PhoneNumber = phoneNumber,
-                PhoneNumbers = null,
-                AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")
-            }));
-        }
+        var response = await sut.SendSmsAsync(sms, default);
 
-        [Fact]
-        public async Task Should_send_sms()
-        {
-            var sms = new SmsMessage(phoneNumber, "4917683297281", "Hello");
-
-            var response = await sut.SendSmsAsync(sms, default);
-
-            Assert.Equal(1, response.Recipients.TotalSentCount);
-        }
+        Assert.Equal(1, response.Recipients.TotalSentCount);
     }
 }

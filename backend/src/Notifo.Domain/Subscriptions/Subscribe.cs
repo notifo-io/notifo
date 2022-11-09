@@ -9,62 +9,61 @@ using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Subscriptions
+namespace Notifo.Domain.Subscriptions;
+
+public sealed class Subscribe : ICommand<Subscription>
 {
-    public sealed class Subscribe : ICommand<Subscription>
+    public ChannelSettings? TopicSettings { get; set; }
+
+    public bool MergeSettings { get; set; }
+
+    public bool CanCreate => true;
+
+    public async ValueTask<Subscription?> ExecuteAsync(Subscription subscription, IServiceProvider serviceProvider,
+        CancellationToken ct)
     {
-        public ChannelSettings? TopicSettings { get; set; }
+        var userStore = serviceProvider.GetRequiredService<IUserStore>();
 
-        public bool MergeSettings { get; set; }
+        await CheckWhitelistAsync(userStore, subscription, ct);
 
-        public bool CanCreate => true;
+        var newSettings = TopicSettings;
 
-        public async ValueTask<Subscription?> ExecuteAsync(Subscription subscription, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        if (MergeSettings || newSettings == null)
         {
-            var userStore = serviceProvider.GetRequiredService<IUserStore>();
-
-            await CheckWhitelistAsync(userStore, subscription, ct);
-
-            var newSettings = TopicSettings;
-
-            if (MergeSettings || newSettings == null)
-            {
-                newSettings = ChannelSettings.Merged(subscription.TopicSettings, TopicSettings);
-            }
-
-            var newSubscription = subscription with
-            {
-                TopicSettings = newSettings
-            };
-
-            return newSubscription;
+            newSettings = ChannelSettings.Merged(subscription.TopicSettings, TopicSettings);
         }
 
-        private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription subscription,
-            CancellationToken ct)
+        var newSubscription = subscription with
         {
-            var user = await userStore.GetCachedAsync(subscription.AppId, subscription.UserId, ct);
+            TopicSettings = newSettings
+        };
 
-            if (user == null)
-            {
-                throw new DomainObjectNotFoundException(subscription.UserId);
-            }
+        return newSubscription;
+    }
 
-            if (user.AllowedTopics == null)
-            {
-                return;
-            }
+    private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription subscription,
+        CancellationToken ct)
+    {
+        var user = await userStore.GetCachedAsync(subscription.AppId, subscription.UserId, ct);
 
-            if (user.AllowedTopics.Count == 0 && !user.RequiresWhitelistedTopics)
-            {
-                return;
-            }
+        if (user == null)
+        {
+            throw new DomainObjectNotFoundException(subscription.UserId);
+        }
 
-            if (!user.AllowedTopics.Any(x => subscription.TopicPrefix.StartsWith(x)))
-            {
-                throw new DomainForbiddenException("Topic is not whitelisted.");
-            }
+        if (user.AllowedTopics == null)
+        {
+            return;
+        }
+
+        if (user.AllowedTopics.Count == 0 && !user.RequiresWhitelistedTopics)
+        {
+            return;
+        }
+
+        if (!user.AllowedTopics.Any(x => subscription.TopicPrefix.StartsWith(x)))
+        {
+            throw new DomainForbiddenException("Topic is not whitelisted.");
         }
     }
 }

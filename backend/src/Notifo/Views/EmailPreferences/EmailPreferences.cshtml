@@ -3,9 +3,9 @@
 
 @{
     ViewData["Title"] = T["EmailPreferencesTitle"];
-    ViewData["AppName"] = Model!.AppName;
+ViewData["AppName"] = Model!.AppName;
 
-    Layout = "~/Views/_Layout.cshtml";
+Layout = "~/Views/_Layout.cshtml";
 }
 
 <h3>@T["EmailPreferencesHeadline"]</h3>
@@ -15,8 +15,8 @@
 <form method="post">
     <div class="notifo-form-group">
         @foreach (var (topic, send) in Model.Topics)
-        {
-            <div class="notifo-topic">
+    {
+        <div class="notifo-topic">
                 <div class="notifo-topic-toggle">
                     <input name="topics.@topic.Path" type="checkbox" value="true" checked="@send" class="notifo-form-toggle" />
                 </div>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
             </div>
-        }
+    }
 
         <div class="notifo-topic">
             <div class="notifo-topic-toggle">

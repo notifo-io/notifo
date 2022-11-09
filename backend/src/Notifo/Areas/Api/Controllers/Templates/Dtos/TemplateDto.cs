@@ -10,65 +10,64 @@ using NodaTime;
 using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Templates.Dtos
+namespace Notifo.Areas.Api.Controllers.Templates.Dtos;
+
+public sealed class TemplateDto
 {
-    public sealed class TemplateDto
+    /// <summary>
+    /// The code of the template.
+    /// </summary>
+    [Required]
+    public string Code { get; set; }
+
+    /// <summary>
+    /// The date time (ISO 8601) when the template has been created.
+    /// </summary>
+    [Required]
+    public Instant Created { get; set; }
+
+    /// <summary>
+    /// The date time (ISO 8601) when the template has been updated.
+    /// </summary>
+    [Required]
+    public Instant LastUpdate { get; set; }
+
+    /// <summary>
+    /// The formatting.
+    /// </summary>
+    [Required]
+    public NotificationFormattingDto Formatting { get; set; }
+
+    /// <summary>
+    /// Notification settings per channel.
+    /// </summary>
+    [Required]
+    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
+
+    public static TemplateDto FromDomainObject(Template source)
     {
-        /// <summary>
-        /// The code of the template.
-        /// </summary>
-        [Required]
-        public string Code { get; set; }
+        var result = SimpleMapper.Map(source, new TemplateDto());
 
-        /// <summary>
-        /// The date time (ISO 8601) when the template has been created.
-        /// </summary>
-        [Required]
-        public Instant Created { get; set; }
-
-        /// <summary>
-        /// The date time (ISO 8601) when the template has been updated.
-        /// </summary>
-        [Required]
-        public Instant LastUpdate { get; set; }
-
-        /// <summary>
-        /// The formatting.
-        /// </summary>
-        [Required]
-        public NotificationFormattingDto Formatting { get; set; }
-
-        /// <summary>
-        /// Notification settings per channel.
-        /// </summary>
-        [Required]
-        public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
-
-        public static TemplateDto FromDomainObject(Template source)
+        if (source.Formatting != null)
         {
-            var result = SimpleMapper.Map(source, new TemplateDto());
+            result.Formatting = NotificationFormattingDto.FromDomainObject(source.Formatting);
+        }
+        else
+        {
+            result.Formatting = new NotificationFormattingDto();
+        }
 
-            if (source.Formatting != null)
+        if (source.Settings != null)
+        {
+            foreach (var (key, value) in source.Settings)
             {
-                result.Formatting = NotificationFormattingDto.FromDomainObject(source.Formatting);
-            }
-            else
-            {
-                result.Formatting = new NotificationFormattingDto();
-            }
-
-            if (source.Settings != null)
-            {
-                foreach (var (key, value) in source.Settings)
+                if (value != null)
                 {
-                    if (value != null)
-                    {
-                        result.Settings[key] = ChannelSettingDto.FromDomainObject(value);
-                    }
+                    result.Settings[key] = ChannelSettingDto.FromDomainObject(value);
                 }
             }
-
-            return result;
         }
+
+        return result;
     }
 }

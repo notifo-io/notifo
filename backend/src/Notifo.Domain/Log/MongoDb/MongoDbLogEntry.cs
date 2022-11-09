@@ -8,30 +8,29 @@
 using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Log.MongoDb
+namespace Notifo.Domain.Log.MongoDb;
+
+public sealed class MongoDbLogEntry : MongoDbEntity
 {
-    public sealed class MongoDbLogEntry : MongoDbEntity
+    [BsonRequired]
+    public LogEntry Entry { get; set; }
+
+    public static string CreateId(string appId, string message)
     {
-        [BsonRequired]
-        public LogEntry Entry { get; set; }
+        return $"{appId}_{message}";
+    }
 
-        public static string CreateId(string appId, string message)
-        {
-            return $"{appId}_{message}";
-        }
+    public static MongoDbLogEntry FromMedia(LogEntry entry, string etag)
+    {
+        var id = CreateId(entry.AppId, entry.Message);
 
-        public static MongoDbLogEntry FromMedia(LogEntry entry, string etag)
-        {
-            var id = CreateId(entry.AppId, entry.Message);
+        var result = new MongoDbLogEntry { DocId = id, Entry = entry, Etag = etag };
 
-            var result = new MongoDbLogEntry { DocId = id, Entry = entry, Etag = etag };
+        return result;
+    }
 
-            return result;
-        }
-
-        public LogEntry ToEntry()
-        {
-            return Entry;
-        }
+    public LogEntry ToEntry()
+    {
+        return Entry;
     }
 }

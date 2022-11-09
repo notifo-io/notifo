@@ -7,18 +7,17 @@
 
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Domain.Events
-{
-    public sealed class EventsOptions : IValidatableOptions
-    {
-        public TimeSpan RetentionTime { get; init; } = TimeSpan.FromDays(10);
+namespace Notifo.Domain.Events;
 
-        public IEnumerable<ConfigurationError> Validate()
+public sealed class EventsOptions : IValidatableOptions
+{
+    public TimeSpan RetentionTime { get; init; } = TimeSpan.FromDays(10);
+
+    public IEnumerable<ConfigurationError> Validate()
+    {
+        if (RetentionTime <= TimeSpan.Zero)
         {
-            if (RetentionTime <= TimeSpan.Zero)
-            {
-                yield return new ConfigurationError("Retention time must be greater than zero.", nameof(RetentionTime));
-            }
+            yield return new ConfigurationError("Retention time must be greater than zero.", nameof(RetentionTime));
         }
     }
 }

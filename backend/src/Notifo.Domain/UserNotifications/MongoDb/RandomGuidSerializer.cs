@@ -8,27 +8,26 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 
-namespace Notifo.Domain.UserNotifications.MongoDb
+namespace Notifo.Domain.UserNotifications.MongoDb;
+
+internal sealed class RandomGuidSerializer : SerializerBase<Guid>
 {
-    internal sealed class RandomGuidSerializer : SerializerBase<Guid>
+    public override Guid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
     {
-        public override Guid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        var read = context.Reader.ReadString();
+
+        if (!Guid.TryParse(read, out var id))
         {
-            var read = context.Reader.ReadString();
-
-            if (!Guid.TryParse(read, out var id))
-            {
-                id = Guid.NewGuid();
-            }
-
-            return id;
+            id = Guid.NewGuid();
         }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Guid value)
-        {
-            var writer = context.Writer;
+        return id;
+    }
 
-            writer.WriteString(value.ToString());
-        }
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Guid value)
+    {
+        var writer = context.Writer;
+
+        writer.WriteString(value.ToString());
     }
 }

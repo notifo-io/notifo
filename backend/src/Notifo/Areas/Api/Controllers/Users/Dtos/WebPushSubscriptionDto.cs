@@ -9,19 +9,18 @@ using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
-{
-    public sealed class WebPushSubscriptionDto
-    {
-        /// <summary>
-        /// The endpoint.
-        /// </summary>
-        [Required]
-        public string Endpoint { get; set; }
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
 
-        public static WebPushSubscriptionDto FromDomainObject(WebPushSubscription source)
-        {
-            return SimpleMapper.Map(source, new WebPushSubscriptionDto());
-        }
+public sealed class WebPushSubscriptionDto
+{
+    /// <summary>
+    /// The endpoint.
+    /// </summary>
+    [Required]
+    public string Endpoint { get; set; }
+
+    public static WebPushSubscriptionDto FromDomainObject(WebPushSubscription source)
+    {
+        return SimpleMapper.Map(source, new WebPushSubscriptionDto());
     }
 }

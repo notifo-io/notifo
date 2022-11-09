@@ -7,20 +7,19 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Notifo.Areas.Api.Controllers
-{
-    public class ListResponseDto<T>
-    {
-        /// <summary>
-        /// The items.
-        /// </summary>
-        [Required]
-        public List<T> Items { get; set; } = new List<T>();
+namespace Notifo.Areas.Api.Controllers;
 
-        /// <summary>
-        /// The total number of items.
-        /// </summary>
-        [Required]
-        public long Total { get; set; }
-    }
+public class ListResponseDto<T>
+{
+    /// <summary>
+    /// The items.
+    /// </summary>
+    [Required]
+    public List<T> Items { get; set; } = new List<T>();
+
+    /// <summary>
+    /// The total number of items.
+    /// </summary>
+    [Required]
+    public long Total { get; set; }
 }

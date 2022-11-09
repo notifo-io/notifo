@@ -7,20 +7,19 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Media
+namespace Notifo.Domain.Media;
+
+public interface IMediaRepository
 {
-    public interface IMediaRepository
-    {
-        Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
-            CancellationToken ct = default);
+    Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
+        CancellationToken ct = default);
 
-        Task<Media?> GetAsync(string appId, string fileName,
-            CancellationToken ct = default);
+    Task<Media?> GetAsync(string appId, string fileName,
+        CancellationToken ct = default);
 
-        Task UpsertAsync(Media media,
-            CancellationToken ct = default);
+    Task UpsertAsync(Media media,
+        CancellationToken ct = default);
 
-        Task DeleteAsync(string appId, string fileName,
-            CancellationToken ct = default);
-    }
+    Task DeleteAsync(string appId, string fileName,
+        CancellationToken ct = default);
 }

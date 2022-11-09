@@ -5,14 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public interface IUserNotificationUrl
 {
-    public interface IUserNotificationUrl
-    {
-        string TrackConfirmed(Guid notificationId, string language);
+    string TrackConfirmed(Guid notificationId, string language);
 
-        string TrackDelivered(Guid notificationId, string language);
+    string TrackDelivered(Guid notificationId, string language);
 
-        string TrackSeen(Guid notificationId, string language);
-    }
+    string TrackSeen(Guid notificationId, string language);
 }

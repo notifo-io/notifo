@@ -5,11 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public enum ConfirmMode
 {
-    public enum ConfirmMode
-    {
-        None,
-        Explicit
-    }
+    None,
+    Explicit
 }

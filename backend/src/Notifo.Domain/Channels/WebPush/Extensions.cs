@@ -7,26 +7,25 @@
 
 using System.Diagnostics;
 
-namespace Notifo.Domain.Channels.WebPush
+namespace Notifo.Domain.Channels.WebPush;
+
+public static class Extensions
 {
-    public static class Extensions
+    public static IEnumerable<ActivityLink> Links(this WebPushJob job)
     {
-        public static IEnumerable<ActivityLink> Links(this WebPushJob job)
+        if (job.UserEventActivity != default)
         {
-            if (job.UserEventActivity != default)
-            {
-                yield return new ActivityLink(job.UserEventActivity);
-            }
+            yield return new ActivityLink(job.UserEventActivity);
+        }
 
-            if (job.EventActivity != default)
-            {
-                yield return new ActivityLink(job.EventActivity);
-            }
+        if (job.EventActivity != default)
+        {
+            yield return new ActivityLink(job.EventActivity);
+        }
 
-            if (job.UserNotificationActivity != default)
-            {
-                yield return new ActivityLink(job.UserNotificationActivity);
-            }
+        if (job.UserNotificationActivity != default)
+        {
+            yield return new ActivityLink(job.UserNotificationActivity);
         }
     }
 }

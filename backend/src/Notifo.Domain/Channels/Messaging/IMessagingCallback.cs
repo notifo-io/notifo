@@ -8,13 +8,12 @@
 #pragma warning disable MA0048 // File name must match type name
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Channels.Messaging
-{
-    public readonly record struct MessagingCallbackResponse(Guid NotificationId, MessagingResult Result, string? Details = null);
+namespace Notifo.Domain.Channels.Messaging;
 
-    public interface IMessagingCallback
-    {
-        Task HandleCallbackAsync(IMessagingSender sender, MessagingCallbackResponse response,
-            CancellationToken ct);
-    }
+public readonly record struct MessagingCallbackResponse(Guid NotificationId, MessagingResult Result, string? Details = null);
+
+public interface IMessagingCallback
+{
+    Task HandleCallbackAsync(IMessagingSender sender, MessagingCallbackResponse response,
+        CancellationToken ct);
 }

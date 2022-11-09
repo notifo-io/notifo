@@ -13,119 +13,118 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.Notifications
+namespace Notifo.Areas.Api.Controllers.Notifications;
+
+[OpenApiTag("Notifications")]
+public sealed class NotificationsController : BaseController
 {
-    [OpenApiTag("Notifications")]
-    public sealed class NotificationsController : BaseController
+    private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
+    private readonly IUserNotificationStore userNotificationsStore;
+    private readonly IUserNotificationService userNotificationService;
+
+    public NotificationsController(
+        IUserNotificationStore userNotificationsStore,
+        IUserNotificationService userNotificationService)
     {
-        private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
-        private readonly IUserNotificationStore userNotificationsStore;
-        private readonly IUserNotificationService userNotificationService;
+        this.userNotificationsStore = userNotificationsStore;
+        this.userNotificationService = userNotificationService;
+    }
 
-        public NotificationsController(
-            IUserNotificationStore userNotificationsStore,
-            IUserNotificationService userNotificationService)
+    /// <summary>
+    /// Query user notifications.
+    /// </summary>
+    /// <param name="appId">The app where the user belongs to.</param>
+    /// <param name="id">The user id.</param>
+    /// <param name="q">The query object.</param>
+    /// <returns>
+    /// 200 => User notifications returned.
+    /// 404 => User or app not found.
+    /// </returns>
+    [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/notifications")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
+    public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] UserNotificationQueryDto q)
+    {
+        var notifications = await userNotificationsStore.QueryAsync(appId, id, q.ToQuery(true), HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<UserNotificationDetailsDto>();
+
+        response.Items.AddRange(notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails));
+        response.Total = notifications.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Query user notifications of the current user.
+    /// </summary>
+    /// <param name="q">The query object.</param>
+    /// <returns>
+    /// 200 => Notifications returned.
+    /// </returns>
+    [HttpGet]
+    [Route("api/me/notifications")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Produces(typeof(ListResponseDto<UserNotificationDto>))]
+    public async Task<IActionResult> GetMyNotifications([FromQuery] UserNotificationQueryDto q)
+    {
+        var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery(true), HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<UserNotificationDto>();
+
+        response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
+        response.Total = notifications.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Query archhived user notifications of the current user.
+    /// </summary>
+    /// <returns>
+    /// 200 => Notifications returned.
+    /// </returns>
+    [HttpGet]
+    [Route("api/me/notifications/archive")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Produces(typeof(ListResponseDto<UserNotificationDto>))]
+    public async Task<IActionResult> GetMyArchive()
+    {
+        var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<UserNotificationDto>();
+
+        response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
+        response.Total = notifications.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Confirms the user notifications for the current user.
+    /// </summary>
+    /// <param name="request">The request object.</param>
+    /// <returns>
+    /// 204 => Notifications updated.
+    /// </returns>
+    [HttpPost("api/me/notifications/handled")]
+    [AppPermission(NotifoRoles.AppUser)]
+    public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
+    {
+        if (request.Confirmed != null)
         {
-            this.userNotificationsStore = userNotificationsStore;
-            this.userNotificationService = userNotificationService;
+            var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.ConfigurationId);
+
+            await userNotificationService.TrackConfirmedAsync(token);
         }
 
-        /// <summary>
-        /// Query user notifications.
-        /// </summary>
-        /// <param name="appId">The app where the user belongs to.</param>
-        /// <param name="id">The user id.</param>
-        /// <param name="q">The query object.</param>
-        /// <returns>
-        /// 200 => User notifications returned.
-        /// 404 => User or app not found.
-        /// </returns>
-        [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/notifications")]
-        [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
-        public async Task<IActionResult> GetNotifications(string appId, string id, [FromQuery] UserNotificationQueryDto q)
+        if (request.Seen?.Length > 0)
         {
-            var notifications = await userNotificationsStore.QueryAsync(appId, id, q.ToQuery(true), HttpContext.RequestAborted);
+            var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.ConfigurationId));
 
-            var response = new ListResponseDto<UserNotificationDetailsDto>();
-
-            response.Items.AddRange(notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails));
-            response.Total = notifications.Total;
-
-            return Ok(response);
+            await userNotificationService.TrackSeenAsync(tokens);
         }
 
-        /// <summary>
-        /// Query user notifications of the current user.
-        /// </summary>
-        /// <param name="q">The query object.</param>
-        /// <returns>
-        /// 200 => Notifications returned.
-        /// </returns>
-        [HttpGet]
-        [Route("api/me/notifications")]
-        [AppPermission(NotifoRoles.AppUser)]
-        [Produces(typeof(ListResponseDto<UserNotificationDto>))]
-        public async Task<IActionResult> GetMyNotifications([FromQuery] UserNotificationQueryDto q)
-        {
-            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, q.ToQuery(true), HttpContext.RequestAborted);
-
-            var response = new ListResponseDto<UserNotificationDto>();
-
-            response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
-            response.Total = notifications.Total;
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Query archhived user notifications of the current user.
-        /// </summary>
-        /// <returns>
-        /// 200 => Notifications returned.
-        /// </returns>
-        [HttpGet]
-        [Route("api/me/notifications/archive")]
-        [AppPermission(NotifoRoles.AppUser)]
-        [Produces(typeof(ListResponseDto<UserNotificationDto>))]
-        public async Task<IActionResult> GetMyArchive()
-        {
-            var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
-
-            var response = new ListResponseDto<UserNotificationDto>();
-
-            response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
-            response.Total = notifications.Total;
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Confirms the user notifications for the current user.
-        /// </summary>
-        /// <param name="request">The request object.</param>
-        /// <returns>
-        /// 204 => Notifications updated.
-        /// </returns>
-        [HttpPost("api/me/notifications/handled")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
-        {
-            if (request.Confirmed != null)
-            {
-                var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.ConfigurationId);
-
-                await userNotificationService.TrackConfirmedAsync(token);
-            }
-
-            if (request.Seen?.Length > 0)
-            {
-                var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.ConfigurationId));
-
-                await userNotificationService.TrackSeenAsync(tokens);
-            }
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

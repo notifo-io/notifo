@@ -9,100 +9,99 @@ using NodaTime;
 using Notifo.Infrastructure;
 using Squidex.Assets;
 
-namespace Notifo.Domain.Media
+namespace Notifo.Domain.Media;
+
+public sealed class MediaStore : IMediaStore
 {
-    public sealed class MediaStore : IMediaStore
+    private readonly IMediaFileStore mediaFileStore;
+    private readonly IMediaRepository mediaRepository;
+    private readonly IEnumerable<IMediaMetadataSource> mediaMetadataSources;
+    private readonly IClock clock;
+
+    public MediaStore(
+        IMediaFileStore mediaFileStore,
+        IMediaRepository mediaRepository,
+        IEnumerable<IMediaMetadataSource> mediaMetadataSources,
+        IClock clock)
     {
-        private readonly IMediaFileStore mediaFileStore;
-        private readonly IMediaRepository mediaRepository;
-        private readonly IEnumerable<IMediaMetadataSource> mediaMetadataSources;
-        private readonly IClock clock;
+        this.mediaFileStore = mediaFileStore;
+        this.mediaMetadataSources = mediaMetadataSources;
+        this.mediaRepository = mediaRepository;
+        this.clock = clock;
+    }
 
-        public MediaStore(
-            IMediaFileStore mediaFileStore,
-            IMediaRepository mediaRepository,
-            IEnumerable<IMediaMetadataSource> mediaMetadataSources,
-            IClock clock)
+    public Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNull(query);
+
+        return mediaRepository.QueryAsync(appId, query, ct);
+    }
+
+    public async Task<Media> UploadAsync(string appId, AssetFile file,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNull(file);
+
+        // Calculate once to have some timestamp for created and updated when new entity is created.
+        var now = clock.GetCurrentInstant();
+
+        var request = new MetadataRequest
         {
-            this.mediaFileStore = mediaFileStore;
-            this.mediaMetadataSources = mediaMetadataSources;
-            this.mediaRepository = mediaRepository;
-            this.clock = clock;
+            File = file
+        };
+
+        foreach (var metadataSource in mediaMetadataSources)
+        {
+            await metadataSource.EnhanceAsync(request);
         }
 
-        public Task<IResultList<Media>> QueryAsync(string appId, MediaQuery query,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNull(query);
+        var infos = new List<string>();
 
-            return mediaRepository.QueryAsync(appId, query, ct);
+        foreach (var metadataSource in mediaMetadataSources)
+        {
+            infos.AddRange(metadataSource.Format(request));
         }
 
-        public async Task<Media> UploadAsync(string appId, AssetFile file,
-            CancellationToken ct = default)
+        var fileInfo = string.Join(", ", infos);
+
+        var media = new Media(appId, file.FileName, now)
         {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNull(file);
+            FileInfo = fileInfo,
+            FileSize = file.FileSize,
+            LastUpdate = now,
+            Metadata = request.Metadata,
+            MimeType = file.MimeType,
+            Type = request.Type
+        };
 
-            // Calculate once to have some timestamp for created and updated when new entity is created.
-            var now = clock.GetCurrentInstant();
-
-            var request = new MetadataRequest
-            {
-                File = file
-            };
-
-            foreach (var metadataSource in mediaMetadataSources)
-            {
-                await metadataSource.EnhanceAsync(request);
-            }
-
-            var infos = new List<string>();
-
-            foreach (var metadataSource in mediaMetadataSources)
-            {
-                infos.AddRange(metadataSource.Format(request));
-            }
-
-            var fileInfo = string.Join(", ", infos);
-
-            var media = new Media(appId, file.FileName, now)
-            {
-                FileInfo = fileInfo,
-                FileSize = file.FileSize,
-                LastUpdate = now,
-                Metadata = request.Metadata,
-                MimeType = file.MimeType,
-                Type = request.Type
-            };
-
-            await using (var stream = request.File.OpenRead())
-            {
-                await mediaFileStore.UploadAsync(appId, media, stream, ct);
-            }
-
-            await mediaRepository.UpsertAsync(media, ct);
-
-            return media;
+        await using (var stream = request.File.OpenRead())
+        {
+            await mediaFileStore.UploadAsync(appId, media, stream, ct);
         }
 
-        public Task<Media?> GetAsync(string appId, string fileName,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNullOrEmpty(fileName);
+        await mediaRepository.UpsertAsync(media, ct);
 
-            return mediaRepository.GetAsync(appId, fileName, ct);
-        }
+        return media;
+    }
 
-        public Task DeleteAsync(string appId, string fileName,
-            CancellationToken ct = default)
-        {
-            Guard.NotNullOrEmpty(appId);
-            Guard.NotNullOrEmpty(fileName);
+    public Task<Media?> GetAsync(string appId, string fileName,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(fileName);
 
-            return mediaRepository.DeleteAsync(appId, fileName, ct);
-        }
+        return mediaRepository.GetAsync(appId, fileName, ct);
+    }
+
+    public Task DeleteAsync(string appId, string fileName,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(fileName);
+
+        return mediaRepository.DeleteAsync(appId, fileName, ct);
     }
 }

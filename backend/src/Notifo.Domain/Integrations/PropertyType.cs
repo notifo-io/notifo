@@ -5,14 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Integrations
+namespace Notifo.Domain.Integrations;
+
+public enum PropertyType
 {
-    public enum PropertyType
-    {
-        Text,
-        Number,
-        MultilineText,
-        Password,
-        Boolean
-    }
+    Text,
+    Number,
+    MultilineText,
+    Password,
+    Boolean
 }

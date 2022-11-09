@@ -7,13 +7,12 @@
 
 using Notifo.Identity.ApiKey;
 
-namespace Microsoft.AspNetCore.Authentication
+namespace Microsoft.AspNetCore.Authentication;
+
+public static class ApiKeyAuthenticationBuilderExtensions
 {
-    public static class ApiKeyAuthenticationBuilderExtensions
+    public static AuthenticationBuilder AddApiKey(this AuthenticationBuilder builder)
     {
-        public static AuthenticationBuilder AddApiKey(this AuthenticationBuilder builder)
-        {
-            return builder.AddScheme<ApiKeyOptions, ApiKeyHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
-        }
+        return builder.AddScheme<ApiKeyOptions, ApiKeyHandler>(ApiKeyDefaults.AuthenticationScheme, _ => { });
     }
 }

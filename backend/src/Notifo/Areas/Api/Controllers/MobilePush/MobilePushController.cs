@@ -12,116 +12,115 @@ using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.MobilePush
+namespace Notifo.Areas.Api.Controllers.MobilePush;
+
+[OpenApiTag("MobilePush")]
+public sealed class MobilePushController : BaseController
 {
-    [OpenApiTag("MobilePush")]
-    public sealed class MobilePushController : BaseController
+    private readonly IUserStore userStore;
+
+    public MobilePushController(IUserStore userStore)
     {
-        private readonly IUserStore userStore;
+        this.userStore = userStore;
+    }
 
-        public MobilePushController(IUserStore userStore)
+    /// <summary>
+    /// Returns the mobile push tokens.
+    /// </summary>
+    /// <returns>
+    /// 200 => Mobile push tokens returned.
+    /// </returns>
+    [HttpGet("api/me/mobilepush")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Produces(typeof(ListResponseDto<MobilePushTokenDto>))]
+    public async Task<IActionResult> GetMyToken()
+    {
+        var user = await userStore.GetAsync(App.Id, UserId, HttpContext.RequestAborted);
+
+        if (user == null)
         {
-            this.userStore = userStore;
+            return NotFound();
         }
 
-        /// <summary>
-        /// Returns the mobile push tokens.
-        /// </summary>
-        /// <returns>
-        /// 200 => Mobile push tokens returned.
-        /// </returns>
-        [HttpGet("api/me/mobilepush")]
-        [AppPermission(NotifoRoles.AppUser)]
-        [Produces(typeof(ListResponseDto<MobilePushTokenDto>))]
-        public async Task<IActionResult> GetMyToken()
+        var response = new ListResponseDto<MobilePushTokenDto>();
+
+        response.Items.AddRange(user.MobilePushTokens.Select(MobilePushTokenDto.FromDomainObject));
+        response.Total = user.MobilePushTokens.Count;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Register a mobile push token for the current user.
+    /// </summary>
+    /// <param name="request">The request object.</param>
+    /// <returns>
+    /// 204 => Mobile push token registered.
+    /// </returns>
+    [HttpPost("api/mobilepush")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Obsolete("Use new endpoint <api/me/mobilepush>")]
+    [OpenApiIgnore]
+    public Task<IActionResult> PostMyTokenOld([FromBody] RegisterMobileTokenDto request)
+    {
+        return PostMyToken(request);
+    }
+
+    /// <summary>
+    /// Register a mobile push token for the current user.
+    /// </summary>
+    /// <param name="request">The request object.</param>
+    /// <returns>
+    /// 204 => Mobile push token registered.
+    /// </returns>
+    [HttpPost("api/me/mobilepush")]
+    [AppPermission(NotifoRoles.AppUser)]
+    public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
+    {
+        var command = new AddUserMobileToken
         {
-            var user = await userStore.GetAsync(App.Id, UserId, HttpContext.RequestAborted);
+            Token = request.ToToken()
+        };
 
-            if (user == null)
-            {
-                return NotFound();
-            }
+        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
 
-            var response = new ListResponseDto<MobilePushTokenDto>();
+        return NoContent();
+    }
 
-            response.Items.AddRange(user.MobilePushTokens.Select(MobilePushTokenDto.FromDomainObject));
-            response.Total = user.MobilePushTokens.Count;
+    /// <summary>
+    /// Deletes a mobile push token for the current user.
+    /// </summary>
+    /// <param name="token">The token to remove.</param>
+    /// <returns>
+    /// 204 => Mobile push token removed.
+    /// </returns>
+    [HttpDelete("api/mobilepush/{token:notEmpty}")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
+    [OpenApiIgnore]
+    public Task<IActionResult> DeleteMyTokenOld(string token)
+    {
+        return DeleteMyToken(token);
+    }
 
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Register a mobile push token for the current user.
-        /// </summary>
-        /// <param name="request">The request object.</param>
-        /// <returns>
-        /// 204 => Mobile push token registered.
-        /// </returns>
-        [HttpPost("api/mobilepush")]
-        [AppPermission(NotifoRoles.AppUser)]
-        [Obsolete("Use new endpoint <api/me/mobilepush>")]
-        [OpenApiIgnore]
-        public Task<IActionResult> PostMyTokenOld([FromBody] RegisterMobileTokenDto request)
+    /// <summary>
+    /// Deletes a mobile push token for the current user.
+    /// </summary>
+    /// <param name="token">The token to remove.</param>
+    /// <returns>
+    /// 204 => Mobile push token removed.
+    /// </returns>
+    [HttpDelete("api/me/mobilepush/{token:notEmpty}")]
+    [AppPermission(NotifoRoles.AppUser)]
+    public async Task<IActionResult> DeleteMyToken(string token)
+    {
+        var command = new RemoveUserMobileToken
         {
-            return PostMyToken(request);
-        }
+            Token = token
+        };
 
-        /// <summary>
-        /// Register a mobile push token for the current user.
-        /// </summary>
-        /// <param name="request">The request object.</param>
-        /// <returns>
-        /// 204 => Mobile push token registered.
-        /// </returns>
-        [HttpPost("api/me/mobilepush")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
-        {
-            var command = new AddUserMobileToken
-            {
-                Token = request.ToToken()
-            };
+        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
 
-            await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
-
-            return NoContent();
-        }
-
-        /// <summary>
-        /// Deletes a mobile push token for the current user.
-        /// </summary>
-        /// <param name="token">The token to remove.</param>
-        /// <returns>
-        /// 204 => Mobile push token removed.
-        /// </returns>
-        [HttpDelete("api/mobilepush/{token:notEmpty}")]
-        [AppPermission(NotifoRoles.AppUser)]
-        [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
-        [OpenApiIgnore]
-        public Task<IActionResult> DeleteMyTokenOld(string token)
-        {
-            return DeleteMyToken(token);
-        }
-
-        /// <summary>
-        /// Deletes a mobile push token for the current user.
-        /// </summary>
-        /// <param name="token">The token to remove.</param>
-        /// <returns>
-        /// 204 => Mobile push token removed.
-        /// </returns>
-        [HttpDelete("api/me/mobilepush/{token:notEmpty}")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteMyToken(string token)
-        {
-            var command = new RemoveUserMobileToken
-            {
-                Token = token
-            };
-
-            await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

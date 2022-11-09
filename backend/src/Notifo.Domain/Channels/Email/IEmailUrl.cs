@@ -7,10 +7,9 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Channels.Email;
+
+public interface IEmailUrl : IUserNotificationUrl
 {
-    public interface IEmailUrl : IUserNotificationUrl
-    {
-        string EmailPreferences(string apiKey, string language);
-    }
+    string EmailPreferences(string apiKey, string language);
 }

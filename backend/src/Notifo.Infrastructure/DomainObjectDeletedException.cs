@@ -7,26 +7,25 @@
 
 using System.Runtime.Serialization;
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+[Serializable]
+public class DomainObjectDeletedException : DomainObjectException
 {
-    [Serializable]
-    public class DomainObjectDeletedException : DomainObjectException
+    private const string ValidationError = "OBJECT_DELETED";
+
+    public DomainObjectDeletedException(string id, Exception? inner = null)
+        : base(FormatMessage(id), id, ValidationError, inner)
     {
-        private const string ValidationError = "OBJECT_DELETED";
+    }
 
-        public DomainObjectDeletedException(string id, Exception? inner = null)
-            : base(FormatMessage(id), id, ValidationError, inner)
-        {
-        }
+    protected DomainObjectDeletedException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+    }
 
-        protected DomainObjectDeletedException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-        private static string FormatMessage(string id)
-        {
-            return $"Domain object \'{id}\' has been deleted.";
-        }
+    private static string FormatMessage(string id)
+    {
+        return $"Domain object \'{id}\' has been deleted.";
     }
 }

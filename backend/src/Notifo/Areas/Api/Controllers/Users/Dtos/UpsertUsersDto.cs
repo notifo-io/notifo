@@ -7,14 +7,13 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+
+public sealed class UpsertUsersDto
 {
-    public sealed class UpsertUsersDto
-    {
-        /// <summary>
-        /// The users to update.
-        /// </summary>
-        [Required]
-        public UpsertUserDto[] Requests { get; set; }
-    }
+    /// <summary>
+    /// The users to update.
+    /// </summary>
+    [Required]
+    public UpsertUserDto[] Requests { get; set; }
 }

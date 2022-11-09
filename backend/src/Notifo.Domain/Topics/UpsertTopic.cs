@@ -12,71 +12,70 @@ using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Topics
+namespace Notifo.Domain.Topics;
+
+public sealed class UpsertTopic : ICommand<Topic>
 {
-    public sealed class UpsertTopic : ICommand<Topic>
+    public LocalizedText? Name { get; set; }
+
+    public LocalizedText? Description { get; set; }
+
+    public ReadonlyDictionary<string, TopicChannel>? Channels { get; set; }
+
+    public bool? ShowAutomatically { get; set; }
+
+    public bool CanCreate => true;
+
+    private sealed class Validator : AbstractValidator<UpsertTopic>
     {
-        public LocalizedText? Name { get; set; }
-
-        public LocalizedText? Description { get; set; }
-
-        public ReadonlyDictionary<string, TopicChannel>? Channels { get; set; }
-
-        public bool? ShowAutomatically { get; set; }
-
-        public bool CanCreate => true;
-
-        private sealed class Validator : AbstractValidator<UpsertTopic>
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(x => x.Name).NotNull().NotEmpty();
-            }
+            RuleFor(x => x.Name).NotNull().NotEmpty();
         }
+    }
 
-        public ValueTask<Topic?> ExecuteAsync(Topic topic, IServiceProvider serviceProvider,
-            CancellationToken ct)
+    public ValueTask<Topic?> ExecuteAsync(Topic topic, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        var newTopic = topic with
         {
-            Validate<Validator>.It(this);
+            IsExplicit = true
+        };
 
-            var newTopic = topic with
+        if (Is.Changed(Name, topic.Name))
+        {
+            newTopic = newTopic with
             {
-                IsExplicit = true
+                Name = Name.Trim()
             };
-
-            if (Is.Changed(Name, topic.Name))
-            {
-                newTopic = newTopic with
-                {
-                    Name = Name.Trim()
-                };
-            }
-
-            if (Is.Changed(Description, topic.Description))
-            {
-                newTopic = newTopic with
-                {
-                    Description = Description.Trim()
-                };
-            }
-
-            if (Is.Changed(ShowAutomatically, topic.ShowAutomatically))
-            {
-                newTopic = newTopic with
-                {
-                    ShowAutomatically = ShowAutomatically.Value
-                };
-            }
-
-            if (Channels != null)
-            {
-                newTopic = newTopic with
-                {
-                    Channels = Channels
-                };
-            }
-
-            return new ValueTask<Topic?>(newTopic);
         }
+
+        if (Is.Changed(Description, topic.Description))
+        {
+            newTopic = newTopic with
+            {
+                Description = Description.Trim()
+            };
+        }
+
+        if (Is.Changed(ShowAutomatically, topic.ShowAutomatically))
+        {
+            newTopic = newTopic with
+            {
+                ShowAutomatically = ShowAutomatically.Value
+            };
+        }
+
+        if (Channels != null)
+        {
+            newTopic = newTopic with
+            {
+                Channels = Channels
+            };
+        }
+
+        return new ValueTask<Topic?>(newTopic);
     }
 }
