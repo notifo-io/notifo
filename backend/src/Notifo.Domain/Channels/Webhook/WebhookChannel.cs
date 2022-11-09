@@ -43,13 +43,13 @@ namespace Notifo.Domain.Channels.Webhook
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting setting, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting setting, SendContext context)
         {
-            var webhooks = integrationManager.Resolve<WebhookDefinition>(options.App, notification);
+            var webhooks = integrationManager.Resolve<WebhookDefinition>(context.App, notification);
 
             foreach (var (id, _) in webhooks)
             {
-                yield return new ChannelConfiguration
+                yield return new SendConfiguration
                 {
                     [WebhookId] = id
                 };
@@ -61,7 +61,7 @@ namespace Notifo.Domain.Channels.Webhook
             return UpdateAsync(job, ProcessStatus.Failed);
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
             CancellationToken ct)
         {
             if (!properties.TryGetValue("WebhookId", out var webhookId))
@@ -72,15 +72,15 @@ namespace Notifo.Domain.Channels.Webhook
 
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                var webhook = integrationManager.Resolve<WebhookDefinition>(webhookId, options.App, notification);
+                var webhook = integrationManager.Resolve<WebhookDefinition>(webhookId, context.App, notification);
 
                 // The webhook must match the name or the conditions.
-                if (webhook == null || !ShouldSend(webhook, options.IsUpdate, setting.Template))
+                if (webhook == null || !ShouldSend(webhook, context.IsUpdate, setting.Template))
                 {
                     return;
                 }
 
-                var job = new WebhookJob(notification, setting, configurationId, webhook, options.IsUpdate);
+                var job = new WebhookJob(notification, setting, configurationId, webhook, context.IsUpdate);
 
                 // Do not use scheduling when the notification is an update.
                 if (job.IsUpdate)

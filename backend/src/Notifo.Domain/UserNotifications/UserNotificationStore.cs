@@ -126,7 +126,7 @@ namespace Notifo.Domain.UserNotifications
             Guard.NotNull(userEvent);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt);
-            var counterKey = CounterKey.ForUserEvent(userEvent);
+            var counterKey = TrackingKey.ForUserEvent(userEvent);
 
             return StoreCountersAsync(counterKey, counterMap, ct);
         }
@@ -137,7 +137,7 @@ namespace Notifo.Domain.UserNotifications
             Guard.NotNull(userEvent);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Failed);
-            var counterKey = CounterKey.ForUserEvent(userEvent);
+            var counterKey = TrackingKey.ForUserEvent(userEvent);
 
             return StoreCountersAsync(counterKey, counterMap, ct);
         }
@@ -148,20 +148,20 @@ namespace Notifo.Domain.UserNotifications
             Guard.NotNull(notification);
 
             var counterMap = CounterMap.ForNotification(ProcessStatus.Handled);
-            var counterKey = CounterKey.ForNotification(UserNotificationIdentifier.ForNotification(notification));
+            var counterKey = TrackingKey.ForNotification(notification);
 
             return Task.WhenAll(
                 StoreCountersAsync(counterKey, counterMap, ct),
                 StoreInternalAsync(notification, ct));
         }
 
-        public Task TrackAsync(UserNotificationIdentifier identifier, ProcessStatus status, string? detail = null,
+        public Task TrackAsync(TrackingKey identifier, ProcessStatus status, string? detail = null,
             CancellationToken ct = default)
         {
             Guard.NotNullOrEmpty(identifier.Channel);
 
             var counterMap = CounterMap.ForChannel(identifier.Channel!, status);
-            var counterKey = CounterKey.ForNotification(identifier);
+            var counterKey = identifier;
 
             if (identifier.ConfigurationId == default)
             {
@@ -173,7 +173,7 @@ namespace Notifo.Domain.UserNotifications
                 StoreInternalAsync(identifier.UserNotificationId, identifier.Channel!, identifier.ConfigurationId, status, detail));
         }
 
-        private Task StoreCountersAsync(CounterKey key, CounterMap counterValues,
+        private Task StoreCountersAsync(TrackingKey key, CounterMap counterValues,
             CancellationToken ct)
         {
             return counters.CollectAsync(key, counterValues, ct);

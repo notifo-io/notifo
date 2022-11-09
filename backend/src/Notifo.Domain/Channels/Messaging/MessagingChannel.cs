@@ -52,20 +52,20 @@ namespace Notifo.Domain.Channels.Messaging
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
             // Faster check because it does not allocate integrations.
-            if (!integrationManager.IsConfigured<IMessagingSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<IMessagingSender>(context.App, notification))
             {
                 yield break;
             }
 
-            var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification);
+            var senders = integrationManager.Resolve<IMessagingSender>(context.App, notification);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
-            if (senders.Any(x => x.Target.HasTarget(options.User)))
+            if (senders.Any(x => x.Target.HasTarget(context.User)))
             {
-                yield return new ChannelConfiguration();
+                yield return new SendConfiguration();
             }
         }
 
@@ -109,7 +109,7 @@ namespace Notifo.Domain.Channels.Messaging
 
             if (status.Status == ProcessStatus.Attempt)
             {
-                var identifier = UserNotificationIdentifier.ForNotification(notification, Name, configurationId);
+                var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
 
                 switch (result)
                 {
@@ -123,10 +123,10 @@ namespace Notifo.Domain.Channels.Messaging
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration configuration, SendContext context,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            if (context.IsUpdate)
             {
                 return;
             }
@@ -135,12 +135,12 @@ namespace Notifo.Domain.Channels.Messaging
             {
                 var job = new MessagingJob(notification, setting, configurationId);
 
-                var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification);
+                var integrations = integrationManager.Resolve<IMessagingSender>(context.App, notification);
 
                 // We try all integrations, ordered by priority.
                 foreach (var (_, sender) in integrations)
                 {
-                    await sender.AddTargetsAsync(job, options.User);
+                    await sender.AddTargetsAsync(job, context.User);
                 }
 
                 // Should not happen because we check before if there is at least one target.

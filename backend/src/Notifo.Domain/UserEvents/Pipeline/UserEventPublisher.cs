@@ -184,7 +184,7 @@ namespace Notifo.Domain.UserEvents.Pipeline
                 if (count > 0)
                 {
                     var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
-                    var counterKey = CounterKey.ForEvent(@event);
+                    var counterKey = TrackingKey.ForEvent(@event);
 
                     await counters.CollectAsync(counterKey, counterMap, ct);
                 }

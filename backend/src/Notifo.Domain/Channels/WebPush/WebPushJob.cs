@@ -18,11 +18,11 @@ namespace Notifo.Domain.Channels.WebPush
 
         public string Payload { get; init; }
 
-        public ActivityContext UserEventActivity { get; init; }
-
         public ActivityContext EventActivity { get; init; }
 
-        public ActivityContext NotificationActivity { get; init; }
+        public ActivityContext UserEventActivity { get; init; }
+
+        public ActivityContext UserNotificationActivity { get; init; }
 
         public bool IsConfirmed { get; init; }
 

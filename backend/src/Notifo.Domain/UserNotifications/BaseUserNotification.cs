@@ -39,11 +39,11 @@ namespace Notifo.Domain.UserNotifications
 
         public int? TimeToLiveInSeconds { get; set; }
 
-        public ActivityContext UserEventActivity { get; set; }
-
         public ActivityContext EventActivity { get; set; }
 
-        public ActivityContext NotificationActivity { get; set; }
+        public ActivityContext UserEventActivity { get; set; }
+
+        public ActivityContext UserNotificationActivity { get; set; }
 
         public NotificationProperties? Properties { get; set; }
 

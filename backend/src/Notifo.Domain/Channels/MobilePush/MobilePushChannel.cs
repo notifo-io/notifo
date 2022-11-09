@@ -52,18 +52,18 @@ namespace Notifo.Domain.Channels.MobilePush
             this.clock = clock;
         }
 
-        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
-            if (!integrationManager.IsConfigured<IMobilePushSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<IMobilePushSender>(context.App, notification))
             {
                 yield break;
             }
 
-            foreach (var token in options.User.MobilePushTokens)
+            foreach (var token in context.User.MobilePushTokens)
             {
                 if (!string.IsNullOrWhiteSpace(token.Token))
                 {
-                    yield return new ChannelConfiguration
+                    yield return new SendConfiguration
                     {
                         [MobilePushToken] = token.Token
                     };
@@ -129,7 +129,7 @@ namespace Notifo.Domain.Channels.MobilePush
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
             CancellationToken ct)
         {
             if (!properties.TryGetValue(MobilePushToken, out var tokenString))
@@ -140,7 +140,7 @@ namespace Notifo.Domain.Channels.MobilePush
 
             using (Telemetry.Activities.StartActivity("MobilePushChannel/SendAsync"))
             {
-                var token = options.User.MobilePushTokens.SingleOrDefault(x => x.Token == tokenString);
+                var token = context.User.MobilePushTokens.SingleOrDefault(x => x.Token == tokenString);
 
                 if (token == null)
                 {
@@ -153,9 +153,9 @@ namespace Notifo.Domain.Channels.MobilePush
                     await TryWakeupAsync(notification, configurationId, token, ct);
                 }
 
-                var job = new MobilePushJob(notification, setting, configurationId, token.Token, token.DeviceType, options.IsUpdate);
+                var job = new MobilePushJob(notification, setting, configurationId, token.Token, token.DeviceType, context.IsUpdate);
 
-                if (options.IsUpdate)
+                if (context.IsUpdate)
                 {
                     await userNotificationQueue.ScheduleAsync(
                         job.ScheduleKey,

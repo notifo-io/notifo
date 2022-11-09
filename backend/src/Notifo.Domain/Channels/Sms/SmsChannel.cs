@@ -53,18 +53,18 @@ namespace Notifo.Domain.Channels.Sms
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
-            if (!integrationManager.IsConfigured<ISmsSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<ISmsSender>(context.App, notification))
             {
                 yield break;
             }
 
-            if (!string.IsNullOrWhiteSpace(options.User.PhoneNumber))
+            if (!string.IsNullOrWhiteSpace(context.User.PhoneNumber))
             {
-                yield return new ChannelConfiguration
+                yield return new SendConfiguration
                 {
-                    [PhoneNumber] = options.User.PhoneNumber
+                    [PhoneNumber] = context.User.PhoneNumber
                 };
             }
         }
@@ -104,7 +104,7 @@ namespace Notifo.Domain.Channels.Sms
 
             if (status.Status == ProcessStatus.Attempt)
             {
-                var identifier = UserNotificationIdentifier.ForNotification(notification, Name, configurationId);
+                var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
 
                 switch (result)
                 {
@@ -118,10 +118,10 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            if (context.IsUpdate)
             {
                 return;
             }

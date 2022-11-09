@@ -5,17 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Apps;
-using Notifo.Domain.Users;
-
 namespace Notifo.Domain.Channels
 {
-    public struct SendOptions
+    public sealed class SendConfiguration : Dictionary<string, string>
     {
-        public bool IsUpdate { get; init; }
-
-        public User User { get; init; }
-
-        public App App { get; init; }
+        public SendConfiguration()
+            : base(StringComparer.OrdinalIgnoreCase)
+        {
+        }
     }
 }

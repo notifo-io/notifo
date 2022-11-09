@@ -22,7 +22,7 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// <summary>
         /// The configuration for the device.
         /// </summary>
-        public ChannelConfiguration Configuration { get; init; }
+        public SendConfiguration Configuration { get; init; }
 
         /// <summary>
         /// The last update.

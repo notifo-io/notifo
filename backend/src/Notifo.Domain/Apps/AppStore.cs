@@ -40,7 +40,7 @@ namespace Notifo.Domain.Apps
             collector.DisposeAsync().AsTask().Wait();
         }
 
-        public async Task CollectAsync(CounterKey key, CounterMap counters,
+        public async Task CollectAsync(TrackingKey key, CounterMap counters,
             CancellationToken ct = default)
         {
             if (key.AppId != null)

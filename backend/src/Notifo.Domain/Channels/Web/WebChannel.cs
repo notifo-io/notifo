@@ -30,17 +30,17 @@ namespace Notifo.Domain.Channels.Web
             this.log = log;
         }
 
-        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
-            yield return new ChannelConfiguration();
+            yield return new SendConfiguration();
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, ChannelConfiguration properties, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, SendConfiguration properties, SendContext context,
             CancellationToken ct)
         {
             using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))
             {
-                var identifier = UserNotificationIdentifier.ForNotification(notification, Name, configurationId);
+                var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
                 try
                 {
                     await streamClient.SendAsync(notification);

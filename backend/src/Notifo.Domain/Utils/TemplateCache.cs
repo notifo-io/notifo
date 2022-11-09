@@ -14,7 +14,7 @@ using Squidex.Caching;
 
 namespace Notifo.Domain.Utils
 {
-    public record struct CachedTemplate(IFluidTemplate? Template, TemplateError? Error);
+    public readonly record struct CachedTemplate(IFluidTemplate? Template, TemplateError? Error);
 
     public static class TemplateCache
     {

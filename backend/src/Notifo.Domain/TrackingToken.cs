@@ -11,7 +11,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain
 {
-    public record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
+    public readonly record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
     {
         public readonly bool IsValid => NotificationId != default;
 

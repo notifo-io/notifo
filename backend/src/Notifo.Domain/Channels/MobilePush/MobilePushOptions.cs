@@ -7,7 +7,7 @@
 
 namespace Notifo.Domain.Channels.MobilePush
 {
-    public struct MobilePushOptions
+    public readonly struct MobilePushOptions
     {
         public string DeviceToken { get; init; }
 

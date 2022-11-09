@@ -57,28 +57,28 @@ namespace Notifo.Domain.Channels.Email
             this.userStore = userStore;
         }
 
-        public IEnumerable<ChannelConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
-            if (!integrationManager.IsConfigured<IEmailSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<IEmailSender>(context.App, notification))
             {
                 yield break;
             }
 
-            if (notification.Silent || string.IsNullOrEmpty(options.User.EmailAddress))
+            if (notification.Silent || string.IsNullOrEmpty(context.User.EmailAddress))
             {
                 yield break;
             }
 
-            yield return new ChannelConfiguration
+            yield return new SendConfiguration
             {
-                [EmailAddress] = options.User.EmailAddress
+                [EmailAddress] = context.User.EmailAddress
             };
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, ChannelConfiguration configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration configuration, SendContext context,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            if (context.IsUpdate)
             {
                 return;
             }

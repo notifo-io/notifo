@@ -9,7 +9,7 @@ namespace Notifo.Domain.Counters
 {
     public interface ICounterService
     {
-        Task CollectAsync(CounterKey key, CounterMap counters,
+        Task CollectAsync(TrackingKey key, CounterMap counters,
             CancellationToken ct = default);
     }
 }

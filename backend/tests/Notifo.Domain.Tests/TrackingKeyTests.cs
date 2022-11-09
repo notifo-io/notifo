@@ -8,14 +8,14 @@
 using Notifo.Infrastructure.TestHelpers;
 using Xunit;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain
 {
-    public class UserNotificationIdentifierTests
+    public class TrackingKeyTests
     {
         [Fact]
         public void Should_serialize_and_deserialize()
         {
-            var sut = new UserNotificationIdentifier
+            var sut = new TrackingKey
             {
                 AppId = "app",
                 Channel = "channel",
@@ -34,7 +34,7 @@ namespace Notifo.Domain.UserNotifications
         [Fact]
         public void Should_serialize_and_deserialize_bson()
         {
-            var sut = new UserNotificationIdentifier
+            var sut = new TrackingKey
             {
                 AppId = "app",
                 Channel = "channel",
