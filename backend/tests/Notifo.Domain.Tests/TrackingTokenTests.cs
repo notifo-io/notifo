@@ -14,7 +14,7 @@ namespace Notifo.Domain
         [Fact]
         public void Should_parse_from_formatted_token()
         {
-            var sourceToken = new TrackingToken(Guid.NewGuid(), "push", "123");
+            var sourceToken = new TrackingToken(Guid.NewGuid(), "push", Guid.NewGuid());
             var sourceString = sourceToken.ToParsableString();
 
             var result = TrackingToken.Parse(sourceString);
@@ -47,7 +47,7 @@ namespace Notifo.Domain
         [Fact]
         public void Should_parse_from_formatted_token_with_complex_device_identifier()
         {
-            var sourceToken = new TrackingToken(Guid.NewGuid(), "web", "a|very|complex|token");
+            var sourceToken = new TrackingToken(Guid.NewGuid(), "web", Guid.NewGuid());
             var sourceString = sourceToken.ToParsableString();
 
             var result = TrackingToken.Parse(sourceString);
@@ -67,23 +67,24 @@ namespace Notifo.Domain
         }
 
         [Fact]
-        public void Should_parse_and_override_channel_and_device_identifier_if_not_set()
+        public void Should_parse_and_override_channel_and_configurationId_if_not_set()
         {
+            var configurationId = Guid.NewGuid();
             var sourceToken = new TrackingToken(Guid.NewGuid());
             var sourceString = sourceToken.ToParsableString();
 
-            var result = TrackingToken.Parse(sourceString, "push", "123");
+            var result = TrackingToken.Parse(sourceString, "push", configurationId);
 
-            Assert.Equal(result, new TrackingToken(sourceToken.Id, "push", "123"));
+            Assert.Equal(result, new TrackingToken(sourceToken.NotificationId, "push", configurationId));
         }
 
         [Fact]
-        public void Should_not_override_channel_device_identifier()
+        public void Should_not_override_channel_configurationId()
         {
-            var sourceToken = new TrackingToken(Guid.NewGuid(), "push", "123");
+            var sourceToken = new TrackingToken(Guid.NewGuid(), "push", Guid.NewGuid());
             var sourceString = sourceToken.ToParsableString();
 
-            var result = TrackingToken.Parse(sourceString, "web", "456");
+            var result = TrackingToken.Parse(sourceString, "web", Guid.NewGuid());
 
             Assert.Equal(result, sourceToken);
         }

@@ -54,14 +54,14 @@ namespace Notifo.Areas.Api.Controllers.Notifications
         {
             if (request.Confirmed != null)
             {
-                var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.DeviceIdentifier);
+                var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.ConfigurationId);
 
                 await userNotificationService.TrackConfirmedAsync(token);
             }
 
             if (request.Seen?.Length > 0)
             {
-                var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.DeviceIdentifier));
+                var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.ConfigurationId));
 
                 await userNotificationService.TrackSeenAsync(tokens);
             }

@@ -7,24 +7,28 @@
 
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
-using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb
 {
-    internal sealed class Base64Serializer : SerializerBase<string>
+    internal sealed class RandomGuidSerializer : SerializerBase<Guid>
     {
-        public override string Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+        public override Guid Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
         {
             var read = context.Reader.ReadString();
 
-            return read.FromOptionalBase64();
+            if (!Guid.TryParse(read, out var id))
+            {
+                id = Guid.NewGuid();
+            }
+
+            return id;
         }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, string value)
+        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Guid value)
         {
             var writer = context.Writer;
 
-            writer.WriteString(value.ToBase64());
+            writer.WriteString(value.ToString());
         }
     }
 }

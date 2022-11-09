@@ -15,7 +15,7 @@ namespace Notifo.Domain.Integrations.Firebase
 {
     public static class UserNotificationExtensions
     {
-        public static Message ToFirebaseMessage(this BaseUserNotification notification, string token, bool wakeup, bool isConfirmed)
+        public static Message ToFirebaseMessage(this BaseUserNotification notification, string token, Guid configurationId, bool wakeup, bool isConfirmed)
         {
             var message = new Message
             {
@@ -37,16 +37,16 @@ namespace Notifo.Domain.Integrations.Firebase
                 new Dictionary<string, string>()
                     .WithNonEmpty("id", notification.Id.ToString())
                     .WithNonEmpty("confirmText", formatting.ConfirmText)
-                    .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, configurationId))
                     .WithNonEmpty("isConfirmed", isConfirmed.ToString())
                     .WithNonEmpty("imageLarge", formatting.ImageLarge)
                     .WithNonEmpty("imageSmall", formatting.ImageSmall)
                     .WithNonEmpty("linkText", formatting.LinkText)
                     .WithNonEmpty("linkUrl", formatting.LinkUrl)
                     .WithNonEmpty("silent", notification.Silent.ToString())
-                    .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
-                    .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, token))
+                    .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, configurationId))
+                    .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, configurationId))
+                    .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, configurationId))
                     .WithNonEmpty("data", notification.Data);
 
             var androidData =

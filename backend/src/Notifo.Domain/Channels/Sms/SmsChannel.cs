@@ -23,6 +23,7 @@ namespace Notifo.Domain.Channels.Sms
 {
     public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ISmsCallback
     {
+        private const string PhoneNumber = nameof(PhoneNumber);
         private readonly IAppStore appStore;
         private readonly IIntegrationManager integrationManager;
         private readonly ILogger<SmsChannel> log;
@@ -52,16 +53,19 @@ namespace Notifo.Domain.Channels.Sms
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
-            if (!integrationManager.IsConfigured<ISmsSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<ISmsSender>(context.App, notification))
             {
                 yield break;
             }
 
-            if (!string.IsNullOrWhiteSpace(options.User.PhoneNumber))
+            if (!string.IsNullOrWhiteSpace(context.User.PhoneNumber))
             {
-                yield return options.User.PhoneNumber;
+                yield return new SendConfiguration
+                {
+                    [PhoneNumber] = context.User.PhoneNumber
+                };
             }
         }
 
@@ -75,7 +79,7 @@ namespace Notifo.Domain.Channels.Sms
 
                 if (notification != null)
                 {
-                    await UpdateAsync(notification, to, result);
+                    await UpdateAsync(notification, result);
 
                     if (!string.IsNullOrEmpty(details))
                     {
@@ -87,38 +91,50 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        private async Task UpdateAsync(UserNotification notification, string to, SmsResult result)
+        private async Task UpdateAsync(UserNotification notification, SmsResult result)
         {
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
+                // There is no activity on this channel.
                 return;
             }
 
-            if (channel.Status.TryGetValue(to, out var status) && status.Status == ProcessStatus.Attempt)
+            // We create only one configuration for this channel. Therefore it must be the first.
+            var (configurationId, status) = channel.Status.First();
+
+            if (status.Status == ProcessStatus.Attempt)
             {
+                var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
+
                 switch (result)
                 {
                     case SmsResult.Delivered:
-                        await UpdateAsync(notification, to, ProcessStatus.Handled);
+                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
                         break;
                     case SmsResult.Failed:
-                        await UpdateAsync(notification, to, ProcessStatus.Failed);
+                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
                         break;
                 }
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            if (context.IsUpdate)
             {
+                return;
+            }
+
+            if (!properties.TryGetValue(PhoneNumber, out var phoneNumber))
+            {
+                // Old configuration without a phone number.
                 return;
             }
 
             using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
             {
-                var job = new SmsJob(notification, setting, configuration);
+                var job = new SmsJob(notification, setting, configurationId, phoneNumber);
 
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
@@ -130,7 +146,7 @@ namespace Notifo.Domain.Channels.Sms
 
         public Task HandleExceptionAsync(SmsJob job, Exception ex)
         {
-            return UpdateAsync(job, job.PhoneNumber, ProcessStatus.Failed);
+            return UpdateAsync(job, ProcessStatus.Failed);
         }
 
         public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
@@ -144,7 +160,7 @@ namespace Notifo.Domain.Channels.Sms
             {
                 if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
-                    await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
+                    await UpdateAsync(job, ProcessStatus.Skipped);
                 }
                 else
                 {
@@ -160,19 +176,19 @@ namespace Notifo.Domain.Channels.Sms
         {
             using (Telemetry.Activities.StartActivity("Send"))
             {
-                var app = await appStore.GetCachedAsync(job.AppId, ct);
+                var app = await appStore.GetCachedAsync(job.Tracking.AppId, ct);
 
                 if (app == null)
                 {
                     log.LogWarning("Cannot send email: App not found.");
 
-                    await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                     return;
                 }
 
                 try
                 {
-                    await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Attempt);
+                    await UpdateAsync(job, ProcessStatus.Attempt);
 
                     var senders = integrationManager.Resolve<ISmsSender>(app, job).Select(x => x.Target).ToList();
 
@@ -186,7 +202,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, Name, ex.Message);
+                    await logStore.LogAsync(job.Tracking.AppId, Name, ex.Message);
                     throw;
                 }
             }
@@ -202,7 +218,7 @@ namespace Notifo.Domain.Channels.Sms
                 try
                 {
                     var (skip, template) = await GetTemplateAsync(
-                        job.AppId,
+                        job.Tracking.AppId,
                         job.TemplateLanguage,
                         job.TemplateName,
                         ct);
@@ -214,12 +230,12 @@ namespace Notifo.Domain.Channels.Sms
 
                     var text = smsFormatter.Format(template, job.PhoneText);
 
-                    var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Id.ToString(), ct);
+                    var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Tracking.UserNotificationId.ToString(), ct);
 
                     // Some integrations provide the actual result via webhook at a later point.
                     if (result == SmsResult.Delivered)
                     {
-                        await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Handled);
+                        await UpdateAsync(job, ProcessStatus.Handled);
                         return;
                     }
 
@@ -231,7 +247,7 @@ namespace Notifo.Domain.Channels.Sms
                 }
                 catch (DomainException ex)
                 {
-                    await logStore.LogAsync(job.AppId, sender.Name, ex.Message);
+                    await logStore.LogAsync(job.Tracking.AppId, sender.Name, ex.Message);
 
                     if (sender == lastSender)
                     {
@@ -248,16 +264,16 @@ namespace Notifo.Domain.Channels.Sms
             }
         }
 
-        private Task UpdateAsync(IUserNotification notification, string phoneNumber, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(SmsJob job, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, phoneNumber, status, reason);
+            return userNotificationStore.TrackAsync(job.Tracking, status, reason);
         }
 
         private async Task SkipAsync(SmsJob job, string reason)
         {
-            await logStore.LogAsync(job.AppId, Name, reason);
+            await logStore.LogAsync(job.Tracking.AppId, Name, reason);
 
-            await UpdateAsync(job, job.PhoneNumber, ProcessStatus.Skipped);
+            await UpdateAsync(job, ProcessStatus.Skipped, reason);
         }
 
         private async Task<(string? Skip, SmsTemplate?)> GetTemplateAsync(

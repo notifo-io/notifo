@@ -5,34 +5,17 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Messaging
 {
-    public sealed class MessagingJob : IChannelJob
+    public sealed class MessagingJob : ChannelJob
     {
-        public const string DefaultToken = "Default";
-
         public BaseUserNotification Notification { get; init; }
 
-        public string? NotificationTemplate { get; }
+        public string? NotificationTemplate { get; init; }
 
         public Dictionary<string, string> Targets { get; init; } = new Dictionary<string, string>();
-
-        public ChannelCondition Condition { get; init; }
-
-        public Duration Delay { get; init; }
-
-        Guid IChannelJob.NotificationId
-        {
-            get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => DefaultToken;
-        }
 
         public string ScheduleKey
         {
@@ -43,12 +26,11 @@ namespace Notifo.Domain.Channels.Messaging
         {
         }
 
-        public MessagingJob(BaseUserNotification notification, ChannelSetting setting)
+        public MessagingJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId)
+            : base(notification, setting, configurationId, false, Providers.Email)
         {
-            Delay = Duration.FromSeconds(setting.DelayInSeconds ?? 0);
             Notification = notification;
             NotificationTemplate = setting.Template;
-            Condition = setting.Condition;
         }
 
         public static string ComputeScheduleKey(Guid notificationId)

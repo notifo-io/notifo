@@ -9,5 +9,5 @@
 
 namespace Notifo.Domain.Channels.Email
 {
-    public record struct FormattedEmail(EmailMessage? Message, List<EmailFormattingError>? Errors);
+    public readonly record struct FormattedEmail(EmailMessage? Message, List<EmailFormattingError>? Errors);
 }

@@ -7,7 +7,7 @@
 
 namespace Notifo.Domain.Channels.MobilePush
 {
-    public struct MobilePushOptions
+    public readonly struct MobilePushOptions
     {
         public string DeviceToken { get; init; }
 
@@ -16,5 +16,7 @@ namespace Notifo.Domain.Channels.MobilePush
         public bool IsConfirmed { get; init; }
 
         public bool Wakeup { get; init; }
+
+        public Guid ConfigurationId { get; init; }
     }
 }

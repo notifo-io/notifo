@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Email
 {
-    public sealed class EmailJob : IChannelJob
+    public sealed class EmailJob : ChannelJob
     {
         public BaseUserNotification Notification { get; init; }
 
@@ -22,20 +21,6 @@ namespace Notifo.Domain.Channels.Email
         public string? FromEmail { get; init; }
 
         public string? FromName { get; init; }
-
-        public ChannelCondition Condition { get; init; }
-
-        public Duration Delay { get; init; }
-
-        Guid IChannelJob.NotificationId
-        {
-            get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => EmailAddress;
-        }
 
         public string ScheduleKey
         {
@@ -54,12 +39,11 @@ namespace Notifo.Domain.Channels.Email
         {
         }
 
-        public EmailJob(BaseUserNotification notification, ChannelSetting setting, string emailAddress)
+        public EmailJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId, string emailAddress)
+            : base(notification, setting, configurationId, false, Providers.Email)
         {
-            Delay = Duration.FromSeconds(setting.DelayInSeconds ?? 0);
             EmailAddress = emailAddress;
             EmailTemplate = setting.Template;
-            Condition = setting.Condition;
             FromEmail = setting.Properties?.GetOrDefault(nameof(FromEmail));
             FromName = setting.Properties?.GetOrDefault(nameof(FromName));
             Notification = notification;

@@ -25,8 +25,8 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         public string? Channel { get; set; }
 
         /// <summary>
-        /// The device identifier.
+        /// The configuration ID.
         /// </summary>
-        public string? DeviceIdentifier { get; set; }
+        public Guid ConfigurationId { get; set; }
     }
 }

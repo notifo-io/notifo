@@ -23,9 +23,9 @@ namespace Notifo.Domain.Channels.WebPush
                 yield return new ActivityLink(job.EventActivity);
             }
 
-            if (job.NotificationActivity != default)
+            if (job.UserNotificationActivity != default)
             {
-                yield return new ActivityLink(job.NotificationActivity);
+                yield return new ActivityLink(job.UserNotificationActivity);
             }
         }
     }

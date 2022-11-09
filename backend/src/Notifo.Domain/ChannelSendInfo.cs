@@ -6,11 +6,14 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain.Channels;
 
 namespace Notifo.Domain
 {
     public sealed class ChannelSendInfo
     {
+        public SendConfiguration? Configuration { get; init; }
+
         public ProcessStatus Status { get; init; }
 
         public Instant LastUpdate { get; init; }

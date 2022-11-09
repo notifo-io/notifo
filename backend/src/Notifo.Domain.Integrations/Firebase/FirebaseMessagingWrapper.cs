@@ -21,10 +21,10 @@ namespace Notifo.Domain.Integrations.Firebase
         {
             var appOptions = new AppOptions
             {
-                Credential = GoogleCredential.FromJson(credentials)
+                ProjectId = projectId,
+                // Credentials are provided as a JSON string.
+                Credential = GoogleCredential.FromJson(credentials),
             };
-
-            appOptions.ProjectId = projectId;
 
             app = FirebaseApp.Create(appOptions, Guid.NewGuid().ToString());
 

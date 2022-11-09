@@ -117,11 +117,19 @@ namespace Notifo.Domain.UserNotifications
                         throw new DomainException(Texts.Notification_NoUser);
                     }
 
-                    var options = new SendOptions { App = app, User = user };
+                    var context = new SendContext
+                    {
+                        App = app,
+                        AppId = app.Id,
+                        User = user,
+                        UserId = user.Id,
+                        IsUpdate = false
+                    };
 
-                    var notification = await CreateUserNotificationAsync(userEvent, options);
+                    var notification = await CreateUserNotificationAsync(userEvent, context);
 
-                    notification.NotificationActivity = activity?.Context ?? default;
+                    // Assign the notification activity, so that we can continue with that when the handle the event.
+                    notification.UserNotificationActivity = activity?.Context ?? default;
 
                     try
                     {
@@ -134,11 +142,19 @@ namespace Notifo.Domain.UserNotifications
 
                     foreach (var channel in channels)
                     {
-                        if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                        if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                         {
-                            foreach (var configuration in notificationChannel.Status.Keys)
+                            continue;
+                        }
+
+                        foreach (var (id, status) in notificationChannel.Status)
+                        {
+                            var configuration = status.Configuration;
+
+                            // Can be null for old status values.
+                            if (configuration != null)
                             {
-                                await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, default);
+                                await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, default);
                             }
                         }
                     }
@@ -171,11 +187,11 @@ namespace Notifo.Domain.UserNotifications
             }
         }
 
-        private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendOptions options)
+        private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendContext context)
         {
             using (Telemetry.Activities.StartActivity("CreateUserNotification"))
             {
-                var notification = userNotificationFactory.Create(options.App, options.User, userEvent);
+                var notification = userNotificationFactory.Create(context.App, context.User, userEvent);
 
                 if (notification == null)
                 {
@@ -202,15 +218,22 @@ namespace Notifo.Domain.UserNotifications
 
                     if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.Send == ChannelSend.Send)
                     {
-                        var configurations = channel.GetConfigurations(notification, channelConfig.Setting, options);
+                        var configurations = channel.GetConfigurations(notification, channelConfig.Setting, context);
 
                         foreach (var configuration in configurations)
                         {
-                            if (!string.IsNullOrWhiteSpace(configuration))
+                            if (configuration != null)
                             {
-                                channelConfig.Status[configuration] = new ChannelSendInfo();
+                                var configurationId = Guid.NewGuid();
 
-                                await userNotificationsStore.CollectAsync(notification, channel.Name, ProcessStatus.Attempt);
+                                channelConfig.Status[configurationId] = new ChannelSendInfo
+                                {
+                                    Configuration = configuration
+                                };
+
+                                var identifier = TrackingKey.ForNotification(notification, channel.Name, configurationId);
+
+                                await userNotificationsStore.TrackAsync(identifier, ProcessStatus.Attempt);
                             }
                         }
                     }
@@ -246,15 +269,30 @@ namespace Notifo.Domain.UserNotifications
                     throw new DomainException(Texts.Notification_NoUser);
                 }
 
-                var options = new SendOptions { App = app, User = user, IsUpdate = true };
+                var context = new SendContext
+                {
+                    App = app,
+                    AppId = app.Id,
+                    User = user,
+                    UserId = user.Id,
+                    IsUpdate = true
+                };
 
                 foreach (var channel in channels)
                 {
-                    if (notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                    if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                     {
-                        foreach (var configuration in notificationChannel.Status.Keys)
+                        continue;
+                    }
+
+                    foreach (var (id, status) in notificationChannel.Status)
+                    {
+                        var configuration = status.Configuration;
+
+                        // Can be null for old status values.
+                        if (configuration != null)
                         {
-                            await channel.SendAsync(notification, notificationChannel.Setting, configuration, options, ct);
+                            await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, ct);
                         }
                     }
                 }

@@ -12,9 +12,9 @@ namespace Notifo.Domain.Channels
 {
     public static class ChannelExtensions
     {
-        public static string HtmlTrackingLink(this BaseUserNotification notification, string emailAddress)
+        public static string HtmlTrackingLink(this BaseUserNotification notification, Guid configurationId)
         {
-            var trackingUrl = notification.ComputeTrackSeenUrl(Providers.Email, emailAddress);
+            var trackingUrl = notification.ComputeTrackSeenUrl(Providers.Email, configurationId);
             var trackingLink = $"<img height=\"0\" width=\"0\" style=\"width: 0px; height: 0px; position: absolute; visibility: hidden;\" src=\"{trackingUrl}\" />";
 
             return trackingLink;

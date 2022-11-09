@@ -5,18 +5,21 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserNotifications
+using Notifo.Domain.Apps;
+using Notifo.Domain.Users;
+
+namespace Notifo.Domain.Channels
 {
-    public interface IUserNotification
+    public readonly struct SendContext
     {
-        public Guid Id { get; }
+        public App App { get; init; }
 
-        public string EventId { get; }
+        public User User { get; init; }
 
-        public string AppId { get; }
+        public string AppId { get; init; }
 
-        public string UserId { get; }
+        public string UserId { get; init; }
 
-        public string Topic { get; }
+        public bool IsUpdate { get; init; }
     }
 }

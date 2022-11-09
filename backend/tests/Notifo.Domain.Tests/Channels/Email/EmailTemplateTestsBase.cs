@@ -322,7 +322,7 @@ namespace Notifo.Domain.Channels.Email
 
         private static List<EmailJob> ToJobs(params UserNotification[] notifications)
         {
-            return notifications.Select(x => new EmailJob(x, new ChannelSetting(), PreviewData.User.EmailAddress!)).ToList();
+            return notifications.Select(x => new EmailJob(x, new ChannelSetting(), Guid.NewGuid(), PreviewData.User.EmailAddress!)).ToList();
         }
     }
 }

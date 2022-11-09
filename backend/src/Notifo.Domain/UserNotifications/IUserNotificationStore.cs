@@ -14,7 +14,7 @@ namespace Notifo.Domain.UserNotifications
 {
     public interface IUserNotificationStore
     {
-        Task<bool> IsHandledAsync(IChannelJob job, ICommunicationChannel channel,
+        Task<bool> IsHandledAsync(ChannelJob job, ICommunicationChannel channel,
             CancellationToken ct = default);
 
         Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
@@ -44,13 +44,10 @@ namespace Notifo.Domain.UserNotifications
         Task TrackFailedAsync(UserEventMessage userEvent,
             CancellationToken ct = default);
 
+        Task TrackAsync(TrackingKey identifier, ProcessStatus status, string? detail = null,
+            CancellationToken ct = default);
+
         Task InsertAsync(UserNotification notification,
-            CancellationToken ct = default);
-
-        Task CollectAndUpdateAsync(IUserNotification notification, string channel, string configuration, ProcessStatus status, string? detail = null,
-            CancellationToken ct = default);
-
-        Task CollectAsync(IUserNotification notification, string channel, ProcessStatus status,
             CancellationToken ct = default);
     }
 }

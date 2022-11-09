@@ -24,6 +24,7 @@ namespace Notifo.Domain.Channels.Email
 {
     public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<EmailJob>
     {
+        private const string EmailAddress = nameof(EmailAddress);
         private readonly IAppStore appStore;
         private readonly IEmailFormatter emailFormatter;
         private readonly IEmailTemplateStore emailTemplateStore;
@@ -56,32 +57,41 @@ namespace Notifo.Domain.Channels.Email
             this.userStore = userStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
-            if (!integrationManager.IsConfigured<IEmailSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<IEmailSender>(context.App, notification))
             {
                 yield break;
             }
 
-            if (notification.Silent || string.IsNullOrEmpty(options.User.EmailAddress))
+            if (notification.Silent || string.IsNullOrEmpty(context.User.EmailAddress))
             {
                 yield break;
             }
 
-            yield return options.User.EmailAddress;
+            yield return new SendConfiguration
+            {
+                [EmailAddress] = context.User.EmailAddress
+            };
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration configuration, SendContext context,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            if (context.IsUpdate)
             {
+                return;
+            }
+
+            if (!configuration.TryGetValue(EmailAddress, out var email))
+            {
+                // Old configuration without a email address.
                 return;
             }
 
             using (Telemetry.Activities.StartActivity("EmailChannel/SendAsync"))
             {
-                var job = new EmailJob(notification, setting, configuration);
+                var job = new EmailJob(notification, setting, configurationId, email);
 
                 await userNotificationQueue.ScheduleGroupedAsync(
                     job.ScheduleKey,
@@ -106,7 +116,7 @@ namespace Notifo.Domain.Channels.Email
                 {
                     if (await userNotificationStore.IsHandledAsync(job, this, ct))
                     {
-                        await UpdateAsync(job.Notification, job.EmailAddress, ProcessStatus.Skipped);
+                        await UpdateAsync(job, ProcessStatus.Skipped);
                     }
                     else
                     {
@@ -125,7 +135,7 @@ namespace Notifo.Domain.Channels.Email
 
         public Task HandleExceptionAsync(List<EmailJob> jobs, Exception ex)
         {
-            return UpdateAsync(jobs, jobs[0].EmailAddress, ProcessStatus.Failed);
+            return UpdateAsync(jobs, ProcessStatus.Failed);
         }
 
         public async Task SendJobsAsync(List<EmailJob> jobs,
@@ -139,7 +149,7 @@ namespace Notifo.Domain.Channels.Email
                 var commonApp = first.Notification.AppId;
                 var commonUser = first.Notification.UserId;
 
-                await UpdateAsync(first.Notification, commonEmail, ProcessStatus.Attempt);
+                await UpdateAsync(jobs, ProcessStatus.Attempt);
 
                 var app = await appStore.GetCachedAsync(first.Notification.AppId, ct);
 
@@ -147,7 +157,7 @@ namespace Notifo.Domain.Channels.Email
                 {
                     log.LogWarning("Cannot send email: App not found.");
 
-                    await UpdateAsync(jobs, commonEmail, ProcessStatus.Handled);
+                    await UpdateAsync(jobs, ProcessStatus.Handled);
                     return;
                 }
 
@@ -157,13 +167,13 @@ namespace Notifo.Domain.Channels.Email
 
                     if (user == null)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_UserDeleted);
+                        await SkipAsync(jobs, Texts.Email_UserDeleted);
                         return;
                     }
 
                     if (string.IsNullOrWhiteSpace(user.EmailAddress))
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_UserNoEmail);
+                        await SkipAsync(jobs, Texts.Email_UserNoEmail);
                         return;
                     }
 
@@ -171,7 +181,7 @@ namespace Notifo.Domain.Channels.Email
 
                     if (senders.Count == 0)
                     {
-                        await SkipAsync(jobs, commonEmail, Texts.Email_ConfigReset);
+                        await SkipAsync(jobs, Texts.Email_ConfigReset);
                         return;
                     }
 
@@ -187,7 +197,7 @@ namespace Notifo.Domain.Channels.Email
 
                         if (skip != null)
                         {
-                            await SkipAsync(jobs, commonEmail, skip!);
+                            await SkipAsync(jobs, skip!);
                             return;
                         }
 
@@ -215,7 +225,7 @@ namespace Notifo.Domain.Channels.Email
 
                     await SendCoreAsync(message, app.Id, senders, ct);
 
-                    await UpdateAsync(jobs, commonEmail, ProcessStatus.Handled);
+                    await UpdateAsync(jobs, ProcessStatus.Handled);
                 }
                 catch (DomainException ex)
                 {
@@ -256,23 +266,23 @@ namespace Notifo.Domain.Channels.Email
             }
         }
 
-        private Task UpdateAsync(IUserNotification notification, string email, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(EmailJob notification, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, email, status, reason);
+            return userNotificationStore.TrackAsync(notification.Tracking, status, reason);
         }
 
-        private async Task SkipAsync(List<EmailJob> jobs, string email, string reason)
+        private async Task SkipAsync(List<EmailJob> jobs, string reason)
         {
             await logStore.LogAsync(jobs[0].Notification.AppId, Name, reason);
 
-            await UpdateAsync(jobs, email, ProcessStatus.Skipped);
+            await UpdateAsync(jobs, ProcessStatus.Skipped);
         }
 
-        private async Task UpdateAsync(List<EmailJob> jobs, string email, ProcessStatus status, string? reason = null)
+        private async Task UpdateAsync(List<EmailJob> jobs, ProcessStatus status, string? reason = null)
         {
             foreach (var job in jobs)
             {
-                await UpdateAsync(job.Notification, email, status, reason);
+                await UpdateAsync(job, status, reason);
             }
         }
 

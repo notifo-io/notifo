@@ -5,12 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.MobilePush
 {
-    public sealed class MobilePushJob : IChannelJob
+    public sealed class MobilePushJob : ChannelJob
     {
         public BaseUserNotification Notification { get; init; }
 
@@ -19,22 +18,6 @@ namespace Notifo.Domain.Channels.MobilePush
         public MobileDeviceType DeviceType { get; init; }
 
         public bool IsConfirmed { get; init; }
-
-        public bool IsUpdate { get; init; }
-
-        public ChannelCondition Condition { get; init; }
-
-        public Duration Delay { get; init; }
-
-        Guid IChannelJob.NotificationId
-        {
-            get => Notification.Id;
-        }
-
-        public string Configuration
-        {
-            get => DeviceToken;
-        }
 
         public string ScheduleKey
         {
@@ -45,14 +28,12 @@ namespace Notifo.Domain.Channels.MobilePush
         {
         }
 
-        public MobilePushJob(UserNotification notification, ChannelSetting? setting, string token, MobileDeviceType deviceType, bool isUpdate)
+        public MobilePushJob(UserNotification notification, ChannelSetting? setting, Guid configurationId, string token, MobileDeviceType type, bool isUpdate)
+            : base(notification, setting, configurationId, isUpdate, Providers.MobilePush)
         {
-            Condition = setting?.Condition ?? ChannelCondition.Always;
-            Delay = Duration.FromSeconds(setting?.DelayInSeconds ?? 0);
             DeviceToken = token;
-            DeviceType = deviceType;
+            DeviceType = type;
             IsConfirmed = notification.FirstConfirmed != null;
-            IsUpdate = isUpdate;
             Notification = notification;
         }
     }

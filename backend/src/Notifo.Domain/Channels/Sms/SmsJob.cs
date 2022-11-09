@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
@@ -14,19 +13,9 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Channels.Sms
 {
-    public sealed class SmsJob : IUserNotification, IIntegrationTarget, IChannelJob
+    public sealed class SmsJob : ChannelJob, IIntegrationTarget
     {
-        public Guid Id { get; init; }
-
         public string PhoneNumber { get; init; }
-
-        public string AppId { get; init; }
-
-        public string EventId { get; init; }
-
-        public string UserId { get; init; }
-
-        public string Topic { get; init; }
 
         public string PhoneText { get; init; }
 
@@ -36,31 +25,17 @@ namespace Notifo.Domain.Channels.Sms
 
         public NotificationProperties? Properties { get; init; }
 
-        public ActivityContext UserEventActivity { get; init; }
-
         public ActivityContext EventActivity { get; init; }
 
-        public ActivityContext NotificationActivity { get; init; }
+        public ActivityContext UserEventActivity { get; init; }
+
+        public ActivityContext UserNotificationActivity { get; init; }
 
         public bool Test { get; init; }
 
-        public ChannelCondition Condition { get; init; }
-
-        public Duration Delay { get; init; }
-
-        Guid IChannelJob.NotificationId
-        {
-            get => Id;
-        }
-
-        public string Configuration
-        {
-            get => PhoneNumber;
-        }
-
         public string ScheduleKey
         {
-            get => ComputeScheduleKey(Id, PhoneNumber);
+            get => ComputeScheduleKey(Tracking.UserNotificationId, PhoneNumber);
         }
 
         IEnumerable<KeyValuePair<string, object>>? IIntegrationTarget.Properties
@@ -80,12 +55,11 @@ namespace Notifo.Domain.Channels.Sms
         {
         }
 
-        public SmsJob(UserNotification notification, ChannelSetting setting, string phoneNumber)
+        public SmsJob(UserNotification notification, ChannelSetting setting, Guid configurationId, string phoneNumber)
+            : base(notification, setting, configurationId, false, Providers.Sms)
         {
             SimpleMapper.Map(notification, this);
 
-            Condition = setting.Condition;
-            Delay = Duration.FromSeconds(setting.DelayInSeconds ?? 0);
             PhoneNumber = phoneNumber;
             PhoneText = notification.Formatting.Subject.Truncate(140);
             TemplateLanguage = notification.UserLanguage;

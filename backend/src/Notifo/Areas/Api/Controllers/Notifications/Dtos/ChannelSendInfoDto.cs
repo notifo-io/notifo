@@ -7,6 +7,7 @@
 
 using NodaTime;
 using Notifo.Domain;
+using Notifo.Domain.Channels;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
@@ -17,6 +18,11 @@ namespace Notifo.Areas.Api.Controllers.Notifications.Dtos
         /// The send status.
         /// </summary>
         public ProcessStatus Status { get; set; }
+
+        /// <summary>
+        /// The configuration for the device.
+        /// </summary>
+        public SendConfiguration Configuration { get; init; }
 
         /// <summary>
         /// The last update.

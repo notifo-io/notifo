@@ -75,8 +75,8 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                     .SetIgnoreIfNull(true);
 
                 cm.MapProperty(x => x.Status)
-                    .SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<string, ChannelSendInfo>, string, ChannelSendInfo>()
-                        .WithKeySerializer(new Base64Serializer()));
+                    .SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<Guid, ChannelSendInfo>, Guid, ChannelSendInfo>()
+                        .WithKeySerializer(new RandomGuidSerializer()));
             });
         }
 
@@ -118,7 +118,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 null, ct);
         }
 
-        public async Task<bool> IsHandledOrConfirmedAsync(Guid id, string channel, string configuration,
+        public async Task<bool> IsHandledOrConfirmedAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsHandledOrConfirmedAsync"))
@@ -128,7 +128,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                         Filter.Eq(x => x.Id, id),
                         Filter.Or(
                             Filter.Exists(x => x.FirstConfirmed),
-                            Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
+                            Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", ProcessStatus.Handled)));
 
                 var count =
                     await Collection.Find(filter).Limit(1)
@@ -138,7 +138,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task<bool> IsHandledOrSeenAsync(Guid id, string channel, string configuration,
+        public async Task<bool> IsHandledOrSeenAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsHandledOrSeenAsync"))
@@ -148,7 +148,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                         Filter.Eq(x => x.Id, id),
                         Filter.Or(
                             Filter.Exists(x => x.FirstSeen),
-                            Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled)));
+                            Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", ProcessStatus.Handled)));
 
                 var count =
                     await Collection.Find(filter).Limit(1)
@@ -158,7 +158,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task<bool> IsHandledAsync(Guid id, string channel, string configuration,
+        public async Task<bool> IsHandledAsync(Guid id, string channel, Guid configurationId,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/IsHandledAsync"))
@@ -166,7 +166,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 var filter =
                     Filter.And(
                         Filter.Eq(x => x.Id, id),
-                        Filter.Eq($"Channels.{channel}.Status.{configuration}.Status", ProcessStatus.Handled));
+                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", ProcessStatus.Handled));
 
                 var count =
                     await Collection.Find(filter).Limit(1)
@@ -290,7 +290,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 var entity =
                     await Collection.FindOneAndUpdateAsync(
                         Filter.And(
-                            Filter.Eq(x => x.Id, token.Id),
+                            Filter.Eq(x => x.Id, token.NotificationId),
                             Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
                             Filter.Exists(x => x.FirstConfirmed, false)),
                         Update
@@ -311,7 +311,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
             }
         }
 
-        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, string Configuration, ChannelSendInfo Info)> updates,
+        public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, Guid ConfigurationId, ChannelSendInfo Info)> updates,
             CancellationToken ct = default)
         {
             using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))
@@ -324,9 +324,9 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 {
                     documentUpdates.Clear();
 
-                    foreach (var (_, channel, configuration, info) in group)
+                    foreach (var (_, channel, configurationId, info) in group)
                     {
-                        var path = $"Channels.{channel}.Status.{configuration.ToBase64()}";
+                        var path = $"Channels.{channel}.Status.{configurationId}";
 
                         documentUpdates.Add(Update.Set($"{path}.Detail", info.Detail));
                         documentUpdates.Add(Update.Set($"{path}.Status", info.Status));
@@ -398,7 +398,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb
 
         private static void AddStatusUpdateWrites(List<WriteModel<UserNotification>> writes, IEnumerable<TrackingToken> tokens, Instant now, string propertyName)
         {
-            foreach (var (guid, channel, deviceIdentifier) in tokens.Where(x => x.IsValid))
+            foreach (var (guid, channel, configurationId) in tokens.Where(x => x.IsValid))
             {
                 writes.Add(new UpdateOneModel<UserNotification>(
                     Filter.And(
@@ -411,9 +411,9 @@ namespace Notifo.Domain.UserNotifications.MongoDb
                 {
                     var update = Update.Min($"Channels.{channel}.{propertyName}", now);
 
-                    if (!string.IsNullOrWhiteSpace(deviceIdentifier))
+                    if (configurationId != default)
                     {
-                        update = update.Min($"Channels.{channel}.Status.{deviceIdentifier.ToBase64()}.{propertyName}", now);
+                        update = update.Min($"Channels.{channel}.Status.{configurationId}.{propertyName}", now);
                     }
 
                     writes.Add(new UpdateOneModel<UserNotification>(

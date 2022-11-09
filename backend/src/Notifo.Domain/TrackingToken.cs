@@ -11,18 +11,18 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain
 {
-    public record struct TrackingToken(Guid Id, string? Channel = null, string? DeviceIdentifier = null)
+    public readonly record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
     {
-        public readonly bool IsValid => Id != default;
+        public readonly bool IsValid => NotificationId != default;
 
-        public static TrackingToken Parse(string id, string? channel = null, string? deviceIdentifier = null)
+        public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default)
         {
-            TryParse(id, channel, deviceIdentifier, out var result);
+            TryParse(id, channel, configurationId, out var result);
 
             return result;
         }
 
-        public static bool TryParse(string id, string? channel, string? deviceIdentifier, out TrackingToken result)
+        public static bool TryParse(string id, string? channel, Guid configurationId, out TrackingToken result)
         {
             result = default;
 
@@ -33,7 +33,7 @@ namespace Notifo.Domain
 
             if (Guid.TryParse(id, out var guid))
             {
-                result = new TrackingToken(guid, channel, deviceIdentifier);
+                result = new TrackingToken(guid, channel, configurationId);
                 return true;
             }
 
@@ -51,9 +51,14 @@ namespace Notifo.Domain
                     channel = decoded[1];
                 }
 
-                if (decoded.Length >= 2 && !string.IsNullOrWhiteSpace(decoded[2]))
+                if (decoded.Length > 2 && !string.IsNullOrWhiteSpace(decoded[2]))
                 {
-                    deviceIdentifier = string.Join('|', decoded.Skip(2));
+                    var configurationIdString = string.Join('|', decoded.Skip(2));
+
+                    if (Guid.TryParse(configurationIdString, out var parsed) && parsed != default)
+                    {
+                        configurationId = parsed;
+                    }
                 }
 
                 if (string.IsNullOrWhiteSpace(channel))
@@ -61,12 +66,7 @@ namespace Notifo.Domain
                     channel = null;
                 }
 
-                if (string.IsNullOrWhiteSpace(deviceIdentifier))
-                {
-                    deviceIdentifier = null;
-                }
-
-                result = new TrackingToken(guid, channel, deviceIdentifier);
+                result = new TrackingToken(guid, channel, configurationId);
                 return true;
             }
             catch (FormatException)
@@ -77,7 +77,10 @@ namespace Notifo.Domain
 
         public readonly string ToParsableString()
         {
-            var compound = $"{Id}|{Channel}|{DeviceIdentifier}";
+            var compound =
+                ConfigurationId == default ?
+                $"{NotificationId}|{Channel}" :
+                $"{NotificationId}|{Channel}|{ConfigurationId}";
 
             return compound.ToBase64();
         }

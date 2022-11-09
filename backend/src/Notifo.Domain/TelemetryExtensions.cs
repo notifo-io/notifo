@@ -47,9 +47,9 @@ namespace Notifo.Domain
                 yield return new ActivityLink(notification.EventActivity);
             }
 
-            if (notification.NotificationActivity != default)
+            if (notification.UserNotificationActivity != default)
             {
-                yield return new ActivityLink(notification.NotificationActivity);
+                yield return new ActivityLink(notification.UserNotificationActivity);
             }
         }
     }

@@ -37,7 +37,7 @@ namespace Notifo.Domain.Channels.Email.Formatting
             {
                 var templateContext = new TemplateContext(Options);
 
-                var emailNotifications = jobs.Select(x => new EmailNotification(x.Notification, x.EmailAddress, imageFormatter)).ToArray();
+                var emailNotifications = jobs.Select(x => new EmailNotification(x.Notification, x.ConfigurationId, x.EmailAddress, imageFormatter)).ToArray();
                 var emailPreferencesUrl = emailUrl.EmailPreferences(user.ApiKey, user.PreferredLanguage);
 
                 templateContext.SetValue("app", app);

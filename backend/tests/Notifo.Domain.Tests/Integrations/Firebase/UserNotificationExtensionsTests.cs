@@ -22,6 +22,7 @@ namespace Notifo.Domain.Integrations.Firebase
             var body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr";
             var confirmText = "Got It!";
             var confirmUrl = "https://confirm.notifo.com";
+            var configurationId = Guid.NewGuid();
             var isConfirmed = true.ToString();
             var imageLarge = "https://via.placeholder.com/600";
             var imageSmall = "https://via.placeholder.com/100";
@@ -56,20 +57,20 @@ namespace Notifo.Domain.Integrations.Firebase
                 Data = data
             };
 
-            var message = notification.ToFirebaseMessage(token, false, true);
+            var message = notification.ToFirebaseMessage(token, configurationId, false, true);
 
             Assert.Equal(message.Token, token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
-            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&configurationId={configurationId}");
             Assert.Equal(message.Data[nameof(isConfirmed)], isConfirmed);
             Assert.Equal(message.Data[nameof(imageSmall)], imageSmall);
             Assert.Equal(message.Data[nameof(imageLarge)], imageLarge);
             Assert.Equal(message.Data[nameof(linkText)], linkText);
             Assert.Equal(message.Data[nameof(linkUrl)], linkUrl);
             Assert.Equal(message.Data[nameof(silent)], silent);
-            Assert.Equal(message.Data[nameof(trackDeliveredUrl)], $"{trackDeliveredUrl}?channel=mobilepush&deviceIdentifier=token1");
-            Assert.Equal(message.Data[nameof(trackSeenUrl)], $"{trackSeenUrl}?channel=mobilepush&deviceIdentifier=token1");
+            Assert.Equal(message.Data[nameof(trackDeliveredUrl)], $"{trackDeliveredUrl}?channel=mobilepush&configurationId={configurationId}");
+            Assert.Equal(message.Data[nameof(trackSeenUrl)], $"{trackSeenUrl}?channel=mobilepush&configurationId={configurationId}");
             Assert.Equal(message.Data[nameof(data)], data);
 
             Assert.Equal(message.Android.Data[nameof(subject)], subject);
@@ -89,6 +90,7 @@ namespace Notifo.Domain.Integrations.Firebase
             var body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr";
             var confirmText = "Got It!";
             var confirmUrl = "https://confirm.notifo.com";
+            var configurationId = Guid.NewGuid();
             var imageLarge = string.Empty;
             var imageSmall = (string?)null;
             var subject = "subject1";
@@ -110,10 +112,10 @@ namespace Notifo.Domain.Integrations.Firebase
                 TrackSeenUrl = trackingUrl
             };
 
-            var message = notification.ToFirebaseMessage(token, false, false);
+            var message = notification.ToFirebaseMessage(token, configurationId, false, false);
 
             Assert.Equal(message.Data[nameof(confirmText)], confirmText);
-            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&deviceIdentifier=token1");
+            Assert.Equal(message.Data[nameof(confirmUrl)], $"{confirmUrl}?channel=mobilepush&configurationId={configurationId}");
             Assert.False(message.Data.ContainsKey(nameof(imageLarge)));
             Assert.False(message.Data.ContainsKey(nameof(imageSmall)));
             Assert.False(message.Data.ContainsKey(nameof(trackingUrl)));
@@ -130,7 +132,7 @@ namespace Notifo.Domain.Integrations.Firebase
                 Id = id
             };
 
-            var message = notification.ToFirebaseMessage(token, true, false);
+            var message = notification.ToFirebaseMessage(token, id, true, false);
 
             Assert.Equal(token, message.Token);
             Assert.Equal(message.Data[nameof(id)], id.ToString());
@@ -145,10 +147,12 @@ namespace Notifo.Domain.Integrations.Firebase
             var notification = new UserNotification
             {
                 Formatting = new NotificationFormatting<string>(),
+                TrackDeliveredUrl = null,
+                TrackSeenUrl = null,
                 TimeToLiveInSeconds = timeToLive
             };
 
-            var message = notification.ToFirebaseMessage(token, false, false);
+            var message = notification.ToFirebaseMessage(token, Guid.NewGuid(), false, false);
 
             var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds();
 
@@ -164,10 +168,12 @@ namespace Notifo.Domain.Integrations.Firebase
             var notification = new UserNotification
             {
                 Formatting = new NotificationFormatting<string>(),
+                TrackDeliveredUrl = null,
+                TrackSeenUrl = null,
                 TimeToLiveInSeconds = timeToLive
             };
 
-            var message = notification.ToFirebaseMessage(token, false, false);
+            var message = notification.ToFirebaseMessage(token, Guid.NewGuid(), false, false);
 
             Assert.Equal(timeToLive, int.Parse(message.Apns.Headers["apns-expiration"], NumberStyles.Integer, CultureInfo.InvariantCulture));
             Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
@@ -181,7 +187,7 @@ namespace Notifo.Domain.Integrations.Firebase
                 Formatting = new NotificationFormatting<string>()
             };
 
-            var message = notification.ToFirebaseMessage(token, false, false);
+            var message = notification.ToFirebaseMessage(token, Guid.NewGuid(), false, false);
 
             Assert.False(message.Apns.Headers.ContainsKey("apns-expiration"));
             Assert.Null(message.Android.TimeToLive);

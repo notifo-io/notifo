@@ -52,20 +52,20 @@ namespace Notifo.Domain.Channels.Messaging
             this.userNotificationStore = userNotificationStore;
         }
 
-        public IEnumerable<string> GetConfigurations(UserNotification notification, ChannelSetting settings, SendOptions options)
+        public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
         {
             // Faster check because it does not allocate integrations.
-            if (!integrationManager.IsConfigured<IMessagingSender>(options.App, notification))
+            if (!integrationManager.IsConfigured<IMessagingSender>(context.App, notification))
             {
                 yield break;
             }
 
-            var senders = integrationManager.Resolve<IMessagingSender>(options.App, notification);
+            var senders = integrationManager.Resolve<IMessagingSender>(context.App, notification);
 
             // Targets are email-addresses or phone-numbers or anything else to identify an user.
-            if (senders.Any(x => x.Target.HasTarget(options.User)))
+            if (senders.Any(x => x.Target.HasTarget(context.User)))
             {
-                yield return MessagingJob.DefaultToken;
+                yield return new SendConfiguration();
             }
         }
 
@@ -95,47 +95,58 @@ namespace Notifo.Domain.Channels.Messaging
         {
             if (!notification.Channels.TryGetValue(Name, out var channel))
             {
+                // There is no activity on this channel.
                 return;
             }
 
-            if (channel.Status.TryGetValue(MessagingJob.DefaultToken, out var status) && status.Status == ProcessStatus.Attempt)
+            if (channel.Status.Count == 0)
             {
+                return;
+            }
+
+            // We create only one configuration for this channel. Therefore it must be the first.
+            var (configurationId, status) = channel.Status.First();
+
+            if (status.Status == ProcessStatus.Attempt)
+            {
+                var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
+
                 switch (result)
                 {
                     case MessagingResult.Delivered:
-                        await UpdateAsync(notification, ProcessStatus.Handled);
+                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
                         break;
                     case MessagingResult.Failed:
-                        await UpdateAsync(notification, ProcessStatus.Failed);
+                        await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
                         break;
                 }
             }
         }
 
-        public async Task SendAsync(UserNotification notification, ChannelSetting setting, string configuration, SendOptions options,
+        public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration configuration, SendContext context,
             CancellationToken ct)
         {
-            if (options.IsUpdate)
+            if (context.IsUpdate)
             {
                 return;
             }
 
             using (Telemetry.Activities.StartActivity("MessagingChannel/SendAsync"))
             {
-                var job = new MessagingJob(notification, setting);
+                var job = new MessagingJob(notification, setting, configurationId);
 
-                var integrations = integrationManager.Resolve<IMessagingSender>(options.App, notification);
+                var integrations = integrationManager.Resolve<IMessagingSender>(context.App, notification);
 
                 // We try all integrations, ordered by priority.
                 foreach (var (_, sender) in integrations)
                 {
-                    await sender.AddTargetsAsync(job, options.User);
+                    await sender.AddTargetsAsync(job, context.User);
                 }
 
                 // Should not happen because we check before if there is at least one target.
                 if (job.Targets.Count == 0)
                 {
-                    await UpdateAsync(notification, ProcessStatus.Skipped);
+                    await UpdateAsync(job, ProcessStatus.Skipped);
                 }
 
                 await userNotificationQueue.ScheduleAsync(
@@ -148,7 +159,7 @@ namespace Notifo.Domain.Channels.Messaging
 
         public Task HandleExceptionAsync(MessagingJob job, Exception ex)
         {
-            return UpdateAsync(job.Notification, ProcessStatus.Failed);
+            return UpdateAsync(job, ProcessStatus.Failed);
         }
 
         public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt,
@@ -162,7 +173,7 @@ namespace Notifo.Domain.Channels.Messaging
             {
                 if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
-                    await UpdateAsync(job.Notification, ProcessStatus.Skipped);
+                    await UpdateAsync(job, ProcessStatus.Skipped);
                 }
                 else
                 {
@@ -184,13 +195,13 @@ namespace Notifo.Domain.Channels.Messaging
                 {
                     log.LogWarning("Cannot send message: App not found.");
 
-                    await UpdateAsync(job.Notification, ProcessStatus.Handled);
+                    await UpdateAsync(job, ProcessStatus.Handled);
                     return;
                 }
 
                 try
                 {
-                    await UpdateAsync(job.Notification, ProcessStatus.Attempt);
+                    await UpdateAsync(job, ProcessStatus.Attempt);
 
                     var senders = integrationManager.Resolve<IMessagingSender>(app, job.Notification).Select(x => x.Target).ToList();
 
@@ -238,7 +249,7 @@ namespace Notifo.Domain.Channels.Messaging
                     // If the message has been delivered, we do not try other integrations.
                     if (result == MessagingResult.Delivered)
                     {
-                        await UpdateAsync(job.Notification, ProcessStatus.Handled);
+                        await UpdateAsync(job, ProcessStatus.Handled);
                         return;
                     }
                 }
@@ -261,16 +272,16 @@ namespace Notifo.Domain.Channels.Messaging
             }
         }
 
-        private Task UpdateAsync(IUserNotification notification, ProcessStatus status, string? reason = null)
+        private Task UpdateAsync(MessagingJob job, ProcessStatus status, string? reason = null)
         {
-            return userNotificationStore.CollectAndUpdateAsync(notification, Name, MessagingJob.DefaultToken, status, reason);
+            return userNotificationStore.TrackAsync(job.Tracking, status, reason);
         }
 
         private async Task SkipAsync(MessagingJob job, string reason)
         {
             await logStore.LogAsync(job.Notification.AppId, Name, reason);
 
-            await UpdateAsync(job.Notification, ProcessStatus.Skipped);
+            await UpdateAsync(job, ProcessStatus.Skipped);
         }
 
         private async Task<(string? Skip, MessagingTemplate?)> GetTemplateAsync(
