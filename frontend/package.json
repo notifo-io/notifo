@@ -6,7 +6,7 @@
     "@emoji-mart/data": "^1.0.4",
     "@emoji-mart/react": "^1.0.0",
     "@floating-ui/react-dom": "^1.0.0",
-    "@microsoft/signalr": "^6.0.1",
+    "@microsoft/signalr": "^6.0.10",
     "@reduxjs/toolkit": "^1.7.1",
     "ace-builds": "^1.4.13",
     "bootstrap": "^4.6.1",
