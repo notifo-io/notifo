@@ -30,7 +30,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var signalROptions = config.GetSection("web:signalR").Get<SignalROptions>();
+        var signalROptions = config.GetSection("web:signalR").Get<SignalROptions>() ?? new SignalROptions();
 
         services.ConfigureAndValidate<SignalROptions>(config, "web:signalR");
 

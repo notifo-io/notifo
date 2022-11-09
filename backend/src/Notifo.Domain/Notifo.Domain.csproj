@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 	<ImplicitUsings>enable</ImplicitUsings>
 	<LangVersion>10.0</LangVersion>
 	<NeutralLanguage>en</NeutralLanguage>
@@ -20,21 +20,21 @@
     <PackageReference Include="FluentValidation" Version="11.2.2" />
     <PackageReference Include="Fluid.Core" Version="2.2.16" />
     <PackageReference Include="Jint" Version="3.0.0-beta-2037" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.12.57" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.734">
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.0" />
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.746">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-    <PackageReference Include="Mjml.Net" Version="1.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+    <PackageReference Include="Mjml.Net" Version="1.11.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
-    <PackageReference Include="NodaTime" Version="3.1.4" />
+    <PackageReference Include="NodaTime" Version="3.1.5" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
-    <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="WebPush" Version="1.0.12" />
   </ItemGroup>

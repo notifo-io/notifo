@@ -16,7 +16,7 @@ namespace Notifo.Domain.Integrations.MessageBird;
 [Trait("Category", "Dependencies")]
 public class MessageBirdTests
 {
-    private readonly string phoneNumber = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumber");
+    private readonly string phoneNumber = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumber")!;
     private readonly MessageBirdClient sut;
 
     public MessageBirdTests()
@@ -30,7 +30,7 @@ public class MessageBirdTests
         {
             PhoneNumber = phoneNumber,
             PhoneNumbers = null,
-            AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")
+            AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")!
         }));
     }
 

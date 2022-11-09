@@ -97,7 +97,7 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
     {
         apiKey = null!;
 
-        string authorizationHeader = request.Headers[HeaderNames.Authorization];
+        string? authorizationHeader = request.Headers[HeaderNames.Authorization];
 
         if (authorizationHeader?.StartsWith(ApiKeyPrefix, StringComparison.OrdinalIgnoreCase) == true)
         {
@@ -111,7 +111,7 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
             }
         }
 
-        string apiKeyHeader1 = request.Headers[ApiKeyHeader];
+        string? apiKeyHeader1 = request.Headers[ApiKeyHeader];
 
         if (!string.IsNullOrWhiteSpace(apiKeyHeader1))
         {
@@ -120,7 +120,7 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
             return true;
         }
 
-        string apiKeyHeader2 = request.Headers[ApiKeyHeaderX];
+        string? apiKeyHeader2 = request.Headers[ApiKeyHeaderX];
 
         if (!string.IsNullOrWhiteSpace(apiKeyHeader2))
         {
@@ -129,7 +129,7 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
             return true;
         }
 
-        string tokenQuery = request.Query[AccessTokenQuery];
+        string? tokenQuery = request.Query[AccessTokenQuery];
 
         if (!string.IsNullOrWhiteSpace(tokenQuery))
         {

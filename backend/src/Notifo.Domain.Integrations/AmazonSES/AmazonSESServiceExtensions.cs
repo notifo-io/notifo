@@ -17,7 +17,7 @@ public static class AmazonSESServiceExtensions
     {
         const string key = "email:amazonSES";
 
-        var options = config.GetSection(key).Get<AmazonSESOptions>();
+        var options = config.GetSection(key).Get<AmazonSESOptions>() ?? new AmazonSESOptions();
 
         if (options.IsValid())
         {

@@ -17,7 +17,7 @@ public class AmazonSESEmailServerTests : EmailSenderTestBase
 {
     protected override IEmailSender CreateSender()
     {
-        var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>();
+        var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>() ?? new AmazonSESOptions();
 
         return new SmtpEmailSender(() => new SmtpEmailServer(options), Address, Address);
     }

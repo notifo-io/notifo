@@ -23,7 +23,7 @@ internal sealed record UserWithClaims(IdentityUser Identity, IReadOnlyList<Claim
 
     public string Email
     {
-        get => Identity.Email;
+        get => Identity.Email!;
     }
 
     public bool IsLocked
