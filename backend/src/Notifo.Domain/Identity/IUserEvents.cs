@@ -5,24 +5,23 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Identity
+namespace Notifo.Domain.Identity;
+
+public interface IUserEvents
 {
-    public interface IUserEvents
+    void OnUserRegistered(IUser user)
     {
-        void OnUserRegistered(IUser user)
-        {
-        }
+    }
 
-        void OnUserUpdated(IUser user)
-        {
-        }
+    void OnUserUpdated(IUser user)
+    {
+    }
 
-        void OnUserDeleted(IUser user)
-        {
-        }
+    void OnUserDeleted(IUser user)
+    {
+    }
 
-        void OnConsentGiven(IUser user)
-        {
-        }
+    void OnConsentGiven(IUser user)
+    {
     }
 }

@@ -9,39 +9,38 @@ using System.ComponentModel.DataAnnotations;
 using Notifo.Domain;
 using Notifo.Domain.Subscriptions;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+
+public sealed class SubscribeDto
 {
-    public sealed class SubscribeDto
+    /// <summary>
+    /// The topic to add.
+    /// </summary>
+    [Required]
+    public string TopicPrefix { get; set; }
+
+    /// <summary>
+    /// Notification settings per channel.
+    /// </summary>
+    public Dictionary<string, ChannelSettingDto>? TopicSettings { get; set; }
+
+    public Subscribe ToUpdate()
     {
-        /// <summary>
-        /// The topic to add.
-        /// </summary>
-        [Required]
-        public string TopicPrefix { get; set; }
+        var result = new Subscribe();
 
-        /// <summary>
-        /// Notification settings per channel.
-        /// </summary>
-        public Dictionary<string, ChannelSettingDto>? TopicSettings { get; set; }
-
-        public Subscribe ToUpdate()
+        if (TopicSettings?.Any() == true)
         {
-            var result = new Subscribe();
+            result.TopicSettings = new ChannelSettings();
 
-            if (TopicSettings?.Any() == true)
+            foreach (var (key, value) in TopicSettings)
             {
-                result.TopicSettings = new ChannelSettings();
-
-                foreach (var (key, value) in TopicSettings)
+                if (value != null)
                 {
-                    if (value != null)
-                    {
-                        result.TopicSettings[key] = value.ToDomainObject();
-                    }
+                    result.TopicSettings[key] = value.ToDomainObject();
                 }
             }
-
-            return result;
         }
+
+        return result;
     }
 }

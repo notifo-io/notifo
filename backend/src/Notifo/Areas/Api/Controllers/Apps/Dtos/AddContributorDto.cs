@@ -9,29 +9,28 @@ using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Apps.Dtos
+namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
+
+public sealed class AddContributorDto
 {
-    public sealed class AddContributorDto
+    /// <summary>
+    /// The email of the new contributor.
+    /// </summary>
+    [Required]
+    public string Email { get; set; }
+
+    /// <summary>
+    /// The role.
+    /// </summary>
+    [Required]
+    public string Role { get; set; }
+
+    public AddContributor ToUpdate(string userId)
     {
-        /// <summary>
-        /// The email of the new contributor.
-        /// </summary>
-        [Required]
-        public string Email { get; set; }
+        var result = SimpleMapper.Map(this, new AddContributor());
 
-        /// <summary>
-        /// The role.
-        /// </summary>
-        [Required]
-        public string Role { get; set; }
+        result.UserId = userId;
 
-        public AddContributor ToUpdate(string userId)
-        {
-            var result = SimpleMapper.Map(this, new AddContributor());
-
-            result.UserId = userId;
-
-            return result;
-        }
+        return result;
     }
 }

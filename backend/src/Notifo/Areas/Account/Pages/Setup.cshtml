@@ -5,19 +5,19 @@
 @{
     ViewBag.Title = T["SetupTitle"];
 
-    void RenderValidation(string field)
+void RenderValidation(string field)
+{
+    @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
     {
-        @if (ViewContext.ViewData.ModelState[field]?.ValidationState == Microsoft.AspNetCore.Mvc.ModelBinding.ModelValidationState.Invalid)
-        {
-            <div class="errors-container">
+        <div class="errors-container">
                 <span class="errors">@Html.ValidationMessage(field)</span>
             </div>
-        }
     }
+}
 
-    void RenderRuleAsSuccess(string message, params object[] args)
-    {
-        <div class="row mt-4">
+void RenderRuleAsSuccess(string message, params object[] args)
+{
+    <div class="row mt-4">
             <div class="col-auto">
                 <div class="status-icon status-icon-success mt-2">
                     <i class="icon-check"></i>
@@ -30,11 +30,11 @@
                 </div>
             </div>
         </div>
-    }
+}
 
-    void RenderRuleAsCritical(string message, params object[] args)
-    {
-        <div class="row mt-4">
+void RenderRuleAsCritical(string message, params object[] args)
+{
+    <div class="row mt-4">
             <div class="col-auto">
                 <div class="status-icon status-icon-failed mt-2">
                     <i class="icon-exclamation"></i>
@@ -47,11 +47,11 @@
                 </div>
             </div>
         </div>
-    }
+}
 
-    void RenderRuleAsWarning(string message, params object[] args)
-    {
-        <div class="row mt-4">
+void RenderRuleAsWarning(string message, params object[] args)
+{
+    <div class="row mt-4">
             <div class="col-auto">
                 <div class="status-icon status-icon-warning mt-2">
                     <i class="icon-exclamation"></i>
@@ -64,7 +64,7 @@
                 </div>
             </div>
         </div>
-    }
+}
 }
 
 <h1 style="font-size: 2rem">@T["SetupHeadline"]</h1>
@@ -75,32 +75,32 @@
     <h2>@T["SetupRulesHeadline"]</h2>
 
     @if (Model!.IsValidHttps)
-    {
-        RenderRuleAsSuccess("SetupRuleHttpsSuccess");
-    }
-    else
-    {
-        RenderRuleAsCritical("SetupRuleHttpsFailure");
-    }
+{
+    RenderRuleAsSuccess("SetupRuleHttpsSuccess");
+}
+else
+{
+    RenderRuleAsCritical("SetupRuleHttpsFailure");
+}
 
     @if (Model!.BaseUrlConfigured == Model!.BaseUrlCurrent)
-    {
-        RenderRuleAsSuccess("SetupRuleUrlSuccess");
-    }
-    else
-    {
-        RenderRuleAsCritical("SetupRuleUrlFailure", Model!.BaseUrlCurrent, Model!.BaseUrlConfigured);
-    }
+{
+    RenderRuleAsSuccess("SetupRuleUrlSuccess");
+}
+else
+{
+    RenderRuleAsCritical("SetupRuleUrlFailure", Model!.BaseUrlCurrent, Model!.BaseUrlConfigured);
+}
 
     @if (Model!.IsAssetStoreFtp)
-    {
-        RenderRuleAsWarning("SetupRuleFtpWarning");
-    }
+{
+    RenderRuleAsWarning("SetupRuleFtpWarning");
+}
 
     @if (Model!.IsAssetStoreFile)
-    {
-        RenderRuleAsWarning("SetupRuleFolderWarning");
-    }
+{
+    RenderRuleAsWarning("SetupRuleFolderWarning");
+}
 </div>
 
 <hr />
@@ -109,8 +109,8 @@
     <h2>@T["SetupCreateUserHeadline"]</h2>
 
     @if (Model!.HasExternalLogin)
-    {
-        <div>
+{
+    <div>
             <div class="form-text text-muted mt-2 mb-2">@T["SetupCreateUserLoginHint"]</div>
 
             <div class="mt-3">
@@ -119,27 +119,27 @@
                 </a>
             </div>
         </div>
-    }
+}
 
     @if (Model!.HasExternalLogin && Model!.HasPasswordAuth)
-    {
-        <div class="login-separator">
+{
+    <div class="login-separator">
             <span>@T["ExternalSeperator"]</span>
         </div>
-    }
+}
 
     @if (Model!.HasPasswordAuth)
-    {
-        <h3>@T["SetupCreateUserHeadlineCreate"]</h3>
+{
+    <h3>@T["SetupCreateUserHeadlineCreate"]</h3>
 
-        @if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
-        {
-            <div class="alert alert-danger">
+    @if (!string.IsNullOrWhiteSpace(Model!.ErrorMessage))
+    {
+        <div class="alert alert-danger">
                 @Model!.ErrorMessage
             </div>
-        }
+    }
 
-        <form class="profile-form" method="post">
+    <form class="profile-form" method="post">
             <div class="form-group">
                 <label for="email">@T["EmailLabel"]</label>
 
@@ -168,12 +168,12 @@
                 <button type="submit" class="btn btn-success">@T["SetupCreateUserButton"]</button>
             </div>
         </form>
-    }
+}
 
     @if (!Model!.HasExternalLogin && !Model!.HasPasswordAuth)
-    {
-        <div>
+{
+    <div>
             @T["SetupCreateUserFailure"]
         </div>
-    }
+}
 </div>

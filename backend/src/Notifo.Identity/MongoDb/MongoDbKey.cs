@@ -7,17 +7,16 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Identity.MongoDb
+namespace Notifo.Identity.MongoDb;
+
+public sealed class MongoDbKey
 {
-    public sealed class MongoDbKey
-    {
-        [BsonId]
-        public string Id { get; set; }
+    [BsonId]
+    public string Id { get; set; }
 
-        [BsonElement]
-        public string Key { get; set; }
+    [BsonElement]
+    public string Key { get; set; }
 
-        [BsonElement]
-        public MongoDbKeyParameters Parameters { get; set; }
-    }
+    [BsonElement]
+    public MongoDbKeyParameters Parameters { get; set; }
 }

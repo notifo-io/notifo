@@ -13,71 +13,70 @@ using Notifo.Domain.Integrations;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.Callbacks
+namespace Notifo.Areas.Api.Controllers.Callbacks;
+
+[OpenApiIgnore]
+public sealed class CallbacksController : BaseController
 {
-    [OpenApiIgnore]
-    public sealed class CallbacksController : BaseController
+    private readonly IAppStore appStore;
+
+    public CallbacksController(IAppStore appStore)
     {
-        private readonly IAppStore appStore;
+        this.appStore = appStore;
+    }
 
-        public CallbacksController(IAppStore appStore)
+    [AllowSynchronousIO]
+    [HttpGet]
+    [HttpPost]
+    [Route("api/callback/sms")]
+    public async Task<IActionResult> SmsCallback([FromQuery] string appId, [FromQuery] string integrationId)
+    {
+        var (app, sender) = await GetIntegrationAsync<ISmsSender>(appId, integrationId);
+
+        if (app == null || sender == null)
         {
-            this.appStore = appStore;
+            return NotFound();
         }
 
-        [AllowSynchronousIO]
-        [HttpGet]
-        [HttpPost]
-        [Route("api/callback/sms")]
-        public async Task<IActionResult> SmsCallback([FromQuery] string appId, [FromQuery] string integrationId)
+        await sender.HandleCallbackAsync(app, HttpContext);
+
+        return Ok();
+    }
+
+    [AllowSynchronousIO]
+    [HttpGet]
+    [HttpPost]
+    [Route("api/callback/messaging")]
+    public async Task<IActionResult> MessagingCallback([FromQuery] string appId, [FromQuery] string integrationId)
+    {
+        var (app, sender) = await GetIntegrationAsync<IMessagingSender>(appId, integrationId);
+
+        if (app == null || sender == null)
         {
-            var (app, sender) = await GetIntegrationAsync<ISmsSender>(appId, integrationId);
-
-            if (app == null || sender == null)
-            {
-                return NotFound();
-            }
-
-            await sender.HandleCallbackAsync(app, HttpContext);
-
-            return Ok();
+            return NotFound();
         }
 
-        [AllowSynchronousIO]
-        [HttpGet]
-        [HttpPost]
-        [Route("api/callback/messaging")]
-        public async Task<IActionResult> MessagingCallback([FromQuery] string appId, [FromQuery] string integrationId)
+        await sender.HandleCallbackAsync(app, HttpContext);
+
+        return Ok();
+    }
+
+    private async Task<(App? App, T? Integration)> GetIntegrationAsync<T>(string appId, string id) where T : class
+    {
+        if (string.IsNullOrWhiteSpace(appId))
         {
-            var (app, sender) = await GetIntegrationAsync<IMessagingSender>(appId, integrationId);
-
-            if (app == null || sender == null)
-            {
-                return NotFound();
-            }
-
-            await sender.HandleCallbackAsync(app, HttpContext);
-
-            return Ok();
+            return default;
         }
 
-        private async Task<(App? App, T? Integration)> GetIntegrationAsync<T>(string appId, string id) where T : class
+        var app = await appStore.GetCachedAsync(appId, HttpContext.RequestAborted);
+
+        if (app == null)
         {
-            if (string.IsNullOrWhiteSpace(appId))
-            {
-                return default;
-            }
-
-            var app = await appStore.GetCachedAsync(appId, HttpContext.RequestAborted);
-
-            if (app == null)
-            {
-                return default;
-            }
-
-            var integrationManager = HttpContext.RequestServices.GetRequiredService<IIntegrationManager>();
-
-            return (app, integrationManager.Resolve<T>(id, app));
+            return default;
         }
+
+        var integrationManager = HttpContext.RequestServices.GetRequiredService<IIntegrationManager>();
+
+        return (app, integrationManager.Resolve<T>(id, app));
     }
 }

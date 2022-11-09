@@ -5,11 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Events
+namespace Notifo.Domain.Events;
+
+public interface IEventPublisher
 {
-    public interface IEventPublisher
-    {
-        Task PublishAsync(EventMessage message,
-            CancellationToken ct = default);
-    }
+    Task PublishAsync(EventMessage message,
+        CancellationToken ct = default);
 }

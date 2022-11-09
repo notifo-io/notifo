@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public enum ChannelCondition
 {
-    public enum ChannelCondition
-    {
-        Inherit,
-        IfNotSeen,
-        IfNotConfirmed,
-        Always
-    }
+    Inherit,
+    IfNotSeen,
+    IfNotConfirmed,
+    Always
 }

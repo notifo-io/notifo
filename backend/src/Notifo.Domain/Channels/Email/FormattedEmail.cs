@@ -7,7 +7,6 @@
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Channels.Email
-{
-    public readonly record struct FormattedEmail(EmailMessage? Message, List<EmailFormattingError>? Errors);
-}
+namespace Notifo.Domain.Channels.Email;
+
+public readonly record struct FormattedEmail(EmailMessage? Message, List<EmailFormattingError>? Errors);

@@ -7,13 +7,12 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels.MobilePush
-{
-    public interface IMobilePushSender
-    {
-        string Name { get; }
+namespace Notifo.Domain.Channels.MobilePush;
 
-        Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
-            CancellationToken ct);
-    }
+public interface IMobilePushSender
+{
+    string Name { get; }
+
+    Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
+        CancellationToken ct);
 }

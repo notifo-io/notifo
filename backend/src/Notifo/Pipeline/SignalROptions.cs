@@ -7,22 +7,21 @@
 
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+public sealed class SignalROptions : IValidatableOptions
 {
-    public sealed class SignalROptions : IValidatableOptions
+    public bool Enabled { get; set; }
+
+    public bool Sticky { get; set; }
+
+    public int PollingInterval { get; set; } = 5000;
+
+    public IEnumerable<ConfigurationError> Validate()
     {
-        public bool Enabled { get; set; }
-
-        public bool Sticky { get; set; }
-
-        public int PollingInterval { get; set; } = 5000;
-
-        public IEnumerable<ConfigurationError> Validate()
+        if (PollingInterval < 1000)
         {
-            if (PollingInterval < 1000)
-            {
-                yield return new ConfigurationError("Value must be greater or equals than 1000ms.", nameof(PollingInterval));
-            }
+            yield return new ConfigurationError("Value must be greater or equals than 1000ms.", nameof(PollingInterval));
         }
     }
 }

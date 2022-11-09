@@ -5,10 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.UserEvents.Pipeline
+namespace Notifo.Domain.UserEvents.Pipeline;
+
+public sealed class UserEventPipelineOptions
 {
-    public sealed class UserEventPipelineOptions
-    {
-        public string ChannelName { get; init; } = "user-events";
-    }
+    public string ChannelName { get; init; } = "user-events";
 }

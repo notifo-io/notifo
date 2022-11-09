@@ -7,32 +7,31 @@
 
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.ChannelTemplates.MongoDb
+namespace Notifo.Domain.ChannelTemplates.MongoDb;
+
+public sealed class MongoDbChannelTemplate<T> : MongoDbEntity<ChannelTemplate<T>>
 {
-    public sealed class MongoDbChannelTemplate<T> : MongoDbEntity<ChannelTemplate<T>>
+    public static string CreateId(string appId, string id)
     {
-        public static string CreateId(string appId, string id)
+        return $"{appId}_{id}";
+    }
+
+    public static MongoDbChannelTemplate<T> FromChannelTemplate(ChannelTemplate<T> template)
+    {
+        var docId = CreateId(template.AppId, template.Id);
+
+        var result = new MongoDbChannelTemplate<T>
         {
-            return $"{appId}_{id}";
-        }
+            DocId = docId,
+            Doc = template,
+            Etag = GenerateEtag()
+        };
 
-        public static MongoDbChannelTemplate<T> FromChannelTemplate(ChannelTemplate<T> template)
-        {
-            var docId = CreateId(template.AppId, template.Id);
+        return result;
+    }
 
-            var result = new MongoDbChannelTemplate<T>
-            {
-                DocId = docId,
-                Doc = template,
-                Etag = GenerateEtag()
-            };
-
-            return result;
-        }
-
-        public ChannelTemplate<T> ToChannelTemplate()
-        {
-            return Doc;
-        }
+    public ChannelTemplate<T> ToChannelTemplate()
+    {
+        return Doc;
     }
 }

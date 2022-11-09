@@ -8,24 +8,23 @@
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
 
-namespace Notifo.Areas.Api.OpenApi
+namespace Notifo.Areas.Api.OpenApi;
+
+public sealed class CommonProcessor : IDocumentProcessor
 {
-    public sealed class CommonProcessor : IDocumentProcessor
+    public void Process(DocumentProcessorContext context)
     {
-        public void Process(DocumentProcessorContext context)
+        context.Document.BasePath = "/api";
+
+        var logo = new
         {
-            context.Document.BasePath = "/api";
+            url = "/logo.svg"
+        };
 
-            var logo = new
-            {
-                url = "/logo.svg"
-            };
-
-            context.Document.Info.Version = "1.0.0";
-            context.Document.Info.ExtensionData = new Dictionary<string, object>
-            {
-                ["x-logo"] = logo
-            };
-        }
+        context.Document.Info.Version = "1.0.0";
+        context.Document.Info.ExtensionData = new Dictionary<string, object>
+        {
+            ["x-logo"] = logo
+        };
     }
 }

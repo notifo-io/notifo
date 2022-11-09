@@ -9,31 +9,30 @@ using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+
+public sealed class UserPropertyDto
 {
-    public sealed class UserPropertyDto
+    /// <summary>
+    /// The field name for the property.
+    /// </summary>
+    [Required]
+    public string Name { get; set; }
+
+    /// <summary>
+    /// The optional description.
+    /// </summary>
+    public string? EditorDescription { get; set; }
+
+    /// <summary>
+    /// The optional label.
+    /// </summary>
+    public string? EditorLabel { get; set; }
+
+    public static UserPropertyDto FromDomainObject(UserProperty property)
     {
-        /// <summary>
-        /// The field name for the property.
-        /// </summary>
-        [Required]
-        public string Name { get; set; }
+        var result = SimpleMapper.Map(property, new UserPropertyDto());
 
-        /// <summary>
-        /// The optional description.
-        /// </summary>
-        public string? EditorDescription { get; set; }
-
-        /// <summary>
-        /// The optional label.
-        /// </summary>
-        public string? EditorLabel { get; set; }
-
-        public static UserPropertyDto FromDomainObject(UserProperty property)
-        {
-            var result = SimpleMapper.Map(property, new UserPropertyDto());
-
-            return result;
-        }
+        return result;
     }
 }

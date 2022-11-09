@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels
+namespace Notifo.Domain.Channels;
+
+public sealed class SendConfiguration : Dictionary<string, string>
 {
-    public sealed class SendConfiguration : Dictionary<string, string>
+    public SendConfiguration()
+        : base(StringComparer.OrdinalIgnoreCase)
     {
-        public SendConfiguration()
-            : base(StringComparer.OrdinalIgnoreCase)
-        {
-        }
     }
 }

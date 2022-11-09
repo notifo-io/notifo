@@ -5,10 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Domain.Channels.Messaging;
+
+public sealed class MessagingTemplate
 {
-    public sealed class MessagingTemplate
-    {
-        public string Text { get; init; }
-    }
+    public string Text { get; init; }
 }

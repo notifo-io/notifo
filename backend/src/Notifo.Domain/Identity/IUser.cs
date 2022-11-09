@@ -7,20 +7,19 @@
 
 using System.Security.Claims;
 
-namespace Notifo.Domain.Identity
+namespace Notifo.Domain.Identity;
+
+public interface IUser
 {
-    public interface IUser
-    {
-        bool IsLocked { get; }
+    bool IsLocked { get; }
 
-        string Id { get; }
+    string Id { get; }
 
-        string Email { get; }
+    string Email { get; }
 
-        object Identity { get; }
+    object Identity { get; }
 
-        IReadOnlySet<string> Roles { get; }
+    IReadOnlySet<string> Roles { get; }
 
-        IReadOnlyList<Claim> Claims { get; }
-    }
+    IReadOnlyList<Claim> Claims { get; }
 }

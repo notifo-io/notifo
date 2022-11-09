@@ -11,42 +11,41 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Users
+namespace Notifo.Domain.Users;
+
+public sealed class AddUserMobileToken : ICommand<User>
 {
-    public sealed class AddUserMobileToken : ICommand<User>
+    public MobilePushToken Token { get; set; }
+
+    private sealed class Validator : AbstractValidator<AddUserMobileToken>
     {
-        public MobilePushToken Token { get; set; }
-
-        private sealed class Validator : AbstractValidator<AddUserMobileToken>
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(x => x.Token).NotNull();
-                RuleFor(x => x.Token.Token).NotNull().NotEmpty();
-            }
+            RuleFor(x => x.Token).NotNull();
+            RuleFor(x => x.Token.Token).NotNull().NotEmpty();
+        }
+    }
+
+    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        if (user.MobilePushTokens.Any(x => x.Token == Token.Token))
+        {
+            return default;
         }
 
-        public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        var newMobilePushTokens = new List<MobilePushToken>(user.MobilePushTokens)
         {
-            Validate<Validator>.It(this);
+            Token
+        };
 
-            if (user.MobilePushTokens.Any(x => x.Token == Token.Token))
-            {
-                return default;
-            }
+        var newUser = user with
+        {
+            MobilePushTokens = newMobilePushTokens.ToReadonlyList()
+        };
 
-            var newMobilePushTokens = new List<MobilePushToken>(user.MobilePushTokens)
-            {
-                Token
-            };
-
-            var newUser = user with
-            {
-                MobilePushTokens = newMobilePushTokens.ToReadonlyList()
-            };
-
-            return new ValueTask<User?>(newUser);
-        }
+        return new ValueTask<User?>(newUser);
     }
 }

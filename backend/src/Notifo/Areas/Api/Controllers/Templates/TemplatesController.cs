@@ -12,83 +12,82 @@ using Notifo.Domain.Templates;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
 
-namespace Notifo.Areas.Api.Controllers.Templates
+namespace Notifo.Areas.Api.Controllers.Templates;
+
+public sealed class TemplatesController : BaseController
 {
-    public sealed class TemplatesController : BaseController
+    private readonly ITemplateStore templateStore;
+
+    public TemplatesController(ITemplateStore templateStore)
     {
-        private readonly ITemplateStore templateStore;
+        this.templateStore = templateStore;
+    }
 
-        public TemplatesController(ITemplateStore templateStore)
+    /// <summary>
+    /// Query templates.
+    /// </summary>
+    /// <param name="appId">The app where the templates belongs to.</param>
+    /// <param name="q">The query object.</param>
+    /// <returns>
+    /// 200 => Templates returned.
+    /// </returns>
+    [HttpGet("api/apps/{appId:notEmpty}/templates/")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(ListResponseDto<TemplateDto>))]
+    public async Task<IActionResult> GetTemplates(string appId, [FromQuery] QueryDto q)
+    {
+        var templates = await templateStore.QueryAsync(appId, q.ToQuery<TemplateQuery>(true), HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<TemplateDto>();
+
+        response.Items.AddRange(templates.Select(TemplateDto.FromDomainObject));
+        response.Total = templates.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Upsert templates.
+    /// </summary>
+    /// <param name="appId">The app where the templates belong to.</param>
+    /// <param name="request">The upsert request.</param>
+    /// <returns>
+    /// 200 => Templates upserted.
+    /// </returns>
+    [HttpPost("api/apps/{appId:notEmpty}/templates/")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(List<TemplateDto>))]
+    public async Task<IActionResult> PostTemplates(string appId, [FromBody] UpsertTemplatesDto request)
+    {
+        var response = new List<TemplateDto>();
+
+        foreach (var dto in request.Requests.OrEmpty().NotNull())
         {
-            this.templateStore = templateStore;
+            var update = dto.ToUpdate();
+
+            var template = await templateStore.UpsertAsync(appId, dto.Code, update, HttpContext.RequestAborted);
+
+            response.Add(TemplateDto.FromDomainObject(template));
         }
 
-        /// <summary>
-        /// Query templates.
-        /// </summary>
-        /// <param name="appId">The app where the templates belongs to.</param>
-        /// <param name="q">The query object.</param>
-        /// <returns>
-        /// 200 => Templates returned.
-        /// </returns>
-        [HttpGet("api/apps/{appId:notEmpty}/templates/")]
-        [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ListResponseDto<TemplateDto>))]
-        public async Task<IActionResult> GetTemplates(string appId, [FromQuery] QueryDto q)
-        {
-            var templates = await templateStore.QueryAsync(appId, q.ToQuery<TemplateQuery>(true), HttpContext.RequestAborted);
+        return Ok(response);
+    }
 
-            var response = new ListResponseDto<TemplateDto>();
+    /// <summary>
+    /// Delete a template.
+    /// </summary>
+    /// <param name="appId">The app where the templates belong to.</param>
+    /// <param name="code">The template code to delete.</param>
+    /// <returns>
+    /// 204 => Template deleted.
+    /// </returns>
+    [HttpDelete("api/apps/{appId:notEmpty}/templates/{code:notEmpty}")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(ListResponseDto<TemplateDto>))]
+    public async Task<IActionResult> DeleteTemplate(string appId, string code)
+    {
+        await templateStore.DeleteAsync(appId, code, HttpContext.RequestAborted);
 
-            response.Items.AddRange(templates.Select(TemplateDto.FromDomainObject));
-            response.Total = templates.Total;
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Upsert templates.
-        /// </summary>
-        /// <param name="appId">The app where the templates belong to.</param>
-        /// <param name="request">The upsert request.</param>
-        /// <returns>
-        /// 200 => Templates upserted.
-        /// </returns>
-        [HttpPost("api/apps/{appId:notEmpty}/templates/")]
-        [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(List<TemplateDto>))]
-        public async Task<IActionResult> PostTemplates(string appId, [FromBody] UpsertTemplatesDto request)
-        {
-            var response = new List<TemplateDto>();
-
-            foreach (var dto in request.Requests.OrEmpty().NotNull())
-            {
-                var update = dto.ToUpdate();
-
-                var template = await templateStore.UpsertAsync(appId, dto.Code, update, HttpContext.RequestAborted);
-
-                response.Add(TemplateDto.FromDomainObject(template));
-            }
-
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// Delete a template.
-        /// </summary>
-        /// <param name="appId">The app where the templates belong to.</param>
-        /// <param name="code">The template code to delete.</param>
-        /// <returns>
-        /// 204 => Template deleted.
-        /// </returns>
-        [HttpDelete("api/apps/{appId:notEmpty}/templates/{code:notEmpty}")]
-        [AppPermission(NotifoRoles.AppAdmin)]
-        [Produces(typeof(ListResponseDto<TemplateDto>))]
-        public async Task<IActionResult> DeleteTemplate(string appId, string code)
-        {
-            await templateStore.DeleteAsync(appId, code, HttpContext.RequestAborted);
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

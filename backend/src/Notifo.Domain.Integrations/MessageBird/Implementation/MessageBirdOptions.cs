@@ -7,32 +7,31 @@
 
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Domain.Integrations.MessageBird.Implementation
+namespace Notifo.Domain.Integrations.MessageBird.Implementation;
+
+public sealed class MessageBirdOptions : IValidatableOptions
 {
-    public sealed class MessageBirdOptions : IValidatableOptions
+    public string AccessKey { get; set; }
+
+    public string PhoneNumber { get; set; }
+
+    public Dictionary<string, string>? PhoneNumbers { get; set; }
+
+    public bool IsValid()
     {
-        public string AccessKey { get; set; }
+        return !Validate().Any();
+    }
 
-        public string PhoneNumber { get; set; }
-
-        public Dictionary<string, string>? PhoneNumbers { get; set; }
-
-        public bool IsValid()
+    public IEnumerable<ConfigurationError> Validate()
+    {
+        if (string.IsNullOrWhiteSpace(AccessKey))
         {
-            return !Validate().Any();
+            yield return new ConfigurationError("Value is required.", nameof(AccessKey));
         }
 
-        public IEnumerable<ConfigurationError> Validate()
+        if (string.IsNullOrWhiteSpace(PhoneNumber))
         {
-            if (string.IsNullOrWhiteSpace(AccessKey))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(AccessKey));
-            }
-
-            if (string.IsNullOrWhiteSpace(PhoneNumber))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(PhoneNumber));
-            }
+            yield return new ConfigurationError("Value is required.", nameof(PhoneNumber));
         }
     }
 }

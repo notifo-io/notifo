@@ -10,66 +10,65 @@ using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure.Collections;
 using Xunit;
 
-namespace Notifo.Domain.Users
+namespace Notifo.Domain.Users;
+
+public class AddUserWebPushSubscriptionTests
 {
-    public class AddUserWebPushSubscriptionTests
+    [Fact]
+    public async Task Should_not_remove_existing_subscriptions_when_new_subscription_added()
     {
-        [Fact]
-        public async Task Should_not_remove_existing_subscriptions_when_new_subscription_added()
+        var sut = new AddUserWebPushSubscription();
+
+        var endpoint1 = "test endpoint 1";
+        var endpoint2 = "test endpoint 2";
+        var endpoint3 = "test endpoint 3";
+
+        sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
+
+        var user = new User("1", "1", default)
         {
-            var sut = new AddUserWebPushSubscription();
+            WebPushSubscriptions = new List<string>
+                {
+                    endpoint2,
+                    endpoint3
+                }
+                .Select(e => new WebPushSubscription { Endpoint = e })
+                .ToReadonlyList()
+        };
 
-            var endpoint1 = "test endpoint 1";
-            var endpoint2 = "test endpoint 2";
-            var endpoint3 = "test endpoint 3";
+        var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
 
-            sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
-
-            var user = new User("1", "1", default)
-            {
-                WebPushSubscriptions = new List<string>
-                    {
-                        endpoint2,
-                        endpoint3
-                    }
-                    .Select(e => new WebPushSubscription { Endpoint = e })
-                    .ToReadonlyList()
-            };
-
-            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
-
-            Assert.Equal(new[]
-            {
-                endpoint1,
-                endpoint2,
-                endpoint3
-            }, updatedUser!.WebPushSubscriptions.Select(x => x.Endpoint).OrderBy(x => x).ToArray());
-        }
-
-        [Fact]
-        public async Task Should_not_change_existing_subscription_if_subscription_added_again()
+        Assert.Equal(new[]
         {
-            var sut = new AddUserWebPushSubscription();
+            endpoint1,
+            endpoint2,
+            endpoint3
+        }, updatedUser!.WebPushSubscriptions.Select(x => x.Endpoint).OrderBy(x => x).ToArray());
+    }
 
-            var endpoint1 = "test subscription 1";
-            var endpoint2 = "test subscription 2";
+    [Fact]
+    public async Task Should_not_change_existing_subscription_if_subscription_added_again()
+    {
+        var sut = new AddUserWebPushSubscription();
 
-            sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
+        var endpoint1 = "test subscription 1";
+        var endpoint2 = "test subscription 2";
 
-            var user = new User("1", "1", default)
-            {
-                WebPushSubscriptions = new List<string>
-                    {
-                        endpoint1,
-                        endpoint2
-                    }
-                    .Select(e => new WebPushSubscription { Endpoint = e })
-                    .ToReadonlyList()
-            };
+        sut.Subscription = new WebPushSubscription { Endpoint = endpoint1 };
 
-            var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
+        var user = new User("1", "1", default)
+        {
+            WebPushSubscriptions = new List<string>
+                {
+                    endpoint1,
+                    endpoint2
+                }
+                .Select(e => new WebPushSubscription { Endpoint = e })
+                .ToReadonlyList()
+        };
 
-            Assert.Null(updatedUser);
-        }
+        var updatedUser = await sut.ExecuteAsync(user, A.Fake<IServiceProvider>(), default);
+
+        Assert.Null(updatedUser);
     }
 }

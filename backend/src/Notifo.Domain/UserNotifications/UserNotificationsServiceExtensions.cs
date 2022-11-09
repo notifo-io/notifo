@@ -12,39 +12,38 @@ using Notifo.Domain.UserNotifications.MongoDb;
 using Notifo.Infrastructure.Scheduling;
 using Squidex.Messaging;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class UserNotificationsServiceExtensions
 {
-    public static class UserNotificationsServiceExtensions
+    public static void AddMyUserNotifications(this IServiceCollection services, IConfiguration config)
     {
-        public static void AddMyUserNotifications(this IServiceCollection services, IConfiguration config)
+        var options = config.GetSection("pipeline:confirms").Get<ConfirmPipelineOptions>() ?? new ConfirmPipelineOptions();
+
+        services.ConfigureAndValidate<UserNotificationsOptions>(config, "notifications");
+
+        services.AddMessaging(new ChannelName(options.ChannelName), true);
+
+        services.Configure<MessagingOptions>(messaging =>
         {
-            var options = config.GetSection("pipeline:confirms").Get<ConfirmPipelineOptions>() ?? new ConfirmPipelineOptions();
+            messaging.Routing.Add(x => x is ConfirmMessage, options.ChannelName);
+        });
 
-            services.ConfigureAndValidate<UserNotificationsOptions>(config, "notifications");
+        services.AddSingletonAs<UserNotificationStore>()
+            .As<IUserNotificationStore>();
 
-            services.AddMessaging(new ChannelName(options.ChannelName), true);
+        services.AddSingletonAs<UserNotificationFactory>()
+            .As<IUserNotificationFactory>();
 
-            services.Configure<MessagingOptions>(messaging =>
-            {
-                messaging.Routing.Add(x => x is ConfirmMessage, options.ChannelName);
-            });
+        services.AddSingletonAs<UserNotificationService>()
+            .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler>();
 
-            services.AddSingletonAs<UserNotificationStore>()
-                .As<IUserNotificationStore>();
+        services.AddScheduler<UserEventMessage>("UserNotifications");
+    }
 
-            services.AddSingletonAs<UserNotificationFactory>()
-                .As<IUserNotificationFactory>();
-
-            services.AddSingletonAs<UserNotificationService>()
-                .As<IUserNotificationService>().AsSelf().As<IScheduleHandler<UserEventMessage>>().As<IMessageHandler>();
-
-            services.AddScheduler<UserEventMessage>("UserNotifications");
-        }
-
-        public static void AddMyMongoUserNotifications(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbUserNotificationRepository>()
-                .As<IUserNotificationRepository>();
-        }
+    public static void AddMyMongoUserNotifications(this IServiceCollection services)
+    {
+        services.AddSingletonAs<MongoDbUserNotificationRepository>()
+            .As<IUserNotificationRepository>();
     }
 }

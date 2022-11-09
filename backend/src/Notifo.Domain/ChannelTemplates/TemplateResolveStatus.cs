@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.ChannelTemplates
+namespace Notifo.Domain.ChannelTemplates;
+
+public enum TemplateResolveStatus
 {
-    public enum TemplateResolveStatus
-    {
-        Resolved,
-        ResolvedWithFallback,
-        NotFound,
-        LanguageNotFound
-    }
+    Resolved,
+    ResolvedWithFallback,
+    NotFound,
+    LanguageNotFound
 }

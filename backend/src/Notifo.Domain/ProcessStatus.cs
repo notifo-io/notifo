@@ -5,14 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public enum ProcessStatus
 {
-    public enum ProcessStatus
-    {
-        None,
-        Attempt,
-        Handled,
-        Failed,
-        Skipped
-    }
+    None,
+    Attempt,
+    Handled,
+    Failed,
+    Skipped
 }

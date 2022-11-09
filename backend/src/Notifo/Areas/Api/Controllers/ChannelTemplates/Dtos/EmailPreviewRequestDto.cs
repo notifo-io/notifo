@@ -8,43 +8,42 @@
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Channels.Email;
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
+
+public sealed class EmailPreviewRequestDto
 {
-    public sealed class EmailPreviewRequestDto
+    /// <summary>
+    /// The preview to render.
+    /// </summary>
+    [Required]
+    public string Template { get; set; }
+
+    /// <summary>
+    /// The template type.
+    /// </summary>
+    public EmailPreviewType Type { get; set; }
+
+    /// <summary>
+    /// The kind of the template.
+    /// </summary>
+    public string? Kind { get; set; }
+
+    public EmailTemplate ToEmailTemplate()
     {
-        /// <summary>
-        /// The preview to render.
-        /// </summary>
-        [Required]
-        public string Template { get; set; }
-
-        /// <summary>
-        /// The template type.
-        /// </summary>
-        public EmailPreviewType Type { get; set; }
-
-        /// <summary>
-        /// The kind of the template.
-        /// </summary>
-        public string? Kind { get; set; }
-
-        public EmailTemplate ToEmailTemplate()
+        var emailTemplate = new EmailTemplate
         {
-            var emailTemplate = new EmailTemplate
-            {
-                Kind = Kind
-            };
+            Kind = Kind
+        };
 
-            if (Type == EmailPreviewType.Html)
-            {
-                emailTemplate = emailTemplate with { BodyHtml = Template };
-            }
-            else
-            {
-                emailTemplate = emailTemplate with { BodyText = Template };
-            }
-
-            return emailTemplate;
+        if (Type == EmailPreviewType.Html)
+        {
+            emailTemplate = emailTemplate with { BodyHtml = Template };
         }
+        else
+        {
+            emailTemplate = emailTemplate with { BodyText = Template };
+        }
+
+        return emailTemplate;
     }
 }

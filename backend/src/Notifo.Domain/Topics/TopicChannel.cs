@@ -5,11 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Topics
+namespace Notifo.Domain.Topics;
+
+public enum TopicChannel
 {
-    public enum TopicChannel
-    {
-        NotAllowed,
-        Allowed
-    }
+    NotAllowed,
+    Allowed
 }

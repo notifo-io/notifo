@@ -8,14 +8,13 @@
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Web;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class WebServiceExtensions
 {
-    public static class WebServiceExtensions
+    public static void AddMyWebChannel(this IServiceCollection services)
     {
-        public static void AddMyWebChannel(this IServiceCollection services)
-        {
-            services.AddSingletonAs<WebChannel>()
-                .As<ICommunicationChannel>();
-        }
+        services.AddSingletonAs<WebChannel>()
+            .As<ICommunicationChannel>();
     }
 }

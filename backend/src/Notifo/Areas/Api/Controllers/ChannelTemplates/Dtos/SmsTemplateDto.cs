@@ -7,14 +7,13 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
+
+public sealed class SmsTemplateDto
 {
-    public sealed class SmsTemplateDto
-    {
-        /// <summary>
-        /// The template text.
-        /// </summary>
-        [Required]
-        public string Text { get; set; }
-    }
+    /// <summary>
+    /// The template text.
+    /// </summary>
+    [Required]
+    public string Text { get; set; }
 }

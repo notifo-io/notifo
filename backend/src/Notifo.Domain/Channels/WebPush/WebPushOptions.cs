@@ -7,32 +7,31 @@
 
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Domain.Channels.WebPush
+namespace Notifo.Domain.Channels.WebPush;
+
+public sealed class WebPushOptions : IValidatableOptions
 {
-    public sealed class WebPushOptions : IValidatableOptions
+    public string VapidPublicKey { get; init; }
+
+    public string VapidPrivateKey { get; init; }
+
+    public string Subject { get; init; }
+
+    public IEnumerable<ConfigurationError> Validate()
     {
-        public string VapidPublicKey { get; init; }
-
-        public string VapidPrivateKey { get; init; }
-
-        public string Subject { get; init; }
-
-        public IEnumerable<ConfigurationError> Validate()
+        if (string.IsNullOrWhiteSpace(VapidPublicKey))
         {
-            if (string.IsNullOrWhiteSpace(VapidPublicKey))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(VapidPublicKey));
-            }
+            yield return new ConfigurationError("Value is required.", nameof(VapidPublicKey));
+        }
 
-            if (string.IsNullOrWhiteSpace(VapidPrivateKey))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(VapidPrivateKey));
-            }
+        if (string.IsNullOrWhiteSpace(VapidPrivateKey))
+        {
+            yield return new ConfigurationError("Value is required.", nameof(VapidPrivateKey));
+        }
 
-            if (string.IsNullOrWhiteSpace(Subject))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(Subject));
-            }
+        if (string.IsNullOrWhiteSpace(Subject))
+        {
+            yield return new ConfigurationError("Value is required.", nameof(Subject));
         }
     }
 }

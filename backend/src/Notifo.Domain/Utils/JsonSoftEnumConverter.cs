@@ -8,25 +8,24 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Notifo.Domain.Utils
+namespace Notifo.Domain.Utils;
+
+public sealed class JsonSoftEnumConverter<T> : JsonConverter<T> where T : struct
 {
-    public sealed class JsonSoftEnumConverter<T> : JsonConverter<T> where T : struct
+    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        var text = reader.GetString();
+
+        if (Enum.TryParse<T>(text, true, out var confirmMode))
         {
-            var text = reader.GetString();
-
-            if (Enum.TryParse<T>(text, true, out var confirmMode))
-            {
-                return confirmMode;
-            }
-
-            return default;
+            return confirmMode;
         }
 
-        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString());
-        }
+        return default;
+    }
+
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString());
     }
 }

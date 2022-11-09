@@ -8,27 +8,26 @@
 using Mailjet.Client;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace Notifo.Domain.Integrations.Mailjet
+namespace Notifo.Domain.Integrations.Mailjet;
+
+public sealed class MailjetEmailServerPool : CachePool<MailjetEmailServer>
 {
-    public sealed class MailjetEmailServerPool : CachePool<MailjetEmailServer>
+    public MailjetEmailServerPool(IMemoryCache memoryCache)
+        : base(memoryCache)
     {
-        public MailjetEmailServerPool(IMemoryCache memoryCache)
-            : base(memoryCache)
+    }
+
+    public MailjetEmailServer GetServer(string apiKey, string apiSecret)
+    {
+        var cacheKey = $"MailjetEmailServer_{apiKey}_{apiSecret}";
+
+        var found = GetOrCreate(cacheKey, () =>
         {
-        }
+            var sender = new MailjetEmailServer(new MailjetClient(apiKey, apiSecret));
 
-        public MailjetEmailServer GetServer(string apiKey, string apiSecret)
-        {
-            var cacheKey = $"MailjetEmailServer_{apiKey}_{apiSecret}";
+            return sender;
+        });
 
-            var found = GetOrCreate(cacheKey, () =>
-            {
-                var sender = new MailjetEmailServer(new MailjetClient(apiKey, apiSecret));
-
-                return sender;
-            });
-
-            return found;
-        }
+        return found;
     }
 }

@@ -20,135 +20,134 @@ using OpenIddict.Abstractions;
 using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class IdentityServiceExtensions
 {
-    public static class IdentityServiceExtensions
+    public static void AddMyIdentity(this IServiceCollection services, IConfiguration config)
     {
-        public static void AddMyIdentity(this IServiceCollection services, IConfiguration config)
-        {
-            IdentityModelEventSource.ShowPII = true;
+        IdentityModelEventSource.ShowPII = true;
 
-            var identityOptions = config.GetSection("identity").Get<NotifoIdentityOptions>() ?? new NotifoIdentityOptions();
+        var identityOptions = config.GetSection("identity").Get<NotifoIdentityOptions>() ?? new NotifoIdentityOptions();
 
-            services.Configure<NotifoIdentityOptions>(config, "identity");
+        services.Configure<NotifoIdentityOptions>(config, "identity");
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddClaimsPrincipalFactory<ClaimFactory>()
-                .AddDefaultTokenProviders();
+        services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddClaimsPrincipalFactory<ClaimFactory>()
+            .AddDefaultTokenProviders();
 
-            services.AddSingletonAs<UserCreator>()
-                .AsSelf();
+        services.AddSingletonAs<UserCreator>()
+            .AsSelf();
 
-            services.AddSingletonAs<TokenStoreInitializer>()
-                .AsSelf();
+        services.AddSingletonAs<TokenStoreInitializer>()
+            .AsSelf();
 
-            services.AddSingletonAs<DefaultUserResolver>()
-                .As<IUserResolver>();
+        services.AddSingletonAs<DefaultUserResolver>()
+            .As<IUserResolver>();
 
-            services.AddScopedAs<DefaultUserService>()
-                .As<IUserService>();
+        services.AddScopedAs<DefaultUserService>()
+            .As<IUserService>();
 
-            services.AddMyOpenIdDict();
-            services.AddAuthorization();
-            services.AddAuthentication()
-               .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
+        services.AddMyOpenIdDict();
+        services.AddAuthorization();
+        services.AddAuthentication()
+           .AddPolicyScheme(Constants.IdentityServerOrApiKeyScheme, null, options =>
+            {
+                options.ForwardDefaultSelector = context =>
                 {
-                    options.ForwardDefaultSelector = context =>
+                    if (ApiKeyHandler.IsApiKey(context.Request, out _))
                     {
-                        if (ApiKeyHandler.IsApiKey(context.Request, out _))
-                        {
-                            return ApiKeyDefaults.AuthenticationScheme;
-                        }
+                        return ApiKeyDefaults.AuthenticationScheme;
+                    }
 
-                        return OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-                    };
-                })
-                .AddGoogle(identityOptions)
-                .AddGithub(identityOptions)
-                .AddApiKey();
-        }
+                    return OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                };
+            })
+            .AddGoogle(identityOptions)
+            .AddGithub(identityOptions)
+            .AddApiKey();
+    }
 
-        private static void AddMyOpenIdDict(this IServiceCollection services)
+    private static void AddMyOpenIdDict(this IServiceCollection services)
+    {
+        services.Configure<IdentityOptions>(options =>
         {
-            services.Configure<IdentityOptions>(options =>
+            options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
+            options.ClaimsIdentity.UserNameClaimType = Claims.Name;
+            options.ClaimsIdentity.RoleClaimType = Claims.Role;
+        });
+
+        services.AddOpenIddict()
+            .AddServer(builder =>
             {
-                options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
-                options.ClaimsIdentity.UserNameClaimType = Claims.Name;
-                options.ClaimsIdentity.RoleClaimType = Claims.Role;
+                builder
+                    .SetAuthorizationEndpointUris("/connect/authorize")
+                    .SetIntrospectionEndpointUris("/connect/introspect")
+                    .SetLogoutEndpointUris("/connect/logout")
+                    .SetTokenEndpointUris("/connect/token")
+                    .SetUserinfoEndpointUris("/connect/userinfo");
+
+                builder.RegisterScopes(
+                    Scopes.Email,
+                    Scopes.Profile,
+                    Scopes.Roles,
+                    Constants.ApiScope);
+
+                builder.AllowImplicitFlow();
+                builder.AllowAuthorizationCodeFlow();
+                builder.AllowClientCredentialsFlow();
+
+                builder.SetAccessTokenLifetime(TimeSpan.FromDays(30));
+
+                builder.UseAspNetCore()
+                    .DisableTransportSecurityRequirement()
+                    .EnableAuthorizationEndpointPassthrough()
+                    .EnableLogoutEndpointPassthrough()
+                    .EnableStatusCodePagesIntegration()
+                    .EnableTokenEndpointPassthrough()
+                    .EnableUserinfoEndpointPassthrough();
+            })
+            .AddValidation(builder =>
+            {
+                builder.UseLocalServer();
+                builder.UseAspNetCore();
+            });
+    }
+
+    public static void AddMyMongoDbIdentity(this IServiceCollection services)
+    {
+        services.AddOpenIddict()
+            .AddCore(builder =>
+            {
+                builder.UseMongoDb<string>();
+
+                builder.SetDefaultScopeEntity<ImmutableScope>();
+
+                builder.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
+                    .As<IOpenIddictScopeStore<ImmutableScope>>();
+
+                builder.SetDefaultApplicationEntity<ImmutableApplication>();
+
+                builder.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
+                    .As<IOpenIddictApplicationStore<ImmutableApplication>>();
+
+                builder.ReplaceApplicationManager(typeof(ApplicationManager<>));
             });
 
-            services.AddOpenIddict()
-                .AddServer(builder =>
-                {
-                    builder
-                        .SetAuthorizationEndpointUris("/connect/authorize")
-                        .SetIntrospectionEndpointUris("/connect/introspect")
-                        .SetLogoutEndpointUris("/connect/logout")
-                        .SetTokenEndpointUris("/connect/token")
-                        .SetUserinfoEndpointUris("/connect/userinfo");
+        services.AddSingletonAs<MongoDbUserStore>()
+            .As<IUserStore<IdentityUser>>().As<IUserFactory>();
 
-                    builder.RegisterScopes(
-                        Scopes.Email,
-                        Scopes.Profile,
-                        Scopes.Roles,
-                        Constants.ApiScope);
+        services.AddSingletonAs<MongoDbRoleStore>()
+            .As<IRoleStore<IdentityRole>>();
 
-                    builder.AllowImplicitFlow();
-                    builder.AllowAuthorizationCodeFlow();
-                    builder.AllowClientCredentialsFlow();
+        services.AddSingletonAs<MongoDbXmlRepository>()
+            .As<IXmlRepository>();
 
-                    builder.SetAccessTokenLifetime(TimeSpan.FromDays(30));
+        services.ConfigureOptions<MongoDbKeyOptions>();
 
-                    builder.UseAspNetCore()
-                        .DisableTransportSecurityRequirement()
-                        .EnableAuthorizationEndpointPassthrough()
-                        .EnableLogoutEndpointPassthrough()
-                        .EnableStatusCodePagesIntegration()
-                        .EnableTokenEndpointPassthrough()
-                        .EnableUserinfoEndpointPassthrough();
-                })
-                .AddValidation(builder =>
-                {
-                    builder.UseLocalServer();
-                    builder.UseAspNetCore();
-                });
-        }
-
-        public static void AddMyMongoDbIdentity(this IServiceCollection services)
+        services.Configure<KeyManagementOptions>((c, options) =>
         {
-            services.AddOpenIddict()
-                .AddCore(builder =>
-                {
-                    builder.UseMongoDb<string>();
-
-                    builder.SetDefaultScopeEntity<ImmutableScope>();
-
-                    builder.Services.AddSingletonAs<InMemoryConfiguration.Scopes>()
-                        .As<IOpenIddictScopeStore<ImmutableScope>>();
-
-                    builder.SetDefaultApplicationEntity<ImmutableApplication>();
-
-                    builder.Services.AddSingletonAs<InMemoryConfiguration.Applications>()
-                        .As<IOpenIddictApplicationStore<ImmutableApplication>>();
-
-                    builder.ReplaceApplicationManager(typeof(ApplicationManager<>));
-                });
-
-            services.AddSingletonAs<MongoDbUserStore>()
-                .As<IUserStore<IdentityUser>>().As<IUserFactory>();
-
-            services.AddSingletonAs<MongoDbRoleStore>()
-                .As<IRoleStore<IdentityRole>>();
-
-            services.AddSingletonAs<MongoDbXmlRepository>()
-                .As<IXmlRepository>();
-
-            services.ConfigureOptions<MongoDbKeyOptions>();
-
-            services.Configure<KeyManagementOptions>((c, options) =>
-            {
-                options.XmlRepository = c.GetRequiredService<IXmlRepository>();
-            });
-        }
+            options.XmlRepository = c.GetRequiredService<IXmlRepository>();
+        });
     }
 }

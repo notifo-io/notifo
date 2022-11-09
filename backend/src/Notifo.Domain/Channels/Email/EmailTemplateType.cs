@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Email
+namespace Notifo.Domain.Channels.Email;
+
+public enum EmailTemplateType
 {
-    public enum EmailTemplateType
-    {
-        General,
-        BodyHtml,
-        BodyText,
-        Subject
-    }
+    General,
+    BodyHtml,
+    BodyText,
+    Subject
 }

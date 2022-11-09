@@ -8,18 +8,17 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+public sealed class AllowSynchronousIOAttribute : ActionFilterAttribute
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public sealed class AllowSynchronousIOAttribute : ActionFilterAttribute
+    public override void OnResultExecuting(ResultExecutingContext context)
     {
-        public override void OnResultExecuting(ResultExecutingContext context)
+        var bodyControlFeature = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
+        if (bodyControlFeature != null)
         {
-            var bodyControlFeature = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
-            if (bodyControlFeature != null)
-            {
-                bodyControlFeature.AllowSynchronousIO = true;
-            }
+            bodyControlFeature.AllowSynchronousIO = true;
         }
     }
 }

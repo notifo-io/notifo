@@ -10,74 +10,73 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
 
-namespace Notifo.Domain.Integrations.Threema
+namespace Notifo.Domain.Integrations.Threema;
+
+public sealed class ThreemaSimpleIntegration : IIntegration
 {
-    public sealed class ThreemaSimpleIntegration : IIntegration
+    private static readonly IntegrationProperty ApiIdentity = new IntegrationProperty("apiIdentity", PropertyType.Text)
     {
-        private static readonly IntegrationProperty ApiIdentity = new IntegrationProperty("apiIdentity", PropertyType.Text)
+        EditorLabel = Texts.ThreemaSimple_ApiIdentityLabel,
+        EditorDescription = null,
+        IsRequired = true,
+        Summary = true
+    };
+
+    private static readonly IntegrationProperty ApiSecret = new IntegrationProperty("apiSecret", PropertyType.Password)
+    {
+        EditorLabel = Texts.ThreemaSimple_ApiSecretLabel,
+        EditorDescription = null,
+        IsRequired = true
+    };
+
+    public IntegrationDefinition Definition { get; } =
+        new IntegrationDefinition(
+            "ThreemaSimple",
+            Texts.ThreemaSimple_Name,
+            "./integrations/threema.svg",
+            new List<IntegrationProperty>
+            {
+                ApiIdentity,
+                ApiSecret
+            },
+            new List<UserProperty>(),
+            new HashSet<string>
+            {
+                Providers.Messaging
+            })
         {
-            EditorLabel = Texts.ThreemaSimple_ApiIdentityLabel,
-            EditorDescription = null,
-            IsRequired = true,
-            Summary = true
+            Description = Texts.ThreemaSimple_Description
         };
 
-        private static readonly IntegrationProperty ApiSecret = new IntegrationProperty("apiSecret", PropertyType.Password)
-        {
-            EditorLabel = Texts.ThreemaSimple_ApiSecretLabel,
-            EditorDescription = null,
-            IsRequired = true
-        };
+    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    {
+        return serviceType == typeof(IMessagingSender);
+    }
 
-        public IntegrationDefinition Definition { get; } =
-            new IntegrationDefinition(
-                "ThreemaSimple",
-                Texts.ThreemaSimple_Name,
-                "./integrations/threema.svg",
-                new List<IntegrationProperty>
-                {
-                    ApiIdentity,
-                    ApiSecret
-                },
-                new List<UserProperty>(),
-                new HashSet<string>
-                {
-                    Providers.Messaging
-                })
+    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    {
+        if (CanCreate(serviceType, id, configured))
+        {
+            var apiIdentity = ApiIdentity.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(apiIdentity))
             {
-                Description = Texts.ThreemaSimple_Description
-            };
-
-        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
-        {
-            return serviceType == typeof(IMessagingSender);
-        }
-
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
-        {
-            if (CanCreate(serviceType, id, configured))
-            {
-                var apiIdentity = ApiIdentity.GetString(configured);
-
-                if (string.IsNullOrWhiteSpace(apiIdentity))
-                {
-                    return null;
-                }
-
-                var apiSecret = ApiSecret.GetString(configured);
-
-                if (string.IsNullOrWhiteSpace(apiSecret))
-                {
-                    return null;
-                }
-
-                return new ThreemaSimpleMessagingSender(
-                    serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                    apiIdentity,
-                    apiSecret);
+                return null;
             }
 
-            return null;
+            var apiSecret = ApiSecret.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(apiSecret))
+            {
+                return null;
+            }
+
+            return new ThreemaSimpleMessagingSender(
+                serviceProvider.GetRequiredService<IHttpClientFactory>(),
+                apiIdentity,
+                apiSecret);
         }
+
+        return null;
     }
 }

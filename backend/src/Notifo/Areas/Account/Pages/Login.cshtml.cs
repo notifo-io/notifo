@@ -13,69 +13,68 @@ using Notifo.Areas.Account.Pages.Utils;
 
 #pragma warning disable MA0048 // File name must match type name
 
-namespace Notifo.Areas.Account.Pages
+namespace Notifo.Areas.Account.Pages;
+
+public sealed class LoginModel : PageModelBase<LoginModel>
 {
-    public sealed class LoginModel : PageModelBase<LoginModel>
+    public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+    public bool RememberMe { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public bool Signup { get; set; }
+
+    [BindProperty]
+    public LoginInputModel Model { get; set; } = new LoginInputModel();
+
+    public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
     {
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
+        ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
-        public bool RememberMe { get; set; }
+        await next();
+    }
 
-        [BindProperty(SupportsGet = true)]
-        public bool Signup { get; set; }
+    public void OnGet()
+    {
+    }
 
-        [BindProperty]
-        public LoginInputModel Model { get; set; } = new LoginInputModel();
-
-        public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+    public async Task<IActionResult> OnPost(LoginInputModel model)
+    {
+        if (!ModelState.IsValid)
         {
-            ExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
-            await next();
-        }
-
-        public void OnGet()
-        {
-        }
-
-        public async Task<IActionResult> OnPost(LoginInputModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
-
-            if (result.Succeeded)
-            {
-                return RedirectTo(ReturnUrl);
-            }
-
-            if (result.IsLockedOut)
-            {
-                return RedirectToPage("./Lockout");
-            }
-
-            ModelState.AddModelError(string.Empty, T["InvalidLoginAttempt"]!);
-
             return Page();
         }
+
+        var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+
+        if (result.Succeeded)
+        {
+            return RedirectTo(ReturnUrl);
+        }
+
+        if (result.IsLockedOut)
+        {
+            return RedirectToPage("./Lockout");
+        }
+
+        ModelState.AddModelError(string.Empty, T["InvalidLoginAttempt"]!);
+
+        return Page();
     }
+}
 
-    public sealed class LoginInputModel
-    {
-        [Required]
-        [EmailAddress]
-        [Display(Name = nameof(Email))]
-        public string Email { get; set; }
+public sealed class LoginInputModel
+{
+    [Required]
+    [EmailAddress]
+    [Display(Name = nameof(Email))]
+    public string Email { get; set; }
 
-        [Required]
-        [Display(Name = nameof(Password))]
-        public string Password { get; set; }
+    [Required]
+    [Display(Name = nameof(Password))]
+    public string Password { get; set; }
 
-        [Required]
-        [Display(Name = nameof(RememberMe))]
-        public bool RememberMe { get; set; }
-    }
+    [Required]
+    [Display(Name = nameof(RememberMe))]
+    public bool RememberMe { get; set; }
 }

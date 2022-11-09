@@ -8,14 +8,13 @@
 using Notifo.Domain.Utils;
 using Notifo.Identity.ApiKey;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class ApiKeyServiceExtensions
 {
-    public static class ApiKeyServiceExtensions
+    public static void AddMyApiKey(this IServiceCollection services)
     {
-        public static void AddMyApiKey(this IServiceCollection services)
-        {
-            services.AddSingletonAs<ApiKeyGenerator>()
-                .As<IApiKeyGenerator>();
-        }
+        services.AddSingletonAs<ApiKeyGenerator>()
+            .As<IApiKeyGenerator>();
     }
 }

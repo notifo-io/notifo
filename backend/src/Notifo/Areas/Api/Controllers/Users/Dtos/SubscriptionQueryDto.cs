@@ -8,30 +8,29 @@
 using Notifo.Domain.Subscriptions;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+
+public sealed class SubscriptionQueryDto : QueryDto
 {
-    public sealed class SubscriptionQueryDto : QueryDto
+    /// <summary>
+    /// The topics we are interested in.
+    /// </summary>
+    public string? Topics { get; set; }
+
+    public SubscriptionQuery ToQuery(bool needsTotal, string? userId)
     {
-        /// <summary>
-        /// The topics we are interested in.
-        /// </summary>
-        public string? Topics { get; set; }
-
-        public SubscriptionQuery ToQuery(bool needsTotal, string? userId)
+        var result = SimpleMapper.Map(this, new SubscriptionQuery
         {
-            var result = SimpleMapper.Map(this, new SubscriptionQuery
-            {
-                TotalNeeded = needsTotal
-            });
+            TotalNeeded = needsTotal
+        });
 
-            result.UserId = userId;
+        result.UserId = userId;
 
-            if (!string.IsNullOrEmpty(Topics))
-            {
-                result.Topics = Topics.Split(',');
-            }
-
-            return result;
+        if (!string.IsNullOrEmpty(Topics))
+        {
+            result.Topics = Topics.Split(',');
         }
+
+        return result;
     }
 }

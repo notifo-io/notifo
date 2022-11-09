@@ -7,32 +7,31 @@
 
 using Notifo.Identity;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+public sealed class SetupMiddleware
 {
-    public sealed class SetupMiddleware
+    private readonly RequestDelegate next;
+    private bool isUserFound;
+
+    public SetupMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate next;
-        private bool isUserFound;
+        this.next = next;
+    }
 
-        public SetupMiddleware(RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, IUserService userService)
+    {
+        if (!isUserFound && await userService.IsEmptyAsync(context.RequestAborted))
         {
-            this.next = next;
+            var url = context.Request.PathBase.Add("/account/setup");
+
+            context.Response.Redirect(url);
         }
-
-        public async Task InvokeAsync(HttpContext context, IUserService userService)
+        else
         {
-            if (!isUserFound && await userService.IsEmptyAsync(context.RequestAborted))
-            {
-                var url = context.Request.PathBase.Add("/account/setup");
+            isUserFound = true;
 
-                context.Response.Redirect(url);
-            }
-            else
-            {
-                isUserFound = true;
-
-                await next(context);
-            }
+            await next(context);
         }
     }
 }

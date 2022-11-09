@@ -11,40 +11,39 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Identity.MongoDb
+namespace Notifo.Identity.MongoDb;
+
+public sealed class MongoDbXmlRepository : MongoDbRepository<MongoDbXmlEntity>, IXmlRepository
 {
-    public sealed class MongoDbXmlRepository : MongoDbRepository<MongoDbXmlEntity>, IXmlRepository
+    public MongoDbXmlRepository(IMongoDatabase database)
+        : base(database)
     {
-        public MongoDbXmlRepository(IMongoDatabase database)
-            : base(database)
+        InitializeAsync(default).Wait();
+    }
+
+    protected override string CollectionName()
+    {
+        return "Xml";
+    }
+
+    public IReadOnlyCollection<XElement> GetAllElements()
+    {
+        var documents = Collection.Find(new BsonDocument()).ToList();
+
+        var elements = documents.Select(x => XElement.Parse(x.Xml)).ToList();
+
+        return elements;
+    }
+
+    public void StoreElement(XElement element, string friendlyName)
+    {
+        var document = new MongoDbXmlEntity
         {
-            InitializeAsync(default).Wait();
-        }
+            FriendlyName = friendlyName,
+            // Serialize the XML to a string value.
+            Xml = element.ToString()
+        };
 
-        protected override string CollectionName()
-        {
-            return "Xml";
-        }
-
-        public IReadOnlyCollection<XElement> GetAllElements()
-        {
-            var documents = Collection.Find(new BsonDocument()).ToList();
-
-            var elements = documents.Select(x => XElement.Parse(x.Xml)).ToList();
-
-            return elements;
-        }
-
-        public void StoreElement(XElement element, string friendlyName)
-        {
-            var document = new MongoDbXmlEntity
-            {
-                FriendlyName = friendlyName,
-                // Serialize the XML to a string value.
-                Xml = element.ToString()
-            };
-
-            Collection.ReplaceOne(x => x.FriendlyName == friendlyName, document, UpsertReplace);
-        }
+        Collection.ReplaceOne(x => x.FriendlyName == friendlyName, document, UpsertReplace);
     }
 }

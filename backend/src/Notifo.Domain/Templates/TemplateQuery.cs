@@ -7,10 +7,9 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Templates
+namespace Notifo.Domain.Templates;
+
+public sealed record TemplateQuery : QueryBase
 {
-    public sealed record TemplateQuery : QueryBase
-    {
-        public string? Query { get; set; }
-    }
+    public string? Query { get; set; }
 }

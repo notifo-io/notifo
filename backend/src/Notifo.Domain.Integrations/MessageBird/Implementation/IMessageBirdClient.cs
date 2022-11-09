@@ -7,24 +7,23 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Notifo.Domain.Integrations.MessageBird.Implementation
+namespace Notifo.Domain.Integrations.MessageBird.Implementation;
+
+public interface IMessageBirdClient
 {
-    public interface IMessageBirdClient
-    {
-        Task<SmsWebhookRequest> ParseSmsWebhookAsync(HttpContext httpContext);
+    Task<SmsWebhookRequest> ParseSmsWebhookAsync(HttpContext httpContext);
 
-        Task<WhatsAppWebhookRequest> ParseWhatsAppWebhookAsync(HttpContext httpContext);
+    Task<WhatsAppWebhookRequest> ParseWhatsAppWebhookAsync(HttpContext httpContext);
 
-        Task<SmsResponse> SendSmsAsync(SmsMessage message,
-            CancellationToken ct);
+    Task<SmsResponse> SendSmsAsync(SmsMessage message,
+        CancellationToken ct);
 
-        Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTemplateMessage message,
-            CancellationToken ct);
+    Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTemplateMessage message,
+        CancellationToken ct);
 
-        Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
-            CancellationToken ct);
+    Task<ConversationResponse> SendWhatsAppAsync(WhatsAppTextMessage message,
+        CancellationToken ct);
 
-        Task<ConversationResponse> GetMessageAsync(string id,
-            CancellationToken ct);
-    }
+    Task<ConversationResponse> GetMessageAsync(string id,
+        CancellationToken ct);
 }

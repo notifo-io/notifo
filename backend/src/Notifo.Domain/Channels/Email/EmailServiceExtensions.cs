@@ -12,38 +12,37 @@ using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Scheduling;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class EmailServiceExtensions
 {
-    public static class EmailServiceExtensions
+    public static void AddMyEmailChannel(this IServiceCollection services)
     {
-        public static void AddMyEmailChannel(this IServiceCollection services)
+        services.AddHttpClient("notifo-mjml");
+
+        services.AddSingletonAs<MjmlRenderer>()
+            .As<IMjmlRenderer>();
+
+        services.AddSingletonAs<EmailChannel>()
+            .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();
+
+        services.AddSingletonAs<EmailFormatterNormal>()
+            .AsSelf();
+
+        services.AddSingletonAs<EmailFormatterLiquid>()
+            .AsSelf();
+
+        services.AddSingletonAs(c =>
         {
-            services.AddHttpClient("notifo-mjml");
-
-            services.AddSingletonAs<MjmlRenderer>()
-                .As<IMjmlRenderer>();
-
-            services.AddSingletonAs<EmailChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<EmailJob>>();
-
-            services.AddSingletonAs<EmailFormatterNormal>()
-                .AsSelf();
-
-            services.AddSingletonAs<EmailFormatterLiquid>()
-                .AsSelf();
-
-            services.AddSingletonAs(c =>
+            return new CompositeEmailFormatter(new IEmailFormatter[]
             {
-                return new CompositeEmailFormatter(new IEmailFormatter[]
-                {
-                    c.GetRequiredService<EmailFormatterNormal>(),
-                    c.GetRequiredService<EmailFormatterLiquid>()
-                });
-            }).As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
+                c.GetRequiredService<EmailFormatterNormal>(),
+                c.GetRequiredService<EmailFormatterLiquid>()
+            });
+        }).As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
 
-            services.AddChannelTemplates<EmailTemplate>();
+        services.AddChannelTemplates<EmailTemplate>();
 
-            services.AddScheduler<EmailJob>(Providers.Email);
-        }
+        services.AddScheduler<EmailJob>(Providers.Email);
     }
 }

@@ -11,76 +11,75 @@ using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Xunit;
 
-namespace Notifo.Domain.Counter
+namespace Notifo.Domain.Counter;
+
+public class CounterCollectorTests
 {
-    public class CounterCollectorTests
+    private readonly ICounterStore<string> store = A.Fake<ICounterStore<string>>();
+    private readonly CounterCollector<string> sut;
+
+    public CounterCollectorTests()
     {
-        private readonly ICounterStore<string> store = A.Fake<ICounterStore<string>>();
-        private readonly CounterCollector<string> sut;
+        var log = A.Fake<ILogger>();
 
-        public CounterCollectorTests()
+        sut = new CounterCollector<string>(store, log, 100, 10, 100);
+    }
+
+    [Fact]
+    public async Task Should_batch_writes()
+    {
+        var log = A.Fake<ILogger>();
+
+        var longDelay = new CounterCollector<string>(store, log, 100, 10, 10000);
+
+        for (var i = 0; i < 100; i++)
         {
-            var log = A.Fake<ILogger>();
+            var key = i.ToString(CultureInfo.InvariantCulture);
 
-            sut = new CounterCollector<string>(store, log, 100, 10, 100);
+            await longDelay.AddAsync(key, new CounterMap());
         }
 
-        [Fact]
-        public async Task Should_batch_writes()
+        await longDelay.DisposeAsync();
+
+        A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>.That.Matches(x => x.Count == 10), default))
+            .MustHaveHappenedANumberOfTimesMatching(x => x == 10);
+    }
+
+    [Fact]
+    public async Task Should_write_after_delay()
+    {
+        for (var i = 0; i < 9; i++)
         {
-            var log = A.Fake<ILogger>();
+            var key = i.ToString(CultureInfo.InvariantCulture);
 
-            var longDelay = new CounterCollector<string>(store, log, 100, 10, 10000);
-
-            for (var i = 0; i < 100; i++)
-            {
-                var key = i.ToString(CultureInfo.InvariantCulture);
-
-                await longDelay.AddAsync(key, new CounterMap());
-            }
-
-            await longDelay.DisposeAsync();
-
-            A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>.That.Matches(x => x.Count == 10), default))
-                .MustHaveHappenedANumberOfTimesMatching(x => x == 10);
+            await sut.AddAsync(key, new CounterMap());
         }
 
-        [Fact]
-        public async Task Should_write_after_delay()
+        A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>._, default))
+            .MustNotHaveHappened();
+
+        await Task.Delay(1000);
+
+        A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>.That.Matches(x => x.Count == 9), default))
+            .MustHaveHappened();
+    }
+
+    [Fact]
+    public async Task Should_group_after_delay()
+    {
+        for (var i = 0; i < 9; i++)
         {
-            for (var i = 0; i < 9; i++)
-            {
-                var key = i.ToString(CultureInfo.InvariantCulture);
+            var key = "1";
 
-                await sut.AddAsync(key, new CounterMap());
-            }
-
-            A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>._, default))
-                .MustNotHaveHappened();
-
-            await Task.Delay(1000);
-
-            A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>.That.Matches(x => x.Count == 9), default))
-                .MustHaveHappened();
+            await sut.AddAsync(key, new CounterMap());
         }
 
-        [Fact]
-        public async Task Should_group_after_delay()
-        {
-            for (var i = 0; i < 9; i++)
-            {
-                var key = "1";
+        A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>._, default))
+            .MustNotHaveHappened();
 
-                await sut.AddAsync(key, new CounterMap());
-            }
+        await Task.Delay(1000);
 
-            A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>._, default))
-                .MustNotHaveHappened();
-
-            await Task.Delay(1000);
-
-            A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>.That.Matches(x => x.Count == 1), default))
-                .MustHaveHappened();
-        }
+        A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>.That.Matches(x => x.Count == 1), default))
+            .MustHaveHappened();
     }
 }

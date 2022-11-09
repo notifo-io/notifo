@@ -8,27 +8,26 @@
 using Microsoft.Extensions.Caching.Memory;
 using Telegram.Bot;
 
-namespace Notifo.Domain.Integrations.Telegram
+namespace Notifo.Domain.Integrations.Telegram;
+
+public sealed class TelegramBotClientPool : CachePool<ITelegramBotClient>
 {
-    public sealed class TelegramBotClientPool : CachePool<ITelegramBotClient>
+    public TelegramBotClientPool(IMemoryCache memoryCache)
+        : base(memoryCache)
     {
-        public TelegramBotClientPool(IMemoryCache memoryCache)
-            : base(memoryCache)
+    }
+
+    public ITelegramBotClient GetBotClient(string accessToken)
+    {
+        var cacheKey = $"{nameof(TelegramBotClient)}_{accessToken}";
+
+        var found = GetOrCreate(cacheKey, TimeSpan.FromMinutes(5), () =>
         {
-        }
+            var botClient = new TelegramBotClient(accessToken);
 
-        public ITelegramBotClient GetBotClient(string accessToken)
-        {
-            var cacheKey = $"{nameof(TelegramBotClient)}_{accessToken}";
+            return botClient;
+        });
 
-            var found = GetOrCreate(cacheKey, TimeSpan.FromMinutes(5), () =>
-            {
-                var botClient = new TelegramBotClient(accessToken);
-
-                return botClient;
-            });
-
-            return found;
-        }
+        return found;
     }
 }

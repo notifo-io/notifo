@@ -9,24 +9,23 @@ using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.MobilePush.Dtos
+namespace Notifo.Areas.Api.Controllers.MobilePush.Dtos;
+
+public sealed class MobilePushTokenDto
 {
-    public sealed class MobilePushTokenDto
+    /// <summary>
+    /// The device token.
+    /// </summary>
+    [Required]
+    public string Token { get; set; }
+
+    /// <summary>
+    /// The device type.
+    /// </summary>
+    public MobileDeviceType DeviceType { get; set; }
+
+    public static MobilePushTokenDto FromDomainObject(MobilePushToken source)
     {
-        /// <summary>
-        /// The device token.
-        /// </summary>
-        [Required]
-        public string Token { get; set; }
-
-        /// <summary>
-        /// The device type.
-        /// </summary>
-        public MobileDeviceType DeviceType { get; set; }
-
-        public static MobilePushTokenDto FromDomainObject(MobilePushToken source)
-        {
-            return SimpleMapper.Map(source, new MobilePushTokenDto());
-        }
+        return SimpleMapper.Map(source, new MobilePushTokenDto());
     }
 }

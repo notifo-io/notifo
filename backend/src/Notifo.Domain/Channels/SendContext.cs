@@ -8,18 +8,17 @@
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
 
-namespace Notifo.Domain.Channels
+namespace Notifo.Domain.Channels;
+
+public readonly struct SendContext
 {
-    public readonly struct SendContext
-    {
-        public App App { get; init; }
+    public App App { get; init; }
 
-        public User User { get; init; }
+    public User User { get; init; }
 
-        public string AppId { get; init; }
+    public string AppId { get; init; }
 
-        public string UserId { get; init; }
+    public string UserId { get; init; }
 
-        public bool IsUpdate { get; init; }
-    }
+    public bool IsUpdate { get; init; }
 }

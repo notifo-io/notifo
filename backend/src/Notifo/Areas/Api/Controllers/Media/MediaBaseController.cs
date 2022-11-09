@@ -12,168 +12,167 @@ using Notifo.Infrastructure;
 using Notifo.Pipeline;
 using Squidex.Assets;
 
-namespace Notifo.Areas.Api.Controllers.Media
+namespace Notifo.Areas.Api.Controllers.Media;
+
+public abstract class MediaBaseController : BaseController
 {
-    public abstract class MediaBaseController : BaseController
+    private readonly IAssetStore assetStore;
+    private readonly IAssetThumbnailGenerator assetThumbnailGenerator;
+
+    public sealed class ResizeSource
     {
-        private readonly IAssetStore assetStore;
-        private readonly IAssetThumbnailGenerator assetThumbnailGenerator;
+        public string FileId { get; init; }
 
-        public sealed class ResizeSource
+        public string FileName { get; init; }
+
+        public string MimeType { get; init; }
+
+        public long FileSize { get; init; }
+
+        public bool IsImage { get; init; } = true;
+
+        public Func<Stream, CancellationToken, Task> OpenRead { get; init; }
+    }
+
+    protected MediaBaseController(
+        IAssetStore assetStore,
+        IAssetThumbnailGenerator assetThumbnailGenerator)
+    {
+        this.assetStore = assetStore;
+        this.assetThumbnailGenerator = assetThumbnailGenerator;
+    }
+
+    protected IActionResult DeliverAssetAsync(ResizeSource source, MediaFileQueryDto? query)
+    {
+        query ??= new MediaFileQueryDto();
+
+        if (source == null)
         {
-            public string FileId { get; init; }
-
-            public string FileName { get; init; }
-
-            public string MimeType { get; init; }
-
-            public long FileSize { get; init; }
-
-            public bool IsImage { get; init; } = true;
-
-            public Func<Stream, CancellationToken, Task> OpenRead { get; init; }
+            return NotFound();
         }
 
-        protected MediaBaseController(
-            IAssetStore assetStore,
-            IAssetThumbnailGenerator assetThumbnailGenerator)
+        var resizeOptions = query.ToResizeOptions();
+
+        if (query.CacheDuration > 0)
         {
-            this.assetStore = assetStore;
-            this.assetThumbnailGenerator = assetThumbnailGenerator;
+            Response.Headers[HeaderNames.CacheControl] = $"public,max-age={query.CacheDuration}";
         }
 
-        protected IActionResult DeliverAssetAsync(ResizeSource source, MediaFileQueryDto? query)
+        var contentLength = (long?)null;
+        var contentCallback = (FileCallback?)null;
+        var contentType = source.MimeType;
+
+        if (source.IsImage && assetThumbnailGenerator.IsResizable(source.MimeType, resizeOptions, out var destinationMimeType))
         {
-            query ??= new MediaFileQueryDto();
-
-            if (source == null)
+            if (destinationMimeType != null)
             {
-                return NotFound();
+                contentType = destinationMimeType;
             }
 
-            var resizeOptions = query.ToResizeOptions();
-
-            if (query.CacheDuration > 0)
+            contentCallback = async (bodyStream, range, ct) =>
             {
-                Response.Headers[HeaderNames.CacheControl] = $"public,max-age={query.CacheDuration}";
-            }
+                var cacheId = $"{source.FileId}_{resizeOptions}";
 
-            var contentLength = (long?)null;
-            var contentCallback = (FileCallback?)null;
-            var contentType = source.MimeType;
-
-            if (source.IsImage && assetThumbnailGenerator.IsResizable(source.MimeType, resizeOptions, out var destinationMimeType))
-            {
-                if (destinationMimeType != null)
+                if (query.ForceResize)
                 {
-                    contentType = destinationMimeType;
+                    await ResizeAsync(source, contentType, bodyStream, cacheId, resizeOptions, true, ct);
                 }
-
-                contentCallback = async (bodyStream, range, ct) =>
+                else
                 {
-                    var cacheId = $"{source.FileId}_{resizeOptions}";
-
-                    if (query.ForceResize)
+                    try
                     {
-                        await ResizeAsync(source, contentType, bodyStream, cacheId, resizeOptions, true, ct);
+                        await assetStore.DownloadAsync(cacheId, bodyStream, ct: ct);
                     }
-                    else
+                    catch (AssetNotFoundException)
                     {
-                        try
-                        {
-                            await assetStore.DownloadAsync(cacheId, bodyStream, ct: ct);
-                        }
-                        catch (AssetNotFoundException)
-                        {
-                            await ResizeAsync(source, contentType, bodyStream, cacheId, resizeOptions, false, ct);
-                        }
+                        await ResizeAsync(source, contentType, bodyStream, cacheId, resizeOptions, false, ct);
                     }
-                };
-            }
-            else
-            {
-                contentLength = source.FileSize;
+                }
+            };
+        }
+        else
+        {
+            contentLength = source.FileSize;
 
-                contentCallback = async (bodyStream, range, ct) =>
-                {
-                    await source.OpenRead(bodyStream, ct);
-                };
-            }
-
-            return new FileCallbackResult(contentType, contentCallback)
+            contentCallback = async (bodyStream, range, ct) =>
             {
-                EnableRangeProcessing = false,
-                ErrorAs404 = true,
-                FileDownloadName = source.FileName,
-                FileSize = contentLength,
-                SendInline = query.Download != 1
+                await source.OpenRead(bodyStream, ct);
             };
         }
 
-        private async Task ResizeAsync(ResizeSource source, string destinationContentType, Stream target, string cacheId, ResizeOptions resizeOptions, bool overwrite,
-            CancellationToken ct)
+        return new FileCallbackResult(contentType, contentCallback)
         {
+            EnableRangeProcessing = false,
+            ErrorAs404 = true,
+            FileDownloadName = source.FileName,
+            FileSize = contentLength,
+            SendInline = query.Download != 1
+        };
+    }
+
+    private async Task ResizeAsync(ResizeSource source, string destinationContentType, Stream target, string cacheId, ResizeOptions resizeOptions, bool overwrite,
+        CancellationToken ct)
+    {
 #pragma warning disable MA0040 // Flow the cancellation token
-            using var activity = Telemetry.Activities.StartActivity("Resize");
+        using var activity = Telemetry.Activities.StartActivity("Resize");
 
-            await using var assetOriginal = new TempAssetFile(source.FileName, source.MimeType, 0);
-            await using var assetResized = new TempAssetFile(source.FileName, destinationContentType, 0);
+        await using var assetOriginal = new TempAssetFile(source.FileName, source.MimeType, 0);
+        await using var assetResized = new TempAssetFile(source.FileName, destinationContentType, 0);
 
-            using (Telemetry.Activities.StartActivity("Read"))
+        using (Telemetry.Activities.StartActivity("Read"))
+        {
+            await using (var originalStream = assetOriginal.OpenWrite())
             {
-                await using (var originalStream = assetOriginal.OpenWrite())
-                {
-                    await source.OpenRead(originalStream, ct);
-                }
+                await source.OpenRead(originalStream, ct);
             }
+        }
 
-            using (Telemetry.Activities.StartActivity("Resize"))
+        using (Telemetry.Activities.StartActivity("Resize"))
+        {
+            try
             {
-                try
+                await using (var originalStream = assetOriginal.OpenRead())
                 {
-                    await using (var originalStream = assetOriginal.OpenRead())
+                    await using (var resizeStream = assetResized.OpenWrite())
                     {
-                        await using (var resizeStream = assetResized.OpenWrite())
-                        {
-                            await assetThumbnailGenerator.CreateThumbnailAsync(originalStream, source.MimeType, resizeStream, resizeOptions);
-                        }
-                    }
-                }
-                catch
-                {
-                    await using (var originalStream = assetOriginal.OpenRead())
-                    {
-                        await using (var resizeStream = assetResized.OpenWrite())
-                        {
-                            await originalStream.CopyToAsync(resizeStream);
-                        }
+                        await assetThumbnailGenerator.CreateThumbnailAsync(originalStream, source.MimeType, resizeStream, resizeOptions);
                     }
                 }
             }
-
-            using (Telemetry.Activities.StartActivity("Save"))
+            catch
             {
-                try
+                await using (var originalStream = assetOriginal.OpenRead())
                 {
-                    await using (var resizeStream = assetResized.OpenRead())
+                    await using (var resizeStream = assetResized.OpenWrite())
                     {
-                        await assetStore.UploadAsync(cacheId, resizeStream, overwrite);
+                        await originalStream.CopyToAsync(resizeStream);
                     }
                 }
-                catch (AssetAlreadyExistsException)
-                {
-                    return;
-                }
             }
+        }
 
-            using (Telemetry.Activities.StartActivity("Write"))
+        using (Telemetry.Activities.StartActivity("Save"))
+        {
+            try
             {
                 await using (var resizeStream = assetResized.OpenRead())
                 {
-                    await resizeStream.CopyToAsync(target, ct);
+                    await assetStore.UploadAsync(cacheId, resizeStream, overwrite);
                 }
             }
-#pragma warning restore MA0040 // Flow the cancellation token
+            catch (AssetAlreadyExistsException)
+            {
+                return;
+            }
         }
+
+        using (Telemetry.Activities.StartActivity("Write"))
+        {
+            await using (var resizeStream = assetResized.OpenRead())
+            {
+                await resizeStream.CopyToAsync(target, ct);
+            }
+        }
+#pragma warning restore MA0040 // Flow the cancellation token
     }
 }

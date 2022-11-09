@@ -8,15 +8,14 @@
 using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Apps;
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Sms;
+
+public interface ISmsSender
 {
-    public interface ISmsSender
-    {
-        string Name { get; }
+    string Name { get; }
 
-        Task<SmsResult> SendAsync(App app, string to, string body, string token,
-            CancellationToken ct = default);
+    Task<SmsResult> SendAsync(App app, string to, string body, string token,
+        CancellationToken ct = default);
 
-        Task HandleCallbackAsync(App app, HttpContext httpContext);
-    }
+    Task HandleCallbackAsync(App app, HttpContext httpContext);
 }

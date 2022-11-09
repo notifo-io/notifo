@@ -7,59 +7,58 @@
 
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+public static class Updater
 {
-    public static class Updater
+    public static async Task<T> UpdateRetriedAsync<T>(int numRetries, Func<Task<T>> action)
     {
-        public static async Task<T> UpdateRetriedAsync<T>(int numRetries, Func<Task<T>> action)
+        for (var i = 1; i <= numRetries; i++)
         {
-            for (var i = 1; i <= numRetries; i++)
+            try
             {
-                try
+                return await action();
+            }
+            catch (InconsistentStateException)
+            {
+                if (i == numRetries)
                 {
-                    return await action();
-                }
-                catch (InconsistentStateException)
-                {
-                    if (i == numRetries)
-                    {
-                        throw;
-                    }
-                }
-                catch (UniqueConstraintException)
-                {
-                    if (i == numRetries)
-                    {
-                        throw;
-                    }
+                    throw;
                 }
             }
-
-            ThrowHelper.InvalidOperationException("Invalid state reached.");
-            return default!;
+            catch (UniqueConstraintException)
+            {
+                if (i == numRetries)
+                {
+                    throw;
+                }
+            }
         }
 
-        public static async Task UpdateRetriedAsync(int numRetries, Func<Task> action)
+        ThrowHelper.InvalidOperationException("Invalid state reached.");
+        return default!;
+    }
+
+    public static async Task UpdateRetriedAsync(int numRetries, Func<Task> action)
+    {
+        for (var i = 1; i <= numRetries; i++)
         {
-            for (var i = 1; i <= numRetries; i++)
+            try
             {
-                try
+                await action();
+            }
+            catch (InconsistentStateException)
+            {
+                if (i == numRetries)
                 {
-                    await action();
+                    throw;
                 }
-                catch (InconsistentStateException)
+            }
+            catch (UniqueConstraintException)
+            {
+                if (i == numRetries)
                 {
-                    if (i == numRetries)
-                    {
-                        throw;
-                    }
-                }
-                catch (UniqueConstraintException)
-                {
-                    if (i == numRetries)
-                    {
-                        throw;
-                    }
+                    throw;
                 }
             }
         }

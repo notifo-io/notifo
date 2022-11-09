@@ -9,80 +9,79 @@ using Notifo.Infrastructure;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public readonly record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
 {
-    public readonly record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
+    public readonly bool IsValid => NotificationId != default;
+
+    public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default)
     {
-        public readonly bool IsValid => NotificationId != default;
+        TryParse(id, channel, configurationId, out var result);
 
-        public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default)
+        return result;
+    }
+
+    public static bool TryParse(string id, string? channel, Guid configurationId, out TrackingToken result)
+    {
+        result = default;
+
+        if (string.IsNullOrWhiteSpace(id))
         {
-            TryParse(id, channel, configurationId, out var result);
-
-            return result;
+            return false;
         }
 
-        public static bool TryParse(string id, string? channel, Guid configurationId, out TrackingToken result)
+        if (Guid.TryParse(id, out var guid))
         {
-            result = default;
+            result = new TrackingToken(guid, channel, configurationId);
+            return true;
+        }
 
-            if (string.IsNullOrWhiteSpace(id))
+        try
+        {
+            var decoded = id.FromBase64().Split('|');
+
+            if (!Guid.TryParse(decoded[0], out guid))
             {
                 return false;
             }
 
-            if (Guid.TryParse(id, out var guid))
+            if (decoded.Length >= 1 && !string.IsNullOrWhiteSpace(decoded[1]))
             {
-                result = new TrackingToken(guid, channel, configurationId);
-                return true;
+                channel = decoded[1];
             }
 
-            try
+            if (decoded.Length > 2 && !string.IsNullOrWhiteSpace(decoded[2]))
             {
-                var decoded = id.FromBase64().Split('|');
+                var configurationIdString = string.Join('|', decoded.Skip(2));
 
-                if (!Guid.TryParse(decoded[0], out guid))
+                if (Guid.TryParse(configurationIdString, out var parsed) && parsed != default)
                 {
-                    return false;
+                    configurationId = parsed;
                 }
-
-                if (decoded.Length >= 1 && !string.IsNullOrWhiteSpace(decoded[1]))
-                {
-                    channel = decoded[1];
-                }
-
-                if (decoded.Length > 2 && !string.IsNullOrWhiteSpace(decoded[2]))
-                {
-                    var configurationIdString = string.Join('|', decoded.Skip(2));
-
-                    if (Guid.TryParse(configurationIdString, out var parsed) && parsed != default)
-                    {
-                        configurationId = parsed;
-                    }
-                }
-
-                if (string.IsNullOrWhiteSpace(channel))
-                {
-                    channel = null;
-                }
-
-                result = new TrackingToken(guid, channel, configurationId);
-                return true;
             }
-            catch (FormatException)
+
+            if (string.IsNullOrWhiteSpace(channel))
             {
-                return false;
+                channel = null;
             }
+
+            result = new TrackingToken(guid, channel, configurationId);
+            return true;
         }
-
-        public readonly string ToParsableString()
+        catch (FormatException)
         {
-            var compound =
-                ConfigurationId == default ?
-                $"{NotificationId}|{Channel}" :
-                $"{NotificationId}|{Channel}|{ConfigurationId}";
-
-            return compound.ToBase64();
+            return false;
         }
+    }
+
+    public readonly string ToParsableString()
+    {
+        var compound =
+            ConfigurationId == default ?
+            $"{NotificationId}|{Channel}" :
+            $"{NotificationId}|{Channel}|{ConfigurationId}";
+
+        return compound.ToBase64();
     }
 }

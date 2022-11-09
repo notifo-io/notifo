@@ -7,27 +7,26 @@
 
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Channels
+namespace Notifo.Domain.Channels;
+
+public interface ICommunicationChannel
 {
-    public interface ICommunicationChannel
+    string Name { get; }
+
+    bool IsSystem => false;
+
+    Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, SendConfiguration configuration, SendContext context,
+        CancellationToken ct);
+
+    IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context);
+
+    Task HandleDeliveredAsync(TrackingToken token)
     {
-        string Name { get; }
+        return Task.CompletedTask;
+    }
 
-        bool IsSystem => false;
-
-        Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, SendConfiguration configuration, SendContext context,
-            CancellationToken ct);
-
-        IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context);
-
-        Task HandleDeliveredAsync(TrackingToken token)
-        {
-            return Task.CompletedTask;
-        }
-
-        Task HandleSeenAsync(TrackingToken token)
-        {
-            return Task.CompletedTask;
-        }
+    Task HandleSeenAsync(TrackingToken token)
+    {
+        return Task.CompletedTask;
     }
 }

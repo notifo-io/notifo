@@ -10,16 +10,15 @@ using Notifo.Infrastructure.Texts;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-namespace Notifo.Domain.Templates
+namespace Notifo.Domain.Templates;
+
+public sealed record Template(string AppId, string Code, Instant Created)
 {
-    public sealed record Template(string AppId, string Code, Instant Created)
-    {
-        public bool IsAutoCreated { get; init; }
+    public bool IsAutoCreated { get; init; }
 
-        public Instant LastUpdate { get; init; }
+    public Instant LastUpdate { get; init; }
 
-        public NotificationFormatting<LocalizedText> Formatting { get; init; } = new NotificationFormatting<LocalizedText>();
+    public NotificationFormatting<LocalizedText> Formatting { get; init; } = new NotificationFormatting<LocalizedText>();
 
-        public ChannelSettings Settings { get; init; } = new ChannelSettings();
-    }
+    public ChannelSettings Settings { get; init; } = new ChannelSettings();
 }

@@ -9,100 +9,99 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Integrations.Resources;
 
-namespace Notifo.Domain.Integrations.Firebase
+namespace Notifo.Domain.Integrations.Firebase;
+
+public sealed class FirebaseIntegration : IIntegration
 {
-    public sealed class FirebaseIntegration : IIntegration
+    private readonly FirebaseMessagingPool messagingPool;
+
+    private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", PropertyType.Text)
     {
-        private readonly FirebaseMessagingPool messagingPool;
+        EditorLabel = Texts.Firebase_ProjectIdLabel,
+        EditorDescription = null,
+        IsRequired = true,
+        Summary = true
+    };
 
-        private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", PropertyType.Text)
-        {
-            EditorLabel = Texts.Firebase_ProjectIdLabel,
-            EditorDescription = null,
-            IsRequired = true,
-            Summary = true
-        };
+    private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", PropertyType.MultilineText)
+    {
+        EditorLabel = Texts.Firebase_CredentialsLabel,
+        EditorDescription = Texts.Firebase_CredentialsHints,
+        IsRequired = true
+    };
 
-        private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", PropertyType.MultilineText)
-        {
-            EditorLabel = Texts.Firebase_CredentialsLabel,
-            EditorDescription = Texts.Firebase_CredentialsHints,
-            IsRequired = true
-        };
+    private static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", PropertyType.Boolean)
+    {
+        EditorLabel = Texts.Firebase_SilentAndroidLabel,
+        EditorDescription = Texts.Firebase_SilentAndroidDescription,
+        IsRequired = true
+    };
 
-        private static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", PropertyType.Boolean)
-        {
-            EditorLabel = Texts.Firebase_SilentAndroidLabel,
-            EditorDescription = Texts.Firebase_SilentAndroidDescription,
-            IsRequired = true
-        };
+    private static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
+    {
+        EditorLabel = Texts.Firebase_SilentIOSLabel,
+        EditorDescription = Texts.Firebase_SilentIOSDescription,
+        IsRequired = true
+    };
 
-        private static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
-        {
-            EditorLabel = Texts.Firebase_SilentIOSLabel,
-            EditorDescription = Texts.Firebase_SilentIOSDescription,
-            IsRequired = true
-        };
-
-        public IntegrationDefinition Definition { get; } =
-            new IntegrationDefinition(
-                "Firebase",
-                Texts.Firebase_Name,
-                "./integrations/firebase.svg",
-                new List<IntegrationProperty>
-                {
-                    ProjectIdProperty,
-                    SilentAndroidProperty,
-                    SilentISOProperty,
-                    CredentialsProperty
-                },
-                new List<UserProperty>(),
-                new HashSet<string>
-                {
-                    Providers.MobilePush
-                })
+    public IntegrationDefinition Definition { get; } =
+        new IntegrationDefinition(
+            "Firebase",
+            Texts.Firebase_Name,
+            "./integrations/firebase.svg",
+            new List<IntegrationProperty>
             {
-                Description = Texts.Firebase_Description
-            };
-
-        public FirebaseIntegration(FirebaseMessagingPool messagingPool)
-        {
-            this.messagingPool = messagingPool;
-        }
-
-        public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
-        {
-            return serviceType == typeof(IMobilePushSender);
-        }
-
-        public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
-        {
-            if (CanCreate(serviceType, id, configured))
+                ProjectIdProperty,
+                SilentAndroidProperty,
+                SilentISOProperty,
+                CredentialsProperty
+            },
+            new List<UserProperty>(),
+            new HashSet<string>
             {
-                var projectId = ProjectIdProperty.GetString(configured);
+                Providers.MobilePush
+            })
+        {
+            Description = Texts.Firebase_Description
+        };
 
-                if (string.IsNullOrWhiteSpace(projectId))
-                {
-                    return null;
-                }
+    public FirebaseIntegration(FirebaseMessagingPool messagingPool)
+    {
+        this.messagingPool = messagingPool;
+    }
 
-                var credentials = CredentialsProperty.GetString(configured);
+    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    {
+        return serviceType == typeof(IMobilePushSender);
+    }
 
-                if (string.IsNullOrWhiteSpace(credentials))
-                {
-                    return null;
-                }
+    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    {
+        if (CanCreate(serviceType, id, configured))
+        {
+            var projectId = ProjectIdProperty.GetString(configured);
 
-                var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
-                var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
-
-                return new FirebaseMobilePushSender(
-                    () => messagingPool.GetMessaging(projectId, credentials),
-                    sendSilentIOS,
-                    sendSilentAndroid);
+            if (string.IsNullOrWhiteSpace(projectId))
+            {
+                return null;
             }
 
-            return null;
+            var credentials = CredentialsProperty.GetString(configured);
+
+            if (string.IsNullOrWhiteSpace(credentials))
+            {
+                return null;
+            }
+
+            var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
+            var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
+
+            return new FirebaseMobilePushSender(
+                () => messagingPool.GetMessaging(projectId, credentials),
+                sendSilentIOS,
+                sendSilentAndroid);
         }
+
+        return null;
     }
 }

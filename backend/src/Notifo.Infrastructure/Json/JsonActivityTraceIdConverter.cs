@@ -9,36 +9,35 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Notifo.Infrastructure.Json
+namespace Notifo.Infrastructure.Json;
+
+public sealed class JsonActivityTraceIdConverter : JsonConverter<ActivityTraceId>
 {
-    public sealed class JsonActivityTraceIdConverter : JsonConverter<ActivityTraceId>
+    public override ActivityTraceId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override ActivityTraceId Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        switch (reader.TokenType)
         {
-            switch (reader.TokenType)
-            {
-                case JsonTokenType.Null:
-                    return default;
-                case JsonTokenType.String:
-                    var text = reader.GetString();
+            case JsonTokenType.Null:
+                return default;
+            case JsonTokenType.String:
+                var text = reader.GetString();
 
-                    return ActivityTraceId.CreateFromString(text);
-                default:
-                    ThrowHelper.JsonException($"Expected JsonTokenType.String or JsonTokenType.Null, got {reader.TokenType}.");
-                    return default;
-            }
+                return ActivityTraceId.CreateFromString(text);
+            default:
+                ThrowHelper.JsonException($"Expected JsonTokenType.String or JsonTokenType.Null, got {reader.TokenType}.");
+                return default;
         }
+    }
 
-        public override void Write(Utf8JsonWriter writer, ActivityTraceId value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, ActivityTraceId value, JsonSerializerOptions options)
+    {
+        if (value == default)
         {
-            if (value == default)
-            {
-                writer.WriteNullValue();
-            }
-            else
-            {
-                writer.WriteStringValue(value.ToString());
-            }
+            writer.WriteNullValue();
+        }
+        else
+        {
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

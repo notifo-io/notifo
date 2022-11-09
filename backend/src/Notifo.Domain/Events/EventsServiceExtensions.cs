@@ -12,39 +12,38 @@ using Notifo.Domain.Events.MongoDb;
 using Notifo.Domain.Events.Pipeline;
 using Squidex.Messaging;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class EventsServiceExtensions
 {
-    public static class EventsServiceExtensions
+    public static void AddMyEvents(this IServiceCollection services, IConfiguration config)
     {
-        public static void AddMyEvents(this IServiceCollection services, IConfiguration config)
+        var options = config.GetSection("pipeline:events").Get<EventPipelineOptions>() ?? new EventPipelineOptions();
+
+        services.ConfigureAndValidate<EventsOptions>(config, "events");
+
+        services.AddMessaging(new ChannelName(options.ChannelName), true);
+
+        services.Configure<MessagingOptions>(messaging =>
         {
-            var options = config.GetSection("pipeline:events").Get<EventPipelineOptions>() ?? new EventPipelineOptions();
+            messaging.Routing.Add(x => x is EventMessage, options.ChannelName);
+        });
 
-            services.ConfigureAndValidate<EventsOptions>(config, "events");
+        services.AddSingletonAs<EventStore>()
+            .As<IEventStore>().As<ICounterTarget>();
 
-            services.AddMessaging(new ChannelName(options.ChannelName), true);
+        services.AddSingletonAs<EventConsumer>()
+            .AsSelf().As<IMessageHandler>();
 
-            services.Configure<MessagingOptions>(messaging =>
-            {
-                messaging.Routing.Add(x => x is EventMessage, options.ChannelName);
-            });
+        services.AddSingletonAs<EventPublisher>()
+            .As<IEventPublisher>();
+    }
 
-            services.AddSingletonAs<EventStore>()
-                .As<IEventStore>().As<ICounterTarget>();
+    public static void AddMyMongoEvents(this IServiceCollection services)
+    {
+        NotificationSendSerializer.Register();
 
-            services.AddSingletonAs<EventConsumer>()
-                .AsSelf().As<IMessageHandler>();
-
-            services.AddSingletonAs<EventPublisher>()
-                .As<IEventPublisher>();
-        }
-
-        public static void AddMyMongoEvents(this IServiceCollection services)
-        {
-            NotificationSendSerializer.Register();
-
-            services.AddSingletonAs<MongoDbEventRepository>()
-                .As<IEventRepository>();
-        }
+        services.AddSingletonAs<MongoDbEventRepository>()
+            .As<IEventRepository>();
     }
 }

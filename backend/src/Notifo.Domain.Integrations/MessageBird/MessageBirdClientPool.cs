@@ -9,35 +9,34 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 
-namespace Notifo.Domain.Integrations.MessageBird
+namespace Notifo.Domain.Integrations.MessageBird;
+
+public sealed class MessageBirdClientPool : CachePool<IMessageBirdClient>
 {
-    public sealed class MessageBirdClientPool : CachePool<IMessageBirdClient>
+    private readonly IHttpClientFactory httpClientFactory;
+
+    public MessageBirdClientPool(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory)
+        : base(memoryCache)
     {
-        private readonly IHttpClientFactory httpClientFactory;
+        this.httpClientFactory = httpClientFactory;
+    }
 
-        public MessageBirdClientPool(IMemoryCache memoryCache, IHttpClientFactory httpClientFactory)
-            : base(memoryCache)
+    public IMessageBirdClient GetClient(string accessKey)
+    {
+        var cacheKey = $"MessageBirdSmsSender_{accessKey}";
+
+        var found = GetOrCreate(cacheKey, () =>
         {
-            this.httpClientFactory = httpClientFactory;
-        }
-
-        public IMessageBirdClient GetClient(string accessKey)
-        {
-            var cacheKey = $"MessageBirdSmsSender_{accessKey}";
-
-            var found = GetOrCreate(cacheKey, () =>
+            var options = Options.Create(new MessageBirdOptions
             {
-                var options = Options.Create(new MessageBirdOptions
-                {
-                    AccessKey = accessKey
-                });
-
-                var sender = new MessageBirdClient(httpClientFactory, options);
-
-                return sender;
+                AccessKey = accessKey
             });
 
-            return found;
-        }
+            var sender = new MessageBirdClient(httpClientFactory, options);
+
+            return sender;
+        });
+
+        return found;
     }
 }

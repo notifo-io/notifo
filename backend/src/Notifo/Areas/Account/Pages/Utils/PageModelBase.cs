@@ -14,94 +14,93 @@ using Notifo.Domain.Identity;
 using Notifo.Identity;
 using Squidex.Hosting;
 
-namespace Notifo.Areas.Account.Pages.Utils
+namespace Notifo.Areas.Account.Pages.Utils;
+
+public abstract class PageModelBase<TDerived> : PageModel
 {
-    public abstract class PageModelBase<TDerived> : PageModel
+    private readonly Lazy<SignInManager<IdentityUser>> signInManager;
+    private readonly Lazy<IUserService> userService;
+    private readonly Lazy<IUrlGenerator> urlGenerator;
+    private readonly Lazy<ILogger<TDerived>> logger;
+    private readonly Lazy<IStringLocalizer<AppResources>> localizer;
+    private readonly Lazy<IOptions<NotifoIdentityOptions>> options;
+
+    public SignInManager<IdentityUser> SignInManager
     {
-        private readonly Lazy<SignInManager<IdentityUser>> signInManager;
-        private readonly Lazy<IUserService> userService;
-        private readonly Lazy<IUrlGenerator> urlGenerator;
-        private readonly Lazy<ILogger<TDerived>> logger;
-        private readonly Lazy<IStringLocalizer<AppResources>> localizer;
-        private readonly Lazy<IOptions<NotifoIdentityOptions>> options;
+        get => signInManager.Value;
+    }
 
-        public SignInManager<IdentityUser> SignInManager
+    public IUserService UserService
+    {
+        get => userService.Value;
+    }
+
+    public IUrlGenerator UrlGenerator
+    {
+        get => urlGenerator.Value;
+    }
+
+    public ILogger<TDerived> Logger
+    {
+        get => logger.Value;
+    }
+
+    public IStringLocalizer<AppResources> T
+    {
+        get => localizer.Value;
+    }
+
+    [BindProperty(SupportsGet = true)]
+    public string? ReturnUrl { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public string? StatusMessage { get; set; }
+
+    [BindProperty(SupportsGet = true)]
+    public string? ErrorMessage { get; set; }
+
+    public bool HasPasswordAuth => options.Value.Value.AllowPasswordAuth;
+
+    protected PageModelBase()
+    {
+        SetupService(ref logger!);
+        SetupService(ref localizer!);
+        SetupService(ref signInManager!);
+        SetupService(ref userService!);
+        SetupService(ref urlGenerator!);
+        SetupService(ref options!);
+    }
+
+    private void SetupService<TService>(ref Lazy<TService>? value) where TService : notnull
+    {
+        value = new Lazy<TService>(() => HttpContext.RequestServices.GetRequiredService<TService>());
+    }
+
+    protected IActionResult RedirectTo(string? returnUrl)
+    {
+        if (Uri.IsWellFormedUriString(returnUrl, UriKind.RelativeOrAbsolute))
         {
-            get => signInManager.Value;
+            return LocalRedirect(returnUrl);
         }
-
-        public IUserService UserService
+        else
         {
-            get => userService.Value;
+            return Redirect("~/");
         }
+    }
 
-        public IUrlGenerator UrlGenerator
+    protected async Task<IUser> GetUserAsync()
+    {
+        var user = await UserService.GetAsync(User, HttpContext.RequestAborted);
+
+        if (user == null)
         {
-            get => urlGenerator.Value;
-        }
-
-        public ILogger<TDerived> Logger
-        {
-            get => logger.Value;
-        }
-
-        public IStringLocalizer<AppResources> T
-        {
-            get => localizer.Value;
-        }
-
-        [BindProperty(SupportsGet = true)]
-        public string? ReturnUrl { get; set; }
-
-        [BindProperty(SupportsGet = true)]
-        public string? StatusMessage { get; set; }
-
-        [BindProperty(SupportsGet = true)]
-        public string? ErrorMessage { get; set; }
-
-        public bool HasPasswordAuth => options.Value.Value.AllowPasswordAuth;
-
-        protected PageModelBase()
-        {
-            SetupService(ref logger!);
-            SetupService(ref localizer!);
-            SetupService(ref signInManager!);
-            SetupService(ref userService!);
-            SetupService(ref urlGenerator!);
-            SetupService(ref options!);
-        }
-
-        private void SetupService<TService>(ref Lazy<TService>? value) where TService : notnull
-        {
-            value = new Lazy<TService>(() => HttpContext.RequestServices.GetRequiredService<TService>());
-        }
-
-        protected IActionResult RedirectTo(string? returnUrl)
-        {
-            if (Uri.IsWellFormedUriString(returnUrl, UriKind.RelativeOrAbsolute))
-            {
-                return LocalRedirect(returnUrl);
-            }
-            else
-            {
-                return Redirect("~/");
-            }
-        }
-
-        protected async Task<IUser> GetUserAsync()
-        {
-            var user = await UserService.GetAsync(User, HttpContext.RequestAborted);
-
-            if (user == null)
-            {
-                var userId = UserService.GetUserId(User, HttpContext.RequestAborted);
+            var userId = UserService.GetUserId(User, HttpContext.RequestAborted);
 
 #pragma warning disable MA0014 // Do not raise System.ApplicationException type
-                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            throw new ApplicationException($"Unable to load user with ID '{userId}'.");
 #pragma warning restore MA0014 // Do not raise System.ApplicationException type
-            }
-
-            return user;
         }
+
+        return user;
     }
 }

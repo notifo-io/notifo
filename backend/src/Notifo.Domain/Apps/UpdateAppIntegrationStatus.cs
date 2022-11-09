@@ -11,41 +11,40 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Apps
+namespace Notifo.Domain.Apps;
+
+public sealed class UpdateAppIntegrationStatus : ICommand<App>
 {
-    public sealed class UpdateAppIntegrationStatus : ICommand<App>
+    public Dictionary<string, IntegrationStatus> Status { get; set; }
+
+    private sealed class Validator : AbstractValidator<UpdateAppIntegrationStatus>
     {
-        public Dictionary<string, IntegrationStatus> Status { get; set; }
-
-        private sealed class Validator : AbstractValidator<UpdateAppIntegrationStatus>
+        public Validator()
         {
-            public Validator()
+            RuleFor(x => x.Status).NotNull();
+        }
+    }
+
+    public ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        var newIntegrations = app.Integrations.ToMutable();
+
+        foreach (var (id, status) in Status)
+        {
+            if (newIntegrations.TryGetValue(id, out var current) && current.Status != status)
             {
-                RuleFor(x => x.Status).NotNull();
+                newIntegrations[id] = current with { Status = status };
             }
         }
 
-        public ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        var newApp = app with
         {
-            Validate<Validator>.It(this);
+            Integrations = newIntegrations.ToReadonlyDictionary()
+        };
 
-            var newIntegrations = app.Integrations.ToMutable();
-
-            foreach (var (id, status) in Status)
-            {
-                if (newIntegrations.TryGetValue(id, out var current) && current.Status != status)
-                {
-                    newIntegrations[id] = current with { Status = status };
-                }
-            }
-
-            var newApp = app with
-            {
-                Integrations = newIntegrations.ToReadonlyDictionary()
-            };
-
-            return new ValueTask<App?>(newApp);
-        }
+        return new ValueTask<App?>(newApp);
     }
 }

@@ -9,23 +9,22 @@ using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.AmazonSES;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class AmazonSESServiceExtensions
 {
-    public static class AmazonSESServiceExtensions
+    public static void IntegrateAmazonSES(this IServiceCollection services, IConfiguration config)
     {
-        public static void IntegrateAmazonSES(this IServiceCollection services, IConfiguration config)
+        const string key = "email:amazonSES";
+
+        var options = config.GetSection(key).Get<AmazonSESOptions>();
+
+        if (options.IsValid())
         {
-            const string key = "email:amazonSES";
+            services.ConfigureAndValidate<AmazonSESOptions>(config, key);
 
-            var options = config.GetSection(key).Get<AmazonSESOptions>();
-
-            if (options.IsValid())
-            {
-                services.ConfigureAndValidate<AmazonSESOptions>(config, key);
-
-                services.AddSingletonAs<IntegratedAmazonSESIntegration>()
-                    .As<IIntegration>();
-            }
+            services.AddSingletonAs<IntegratedAmazonSESIntegration>()
+                .As<IIntegration>();
         }
     }
 }

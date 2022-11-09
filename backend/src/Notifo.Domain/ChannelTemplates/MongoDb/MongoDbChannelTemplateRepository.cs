@@ -11,144 +11,143 @@ using MongoDB.Driver;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.ChannelTemplates.MongoDb
+namespace Notifo.Domain.ChannelTemplates.MongoDb;
+
+public sealed class MongoDbChannelTemplateRepository<T> : MongoDbStore<MongoDbChannelTemplate<T>>, IChannelTemplateRepository<T> where T : class
 {
-    public sealed class MongoDbChannelTemplateRepository<T> : MongoDbStore<MongoDbChannelTemplate<T>>, IChannelTemplateRepository<T> where T : class
+    public MongoDbChannelTemplateRepository(IMongoDatabase database)
+        : base(database)
     {
-        public MongoDbChannelTemplateRepository(IMongoDatabase database)
-            : base(database)
-        {
-        }
+    }
 
-        protected override string CollectionName()
-        {
-            return $"ChannelTemplates_{typeof(T).Name}";
-        }
+    protected override string CollectionName()
+    {
+        return $"ChannelTemplates_{typeof(T).Name}";
+    }
 
-        protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbChannelTemplate<T>> collection,
-            CancellationToken ct = default)
-        {
-            await collection.Indexes.CreateOneAsync(
-                new CreateIndexModel<MongoDbChannelTemplate<T>>(
-                    IndexKeys
-                        .Ascending(x => x.Doc.AppId)
-                        .Ascending(x => x.Doc.Id)),
-                null, ct);
-        }
+    protected override async Task SetupCollectionAsync(IMongoCollection<MongoDbChannelTemplate<T>> collection,
+        CancellationToken ct = default)
+    {
+        await collection.Indexes.CreateOneAsync(
+            new CreateIndexModel<MongoDbChannelTemplate<T>>(
+                IndexKeys
+                    .Ascending(x => x.Doc.AppId)
+                    .Ascending(x => x.Doc.Id)),
+            null, ct);
+    }
 
-        public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
-            CancellationToken ct = default)
+    public async Task<IResultList<ChannelTemplate<T>>> QueryAsync(string appId, ChannelTemplateQuery query,
+        CancellationToken ct = default)
+    {
+        using (var activity = Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/QueryAsync"))
         {
-            using (var activity = Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/QueryAsync"))
+            var filter = BuildFilter(appId, query);
+
+            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
+
+            if (query.ShouldQueryTotal(resultItems))
             {
-                var filter = BuildFilter(appId, query);
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
 
-                var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
-                var resultTotal = (long)resultItems.Count;
+            activity?.SetTag("numResults", resultItems.Count);
+            activity?.SetTag("numTotal", resultTotal);
 
-                if (query.ShouldQueryTotal(resultItems))
+            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToChannelTemplate()));
+        }
+    }
+
+    public async Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetBestAsync"))
+        {
+            var templates =
+                await Collection.Find(x => x.Doc.AppId == appId)
+                    .Project<MongoDbChannelTemplate<T>>(
+                        Projection
+                            .Include(x => x.DocId)
+                            .Include(x => x.Doc.Name)
+                            .Include(x => x.Doc.Primary))
+                    .ToListAsync(ct);
+
+            string? id;
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                id = templates.Find(x => x.Doc.Name == name)?.DocId;
+            }
+            else
+            {
+                id = templates.Find(x => x.Doc.Primary)?.DocId;
+
+                if (id == null && templates.Count == 1)
                 {
-                    resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+                    id = templates[0].DocId;
                 }
-
-                activity?.SetTag("numResults", resultItems.Count);
-                activity?.SetTag("numTotal", resultTotal);
-
-                return ResultList.Create(resultTotal, resultItems.Select(x => x.ToChannelTemplate()));
             }
-        }
 
-        public async Task<ChannelTemplate<T>?> GetBestAsync(string appId, string? name,
-            CancellationToken ct = default)
+            if (id == null)
+            {
+                return null;
+            }
+
+            var document = await Collection.Find(x => x.DocId == id).FirstOrDefaultAsync(ct);
+
+            return document?.ToChannelTemplate();
+        }
+    }
+
+    public async Task<(ChannelTemplate<T>? Template, string? Etag)> GetAsync(string appId, string code,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetAsync"))
         {
-            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetBestAsync"))
-            {
-                var templates =
-                    await Collection.Find(x => x.Doc.AppId == appId)
-                        .Project<MongoDbChannelTemplate<T>>(
-                            Projection
-                                .Include(x => x.DocId)
-                                .Include(x => x.Doc.Name)
-                                .Include(x => x.Doc.Primary))
-                        .ToListAsync(ct);
+            var docId = MongoDbChannelTemplate<T>.CreateId(appId, code);
 
-                string? id;
+            var document = await GetDocumentAsync(docId, ct);
 
-                if (!string.IsNullOrWhiteSpace(name))
-                {
-                    id = templates.Find(x => x.Doc.Name == name)?.DocId;
-                }
-                else
-                {
-                    id = templates.Find(x => x.Doc.Primary)?.DocId;
-
-                    if (id == null && templates.Count == 1)
-                    {
-                        id = templates[0].DocId;
-                    }
-                }
-
-                if (id == null)
-                {
-                    return null;
-                }
-
-                var document = await Collection.Find(x => x.DocId == id).FirstOrDefaultAsync(ct);
-
-                return document?.ToChannelTemplate();
-            }
+            return (document?.ToChannelTemplate(), document?.Etag);
         }
+    }
 
-        public async Task<(ChannelTemplate<T>? Template, string? Etag)> GetAsync(string appId, string code,
-            CancellationToken ct = default)
+    public async Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag = null,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/UpsertAsync"))
         {
-            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/GetAsync"))
-            {
-                var docId = MongoDbChannelTemplate<T>.CreateId(appId, code);
+            var document = MongoDbChannelTemplate<T>.FromChannelTemplate(template);
 
-                var document = await GetDocumentAsync(docId, ct);
-
-                return (document?.ToChannelTemplate(), document?.Etag);
-            }
+            await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
         }
+    }
 
-        public async Task UpsertAsync(ChannelTemplate<T> template, string? oldEtag = null,
-            CancellationToken ct = default)
+    public async Task DeleteAsync(string appId, string id,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/DeleteAsync"))
         {
-            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/UpsertAsync"))
-            {
-                var document = MongoDbChannelTemplate<T>.FromChannelTemplate(template);
+            var docId = MongoDbChannelTemplate<T>.CreateId(appId, id);
 
-                await UpsertDocumentAsync(document.DocId, document, oldEtag, ct);
-            }
+            await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
         }
+    }
 
-        public async Task DeleteAsync(string appId, string id,
-            CancellationToken ct = default)
+    private static FilterDefinition<MongoDbChannelTemplate<T>> BuildFilter(string appId, ChannelTemplateQuery query)
+    {
+        var filters = new List<FilterDefinition<MongoDbChannelTemplate<T>>>
         {
-            using (Telemetry.Activities.StartActivity("MongoDbChannelTemplateRepository/DeleteAsync"))
-            {
-                var docId = MongoDbChannelTemplate<T>.CreateId(appId, id);
+            Filter.Eq(x => x.Doc.AppId, appId)
+        };
 
-                await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
-            }
-        }
-
-        private static FilterDefinition<MongoDbChannelTemplate<T>> BuildFilter(string appId, ChannelTemplateQuery query)
+        if (!string.IsNullOrWhiteSpace(query.Query))
         {
-            var filters = new List<FilterDefinition<MongoDbChannelTemplate<T>>>
-            {
-                Filter.Eq(x => x.Doc.AppId, appId)
-            };
+            var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-            if (!string.IsNullOrWhiteSpace(query.Query))
-            {
-                var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
-
-                filters.Add(Filter.Regex(x => x.Doc.Name, regex));
-            }
-
-            return Filter.And(filters);
+            filters.Add(Filter.Regex(x => x.Doc.Name, regex));
         }
+
+        return Filter.And(filters);
     }
 }

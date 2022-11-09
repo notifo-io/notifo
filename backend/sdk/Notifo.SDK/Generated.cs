@@ -5597,9 +5597,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -5627,9 +5628,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -5647,9 +5649,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -5666,9 +5669,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -5947,9 +5951,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -6000,6 +6005,10 @@ namespace Notifo.SDK
             if (force != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("force") + "=").Append(System.Uri.EscapeDataString(ConvertToString(force, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (emptyOnFailure != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("emptyOnFailure") + "=").Append(System.Uri.EscapeDataString(ConvertToString(emptyOnFailure, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
@@ -6202,9 +6211,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -6255,6 +6265,10 @@ namespace Notifo.SDK
             if (force != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("force") + "=").Append(System.Uri.EscapeDataString(ConvertToString(force, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (emptyOnFailure != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("emptyOnFailure") + "=").Append(System.Uri.EscapeDataString(ConvertToString(emptyOnFailure, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
@@ -6357,9 +6371,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -6410,6 +6425,10 @@ namespace Notifo.SDK
             if (force != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("force") + "=").Append(System.Uri.EscapeDataString(ConvertToString(force, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (emptyOnFailure != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("emptyOnFailure") + "=").Append(System.Uri.EscapeDataString(ConvertToString(emptyOnFailure, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
@@ -6511,9 +6530,10 @@ namespace Notifo.SDK
         /// <param name="focusX">The x position of the focues point.</param>
         /// <param name="focusY">The y position of the focues point.</param>
         /// <param name="force">True to resize it and clear the cache.</param>
+        /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/proxy?");
@@ -6560,6 +6580,10 @@ namespace Notifo.SDK
             if (force != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("force") + "=").Append(System.Uri.EscapeDataString(ConvertToString(force, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (emptyOnFailure != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("emptyOnFailure") + "=").Append(System.Uri.EscapeDataString(ConvertToString(emptyOnFailure, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
@@ -14109,6 +14133,12 @@ namespace Notifo.SDK
         public ProcessStatus Status { get; set; }
 
         /// <summary>
+        /// The configuration for the device.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("configuration", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SendConfiguration Configuration { get; set; }
+
+        /// <summary>
         /// The last update.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -14119,6 +14149,24 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("detail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Detail { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as delivered for this identifier.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("firstDelivered", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? FirstDelivered { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as seen for this identifier.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("firstSeen", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? FirstSeen { get; set; }
+
+        /// <summary>
+        /// The first time the notification has been marked as confirmed for this identifier.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("firstConfirmed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTimeOffset? FirstConfirmed { get; set; }
 
     }
 
@@ -14140,6 +14188,12 @@ namespace Notifo.SDK
 
         [System.Runtime.Serialization.EnumMember(Value = @"Skipped")]
         Skipped = 4,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.16.1.0 (NJsonSchema v10.7.2.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class SendConfiguration : System.Collections.Generic.Dictionary<string, string>
+    {
 
     }
 
@@ -14328,10 +14382,10 @@ namespace Notifo.SDK
         public string Channel { get; set; }
 
         /// <summary>
-        /// The device identifier.
+        /// The configuration ID.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("deviceIdentifier", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string DeviceIdentifier { get; set; }
+        [Newtonsoft.Json.JsonProperty("configurationId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid ConfigurationId { get; set; }
 
     }
 

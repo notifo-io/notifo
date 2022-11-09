@@ -5,10 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.WebPush
+namespace Notifo.Domain.Channels.WebPush;
+
+public interface IWebPushService
 {
-    public interface IWebPushService
-    {
-        string PublicKey { get; }
-    }
+    string PublicKey { get; }
 }

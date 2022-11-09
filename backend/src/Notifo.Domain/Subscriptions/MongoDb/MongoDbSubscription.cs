@@ -8,62 +8,61 @@
 using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Subscriptions.MongoDb
+namespace Notifo.Domain.Subscriptions.MongoDb;
+
+public sealed class MongoDbSubscription : MongoDbEntity
 {
-    public sealed class MongoDbSubscription : MongoDbEntity
+    [BsonRequired]
+    [BsonElement("a")]
+    public string AppId { get; set; }
+
+    [BsonRequired]
+    [BsonElement("u")]
+    public string UserId { get; set; }
+
+    [BsonRequired]
+    [BsonElement("ta")]
+    public string[] TopicArray { get; set; }
+
+    [BsonRequired]
+    [BsonElement("t")]
+    public string TopicPrefix { get; set; }
+
+    [BsonRequired]
+    [BsonElement("s")]
+    public ChannelSettings? TopicSettings { get; set; }
+
+    public static string CreateId(string appId, string userId, string topicPrefix)
     {
-        [BsonRequired]
-        [BsonElement("a")]
-        public string AppId { get; set; }
+        return $"{appId}_{userId}_{topicPrefix}";
+    }
 
-        [BsonRequired]
-        [BsonElement("u")]
-        public string UserId { get; set; }
+    public static MongoDbSubscription FromSubscription(Subscription subscription)
+    {
+        var id = CreateId(subscription.AppId, subscription.UserId, subscription.TopicPrefix);
 
-        [BsonRequired]
-        [BsonElement("ta")]
-        public string[] TopicArray { get; set; }
-
-        [BsonRequired]
-        [BsonElement("t")]
-        public string TopicPrefix { get; set; }
-
-        [BsonRequired]
-        [BsonElement("s")]
-        public ChannelSettings? TopicSettings { get; set; }
-
-        public static string CreateId(string appId, string userId, string topicPrefix)
+        var result = new MongoDbSubscription
         {
-            return $"{appId}_{userId}_{topicPrefix}";
-        }
+            DocId = id,
+            AppId = subscription.AppId,
+            TopicArray = subscription.TopicPrefix.GetParts(),
+            TopicPrefix = subscription.TopicPrefix,
+            TopicSettings = subscription.TopicSettings,
+            UserId = subscription.UserId,
+            Etag = GenerateEtag()
+        };
 
-        public static MongoDbSubscription FromSubscription(Subscription subscription)
+        return result;
+    }
+
+    public Subscription ToSubscription()
+    {
+        return new Subscription
         {
-            var id = CreateId(subscription.AppId, subscription.UserId, subscription.TopicPrefix);
-
-            var result = new MongoDbSubscription
-            {
-                DocId = id,
-                AppId = subscription.AppId,
-                TopicArray = subscription.TopicPrefix.GetParts(),
-                TopicPrefix = subscription.TopicPrefix,
-                TopicSettings = subscription.TopicSettings,
-                UserId = subscription.UserId,
-                Etag = GenerateEtag()
-            };
-
-            return result;
-        }
-
-        public Subscription ToSubscription()
-        {
-            return new Subscription
-            {
-                AppId = AppId,
-                TopicPrefix = TopicPrefix,
-                TopicSettings = TopicSettings,
-                UserId = UserId
-            };
-        }
+            AppId = AppId,
+            TopicPrefix = TopicPrefix,
+            TopicSettings = TopicSettings,
+            UserId = UserId
+        };
     }
 }

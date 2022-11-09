@@ -7,26 +7,25 @@
 
 using System.Runtime.Serialization;
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+[Serializable]
+public class DomainObjectNotFoundException : DomainObjectException
 {
-    [Serializable]
-    public class DomainObjectNotFoundException : DomainObjectException
+    private const string ValidationError = "OBJECT_NOTFOUND";
+
+    public DomainObjectNotFoundException(string id, Exception? inner = null)
+        : base(FormatMessage(id), id, ValidationError, inner)
     {
-        private const string ValidationError = "OBJECT_NOTFOUND";
+    }
 
-        public DomainObjectNotFoundException(string id, Exception? inner = null)
-            : base(FormatMessage(id), id, ValidationError, inner)
-        {
-        }
+    protected DomainObjectNotFoundException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+    }
 
-        protected DomainObjectNotFoundException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
-        private static string FormatMessage(string id)
-        {
-            return $"Domain object \'{id}\' not found.";
-        }
+    private static string FormatMessage(string id)
+    {
+        return $"Domain object \'{id}\' not found.";
     }
 }

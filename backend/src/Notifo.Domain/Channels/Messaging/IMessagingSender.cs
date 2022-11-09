@@ -9,19 +9,18 @@ using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
 
-namespace Notifo.Domain.Channels.Messaging
+namespace Notifo.Domain.Channels.Messaging;
+
+public interface IMessagingSender
 {
-    public interface IMessagingSender
-    {
-        string Name { get; }
+    string Name { get; }
 
-        bool HasTarget(User user);
+    bool HasTarget(User user);
 
-        Task AddTargetsAsync(MessagingJob job, User user);
+    Task AddTargetsAsync(MessagingJob job, User user);
 
-        Task HandleCallbackAsync(App app, HttpContext httpContext);
+    Task HandleCallbackAsync(App app, HttpContext httpContext);
 
-        Task<MessagingResult> SendAsync(MessagingJob job, string text,
-            CancellationToken ct);
-    }
+    Task<MessagingResult> SendAsync(MessagingJob job, string text,
+        CancellationToken ct);
 }

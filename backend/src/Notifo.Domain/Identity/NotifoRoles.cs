@@ -5,18 +5,17 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Identity
+namespace Notifo.Domain.Identity;
+
+public static class NotifoRoles
 {
-    public static class NotifoRoles
-    {
-        public const string HostAdmin = "ADMIN";
+    public const string HostAdmin = "ADMIN";
 
-        public const string AppUser = "User";
+    public const string AppUser = "User";
 
-        public const string AppAdmin = "Admin";
+    public const string AppAdmin = "Admin";
 
-        public const string AppOwner = "Owner";
+    public const string AppOwner = "Owner";
 
-        public const string AppWebManager = "WebManager";
-    }
+    public const string AppWebManager = "WebManager";
 }

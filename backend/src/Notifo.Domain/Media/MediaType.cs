@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Media
+namespace Notifo.Domain.Media;
+
+public enum MediaType
 {
-    public enum MediaType
-    {
-        Unknown,
-        Image,
-        Audio,
-        Video
-    }
+    Unknown,
+    Image,
+    Audio,
+    Video
 }

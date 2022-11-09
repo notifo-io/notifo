@@ -10,28 +10,27 @@ using Notifo.Domain.UserEvents;
 using Notifo.Infrastructure;
 using Squidex.Messaging;
 
-namespace Notifo.Domain.Events.Pipeline
+namespace Notifo.Domain.Events.Pipeline;
+
+public sealed class EventConsumer : IMessageHandler<EventMessage>
 {
-    public sealed class EventConsumer : IMessageHandler<EventMessage>
+    private readonly IUserEventPublisher userEventPublisher;
+
+    public EventConsumer(IUserEventPublisher userEventPublisher)
     {
-        private readonly IUserEventPublisher userEventPublisher;
+        this.userEventPublisher = userEventPublisher;
+    }
 
-        public EventConsumer(IUserEventPublisher userEventPublisher)
+    public async Task HandleAsync(EventMessage message,
+        CancellationToken ct)
+    {
+        var links = message.Links();
+
+        var parentContext = Activity.Current?.Context ?? default;
+
+        using (Telemetry.Activities.StartActivity("ConsumeEvent", ActivityKind.Internal, parentContext, links: links))
         {
-            this.userEventPublisher = userEventPublisher;
-        }
-
-        public async Task HandleAsync(EventMessage message,
-            CancellationToken ct)
-        {
-            var links = message.Links();
-
-            var parentContext = Activity.Current?.Context ?? default;
-
-            using (Telemetry.Activities.StartActivity("ConsumeEvent", ActivityKind.Internal, parentContext, links: links))
-            {
-                await userEventPublisher.PublishAsync(message, ct);
-            }
+            await userEventPublisher.PublishAsync(message, ct);
         }
     }
 }

@@ -7,18 +7,17 @@
 
 using NodaTime;
 
-namespace Notifo.Areas.Api.Controllers.Web.Dtos
+namespace Notifo.Areas.Api.Controllers.Web.Dtos;
+
+public class PollRequest
 {
-    public class PollRequest
-    {
-        public Guid[]? Deleted { get; set; }
+    public Guid[]? Deleted { get; set; }
 
-        public string[]? Delivered { get; set; }
+    public string[]? Delivered { get; set; }
 
-        public string[]? Seen { get; set; }
+    public string[]? Seen { get; set; }
 
-        public string[]? Confirmed { get; set; }
+    public string[]? Confirmed { get; set; }
 
-        public Instant? Token { get; set; }
-    }
+    public Instant? Token { get; set; }
 }

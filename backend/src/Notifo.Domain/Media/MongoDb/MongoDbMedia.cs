@@ -7,30 +7,29 @@
 
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Media.MongoDb
+namespace Notifo.Domain.Media.MongoDb;
+
+public sealed class MongoDbMedia : MongoDbEntity<Media>
 {
-    public sealed class MongoDbMedia : MongoDbEntity<Media>
+    public static string CreateId(string appId, string fileName)
     {
-        public static string CreateId(string appId, string fileName)
-        {
-            return $"{appId}_{fileName}";
-        }
+        return $"{appId}_{fileName}";
+    }
 
-        public static MongoDbMedia FromMedia(Media media)
+    public static MongoDbMedia FromMedia(Media media)
+    {
+        var result = new MongoDbMedia
         {
-            var result = new MongoDbMedia
-            {
-                DocId = CreateId(media.AppId, media.FileName),
-                Doc = media,
-                Etag = GenerateEtag()
-            };
+            DocId = CreateId(media.AppId, media.FileName),
+            Doc = media,
+            Etag = GenerateEtag()
+        };
 
-            return result;
-        }
+        return result;
+    }
 
-        public Media ToMedia()
-        {
-            return Doc;
-        }
+    public Media ToMedia()
+    {
+        return Doc;
     }
 }

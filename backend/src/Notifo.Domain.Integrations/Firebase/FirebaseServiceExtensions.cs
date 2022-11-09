@@ -8,17 +8,16 @@
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.Firebase;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class FirebaseServiceExtensions
-    {
-        public static void IntegrateFirebase(this IServiceCollection services)
-        {
-            services.AddSingletonAs<FirebaseIntegration>()
-                .As<IIntegration>();
+namespace Microsoft.Extensions.DependencyInjection;
 
-            services.AddSingletonAs<FirebaseMessagingPool>()
-                .AsSelf();
-        }
+public static class FirebaseServiceExtensions
+{
+    public static void IntegrateFirebase(this IServiceCollection services)
+    {
+        services.AddSingletonAs<FirebaseIntegration>()
+            .As<IIntegration>();
+
+        services.AddSingletonAs<FirebaseMessagingPool>()
+            .AsSelf();
     }
 }

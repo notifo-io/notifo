@@ -12,231 +12,230 @@ using TestSuite.Utils;
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
 
-namespace TestSuite.ApiTests
+namespace TestSuite.ApiTests;
+
+public class SmsTests : IClassFixture<ClientFixture>
 {
-    public class SmsTests : IClassFixture<ClientFixture>
+    private static readonly string PhoneNumber = "00436703091161";
+    private static readonly string AccessKey = TestHelpers.GetAndPrintValue("messagebird:accessKey", "invalid");
+
+    public ClientFixture _ { get; }
+
+    public SmsTests(ClientFixture fixture)
     {
-        private static readonly string PhoneNumber = "00436703091161";
-        private static readonly string AccessKey = TestHelpers.GetAndPrintValue("messagebird:accessKey", "invalid");
+        _ = fixture;
+    }
 
-        public ClientFixture _ { get; }
+    [Fact]
+    public async Task Should_send_sms_with_template()
+    {
+        var appName = Guid.NewGuid().ToString();
 
-        public SmsTests(ClientFixture fixture)
+        // STEP 0: Create app
+        var createRequest = new UpsertAppDto
         {
-            _ = fixture;
-        }
+            Name = appName
+        };
 
-        [Fact]
-        public async Task Should_send_sms_with_template()
+        var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+
+
+        // STEP 1: Create sms template.
+        var smsTemplateRequest = new CreateChannelTemplateDto
         {
-            var appName = Guid.NewGuid().ToString();
+        };
 
-            // STEP 0: Create app
-            var createRequest = new UpsertAppDto
+        var template_0 = await _.Client.SmsTemplates.PostTemplateAsync(app_0.Id, smsTemplateRequest);
+
+        var smsTemplate = new SmsTemplateDto
+        {
+            Text = "<start>{{ notification.subject }}</end>"
+        };
+
+        await _.Client.SmsTemplates.PutTemplateLanguageAsync(app_0.Id, template_0.Id, "en", smsTemplate);
+
+
+        // STEP 2: Create integration
+        var emailIntegrationRequest = new CreateIntegrationDto
+        {
+            Type = "MessageBird",
+            Properties = new Dictionary<string, string>
             {
-                Name = appName
-            };
+                ["accessKey"] = AccessKey,
+                ["phoneNumber"] = PhoneNumber,
+                ["phoneNumbers"] = string.Empty
+            },
+            Enabled = true
+        };
 
-            var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+        await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
 
 
-            // STEP 1: Create sms template.
-            var smsTemplateRequest = new CreateChannelTemplateDto
+        // STEP 3: Create user
+        var userRequest = new UpsertUsersDto
+        {
+            Requests = new List<UpsertUserDto>
             {
-            };
-
-            var template_0 = await _.Client.SmsTemplates.PostTemplateAsync(app_0.Id, smsTemplateRequest);
-
-            var smsTemplate = new SmsTemplateDto
-            {
-                Text = "<start>{{ notification.subject }}</end>"
-            };
-
-            await _.Client.SmsTemplates.PutTemplateLanguageAsync(app_0.Id, template_0.Id, "en", smsTemplate);
-
-
-            // STEP 2: Create integration
-            var emailIntegrationRequest = new CreateIntegrationDto
-            {
-                Type = "MessageBird",
-                Properties = new Dictionary<string, string>
+                new UpsertUserDto
                 {
-                    ["accessKey"] = AccessKey,
-                    ["phoneNumber"] = PhoneNumber,
-                    ["phoneNumbers"] = string.Empty
-                },
-                Enabled = true
-            };
-
-            await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
-
-
-            // STEP 3: Create user
-            var userRequest = new UpsertUsersDto
-            {
-                Requests = new List<UpsertUserDto>
-                {
-                    new UpsertUserDto
-                    {
-                        PhoneNumber = PhoneNumber
-                    }
+                    PhoneNumber = PhoneNumber
                 }
-            };
+            }
+        };
 
-            var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
-            var user_0 = users_0.First();
+        var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+        var user_0 = users_0.First();
 
 
-            // STEP 4: Send SMS
-            var subjectId = Guid.NewGuid().ToString();
+        // STEP 4: Send SMS
+        var subjectId = Guid.NewGuid().ToString();
 
-            var publishRequest = new PublishManyDto
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
             {
-                Requests = new List<PublishDto>
+                new PublishDto
                 {
-                    new PublishDto
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
                     {
-                        Topic = $"users/{user_0.Id}",
-                        Preformatted = new NotificationFormattingDto
+                        Subject = new LocalizedText
                         {
-                            Subject = new LocalizedText
-                            {
-                                ["en"] = subjectId
-                            }
-                        },
-                        Settings = new Dictionary<string, ChannelSettingDto>
+                            ["en"] = subjectId
+                        }
+                    },
+                    Settings = new Dictionary<string, ChannelSettingDto>
+                    {
+                        [Providers.Sms] = new ChannelSettingDto
                         {
-                            [Providers.Sms] = new ChannelSettingDto
-                            {
-                                Send = ChannelSend.Send
-                            }
+                            Send = ChannelSend.Send
                         }
                     }
                 }
-            };
-
-            await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
-
-
-            // Get SMS status
-            var messageBird = new MessageBirdClient(AccessKey);
-
-            var text = $"<start>{subjectId}</end>";
-
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
-            {
-                while (!cts.IsCancellationRequested)
-                {
-                    var messages = await messageBird.GetMessagesAsync(200);
-
-                    if (messages.Items.Any(x => x.Body == text && x.Recipients.Items[0].Status == "delivered"))
-                    {
-                        return;
-                    }
-
-                    await Task.Delay(1000);
-                }
             }
+        };
 
-            Assert.False(true, "SMS not sent.");
+        await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
+
+
+        // Get SMS status
+        var messageBird = new MessageBirdClient(AccessKey);
+
+        var text = $"<start>{subjectId}</end>";
+
+        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+        {
+            while (!cts.IsCancellationRequested)
+            {
+                var messages = await messageBird.GetMessagesAsync(200);
+
+                if (messages.Items.Any(x => x.Body == text && x.Recipients.Items[0].Status == "delivered"))
+                {
+                    return;
+                }
+
+                await Task.Delay(1000);
+            }
         }
 
-        [Fact]
-        public async Task Should_send_sms_without_template()
+        Assert.False(true, "SMS not sent.");
+    }
+
+    [Fact]
+    public async Task Should_send_sms_without_template()
+    {
+        var appName = Guid.NewGuid().ToString();
+
+        // STEP 0: Create app
+        var createRequest = new UpsertAppDto
         {
-            var appName = Guid.NewGuid().ToString();
+            Name = appName
+        };
 
-            // STEP 0: Create app
-            var createRequest = new UpsertAppDto
+        var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+
+
+        // STEP 1: Create integration
+        var emailIntegrationRequest = new CreateIntegrationDto
+        {
+            Type = "MessageBird",
+            Properties = new Dictionary<string, string>
             {
-                Name = appName
-            };
+                ["accessKey"] = AccessKey,
+                ["phoneNumber"] = PhoneNumber,
+                ["phoneNumbers"] = string.Empty
+            },
+            Enabled = true
+        };
 
-            var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+        await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
 
 
-            // STEP 1: Create integration
-            var emailIntegrationRequest = new CreateIntegrationDto
+        // STEP 2: Create user
+        var userRequest = new UpsertUsersDto
+        {
+            Requests = new List<UpsertUserDto>
             {
-                Type = "MessageBird",
-                Properties = new Dictionary<string, string>
+                new UpsertUserDto
                 {
-                    ["accessKey"] = AccessKey,
-                    ["phoneNumber"] = PhoneNumber,
-                    ["phoneNumbers"] = string.Empty
-                },
-                Enabled = true
-            };
-
-            await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
-
-
-            // STEP 2: Create user
-            var userRequest = new UpsertUsersDto
-            {
-                Requests = new List<UpsertUserDto>
-                {
-                    new UpsertUserDto
-                    {
-                        PhoneNumber = PhoneNumber
-                    }
+                    PhoneNumber = PhoneNumber
                 }
-            };
+            }
+        };
 
-            var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
-            var user_0 = users_0.First();
+        var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+        var user_0 = users_0.First();
 
 
-            // STEP 3: Send SMS
-            var subjectId = Guid.NewGuid().ToString();
+        // STEP 3: Send SMS
+        var subjectId = Guid.NewGuid().ToString();
 
-            var publishRequest = new PublishManyDto
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
             {
-                Requests = new List<PublishDto>
+                new PublishDto
                 {
-                    new PublishDto
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
                     {
-                        Topic = $"users/{user_0.Id}",
-                        Preformatted = new NotificationFormattingDto
+                        Subject = new LocalizedText
                         {
-                            Subject = new LocalizedText
-                            {
-                                ["en"] = subjectId
-                            }
-                        },
-                        Settings = new Dictionary<string, ChannelSettingDto>
+                            ["en"] = subjectId
+                        }
+                    },
+                    Settings = new Dictionary<string, ChannelSettingDto>
+                    {
+                        [Providers.Sms] = new ChannelSettingDto
                         {
-                            [Providers.Sms] = new ChannelSettingDto
-                            {
-                                Send = ChannelSend.Send
-                            }
+                            Send = ChannelSend.Send
                         }
                     }
                 }
-            };
-
-            await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
-
-
-            // Get SMS status
-            var messageBird = new MessageBirdClient(AccessKey);
-
-            using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
-            {
-                while (!cts.IsCancellationRequested)
-                {
-                    var messages = await messageBird.GetMessagesAsync(200);
-
-                    if (messages.Items.Any(x => x.Body == subjectId && x.Recipients.Items[0].Status == "delivered"))
-                    {
-                        return;
-                    }
-
-                    await Task.Delay(1000);
-                }
             }
+        };
 
-            Assert.False(true, "SMS not sent.");
+        await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
+
+
+        // Get SMS status
+        var messageBird = new MessageBirdClient(AccessKey);
+
+        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60)))
+        {
+            while (!cts.IsCancellationRequested)
+            {
+                var messages = await messageBird.GetMessagesAsync(200);
+
+                if (messages.Items.Any(x => x.Body == subjectId && x.Recipients.Items[0].Status == "delivered"))
+                {
+                    return;
+                }
+
+                await Task.Delay(1000);
+            }
         }
+
+        Assert.False(true, "SMS not sent.");
     }
 }

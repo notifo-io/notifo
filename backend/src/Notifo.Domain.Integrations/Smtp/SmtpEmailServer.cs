@@ -12,115 +12,114 @@ using MimeKit.Text;
 using Notifo.Domain.Channels.Email;
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Integrations.Smtp
+namespace Notifo.Domain.Integrations.Smtp;
+
+public class SmtpEmailServer : IEmailSender, IDisposable
 {
-    public class SmtpEmailServer : IEmailSender, IDisposable
+    private readonly ObjectPool<SmtpClient> clientPool;
+    private readonly SmtpOptions options;
+
+    public string Name => "SMTP";
+
+    public SmtpEmailServer(SmtpOptions options)
     {
-        private readonly ObjectPool<SmtpClient> clientPool;
-        private readonly SmtpOptions options;
+        this.options = options;
 
-        public string Name => "SMTP";
+        clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
+    }
 
-        public SmtpEmailServer(SmtpOptions options)
+    public void Dispose()
+    {
+        if (clientPool is IDisposable disposable)
         {
-            this.options = options;
-
-            clientPool = new DefaultObjectPoolProvider().Create(new DefaultPooledObjectPolicy<SmtpClient>());
+            disposable.Dispose();
         }
 
-        public void Dispose()
+        GC.SuppressFinalize(this);
+    }
+
+    public async Task SendAsync(EmailMessage message,
+        CancellationToken ct = default)
+    {
+        var smtpClient = clientPool.Get();
+        try
         {
-            if (clientPool is IDisposable disposable)
+            await EnsureConnectedAsync(smtpClient);
+
+            var smtpMessage = new MimeMessage();
+
+            smtpMessage.From.Add(new MailboxAddress(
+                message.FromName,
+                message.FromEmail));
+
+            smtpMessage.To.Add(new MailboxAddress(
+                message.ToName,
+                message.ToEmail));
+
+            var hasHtml = !string.IsNullOrWhiteSpace(message.BodyHtml);
+            var hasText = !string.IsNullOrWhiteSpace(message.BodyText);
+
+            if (hasHtml && hasText)
             {
-                disposable.Dispose();
-            }
-
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task SendAsync(EmailMessage message,
-            CancellationToken ct = default)
-        {
-            var smtpClient = clientPool.Get();
-            try
-            {
-                await EnsureConnectedAsync(smtpClient);
-
-                var smtpMessage = new MimeMessage();
-
-                smtpMessage.From.Add(new MailboxAddress(
-                    message.FromName,
-                    message.FromEmail));
-
-                smtpMessage.To.Add(new MailboxAddress(
-                    message.ToName,
-                    message.ToEmail));
-
-                var hasHtml = !string.IsNullOrWhiteSpace(message.BodyHtml);
-                var hasText = !string.IsNullOrWhiteSpace(message.BodyText);
-
-                if (hasHtml && hasText)
+                smtpMessage.Body = new MultipartAlternative
                 {
-                    smtpMessage.Body = new MultipartAlternative
-                    {
-                        new TextPart(TextFormat.Plain)
-                        {
-                            Text = message.BodyText
-                        },
-
-                        new TextPart(TextFormat.Html)
-                        {
-                            Text = message.BodyHtml
-                        }
-                    };
-                }
-                else if (hasHtml)
-                {
-                    smtpMessage.Body = new TextPart(TextFormat.Html)
-                    {
-                        Text = message.BodyHtml
-                    };
-                }
-                else if (hasText)
-                {
-                    smtpMessage.Body = new TextPart(TextFormat.Plain)
+                    new TextPart(TextFormat.Plain)
                     {
                         Text = message.BodyText
-                    };
-                }
-                else
+                    },
+
+                    new TextPart(TextFormat.Html)
+                    {
+                        Text = message.BodyHtml
+                    }
+                };
+            }
+            else if (hasHtml)
+            {
+                smtpMessage.Body = new TextPart(TextFormat.Html)
                 {
-                    ThrowHelper.InvalidOperationException("Cannot send email without text body or html body");
-                    return;
-                }
-
-                smtpMessage.Subject = message.Subject;
-
-                await smtpClient.SendAsync(smtpMessage, ct);
+                    Text = message.BodyHtml
+                };
             }
-            finally
+            else if (hasText)
             {
-                clientPool.Return(smtpClient);
+                smtpMessage.Body = new TextPart(TextFormat.Plain)
+                {
+                    Text = message.BodyText
+                };
             }
-        }
-
-        private async Task EnsureConnectedAsync(SmtpClient smtpClient)
-        {
-            if (!smtpClient.IsConnected)
+            else
             {
-                await smtpClient.ConnectAsync(options.Host, options.HostPort);
-            }
-
-            if (string.IsNullOrWhiteSpace(options.Username) ||
-                string.IsNullOrWhiteSpace(options.Password))
-            {
+                ThrowHelper.InvalidOperationException("Cannot send email without text body or html body");
                 return;
             }
 
-            if (!smtpClient.IsAuthenticated)
-            {
-                await smtpClient.AuthenticateAsync(options.Username, options.Password);
-            }
+            smtpMessage.Subject = message.Subject;
+
+            await smtpClient.SendAsync(smtpMessage, ct);
+        }
+        finally
+        {
+            clientPool.Return(smtpClient);
+        }
+    }
+
+    private async Task EnsureConnectedAsync(SmtpClient smtpClient)
+    {
+        if (!smtpClient.IsConnected)
+        {
+            await smtpClient.ConnectAsync(options.Host, options.HostPort);
+        }
+
+        if (string.IsNullOrWhiteSpace(options.Username) ||
+            string.IsNullOrWhiteSpace(options.Password))
+        {
+            return;
+        }
+
+        if (!smtpClient.IsAuthenticated)
+        {
+            await smtpClient.AuthenticateAsync(options.Username, options.Password);
         }
     }
 }

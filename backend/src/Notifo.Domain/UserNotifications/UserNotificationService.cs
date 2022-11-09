@@ -19,252 +19,100 @@ using Notifo.Infrastructure.Scheduling;
 using Squidex.Messaging;
 using IUserEventQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.UserEvents.UserEventMessage>;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
 {
-    public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
+    private readonly IAppStore appStore;
+    private readonly IClock clock;
+    private readonly IEnumerable<ICommunicationChannel> channels;
+    private readonly ILogger<UserNotificationService> log;
+    private readonly ILogStore logStore;
+    private readonly IMessageBus messageBus;
+    private readonly IUserEventQueue userEventQueue;
+    private readonly IUserNotificationFactory userNotificationFactory;
+    private readonly IUserNotificationStore userNotificationsStore;
+    private readonly IUserStore userStore;
+
+    public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
+        IAppStore appStore,
+        IMessageBus messageBus,
+        IUserEventQueue userEventQueue,
+        IUserNotificationFactory userNotificationFactory,
+        IUserNotificationStore userNotificationsStore,
+        IUserStore userStore,
+        ILogStore logStore,
+        ILogger<UserNotificationService> log,
+        IClock clock)
     {
-        private readonly IAppStore appStore;
-        private readonly IClock clock;
-        private readonly IEnumerable<ICommunicationChannel> channels;
-        private readonly ILogger<UserNotificationService> log;
-        private readonly ILogStore logStore;
-        private readonly IMessageBus messageBus;
-        private readonly IUserEventQueue userEventQueue;
-        private readonly IUserNotificationFactory userNotificationFactory;
-        private readonly IUserNotificationStore userNotificationsStore;
-        private readonly IUserStore userStore;
+        this.appStore = appStore;
+        this.channels = channels;
+        this.log = log;
+        this.logStore = logStore;
+        this.messageBus = messageBus;
+        this.userEventQueue = userEventQueue;
+        this.userNotificationFactory = userNotificationFactory;
+        this.userNotificationsStore = userNotificationsStore;
+        this.userStore = userStore;
+        this.clock = clock;
+    }
 
-        public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
-            IAppStore appStore,
-            IMessageBus messageBus,
-            IUserEventQueue userEventQueue,
-            IUserNotificationFactory userNotificationFactory,
-            IUserNotificationStore userNotificationsStore,
-            IUserStore userStore,
-            ILogStore logStore,
-            ILogger<UserNotificationService> log,
-            IClock clock)
+    public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt,
+        CancellationToken ct)
+    {
+        await DistributeScheduledAsync(job, isLastAttempt);
+
+        return true;
+    }
+
+    public async Task DistributeAsync(UserEventMessage userEvent)
+    {
+        using (Telemetry.Activities.StartActivity("HandleUserEvent"))
         {
-            this.appStore = appStore;
-            this.channels = channels;
-            this.log = log;
-            this.logStore = logStore;
-            this.messageBus = messageBus;
-            this.userEventQueue = userEventQueue;
-            this.userNotificationFactory = userNotificationFactory;
-            this.userNotificationsStore = userNotificationsStore;
-            this.userStore = userStore;
-            this.clock = clock;
-        }
-
-        public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt,
-            CancellationToken ct)
-        {
-            await DistributeScheduledAsync(job, isLastAttempt);
-
-            return true;
-        }
-
-        public async Task DistributeAsync(UserEventMessage userEvent)
-        {
-            using (Telemetry.Activities.StartActivity("HandleUserEvent"))
+            try
             {
-                try
+                var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
+
+                if (user == null)
                 {
-                    var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
-
-                    if (user == null)
-                    {
-                        throw new DomainException(Texts.Notification_NoUser);
-                    }
-
-                    var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
-
-                    await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
+                    throw new DomainException(Texts.Notification_NoUser);
                 }
-                catch (DomainException ex)
-                {
-                    await logStore.LogAsync(userEvent.AppId, ex.Message);
 
-                    await userNotificationsStore.TrackFailedAsync(userEvent);
-                }
+                var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
+
+                await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
+            }
+            catch (DomainException ex)
+            {
+                await logStore.LogAsync(userEvent.AppId, ex.Message);
+
+                await userNotificationsStore.TrackFailedAsync(userEvent);
             }
         }
+    }
 
-        public async Task DistributeScheduledAsync(UserEventMessage userEvent, bool isLastAttempt)
+    public async Task DistributeScheduledAsync(UserEventMessage userEvent, bool isLastAttempt)
+    {
+        var links = userEvent.Links();
+
+        var parentContext = Activity.Current?.Context ?? default;
+
+        using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, parentContext, links: links))
         {
-            var links = userEvent.Links();
-
-            var parentContext = Activity.Current?.Context ?? default;
-
-            using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, parentContext, links: links))
-            {
-                await userNotificationsStore.TrackAttemptAsync(userEvent);
-
-                try
-                {
-                    var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
-
-                    if (user == null)
-                    {
-                        throw new DomainException(Texts.Notification_NoApp);
-                    }
-
-                    var app = await appStore.GetCachedAsync(userEvent.AppId);
-
-                    if (app == null)
-                    {
-                        throw new DomainException(Texts.Notification_NoUser);
-                    }
-
-                    var context = new SendContext
-                    {
-                        App = app,
-                        AppId = app.Id,
-                        User = user,
-                        UserId = user.Id,
-                        IsUpdate = false
-                    };
-
-                    var notification = await CreateUserNotificationAsync(userEvent, context);
-
-                    // Assign the notification activity, so that we can continue with that when the handle the event.
-                    notification.UserNotificationActivity = activity?.Context ?? default;
-
-                    try
-                    {
-                        await userNotificationsStore.InsertAsync(notification);
-                    }
-                    catch (UniqueConstraintException)
-                    {
-                        throw new DomainException(Texts.Notification_AlreadyProcessed);
-                    }
-
-                    foreach (var channel in channels)
-                    {
-                        if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
-                        {
-                            continue;
-                        }
-
-                        foreach (var (id, status) in notificationChannel.Status)
-                        {
-                            var configuration = status.Configuration;
-
-                            // Can be null for old status values.
-                            if (configuration != null)
-                            {
-                                await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, default);
-                            }
-                        }
-                    }
-
-                    log.LogInformation("Processed user event for app {appId} with ID {id} to topic {topic}.",
-                        userEvent.AppId,
-                        userEvent.EventId,
-                        userEvent.Topic);
-                }
-                catch (Exception ex)
-                {
-                    if (isLastAttempt)
-                    {
-                        await userNotificationsStore.TrackFailedAsync(userEvent);
-                    }
-
-                    if (ex is DomainException domainException)
-                    {
-                        await logStore.LogAsync(userEvent.AppId, domainException.Message);
-                    }
-                    else
-                    {
-                        log.LogError(ex, "Failed to process user event for app {appId} with ID {id} to topic {topic}.",
-                            userEvent.AppId,
-                            userEvent.EventId,
-                            userEvent.Topic);
-                        throw;
-                    }
-                }
-            }
-        }
-
-        private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendContext context)
-        {
-            using (Telemetry.Activities.StartActivity("CreateUserNotification"))
-            {
-                var notification = userNotificationFactory.Create(context.App, context.User, userEvent);
-
-                if (notification == null)
-                {
-                    throw new DomainException(Texts.Notification_NoSubject);
-                }
-
-                foreach (var channel in channels)
-                {
-                    if (channel.IsSystem && !string.IsNullOrWhiteSpace(channel.Name))
-                    {
-                        if (!notification.Channels.TryGetValue(channel.Name, out var channelInfo))
-                        {
-                            channelInfo = new UserNotificationChannel
-                            {
-                                Setting = new ChannelSetting
-                                {
-                                    Send = ChannelSend.Send
-                                }
-                            };
-
-                            notification.Channels[channel.Name] = channelInfo;
-                        }
-                    }
-
-                    if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.Send == ChannelSend.Send)
-                    {
-                        var configurations = channel.GetConfigurations(notification, channelConfig.Setting, context);
-
-                        foreach (var configuration in configurations)
-                        {
-                            if (configuration != null)
-                            {
-                                var configurationId = Guid.NewGuid();
-
-                                channelConfig.Status[configurationId] = new ChannelSendInfo
-                                {
-                                    Configuration = configuration
-                                };
-
-                                var identifier = TrackingKey.ForNotification(notification, channel.Name, configurationId);
-
-                                await userNotificationsStore.TrackAsync(identifier, ProcessStatus.Attempt);
-                            }
-                        }
-                    }
-                }
-
-                return notification;
-            }
-        }
-
-        public async Task HandleAsync(ConfirmMessage message,
-            CancellationToken ct)
-        {
-            var notification = await userNotificationsStore.TrackConfirmedAsync(message.Token, ct);
-
-            if (notification == null || !notification.Channels.Any())
-            {
-                return;
-            }
+            await userNotificationsStore.TrackAttemptAsync(userEvent);
 
             try
             {
-                var app = await appStore.GetCachedAsync(notification.AppId, ct);
-
-                if (app == null)
-                {
-                    return;
-                }
-
-                var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId, ct);
+                var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
 
                 if (user == null)
+                {
+                    throw new DomainException(Texts.Notification_NoApp);
+                }
+
+                var app = await appStore.GetCachedAsync(userEvent.AppId);
+
+                if (app == null)
                 {
                     throw new DomainException(Texts.Notification_NoUser);
                 }
@@ -275,8 +123,22 @@ namespace Notifo.Domain.UserNotifications
                     AppId = app.Id,
                     User = user,
                     UserId = user.Id,
-                    IsUpdate = true
+                    IsUpdate = false
                 };
+
+                var notification = await CreateUserNotificationAsync(userEvent, context);
+
+                // Assign the notification activity, so that we can continue with that when the handle the event.
+                notification.UserNotificationActivity = activity?.Context ?? default;
+
+                try
+                {
+                    await userNotificationsStore.InsertAsync(notification);
+                }
+                catch (UniqueConstraintException)
+                {
+                    throw new DomainException(Texts.Notification_AlreadyProcessed);
+                }
 
                 foreach (var channel in channels)
                 {
@@ -292,61 +154,198 @@ namespace Notifo.Domain.UserNotifications
                         // Can be null for old status values.
                         if (configuration != null)
                         {
-                            await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, ct);
+                            await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, default);
+                        }
+                    }
+                }
+
+                log.LogInformation("Processed user event for app {appId} with ID {id} to topic {topic}.",
+                    userEvent.AppId,
+                    userEvent.EventId,
+                    userEvent.Topic);
+            }
+            catch (Exception ex)
+            {
+                if (isLastAttempt)
+                {
+                    await userNotificationsStore.TrackFailedAsync(userEvent);
+                }
+
+                if (ex is DomainException domainException)
+                {
+                    await logStore.LogAsync(userEvent.AppId, domainException.Message);
+                }
+                else
+                {
+                    log.LogError(ex, "Failed to process user event for app {appId} with ID {id} to topic {topic}.",
+                        userEvent.AppId,
+                        userEvent.EventId,
+                        userEvent.Topic);
+                    throw;
+                }
+            }
+        }
+    }
+
+    private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendContext context)
+    {
+        using (Telemetry.Activities.StartActivity("CreateUserNotification"))
+        {
+            var notification = userNotificationFactory.Create(context.App, context.User, userEvent);
+
+            if (notification == null)
+            {
+                throw new DomainException(Texts.Notification_NoSubject);
+            }
+
+            foreach (var channel in channels)
+            {
+                if (channel.IsSystem && !string.IsNullOrWhiteSpace(channel.Name))
+                {
+                    if (!notification.Channels.TryGetValue(channel.Name, out var channelInfo))
+                    {
+                        channelInfo = new UserNotificationChannel
+                        {
+                            Setting = new ChannelSetting
+                            {
+                                Send = ChannelSend.Send
+                            }
+                        };
+
+                        notification.Channels[channel.Name] = channelInfo;
+                    }
+                }
+
+                if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.Send == ChannelSend.Send)
+                {
+                    var configurations = channel.GetConfigurations(notification, channelConfig.Setting, context);
+
+                    foreach (var configuration in configurations)
+                    {
+                        if (configuration != null)
+                        {
+                            var configurationId = Guid.NewGuid();
+
+                            channelConfig.Status[configurationId] = new ChannelSendInfo
+                            {
+                                Configuration = configuration
+                            };
+
+                            var identifier = TrackingKey.ForNotification(notification, channel.Name, configurationId);
+
+                            await userNotificationsStore.TrackAsync(identifier, ProcessStatus.Attempt);
                         }
                     }
                 }
             }
-            catch (DomainException domainException)
-            {
-                await logStore.LogAsync(notification.AppId, domainException.Message);
-                throw;
-            }
+
+            return notification;
+        }
+    }
+
+    public async Task HandleAsync(ConfirmMessage message,
+        CancellationToken ct)
+    {
+        var notification = await userNotificationsStore.TrackConfirmedAsync(message.Token, ct);
+
+        if (notification == null || !notification.Channels.Any())
+        {
+            return;
         }
 
-        public async Task TrackConfirmedAsync(TrackingToken token)
+        try
         {
-            if (!token.IsValid)
+            var app = await appStore.GetCachedAsync(notification.AppId, ct);
+
+            if (app == null)
             {
                 return;
             }
 
-            await messageBus.PublishAsync(new ConfirmMessage { Token = token }, token.ToString());
-        }
+            var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId, ct);
 
-        public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens)
-        {
-            await userNotificationsStore.TrackDeliveredAsync(tokens);
-
-            foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
+            if (user == null)
             {
-                var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
+                throw new DomainException(Texts.Notification_NoUser);
+            }
 
-                if (channel != null)
+            var context = new SendContext
+            {
+                App = app,
+                AppId = app.Id,
+                User = user,
+                UserId = user.Id,
+                IsUpdate = true
+            };
+
+            foreach (var channel in channels)
+            {
+                if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                 {
-                    await channel.HandleDeliveredAsync(token);
+                    continue;
+                }
+
+                foreach (var (id, status) in notificationChannel.Status)
+                {
+                    var configuration = status.Configuration;
+
+                    // Can be null for old status values.
+                    if (configuration != null)
+                    {
+                        await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, ct);
+                    }
                 }
             }
         }
-
-        public async Task TrackSeenAsync(IEnumerable<TrackingToken> tokens)
+        catch (DomainException domainException)
         {
-            await userNotificationsStore.TrackSeenAsync(tokens);
+            await logStore.LogAsync(notification.AppId, domainException.Message);
+            throw;
+        }
+    }
 
-            foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
+    public async Task TrackConfirmedAsync(TrackingToken token)
+    {
+        if (!token.IsValid)
+        {
+            return;
+        }
+
+        await messageBus.PublishAsync(new ConfirmMessage { Token = token }, token.ToString());
+    }
+
+    public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens)
+    {
+        await userNotificationsStore.TrackDeliveredAsync(tokens);
+
+        foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
+        {
+            var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
+
+            if (channel != null)
             {
-                var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
-
-                if (channel != null)
-                {
-                    await channel.HandleSeenAsync(token);
-                }
+                await channel.HandleDeliveredAsync(token);
             }
         }
+    }
 
-        private static string ScheduleKey(UserEventMessage userEvent)
+    public async Task TrackSeenAsync(IEnumerable<TrackingToken> tokens)
+    {
+        await userNotificationsStore.TrackSeenAsync(tokens);
+
+        foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
         {
-            return $"{userEvent.AppId}_{userEvent.UserId}_{userEvent.EventId}";
+            var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
+
+            if (channel != null)
+            {
+                await channel.HandleSeenAsync(token);
+            }
         }
+    }
+
+    private static string ScheduleKey(UserEventMessage userEvent)
+    {
+        return $"{userEvent.AppId}_{userEvent.UserId}_{userEvent.EventId}";
     }
 }

@@ -7,13 +7,12 @@
 
 using NodaTime;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class NodaTimeServiceExtensions
 {
-    public static class NodaTimeServiceExtensions
+    public static void AddMyNodaTime(this IServiceCollection services)
     {
-        public static void AddMyNodaTime(this IServiceCollection services)
-        {
-            services.AddSingleton<IClock>(SystemClock.Instance);
-        }
+        services.AddSingleton<IClock>(SystemClock.Instance);
     }
 }

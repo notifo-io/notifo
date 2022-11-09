@@ -5,47 +5,46 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure
+namespace Notifo.Infrastructure;
+
+public abstract class DisposableObjectBase : IDisposable
 {
-    public abstract class DisposableObjectBase : IDisposable
+    private readonly object disposeLock = new object();
+
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose()
     {
-        private readonly object disposeLock = new object();
+        Dispose(true);
 
-        public bool IsDisposed { get; private set; }
+        GC.SuppressFinalize(this);
+    }
 
-        public void Dispose()
+    protected void Dispose(bool disposing)
+    {
+        if (IsDisposed)
         {
-            Dispose(true);
-
-            GC.SuppressFinalize(this);
+            return;
         }
 
-        protected void Dispose(bool disposing)
+        lock (disposeLock)
         {
-            if (IsDisposed)
+            if (!IsDisposed)
             {
-                return;
+                DisposeObject(disposing);
             }
-
-            lock (disposeLock)
-            {
-                if (!IsDisposed)
-                {
-                    DisposeObject(disposing);
-                }
-            }
-
-            IsDisposed = true;
         }
 
-        protected abstract void DisposeObject(bool disposing);
+        IsDisposed = true;
+    }
 
-        protected void ThrowIfDisposed()
+    protected abstract void DisposeObject(bool disposing);
+
+    protected void ThrowIfDisposed()
+    {
+        if (IsDisposed)
         {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
+            throw new ObjectDisposedException(GetType().Name);
         }
     }
 }

@@ -10,41 +10,40 @@ using TestSuite.Fixtures;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 
-namespace TestSuite.ApiTests
+namespace TestSuite.ApiTests;
+
+[UsesVerify]
+public class IntegrationTests : IClassFixture<CreatedAppFixture>
 {
-    [UsesVerify]
-    public class IntegrationTests : IClassFixture<CreatedAppFixture>
+    public CreatedAppFixture _ { get; set; }
+
+    public IntegrationTests(CreatedAppFixture fixture)
     {
-        public CreatedAppFixture _ { get; set; }
+        _ = fixture;
+    }
 
-        public IntegrationTests(CreatedAppFixture fixture)
+    [Fact]
+    public async Task Should_create_integration()
+    {
+        // STEP 1: Create integration
+        var emailIntegrationRequest = new CreateIntegrationDto
         {
-            _ = fixture;
-        }
-
-        [Fact]
-        public async Task Should_create_integration()
-        {
-            // STEP 1: Create integration
-            var emailIntegrationRequest = new CreateIntegrationDto
+            Type = "SMTP",
+            Properties = new Dictionary<string, string>
             {
-                Type = "SMTP",
-                Properties = new Dictionary<string, string>
-                {
-                    ["host"] = "localhost",
-                    ["fromEmail"] = "hello@notifo.io",
-                    ["fromName"] = "Hello Notifo",
-                    ["port"] = "1025"
-                },
-                Enabled = true
-            };
+                ["host"] = "localhost",
+                ["fromEmail"] = "hello@notifo.io",
+                ["fromName"] = "Hello Notifo",
+                ["port"] = "1025"
+            },
+            Enabled = true
+        };
 
-            var integration = await _.Client.Apps.PostIntegrationAsync(_.AppId, emailIntegrationRequest);
+        var integration = await _.Client.Apps.PostIntegrationAsync(_.AppId, emailIntegrationRequest);
 
-            Assert.True(integration.Integration.Enabled);
+        Assert.True(integration.Integration.Enabled);
 
-            await Verify(integration)
-                .IgnoreMembersWithType<DateTimeOffset>();
-        }
+        await Verify(integration)
+            .IgnoreMembersWithType<DateTimeOffset>();
     }
 }

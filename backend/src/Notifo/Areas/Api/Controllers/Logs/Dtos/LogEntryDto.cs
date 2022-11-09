@@ -10,39 +10,38 @@ using NodaTime;
 using Notifo.Domain.Log;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.Logs.Dtos
+namespace Notifo.Areas.Api.Controllers.Logs.Dtos;
+
+public sealed class LogEntryDto
 {
-    public sealed class LogEntryDto
+    /// <summary>
+    /// The log message.
+    /// </summary>
+    [Required]
+    public string Message { get; set; }
+
+    /// <summary>
+    /// The first time this message has been seen.
+    /// </summary>
+    [Required]
+    public Instant FirstSeen { get; set; }
+
+    /// <summary>
+    /// The last time this message has been seen.
+    /// </summary>
+    [Required]
+    public Instant LastSeen { get; set; }
+
+    /// <summary>
+    /// The number of items the message has been seen.
+    /// </summary>
+    [Required]
+    public long Count { get; set; }
+
+    public static LogEntryDto FromDomainObject(LogEntry source)
     {
-        /// <summary>
-        /// The log message.
-        /// </summary>
-        [Required]
-        public string Message { get; set; }
+        var result = SimpleMapper.Map(source, new LogEntryDto());
 
-        /// <summary>
-        /// The first time this message has been seen.
-        /// </summary>
-        [Required]
-        public Instant FirstSeen { get; set; }
-
-        /// <summary>
-        /// The last time this message has been seen.
-        /// </summary>
-        [Required]
-        public Instant LastSeen { get; set; }
-
-        /// <summary>
-        /// The number of items the message has been seen.
-        /// </summary>
-        [Required]
-        public long Count { get; set; }
-
-        public static LogEntryDto FromDomainObject(LogEntry source)
-        {
-            var result = SimpleMapper.Map(source, new LogEntryDto());
-
-            return result;
-        }
+        return result;
     }
 }

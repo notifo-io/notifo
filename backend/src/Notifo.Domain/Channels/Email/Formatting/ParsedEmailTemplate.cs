@@ -13,170 +13,169 @@ using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
-namespace Notifo.Domain.Channels.Email.Formatting
+namespace Notifo.Domain.Channels.Email.Formatting;
+
+public sealed record ParsedEmailTemplate
 {
-    public sealed record ParsedEmailTemplate
+    private const string NotificationsPlaceholder = "<<<<Notifications>>>>";
+    private const string ItemDefault = "NOTIFICATION";
+    private const string ItemWithButton = "NOTIFICATION WITH BUTTON";
+    private const string ItemWithButtonAndImage = "NOTIFICATION WITH BUTTON AND IMAGE";
+    private const string ItemWithImage = "NOTIFICATION WITH IMAGE";
+    private static readonly ObjectPool<StringBuilder> Pool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
+
+    public string Text { get; init; }
+
+    public ReadonlyDictionary<string, string> ItemTemplates { get; init; }
+
+    public string Format(IReadOnlyList<EmailJob> jobs,
+        Dictionary<string, string?> properties, bool asHtml, IImageFormatter imageFormatter)
     {
-        private const string NotificationsPlaceholder = "<<<<Notifications>>>>";
-        private const string ItemDefault = "NOTIFICATION";
-        private const string ItemWithButton = "NOTIFICATION WITH BUTTON";
-        private const string ItemWithButtonAndImage = "NOTIFICATION WITH BUTTON AND IMAGE";
-        private const string ItemWithImage = "NOTIFICATION WITH IMAGE";
-        private static readonly ObjectPool<StringBuilder> Pool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
+        var notificationProperties = new Dictionary<string, string?>();
 
-        public string Text { get; init; }
-
-        public ReadonlyDictionary<string, string> ItemTemplates { get; init; }
-
-        public string Format(IReadOnlyList<EmailJob> jobs,
-            Dictionary<string, string?> properties, bool asHtml, IImageFormatter imageFormatter)
+        var stringBuilder = Pool.Get();
+        try
         {
-            var notificationProperties = new Dictionary<string, string?>();
+            var text = Text.Format(properties);
 
-            var stringBuilder = Pool.Get();
-            try
+            jobs.Foreach((job, index) =>
             {
-                var text = Text.Format(properties);
+                var notification = job.Notification;
 
-                jobs.Foreach((job, index) =>
+                var formatting = notification.Formatting;
+
+                var inner = string.Empty;
+
+                var hasButton = !string.IsNullOrWhiteSpace(formatting.ConfirmText) && !string.IsNullOrWhiteSpace(job.Notification.ConfirmUrl);
+                var hasImage = !string.IsNullOrWhiteSpace(formatting.ImageSmall) || !string.IsNullOrWhiteSpace(formatting.ImageLarge);
+
+                if (hasButton && hasImage)
                 {
-                    var notification = job.Notification;
-
-                    var formatting = notification.Formatting;
-
-                    var inner = string.Empty;
-
-                    var hasButton = !string.IsNullOrWhiteSpace(formatting.ConfirmText) && !string.IsNullOrWhiteSpace(job.Notification.ConfirmUrl);
-                    var hasImage = !string.IsNullOrWhiteSpace(formatting.ImageSmall) || !string.IsNullOrWhiteSpace(formatting.ImageLarge);
-
-                    if (hasButton && hasImage)
-                    {
-                        ItemTemplates.TryGetValue(ItemWithButtonAndImage, out inner);
-                    }
-
-                    if (hasButton && string.IsNullOrWhiteSpace(inner))
-                    {
-                        ItemTemplates.TryGetValue(ItemWithButton, out inner);
-                    }
-
-                    if (hasImage && string.IsNullOrWhiteSpace(inner))
-                    {
-                        ItemTemplates.TryGetValue(ItemWithImage, out inner);
-                    }
-
-                    if (string.IsNullOrWhiteSpace(inner))
-                    {
-                        inner = ItemTemplates[ItemDefault];
-                    }
-
-                    notificationProperties.Clear();
-                    notificationProperties["notification.body"] = notification.BodyWithLink(asHtml);
-                    notificationProperties["notification.confirmText"] = notification.ConfirmText();
-                    notificationProperties["notification.confirmUrl"] = notification.ConfirmUrl();
-                    notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge");
-                    notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall");
-                    notificationProperties["notification.subject"] = notification.Subject(asHtml);
-
-                    inner = inner.Format(notificationProperties);
-
-                    stringBuilder.AppendLine(inner);
-
-                    if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
-                    {
-                        var trackingLink = notification.HtmlTrackingLink(job.ConfigurationId);
-
-                        stringBuilder.Append(trackingLink);
-                    }
-                });
-
-                return text.Replace(NotificationsPlaceholder, stringBuilder.ToString(), StringComparison.OrdinalIgnoreCase);
-            }
-            finally
-            {
-                Pool.Return(stringBuilder);
-            }
-        }
-
-        public static (ParsedEmailTemplate? Template, string? Error) Create(string? body)
-        {
-            if (string.IsNullOrWhiteSpace(body))
-            {
-                return default;
-            }
-
-            var itemTemplates = new Dictionary<string, string>();
-
-            while (true)
-            {
-                var (newTemplate, type, item) = Extract(body);
-
-                if (item == null || type == null)
-                {
-                    break;
+                    ItemTemplates.TryGetValue(ItemWithButtonAndImage, out inner);
                 }
 
-                itemTemplates[type.ToUpperInvariant()] = item;
+                if (hasButton && string.IsNullOrWhiteSpace(inner))
+                {
+                    ItemTemplates.TryGetValue(ItemWithButton, out inner);
+                }
 
-                body = newTemplate;
-            }
+                if (hasImage && string.IsNullOrWhiteSpace(inner))
+                {
+                    ItemTemplates.TryGetValue(ItemWithImage, out inner);
+                }
 
-            var result = new ParsedEmailTemplate
-            {
-                Text = body,
-                ItemTemplates = itemTemplates.ToReadonlyDictionary()
-            };
+                if (string.IsNullOrWhiteSpace(inner))
+                {
+                    inner = ItemTemplates[ItemDefault];
+                }
 
-            if (!result.ItemTemplates.ContainsKey(ItemDefault))
-            {
-                return (null, Texts.Email_TemplateNormalNoItem);
-            }
+                notificationProperties.Clear();
+                notificationProperties["notification.body"] = notification.BodyWithLink(asHtml);
+                notificationProperties["notification.confirmText"] = notification.ConfirmText();
+                notificationProperties["notification.confirmUrl"] = notification.ConfirmUrl();
+                notificationProperties["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "EmailLarge");
+                notificationProperties["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "EmailSmall");
+                notificationProperties["notification.subject"] = notification.Subject(asHtml);
 
-            return (result, null);
+                inner = inner.Format(notificationProperties);
+
+                stringBuilder.AppendLine(inner);
+
+                if (!string.IsNullOrEmpty(notification.TrackSeenUrl) && asHtml)
+                {
+                    var trackingLink = notification.HtmlTrackingLink(job.ConfigurationId);
+
+                    stringBuilder.Append(trackingLink);
+                }
+            });
+
+            return text.Replace(NotificationsPlaceholder, stringBuilder.ToString(), StringComparison.OrdinalIgnoreCase);
+        }
+        finally
+        {
+            Pool.Return(stringBuilder);
+        }
+    }
+
+    public static (ParsedEmailTemplate? Template, string? Error) Create(string? body)
+    {
+        if (string.IsNullOrWhiteSpace(body))
+        {
+            return default;
         }
 
-        private static (string Template, string? Type, string? Inner) Extract(string template)
+        var itemTemplates = new Dictionary<string, string>();
+
+        while (true)
         {
-            var span = template.AsSpan();
+            var (newTemplate, type, item) = Extract(body);
 
-            var start = Regex.Match(template, "<!--[\\s]*START:(?<Type>.*)-->[\r\n]*", RegexOptions.IgnoreCase);
-
-            if (!start.Success)
+            if (item == null || type == null)
             {
-                return (template, null, null);
+                break;
             }
 
-            var type = start.Groups["Type"].Value.Trim();
+            itemTemplates[type.ToUpperInvariant()] = item;
 
-            var startOuter = start.Index;
-            var startInner = startOuter + start.Length;
+            body = newTemplate;
+        }
 
-            var end = new Regex($"<!--[\\s]*END:[\\s]*{type}[\\s]*-->[\r\n]*", RegexOptions.IgnoreCase).Match(template, startOuter);
+        var result = new ParsedEmailTemplate
+        {
+            Text = body,
+            ItemTemplates = itemTemplates.ToReadonlyDictionary()
+        };
 
-            if (!end.Success)
-            {
-                return (template, null, null);
-            }
+        if (!result.ItemTemplates.ContainsKey(ItemDefault))
+        {
+            return (null, Texts.Email_TemplateNormalNoItem);
+        }
 
-            var endInner = end.Index;
-            var endOuter = endInner + end.Length;
+        return (result, null);
+    }
 
-            var stringBuilder = Pool.Get();
-            try
-            {
-                var replacement = template.Contains(NotificationsPlaceholder, StringComparison.OrdinalIgnoreCase) ? string.Empty : NotificationsPlaceholder;
+    private static (string Template, string? Type, string? Inner) Extract(string template)
+    {
+        var span = template.AsSpan();
 
-                stringBuilder.Append(span[..startOuter]);
-                stringBuilder.Append(replacement);
-                stringBuilder.Append(span[endOuter..]);
+        var start = Regex.Match(template, "<!--[\\s]*START:(?<Type>.*)-->[\r\n]*", RegexOptions.IgnoreCase);
 
-                var inner = template[startInner..endInner];
+        if (!start.Success)
+        {
+            return (template, null, null);
+        }
 
-                return (stringBuilder.ToString(), type, inner);
-            }
-            finally
-            {
-                Pool.Return(stringBuilder);
-            }
+        var type = start.Groups["Type"].Value.Trim();
+
+        var startOuter = start.Index;
+        var startInner = startOuter + start.Length;
+
+        var end = new Regex($"<!--[\\s]*END:[\\s]*{type}[\\s]*-->[\r\n]*", RegexOptions.IgnoreCase).Match(template, startOuter);
+
+        if (!end.Success)
+        {
+            return (template, null, null);
+        }
+
+        var endInner = end.Index;
+        var endOuter = endInner + end.Length;
+
+        var stringBuilder = Pool.Get();
+        try
+        {
+            var replacement = template.Contains(NotificationsPlaceholder, StringComparison.OrdinalIgnoreCase) ? string.Empty : NotificationsPlaceholder;
+
+            stringBuilder.Append(span[..startOuter]);
+            stringBuilder.Append(replacement);
+            stringBuilder.Append(span[endOuter..]);
+
+            var inner = template[startInner..endInner];
+
+            return (stringBuilder.ToString(), type, inner);
+        }
+        finally
+        {
+            Pool.Return(stringBuilder);
         }
     }
 }

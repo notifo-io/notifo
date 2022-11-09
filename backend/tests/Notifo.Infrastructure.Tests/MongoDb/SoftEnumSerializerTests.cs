@@ -8,32 +8,31 @@
 using Notifo.Infrastructure.TestHelpers;
 using Xunit;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public class SoftEnumSerializerTests
 {
-    public class SoftEnumSerializerTests
+    public enum MyEnum
     {
-        public enum MyEnum
-        {
-            A,
-            B
-        }
+        A,
+        B
+    }
 
-        public SoftEnumSerializerTests()
-        {
-            SoftEnumSerializer<MyEnum>.Register();
-        }
+    public SoftEnumSerializerTests()
+    {
+        SoftEnumSerializer<MyEnum>.Register();
+    }
 
-        [Theory]
-        [InlineData(null, MyEnum.A)]
-        [InlineData("A", MyEnum.A)]
-        [InlineData("B", MyEnum.B)]
-        [InlineData("C", MyEnum.A)]
-        [InlineData("", MyEnum.A)]
-        public void Should_deserialize_from_string(string source, MyEnum expected)
-        {
-            var serialized = source.SerializeAndDeserializeBson<string, MyEnum>();
+    [Theory]
+    [InlineData(null, MyEnum.A)]
+    [InlineData("A", MyEnum.A)]
+    [InlineData("B", MyEnum.B)]
+    [InlineData("C", MyEnum.A)]
+    [InlineData("", MyEnum.A)]
+    public void Should_deserialize_from_string(string source, MyEnum expected)
+    {
+        var serialized = source.SerializeAndDeserializeBson<string, MyEnum>();
 
-            Assert.Equal(expected, serialized);
-        }
+        Assert.Equal(expected, serialized);
     }
 }

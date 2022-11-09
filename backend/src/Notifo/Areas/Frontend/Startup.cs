@@ -9,81 +9,80 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
 using Notifo.Pipeline;
 
-namespace Notifo.Areas.Frontend
+namespace Notifo.Areas.Frontend;
+
+public static class Startup
 {
-    public static class Startup
+    public static void UseFrontend(this IApplicationBuilder app)
     {
-        public static void UseFrontend(this IApplicationBuilder app)
+        var environment = app.ApplicationServices.GetRequiredService<IWebHostEnvironment>();
+
+        var fileProvider = environment.WebRootFileProvider;
+
+        if (environment.IsProduction())
         {
-            var environment = app.ApplicationServices.GetRequiredService<IWebHostEnvironment>();
+            fileProvider = new CompositeFileProvider(fileProvider,
+                new PhysicalFileProvider(Path.Combine(environment.WebRootPath, "build")));
+        }
 
-            var fileProvider = environment.WebRootFileProvider;
+        app.UseMiddleware<NotifoMiddleware>();
 
-            if (environment.IsProduction())
-            {
-                fileProvider = new CompositeFileProvider(fileProvider,
-                    new PhysicalFileProvider(Path.Combine(environment.WebRootPath, "build")));
-            }
+        app.UseWhen(c => c.IsSpaFile(), builder =>
+        {
+            builder.UseMiddleware<SetupMiddleware>();
+        });
 
-            app.UseMiddleware<NotifoMiddleware>();
+        app.UseWhen(c => c.IsSpaFile() || c.IsHtmlPath(), builder =>
+        {
+            builder.UseHtmlTransform();
+        });
 
-            app.UseWhen(c => c.IsSpaFile(), builder =>
-            {
-                builder.UseMiddleware<SetupMiddleware>();
-            });
+        app.UseNotifoStaticFiles(fileProvider);
 
-            app.UseWhen(c => c.IsSpaFile() || c.IsHtmlPath(), builder =>
-            {
-                builder.UseHtmlTransform();
-            });
-
+        if (environment.IsProduction())
+        {
+            // Try static files again tó serve index.html.
+            app.UsePathOverride("/index.html");
             app.UseNotifoStaticFiles(fileProvider);
-
-            if (environment.IsProduction())
-            {
-                // Try static files again tó serve index.html.
-                app.UsePathOverride("/index.html");
-                app.UseNotifoStaticFiles(fileProvider);
-            }
-            else
-            {
-                // Forward requests to SPA development server.
-                app.UseSpa(builder =>
-                {
-                    builder.UseProxyToSpaDevelopmentServer("https://localhost:3002");
-                });
-            }
         }
-
-        private static void UseNotifoStaticFiles(this IApplicationBuilder app, IFileProvider fileProvider)
+        else
         {
-            app.UseStaticFiles(new StaticFileOptions
+            // Forward requests to SPA development server.
+            app.UseSpa(builder =>
             {
-                OnPrepareResponse = context =>
-                {
-                    var response = context.Context.Response;
-
-                    if (!string.IsNullOrWhiteSpace(context.Context.Request.QueryString.ToString()))
-                    {
-                        response.Headers[HeaderNames.CacheControl] = "max-age=5184000";
-                    }
-                    else if (string.Equals(response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
-                    {
-                        response.Headers[HeaderNames.CacheControl] = "no-cache";
-                    }
-                },
-                FileProvider = fileProvider
+                builder.UseProxyToSpaDevelopmentServer("https://localhost:3002");
             });
         }
+    }
 
-        private static bool IsSpaFile(this HttpContext context)
+    private static void UseNotifoStaticFiles(this IApplicationBuilder app, IFileProvider fileProvider)
+    {
+        app.UseStaticFiles(new StaticFileOptions
         {
-            return (context.IsIndex() || !Path.HasExtension(context.Request.Path)) && !context.IsDevServer();
-        }
+            OnPrepareResponse = context =>
+            {
+                var response = context.Context.Response;
 
-        private static bool IsDevServer(this HttpContext context)
-        {
-            return context.Request.Path.StartsWithSegments("/ws", StringComparison.OrdinalIgnoreCase);
-        }
+                if (!string.IsNullOrWhiteSpace(context.Context.Request.QueryString.ToString()))
+                {
+                    response.Headers[HeaderNames.CacheControl] = "max-age=5184000";
+                }
+                else if (string.Equals(response.ContentType, "text/html", StringComparison.OrdinalIgnoreCase))
+                {
+                    response.Headers[HeaderNames.CacheControl] = "no-cache";
+                }
+            },
+            FileProvider = fileProvider
+        });
+    }
+
+    private static bool IsSpaFile(this HttpContext context)
+    {
+        return (context.IsIndex() || !Path.HasExtension(context.Request.Path)) && !context.IsDevServer();
+    }
+
+    private static bool IsDevServer(this HttpContext context)
+    {
+        return context.Request.Path.StartsWithSegments("/ws", StringComparison.OrdinalIgnoreCase);
     }
 }

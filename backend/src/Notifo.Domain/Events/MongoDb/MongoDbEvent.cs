@@ -9,61 +9,60 @@ using System.Text;
 using Microsoft.Extensions.ObjectPool;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Events.MongoDb
+namespace Notifo.Domain.Events.MongoDb;
+
+public sealed class MongoDbEvent : MongoDbEntity<Event>
 {
-    public sealed class MongoDbEvent : MongoDbEntity<Event>
+    private static readonly ObjectPool<StringBuilder> StringBuilderPool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
+
+    public string SearchText { get; set; }
+
+    public static string CreateId(string appId, string id)
     {
-        private static readonly ObjectPool<StringBuilder> StringBuilderPool = ObjectPool.Create(new StringBuilderPooledObjectPolicy());
+        return $"{appId}_{id}";
+    }
 
-        public string SearchText { get; set; }
+    public static MongoDbEvent FromEvent(Event @event)
+    {
+        var docId = CreateId(@event.AppId, @event.Id);
 
-        public static string CreateId(string appId, string id)
+        return new MongoDbEvent
         {
-            return $"{appId}_{id}";
-        }
+            DocId = docId,
+            Doc = @event,
+            Etag = Guid.NewGuid().ToString(),
+            SearchText = BuildSearchText(@event)
+        };
+    }
 
-        public static MongoDbEvent FromEvent(Event @event)
+    private static string BuildSearchText(Event @event)
+    {
+        var sb = StringBuilderPool.Get();
+        try
         {
-            var docId = CreateId(@event.AppId, @event.Id);
-
-            return new MongoDbEvent
+            foreach (var text in @event.Formatting.Subject.Values)
             {
-                DocId = docId,
-                Doc = @event,
-                Etag = Guid.NewGuid().ToString(),
-                SearchText = BuildSearchText(@event)
-            };
-        }
+                sb.AppendLine(text);
+            }
 
-        private static string BuildSearchText(Event @event)
-        {
-            var sb = StringBuilderPool.Get();
-            try
+            if (@event.Formatting.Body != null)
             {
-                foreach (var text in @event.Formatting.Subject.Values)
+                foreach (var text in @event.Formatting.Body.Values)
                 {
                     sb.AppendLine(text);
                 }
-
-                if (@event.Formatting.Body != null)
-                {
-                    foreach (var text in @event.Formatting.Body.Values)
-                    {
-                        sb.AppendLine(text);
-                    }
-                }
-
-                return sb.ToString();
             }
-            finally
-            {
-                StringBuilderPool.Return(sb);
-            }
+
+            return sb.ToString();
         }
-
-        public Event ToEvent()
+        finally
         {
-            return Doc;
+            StringBuilderPool.Return(sb);
         }
+    }
+
+    public Event ToEvent()
+    {
+        return Doc;
     }
 }

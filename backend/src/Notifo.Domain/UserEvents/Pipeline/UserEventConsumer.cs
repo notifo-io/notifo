@@ -10,28 +10,27 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Squidex.Messaging;
 
-namespace Notifo.Domain.UserEvents.Pipeline
+namespace Notifo.Domain.UserEvents.Pipeline;
+
+public sealed class UserEventConsumer : IMessageHandler<UserEventMessage>
 {
-    public sealed class UserEventConsumer : IMessageHandler<UserEventMessage>
+    private readonly IUserNotificationService userNotificationService;
+
+    public UserEventConsumer(IUserNotificationService userNotificationService)
     {
-        private readonly IUserNotificationService userNotificationService;
+        this.userNotificationService = userNotificationService;
+    }
 
-        public UserEventConsumer(IUserNotificationService userNotificationService)
+    public async Task HandleAsync(UserEventMessage message,
+        CancellationToken ct)
+    {
+        var links = message.Links();
+
+        var parentContext = Activity.Current?.Context ?? default;
+
+        using (Telemetry.Activities.StartActivity("ConsumeUserEvent", ActivityKind.Internal, parentContext, links: links))
         {
-            this.userNotificationService = userNotificationService;
-        }
-
-        public async Task HandleAsync(UserEventMessage message,
-            CancellationToken ct)
-        {
-            var links = message.Links();
-
-            var parentContext = Activity.Current?.Context ?? default;
-
-            using (Telemetry.Activities.StartActivity("ConsumeUserEvent", ActivityKind.Internal, parentContext, links: links))
-            {
-                await userNotificationService.DistributeAsync(message);
-            }
+            await userNotificationService.DistributeAsync(message);
         }
     }
 }

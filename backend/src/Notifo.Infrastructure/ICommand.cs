@@ -5,13 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure
-{
-    public interface ICommand<T> where T : notnull
-    {
-        bool CanCreate => false;
+namespace Notifo.Infrastructure;
 
-        ValueTask<T?> ExecuteAsync(T target, IServiceProvider serviceProvider,
-            CancellationToken ct);
-    }
+public interface ICommand<T> where T : notnull
+{
+    bool CanCreate => false;
+
+    ValueTask<T?> ExecuteAsync(T target, IServiceProvider serviceProvider,
+        CancellationToken ct);
 }

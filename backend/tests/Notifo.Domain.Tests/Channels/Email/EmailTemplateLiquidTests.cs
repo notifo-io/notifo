@@ -9,15 +9,14 @@ using Mjml.Net;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Utils;
 
-namespace Notifo.Domain.Channels.Email
-{
-    public class EmailTemplateLiquidTests : EmailTemplateTestsBase
-    {
-        protected override string Name => "liquid";
+namespace Notifo.Domain.Channels.Email;
 
-        protected override IEmailFormatter CreateFormatter(IEmailUrl url, IImageFormatter imageFormatter)
-        {
-            return new EmailFormatterLiquid(imageFormatter, url, new MjmlRenderer());
-        }
+public class EmailTemplateLiquidTests : EmailTemplateTestsBase
+{
+    protected override string Name => "liquid";
+
+    protected override IEmailFormatter CreateFormatter(IEmailUrl url, IImageFormatter imageFormatter)
+    {
+        return new EmailFormatterLiquid(imageFormatter, url, new MjmlRenderer());
     }
 }

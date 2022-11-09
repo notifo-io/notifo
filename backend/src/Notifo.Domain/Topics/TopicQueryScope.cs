@@ -5,12 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Topics
+namespace Notifo.Domain.Topics;
+
+public enum TopicQueryScope
 {
-    public enum TopicQueryScope
-    {
-        All,
-        Explicit,
-        Implicit
-    }
+    All,
+    Explicit,
+    Implicit
 }

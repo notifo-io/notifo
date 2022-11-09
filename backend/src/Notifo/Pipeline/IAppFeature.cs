@@ -7,10 +7,9 @@
 
 using Notifo.Domain.Apps;
 
-namespace Notifo.Pipeline
+namespace Notifo.Pipeline;
+
+public interface IAppFeature
 {
-    public interface IAppFeature
-    {
-        App App { get; }
-    }
+    App App { get; }
 }

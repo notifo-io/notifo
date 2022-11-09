@@ -10,47 +10,46 @@ using Notifo.Domain.Events;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain
+namespace Notifo.Domain;
+
+public static class TelemetryExtensions
 {
-    public static class TelemetryExtensions
+    public static IEnumerable<ActivityLink> Links(this UserEventMessage message)
     {
-        public static IEnumerable<ActivityLink> Links(this UserEventMessage message)
+        if (message.UserEventActivity != default)
         {
-            if (message.UserEventActivity != default)
-            {
-                yield return new ActivityLink(message.UserEventActivity);
-            }
-
-            if (message.EventActivity != default)
-            {
-                yield return new ActivityLink(message.EventActivity);
-            }
+            yield return new ActivityLink(message.UserEventActivity);
         }
 
-        public static IEnumerable<ActivityLink> Links(this EventMessage message)
+        if (message.EventActivity != default)
         {
-            if (message.EventActivity != default)
-            {
-                yield return new ActivityLink(message.EventActivity);
-            }
+            yield return new ActivityLink(message.EventActivity);
+        }
+    }
+
+    public static IEnumerable<ActivityLink> Links(this EventMessage message)
+    {
+        if (message.EventActivity != default)
+        {
+            yield return new ActivityLink(message.EventActivity);
+        }
+    }
+
+    public static IEnumerable<ActivityLink> Links(this BaseUserNotification notification)
+    {
+        if (notification.UserEventActivity != default)
+        {
+            yield return new ActivityLink(notification.UserEventActivity);
         }
 
-        public static IEnumerable<ActivityLink> Links(this BaseUserNotification notification)
+        if (notification.EventActivity != default)
         {
-            if (notification.UserEventActivity != default)
-            {
-                yield return new ActivityLink(notification.UserEventActivity);
-            }
+            yield return new ActivityLink(notification.EventActivity);
+        }
 
-            if (notification.EventActivity != default)
-            {
-                yield return new ActivityLink(notification.EventActivity);
-            }
-
-            if (notification.UserNotificationActivity != default)
-            {
-                yield return new ActivityLink(notification.UserNotificationActivity);
-            }
+        if (notification.UserNotificationActivity != default)
+        {
+            yield return new ActivityLink(notification.UserNotificationActivity);
         }
     }
 }

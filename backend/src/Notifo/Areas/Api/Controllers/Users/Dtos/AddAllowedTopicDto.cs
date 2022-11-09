@@ -8,22 +8,21 @@
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Users;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos
-{
-    public sealed class AddAllowedTopicDto
-    {
-        /// <summary>
-        /// The topic to add.
-        /// </summary>
-        [Required]
-        public string Prefix { get; set; }
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
 
-        public AddUserAllowedTopic ToUpdate()
+public sealed class AddAllowedTopicDto
+{
+    /// <summary>
+    /// The topic to add.
+    /// </summary>
+    [Required]
+    public string Prefix { get; set; }
+
+    public AddUserAllowedTopic ToUpdate()
+    {
+        return new AddUserAllowedTopic
         {
-            return new AddUserAllowedTopic
-            {
-                Prefix = Prefix
-            };
-        }
+            Prefix = Prefix
+        };
     }
 }

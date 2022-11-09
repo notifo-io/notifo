@@ -7,12 +7,11 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Topics
-{
-    public sealed record TopicQuery : QueryBase
-    {
-        public string? Query { get; set; }
+namespace Notifo.Domain.Topics;
 
-        public TopicQueryScope Scope { get; set; }
-    }
+public sealed record TopicQuery : QueryBase
+{
+    public string? Query { get; set; }
+
+    public TopicQueryScope Scope { get; set; }
 }

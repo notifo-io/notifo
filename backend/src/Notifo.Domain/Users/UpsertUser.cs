@@ -12,130 +12,129 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Users
+namespace Notifo.Domain.Users;
+
+public sealed class UpsertUser : ICommand<User>
 {
-    public sealed class UpsertUser : ICommand<User>
+    public string? FullName { get; set; }
+
+    public string? EmailAddress { get; set; }
+
+    public string? PhoneNumber { get; set; }
+
+    public string? PreferredLanguage { get; set; }
+
+    public string? PreferredTimezone { get; set; }
+
+    public bool? RequiresWhitelistedTopics { get; set; }
+
+    public ReadonlyDictionary<string, string>? Properties { get; set; }
+
+    public ChannelSettings? Settings { get; set; }
+
+    public bool MergeSettings { get; set; }
+
+    public bool CanCreate => true;
+
+    private sealed class Validator : AbstractValidator<UpsertUser>
     {
-        public string? FullName { get; set; }
-
-        public string? EmailAddress { get; set; }
-
-        public string? PhoneNumber { get; set; }
-
-        public string? PreferredLanguage { get; set; }
-
-        public string? PreferredTimezone { get; set; }
-
-        public bool? RequiresWhitelistedTopics { get; set; }
-
-        public ReadonlyDictionary<string, string>? Properties { get; set; }
-
-        public ChannelSettings? Settings { get; set; }
-
-        public bool MergeSettings { get; set; }
-
-        public bool CanCreate => true;
-
-        private sealed class Validator : AbstractValidator<UpsertUser>
+        public Validator()
         {
-            public Validator()
+            RuleFor(x => x.EmailAddress).EmailAddress().Unless(x => string.IsNullOrWhiteSpace(x.EmailAddress));
+            RuleFor(x => x.PreferredLanguage).Language();
+            RuleFor(x => x.PreferredTimezone).Timezone();
+            RuleFor(x => x.PhoneNumber).PhoneNumber();
+        }
+    }
+
+    public async ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        var newUser = user;
+
+        if (Is.Changed(FullName, user.FullName))
+        {
+            newUser = newUser with
             {
-                RuleFor(x => x.EmailAddress).EmailAddress().Unless(x => string.IsNullOrWhiteSpace(x.EmailAddress));
-                RuleFor(x => x.PreferredLanguage).Language();
-                RuleFor(x => x.PreferredTimezone).Timezone();
-                RuleFor(x => x.PhoneNumber).PhoneNumber();
-            }
+                FullName = FullName.Trim()
+            };
         }
 
-        public async ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        if (Is.Changed(EmailAddress, user.EmailAddress))
         {
-            Validate<Validator>.It(this);
-
-            var newUser = user;
-
-            if (Is.Changed(FullName, user.FullName))
+            newUser = newUser with
             {
-                newUser = newUser with
-                {
-                    FullName = FullName.Trim()
-                };
-            }
-
-            if (Is.Changed(EmailAddress, user.EmailAddress))
-            {
-                newUser = newUser with
-                {
-                    EmailAddress = EmailAddress.Trim().ToLowerInvariant()
-                };
-            }
-
-            if (Is.Changed(PhoneNumber, user.PhoneNumber))
-            {
-                newUser = newUser with
-                {
-                    PhoneNumber = PhoneNumber.Trim().ToLowerInvariant()
-                };
-            }
-
-            if (Is.Changed(Properties, user.Properties))
-            {
-                newUser = newUser with
-                {
-                    Properties = Properties
-                };
-            }
-
-            if (Is.Changed(PreferredLanguage, user.PreferredLanguage))
-            {
-                newUser = newUser with
-                {
-                    PreferredLanguage = PreferredLanguage.Trim()
-                };
-            }
-
-            if (Is.Changed(PreferredTimezone, user.PreferredTimezone))
-            {
-                newUser = newUser with
-                {
-                    PreferredTimezone = PreferredTimezone.Trim()
-                };
-            }
-
-            if (Is.Changed(RequiresWhitelistedTopics, user.RequiresWhitelistedTopics))
-            {
-                newUser = newUser with
-                {
-                    RequiresWhitelistedTopics = RequiresWhitelistedTopics.Value
-                };
-            }
-
-            if (Settings != null)
-            {
-                var newSettings = Settings;
-
-                if (MergeSettings)
-                {
-                    newSettings = ChannelSettings.Merged(user.Settings, Settings);
-                }
-
-                newUser = newUser with
-                {
-                    Settings = newSettings
-                };
-            }
-
-            if (string.IsNullOrWhiteSpace(user.ApiKey))
-            {
-                var tokenGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
-
-                newUser = newUser with
-                {
-                    ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id)
-                };
-            }
-
-            return newUser;
+                EmailAddress = EmailAddress.Trim().ToLowerInvariant()
+            };
         }
+
+        if (Is.Changed(PhoneNumber, user.PhoneNumber))
+        {
+            newUser = newUser with
+            {
+                PhoneNumber = PhoneNumber.Trim().ToLowerInvariant()
+            };
+        }
+
+        if (Is.Changed(Properties, user.Properties))
+        {
+            newUser = newUser with
+            {
+                Properties = Properties
+            };
+        }
+
+        if (Is.Changed(PreferredLanguage, user.PreferredLanguage))
+        {
+            newUser = newUser with
+            {
+                PreferredLanguage = PreferredLanguage.Trim()
+            };
+        }
+
+        if (Is.Changed(PreferredTimezone, user.PreferredTimezone))
+        {
+            newUser = newUser with
+            {
+                PreferredTimezone = PreferredTimezone.Trim()
+            };
+        }
+
+        if (Is.Changed(RequiresWhitelistedTopics, user.RequiresWhitelistedTopics))
+        {
+            newUser = newUser with
+            {
+                RequiresWhitelistedTopics = RequiresWhitelistedTopics.Value
+            };
+        }
+
+        if (Settings != null)
+        {
+            var newSettings = Settings;
+
+            if (MergeSettings)
+            {
+                newSettings = ChannelSettings.Merged(user.Settings, Settings);
+            }
+
+            newUser = newUser with
+            {
+                Settings = newSettings
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(user.ApiKey))
+        {
+            var tokenGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
+
+            newUser = newUser with
+            {
+                ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id)
+            };
+        }
+
+        return newUser;
     }
 }

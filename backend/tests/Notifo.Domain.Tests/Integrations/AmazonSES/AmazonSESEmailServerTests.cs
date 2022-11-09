@@ -10,16 +10,15 @@ using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Smtp;
 using Xunit;
 
-namespace Notifo.Domain.Integrations.AmazonSES
-{
-    [Trait("Category", "Dependencies")]
-    public class AmazonSESEmailServerTests : EmailSenderTestBase
-    {
-        protected override IEmailSender CreateSender()
-        {
-            var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>();
+namespace Notifo.Domain.Integrations.AmazonSES;
 
-            return new SmtpEmailSender(() => new SmtpEmailServer(options), Address, Address);
-        }
+[Trait("Category", "Dependencies")]
+public class AmazonSESEmailServerTests : EmailSenderTestBase
+{
+    protected override IEmailSender CreateSender()
+    {
+        var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>();
+
+        return new SmtpEmailSender(() => new SmtpEmailServer(options), Address, Address);
     }
 }

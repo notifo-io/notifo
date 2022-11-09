@@ -12,46 +12,45 @@ using Notifo.Domain.Users;
 using Notifo.Pipeline;
 using NSwag.Annotations;
 
-namespace Notifo.Areas.Api.Controllers.WebPush
+namespace Notifo.Areas.Api.Controllers.WebPush;
+
+[OpenApiIgnore]
+public sealed class WebPushController : BaseController
 {
-    [OpenApiIgnore]
-    public sealed class WebPushController : BaseController
+    private readonly IUserStore userStore;
+
+    public WebPushController(IUserStore userStore)
     {
-        private readonly IUserStore userStore;
+        this.userStore = userStore;
+    }
 
-        public WebPushController(IUserStore userStore)
+    [HttpPost("api/me/webpush")]
+    [HttpPost("api/webpush")]
+    [AppPermission(NotifoRoles.AppUser)]
+    public async Task<IActionResult> PostMyToken([FromBody] RegisterWebTokenDto request)
+    {
+        var command = new AddUserWebPushSubscription
         {
-            this.userStore = userStore;
-        }
+            Subscription = request.Subscription.ToSubscription()
+        };
 
-        [HttpPost("api/me/webpush")]
-        [HttpPost("api/webpush")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> PostMyToken([FromBody] RegisterWebTokenDto request)
+        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
+
+        return NoContent();
+    }
+
+    [HttpDelete("api/me/webpush")]
+    [HttpDelete("api/webpush")]
+    [AppPermission(NotifoRoles.AppUser)]
+    public async Task<IActionResult> DeleteMyToken([FromBody] RegisterWebTokenDto request)
+    {
+        var command = new RemoveUserWebPushSubscription
         {
-            var command = new AddUserWebPushSubscription
-            {
-                Subscription = request.Subscription.ToSubscription()
-            };
+            Endpoint = request.Subscription.Endpoint
+        };
 
-            await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
+        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
 
-            return NoContent();
-        }
-
-        [HttpDelete("api/me/webpush")]
-        [HttpDelete("api/webpush")]
-        [AppPermission(NotifoRoles.AppUser)]
-        public async Task<IActionResult> DeleteMyToken([FromBody] RegisterWebTokenDto request)
-        {
-            var command = new RemoveUserWebPushSubscription
-            {
-                Endpoint = request.Subscription.Endpoint
-            };
-
-            await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

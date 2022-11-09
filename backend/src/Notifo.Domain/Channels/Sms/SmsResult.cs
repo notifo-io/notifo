@@ -5,14 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Sms
+namespace Notifo.Domain.Channels.Sms;
+
+public enum SmsResult
 {
-    public enum SmsResult
-    {
-        Unknown,
-        Skipped,
-        Sent,
-        Delivered,
-        Failed
-    }
+    Unknown,
+    Skipped,
+    Sent,
+    Delivered,
+    Failed
 }

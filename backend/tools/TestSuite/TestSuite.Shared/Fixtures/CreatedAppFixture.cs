@@ -7,70 +7,69 @@
 
 using Notifo.SDK;
 
-namespace TestSuite.Fixtures
+namespace TestSuite.Fixtures;
+
+public class CreatedAppFixture : ClientFixture
 {
-    public class CreatedAppFixture : ClientFixture
+    public string AppId { get; private set; }
+
+    public override async Task InitializeAsync()
     {
-        public string AppId { get; private set; }
+        await base.InitializeAsync();
 
-        public override async Task InitializeAsync()
+        AppId = await Factories.CreateAsync(nameof(AppName), async () =>
         {
-            await base.InitializeAsync();
+            var appId = await FindAppAsync();
 
-            AppId = await Factories.CreateAsync(nameof(AppName), async () =>
+            if (appId != null)
             {
-                var appId = await FindAppAsync();
-
-                if (appId != null)
-                {
-                    return appId;
-                }
-
-                try
-                {
-                    await Client.Apps.PostAppAsync(new UpsertAppDto
-                    {
-                        Name = AppName,
-                        Languages = new List<string>
-                        {
-                            "en",
-                            "de"
-                        }
-                    });
-                }
-                catch (NotifoException ex)
-                {
-                    if (ex.StatusCode != 400)
-                    {
-                        throw;
-                    }
-                }
-
-                appId = await FindAppAsync();
-
-                string[] contributors =
-                {
-                    "hello@squidex.io"
-                };
-
-                var invite = new AddContributorDto { Role = "Owner" };
-
-                foreach (var contributor in contributors)
-                {
-                    invite.Email = contributor;
-
-                    await Client.Apps.PostContributorAsync(appId, invite);
-                }
-
                 return appId;
-            });
-        }
+            }
 
-        private async Task<string> FindAppAsync()
-        {
-            var apps = await Client.Apps.GetAppsAsync();
+            try
+            {
+                await Client.Apps.PostAppAsync(new UpsertAppDto
+                {
+                    Name = AppName,
+                    Languages = new List<string>
+                    {
+                        "en",
+                        "de"
+                    }
+                });
+            }
+            catch (NotifoException ex)
+            {
+                if (ex.StatusCode != 400)
+                {
+                    throw;
+                }
+            }
 
-            return apps.FirstOrDefault(x => x.Name == AppName)?.Id;
-        }
+            appId = await FindAppAsync();
+
+            string[] contributors =
+            {
+                "hello@squidex.io"
+            };
+
+            var invite = new AddContributorDto { Role = "Owner" };
+
+            foreach (var contributor in contributors)
+            {
+                invite.Email = contributor;
+
+                await Client.Apps.PostContributorAsync(appId, invite);
+            }
+
+            return appId;
+        });
+    }
+
+    private async Task<string> FindAppAsync()
+    {
+        var apps = await Client.Apps.GetAppsAsync();
+
+        return apps.FirstOrDefault(x => x.Name == AppName)?.Id;
     }
 }

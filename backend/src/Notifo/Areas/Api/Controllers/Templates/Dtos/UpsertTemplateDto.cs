@@ -11,54 +11,53 @@ using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
 using Notifo.Infrastructure.Texts;
 
-namespace Notifo.Areas.Api.Controllers.Templates.Dtos
+namespace Notifo.Areas.Api.Controllers.Templates.Dtos;
+
+public sealed class UpsertTemplateDto
 {
-    public sealed class UpsertTemplateDto
+    /// <summary>
+    /// The code of the template.
+    /// </summary>
+    [Required]
+    public string Code { get; set; }
+
+    /// <summary>
+    /// The formatting.
+    /// </summary>
+    [Required]
+    public NotificationFormattingDto Formatting { get; set; }
+
+    /// <summary>
+    /// Notification settings per channel.
+    /// </summary>
+    public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
+
+    public UpsertTemplate ToUpdate()
     {
-        /// <summary>
-        /// The code of the template.
-        /// </summary>
-        [Required]
-        public string Code { get; set; }
+        var result = SimpleMapper.Map(this, new UpsertTemplate());
 
-        /// <summary>
-        /// The formatting.
-        /// </summary>
-        [Required]
-        public NotificationFormattingDto Formatting { get; set; }
-
-        /// <summary>
-        /// Notification settings per channel.
-        /// </summary>
-        public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
-
-        public UpsertTemplate ToUpdate()
+        if (Formatting != null)
         {
-            var result = SimpleMapper.Map(this, new UpsertTemplate());
+            result.Formatting = Formatting.ToDomainObject();
+        }
+        else
+        {
+            result.Formatting = new NotificationFormatting<LocalizedText>();
+        }
 
-            if (Formatting != null)
-            {
-                result.Formatting = Formatting.ToDomainObject();
-            }
-            else
-            {
-                result.Formatting = new NotificationFormatting<LocalizedText>();
-            }
+        if (Settings != null)
+        {
+            result.Settings = new ChannelSettings();
 
-            if (Settings != null)
+            foreach (var (key, value) in Settings)
             {
-                result.Settings = new ChannelSettings();
-
-                foreach (var (key, value) in Settings)
+                if (value != null)
                 {
-                    if (value != null)
-                    {
-                        result.Settings[key] = value.ToDomainObject();
-                    }
+                    result.Settings[key] = value.ToDomainObject();
                 }
             }
-
-            return result;
         }
+
+        return result;
     }
 }

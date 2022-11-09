@@ -10,60 +10,59 @@ using NodaTime;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
+
+public sealed class ChannelTemplateDetailsDto<T>
 {
-    public sealed class ChannelTemplateDetailsDto<T>
+    /// <summary>
+    /// The id of the template.
+    /// </summary>
+    [Required]
+    public string Id { get; set; }
+
+    /// <summary>
+    /// The optional name of the template.
+    /// </summary>
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// True, when the template is the primary template.
+    /// </summary>
+    [Required]
+    public bool Primary { get; set; }
+
+    /// <summary>
+    /// The date time (ISO 8601) when the template has been created.
+    /// </summary>
+    [Required]
+    public Instant Created { get; set; }
+
+    /// <summary>
+    /// The date time (ISO 8601) when the template has been updated.
+    /// </summary>
+    [Required]
+    public Instant LastUpdate { get; set; }
+
+    /// <summary>
+    /// The language specific templates.
+    /// </summary>
+    [Required]
+    public Dictionary<string, T> Languages { get; set; }
+
+    public static ChannelTemplateDetailsDto<T> FromDomainObject<TInput>(ChannelTemplate<TInput> source, Func<TInput, T> factory)
     {
-        /// <summary>
-        /// The id of the template.
-        /// </summary>
-        [Required]
-        public string Id { get; set; }
+        var result = SimpleMapper.Map(source, new ChannelTemplateDetailsDto<T>());
 
-        /// <summary>
-        /// The optional name of the template.
-        /// </summary>
-        public string? Name { get; set; }
+        result.Languages = new Dictionary<string, T>();
 
-        /// <summary>
-        /// True, when the template is the primary template.
-        /// </summary>
-        [Required]
-        public bool Primary { get; set; }
-
-        /// <summary>
-        /// The date time (ISO 8601) when the template has been created.
-        /// </summary>
-        [Required]
-        public Instant Created { get; set; }
-
-        /// <summary>
-        /// The date time (ISO 8601) when the template has been updated.
-        /// </summary>
-        [Required]
-        public Instant LastUpdate { get; set; }
-
-        /// <summary>
-        /// The language specific templates.
-        /// </summary>
-        [Required]
-        public Dictionary<string, T> Languages { get; set; }
-
-        public static ChannelTemplateDetailsDto<T> FromDomainObject<TInput>(ChannelTemplate<TInput> source, Func<TInput, T> factory)
+        if (source.Languages != null)
         {
-            var result = SimpleMapper.Map(source, new ChannelTemplateDetailsDto<T>());
-
-            result.Languages = new Dictionary<string, T>();
-
-            if (source.Languages != null)
+            foreach (var (key, value) in source.Languages)
             {
-                foreach (var (key, value) in source.Languages)
-                {
-                    result.Languages[key] = factory(value);
-                }
+                result.Languages[key] = factory(value);
             }
-
-            return result;
         }
+
+        return result;
     }
 }

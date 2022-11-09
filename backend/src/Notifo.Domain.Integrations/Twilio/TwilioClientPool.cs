@@ -8,27 +8,26 @@
 using Microsoft.Extensions.Caching.Memory;
 using Twilio.Clients;
 
-namespace Notifo.Domain.Integrations.Twilio
+namespace Notifo.Domain.Integrations.Twilio;
+
+public sealed class TwilioClientPool : CachePool<ITwilioRestClient>
 {
-    public sealed class TwilioClientPool : CachePool<ITwilioRestClient>
+    public TwilioClientPool(IMemoryCache memoryCache)
+        : base(memoryCache)
     {
-        public TwilioClientPool(IMemoryCache memoryCache)
-            : base(memoryCache)
+    }
+
+    public ITwilioRestClient GetServer(string username, string password)
+    {
+        var cacheKey = $"TwilioRestClient_{username}_{password}";
+
+        var found = GetOrCreate(cacheKey, () =>
         {
-        }
+            var client = new TwilioRestClient(username, password);
 
-        public ITwilioRestClient GetServer(string username, string password)
-        {
-            var cacheKey = $"TwilioRestClient_{username}_{password}";
+            return client;
+        });
 
-            var found = GetOrCreate(cacheKey, () =>
-            {
-                var client = new TwilioRestClient(username, password);
-
-                return client;
-            });
-
-            return found;
-        }
+        return found;
     }
 }

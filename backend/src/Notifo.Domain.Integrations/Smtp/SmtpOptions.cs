@@ -7,34 +7,33 @@
 
 using Squidex.Hosting.Configuration;
 
-namespace Notifo.Domain.Integrations.Smtp
+namespace Notifo.Domain.Integrations.Smtp;
+
+public class SmtpOptions : IValidatableOptions
 {
-    public class SmtpOptions : IValidatableOptions
+    public string Host { get; set; }
+
+    public string? Username { get; set; }
+
+    public string? Password { get; set; }
+
+    public int HostPort { get; set; } = 587;
+
+    public bool IsValid()
     {
-        public string Host { get; set; }
+        return !Validate().Any();
+    }
 
-        public string? Username { get; set; }
-
-        public string? Password { get; set; }
-
-        public int HostPort { get; set; } = 587;
-
-        public bool IsValid()
+    public virtual IEnumerable<ConfigurationError> Validate()
+    {
+        if (string.IsNullOrWhiteSpace(Host))
         {
-            return !Validate().Any();
+            yield return new ConfigurationError("Value is required.", nameof(Host));
         }
 
-        public virtual IEnumerable<ConfigurationError> Validate()
+        if (HostPort == 0)
         {
-            if (string.IsNullOrWhiteSpace(Host))
-            {
-                yield return new ConfigurationError("Value is required.", nameof(Host));
-            }
-
-            if (HostPort == 0)
-            {
-                yield return new ConfigurationError("Value is required.", nameof(HostPort));
-            }
+            yield return new ConfigurationError("Value is required.", nameof(HostPort));
         }
     }
 }

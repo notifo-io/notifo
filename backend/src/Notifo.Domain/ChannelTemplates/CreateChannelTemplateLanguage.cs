@@ -11,40 +11,39 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.ChannelTemplates
+namespace Notifo.Domain.ChannelTemplates;
+
+public sealed class CreateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
 {
-    public sealed class CreateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
+    public string Language { get; set; }
+
+    private sealed class Validator : AbstractValidator<CreateChannelTemplateLanguage<T>>
     {
-        public string Language { get; set; }
-
-        private sealed class Validator : AbstractValidator<CreateChannelTemplateLanguage<T>>
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(x => x.Language).NotNull().Language();
-            }
+            RuleFor(x => x.Language).NotNull().Language();
+        }
+    }
+
+    public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+
+        if (template.Languages.ContainsKey(Language))
+        {
+            throw new DomainObjectConflictException(Language);
         }
 
-        public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        var channelInstance = await channelFactory.CreateInitialAsync(template.Kind, ct);
+
+        var newTemplate = template with
         {
-            Validate<Validator>.It(this);
+            Languages = template.Languages.Set(Language, channelInstance)
+        };
 
-            var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
-
-            if (template.Languages.ContainsKey(Language))
-            {
-                throw new DomainObjectConflictException(Language);
-            }
-
-            var channelInstance = await channelFactory.CreateInitialAsync(template.Kind, ct);
-
-            var newTemplate = template with
-            {
-                Languages = template.Languages.Set(Language, channelInstance)
-            };
-
-            return newTemplate;
-        }
+        return newTemplate;
     }
 }

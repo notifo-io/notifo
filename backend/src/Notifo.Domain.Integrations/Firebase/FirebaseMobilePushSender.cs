@@ -9,81 +9,80 @@ using FirebaseAdmin.Messaging;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.UserNotifications;
 
-namespace Notifo.Domain.Integrations.Firebase
+namespace Notifo.Domain.Integrations.Firebase;
+
+public sealed class FirebaseMobilePushSender : IMobilePushSender
 {
-    public sealed class FirebaseMobilePushSender : IMobilePushSender
+    private const int Attempts = 5;
+    private readonly Func<FirebaseMessagingWrapper> wrapper;
+    private readonly bool sendSilentAndroid;
+    private readonly bool sendSilentIOS;
+
+    public string Name => "Firebase";
+
+    public FirebaseMobilePushSender(Func<FirebaseMessagingWrapper> wrapper,
+        bool sendSilentIOS,
+        bool sendSilentAndroid)
     {
-        private const int Attempts = 5;
-        private readonly Func<FirebaseMessagingWrapper> wrapper;
-        private readonly bool sendSilentAndroid;
-        private readonly bool sendSilentIOS;
+        this.wrapper = wrapper;
+        this.sendSilentAndroid = sendSilentAndroid;
+        this.sendSilentIOS = sendSilentIOS;
+    }
 
-        public string Name => "Firebase";
-
-        public FirebaseMobilePushSender(Func<FirebaseMessagingWrapper> wrapper,
-            bool sendSilentIOS,
-            bool sendSilentAndroid)
+    public async Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
+        CancellationToken ct)
+    {
+        if (!ShouldSend(userNotification.Silent, options.DeviceType))
         {
-            this.wrapper = wrapper;
-            this.sendSilentAndroid = sendSilentAndroid;
-            this.sendSilentIOS = sendSilentIOS;
+            return;
         }
 
-        public async Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
-            CancellationToken ct)
+        try
         {
-            if (!ShouldSend(userNotification.Silent, options.DeviceType))
-            {
-                return;
-            }
+            var message = userNotification.ToFirebaseMessage(
+                options.DeviceToken,
+                options.ConfigurationId,
+                options.Wakeup,
+                options.IsConfirmed);
 
-            try
+            // Try a few attempts to get a non-disposed messaging service.
+            for (var i = 1; i <= Attempts; i++)
             {
-                var message = userNotification.ToFirebaseMessage(
-                    options.DeviceToken,
-                    options.ConfigurationId,
-                    options.Wakeup,
-                    options.IsConfirmed);
-
-                // Try a few attempts to get a non-disposed messaging service.
-                for (var i = 1; i <= Attempts; i++)
+                try
                 {
-                    try
+                    await wrapper().Messaging.SendAsync(message, ct);
+                    break;
+                }
+                catch (ObjectDisposedException)
+                {
+                    if (i == Attempts)
                     {
-                        await wrapper().Messaging.SendAsync(message, ct);
-                        break;
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                        if (i == Attempts)
-                        {
-                            throw;
-                        }
+                        throw;
                     }
                 }
             }
-            catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
-            {
-                throw new MobilePushTokenExpiredException();
-            }
+        }
+        catch (FirebaseMessagingException ex) when (ex.MessagingErrorCode == MessagingErrorCode.Unregistered)
+        {
+            throw new MobilePushTokenExpiredException();
+        }
+    }
+
+    private bool ShouldSend(bool isSilent, MobileDeviceType deviceType)
+    {
+        if (!isSilent)
+        {
+            return true;
         }
 
-        private bool ShouldSend(bool isSilent, MobileDeviceType deviceType)
+        switch (deviceType)
         {
-            if (!isSilent)
-            {
-                return true;
-            }
-
-            switch (deviceType)
-            {
-                case MobileDeviceType.Android:
-                    return sendSilentAndroid;
-                case MobileDeviceType.iOS:
-                    return sendSilentIOS;
-                default:
-                    return false;
-            }
+            case MobileDeviceType.Android:
+                return sendSilentAndroid;
+            case MobileDeviceType.iOS:
+                return sendSilentIOS;
+            default:
+                return false;
         }
     }
 }

@@ -10,35 +10,34 @@ using MongoDB.Bson.Serialization.Serializers;
 using NodaTime;
 using NodaTime.Text;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public sealed class LocalTimeSerializer : SerializerBase<LocalTime>, IBsonPolymorphicSerializer
 {
-    public sealed class LocalTimeSerializer : SerializerBase<LocalTime>, IBsonPolymorphicSerializer
+    private static volatile int isRegistered;
+
+    public static void Register()
     {
-        private static volatile int isRegistered;
-
-        public static void Register()
+        if (Interlocked.Increment(ref isRegistered) == 1)
         {
-            if (Interlocked.Increment(ref isRegistered) == 1)
-            {
-                BsonSerializer.RegisterSerializer(new LocalTimeSerializer());
-            }
+            BsonSerializer.RegisterSerializer(new LocalTimeSerializer());
         }
+    }
 
-        public bool IsDiscriminatorCompatibleWithObjectSerializer
-        {
-            get => true;
-        }
+    public bool IsDiscriminatorCompatibleWithObjectSerializer
+    {
+        get => true;
+    }
 
-        public override LocalTime Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
-        {
-            var text = context.Reader.ReadString();
+    public override LocalTime Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        var text = context.Reader.ReadString();
 
-            return LocalTimePattern.GeneralIso.Parse(text).Value;
-        }
+        return LocalTimePattern.GeneralIso.Parse(text).Value;
+    }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, LocalTime value)
-        {
-            context.Writer.WriteString(LocalTimePattern.GeneralIso.Format(value));
-        }
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, LocalTime value)
+    {
+        context.Writer.WriteString(LocalTimePattern.GeneralIso.Format(value));
     }
 }

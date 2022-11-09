@@ -8,54 +8,53 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Notifo.Infrastructure.Collections.Json
+namespace Notifo.Infrastructure.Collections.Json;
+
+public sealed class JsonReadonlyDictionaryConverterFactory : JsonConverterFactory
 {
-    public sealed class JsonReadonlyDictionaryConverterFactory : JsonConverterFactory
+    private sealed class Converter<TKey, TValue> : JsonConverter<ReadonlyDictionary<TKey, TValue>> where TKey : notnull
     {
-        private sealed class Converter<TKey, TValue> : JsonConverter<ReadonlyDictionary<TKey, TValue>> where TKey : notnull
+        private readonly Type innerType = typeof(IReadOnlyDictionary<TKey, TValue>);
+
+        public override ReadonlyDictionary<TKey, TValue>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            private readonly Type innerType = typeof(IReadOnlyDictionary<TKey, TValue>);
+            var inner = JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(ref reader, options)!;
 
-            public override ReadonlyDictionary<TKey, TValue>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                var inner = JsonSerializer.Deserialize<Dictionary<TKey, TValue>>(ref reader, options)!;
-
-                return new ReadonlyDictionary<TKey, TValue>(inner);
-            }
-
-            public override void Write(Utf8JsonWriter writer, ReadonlyDictionary<TKey, TValue> value, JsonSerializerOptions options)
-            {
-                JsonSerializer.Serialize(writer, value, innerType, options);
-            }
+            return new ReadonlyDictionary<TKey, TValue>(inner);
         }
 
-        public override bool CanConvert(Type typeToConvert)
+        public override void Write(Utf8JsonWriter writer, ReadonlyDictionary<TKey, TValue> value, JsonSerializerOptions options)
         {
-            if (!typeToConvert.IsGenericType)
-            {
-                return false;
-            }
+            JsonSerializer.Serialize(writer, value, innerType, options);
+        }
+    }
 
-            if (typeToConvert.GetGenericTypeDefinition() != typeof(ReadonlyDictionary<,>))
-            {
-                return false;
-            }
-
-            return true;
+    public override bool CanConvert(Type typeToConvert)
+    {
+        if (!typeToConvert.IsGenericType)
+        {
+            return false;
         }
 
-        public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        if (typeToConvert.GetGenericTypeDefinition() != typeof(ReadonlyDictionary<,>))
         {
-            var concreteType = typeof(Converter<,>).MakeGenericType(
-                new Type[]
-                {
-                    typeToConvert.GetGenericArguments()[0],
-                    typeToConvert.GetGenericArguments()[1]
-                });
-
-            var converter = (JsonConverter)Activator.CreateInstance(concreteType)!;
-
-            return converter;
+            return false;
         }
+
+        return true;
+    }
+
+    public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+    {
+        var concreteType = typeof(Converter<,>).MakeGenericType(
+            new Type[]
+            {
+                typeToConvert.GetGenericArguments()[0],
+                typeToConvert.GetGenericArguments()[1]
+            });
+
+        var converter = (JsonConverter)Activator.CreateInstance(concreteType)!;
+
+        return converter;
     }
 }

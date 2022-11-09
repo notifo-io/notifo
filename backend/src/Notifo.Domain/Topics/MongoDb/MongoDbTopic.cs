@@ -7,32 +7,31 @@
 
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.Topics.MongoDb
+namespace Notifo.Domain.Topics.MongoDb;
+
+public sealed class MongoDbTopic : MongoDbEntity<Topic>
 {
-    public sealed class MongoDbTopic : MongoDbEntity<Topic>
+    public static string CreateId(string appId, string path)
     {
-        public static string CreateId(string appId, string path)
+        return $"{appId}_{path}";
+    }
+
+    public static MongoDbTopic FromTopic(Topic topic)
+    {
+        var docId = CreateId(topic.AppId, topic.Path);
+
+        var result = new MongoDbTopic
         {
-            return $"{appId}_{path}";
-        }
+            DocId = docId,
+            Doc = topic,
+            Etag = GenerateEtag()
+        };
 
-        public static MongoDbTopic FromTopic(Topic topic)
-        {
-            var docId = CreateId(topic.AppId, topic.Path);
+        return result;
+    }
 
-            var result = new MongoDbTopic
-            {
-                DocId = docId,
-                Doc = topic,
-                Etag = GenerateEtag()
-            };
-
-            return result;
-        }
-
-        public Topic ToTopic()
-        {
-            return Doc;
-        }
+    public Topic ToTopic()
+    {
+        return Doc;
     }
 }

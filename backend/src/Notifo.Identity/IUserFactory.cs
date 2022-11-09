@@ -7,12 +7,11 @@
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Notifo.Identity
-{
-    public interface IUserFactory
-    {
-        IdentityUser Create(string email);
+namespace Notifo.Identity;
 
-        bool IsId(string id);
-    }
+public interface IUserFactory
+{
+    IdentityUser Create(string email);
+
+    bool IsId(string id);
 }

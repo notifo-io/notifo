@@ -12,40 +12,39 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
-namespace Notifo.Domain.Apps
+namespace Notifo.Domain.Apps;
+
+public sealed class DeleteAppIntegration : ICommand<App>
 {
-    public sealed class DeleteAppIntegration : ICommand<App>
+    public string Id { get; set; }
+
+    private sealed class Validator : AbstractValidator<DeleteAppIntegration>
     {
-        public string Id { get; set; }
-
-        private sealed class Validator : AbstractValidator<DeleteAppIntegration>
+        public Validator()
         {
-            public Validator()
-            {
-                RuleFor(x => x.Id).NotNull();
-            }
+            RuleFor(x => x.Id).NotNull();
+        }
+    }
+
+    public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        Validate<Validator>.It(this);
+
+        if (!app.Integrations.TryGetValue(Id, out var removed))
+        {
+            return default;
         }
 
-        public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
-            CancellationToken ct)
+        var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
+
+        await integrationManager.HandleRemovedAsync(Id, app, removed, ct);
+
+        var newApp = app with
         {
-            Validate<Validator>.It(this);
+            Integrations = app.Integrations.Where(x => x.Key != Id).ToReadonlyDictionary()
+        };
 
-            if (!app.Integrations.TryGetValue(Id, out var removed))
-            {
-                return default;
-            }
-
-            var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
-
-            await integrationManager.HandleRemovedAsync(Id, app, removed, ct);
-
-            var newApp = app with
-            {
-                Integrations = app.Integrations.Where(x => x.Key != Id).ToReadonlyDictionary()
-            };
-
-            return newApp;
-        }
+        return newApp;
     }
 }

@@ -7,14 +7,13 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Events
-{
-    public interface IEventStore
-    {
-        Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
-            CancellationToken ct = default);
+namespace Notifo.Domain.Events;
 
-        Task InsertAsync(EventMessage request,
-            CancellationToken ct = default);
-    }
+public interface IEventStore
+{
+    Task<IResultList<Event>> QueryAsync(string appId, EventQuery query,
+        CancellationToken ct = default);
+
+    Task InsertAsync(EventMessage request,
+        CancellationToken ct = default);
 }

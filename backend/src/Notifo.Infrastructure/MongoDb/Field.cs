@@ -7,30 +7,29 @@
 
 using MongoDB.Bson.Serialization;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public static class Field
 {
-    public static class Field
+    public static string Of<T>(Func<T, string> mapper)
     {
-        public static string Of<T>(Func<T, string> mapper)
+        var name = mapper(default!);
+
+        var classMap = BsonClassMap.LookupClassMap(typeof(T));
+
+        while (classMap != null)
         {
-            var name = mapper(default!);
+            var field = classMap.GetMemberMap(name)?.ElementName;
 
-            var classMap = BsonClassMap.LookupClassMap(typeof(T));
-
-            while (classMap != null)
+            if (!string.IsNullOrWhiteSpace(field))
             {
-                var field = classMap.GetMemberMap(name)?.ElementName;
-
-                if (!string.IsNullOrWhiteSpace(field))
-                {
-                    return field;
-                }
-
-                classMap = classMap.BaseClassMap;
+                return field;
             }
 
-            ThrowHelper.InvalidOperationException("Cannot find member name.");
-            return default!;
+            classMap = classMap.BaseClassMap;
         }
+
+        ThrowHelper.InvalidOperationException("Cannot find member name.");
+        return default!;
     }
 }

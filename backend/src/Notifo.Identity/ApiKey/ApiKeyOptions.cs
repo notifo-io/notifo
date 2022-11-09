@@ -7,9 +7,8 @@
 
 using Microsoft.AspNetCore.Authentication;
 
-namespace Notifo.Identity.ApiKey
+namespace Notifo.Identity.ApiKey;
+
+public sealed class ApiKeyOptions : AuthenticationSchemeOptions
 {
-    public sealed class ApiKeyOptions : AuthenticationSchemeOptions
-    {
-    }
 }

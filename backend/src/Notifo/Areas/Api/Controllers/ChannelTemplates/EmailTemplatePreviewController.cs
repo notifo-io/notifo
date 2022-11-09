@@ -16,103 +16,102 @@ using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
+
+[OpenApiTag("EmailTemplates")]
+public class EmailTemplatePreviewController : BaseController
 {
-    [OpenApiTag("EmailTemplates")]
-    public class EmailTemplatePreviewController : BaseController
+    private readonly IEmailFormatter emailFormatter;
+    private readonly IEmailTemplateStore emailTemplateStore;
+
+    public object PreviewType { get; private set; }
+
+    public EmailTemplatePreviewController(
+        IEmailFormatter emailFormatter,
+        IEmailTemplateStore emailTemplateStore)
     {
-        private readonly IEmailFormatter emailFormatter;
-        private readonly IEmailTemplateStore emailTemplateStore;
+        this.emailFormatter = emailFormatter;
+        this.emailTemplateStore = emailTemplateStore;
+    }
 
-        public object PreviewType { get; private set; }
+    /// <summary>
+    /// Get the HTML preview for a channel template.
+    /// </summary>
+    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="id">The template ID.</param>
+    /// <returns>
+    /// 200 => Channel template preview returned.
+    /// 404 => Channel template not found.
+    /// </returns>
+    [HttpGet("api/apps/{appId:notEmpty}/email-templates/{id:notEmpty}/preview")]
+    [Produces("text/html")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    public async Task<IActionResult> GetPreview(string appId, string id)
+    {
+        var template = await emailTemplateStore.GetAsync(appId, id, HttpContext.RequestAborted);
 
-        public EmailTemplatePreviewController(
-            IEmailFormatter emailFormatter,
-            IEmailTemplateStore emailTemplateStore)
+        if (template == null || template.Languages.Count == 0)
         {
-            this.emailFormatter = emailFormatter;
-            this.emailTemplateStore = emailTemplateStore;
+            return NotFound();
         }
 
-        /// <summary>
-        /// Get the HTML preview for a channel template.
-        /// </summary>
-        /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
-        /// <returns>
-        /// 200 => Channel template preview returned.
-        /// 404 => Channel template not found.
-        /// </returns>
-        [HttpGet("api/apps/{appId:notEmpty}/email-templates/{id:notEmpty}/preview")]
-        [Produces("text/html")]
-        [AppPermission(NotifoRoles.AppAdmin)]
-        public async Task<IActionResult> GetPreview(string appId, string id)
+        if (!template.Languages.TryGetValue(App.Language, out var emailTemplate))
         {
-            var template = await emailTemplateStore.GetAsync(appId, id, HttpContext.RequestAborted);
-
-            if (template == null || template.Languages.Count == 0)
-            {
-                return NotFound();
-            }
-
-            if (!template.Languages.TryGetValue(App.Language, out var emailTemplate))
-            {
-                emailTemplate = template.Languages.Values.First();
-            }
-
-            var formatted = await FormatAsync(emailTemplate);
-
-            return Content(formatted.Message!.BodyHtml!, "text/html");
+            emailTemplate = template.Languages.Values.First();
         }
 
-        /// <summary>
-        /// Render a preview for a email template.
-        /// </summary>
-        /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="request">The template to render.</param>
-        /// <returns>
-        /// 200 => Template rendered.
-        /// 404 => App not found.
-        /// </returns>
-        [HttpPost("api/apps/{appId:notEmpty}/email-templates/render")]
-        [Produces(typeof(EmailPreviewDto))]
-        [AppPermission(NotifoRoles.AppAdmin)]
-        public async Task<IActionResult> PostPreview(string appId, [FromBody] EmailPreviewRequestDto request)
+        var formatted = await FormatAsync(emailTemplate);
+
+        return Content(formatted.Message!.BodyHtml!, "text/html");
+    }
+
+    /// <summary>
+    /// Render a preview for a email template.
+    /// </summary>
+    /// <param name="appId">The id of the app where the templates belong to.</param>
+    /// <param name="request">The template to render.</param>
+    /// <returns>
+    /// 200 => Template rendered.
+    /// 404 => App not found.
+    /// </returns>
+    [HttpPost("api/apps/{appId:notEmpty}/email-templates/render")]
+    [Produces(typeof(EmailPreviewDto))]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    public async Task<IActionResult> PostPreview(string appId, [FromBody] EmailPreviewRequestDto request)
+    {
+        var response = new EmailPreviewDto();
+
+        try
         {
-            var response = new EmailPreviewDto();
+            var formatted = await FormatAsync(request.ToEmailTemplate());
 
-            try
+            if (request.Type == EmailPreviewType.Html)
             {
-                var formatted = await FormatAsync(request.ToEmailTemplate());
-
-                if (request.Type == EmailPreviewType.Html)
-                {
-                    response.Result = formatted.Message?.BodyHtml;
-                }
-                else
-                {
-                    response.Result = formatted.Message?.BodyText;
-                }
-
-                response.Errors = formatted.Errors?.ToArray();
+                response.Result = formatted.Message?.BodyHtml;
             }
-            catch (EmailFormattingException ex)
+            else
             {
-                response.Errors = ex.Errors.ToArray();
+                response.Result = formatted.Message?.BodyText;
             }
 
-            return Ok(response);
+            response.Errors = formatted.Errors?.ToArray();
         }
-
-        private async ValueTask<FormattedEmail> FormatAsync(EmailTemplate emailTemplate)
+        catch (EmailFormattingException ex)
         {
-            emailTemplate = await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
-
-            return await emailFormatter.FormatAsync(emailTemplate,
-                PreviewData.Jobs, App,
-                PreviewData.User,
-                true,
-                HttpContext.RequestAborted);
+            response.Errors = ex.Errors.ToArray();
         }
+
+        return Ok(response);
+    }
+
+    private async ValueTask<FormattedEmail> FormatAsync(EmailTemplate emailTemplate)
+    {
+        emailTemplate = await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
+
+        return await emailFormatter.FormatAsync(emailTemplate,
+            PreviewData.Jobs, App,
+            PreviewData.User,
+            true,
+            HttpContext.RequestAborted);
     }
 }

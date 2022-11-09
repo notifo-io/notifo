@@ -7,20 +7,19 @@
 
 using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Templates
+namespace Notifo.Domain.Templates;
+
+public interface ITemplateStore
 {
-    public interface ITemplateStore
-    {
-        Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
-            CancellationToken ct = default);
+    Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
+        CancellationToken ct = default);
 
-        Task<Template?> GetAsync(string appId, string code,
-            CancellationToken ct = default);
+    Task<Template?> GetAsync(string appId, string code,
+        CancellationToken ct = default);
 
-        Task<Template> UpsertAsync(string appId, string code, ICommand<Template> command,
-            CancellationToken ct = default);
+    Task<Template> UpsertAsync(string appId, string code, ICommand<Template> command,
+        CancellationToken ct = default);
 
-        Task DeleteAsync(string appId, string code,
-            CancellationToken ct = default);
-    }
+    Task DeleteAsync(string appId, string code,
+        CancellationToken ct = default);
 }

@@ -11,33 +11,32 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 
-namespace Notifo.Areas.Api.Controllers
+namespace Notifo.Areas.Api.Controllers;
+
+[ApiController]
+[ApiExceptionFilter]
+[ApiModelValidation(true)]
+public abstract class BaseController : Controller
 {
-    [ApiController]
-    [ApiExceptionFilter]
-    [ApiModelValidation(true)]
-    public abstract class BaseController : Controller
+    protected string UserId
     {
-        protected string UserId
+        get
         {
-            get
+            var id = User.UserId();
+
+            if (string.IsNullOrWhiteSpace(id))
             {
-                var id = User.UserId();
-
-                if (string.IsNullOrWhiteSpace(id))
-                {
-                    throw new DomainForbiddenException("This operation is only allowed using User API Keys.");
-                }
-
-                return id;
+                throw new DomainForbiddenException("This operation is only allowed using User API Keys.");
             }
-        }
 
-        protected string UserIdOrSub => User.UserId() ?? User.Sub()!;
-
-        public App App
-        {
-            get => HttpContext.Features.Get<IAppFeature>()!.App;
+            return id;
         }
+    }
+
+    protected string UserIdOrSub => User.UserId() ?? User.Sub()!;
+
+    public App App
+    {
+        get => HttpContext.Features.Get<IAppFeature>()!.App;
     }
 }

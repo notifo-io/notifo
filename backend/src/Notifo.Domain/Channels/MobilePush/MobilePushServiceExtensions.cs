@@ -9,16 +9,15 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure.Scheduling;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class MobilePushServiceExtensions
-    {
-        public static void AddMyMobilePushChannel(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MobilePushChannel>()
-                .As<ICommunicationChannel>().As<IScheduleHandler<MobilePushJob>>();
+namespace Microsoft.Extensions.DependencyInjection;
 
-            services.AddScheduler<MobilePushJob>(Providers.MobilePush);
-        }
+public static class MobilePushServiceExtensions
+{
+    public static void AddMyMobilePushChannel(this IServiceCollection services)
+    {
+        services.AddSingletonAs<MobilePushChannel>()
+            .As<ICommunicationChannel>().As<IScheduleHandler<MobilePushJob>>();
+
+        services.AddScheduler<MobilePushJob>(Providers.MobilePush);
     }
 }

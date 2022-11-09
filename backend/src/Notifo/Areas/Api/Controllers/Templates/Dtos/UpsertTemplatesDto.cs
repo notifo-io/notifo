@@ -7,14 +7,13 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Notifo.Areas.Api.Controllers.Templates.Dtos
+namespace Notifo.Areas.Api.Controllers.Templates.Dtos;
+
+public sealed class UpsertTemplatesDto
 {
-    public sealed class UpsertTemplatesDto
-    {
-        /// <summary>
-        /// The templates to update.
-        /// </summary>
-        [Required]
-        public UpsertTemplateDto[] Requests { get; set; }
-    }
+    /// <summary>
+    /// The templates to update.
+    /// </summary>
+    [Required]
+    public UpsertTemplateDto[] Requests { get; set; }
 }

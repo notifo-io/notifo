@@ -9,23 +9,22 @@ using NJsonSchema;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
 
-namespace Notifo.Areas.Api.OpenApi
+namespace Notifo.Areas.Api.OpenApi;
+
+public sealed class FixProcessor : IOperationProcessor
 {
-    public sealed class FixProcessor : IOperationProcessor
+    private static readonly JsonSchema StringSchema = new JsonSchema { Type = JsonObjectType.String };
+
+    public bool Process(OperationProcessorContext context)
     {
-        private static readonly JsonSchema StringSchema = new JsonSchema { Type = JsonObjectType.String };
-
-        public bool Process(OperationProcessorContext context)
+        foreach (var parameter in context.Parameters.Values)
         {
-            foreach (var parameter in context.Parameters.Values)
+            if (parameter.IsRequired && parameter.Schema is { Type: JsonObjectType.String })
             {
-                if (parameter.IsRequired && parameter.Schema is { Type: JsonObjectType.String })
-                {
-                    parameter.Schema = StringSchema;
-                }
+                parameter.Schema = StringSchema;
             }
-
-            return true;
         }
+
+        return true;
     }
 }

@@ -5,16 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Json
+namespace Notifo.Infrastructure.Json;
+
+public interface IJsonSerializer
 {
-    public interface IJsonSerializer
-    {
-        T Deserialize<T>(ReadOnlySpan<byte> data);
+    T Deserialize<T>(ReadOnlySpan<byte> data);
 
-        T Deserialize<T>(byte[] data);
+    T Deserialize<T>(byte[] data);
 
-        string SerializeToString<T>(T data);
+    string SerializeToString<T>(T data);
 
-        byte[] SerializeToBytes<T>(T data);
-    }
+    byte[] SerializeToBytes<T>(T data);
 }

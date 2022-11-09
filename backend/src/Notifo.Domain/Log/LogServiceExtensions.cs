@@ -8,20 +8,19 @@
 using Notifo.Domain.Log;
 using Notifo.Domain.Log.MongoDb;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static class LogServiceExtensions
-    {
-        public static void AddMyLog(this IServiceCollection services)
-        {
-            services.AddSingletonAs<LogStore>()
-                .As<ILogStore>();
-        }
+namespace Microsoft.Extensions.DependencyInjection;
 
-        public static void AddMyMongoLog(this IServiceCollection services)
-        {
-            services.AddSingletonAs<MongoDbLogRepository>()
-                .As<ILogRepository>();
-        }
+public static class LogServiceExtensions
+{
+    public static void AddMyLog(this IServiceCollection services)
+    {
+        services.AddSingletonAs<LogStore>()
+            .As<ILogStore>();
+    }
+
+    public static void AddMyMongoLog(this IServiceCollection services)
+    {
+        services.AddSingletonAs<MongoDbLogRepository>()
+            .As<ILogRepository>();
     }
 }

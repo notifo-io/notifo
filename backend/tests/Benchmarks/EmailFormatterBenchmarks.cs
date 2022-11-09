@@ -12,33 +12,32 @@ using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Utils;
 
-namespace Benchmarks
+namespace Benchmarks;
+
+[MemoryDiagnoser]
+[SimpleJob]
+public class EmailFormatterBenchmarks
 {
-    [MemoryDiagnoser]
-    [SimpleJob]
-    public class EmailFormatterBenchmarks
+    private readonly IEmailFormatter emailFormatterNormal = new EmailFormatterNormal(A.Fake<IImageFormatter>(), A.Fake<IEmailUrl>(), new MjmlRenderer());
+    private readonly IEmailFormatter emailFormatterLiquid = new EmailFormatterLiquid(A.Fake<IImageFormatter>(), A.Fake<IEmailUrl>(), new MjmlRenderer());
+    private readonly EmailTemplate emailTemplateNormal;
+    private readonly EmailTemplate emailTemplateLiquid;
+
+    public EmailFormatterBenchmarks()
     {
-        private readonly IEmailFormatter emailFormatterNormal = new EmailFormatterNormal(A.Fake<IImageFormatter>(), A.Fake<IEmailUrl>(), new MjmlRenderer());
-        private readonly IEmailFormatter emailFormatterLiquid = new EmailFormatterLiquid(A.Fake<IImageFormatter>(), A.Fake<IEmailUrl>(), new MjmlRenderer());
-        private readonly EmailTemplate emailTemplateNormal;
-        private readonly EmailTemplate emailTemplateLiquid;
+        emailTemplateNormal = emailFormatterNormal.CreateInitialAsync().AsTask().Result;
+        emailTemplateLiquid = emailFormatterLiquid.CreateInitialAsync().AsTask().Result;
+    }
 
-        public EmailFormatterBenchmarks()
-        {
-            emailTemplateNormal = emailFormatterNormal.CreateInitialAsync().AsTask().Result;
-            emailTemplateLiquid = emailFormatterLiquid.CreateInitialAsync().AsTask().Result;
-        }
+    [Benchmark]
+    public async ValueTask<FormattedEmail> FormatNormal()
+    {
+        return await emailFormatterNormal.FormatAsync(emailTemplateNormal, PreviewData.Jobs, PreviewData.App, PreviewData.User);
+    }
 
-        [Benchmark]
-        public async ValueTask<FormattedEmail> FormatNormal()
-        {
-            return await emailFormatterNormal.FormatAsync(emailTemplateNormal, PreviewData.Jobs, PreviewData.App, PreviewData.User);
-        }
-
-        [Benchmark]
-        public async ValueTask<FormattedEmail> FormatLiquid()
-        {
-            return await emailFormatterLiquid.FormatAsync(emailTemplateLiquid, PreviewData.Jobs, PreviewData.App, PreviewData.User);
-        }
+    [Benchmark]
+    public async ValueTask<FormattedEmail> FormatLiquid()
+    {
+        return await emailFormatterLiquid.FormatAsync(emailTemplateLiquid, PreviewData.Jobs, PreviewData.App, PreviewData.User);
     }
 }

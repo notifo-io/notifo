@@ -9,30 +9,29 @@ using Namotion.Reflection;
 using NJsonSchema.Generation;
 using Notifo.Infrastructure.Collections;
 
-namespace Notifo.Areas.Api.OpenApi
+namespace Notifo.Areas.Api.OpenApi;
+
+public sealed class ReflectionServices : DefaultReflectionService
 {
-    public sealed class ReflectionServices : DefaultReflectionService
+    protected override bool IsArrayType(ContextualType contextualType)
     {
-        protected override bool IsArrayType(ContextualType contextualType)
+        if (contextualType.Type.IsGenericType &&
+            contextualType.Type.GetGenericTypeDefinition() == typeof(ReadonlyList<>))
         {
-            if (contextualType.Type.IsGenericType &&
-                contextualType.Type.GetGenericTypeDefinition() == typeof(ReadonlyList<>))
-            {
-                return true;
-            }
-
-            return base.IsArrayType(contextualType);
+            return true;
         }
 
-        protected override bool IsDictionaryType(ContextualType contextualType)
-        {
-            if (contextualType.Type.IsGenericType &&
-                contextualType.Type.GetGenericTypeDefinition() == typeof(ReadonlyDictionary<,>))
-            {
-                return true;
-            }
+        return base.IsArrayType(contextualType);
+    }
 
-            return base.IsDictionaryType(contextualType);
+    protected override bool IsDictionaryType(ContextualType contextualType)
+    {
+        if (contextualType.Type.IsGenericType &&
+            contextualType.Type.GetGenericTypeDefinition() == typeof(ReadonlyDictionary<,>))
+        {
+            return true;
         }
+
+        return base.IsDictionaryType(contextualType);
     }
 }

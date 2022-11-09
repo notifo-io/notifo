@@ -10,175 +10,174 @@ using Notifo.Infrastructure.Reflection.Internal;
 
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 
-namespace Notifo.Infrastructure.Reflection
+namespace Notifo.Infrastructure.Reflection;
+
+public static class SimpleMapper
 {
-    public static class SimpleMapper
+    private sealed class StringConversionPropertyMapper : PropertyMapper
     {
-        private sealed class StringConversionPropertyMapper : PropertyMapper
+        public StringConversionPropertyMapper(
+            PropertyAccessor sourceAccessor,
+            PropertyAccessor targetAccessor)
+            : base(sourceAccessor, targetAccessor)
         {
-            public StringConversionPropertyMapper(
-                PropertyAccessor sourceAccessor,
-                PropertyAccessor targetAccessor)
-                : base(sourceAccessor, targetAccessor)
-            {
-            }
-
-            public override void MapProperty(object source, object target, CultureInfo culture)
-            {
-                var value = GetValue(source);
-
-                SetValue(target, value?.ToString());
-            }
         }
 
-        private sealed class ConversionPropertyMapper : PropertyMapper
+        public override void MapProperty(object source, object target, CultureInfo culture)
         {
-            private readonly Type targetType;
+            var value = GetValue(source);
 
-            public ConversionPropertyMapper(
-                PropertyAccessor sourceAccessor,
-                PropertyAccessor targetAccessor,
-                Type targetType)
-                : base(sourceAccessor, targetAccessor)
+            SetValue(target, value?.ToString());
+        }
+    }
+
+    private sealed class ConversionPropertyMapper : PropertyMapper
+    {
+        private readonly Type targetType;
+
+        public ConversionPropertyMapper(
+            PropertyAccessor sourceAccessor,
+            PropertyAccessor targetAccessor,
+            Type targetType)
+            : base(sourceAccessor, targetAccessor)
+        {
+            this.targetType = targetType;
+        }
+
+        public override void MapProperty(object source, object target, CultureInfo culture)
+        {
+            var value = GetValue(source);
+
+            if (value == null)
             {
-                this.targetType = targetType;
+                return;
             }
 
-            public override void MapProperty(object source, object target, CultureInfo culture)
+            try
             {
-                var value = GetValue(source);
+                var converted = Convert.ChangeType(value, targetType, culture);
 
-                if (value == null)
+                SetValue(target, converted);
+            }
+            catch
+            {
+                return;
+            }
+        }
+    }
+
+    private class PropertyMapper
+    {
+        private readonly PropertyAccessor sourceAccessor;
+        private readonly PropertyAccessor targetAccessor;
+
+        public PropertyMapper(PropertyAccessor sourceAccessor, PropertyAccessor targetAccessor)
+        {
+            this.sourceAccessor = sourceAccessor;
+            this.targetAccessor = targetAccessor;
+        }
+
+        public virtual void MapProperty(object source, object target, CultureInfo culture)
+        {
+            var value = GetValue(source);
+
+            SetValue(target, value);
+        }
+
+        protected void SetValue(object destination, object? value)
+        {
+            targetAccessor.Set(destination, value);
+        }
+
+        protected object? GetValue(object source)
+        {
+            return sourceAccessor.Get(source);
+        }
+    }
+
+    private static class ClassMapper<TSource, TTarget> where TSource : class where TTarget : class
+    {
+        private static readonly List<PropertyMapper> Mappers = new List<PropertyMapper>();
+
+        static ClassMapper()
+        {
+            var sourceClassType = typeof(TSource);
+            var sourceProperties =
+                sourceClassType.GetPublicProperties()
+                    .Where(x => x.CanRead).ToList();
+
+            var targetClassType = typeof(TTarget);
+            var targetProperties =
+                targetClassType.GetPublicProperties()
+                    .Where(x => x.CanWrite).ToList();
+
+            foreach (var sourceProperty in sourceProperties)
+            {
+                var targetProperty = targetProperties.Find(x => x.Name == sourceProperty.Name);
+
+                if (targetProperty == null)
                 {
-                    return;
+                    continue;
                 }
 
-                try
-                {
-                    var converted = Convert.ChangeType(value, targetType, culture);
+                var sourceType = sourceProperty.PropertyType;
+                var targetType = targetProperty.PropertyType;
 
-                    SetValue(target, converted);
+                if (sourceType == targetType)
+                {
+                    Mappers.Add(new PropertyMapper(
+                        new PropertyAccessor(sourceClassType, sourceProperty),
+                        new PropertyAccessor(targetClassType, targetProperty)));
                 }
-                catch
+                else if (targetType == typeof(string))
                 {
-                    return;
+                    Mappers.Add(new StringConversionPropertyMapper(
+                        new PropertyAccessor(sourceClassType, sourceProperty),
+                        new PropertyAccessor(targetClassType, targetProperty)));
                 }
-            }
-        }
-
-        private class PropertyMapper
-        {
-            private readonly PropertyAccessor sourceAccessor;
-            private readonly PropertyAccessor targetAccessor;
-
-            public PropertyMapper(PropertyAccessor sourceAccessor, PropertyAccessor targetAccessor)
-            {
-                this.sourceAccessor = sourceAccessor;
-                this.targetAccessor = targetAccessor;
-            }
-
-            public virtual void MapProperty(object source, object target, CultureInfo culture)
-            {
-                var value = GetValue(source);
-
-                SetValue(target, value);
-            }
-
-            protected void SetValue(object destination, object? value)
-            {
-                targetAccessor.Set(destination, value);
-            }
-
-            protected object? GetValue(object source)
-            {
-                return sourceAccessor.Get(source);
-            }
-        }
-
-        private static class ClassMapper<TSource, TTarget> where TSource : class where TTarget : class
-        {
-            private static readonly List<PropertyMapper> Mappers = new List<PropertyMapper>();
-
-            static ClassMapper()
-            {
-                var sourceClassType = typeof(TSource);
-                var sourceProperties =
-                    sourceClassType.GetPublicProperties()
-                        .Where(x => x.CanRead).ToList();
-
-                var targetClassType = typeof(TTarget);
-                var targetProperties =
-                    targetClassType.GetPublicProperties()
-                        .Where(x => x.CanWrite).ToList();
-
-                foreach (var sourceProperty in sourceProperties)
+                else if (sourceType.Implements<IConvertible>() || targetType.Implements<IConvertible>())
                 {
-                    var targetProperty = targetProperties.Find(x => x.Name == sourceProperty.Name);
-
-                    if (targetProperty == null)
-                    {
-                        continue;
-                    }
-
-                    var sourceType = sourceProperty.PropertyType;
-                    var targetType = targetProperty.PropertyType;
-
-                    if (sourceType == targetType)
-                    {
-                        Mappers.Add(new PropertyMapper(
-                            new PropertyAccessor(sourceClassType, sourceProperty),
-                            new PropertyAccessor(targetClassType, targetProperty)));
-                    }
-                    else if (targetType == typeof(string))
-                    {
-                        Mappers.Add(new StringConversionPropertyMapper(
-                            new PropertyAccessor(sourceClassType, sourceProperty),
-                            new PropertyAccessor(targetClassType, targetProperty)));
-                    }
-                    else if (sourceType.Implements<IConvertible>() || targetType.Implements<IConvertible>())
-                    {
-                        Mappers.Add(new ConversionPropertyMapper(
-                            new PropertyAccessor(sourceClassType, sourceProperty),
-                            new PropertyAccessor(targetClassType, targetProperty),
-                            targetType));
-                    }
+                    Mappers.Add(new ConversionPropertyMapper(
+                        new PropertyAccessor(sourceClassType, sourceProperty),
+                        new PropertyAccessor(targetClassType, targetProperty),
+                        targetType));
                 }
             }
+        }
 
-            public static TTarget MapClass(TSource source, TTarget destination, CultureInfo culture)
+        public static TTarget MapClass(TSource source, TTarget destination, CultureInfo culture)
+        {
+            foreach (var mapper in Mappers)
             {
-                foreach (var mapper in Mappers)
-                {
-                    mapper.MapProperty(source, destination, culture);
-                }
-
-                return destination;
+                mapper.MapProperty(source, destination, culture);
             }
-        }
 
-        public static TTarget Map<TSource, TTarget>(TSource source)
-            where TSource : class
-            where TTarget : class, new()
-        {
-            return Map(source, new TTarget(), CultureInfo.CurrentCulture);
+            return destination;
         }
+    }
 
-        public static TTarget Map<TSource, TTarget>(TSource source, TTarget target)
-            where TSource : class
-            where TTarget : class
-        {
-            return Map(source, target, CultureInfo.CurrentCulture);
-        }
+    public static TTarget Map<TSource, TTarget>(TSource source)
+        where TSource : class
+        where TTarget : class, new()
+    {
+        return Map(source, new TTarget(), CultureInfo.CurrentCulture);
+    }
 
-        public static TTarget Map<TSource, TTarget>(TSource source, TTarget target, CultureInfo culture)
-            where TSource : class
-            where TTarget : class
-        {
-            Guard.NotNull(source);
-            Guard.NotNull(culture);
-            Guard.NotNull(target);
+    public static TTarget Map<TSource, TTarget>(TSource source, TTarget target)
+        where TSource : class
+        where TTarget : class
+    {
+        return Map(source, target, CultureInfo.CurrentCulture);
+    }
 
-            return ClassMapper<TSource, TTarget>.MapClass(source, target, culture);
-        }
+    public static TTarget Map<TSource, TTarget>(TSource source, TTarget target, CultureInfo culture)
+        where TSource : class
+        where TTarget : class
+    {
+        Guard.NotNull(source);
+        Guard.NotNull(culture);
+        Guard.NotNull(target);
+
+        return ClassMapper<TSource, TTarget>.MapClass(source, target, culture);
     }
 }

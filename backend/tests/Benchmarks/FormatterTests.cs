@@ -8,27 +8,26 @@
 using BenchmarkDotNet.Attributes;
 using Notifo.Domain.Utils;
 
-namespace Benchmarks
+namespace Benchmarks;
+
+public class FormatterTests
 {
-    public class FormatterTests
+    private readonly string template = "Hello {userFirstName} {userLastName}";
+    private readonly Dictionary<string, string?> properties = new Dictionary<string, string?>
     {
-        private readonly string template = "Hello {userFirstName} {userLastName}";
-        private readonly Dictionary<string, string?> properties = new Dictionary<string, string?>
-        {
-            ["userFirstName"] = "Donald",
-            ["userLastName"] = "Duck"
-        };
+        ["userFirstName"] = "Donald",
+        ["userLastName"] = "Duck"
+    };
 
-        [Benchmark]
-        public string FormatNormal()
-        {
-            return template.Format(properties);
-        }
+    [Benchmark]
+    public string FormatNormal()
+    {
+        return template.Format(properties);
+    }
 
-        [Benchmark]
-        public string FormatLiquid()
-        {
-            return template.FormatLiquid(properties);
-        }
+    [Benchmark]
+    public string FormatLiquid()
+    {
+        return template.FormatLiquid(properties);
     }
 }

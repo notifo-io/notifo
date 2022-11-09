@@ -7,14 +7,13 @@
 
 using Notifo.Domain.Utils;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class UtilsServiceExtensions
 {
-    public static class UtilsServiceExtensions
+    public static void AddMyUtils(this IServiceCollection services)
     {
-        public static void AddMyUtils(this IServiceCollection services)
-        {
-            services.AddSingletonAs<ImageFormatter>()
-                .As<IImageFormatter>();
-        }
+        services.AddSingletonAs<ImageFormatter>()
+            .As<IImageFormatter>();
     }
 }

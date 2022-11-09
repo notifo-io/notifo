@@ -7,16 +7,15 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Notifo.Infrastructure.KeyValueStore.MongoDb
-{
-    public sealed class MongoDbKeyValue
-    {
-        [BsonId]
-        [BsonElement]
-        public string Key { get; set; }
+namespace Notifo.Infrastructure.KeyValueStore.MongoDb;
 
-        [BsonIgnoreIfDefault]
-        [BsonElement("v")]
-        public string? Value { get; set; }
-    }
+public sealed class MongoDbKeyValue
+{
+    [BsonId]
+    [BsonElement]
+    public string Key { get; set; }
+
+    [BsonIgnoreIfDefault]
+    [BsonElement("v")]
+    public string? Value { get; set; }
 }

@@ -7,18 +7,17 @@
 
 using Notifo.Domain.Channels.Email;
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos
-{
-    public sealed class EmailPreviewDto
-    {
-        /// <summary>
-        /// The rendered preview.
-        /// </summary>
-        public string? Result { get; set; }
+namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
-        /// <summary>
-        /// The errors when rendering a preview.
-        /// </summary>
-        public EmailFormattingError[]? Errors { get; set; }
-    }
+public sealed class EmailPreviewDto
+{
+    /// <summary>
+    /// The rendered preview.
+    /// </summary>
+    public string? Result { get; set; }
+
+    /// <summary>
+    /// The errors when rendering a preview.
+    /// </summary>
+    public EmailFormattingError[]? Errors { get; set; }
 }

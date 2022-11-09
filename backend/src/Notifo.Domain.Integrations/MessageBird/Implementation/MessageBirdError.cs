@@ -8,17 +8,16 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Notifo.Domain.Integrations.MessageBird.Implementation
+namespace Notifo.Domain.Integrations.MessageBird.Implementation;
+
+public sealed class MessageBirdError
 {
-    public sealed class MessageBirdError
-    {
-        [JsonPropertyName("code")]
-        public int Code { get; set; }
+    [JsonPropertyName("code")]
+    public int Code { get; set; }
 
-        [JsonPropertyName("description")]
-        public string Description { get; set; }
+    [JsonPropertyName("description")]
+    public string Description { get; set; }
 
-        [JsonExtensionData]
-        public Dictionary<string, JsonElement>? ExtensionData { get; set; }
-    }
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? ExtensionData { get; set; }
 }

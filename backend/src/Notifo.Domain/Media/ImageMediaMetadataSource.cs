@@ -8,84 +8,83 @@
 using Notifo.Infrastructure;
 using Squidex.Assets;
 
-namespace Notifo.Domain.Media
+namespace Notifo.Domain.Media;
+
+public sealed class ImageMediaMetadataSource : IMediaMetadataSource
 {
-    public sealed class ImageMediaMetadataSource : IMediaMetadataSource
+    private readonly IAssetThumbnailGenerator assetThumbnailGenerator;
+
+    public ImageMediaMetadataSource(IAssetThumbnailGenerator assetThumbnailGenerator)
     {
-        private readonly IAssetThumbnailGenerator assetThumbnailGenerator;
+        Guard.NotNull(assetThumbnailGenerator);
 
-        public ImageMediaMetadataSource(IAssetThumbnailGenerator assetThumbnailGenerator)
+        this.assetThumbnailGenerator = assetThumbnailGenerator;
+    }
+
+    public async Task EnhanceAsync(MetadataRequest request)
+    {
+        var file = request.File;
+
+        if (request.Type != MediaType.Unknown)
         {
-            Guard.NotNull(assetThumbnailGenerator);
-
-            this.assetThumbnailGenerator = assetThumbnailGenerator;
+            return;
         }
 
-        public async Task EnhanceAsync(MetadataRequest request)
+        var mimeType = file.MimeType;
+
+        ImageInfo? imageInfo = null;
+
+        await using (var uploadStream = file.OpenRead())
         {
-            var file = request.File;
+            imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(uploadStream, mimeType);
+        }
 
-            if (request.Type != MediaType.Unknown)
+        if (imageInfo != null)
+        {
+            var isSwapped = imageInfo.Orientation > ImageOrientation.TopLeft;
+
+            if (isSwapped)
             {
-                return;
-            }
+                var tempFile = TempAssetFile.Create(file);
 
-            var mimeType = file.MimeType;
-
-            ImageInfo? imageInfo = null;
-
-            await using (var uploadStream = file.OpenRead())
-            {
-                imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(uploadStream, mimeType);
-            }
-
-            if (imageInfo != null)
-            {
-                var isSwapped = imageInfo.Orientation > ImageOrientation.TopLeft;
-
-                if (isSwapped)
+                await using (var uploadStream = file.OpenRead())
                 {
-                    var tempFile = TempAssetFile.Create(file);
-
-                    await using (var uploadStream = file.OpenRead())
+                    await using (var tempStream = tempFile.OpenWrite())
                     {
-                        await using (var tempStream = tempFile.OpenWrite())
-                        {
-                            await assetThumbnailGenerator.FixOrientationAsync(uploadStream, mimeType, tempStream);
-                        }
+                        await assetThumbnailGenerator.FixOrientationAsync(uploadStream, mimeType, tempStream);
                     }
-
-                    await using (var tempStream = tempFile.OpenRead())
-                    {
-                        imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(tempStream, mimeType) ?? imageInfo;
-                    }
-
-                    await file.DisposeAsync();
-
-                    request.File = tempFile;
                 }
-            }
 
-            if (imageInfo != null)
-            {
-                request.Type = MediaType.Image;
+                await using (var tempStream = tempFile.OpenRead())
+                {
+                    imageInfo = await assetThumbnailGenerator.GetImageInfoAsync(tempStream, mimeType) ?? imageInfo;
+                }
 
-                request.Metadata.SetPixelWidth(imageInfo.PixelWidth);
-                request.Metadata.SetPixelHeight(imageInfo.PixelHeight);
+                await file.DisposeAsync();
+
+                request.File = tempFile;
             }
         }
 
-        public IEnumerable<string> Format(MetadataRequest request)
+        if (imageInfo != null)
         {
-            if (request.Type == MediaType.Image)
-            {
-                var w = request.Metadata.GetPixelWidth();
-                var h = request.Metadata.GetPixelHeight();
+            request.Type = MediaType.Image;
 
-                if (w != null && h != null)
-                {
-                    yield return $"{w}x{h}px";
-                }
+            request.Metadata.SetPixelWidth(imageInfo.PixelWidth);
+            request.Metadata.SetPixelHeight(imageInfo.PixelHeight);
+        }
+    }
+
+    public IEnumerable<string> Format(MetadataRequest request)
+    {
+        if (request.Type == MediaType.Image)
+        {
+            var w = request.Metadata.GetPixelWidth();
+            var h = request.Metadata.GetPixelHeight();
+
+            if (w != null && h != null)
+            {
+                yield return $"{w}x{h}px";
             }
         }
     }

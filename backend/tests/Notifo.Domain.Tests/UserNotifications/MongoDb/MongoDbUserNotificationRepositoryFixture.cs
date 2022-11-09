@@ -11,36 +11,35 @@ using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Domain.UserNotifications.MongoDb
+namespace Notifo.Domain.UserNotifications.MongoDb;
+
+public sealed class MongoDbUserNotificationRepositoryFixture : IDisposable
 {
-    public sealed class MongoDbUserNotificationRepositoryFixture : IDisposable
+    public MongoDbUserNotificationRepository Repository { get; }
+
+    public MongoDbUserNotificationRepositoryFixture()
     {
-        public MongoDbUserNotificationRepository Repository { get; }
+        ActivityContextSerializer.Register();
+        ActivitySpanIdSerializer.Register();
+        ActivityTraceIdSerializer.Register();
 
-        public MongoDbUserNotificationRepositoryFixture()
+        InstantSerializer.Register();
+
+        var mongoClient = new MongoClient("mongodb://localhost");
+        var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
+
+        var options = new UserNotificationsOptions
         {
-            ActivityContextSerializer.Register();
-            ActivitySpanIdSerializer.Register();
-            ActivityTraceIdSerializer.Register();
+            MaxItemsPerUser = 100
+        };
 
-            InstantSerializer.Register();
+        var log = A.Fake<ILogger<MongoDbUserNotificationRepository>>();
 
-            var mongoClient = new MongoClient("mongodb://localhost");
-            var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
+        Repository = new MongoDbUserNotificationRepository(mongoDatabase, Options.Create(options), log);
+        Repository.InitializeAsync(default).Wait();
+    }
 
-            var options = new UserNotificationsOptions
-            {
-                MaxItemsPerUser = 100
-            };
-
-            var log = A.Fake<ILogger<MongoDbUserNotificationRepository>>();
-
-            Repository = new MongoDbUserNotificationRepository(mongoDatabase, Options.Create(options), log);
-            Repository.InitializeAsync(default).Wait();
-        }
-
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }

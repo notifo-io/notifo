@@ -10,35 +10,34 @@ using MongoDB.Bson.Serialization.Serializers;
 using NodaTime;
 using NodaTime.Text;
 
-namespace Notifo.Infrastructure.MongoDb
+namespace Notifo.Infrastructure.MongoDb;
+
+public sealed class LocalDateSerializer : SerializerBase<LocalDate>, IBsonPolymorphicSerializer
 {
-    public sealed class LocalDateSerializer : SerializerBase<LocalDate>, IBsonPolymorphicSerializer
+    private static volatile int isRegistered;
+
+    public static void Register()
     {
-        private static volatile int isRegistered;
-
-        public static void Register()
+        if (Interlocked.Increment(ref isRegistered) == 1)
         {
-            if (Interlocked.Increment(ref isRegistered) == 1)
-            {
-                BsonSerializer.RegisterSerializer(new LocalDateSerializer());
-            }
+            BsonSerializer.RegisterSerializer(new LocalDateSerializer());
         }
+    }
 
-        public bool IsDiscriminatorCompatibleWithObjectSerializer
-        {
-            get => true;
-        }
+    public bool IsDiscriminatorCompatibleWithObjectSerializer
+    {
+        get => true;
+    }
 
-        public override LocalDate Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
-        {
-            var text = context.Reader.ReadString();
+    public override LocalDate Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
+    {
+        var text = context.Reader.ReadString();
 
-            return LocalDatePattern.Iso.Parse(text).Value;
-        }
+        return LocalDatePattern.Iso.Parse(text).Value;
+    }
 
-        public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, LocalDate value)
-        {
-            context.Writer.WriteString(LocalDatePattern.Iso.Format(value));
-        }
+    public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, LocalDate value)
+    {
+        context.Writer.WriteString(LocalDatePattern.Iso.Format(value));
     }
 }

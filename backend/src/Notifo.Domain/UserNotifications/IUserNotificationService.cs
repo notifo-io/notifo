@@ -7,16 +7,15 @@
 
 using Notifo.Domain.UserEvents;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public interface IUserNotificationService
 {
-    public interface IUserNotificationService
-    {
-        Task DistributeAsync(UserEventMessage userEvent);
+    Task DistributeAsync(UserEventMessage userEvent);
 
-        Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens);
+    Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens);
 
-        Task TrackSeenAsync(IEnumerable<TrackingToken> tokens);
+    Task TrackSeenAsync(IEnumerable<TrackingToken> tokens);
 
-        Task TrackConfirmedAsync(TrackingToken token);
-    }
+    Task TrackConfirmedAsync(TrackingToken token);
 }

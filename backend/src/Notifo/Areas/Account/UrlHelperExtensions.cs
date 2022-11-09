@@ -10,34 +10,33 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Notifo.Areas.Account
+namespace Notifo.Areas.Account;
+
+public static class UrlHelperExtensions
 {
-    public static class UrlHelperExtensions
+    public static string? EmailConfirmationLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
     {
-        public static string? EmailConfirmationLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
-        {
-            return urlHelper.Page("/ConfirmEmail", null, new { userId, code }, scheme);
-        }
+        return urlHelper.Page("/ConfirmEmail", null, new { userId, code }, scheme);
+    }
 
-        public static string? ResetPasswordCallbackLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
-        {
-            return urlHelper.Page("/Account/ResetPassword", null, new { userId, code }, scheme);
-        }
+    public static string? ResetPasswordCallbackLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
+    {
+        return urlHelper.Page("/Account/ResetPassword", null, new { userId, code }, scheme);
+    }
 
-        public static void AddModelErrors(this ModelStateDictionary modelState, IdentityResult result)
+    public static void AddModelErrors(this ModelStateDictionary modelState, IdentityResult result)
+    {
+        foreach (var error in result.Errors)
         {
-            foreach (var error in result.Errors)
-            {
-                modelState.AddModelError(string.Empty, error.Description);
-            }
+            modelState.AddModelError(string.Empty, error.Description);
         }
+    }
 
-        public static string? ActiveClass(this ViewContext viewContext, string page)
-        {
-            var activePage = viewContext.ViewData["ActivePage"] as string
-                ?? Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
+    public static string? ActiveClass(this ViewContext viewContext, string page)
+    {
+        var activePage = viewContext.ViewData["ActivePage"] as string
+            ?? Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
 
-            return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "active" : null;
-        }
+        return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "active" : null;
     }
 }

@@ -7,28 +7,27 @@
 
 using System.Runtime.Serialization;
 
-namespace Notifo.Domain.Channels.MobilePush
+namespace Notifo.Domain.Channels.MobilePush;
+
+[Serializable]
+public class MobilePushTokenExpiredException : Exception
 {
-    [Serializable]
-    public class MobilePushTokenExpiredException : Exception
+    public MobilePushTokenExpiredException()
     {
-        public MobilePushTokenExpiredException()
-        {
-        }
+    }
 
-        public MobilePushTokenExpiredException(string message)
-            : base(message)
-        {
-        }
+    public MobilePushTokenExpiredException(string message)
+        : base(message)
+    {
+    }
 
-        public MobilePushTokenExpiredException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public MobilePushTokenExpiredException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 
-        protected MobilePushTokenExpiredException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected MobilePushTokenExpiredException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

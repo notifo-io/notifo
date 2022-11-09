@@ -8,23 +8,22 @@
 using NSwag;
 using NSwag.Generation.Processors.Security;
 
-namespace Notifo.Areas.Api.OpenApi
+namespace Notifo.Areas.Api.OpenApi;
+
+public sealed class SecurityProcessor : SecurityDefinitionAppender
 {
-    public sealed class SecurityProcessor : SecurityDefinitionAppender
+    public SecurityProcessor()
+        : base("notifo-api", Enumerable.Empty<string>(), CreateOAuthSchema())
     {
-        public SecurityProcessor()
-            : base("notifo-api", Enumerable.Empty<string>(), CreateOAuthSchema())
-        {
-        }
+    }
 
-        private static OpenApiSecurityScheme CreateOAuthSchema()
+    private static OpenApiSecurityScheme CreateOAuthSchema()
+    {
+        var security = new OpenApiSecurityScheme
         {
-            var security = new OpenApiSecurityScheme
-            {
-                Type = OpenApiSecuritySchemeType.ApiKey
-            };
+            Type = OpenApiSecuritySchemeType.ApiKey
+        };
 
-            return security;
-        }
+        return security;
     }
 }

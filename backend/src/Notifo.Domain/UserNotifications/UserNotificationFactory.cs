@@ -16,113 +16,112 @@ using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 
-namespace Notifo.Domain.UserNotifications
+namespace Notifo.Domain.UserNotifications;
+
+public sealed class UserNotificationFactory : IUserNotificationFactory
 {
-    public sealed class UserNotificationFactory : IUserNotificationFactory
+    private const string DefaultConfirmText = "Confirm";
+    private readonly IUserNotificationUrl notificationUrl;
+    private readonly IImageFormatter imageFormatter;
+    private readonly IClock clock;
+    private readonly ILogStore logstore;
+
+    public UserNotificationFactory(ILogStore logstore, IUserNotificationUrl notificationUrl, IImageFormatter imageFormatter,
+        IClock clock)
     {
-        private const string DefaultConfirmText = "Confirm";
-        private readonly IUserNotificationUrl notificationUrl;
-        private readonly IImageFormatter imageFormatter;
-        private readonly IClock clock;
-        private readonly ILogStore logstore;
+        this.notificationUrl = notificationUrl;
+        this.imageFormatter = imageFormatter;
+        this.logstore = logstore;
+        this.clock = clock;
+    }
 
-        public UserNotificationFactory(ILogStore logstore, IUserNotificationUrl notificationUrl, IImageFormatter imageFormatter,
-            IClock clock)
+    public UserNotification? Create(App app, User user, UserEventMessage userEvent)
+    {
+        Guard.NotNull(user);
+        Guard.NotNull(userEvent);
+
+        if (userEvent.Formatting == null ||
+            string.IsNullOrWhiteSpace(userEvent.AppId) ||
+            string.IsNullOrWhiteSpace(userEvent.EventId) ||
+            string.IsNullOrWhiteSpace(userEvent.Topic) ||
+            string.IsNullOrWhiteSpace(userEvent.UserId))
         {
-            this.notificationUrl = notificationUrl;
-            this.imageFormatter = imageFormatter;
-            this.logstore = logstore;
-            this.clock = clock;
+            return null;
         }
 
-        public UserNotification? Create(App app, User user, UserEventMessage userEvent)
+        var language = user.PreferredLanguage;
+
+        if (!app.Languages.Contains(language))
         {
-            Guard.NotNull(user);
-            Guard.NotNull(userEvent);
+            logstore.LogAsync(app.Id, string.Format(CultureInfo.InvariantCulture, Texts.UserLanguage_NotValid, language, app.Language));
 
-            if (userEvent.Formatting == null ||
-                string.IsNullOrWhiteSpace(userEvent.AppId) ||
-                string.IsNullOrWhiteSpace(userEvent.EventId) ||
-                string.IsNullOrWhiteSpace(userEvent.Topic) ||
-                string.IsNullOrWhiteSpace(userEvent.UserId))
-            {
-                return null;
-            }
-
-            var language = user.PreferredLanguage;
-
-            if (!app.Languages.Contains(language))
-            {
-                logstore.LogAsync(app.Id, string.Format(CultureInfo.InvariantCulture, Texts.UserLanguage_NotValid, language, app.Language));
-
-                language = app.Language;
-            }
-
-            var formatting = userEvent.Formatting.SelectText(language);
-
-            if (!formatting.HasSubject())
-            {
-                return null;
-            }
-
-            var notification = SimpleMapper.Map(userEvent, new UserNotification
-            {
-                Id = Guid.NewGuid()
-            });
-
-            notification.Updated = clock.GetCurrentInstant();
-            notification.UserLanguage = language;
-            notification.Formatting = formatting;
-
-            ConfigureImages(notification);
-            ConfigureTracking(notification, userEvent);
-            ConfigureSettings(notification, userEvent, user);
-
-            return notification;
+            language = app.Language;
         }
 
-        private void ConfigureImages(UserNotification notification)
+        var formatting = userEvent.Formatting.SelectText(language);
+
+        if (!formatting.HasSubject())
         {
-            notification.Formatting.ImageSmall = imageFormatter.AddProxy(notification.Formatting.ImageSmall);
-            notification.Formatting.ImageLarge = imageFormatter.AddProxy(notification.Formatting.ImageLarge);
+            return null;
         }
 
-        private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)
+        var notification = SimpleMapper.Map(userEvent, new UserNotification
         {
-            var confirmMode = userEvent.Formatting.ConfirmMode;
+            Id = Guid.NewGuid()
+        });
 
-            if (confirmMode == ConfirmMode.Explicit)
+        notification.Updated = clock.GetCurrentInstant();
+        notification.UserLanguage = language;
+        notification.Formatting = formatting;
+
+        ConfigureImages(notification);
+        ConfigureTracking(notification, userEvent);
+        ConfigureSettings(notification, userEvent, user);
+
+        return notification;
+    }
+
+    private void ConfigureImages(UserNotification notification)
+    {
+        notification.Formatting.ImageSmall = imageFormatter.AddProxy(notification.Formatting.ImageSmall);
+        notification.Formatting.ImageLarge = imageFormatter.AddProxy(notification.Formatting.ImageLarge);
+    }
+
+    private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)
+    {
+        var confirmMode = userEvent.Formatting.ConfirmMode;
+
+        if (confirmMode == ConfirmMode.Explicit)
+        {
+            notification.ConfirmUrl = notificationUrl.TrackConfirmed(notification.Id, notification.UserLanguage);
+
+            if (string.IsNullOrWhiteSpace(notification.Formatting.ConfirmText))
             {
-                notification.ConfirmUrl = notificationUrl.TrackConfirmed(notification.Id, notification.UserLanguage);
-
-                if (string.IsNullOrWhiteSpace(notification.Formatting.ConfirmText))
-                {
-                    notification.Formatting.ConfirmText = DefaultConfirmText;
-                }
+                notification.Formatting.ConfirmText = DefaultConfirmText;
             }
-            else
-            {
-                notification.Formatting.ConfirmText = null;
-            }
-
-            notification.TrackDeliveredUrl = notificationUrl.TrackDelivered(notification.Id, notification.UserLanguage);
-            notification.TrackSeenUrl = notificationUrl.TrackSeen(notification.Id, notification.UserLanguage);
+        }
+        else
+        {
+            notification.Formatting.ConfirmText = null;
         }
 
-        private static void ConfigureSettings(UserNotification notification, UserEventMessage userEvent, User user)
-        {
-            notification.Channels = new Dictionary<string, UserNotificationChannel>();
+        notification.TrackDeliveredUrl = notificationUrl.TrackDelivered(notification.Id, notification.UserLanguage);
+        notification.TrackSeenUrl = notificationUrl.TrackSeen(notification.Id, notification.UserLanguage);
+    }
 
-            OverrideBy(notification, user.Settings);
-            OverrideBy(notification, userEvent.Settings);
-        }
+    private static void ConfigureSettings(UserNotification notification, UserEventMessage userEvent, User user)
+    {
+        notification.Channels = new Dictionary<string, UserNotificationChannel>();
 
-        private static void OverrideBy(UserNotification notification, ChannelSettings? source)
+        OverrideBy(notification, user.Settings);
+        OverrideBy(notification, userEvent.Settings);
+    }
+
+    private static void OverrideBy(UserNotification notification, ChannelSettings? source)
+    {
+        foreach (var (channel, setting) in source.OrEmpty())
         {
-            foreach (var (channel, setting) in source.OrEmpty())
-            {
-                notification.Channels.GetOrAddNew(channel).Setting.OverrideBy(setting);
-            }
+            notification.Channels.GetOrAddNew(channel).Setting.OverrideBy(setting);
         }
     }
 }
