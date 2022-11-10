@@ -14,11 +14,10 @@ using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.EmailPreferences;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public sealed class EmailPreferencesController : BaseController
 {
     private static readonly TopicQuery TopicQuery = new TopicQuery { Scope = TopicQueryScope.Explicit };

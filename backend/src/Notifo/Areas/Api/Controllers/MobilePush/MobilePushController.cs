@@ -10,7 +10,6 @@ using Notifo.Areas.Api.Controllers.MobilePush.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.MobilePush;
 
@@ -60,7 +59,7 @@ public sealed class MobilePushController : BaseController
     [HttpPost("api/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush>")]
-    [OpenApiIgnore]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public Task<IActionResult> PostMyTokenOld([FromBody] RegisterMobileTokenDto request)
     {
         return PostMyToken(request);
@@ -97,7 +96,7 @@ public sealed class MobilePushController : BaseController
     [HttpDelete("api/mobilepush/{token:notEmpty}")]
     [AppPermission(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
-    [OpenApiIgnore]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public Task<IActionResult> DeleteMyTokenOld(string token)
     {
         return DeleteMyToken(token);

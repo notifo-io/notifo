@@ -11,11 +11,10 @@ using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Callbacks;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public sealed class CallbacksController : BaseController
 {
     private readonly IAppStore appStore;

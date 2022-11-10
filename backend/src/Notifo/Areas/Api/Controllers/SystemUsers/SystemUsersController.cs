@@ -12,11 +12,10 @@ using Notifo.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.SystemUsers;
 
-[OpenApiTags("SystemUsers")]
+[ApiExplorerSettings(GroupName = "SystemUsers")]
 public sealed class SystemUsersController : BaseController
 {
     private readonly IUserService userService;
