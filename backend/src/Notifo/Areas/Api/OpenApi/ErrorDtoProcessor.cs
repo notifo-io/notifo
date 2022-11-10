@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Xml;
 using System.Xml.Linq;
 using Namotion.Reflection;
 using NJsonSchema;
@@ -23,6 +22,11 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
 
         void AddResponse(string code, string description)
         {
+            if (!IsErrorCode(code))
+            {
+                return;
+            }
+
             if (!operation.Responses.ContainsKey(code))
             {
                 operation.Responses.Add(code, new OpenApiResponse
@@ -52,7 +56,7 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
         {
             if (response.Schema == null)
             {
-                if (!code.StartsWith("2", StringComparison.OrdinalIgnoreCase) && code != "404")
+                if (IsErrorCode(code) && code != "404")
                 {
                     response.Schema = GetErrorSchema(context);
                 }
@@ -60,6 +64,11 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
         }
 
         return true;
+    }
+
+    private static bool IsErrorCode(string code)
+    {
+        return !code.StartsWith("2", StringComparison.OrdinalIgnoreCase);
     }
 
     private static JsonSchema GetErrorSchema(OperationProcessorContext context)
