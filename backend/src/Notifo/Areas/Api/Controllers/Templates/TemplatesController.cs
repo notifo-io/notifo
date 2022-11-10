@@ -78,7 +78,6 @@ public sealed class TemplatesController : BaseController
     /// <response code="204">Template deleted.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/templates/{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [Produces(typeof(ListResponseDto<TemplateDto>))]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTemplate(string appId, string code)
     {

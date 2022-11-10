@@ -1453,8 +1453,9 @@ export class TemplatesClient {
      * Delete a template.
      * @param appId The app where the templates belong to.
      * @param code The template code to delete.
+     * @return Template deleted.
      */
-    deleteTemplate(appId: string | null, code: string | null): Promise<ListResponseDtoOfTemplateDto> {
+    deleteTemplate(appId: string | null, code: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1467,7 +1468,6 @@ export class TemplatesClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
-                "Accept": "application/json"
             }
         };
 
@@ -1476,18 +1476,12 @@ export class TemplatesClient {
         });
     }
 
-    protected processDeleteTemplate(response: Response): Promise<ListResponseDtoOfTemplateDto> {
+    protected processDeleteTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
+        if (status === 204) {
             return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ListResponseDtoOfTemplateDto;
-            return result200;
-            });
-        } else if (status === 204) {
-            return response.text().then((_responseText) => {
-            return throwException("Template deleted.", status, _responseText, _headers);
+            return;
             });
         } else if (status === 500) {
             return response.text().then((_responseText) => {
@@ -1506,7 +1500,7 @@ export class TemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<ListResponseDtoOfTemplateDto>(null as any);
+        return Promise.resolve<void>(null as any);
     }
 }
 

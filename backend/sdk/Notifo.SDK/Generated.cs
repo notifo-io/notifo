@@ -2825,8 +2825,9 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the templates belong to.</param>
         /// <param name="code">The template code to delete.</param>
+        /// <returns>Template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfTemplateDto> DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -3078,8 +3079,9 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the templates belong to.</param>
         /// <param name="code">The template code to delete.</param>
+        /// <returns>Template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTemplateDto> DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/templates/{code}");
@@ -3093,7 +3095,6 @@ namespace Notifo.SDK
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -3116,20 +3117,9 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
-                            if (objectResponse_.Object == null)
-                            {
-                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
-                            }
-                            return objectResponse_.Object;
-                        }
-                        else
                         if (status_ == 204)
                         {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new NotifoException("Template deleted.", status_, responseText_, headers_, null);
+                            return;
                         }
                         else
                         if (status_ == 500)
