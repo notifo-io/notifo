@@ -11,11 +11,10 @@ using Notifo.Domain;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Notifications;
 
-[OpenApiTag("Notifications")]
+[ApiExplorerSettings(GroupName = "Notifications")]
 public sealed class NotificationsController : BaseController
 {
     private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };

@@ -12,13 +12,12 @@ using Notifo.Domain.Identity;
 using Notifo.Domain.Media;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 using Squidex.Assets;
 using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Controllers.Media;
 
-[OpenApiTag("Media")]
+[ApiExplorerSettings(GroupName = "Media")]
 public sealed class MediaController : MediaBaseController
 {
     private readonly IMediaStore mediaStore;

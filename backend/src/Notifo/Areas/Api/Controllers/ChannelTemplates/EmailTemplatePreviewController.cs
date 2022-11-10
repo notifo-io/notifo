@@ -11,14 +11,13 @@ using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Identity;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
-[OpenApiTag("EmailTemplates")]
+[ApiExplorerSettings(GroupName = "EmailTemplates")]
 public class EmailTemplatePreviewController : BaseController
 {
     private readonly IEmailFormatter emailFormatter;

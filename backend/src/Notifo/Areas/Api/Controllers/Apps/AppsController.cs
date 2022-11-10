@@ -12,13 +12,12 @@ using Notifo.Domain.Identity;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Notifo.Areas.Api.Controllers.Apps;
 
-[OpenApiTag("Apps")]
+[ApiExplorerSettings(GroupName = "Apps")]
 public sealed class AppsController : BaseController
 {
     private readonly IAppStore appStore;

@@ -16,11 +16,10 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Users;
 
-[OpenApiTag("Users")]
+[ApiExplorerSettings(GroupName = "Users")]
 public sealed class UsersController : BaseController
 {
     private readonly IIntegrationManager integrationManager;

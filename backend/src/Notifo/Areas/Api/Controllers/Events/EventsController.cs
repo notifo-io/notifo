@@ -12,11 +12,10 @@ using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Events;
 
-[OpenApiTag("Events")]
+[ApiExplorerSettings(GroupName = "Events")]
 public sealed class EventsController : BaseController
 {
     private readonly IEventStore eventStore;

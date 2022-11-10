@@ -11,11 +11,10 @@ using Notifo.Domain.Identity;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Topics;
 
-[OpenApiTag("Topics")]
+[ApiExplorerSettings(GroupName = "Topics")]
 public sealed class TopicsController : BaseController
 {
     private readonly ITopicStore topicStore;

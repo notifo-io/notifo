@@ -14,6 +14,7 @@ public sealed class CommonProcessor : IDocumentProcessor
 {
     public void Process(DocumentProcessorContext context)
     {
+        context.Document.Info.Title = "Notifo API";
         context.Document.BasePath = "/api";
 
         var logo = new

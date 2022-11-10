@@ -14,7 +14,7 @@ using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.MobilePush;
 
-[OpenApiTag("MobilePush")]
+[ApiExplorerSettings(GroupName = "MobilePush")]
 public sealed class MobilePushController : BaseController
 {
     private readonly IUserStore userStore;

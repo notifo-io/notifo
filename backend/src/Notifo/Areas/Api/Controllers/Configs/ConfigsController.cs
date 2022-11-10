@@ -8,11 +8,10 @@
 using Microsoft.AspNetCore.Mvc;
 using NodaTime;
 using Notifo.Infrastructure;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Configs;
 
-[OpenApiTag("Configs")]
+[ApiExplorerSettings(GroupName = "Configs")]
 public class ConfigsController : BaseController
 {
     /// <summary>

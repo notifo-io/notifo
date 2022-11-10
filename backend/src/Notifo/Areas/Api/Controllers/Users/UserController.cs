@@ -13,11 +13,10 @@ using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Users;
 
-[OpenApiTag("User")]
+[ApiExplorerSettings(GroupName = "User")]
 public class UserController : BaseController
 {
     private readonly ISubscriptionStore subscriptionStore;

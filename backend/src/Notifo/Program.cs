@@ -14,8 +14,6 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        AppContext.SetSwitch("Microsoft.AspNetCore.Authentication.SuppressAutoDefaultScheme", true);
-
         CreateHostBuilder(args).Build().Run();
     }
 

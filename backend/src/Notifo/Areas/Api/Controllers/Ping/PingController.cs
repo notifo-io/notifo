@@ -6,14 +6,13 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Ping;
 
 /// <summary>
 /// Makes a ping request.
 /// </summary>
-[OpenApiTag("Ping")]
+[ApiExplorerSettings(GroupName = "Ping")]
 public sealed class PingController : BaseController
 {
     /// <summary>

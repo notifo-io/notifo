@@ -10,11 +10,10 @@ using Notifo.Areas.Api.Controllers.Logs.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Log;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Logs;
 
-[OpenApiTag("Logs")]
+[ApiExplorerSettings(GroupName = "Logs")]
 public class LogsController : BaseController
 {
     private readonly ILogStore logStore;

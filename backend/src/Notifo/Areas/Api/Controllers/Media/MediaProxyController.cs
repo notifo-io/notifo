@@ -11,14 +11,13 @@ using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
-using NSwag.Annotations;
 using Squidex.Assets;
 
 #pragma warning disable SA1119 // Statement should not use unnecessary parenthesis
 
 namespace Notifo.Areas.Api.Controllers.Media;
 
-[OpenApiTag("Media")]
+[ApiExplorerSettings(GroupName = "Media")]
 public sealed class MediaProxyController : MediaBaseController
 {
     private static readonly HashSet<string> SafeHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
