@@ -60,6 +60,7 @@ public sealed class EventsController : BaseController
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/events/")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
     {
         if (request.Requests?.Length > 100)
@@ -85,6 +86,7 @@ public sealed class EventsController : BaseController
     /// <response code="404">App not found.</response>.
     [HttpPost("api/me/events/")]
     [AppPermission(NotifoRoles.AppUser)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMyEvents([FromBody] PublishDto request)
     {
         var @event = request.ToEvent(App.Id, $"users/{UserId}");

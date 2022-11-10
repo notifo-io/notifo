@@ -13,6 +13,7 @@ using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
+using System.Net;
 
 namespace Notifo.Areas.Api.Controllers.Users;
 
@@ -138,7 +139,7 @@ public class UserController : BaseController
     /// </remarks>
     [HttpPost("api/me/subscriptions")]
     [AppPermission(NotifoRoles.AppUser)]
-    [Produces(typeof(SubscriptionDto))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMySubscriptions([FromBody] SubscribeManyDto request)
     {
         foreach (var dto in request.Subscribe.OrEmpty())
@@ -166,6 +167,7 @@ public class UserController : BaseController
     /// </remarks>
     [HttpPost("api/me/subscriptions/{*prefix}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubscription(string prefix)
     {
         await subscriptionStore.DeleteAsync(App.Id, UserId, Uri.UnescapeDataString(prefix), HttpContext.RequestAborted);

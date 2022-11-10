@@ -78,6 +78,7 @@ public sealed class TemplatesController : BaseController
     [HttpDelete("api/apps/{appId:notEmpty}/templates/{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<TemplateDto>))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTemplate(string appId, string code)
     {
         await templateStore.DeleteAsync(appId, code, HttpContext.RequestAborted);

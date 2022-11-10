@@ -111,6 +111,7 @@ public sealed class MediaController : MediaBaseController
     /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/media/")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Upload(string appId, IFormFile file)
     {
         var assetFile = CreateFile(file);
@@ -129,6 +130,7 @@ public sealed class MediaController : MediaBaseController
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/media/{fileName:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(string appId, string fileName)
     {
         await mediaStore.DeleteAsync(appId, fileName, HttpContext.RequestAborted);

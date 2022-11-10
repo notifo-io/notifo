@@ -24,6 +24,7 @@ public sealed class PingController : BaseController
     /// </remarks>
     [HttpGet]
     [Route("ping/")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public IActionResult GetPing()
     {
         return NoContent();

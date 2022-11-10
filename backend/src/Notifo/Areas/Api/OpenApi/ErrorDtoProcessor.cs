@@ -22,8 +22,6 @@ public sealed class ErrorDtoProcessor : IDocumentProcessor
         foreach (var operation in context.Document.Paths.Values.SelectMany(x => x.Values))
         {
             AddErrorResponses(operation, errorSchema);
-
-            CleanupResponses(operation);
         }
     }
 
@@ -50,19 +48,6 @@ public sealed class ErrorDtoProcessor : IDocumentProcessor
                 {
                     response.Schema = errorSchema;
                 }
-            }
-        }
-    }
-
-    private static void CleanupResponses(OpenApiOperation operation)
-    {
-        foreach (var (code, response) in operation.Responses.ToList())
-        {
-            if (string.IsNullOrWhiteSpace(response.Description) ||
-                response.Description?.Contains("=&gt;", StringComparison.OrdinalIgnoreCase) == true ||
-                response.Description?.Contains("=>", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                operation.Responses.Remove(code);
             }
         }
     }

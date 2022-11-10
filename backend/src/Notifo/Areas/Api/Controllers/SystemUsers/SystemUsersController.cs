@@ -163,6 +163,7 @@ public sealed class SystemUsersController : BaseController
     /// <response code="403">User cannot be deleted.</response>.
     [HttpDelete("api/system-users/{id:notEmpty}/")]
     [AppPermission(NotifoRoles.HostAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUser(string id)
     {
         if (IsUser(id))

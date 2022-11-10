@@ -241,6 +241,7 @@ export class UserClient {
     /**
      * Upserts or deletes my subscriptions.
      * @param request The subscription settings.
+     * @return User subscribed.
      */
     postMySubscriptions(request: SubscribeManyDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions";
@@ -264,7 +265,11 @@ export class UserClient {
     protected processPostMySubscriptions(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -340,6 +345,7 @@ export class UserClient {
     /**
      * Remove my subscription.
      * @param prefix The topic prefix.
+     * @return User unsubscribed.
      */
     deleteSubscription(prefix: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/me/subscriptions/{prefix}";
@@ -362,7 +368,11 @@ export class UserClient {
     protected processDeleteSubscription(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -588,6 +598,7 @@ export class UsersClient {
      * Delete a user.
      * @param appId The app where the users belongs to.
      * @param id The user id to delete.
+     * @return User deleted.
      */
     deleteUser(appId: string | null, id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}";
@@ -613,7 +624,11 @@ export class UsersClient {
     protected processDeleteUser(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -708,6 +723,7 @@ export class UsersClient {
      * @param appId The app where the user belongs to.
      * @param id The user ID.
      * @param request The subscription object.
+     * @return User subscribed.
      */
     postSubscriptions(appId: string | null, id: string | null, request: SubscribeManyDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions";
@@ -737,7 +753,11 @@ export class UsersClient {
     protected processPostSubscriptions(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -762,6 +782,7 @@ export class UsersClient {
      * @param appId The app where the user belongs to.
      * @param id The user ID.
      * @param prefix The topic prefix.
+     * @return User unsubscribed.
      */
     deleteSubscription(appId: string | null, id: string | null, prefix: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions/{prefix}";
@@ -790,7 +811,11 @@ export class UsersClient {
     protected processDeleteSubscription(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -815,6 +840,7 @@ export class UsersClient {
      * @param appId The app where the users belong to.
      * @param id The user ID.
      * @param request The upsert request.
+     * @return User updated.
      */
     postAllowedTopic(appId: string | null, id: string | null, request: AddAllowedTopicDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/allowed-topics";
@@ -844,7 +870,11 @@ export class UsersClient {
     protected processPostAllowedTopic(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -869,6 +899,7 @@ export class UsersClient {
      * @param appId The app where the users belong to.
      * @param id The user ID.
      * @param prefix The topic prefix.
+     * @return User updated.
      */
     deleteAllowedTopic(appId: string | null, id: string | null, prefix: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/allowed-topics/{prefix}";
@@ -897,7 +928,11 @@ export class UsersClient {
     protected processDeleteAllowedTopic(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -922,6 +957,7 @@ export class UsersClient {
      * @param appId The app where the users belong to.
      * @param id The user ID.
      * @param token The token.
+     * @return User updated.
      */
     deleteMobilePushToken(appId: string | null, id: string | null, token: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/mobilepush/{token}";
@@ -950,7 +986,11 @@ export class UsersClient {
     protected processDeleteMobilePushToken(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -975,6 +1015,7 @@ export class UsersClient {
      * @param appId The app where the users belong to.
      * @param id The user ID.
      * @param endpoint The endpoint.
+     * @return User updated.
      */
     deleteWebPushSubscription(appId: string | null, id: string | null, endpoint: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/webpush/{endpoint}";
@@ -1003,7 +1044,11 @@ export class UsersClient {
     protected processDeleteWebPushSubscription(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -1167,6 +1212,7 @@ export class TopicsClient {
      * Delete a topic.
      * @param appId The app where the topics belong to.
      * @param id The ID of the topic to delete.
+     * @return Topic deleted.
      */
     deleteTopic(appId: string | null, id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/topics/{id}";
@@ -1192,7 +1238,11 @@ export class TopicsClient {
     protected processDeleteTopic(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -1453,6 +1503,7 @@ export class SystemUsersClient {
     /**
      * Delete the user.
      * @param id The user ID.
+     * @return User deleted.
      */
     deleteUser(id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/system-users/{id}";
@@ -1475,7 +1526,11 @@ export class SystemUsersClient {
     protected processDeleteUser(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -1614,6 +1669,7 @@ export class PingClient {
 
     /**
      * Get ping status of the API.
+     * @return Service ping successful.
      */
     getPing(): Promise<void> {
         let url_ = this.baseUrl + "/ping";
@@ -1633,7 +1689,11 @@ export class PingClient {
     protected processGetPing(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -1854,6 +1914,7 @@ export class NotificationsClient {
     /**
      * Confirms the user notifications for the current user.
      * @param request The request object.
+     * @return Notifications updated.
      */
     confirmMe(request: TrackNotificationDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/notifications/handled";
@@ -1877,7 +1938,11 @@ export class NotificationsClient {
     protected processConfirmMe(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -1960,6 +2025,7 @@ export class MobilePushClient {
     /**
      * Register a mobile push token for the current user.
      * @param request The request object.
+     * @return Mobile push token registered.
      */
     postMyToken(request: RegisterMobileTokenDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/mobilepush";
@@ -1983,7 +2049,11 @@ export class MobilePushClient {
     protected processPostMyToken(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2006,6 +2076,7 @@ export class MobilePushClient {
     /**
      * Deletes a mobile push token for the current user.
      * @param token The token to remove.
+     * @return Mobile push token removed.
      */
     deleteMyToken(token: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/me/mobilepush/{token}";
@@ -2028,7 +2099,11 @@ export class MobilePushClient {
     protected processDeleteMyToken(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2129,6 +2204,7 @@ export class MediaClient {
      * Upload a media object.
      * @param appId The app id where the media belongs to.
      * @param file (optional) 
+     * @return Media uploaded.
      */
     upload(appId: string | null, file?: File | null | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media";
@@ -2156,7 +2232,11 @@ export class MediaClient {
     protected processUpload(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 201) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2283,6 +2363,7 @@ export class MediaClient {
      * Delete a media.
      * @param appId The app id where the media belongs to.
      * @param fileName The file name of the media.
+     * @return Media deleted.
      */
     delete(appId: string | null, fileName: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}";
@@ -2308,7 +2389,11 @@ export class MediaClient {
     protected processDelete(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2793,6 +2878,7 @@ export class EventsClient {
      * Publish events.
      * @param appId The app where the events belongs to.
      * @param request The publish request.
+     * @return Events created.
      */
     postEvents(appId: string | null, request: PublishManyDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events";
@@ -2819,7 +2905,11 @@ export class EventsClient {
     protected processPostEvents(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2842,6 +2932,7 @@ export class EventsClient {
     /**
      * Publish an event for the current user.
      * @param request The publish request.
+     * @return Event created.
      */
     postMyEvents(request: PublishDto): Promise<void> {
         let url_ = this.baseUrl + "/api/me/events";
@@ -2865,7 +2956,11 @@ export class EventsClient {
     protected processPostMyEvents(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2898,6 +2993,7 @@ export class DiagnosticsClient {
 
     /**
      * Creates a dump and writes it into storage..
+     * @return Dump created successful.
      */
     getDump(): Promise<void> {
         let url_ = this.baseUrl + "/api/diagnostics/dump";
@@ -2917,7 +3013,11 @@ export class DiagnosticsClient {
     protected processGetDump(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -2939,6 +3039,7 @@ export class DiagnosticsClient {
 
     /**
      * Creates a gc dump and writes it into storage.
+     * @return Dump created successful.
      */
     getGCDump(): Promise<void> {
         let url_ = this.baseUrl + "/api/diagnostics/gcdump";
@@ -2958,7 +3059,11 @@ export class DiagnosticsClient {
     protected processGetGCDump(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -3466,6 +3571,7 @@ export class EmailTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
      * @param request The request object.
+     * @return Channel template updated.
      */
     putTemplate(appId: string | null, id: string | null, request: UpdateChannelTemplateDtoOfEmailTemplateDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}";
@@ -3495,7 +3601,11 @@ export class EmailTemplatesClient {
     protected processPutTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -3519,6 +3629,7 @@ export class EmailTemplatesClient {
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
+     * @return Channel template deleted.
      */
     deleteTemplate(appId: string | null, id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}";
@@ -3544,7 +3655,11 @@ export class EmailTemplatesClient {
     protected processDeleteTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -3570,6 +3685,7 @@ export class EmailTemplatesClient {
      * @param id The template ID.
      * @param language The language.
      * @param request The request object.
+     * @return Channel template updated.
      */
     putTemplateLanguage(appId: string | null, id: string | null, language: string | null, request: EmailTemplateDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}/{language}";
@@ -3602,7 +3718,11 @@ export class EmailTemplatesClient {
     protected processPutTemplateLanguage(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -3627,6 +3747,7 @@ export class EmailTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
      * @param language The language.
+     * @return Channel template updated.
      */
     deleteTemplateLanguage(appId: string | null, id: string | null, language: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}/{language}";
@@ -3655,7 +3776,11 @@ export class EmailTemplatesClient {
     protected processDeleteTemplateLanguage(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -3934,6 +4059,7 @@ export class MessagingTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
      * @param request The request object.
+     * @return Channel template updated.
      */
     putTemplate(appId: string | null, id: string | null, request: UpdateChannelTemplateDtoOfMessagingTemplateDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}";
@@ -3963,7 +4089,11 @@ export class MessagingTemplatesClient {
     protected processPutTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -3987,6 +4117,7 @@ export class MessagingTemplatesClient {
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
+     * @return Channel template deleted.
      */
     deleteTemplate(appId: string | null, id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}";
@@ -4012,7 +4143,11 @@ export class MessagingTemplatesClient {
     protected processDeleteTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -4038,6 +4173,7 @@ export class MessagingTemplatesClient {
      * @param id The template ID.
      * @param language The language.
      * @param request The request object.
+     * @return Channel template updated.
      */
     putTemplateLanguage(appId: string | null, id: string | null, language: string | null, request: MessagingTemplateDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}/{language}";
@@ -4070,7 +4206,11 @@ export class MessagingTemplatesClient {
     protected processPutTemplateLanguage(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -4095,6 +4235,7 @@ export class MessagingTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
      * @param language The language.
+     * @return Channel template updated.
      */
     deleteTemplateLanguage(appId: string | null, id: string | null, language: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}/{language}";
@@ -4123,7 +4264,11 @@ export class MessagingTemplatesClient {
     protected processDeleteTemplateLanguage(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -4402,6 +4547,7 @@ export class SmsTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
      * @param request The request object.
+     * @return Channel template updated.
      */
     putTemplate(appId: string | null, id: string | null, request: UpdateChannelTemplateDtoOfSmsTemplateDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}";
@@ -4431,7 +4577,11 @@ export class SmsTemplatesClient {
     protected processPutTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -4455,6 +4605,7 @@ export class SmsTemplatesClient {
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
+     * @return Channel template deleted.
      */
     deleteTemplate(appId: string | null, id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}";
@@ -4480,7 +4631,11 @@ export class SmsTemplatesClient {
     protected processDeleteTemplate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -4506,6 +4661,7 @@ export class SmsTemplatesClient {
      * @param id The template ID.
      * @param language The language.
      * @param request The request object.
+     * @return Channel template updated.
      */
     putTemplateLanguage(appId: string | null, id: string | null, language: string | null, request: SmsTemplateDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}/{language}";
@@ -4538,7 +4694,11 @@ export class SmsTemplatesClient {
     protected processPutTemplateLanguage(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -4563,6 +4723,7 @@ export class SmsTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
      * @param language The language.
+     * @return Channel template updated.
      */
     deleteTemplateLanguage(appId: string | null, id: string | null, language: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}/{language}";
@@ -4591,7 +4752,11 @@ export class SmsTemplatesClient {
     protected processDeleteTemplateLanguage(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -5067,6 +5232,7 @@ export class AppsClient {
      * @param appId The id of the app where the integration belong to.
      * @param id The id of the integration.
      * @param request The request object.
+     * @return App integration updated.
      */
     putIntegration(appId: string | null, id: string | null, request: UpdateIntegrationDto): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
@@ -5096,7 +5262,11 @@ export class AppsClient {
     protected processPutIntegration(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
@@ -5120,6 +5290,7 @@ export class AppsClient {
      * Delete an app integration.
      * @param appId The id of the app where the email templates belong to.
      * @param id The id of the integration.
+     * @return App integration deleted.
      */
     deleteIntegration(appId: string | null, id: string | null): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/integrations/{id}";
@@ -5145,7 +5316,11 @@ export class AppsClient {
     protected processDeleteIntegration(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 500) {
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;

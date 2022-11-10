@@ -79,7 +79,7 @@ public sealed class TopicsController : BaseController
     /// <response code="204">Topic deleted.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/topics/{*id}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [Produces(typeof(ListResponseDto<TopicDto>))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTopic(string appId, string id)
     {
         await topicStore.DeleteAsync(appId, Uri.UnescapeDataString(id), HttpContext.RequestAborted);

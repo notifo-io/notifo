@@ -67,6 +67,7 @@ namespace Notifo.SDK
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         /// <param name="request">The subscription settings.</param>
+        /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PostMySubscriptionsAsync(SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -90,6 +91,7 @@ namespace Notifo.SDK
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteSubscriptionAsync(string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -532,6 +534,7 @@ namespace Notifo.SDK
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         /// <param name="request">The subscription settings.</param>
+        /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostMySubscriptionsAsync(SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -574,6 +577,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -592,13 +600,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -723,6 +724,7 @@ namespace Notifo.SDK
         /// User Id and App Id are resolved using the API token.
         /// </remarks>
         /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteSubscriptionAsync(string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -760,6 +762,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -778,13 +785,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -953,6 +953,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the users belongs to.</param>
         /// <param name="id">The user id to delete.</param>
+        /// <returns>User deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -976,6 +977,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
+        /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PostSubscriptionsAsync(string appId, string id, SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -986,6 +988,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteSubscriptionAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -996,6 +999,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="request">The upsert request.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PostAllowedTopicAsync(string appId, string id, AddAllowedTopicDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -1006,6 +1010,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAllowedTopicAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -1016,6 +1021,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="token">The token.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteMobilePushTokenAsync(string appId, string id, string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -1026,6 +1032,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="endpoint">The endpoint.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteWebPushSubscriptionAsync(string appId, string id, string endpoint, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -1384,6 +1391,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the users belongs to.</param>
         /// <param name="id">The user id to delete.</param>
+        /// <returns>User deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1421,6 +1429,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -1439,13 +1452,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -1584,6 +1590,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="request">The subscription object.</param>
+        /// <returns>User subscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostSubscriptionsAsync(string appId, string id, SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1628,6 +1635,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -1646,13 +1658,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -1681,6 +1686,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User unsubscribed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteSubscriptionAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1719,6 +1725,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -1737,13 +1748,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -1772,6 +1776,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="request">The upsert request.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostAllowedTopicAsync(string appId, string id, AddAllowedTopicDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1816,6 +1821,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -1834,13 +1844,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -1869,6 +1872,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="prefix">The topic prefix.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteAllowedTopicAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1907,6 +1911,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -1925,13 +1934,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -1960,6 +1962,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="token">The token.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteMobilePushTokenAsync(string appId, string id, string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -1998,6 +2001,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -2016,13 +2024,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -2051,6 +2052,7 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the users belong to.</param>
         /// <param name="id">The user ID.</param>
         /// <param name="endpoint">The endpoint.</param>
+        /// <returns>User updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteWebPushSubscriptionAsync(string appId, string id, string endpoint, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -2089,6 +2091,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -2107,13 +2114,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -2271,6 +2271,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the topics belong to.</param>
         /// <param name="id">The ID of the topic to delete.</param>
+        /// <returns>Topic deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTopicAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -2529,6 +2530,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the topics belong to.</param>
         /// <param name="id">The ID of the topic to delete.</param>
+        /// <returns>Topic deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTopicAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -2566,6 +2568,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -2584,13 +2591,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -2763,6 +2763,7 @@ namespace Notifo.SDK
         /// Delete the user.
         /// </summary>
         /// <param name="id">The user ID.</param>
+        /// <returns>User deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -3221,6 +3222,7 @@ namespace Notifo.SDK
         /// Delete the user.
         /// </summary>
         /// <param name="id">The user ID.</param>
+        /// <returns>User deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -3257,6 +3259,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -3275,13 +3282,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -3603,6 +3603,7 @@ namespace Notifo.SDK
         /// <remarks>
         /// Can be used to test, if the Squidex API is alive and responding.
         /// </remarks>
+        /// <returns>Service ping successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -3649,6 +3650,7 @@ namespace Notifo.SDK
         /// <remarks>
         /// Can be used to test, if the Squidex API is alive and responding.
         /// </remarks>
+        /// <returns>Service ping successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -3684,6 +3686,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -3702,13 +3709,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -3876,6 +3876,7 @@ namespace Notifo.SDK
         /// Confirms the user notifications for the current user.
         /// </summary>
         /// <param name="request">The request object.</param>
+        /// <returns>Notifications updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task ConfirmMeAsync(TrackNotificationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -4236,6 +4237,7 @@ namespace Notifo.SDK
         /// Confirms the user notifications for the current user.
         /// </summary>
         /// <param name="request">The request object.</param>
+        /// <returns>Notifications updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task ConfirmMeAsync(TrackNotificationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -4278,6 +4280,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -4296,13 +4303,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -4444,6 +4444,7 @@ namespace Notifo.SDK
         /// Register a mobile push token for the current user.
         /// </summary>
         /// <param name="request">The request object.</param>
+        /// <returns>Mobile push token registered.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PostMyTokenAsync(RegisterMobileTokenDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -4452,6 +4453,7 @@ namespace Notifo.SDK
         /// Deletes a mobile push token for the current user.
         /// </summary>
         /// <param name="token">The token to remove.</param>
+        /// <returns>Mobile push token removed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteMyTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -4586,6 +4588,7 @@ namespace Notifo.SDK
         /// Register a mobile push token for the current user.
         /// </summary>
         /// <param name="request">The request object.</param>
+        /// <returns>Mobile push token registered.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostMyTokenAsync(RegisterMobileTokenDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -4628,6 +4631,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -4646,13 +4654,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -4679,6 +4680,7 @@ namespace Notifo.SDK
         /// Deletes a mobile push token for the current user.
         /// </summary>
         /// <param name="token">The token to remove.</param>
+        /// <returns>Mobile push token removed.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteMyTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -4715,6 +4717,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -4733,13 +4740,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -4885,6 +4885,7 @@ namespace Notifo.SDK
         /// Upload a media object.
         /// </summary>
         /// <param name="appId">The app id where the media belongs to.</param>
+        /// <returns>Media uploaded.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task UploadAsync(string appId, FileParameter file = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -4915,6 +4916,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app id where the media belongs to.</param>
         /// <param name="fileName">The file name of the media.</param>
+        /// <returns>Media deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAsync(string appId, string fileName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -5129,6 +5131,7 @@ namespace Notifo.SDK
         /// Upload a media object.
         /// </summary>
         /// <param name="appId">The app id where the media belongs to.</param>
+        /// <returns>Media uploaded.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task UploadAsync(string appId, FileParameter file = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -5178,6 +5181,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 201)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -5196,13 +5204,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -5378,6 +5379,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app id where the media belongs to.</param>
         /// <param name="fileName">The file name of the media.</param>
+        /// <returns>Media deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteAsync(string appId, string fileName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -5415,6 +5417,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -5433,13 +5440,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -6295,6 +6295,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the events belongs to.</param>
         /// <param name="request">The publish request.</param>
+        /// <returns>Events created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PostEventsAsync(string appId, PublishManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -6303,6 +6304,7 @@ namespace Notifo.SDK
         /// Publish an event for the current user.
         /// </summary>
         /// <param name="request">The publish request.</param>
+        /// <returns>Event created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PostMyEventsAsync(PublishDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -6461,6 +6463,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The app where the events belongs to.</param>
         /// <param name="request">The publish request.</param>
+        /// <returns>Events created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostEventsAsync(string appId, PublishManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -6504,6 +6507,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -6522,13 +6530,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -6555,6 +6556,7 @@ namespace Notifo.SDK
         /// Publish an event for the current user.
         /// </summary>
         /// <param name="request">The publish request.</param>
+        /// <returns>Event created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostMyEventsAsync(PublishDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -6597,6 +6599,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -6615,13 +6622,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -6754,6 +6754,7 @@ namespace Notifo.SDK
         /// <summary>
         /// Creates a dump and writes it into storage..
         /// </summary>
+        /// <returns>Dump created successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task GetDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -6761,6 +6762,7 @@ namespace Notifo.SDK
         /// <summary>
         /// Creates a gc dump and writes it into storage.
         /// </summary>
+        /// <returns>Dump created successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task GetGCDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -6804,6 +6806,7 @@ namespace Notifo.SDK
         /// <summary>
         /// Creates a dump and writes it into storage..
         /// </summary>
+        /// <returns>Dump created successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task GetDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -6839,6 +6842,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -6857,13 +6865,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -6889,6 +6890,7 @@ namespace Notifo.SDK
         /// <summary>
         /// Creates a gc dump and writes it into storage.
         /// </summary>
+        /// <returns>Dump created successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task GetGCDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -6924,6 +6926,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -6942,13 +6949,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -7486,6 +7486,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -7495,6 +7496,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
+        /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -7506,6 +7508,7 @@ namespace Notifo.SDK
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -7516,6 +7519,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -8158,6 +8162,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -8202,6 +8207,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -8220,13 +8230,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -8254,6 +8257,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
+        /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -8291,6 +8295,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -8309,13 +8318,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -8345,6 +8347,7 @@ namespace Notifo.SDK
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -8390,6 +8393,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -8408,13 +8416,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -8443,6 +8444,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -8481,6 +8483,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -8499,13 +8506,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -8684,6 +8684,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -8693,6 +8694,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
+        /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -8704,6 +8706,7 @@ namespace Notifo.SDK
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -8714,6 +8717,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -9164,6 +9168,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -9208,6 +9213,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -9226,13 +9236,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -9260,6 +9263,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
+        /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -9297,6 +9301,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -9315,13 +9324,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -9351,6 +9353,7 @@ namespace Notifo.SDK
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -9396,6 +9399,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -9414,13 +9422,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -9449,6 +9450,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -9487,6 +9489,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -9505,13 +9512,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -9690,6 +9690,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -9699,6 +9700,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
+        /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -9710,6 +9712,7 @@ namespace Notifo.SDK
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -9720,6 +9723,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -10170,6 +10174,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -10214,6 +10219,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -10232,13 +10242,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -10266,6 +10269,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
+        /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -10303,6 +10307,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -10321,13 +10330,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -10357,6 +10359,7 @@ namespace Notifo.SDK
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -10402,6 +10405,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -10420,13 +10428,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -10455,6 +10456,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="id">The template ID.</param>
         /// <param name="language">The language.</param>
+        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -10493,6 +10495,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -10511,13 +10518,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -10728,6 +10728,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the integration belong to.</param>
         /// <param name="id">The id of the integration.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>App integration updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task PutIntegrationAsync(string appId, string id, UpdateIntegrationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -10737,6 +10738,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the email templates belong to.</param>
         /// <param name="id">The id of the integration.</param>
+        /// <returns>App integration deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteIntegrationAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
@@ -11550,6 +11552,7 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the integration belong to.</param>
         /// <param name="id">The id of the integration.</param>
         /// <param name="request">The request object.</param>
+        /// <returns>App integration updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutIntegrationAsync(string appId, string id, UpdateIntegrationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -11594,6 +11597,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -11612,13 +11620,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {
@@ -11646,6 +11647,7 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="appId">The id of the app where the email templates belong to.</param>
         /// <param name="id">The id of the integration.</param>
+        /// <returns>App integration deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteIntegrationAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
@@ -11683,6 +11685,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
                         if (status_ == 500)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
@@ -11701,13 +11708,6 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-
-                        if (status_ == 200 || status_ == 204)
-                        {
-
-                            return;
                         }
                         else
                         {

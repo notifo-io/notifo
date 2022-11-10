@@ -206,6 +206,7 @@ public sealed class AppsController : BaseController
     /// <response code="404">App not found.</response>.
     [HttpPut("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PutIntegration(string appId, string id, [FromBody] UpdateIntegrationDto request)
     {
         var update = request.ToUpdate(id);
@@ -224,6 +225,7 @@ public sealed class AppsController : BaseController
     /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteIntegration(string appId, string id)
     {
         var update = new DeleteAppIntegration { Id = id };

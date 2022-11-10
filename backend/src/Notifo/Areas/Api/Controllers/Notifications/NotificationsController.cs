@@ -100,6 +100,7 @@ public sealed class NotificationsController : BaseController
     /// <response code="204">Notifications updated.</response>.
     [HttpPost("api/me/notifications/handled")]
     [AppPermission(NotifoRoles.AppUser)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
     {
         if (request.Confirmed != null)

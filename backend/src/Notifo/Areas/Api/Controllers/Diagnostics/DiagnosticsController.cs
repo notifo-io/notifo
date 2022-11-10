@@ -33,6 +33,7 @@ public sealed class DiagnosticsController : BaseController
     [HttpGet]
     [Route("api/diagnostics/dump")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetDump()
     {
         var success = await dumper.CreateDumpAsync(HttpContext.RequestAborted);
@@ -53,6 +54,7 @@ public sealed class DiagnosticsController : BaseController
     [HttpGet]
     [Route("api/diagnostics/gcdump")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetGCDump()
     {
         var success = await dumper.CreateGCDumpAsync(HttpContext.RequestAborted);
