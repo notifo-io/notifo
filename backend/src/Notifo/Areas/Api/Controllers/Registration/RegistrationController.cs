@@ -16,11 +16,10 @@ using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Registration;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public sealed class RegistrationController : BaseController
 {
     private readonly IUserStore userStore;

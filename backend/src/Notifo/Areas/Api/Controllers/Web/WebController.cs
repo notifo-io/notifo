@@ -15,11 +15,10 @@ using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Web;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public sealed class WebController : BaseController
 {
     private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };

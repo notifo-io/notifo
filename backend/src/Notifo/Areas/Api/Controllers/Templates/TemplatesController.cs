@@ -14,6 +14,7 @@ using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.Templates;
 
+[ApiExplorerSettings(GroupName = "Templates")]
 public sealed class TemplatesController : BaseController
 {
     private readonly ITemplateStore templateStore;
@@ -28,9 +29,7 @@ public sealed class TemplatesController : BaseController
     /// </summary>
     /// <param name="appId">The app where the templates belongs to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Templates returned.
-    /// </returns>
+    /// <response code="200">Templates returned.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/templates/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<TemplateDto>))]
@@ -51,9 +50,7 @@ public sealed class TemplatesController : BaseController
     /// </summary>
     /// <param name="appId">The app where the templates belong to.</param>
     /// <param name="request">The upsert request.</param>
-    /// <returns>
-    /// 200 => Templates upserted.
-    /// </returns>
+    /// <response code="200">Templates upserted.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/templates/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(List<TemplateDto>))]
@@ -78,12 +75,10 @@ public sealed class TemplatesController : BaseController
     /// </summary>
     /// <param name="appId">The app where the templates belong to.</param>
     /// <param name="code">The template code to delete.</param>
-    /// <returns>
-    /// 204 => Template deleted.
-    /// </returns>
+    /// <response code="204">Template deleted.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/templates/{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [Produces(typeof(ListResponseDto<TemplateDto>))]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTemplate(string appId, string code)
     {
         await templateStore.DeleteAsync(appId, code, HttpContext.RequestAborted);

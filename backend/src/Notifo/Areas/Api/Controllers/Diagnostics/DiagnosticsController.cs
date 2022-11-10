@@ -28,13 +28,12 @@ public sealed class DiagnosticsController : BaseController
     /// <summary>
     /// Creates a dump and writes it into storage..
     /// </summary>
-    /// <returns>
-    /// 204 => Dump created successful.
-    /// 501 => Not configured.
-    /// </returns>
+    /// <response code="204">Dump created successful.</response>.
+    /// <response code="501">Not configured.</response>.
     [HttpGet]
     [Route("api/diagnostics/dump")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetDump()
     {
         var success = await dumper.CreateDumpAsync(HttpContext.RequestAborted);
@@ -50,13 +49,12 @@ public sealed class DiagnosticsController : BaseController
     /// <summary>
     /// Creates a gc dump and writes it into storage.
     /// </summary>
-    /// <returns>
-    /// 204 => Dump created successful.
-    /// 501 => Not configured.
-    /// </returns>
+    /// <response code="204">Dump created successful.</response>.
+    /// <response code="501">Not configured.</response>.
     [HttpGet]
     [Route("api/diagnostics/gcdump")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetGCDump()
     {
         var success = await dumper.CreateGCDumpAsync(HttpContext.RequestAborted);

@@ -16,11 +16,10 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Users;
 
-[OpenApiTag("Users")]
+[ApiExplorerSettings(GroupName = "Users")]
 public sealed class UsersController : BaseController
 {
     private readonly IIntegrationManager integrationManager;
@@ -46,10 +45,8 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the users belongs to.</param>
     /// <param name="q">The query object.</param>
     /// <param name="withDetails">Provide extra details, might be expensive.</param>
-    /// <returns>
-    /// 200 => Users returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Users returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<UserDto>))]
@@ -78,10 +75,8 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the user belongs to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="withDetails">Provide extra details, might be expensive.</param>
-    /// <returns>
-    /// 200 => User returned.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="200">User returned.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(UserDto))]
@@ -112,10 +107,8 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the user belongs to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => User subscriptions returned.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="200">User subscriptions returned.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<SubscriptionDto>))]
@@ -137,12 +130,11 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the user belongs to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="request">The subscription object.</param>
-    /// <returns>
-    /// 204 => User subscribed.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="204">User subscribed.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostSubscriptions(string appId, string id, [FromBody] SubscribeManyDto request)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -173,12 +165,11 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the user belongs to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="prefix">The topic prefix.</param>
-    /// <returns>
-    /// 204 => User unsubscribed.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="204">User unsubscribed.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/subscriptions/{*prefix}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubscription(string appId, string id, string prefix)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -198,10 +189,8 @@ public sealed class UsersController : BaseController
     /// </summary>
     /// <param name="appId">The app where the users belong to.</param>
     /// <param name="request">The upsert request.</param>
-    /// <returns>
-    /// 200 => Users upserted.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Users upserted.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/users/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(List<UserDto>))]
@@ -232,12 +221,11 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the users belong to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="request">The upsert request.</param>
-    /// <returns>
-    /// 204 => User updated.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="204">User updated.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/users/{id:notEmpty}/allowed-topics")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostAllowedTopic(string appId, string id, [FromBody] AddAllowedTopicDto request)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -260,12 +248,11 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the users belong to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="prefix">The topic prefix.</param>
-    /// <returns>
-    /// 204 => User updated.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="204">User updated.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/allowed-topics/{*prefix}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteAllowedTopic(string appId, string id, string prefix)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -288,12 +275,11 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the users belong to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="token">The token.</param>
-    /// <returns>
-    /// 204 => User updated.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="204">User updated.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/mobilepush/{token}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteMobilePushToken(string appId, string id, string token)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -316,12 +302,11 @@ public sealed class UsersController : BaseController
     /// <param name="appId">The app where the users belong to.</param>
     /// <param name="id">The user ID.</param>
     /// <param name="endpoint">The endpoint.</param>
-    /// <returns>
-    /// 204 => User updated.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="204">User updated.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}/webpush/{endpoint}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteWebPushSubscription(string appId, string id, string endpoint)
     {
         var user = await userStore.GetAsync(appId, id, HttpContext.RequestAborted);
@@ -343,12 +328,11 @@ public sealed class UsersController : BaseController
     /// </summary>
     /// <param name="appId">The app where the users belongs to.</param>
     /// <param name="id">The user id to delete.</param>
-    /// <returns>
-    /// 204 => User deleted.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">User deleted.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/users/{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUser(string appId, string id)
     {
         await userStore.DeleteAsync(appId, id, HttpContext.RequestAborted);

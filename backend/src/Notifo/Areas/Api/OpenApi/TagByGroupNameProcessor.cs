@@ -5,26 +5,28 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NJsonSchema;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class FixProcessor : IOperationProcessor
+public sealed class TagByGroupNameProcessor : IOperationProcessor
 {
-    private static readonly JsonSchema StringSchema = new JsonSchema { Type = JsonObjectType.String };
-
     public bool Process(OperationProcessorContext context)
     {
-        foreach (var parameter in context.Parameters.Values)
-        {
-            if (parameter.IsRequired && parameter.Schema is { Type: JsonObjectType.String })
-            {
-                parameter.Schema = StringSchema;
-            }
-        }
+        var groupName = context.ControllerType.GetCustomAttribute<ApiExplorerSettingsAttribute>()?.GroupName;
 
-        return true;
+        if (!string.IsNullOrWhiteSpace(groupName))
+        {
+            context.OperationDescription.Operation.Tags = new List<string> { groupName };
+
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

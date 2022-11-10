@@ -9,11 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Tracking;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public sealed class TrackingController : Controller
 {
     private readonly IAppStore appStore;

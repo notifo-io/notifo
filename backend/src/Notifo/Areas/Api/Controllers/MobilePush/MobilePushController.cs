@@ -10,11 +10,10 @@ using Notifo.Areas.Api.Controllers.MobilePush.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.MobilePush;
 
-[OpenApiTag("MobilePush")]
+[ApiExplorerSettings(GroupName = "MobilePush")]
 public sealed class MobilePushController : BaseController
 {
     private readonly IUserStore userStore;
@@ -27,9 +26,7 @@ public sealed class MobilePushController : BaseController
     /// <summary>
     /// Returns the mobile push tokens.
     /// </summary>
-    /// <returns>
-    /// 200 => Mobile push tokens returned.
-    /// </returns>
+    /// <response code="200">Mobile push tokens returned.</response>.
     [HttpGet("api/me/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<MobilePushTokenDto>))]
@@ -54,13 +51,12 @@ public sealed class MobilePushController : BaseController
     /// Register a mobile push token for the current user.
     /// </summary>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Mobile push token registered.
-    /// </returns>
+    /// <response code="204">Mobile push token registered.</response>.
     [HttpPost("api/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush>")]
-    [OpenApiIgnore]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public Task<IActionResult> PostMyTokenOld([FromBody] RegisterMobileTokenDto request)
     {
         return PostMyToken(request);
@@ -70,11 +66,10 @@ public sealed class MobilePushController : BaseController
     /// Register a mobile push token for the current user.
     /// </summary>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Mobile push token registered.
-    /// </returns>
+    /// <response code="204">Mobile push token registered.</response>.
     [HttpPost("api/me/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
     {
         var command = new AddUserMobileToken
@@ -91,13 +86,12 @@ public sealed class MobilePushController : BaseController
     /// Deletes a mobile push token for the current user.
     /// </summary>
     /// <param name="token">The token to remove.</param>
-    /// <returns>
-    /// 204 => Mobile push token removed.
-    /// </returns>
+    /// <response code="204">Mobile push token removed.</response>.
     [HttpDelete("api/mobilepush/{token:notEmpty}")]
     [AppPermission(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
-    [OpenApiIgnore]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public Task<IActionResult> DeleteMyTokenOld(string token)
     {
         return DeleteMyToken(token);
@@ -107,11 +101,10 @@ public sealed class MobilePushController : BaseController
     /// Deletes a mobile push token for the current user.
     /// </summary>
     /// <param name="token">The token to remove.</param>
-    /// <returns>
-    /// 204 => Mobile push token removed.
-    /// </returns>
+    /// <response code="204">Mobile push token removed.</response>.
     [HttpDelete("api/me/mobilepush/{token:notEmpty}")]
     [AppPermission(NotifoRoles.AppUser)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteMyToken(string token)
     {
         var command = new RemoveUserMobileToken

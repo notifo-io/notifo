@@ -11,14 +11,13 @@ using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.Identity;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 using IEmailTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Email.EmailTemplate>;
 
 #pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
-[OpenApiTag("EmailTemplates")]
+[ApiExplorerSettings(GroupName = "EmailTemplates")]
 public class EmailTemplatePreviewController : BaseController
 {
     private readonly IEmailFormatter emailFormatter;
@@ -39,10 +38,8 @@ public class EmailTemplatePreviewController : BaseController
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
-    /// <returns>
-    /// 200 => Channel template preview returned.
-    /// 404 => Channel template not found.
-    /// </returns>
+    /// <response code="200">Channel template preview returned.</response>.
+    /// <response code="404">Channel template not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/email-templates/{id:notEmpty}/preview")]
     [Produces("text/html")]
     [AppPermission(NotifoRoles.AppAdmin)]
@@ -70,10 +67,8 @@ public class EmailTemplatePreviewController : BaseController
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="request">The template to render.</param>
-    /// <returns>
-    /// 200 => Template rendered.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Template rendered.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/email-templates/render")]
     [Produces(typeof(EmailPreviewDto))]
     [AppPermission(NotifoRoles.AppAdmin)]

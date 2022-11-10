@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Xml.Linq;
 using Namotion.Reflection;
 using NJsonSchema;
 using NSwag;
@@ -13,61 +14,64 @@ using NSwag.Generation.Processors.Contexts;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class ErrorDtoProcessor : IDocumentProcessor
+public sealed class ErrorDtoProcessor : IOperationProcessor
 {
-    public void Process(DocumentProcessorContext context)
+    public bool Process(OperationProcessorContext context)
     {
-        var errorSchema = GetErrorSchema(context);
+        var operation = context.OperationDescription.Operation;
 
-        foreach (var operation in context.Document.Paths.Values.SelectMany(x => x.Values))
+        void AddResponse(string code, string description)
         {
-            AddErrorResponses(operation, errorSchema);
-
-            CleanupResponses(operation);
-        }
-    }
-
-    private static void AddErrorResponses(OpenApiOperation operation, JsonSchema errorSchema)
-    {
-        operation.Responses.Add("500", new OpenApiResponse
-        {
-            Description = "Operation failed"
-        });
-
-        if (!operation.Responses.ContainsKey("400"))
-        {
-            operation.Responses.Add("400", new OpenApiResponse
+            if (!IsErrorCode(code))
             {
-                Description = "Validation error"
-            });
+                return;
+            }
+
+            if (!operation.Responses.ContainsKey(code))
+            {
+                operation.Responses.Add(code, new OpenApiResponse
+                {
+                    Description = description
+                });
+            }
+        }
+
+        AddResponse("500", "Operation failed.");
+        AddResponse("400", "Validation error.");
+
+        var responses =
+            context.MethodInfo.GetXmlDocsElement(null)?
+                .Nodes()
+                .OfType<XElement>()
+                .Where(x => x.Name == "response")
+                .Where(x => x.Attribute("code") != null)
+                ?? Enumerable.Empty<XElement>();
+
+        foreach (var response in responses)
+        {
+            AddResponse(response.Attribute("code")!.Value, response.Value);
         }
 
         foreach (var (code, response) in operation.Responses)
         {
             if (response.Schema == null)
             {
-                if (!code.StartsWith("2", StringComparison.OrdinalIgnoreCase) && code != "404")
+                if (IsErrorCode(code) && code != "404")
                 {
-                    response.Schema = errorSchema;
+                    response.Schema = GetErrorSchema(context);
                 }
             }
         }
+
+        return true;
     }
 
-    private static void CleanupResponses(OpenApiOperation operation)
+    private static bool IsErrorCode(string code)
     {
-        foreach (var (code, response) in operation.Responses.ToList())
-        {
-            if (string.IsNullOrWhiteSpace(response.Description) ||
-                response.Description?.Contains("=&gt;", StringComparison.OrdinalIgnoreCase) == true ||
-                response.Description?.Contains("=>", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                operation.Responses.Remove(code);
-            }
-        }
+        return !code.StartsWith("2", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static JsonSchema GetErrorSchema(DocumentProcessorContext context)
+    private static JsonSchema GetErrorSchema(OperationProcessorContext context)
     {
         var errorType = typeof(ErrorDto).ToContextualType();
 

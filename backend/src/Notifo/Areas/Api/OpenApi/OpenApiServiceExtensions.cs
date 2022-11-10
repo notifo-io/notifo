@@ -10,7 +10,6 @@ using NJsonSchema.Generation.TypeMappers;
 using NodaTime;
 using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain;
-using NSwag.Generation;
 using NSwag.Generation.Processors;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -19,44 +18,30 @@ public static class OpenApiServiceExtensions
 {
     public static void AddMyOpenApi(this IServiceCollection services)
     {
-        services.AddSingletonAs<ErrorDtoProcessor>()
-            .As<IDocumentProcessor>();
-
         services.AddSingletonAs<CommonProcessor>()
             .As<IDocumentProcessor>();
 
-        services.AddSingletonAs<XmlTagProcessor>()
+        services.AddSingletonAs<TagXmlProcessor>()
             .As<IDocumentProcessor>();
 
-        services.AddSingletonAs<FixProcessor>()
+        services.AddSingletonAs<TagByGroupNameProcessor>()
             .As<IOperationProcessor>();
 
-        services.AddSingletonAs<XmlResponseTypesProcessor>()
+        services.AddSingletonAs<ErrorDtoProcessor>()
             .As<IOperationProcessor>();
 
         services.AddOpenApiDocument(settings =>
         {
             settings.AllowReferencesWithProperties = true;
 
-            settings.ConfigureName();
-            settings.ConfigureSchemaSettings();
+            settings.TypeMappers = new List<ITypeMapper>
+            {
+                CreateStringMap<Instant>(JsonFormatStrings.DateTime),
+                CreateStringMap<TopicId>()
+            };
 
             settings.ReflectionService = new ReflectionServices();
         });
-    }
-
-    public static void ConfigureName<T>(this T settings) where T : OpenApiDocumentGeneratorSettings
-    {
-        settings.Title = "Notifo API";
-    }
-
-    public static void ConfigureSchemaSettings<T>(this T settings) where T : OpenApiDocumentGeneratorSettings
-    {
-        settings.TypeMappers = new List<ITypeMapper>
-        {
-            CreateStringMap<Instant>(JsonFormatStrings.DateTime),
-            CreateStringMap<TopicId>()
-        };
     }
 
     private static ITypeMapper CreateStringMap<T>(string? format = null)

@@ -10,11 +10,10 @@ using Notifo.Areas.Api.Controllers.WebPush.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Users;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.WebPush;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public sealed class WebPushController : BaseController
 {
     private readonly IUserStore userStore;

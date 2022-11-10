@@ -11,14 +11,13 @@ using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
-using NSwag.Annotations;
 using Squidex.Assets;
 
 #pragma warning disable SA1119 // Statement should not use unnecessary parenthesis
 
 namespace Notifo.Areas.Api.Controllers.Media;
 
-[OpenApiTag("Media")]
+[ApiExplorerSettings(GroupName = "Media")]
 public sealed class MediaProxyController : MediaBaseController
 {
     private static readonly HashSet<string> SafeHeaders = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -45,10 +44,8 @@ public sealed class MediaProxyController : MediaBaseController
     /// </summary>
     /// <param name="url">The app id where the media belongs to.</param>
     /// <param name="query">Additional query parameters.</param>
-    /// <returns>
-    /// 200 => Media returned.
-    /// 404 => Media or app not found.
-    /// </returns>
+    /// <response code="200">Media returned.</response>.
+    /// <response code="404">Media or app not found.</response>.
     [HttpGet("api/assets/proxy")]
     [AllowAnonymous]
     public async Task<IActionResult> ProxyImage([FromQuery] string url, [FromQuery] MediaFileQueryDto? query = null)

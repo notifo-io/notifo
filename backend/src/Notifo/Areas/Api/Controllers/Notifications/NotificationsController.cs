@@ -11,11 +11,10 @@ using Notifo.Domain;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Notifications;
 
-[OpenApiTag("Notifications")]
+[ApiExplorerSettings(GroupName = "Notifications")]
 public sealed class NotificationsController : BaseController
 {
     private static readonly UserNotificationQuery ArchiveQuery = new UserNotificationQuery { Take = 100, Scope = UserNotificationQueryScope.Deleted };
@@ -36,10 +35,8 @@ public sealed class NotificationsController : BaseController
     /// <param name="appId">The app where the user belongs to.</param>
     /// <param name="id">The user id.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => User notifications returned.
-    /// 404 => User or app not found.
-    /// </returns>
+    /// <response code="200">User notifications returned.</response>.
+    /// <response code="404">User or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/users/{id:notEmpty}/notifications")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
@@ -59,9 +56,7 @@ public sealed class NotificationsController : BaseController
     /// Query user notifications of the current user.
     /// </summary>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Notifications returned.
-    /// </returns>
+    /// <response code="200">Notifications returned.</response>.
     [HttpGet]
     [Route("api/me/notifications")]
     [AppPermission(NotifoRoles.AppUser)]
@@ -81,9 +76,7 @@ public sealed class NotificationsController : BaseController
     /// <summary>
     /// Query archhived user notifications of the current user.
     /// </summary>
-    /// <returns>
-    /// 200 => Notifications returned.
-    /// </returns>
+    /// <response code="200">Notifications returned.</response>.
     [HttpGet]
     [Route("api/me/notifications/archive")]
     [AppPermission(NotifoRoles.AppUser)]
@@ -104,11 +97,10 @@ public sealed class NotificationsController : BaseController
     /// Confirms the user notifications for the current user.
     /// </summary>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Notifications updated.
-    /// </returns>
+    /// <response code="204">Notifications updated.</response>.
     [HttpPost("api/me/notifications/handled")]
     [AppPermission(NotifoRoles.AppUser)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ConfirmMe([FromBody] TrackNotificationDto request)
     {
         if (request.Confirmed != null)

@@ -12,13 +12,12 @@ using Notifo.Domain.Identity;
 using Notifo.Domain.Media;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 using Squidex.Assets;
 using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Controllers.Media;
 
-[OpenApiTag("Media")]
+[ApiExplorerSettings(GroupName = "Media")]
 public sealed class MediaController : MediaBaseController
 {
     private readonly IMediaStore mediaStore;
@@ -43,10 +42,8 @@ public sealed class MediaController : MediaBaseController
     /// </summary>
     /// <param name="appId">The app where the media belongs to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Media returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Media returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/media/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<MediaDto>))]
@@ -68,10 +65,8 @@ public sealed class MediaController : MediaBaseController
     /// <param name="appId">The app id where the media belongs to.</param>
     /// <param name="fileName">The name of the media to download.</param>
     /// <param name="query">Additional query parameters.</param>
-    /// <returns>
-    /// 200 => Media returned.
-    /// 404 => Media or app not found.
-    /// </returns>
+    /// <response code="200">Media returned.</response>.
+    /// <response code="404">Media or app not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/media/{fileName:notEmpty}")]
     [HttpGet("api/asset/{appId:notEmpty}/{fileName:notEmpty}")]
     [HttpGet("api/assets/{appId:notEmpty}/{fileName:notEmpty}")]
@@ -112,12 +107,11 @@ public sealed class MediaController : MediaBaseController
     /// </summary>
     /// <param name="appId">The app id where the media belongs to.</param>
     /// <param name="file">The file to upload.</param>
-    /// <returns>
-    /// 201 => Media uploaded.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="201">Media uploaded.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/media/")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> Upload(string appId, IFormFile file)
     {
         var assetFile = CreateFile(file);
@@ -132,12 +126,11 @@ public sealed class MediaController : MediaBaseController
     /// </summary>
     /// <param name="appId">The app id where the media belongs to.</param>
     /// <param name="fileName">The file name of the media.</param>
-    /// <returns>
-    /// 204 => Media deleted.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">Media deleted.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/media/{fileName:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(string appId, string fileName)
     {
         await mediaStore.DeleteAsync(appId, fileName, HttpContext.RequestAborted);

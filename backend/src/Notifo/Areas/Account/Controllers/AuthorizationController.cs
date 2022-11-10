@@ -13,14 +13,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Notifo.Identity;
 using Notifo.Infrastructure;
-using NSwag.Annotations;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Notifo.Areas.Account.Controllers;
 
-[OpenApiIgnore]
+[ApiExplorerSettings(IgnoreApi = true)]
 public class AuthorizationController : ControllerBase<AuthorizationController>
 {
     private readonly IOpenIddictScopeManager scopeManager;

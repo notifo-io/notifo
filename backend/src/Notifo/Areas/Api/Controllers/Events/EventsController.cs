@@ -12,11 +12,10 @@ using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Events;
 
-[OpenApiTag("Events")]
+[ApiExplorerSettings(GroupName = "Events")]
 public sealed class EventsController : BaseController
 {
     private readonly IEventStore eventStore;
@@ -35,10 +34,8 @@ public sealed class EventsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the events belongs to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Events returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Events returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/events/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<EventDto>))]
@@ -59,12 +56,11 @@ public sealed class EventsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the events belongs to.</param>
     /// <param name="request">The publish request.</param>
-    /// <returns>
-    /// 204 => Events created.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">Events created.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/events/")]
     [AppPermission(NotifoRoles.AppAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
     {
         if (request.Requests?.Length > 100)
@@ -86,12 +82,11 @@ public sealed class EventsController : BaseController
     /// Publish an event for the current user.
     /// </summary>
     /// <param name="request">The publish request.</param>
-    /// <returns>
-    /// 204 => Event created.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">Event created.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/me/events/")]
     [AppPermission(NotifoRoles.AppUser)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMyEvents([FromBody] PublishDto request)
     {
         var @event = request.ToEvent(App.Id, $"users/{UserId}");

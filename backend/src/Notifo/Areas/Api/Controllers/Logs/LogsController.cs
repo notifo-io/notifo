@@ -10,11 +10,10 @@ using Notifo.Areas.Api.Controllers.Logs.Dtos;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Log;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.Logs;
 
-[OpenApiTag("Logs")]
+[ApiExplorerSettings(GroupName = "Logs")]
 public class LogsController : BaseController
 {
     private readonly ILogStore logStore;
@@ -29,10 +28,8 @@ public class LogsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the log entries belongs to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Log entries returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Log entries returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/logs/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<LogEntryDto>))]

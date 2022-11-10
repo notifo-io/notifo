@@ -9,12 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
 [Route("api/apps/{appId:notEmpty}/sms-templates")]
-[OpenApiTag("SmsTemplates")]
+[ApiExplorerSettings(GroupName = "SmsTemplates")]
 public sealed class SmsTemplatesController : ChannelTemplatesController<SmsTemplate, SmsTemplateDto>
 {
     public SmsTemplatesController(IChannelTemplateStore<SmsTemplate> channelTemplateStore)

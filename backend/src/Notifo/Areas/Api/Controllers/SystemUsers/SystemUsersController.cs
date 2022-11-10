@@ -12,11 +12,10 @@ using Notifo.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
-using NSwag.Annotations;
 
 namespace Notifo.Areas.Api.Controllers.SystemUsers;
 
-[OpenApiTags("SystemUsers")]
+[ApiExplorerSettings(GroupName = "SystemUsers")]
 public sealed class SystemUsersController : BaseController
 {
     private readonly IUserService userService;
@@ -30,9 +29,7 @@ public sealed class SystemUsersController : BaseController
     /// Query users.
     /// </summary>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Users returned.
-    /// </returns>
+    /// <response code="200">Users returned.</response>.
     [HttpGet("api/system-users/")]
     [Produces(typeof(ListResponseDto<SystemUserDto>))]
     [AppPermission(NotifoRoles.HostAdmin)]
@@ -52,10 +49,8 @@ public sealed class SystemUsersController : BaseController
     /// Get a user.
     /// </summary>
     /// <param name="id">The user ID.</param>
-    /// <returns>
-    /// 200 => User returned.
-    /// 404 => User not found.
-    /// </returns>
+    /// <response code="200">User returned.</response>.
+    /// <response code="404">User not found.</response>.
     [HttpGet("api/system-users/{id:notEmpty}/")]
     [Produces(typeof(SystemUserDto))]
     [AppPermission(NotifoRoles.HostAdmin)]
@@ -77,9 +72,7 @@ public sealed class SystemUsersController : BaseController
     /// Create a user.
     /// </summary>
     /// <param name="request">The create request.</param>
-    /// <returns>
-    /// 201 => User created.
-    /// </returns>
+    /// <response code="201">User created.</response>.
     [HttpPost("api/system-users/")]
     [ProducesResponseType(typeof(SystemUserDto), StatusCodes.Status201Created)]
     [AppPermission(NotifoRoles.HostAdmin)]
@@ -97,10 +90,8 @@ public sealed class SystemUsersController : BaseController
     /// </summary>
     /// <param name="id">The user ID.</param>
     /// <param name="request">The update request.</param>
-    /// <returns>
-    /// 200 => User updated.
-    /// 403 => User cannot be updated.
-    /// </returns>
+    /// <response code="200">User updated.</response>.
+    /// <response code="403">User cannot be updated.</response>.
     [HttpPut("api/system-users/{id:notEmpty}/")]
     [Produces(typeof(SystemUserDto))]
     [AppPermission(NotifoRoles.HostAdmin)]
@@ -122,10 +113,8 @@ public sealed class SystemUsersController : BaseController
     /// Lock the user.
     /// </summary>
     /// <param name="id">The user ID.</param>
-    /// <returns>
-    /// 200 => User locked.
-    /// 403 => User cannot be locked.
-    /// </returns>
+    /// <response code="200">User locked.</response>.
+    /// <response code="403">User cannot be locked.</response>.
     [HttpPut("api/system-users/{id:notEmpty}/lock/")]
     [Produces(typeof(SystemUserDto))]
     [AppPermission(NotifoRoles.HostAdmin)]
@@ -147,10 +136,8 @@ public sealed class SystemUsersController : BaseController
     /// Unlock the user.
     /// </summary>
     /// <param name="id">The user ID.</param>
-    /// <returns>
-    /// 200 => User unlocked.
-    /// 403 => User cannot be unlocked.
-    /// </returns>
+    /// <response code="200">User unlocked.</response>.
+    /// <response code="403">User cannot be unlocked.</response>.
     [HttpPut("api/system-users/{id:notEmpty}/unlock/")]
     [ProducesResponseType(typeof(SystemUserDto), 200)]
     [AppPermission(NotifoRoles.HostAdmin)]
@@ -172,12 +159,11 @@ public sealed class SystemUsersController : BaseController
     /// Delete the user.
     /// </summary>
     /// <param name="id">The user ID.</param>
-    /// <returns>
-    /// 204 => User deleted.
-    /// 403 => User cannot be deleted.
-    /// </returns>
+    /// <response code="204">User deleted.</response>.
+    /// <response code="403">User cannot be deleted.</response>.
     [HttpDelete("api/system-users/{id:notEmpty}/")]
     [AppPermission(NotifoRoles.HostAdmin)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUser(string id)
     {
         if (IsUser(id))
