@@ -16,16 +16,13 @@ public sealed class CommonProcessor : IDocumentProcessor
     {
         context.Document.Info.Title = "Notifo API";
         context.Document.BasePath = "/api";
-
-        var logo = new
-        {
-            url = "/logo.svg"
-        };
-
         context.Document.Info.Version = "1.0.0";
         context.Document.Info.ExtensionData = new Dictionary<string, object>
         {
-            ["x-logo"] = logo
+            ["x-logo"] = new
+            {
+                url = "/logo.svg"
+            }
         };
     }
 }
