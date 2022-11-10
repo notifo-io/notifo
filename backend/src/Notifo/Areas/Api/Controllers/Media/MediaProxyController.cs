@@ -44,10 +44,8 @@ public sealed class MediaProxyController : MediaBaseController
     /// </summary>
     /// <param name="url">The app id where the media belongs to.</param>
     /// <param name="query">Additional query parameters.</param>
-    /// <returns>
-    /// 200 => Media returned.
-    /// 404 => Media or app not found.
-    /// </returns>
+    /// <response code="200">Media returned.</response>.
+    /// <response code="404">Media or app not found.</response>.
     [HttpGet("api/assets/proxy")]
     [AllowAnonymous]
     public async Task<IActionResult> ProxyImage([FromQuery] string url, [FromQuery] MediaFileQueryDto? query = null)

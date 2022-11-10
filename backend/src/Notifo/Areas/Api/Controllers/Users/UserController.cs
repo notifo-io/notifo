@@ -33,9 +33,7 @@ public class UserController : BaseController
     /// <summary>
     /// Get the current user.
     /// </summary>
-    /// <returns>
-    /// 200 => User returned.
-    /// </returns>
+    /// <response code="200">User returned.</response>.
     [HttpGet("api/me")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ProfileDto))]
@@ -52,9 +50,7 @@ public class UserController : BaseController
     /// Update the user.
     /// </summary>
     /// <param name="request">The upsert request.</param>
-    /// <returns>
-    /// 200 => Users upserted.
-    /// </returns>
+    /// <response code="200">Users upserted.</response>.
     [HttpPost("api/me")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ProfileDto))]
@@ -73,9 +69,7 @@ public class UserController : BaseController
     /// Query the user topics.
     /// </summary>
     /// <param name="language">The optional language.</param>
-    /// <returns>
-    /// 200 => User subscriptions returned.
-    /// </returns>
+    /// <response code="200">User subscriptions returned.</response>.
     [HttpGet("api/me/topics")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(UserTopicDto[]))]
@@ -92,9 +86,7 @@ public class UserController : BaseController
     /// Query the user subscriptions.
     /// </summary>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => User subscriptions returned.
-    /// </returns>
+    /// <response code="200">User subscriptions returned.</response>.
     [HttpGet("api/me/subscriptions")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<SubscriptionDto>))]
@@ -114,10 +106,8 @@ public class UserController : BaseController
     /// Gets a user subscription.
     /// </summary>
     /// <param name="topic">The topic path.</param>
-    /// <returns>
-    /// 200 => Subscription exists.
-    /// 404 => Subscription does not exist.
-    /// </returns>
+    /// <response code="200">Subscription exists.</response>.
+    /// <response code="404">Subscription does not exist.</response>.
     /// <remarks>
     /// User Id and App Id are resolved using the API token.
     /// </remarks>
@@ -142,9 +132,7 @@ public class UserController : BaseController
     /// Upserts or deletes my subscriptions.
     /// </summary>
     /// <param name="request">The subscription settings.</param>
-    /// <returns>
-    /// 204 => User subscribed.
-    /// </returns>
+    /// <response code="204">User subscribed.</response>.
     /// <remarks>
     /// User Id and App Id are resolved using the API token.
     /// </remarks>
@@ -172,9 +160,7 @@ public class UserController : BaseController
     /// Remove my subscription.
     /// </summary>
     /// <param name="prefix">The topic prefix.</param>
-    /// <returns>
-    /// 204 => User unsubscribed.
-    /// </returns>
+    /// <response code="204">User unsubscribed.</response>.
     /// <remarks>
     /// User Id and App Id are resolved using the API token.
     /// </remarks>

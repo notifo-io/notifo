@@ -26,9 +26,7 @@ public sealed class MobilePushController : BaseController
     /// <summary>
     /// Returns the mobile push tokens.
     /// </summary>
-    /// <returns>
-    /// 200 => Mobile push tokens returned.
-    /// </returns>
+    /// <response code="200">Mobile push tokens returned.</response>.
     [HttpGet("api/me/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<MobilePushTokenDto>))]
@@ -53,9 +51,7 @@ public sealed class MobilePushController : BaseController
     /// Register a mobile push token for the current user.
     /// </summary>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Mobile push token registered.
-    /// </returns>
+    /// <response code="204">Mobile push token registered.</response>.
     [HttpPost("api/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush>")]
@@ -69,9 +65,7 @@ public sealed class MobilePushController : BaseController
     /// Register a mobile push token for the current user.
     /// </summary>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Mobile push token registered.
-    /// </returns>
+    /// <response code="204">Mobile push token registered.</response>.
     [HttpPost("api/me/mobilepush")]
     [AppPermission(NotifoRoles.AppUser)]
     public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
@@ -90,9 +84,7 @@ public sealed class MobilePushController : BaseController
     /// Deletes a mobile push token for the current user.
     /// </summary>
     /// <param name="token">The token to remove.</param>
-    /// <returns>
-    /// 204 => Mobile push token removed.
-    /// </returns>
+    /// <response code="204">Mobile push token removed.</response>.
     [HttpDelete("api/mobilepush/{token:notEmpty}")]
     [AppPermission(NotifoRoles.AppUser)]
     [Obsolete("Use new endpoint <api/me/mobilepush/{token:notEmpty}>")]
@@ -106,9 +98,7 @@ public sealed class MobilePushController : BaseController
     /// Deletes a mobile push token for the current user.
     /// </summary>
     /// <param name="token">The token to remove.</param>
-    /// <returns>
-    /// 204 => Mobile push token removed.
-    /// </returns>
+    /// <response code="204">Mobile push token removed.</response>.
     [HttpDelete("api/me/mobilepush/{token:notEmpty}")]
     [AppPermission(NotifoRoles.AppUser)]
     public async Task<IActionResult> DeleteMyToken(string token)

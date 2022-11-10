@@ -17,9 +17,7 @@ public class ConfigsController : BaseController
     /// <summary>
     /// Get all supported timezones.
     /// </summary>
-    /// <returns>
-    /// 200 => Timezones returned.
-    /// </returns>
+    /// <response code="200">Timezones returned.</response>.
     [HttpGet("api/timezones")]
     [Produces(typeof(string[]))]
     public IActionResult GetTimezones()
@@ -32,9 +30,7 @@ public class ConfigsController : BaseController
     /// <summary>
     /// Get all supported languages.
     /// </summary>
-    /// <returns>
-    /// 200 => Languages returned.
-    /// </returns>
+    /// <response code="200">Languages returned.</response>.
     [HttpGet("api/languages")]
     [Produces(typeof(string[]))]
     public IActionResult GetLanguages()

@@ -34,10 +34,8 @@ public sealed class EventsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the events belongs to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Events returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Events returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/events/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<EventDto>))]
@@ -58,10 +56,8 @@ public sealed class EventsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the events belongs to.</param>
     /// <param name="request">The publish request.</param>
-    /// <returns>
-    /// 204 => Events created.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">Events created.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/events/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> PostEvents(string appId, [FromBody] PublishManyDto request)
@@ -85,10 +81,8 @@ public sealed class EventsController : BaseController
     /// Publish an event for the current user.
     /// </summary>
     /// <param name="request">The publish request.</param>
-    /// <returns>
-    /// 204 => Event created.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">Event created.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/me/events/")]
     [AppPermission(NotifoRoles.AppUser)]
     public async Task<IActionResult> PostMyEvents([FromBody] PublishDto request)

@@ -24,11 +24,8 @@ public static class OpenApiServiceExtensions
         services.AddSingletonAs<CommonProcessor>()
             .As<IDocumentProcessor>();
 
-        services.AddSingletonAs<XmlTagProcessor>()
+        services.AddSingletonAs<TagXmlProcessor>()
             .As<IDocumentProcessor>();
-
-        services.AddSingletonAs<XmlResponseTypesProcessor>()
-            .As<IOperationProcessor>();
 
         services.AddSingletonAs<TagByGroupNameProcessor>()
             .As<IOperationProcessor>();

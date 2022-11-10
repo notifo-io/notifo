@@ -34,9 +34,7 @@ public sealed class AppsController : BaseController
     /// <summary>
     /// Get the user apps.
     /// </summary>
-    /// <returns>
-    /// 200 => Apps returned.
-    /// </returns>
+    /// <response code="200">Apps returned.</response>.
     [HttpGet("api/apps")]
     [AppPermission]
     [Produces(typeof(List<AppDto>))]
@@ -60,10 +58,8 @@ public sealed class AppsController : BaseController
     /// Get app by id.
     /// </summary>
     /// <param name="appId">The id of the app.</param>
-    /// <returns>
-    /// 200 => Apps returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Apps returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
@@ -78,9 +74,7 @@ public sealed class AppsController : BaseController
     /// Create an app.
     /// </summary>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 200 => App created.
-    /// </returns>
+    /// <response code="200">App created.</response>.
     [HttpPost("api/apps/")]
     [AppPermission]
     [Produces(typeof(AppDto))]
@@ -107,10 +101,8 @@ public sealed class AppsController : BaseController
     /// </summary>
     /// <param name="appId">The app id to update.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 200 => App updated.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">App updated.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
@@ -130,10 +122,8 @@ public sealed class AppsController : BaseController
     /// </summary>
     /// <param name="appId">The id of the app.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 200 => Apps returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Apps returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/contributors")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
@@ -153,10 +143,8 @@ public sealed class AppsController : BaseController
     /// </summary>
     /// <param name="appId">The id of the app.</param>
     /// <param name="contributorId">The contributor to remove.</param>
-    /// <returns>
-    /// 200 => Apps returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Apps returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/contributors/{contributorId:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(AppDetailsDto))]
@@ -175,10 +163,8 @@ public sealed class AppsController : BaseController
     /// Get the app integrations.
     /// </summary>
     /// <param name="appId">The id of the app where the integrations belong to.</param>
-    /// <returns>
-    /// 200 => App email templates returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">App email templates returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/integrations")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ConfiguredIntegrationsDto))]
@@ -194,10 +180,8 @@ public sealed class AppsController : BaseController
     /// </summary>
     /// <param name="appId">The id of the app where the integration belong to.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 200 => App integration created.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">App integration created.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/integration/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(IntegrationCreatedDto))]
@@ -218,10 +202,8 @@ public sealed class AppsController : BaseController
     /// <param name="appId">The id of the app where the integration belong to.</param>
     /// <param name="id">The id of the integration.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => App integration updated.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">App integration updated.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPut("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> PutIntegration(string appId, string id, [FromBody] UpdateIntegrationDto request)
@@ -238,10 +220,8 @@ public sealed class AppsController : BaseController
     /// </summary>
     /// <param name="appId">The id of the app where the email templates belong to.</param>
     /// <param name="id">The id of the integration.</param>
-    /// <returns>
-    /// 204 => App integration deleted.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="204">App integration deleted.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/integrations/{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> DeleteIntegration(string appId, string id)

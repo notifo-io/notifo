@@ -13,7 +13,7 @@ using NSwag.Generation.Processors.Contexts;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class XmlTagProcessor : IDocumentProcessor
+public sealed class TagXmlProcessor : IDocumentProcessor
 {
     public void Process(DocumentProcessorContext context)
     {

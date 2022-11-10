@@ -29,10 +29,8 @@ public sealed class TopicsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the topics belongs to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Topics returned.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Topics returned.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpGet("api/apps/{appId:notEmpty}/topics/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<TopicDto>))]
@@ -53,9 +51,7 @@ public sealed class TopicsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the topics belong to.</param>
     /// <param name="request">The upsert request.</param>
-    /// <returns>
-    /// 200 => Named topics upserted.
-    /// </returns>
+    /// <response code="200">Named topics upserted.</response>.
     [HttpPost("api/apps/{appId:notEmpty}/topics/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(List<TopicDto>))]
@@ -80,9 +76,7 @@ public sealed class TopicsController : BaseController
     /// </summary>
     /// <param name="appId">The app where the topics belong to.</param>
     /// <param name="id">The ID of the topic to delete.</param>
-    /// <returns>
-    /// 204 => Topic deleted.
-    /// </returns>
+    /// <response code="204">Topic deleted.</response>.
     [HttpDelete("api/apps/{appId:notEmpty}/topics/{*id}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<TopicDto>))]

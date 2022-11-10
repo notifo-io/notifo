@@ -29,10 +29,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="q">The query object.</param>
-    /// <returns>
-    /// 200 => Channel templates returned.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="200">Channel templates returned.</response>.
+    /// <response code="404">Channel template or app not found.</response>.
     [HttpGet]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<ListResponseDto<ChannelTemplateDto>> GetTemplates(string appId, [FromQuery] QueryDto q)
@@ -52,10 +50,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
-    /// <returns>
-    /// 200 => Channel templates returned.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="200">Channel templates returned.</response>.
+    /// <response code="404">Channel template or app not found.</response>
     [HttpGet("{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<ChannelTemplateDetailsDto<TDto>> GetTemplate(string appId, string id)
@@ -75,10 +71,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 200 => Channel template created.
-    /// 404 => App not found.
-    /// </returns>
+    /// <response code="200">Channel template created.</response>.
+    /// <response code="404">App not found.</response>.
     [HttpPost]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<ChannelTemplateDetailsDto<TDto>> PostTemplate(string appId, [FromBody] CreateChannelTemplateDto request)
@@ -96,10 +90,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 200 => Channel template created.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="200">Channel template created.</response>.
+    /// <response code="404">Channel template or app not found.</response>.
     [HttpPost("{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<TDto> PostTemplateLanguage(string appId, string id, [FromBody] CreateChannelTemplateLanguageDto request)
@@ -117,10 +109,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Channel template updated.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="204">Channel template updated.</response>.
+    /// <response code="404">Channel template or app not found.</response>.
     [HttpPut("{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> PutTemplate(string appId, string id, [FromBody] UpdateChannelTemplateDto<TDto> request)
@@ -139,10 +129,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <param name="id">The template ID.</param>
     /// <param name="language">The language.</param>
     /// <param name="request">The request object.</param>
-    /// <returns>
-    /// 204 => Channel template updated.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="204">Channel template updated.</response>.
+    /// <response code="404">Channel template or app not found.</response>.
     [HttpPut("{id:notEmpty}/{language:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> PutTemplateLanguage(string appId, string id, string language, [FromBody] TDto request)
@@ -160,10 +148,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
     /// <param name="language">The language.</param>
-    /// <returns>
-    /// 204 => Channel template updated.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="204">Channel template updated.</response>.
+    /// <response code="404">Channel template or app not found.</response>.
     [HttpDelete("{id:notEmpty}/{language:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> DeleteTemplateLanguage(string appId, string id, string language)
@@ -180,10 +166,8 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
     /// <param name="id">The template ID.</param>
-    /// <returns>
-    /// 204 => Channel template deleted.
-    /// 404 => Channel template or app not found.
-    /// </returns>
+    /// <response code="204">Channel template deleted.</response>.
+    /// <response code="404">Channel template or app not found.</response>.
     [HttpDelete("{id:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<IActionResult> DeleteTemplate(string appId, string id)
