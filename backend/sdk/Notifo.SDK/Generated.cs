@@ -189,7 +189,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -199,7 +199,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -287,7 +287,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -297,7 +297,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -383,7 +383,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -393,7 +393,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -494,7 +494,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -504,7 +504,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -589,7 +589,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -599,7 +599,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -684,7 +684,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -694,7 +694,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Subscription does not exist.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -774,7 +780,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -784,7 +790,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -1153,7 +1159,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1163,7 +1169,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1253,7 +1265,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1263,7 +1275,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1353,7 +1371,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1363,7 +1381,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1441,7 +1465,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1451,7 +1475,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1551,7 +1581,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1561,7 +1591,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1647,7 +1683,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1657,7 +1693,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1737,7 +1779,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1747,7 +1789,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1833,7 +1881,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1843,7 +1891,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -1923,7 +1977,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -1933,7 +1987,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -2013,7 +2073,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -2023,7 +2083,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -2103,7 +2169,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -2113,7 +2179,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -2392,7 +2464,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -2402,7 +2474,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -2492,7 +2570,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -2502,7 +2580,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -2580,7 +2658,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -2590,7 +2668,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -2895,7 +2973,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -2905,7 +2983,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -2993,7 +3071,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3003,7 +3081,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -3085,7 +3163,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3095,7 +3173,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -3185,7 +3269,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3195,7 +3279,17 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("User cannot be updated.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -3271,7 +3365,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3281,7 +3375,17 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("User cannot be deleted.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -3364,7 +3468,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3374,7 +3478,17 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("User cannot be locked.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -3457,7 +3571,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3467,7 +3581,17 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 403)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("User cannot be unlocked.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -3698,7 +3822,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -3708,7 +3832,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -3999,7 +4123,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4009,7 +4133,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -4110,7 +4240,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4120,7 +4250,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -4200,7 +4330,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4210,7 +4340,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -4292,7 +4422,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4302,7 +4432,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -4551,7 +4681,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4561,7 +4691,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -4643,7 +4773,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4653,7 +4783,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -4729,7 +4859,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -4739,7 +4869,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -5094,7 +5224,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5104,7 +5234,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -5193,7 +5329,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5203,7 +5339,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -5341,7 +5483,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5351,7 +5493,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Media or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -5429,7 +5577,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5439,7 +5587,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -5577,7 +5731,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5587,7 +5741,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Media or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -5725,7 +5885,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5735,7 +5895,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Media or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -5874,7 +6040,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -5884,7 +6050,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Media or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -6137,7 +6309,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -6147,7 +6319,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -6425,7 +6603,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -6435,7 +6613,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -6519,7 +6703,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -6529,7 +6713,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -6611,7 +6801,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -6621,7 +6811,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -6854,7 +7050,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -6864,7 +7060,17 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 501)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Not configured.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -6938,7 +7144,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -6948,7 +7154,17 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 501)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Not configured.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -7187,7 +7403,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -7197,7 +7413,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -7277,7 +7493,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -7287,7 +7503,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -7619,7 +7835,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -7629,7 +7845,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -7719,7 +7941,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -7729,7 +7951,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -7827,7 +8055,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -7837,7 +8065,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -7927,7 +8161,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -7937,7 +8171,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8021,7 +8261,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8031,7 +8271,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8123,7 +8369,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8133,7 +8379,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8219,7 +8471,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8229,7 +8481,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8307,7 +8565,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8317,7 +8575,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8405,7 +8669,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8415,7 +8679,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8495,7 +8765,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8505,7 +8775,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8833,7 +9109,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8843,7 +9119,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -8933,7 +9215,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -8943,7 +9225,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9027,7 +9315,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9037,7 +9325,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9129,7 +9423,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9139,7 +9433,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9225,7 +9525,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9235,7 +9535,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9313,7 +9619,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9323,7 +9629,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9411,7 +9723,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9421,7 +9733,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9501,7 +9819,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9511,7 +9829,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9839,7 +10163,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9849,7 +10173,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -9939,7 +10269,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -9949,7 +10279,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10033,7 +10369,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10043,7 +10379,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10135,7 +10477,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10145,7 +10487,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10231,7 +10579,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10241,7 +10589,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10319,7 +10673,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10329,7 +10683,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10417,7 +10777,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10427,7 +10787,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10507,7 +10873,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10517,7 +10883,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("Channel template or app not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -10836,7 +11208,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10846,7 +11218,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -10934,7 +11306,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -10944,7 +11316,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         {
@@ -11026,7 +11398,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11036,7 +11408,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11126,7 +11504,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11136,7 +11514,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11226,7 +11610,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11236,7 +11620,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11321,7 +11711,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11331,7 +11721,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11413,7 +11809,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11423,7 +11819,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11513,7 +11915,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11523,7 +11925,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11609,7 +12017,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11619,7 +12027,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11697,7 +12111,7 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Operation failed", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == 400)
@@ -11707,7 +12121,13 @@ namespace Notifo.SDK
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
-                            throw new NotifoException<ErrorDto>("Validation error", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("App not found.", status_, responseText_, headers_, null);
                         }
                         else
                         {
@@ -11974,6 +12394,47 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class NotificationProperties : System.Collections.Generic.Dictionary<string, string>
     {
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class ErrorDto
+    {
+        /// <summary>
+        /// The error message.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Message { get; set; }
+
+        /// <summary>
+        /// The error code.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("errorCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ErrorCode { get; set; }
+
+        /// <summary>
+        /// The optional trace id.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("traceId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string TraceId { get; set; }
+
+        /// <summary>
+        /// The error type, usually a link.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Type { get; set; }
+
+        /// <summary>
+        /// Detailed error messages.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("details", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<string> Details { get; set; }
+
+        /// <summary>
+        /// Status code of the http response.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("statusCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int StatusCode { get; set; }
 
     }
 
@@ -14733,47 +15194,6 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("priority", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Priority { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public partial class ErrorDto
-    {
-        /// <summary>
-        /// The error message.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Message { get; set; }
-
-        /// <summary>
-        /// The error code.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("errorCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string ErrorCode { get; set; }
-
-        /// <summary>
-        /// The optional trace id.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("traceId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string TraceId { get; set; }
-
-        /// <summary>
-        /// The error type, usually a link.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Type { get; set; }
-
-        /// <summary>
-        /// Detailed error messages.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("details", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<string> Details { get; set; }
-
-        /// <summary>
-        /// Status code of the http response.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("statusCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int StatusCode { get; set; }
 
     }
 

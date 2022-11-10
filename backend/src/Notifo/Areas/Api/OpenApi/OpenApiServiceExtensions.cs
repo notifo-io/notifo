@@ -18,9 +18,6 @@ public static class OpenApiServiceExtensions
 {
     public static void AddMyOpenApi(this IServiceCollection services)
     {
-        services.AddSingletonAs<ErrorDtoProcessor>()
-            .As<IDocumentProcessor>();
-
         services.AddSingletonAs<CommonProcessor>()
             .As<IDocumentProcessor>();
 
@@ -28,6 +25,9 @@ public static class OpenApiServiceExtensions
             .As<IDocumentProcessor>();
 
         services.AddSingletonAs<TagByGroupNameProcessor>()
+            .As<IOperationProcessor>();
+
+        services.AddSingletonAs<ErrorDtoProcessor>()
             .As<IOperationProcessor>();
 
         services.AddOpenApiDocument(settings =>

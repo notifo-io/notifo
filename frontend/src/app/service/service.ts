@@ -51,13 +51,13 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -105,13 +105,13 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -157,13 +157,13 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -222,13 +222,13 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -273,13 +273,13 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -326,13 +326,17 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Subscription does not exist.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -376,13 +380,13 @@ export class UserClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -458,13 +462,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -516,13 +524,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -578,13 +590,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -632,13 +648,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -702,13 +722,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -761,13 +785,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -819,13 +847,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -878,13 +910,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -936,13 +972,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -994,13 +1034,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1052,13 +1096,17 @@ export class UsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1134,13 +1182,17 @@ export class TopicsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1192,13 +1244,13 @@ export class TopicsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1246,13 +1298,13 @@ export class TopicsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1319,13 +1371,13 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1373,13 +1425,13 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1426,13 +1478,17 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1484,13 +1540,19 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("User cannot be updated.", status, _responseText, _headers, result403);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1534,13 +1596,19 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("User cannot be deleted.", status, _responseText, _headers, result403);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1587,13 +1655,19 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("User cannot be locked.", status, _responseText, _headers, result403);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1640,13 +1714,19 @@ export class SystemUsersClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 403) {
+            return response.text().then((_responseText) => {
+            let result403: any = null;
+            result403 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("User cannot be unlocked.", status, _responseText, _headers, result403);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1697,13 +1777,13 @@ export class PingClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1781,13 +1861,17 @@ export class NotificationsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1846,13 +1930,13 @@ export class NotificationsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1895,13 +1979,13 @@ export class NotificationsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -1946,13 +2030,13 @@ export class NotificationsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2006,13 +2090,13 @@ export class MobilePushClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2057,13 +2141,13 @@ export class MobilePushClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2107,13 +2191,13 @@ export class MobilePushClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2184,13 +2268,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2240,13 +2328,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2343,13 +2435,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Media or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2397,13 +2493,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2500,13 +2600,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Media or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2603,13 +2707,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Media or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2701,13 +2809,17 @@ export class MediaClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Media or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2778,13 +2890,17 @@ export class LogsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2858,13 +2974,17 @@ export class EventsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2913,13 +3033,17 @@ export class EventsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2964,13 +3088,17 @@ export class EventsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3021,13 +3149,19 @@ export class DiagnosticsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 501) {
+            return response.text().then((_responseText) => {
+            let result501: any = null;
+            result501 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Not configured.", status, _responseText, _headers, result501);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3067,13 +3201,19 @@ export class DiagnosticsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 501) {
+            return response.text().then((_responseText) => {
+            let result501: any = null;
+            result501 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Not configured.", status, _responseText, _headers, result501);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3127,13 +3267,13 @@ export class ConfigsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3176,13 +3316,13 @@ export class ConfigsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3249,13 +3389,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3307,13 +3451,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3373,13 +3521,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3431,13 +3583,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3488,13 +3644,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3550,13 +3710,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3609,13 +3773,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3663,13 +3831,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3726,13 +3898,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3784,13 +3960,17 @@ export class EmailTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3861,13 +4041,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3919,13 +4103,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -3976,13 +4164,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4038,13 +4230,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4097,13 +4293,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4151,13 +4351,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4214,13 +4418,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4272,13 +4480,17 @@ export class MessagingTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4349,13 +4561,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4407,13 +4623,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4464,13 +4684,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4526,13 +4750,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4585,13 +4813,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4639,13 +4871,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4702,13 +4938,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4760,13 +5000,17 @@ export class SmsTemplatesClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("Channel template or app not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4820,13 +5064,13 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4874,13 +5118,13 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4927,13 +5171,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -4985,13 +5233,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5043,13 +5295,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5100,13 +5356,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5153,13 +5413,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5211,13 +5475,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5270,13 +5538,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5324,13 +5596,17 @@ export class AppsClient {
             return response.text().then((_responseText) => {
             let result500: any = null;
             result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Operation failed", status, _responseText, _headers, result500);
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
             });
         } else if (status === 400) {
             return response.text().then((_responseText) => {
             let result400: any = null;
             result400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
-            return throwException("Validation error", status, _responseText, _headers, result400);
+            return throwException("Validation error.", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("App not found.", status, _responseText, _headers);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -5382,6 +5658,21 @@ export type ChannelCondition = "Inherit" | "IfNotSeen" | "IfNotConfirmed" | "Alw
 export interface NotificationProperties {
 
     [key: string]: string | any;
+}
+
+export interface ErrorDto {
+    /** The error message. */
+    message?: string | undefined;
+    /** The error code. */
+    errorCode?: string | undefined;
+    /** The optional trace id. */
+    traceId?: string | undefined;
+    /** The error type, usually a link. */
+    type?: string | undefined;
+    /** Detailed error messages. */
+    details?: string[] | undefined;
+    /** Status code of the http response. */
+    statusCode?: number;
 }
 
 export interface UpdateProfileDto {
@@ -6310,21 +6601,6 @@ export interface UpdateIntegrationDto {
     condition?: string | undefined;
     /** The priority in which order the integrations must run. */
     priority?: number | undefined;
-}
-
-export interface ErrorDto {
-    /** The error message. */
-    message?: string | undefined;
-    /** The error code. */
-    errorCode?: string | undefined;
-    /** The optional trace id. */
-    traceId?: string | undefined;
-    /** The error type, usually a link. */
-    type?: string | undefined;
-    /** Detailed error messages. */
-    details?: string[] | undefined;
-    /** Status code of the http response. */
-    statusCode?: number;
 }
 
 export interface FileParameter {
