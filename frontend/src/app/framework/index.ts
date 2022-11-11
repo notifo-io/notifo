@@ -8,6 +8,7 @@
 import './utils/array-extensions';
 
 export * from './model';
+export * from './react/Ace';
 export * from './react/ApiValue';
 export * from './react/ClickOutside';
 export * from './react/Confirm';
@@ -21,7 +22,6 @@ export * from './react/Gist';
 export * from './react/hooks';
 export * from './react/Icon';
 export * from './react/IFrame';
-export * from './react/JsonDetails';
 export * from './react/LanguageSelector';
 export * from './react/Loader';
 export * from './react/LoadScript';
