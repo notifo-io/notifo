@@ -218,8 +218,8 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
         options.permissionDeniedLifetimeHours = 7 * 24;
     }
 
-    if (!isStringOption(options.apiUrl) && !isStringOption(options.apiKey)) {
-        logWarn('init.apiUrl or init.apIKey must be defined');
+    if (!options.apiKey && !options.userToken) {
+        logWarn('init.apiKey or init.userToken must be defined');
 
         return null;
     }
