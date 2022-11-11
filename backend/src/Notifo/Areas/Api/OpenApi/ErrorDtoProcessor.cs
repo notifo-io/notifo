@@ -36,9 +36,6 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
             }
         }
 
-        AddResponse("500", "Operation failed.");
-        AddResponse("400", "Validation error.");
-
         var responses =
             context.MethodInfo.GetXmlDocsElement(null)?
                 .Nodes()
@@ -51,6 +48,13 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
         {
             AddResponse(response.Attribute("code")!.Value, response.Value);
         }
+
+        if (!string.Equals(context.OperationDescription.Method, HttpMethods.Get, StringComparison.OrdinalIgnoreCase))
+        {
+            AddResponse("400", "Validation error.");
+        }
+
+        AddResponse("500", "Operation failed.");
 
         foreach (var (code, response) in operation.Responses)
         {
