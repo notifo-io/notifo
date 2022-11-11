@@ -326,7 +326,7 @@ export interface SDKConfig {
     // The timer interval.
     pollingInterval: number;
 
-    // How long the deny request will be valid. If it is 
+    // How long a deny of the web push permission will be valid. 
     permissionDeniedLifetimeHours: number;
 
     // The public key for web push encryption.
