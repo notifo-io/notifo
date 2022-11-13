@@ -18,11 +18,15 @@ public sealed class AddAllowedTopicDto
     [Required]
     public string Prefix { get; set; }
 
-    public AddUserAllowedTopic ToUpdate()
+    public AddUserAllowedTopic ToUpdate(string userId)
     {
-        return new AddUserAllowedTopic
+        var result = new AddUserAllowedTopic
         {
             Prefix = Prefix
         };
+
+        result.UserId = userId;
+
+        return result;
     }
 }

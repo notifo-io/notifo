@@ -13,7 +13,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class UpdateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
+public sealed class UpdateChannelTemplateLanguage<T> : ChannelTemplateCommand<T>
 {
     public string Language { get; init; }
 
@@ -28,7 +28,7 @@ public sealed class UpdateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<
         }
     }
 
-    public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+    public override async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
@@ -36,9 +36,9 @@ public sealed class UpdateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<
         var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
         var channelInstance = await channelFactory.ParseAsync(Template, true, ct);
 
-        var newTemplate = template with
+        var newTemplate = target with
         {
-            Languages = template.Languages.Set(Language, channelInstance)
+            Languages = target.Languages.Set(Language, channelInstance)
         };
 
         return newTemplate;

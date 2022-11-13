@@ -26,7 +26,7 @@ public sealed class RegisterUserDto
 
     public TopicId[]? Topics { get; set; }
 
-    public UpsertUser ToUpsert()
+    public UpsertUser ToUpsert(string userId)
     {
         var result = SimpleMapper.Map(this, new UpsertUser());
 
@@ -47,6 +47,8 @@ public sealed class RegisterUserDto
                 Send = ChannelSend.Send
             };
         }
+
+        result.UserId = userId;
 
         return result;
     }

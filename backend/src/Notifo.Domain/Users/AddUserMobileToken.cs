@@ -13,7 +13,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users;
 
-public sealed class AddUserMobileToken : ICommand<User>
+public sealed class AddUserMobileToken : UserCommand
 {
     public MobilePushToken Token { get; set; }
 
@@ -26,22 +26,22 @@ public sealed class AddUserMobileToken : ICommand<User>
         }
     }
 
-    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        if (user.MobilePushTokens.Any(x => x.Token == Token.Token))
+        if (target.MobilePushTokens.Any(x => x.Token == Token.Token))
         {
             return default;
         }
 
-        var newMobilePushTokens = new List<MobilePushToken>(user.MobilePushTokens)
+        var newMobilePushTokens = new List<MobilePushToken>(target.MobilePushTokens)
         {
             Token
         };
 
-        var newUser = user with
+        var newUser = target with
         {
             MobilePushTokens = newMobilePushTokens.ToReadonlyList()
         };

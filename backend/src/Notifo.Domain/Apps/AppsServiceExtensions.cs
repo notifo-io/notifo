@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Apps.MongoDb;
 using Notifo.Domain.Counters;
@@ -16,7 +17,7 @@ public static class AppsServiceExtensions
     public static void AddMyApps(this IServiceCollection services)
     {
         services.AddSingletonAs<AppStore>()
-            .As<IAppStore>().As<ICounterTarget>();
+            .As<IAppStore>().As<ICounterTarget>().As<IRequestHandler<AppCommand, App?>>();
     }
 
     public static void AddMyMongoApps(this IServiceCollection services)

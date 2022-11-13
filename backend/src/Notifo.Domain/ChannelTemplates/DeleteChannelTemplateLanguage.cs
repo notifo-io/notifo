@@ -12,7 +12,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class DeleteChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
+public sealed class DeleteChannelTemplateLanguage<T> : ChannelTemplateCommand<T>
 {
     public string Language { get; set; }
 
@@ -24,19 +24,19 @@ public sealed class DeleteChannelTemplateLanguage<T> : ICommand<ChannelTemplate<
         }
     }
 
-    public ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+    public override ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        if (!template.Languages.ContainsKey(Language))
+        if (!target.Languages.ContainsKey(Language))
         {
             return default;
         }
 
-        var newTemplate = template with
+        var newTemplate = target with
         {
-            Languages = template.Languages.Where(x => x.Key != Language).ToReadonlyDictionary()
+            Languages = target.Languages.Where(x => x.Key != Language).ToReadonlyDictionary()
         };
 
         return new ValueTask<ChannelTemplate<T>?>(newTemplate);

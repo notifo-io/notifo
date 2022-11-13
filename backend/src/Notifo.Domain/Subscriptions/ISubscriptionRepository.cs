@@ -23,7 +23,7 @@ public interface ISubscriptionRepository
     Task UpsertAsync(Subscription subscription, string? oldEtag = null,
         CancellationToken ct = default);
 
-    Task DeleteAsync(string appId, string userId, TopicId prefix,
+    Task DeleteAsync(string appId, string userId, TopicId topic,
         CancellationToken ct = default);
 
     Task DeletePrefixAsync(string appId, string userId, TopicId prefix,

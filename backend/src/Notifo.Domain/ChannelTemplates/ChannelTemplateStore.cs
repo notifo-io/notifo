@@ -5,12 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using NodaTime;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T> where T : class
+public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>, IRequestHandler<ChannelTemplateCommand<T>, ChannelTemplate<T>?> where T : class
 {
     private readonly IChannelTemplateRepository<T> repository;
     private readonly IServiceProvider serviceProvider;
@@ -75,20 +76,21 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T> where T :
         return (status, result);
     }
 
-    public Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> command,
-        CancellationToken ct = default)
+    public async Task<ChannelTemplate<T>?> Handle(ChannelTemplateCommand<T> command,
+        CancellationToken ct)
     {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNull(command);
+        Guard.NotNullOrEmpty(command.AppId);
+        Guard.NotNullOrEmpty(command.TemplateCode);
 
-        if (string.IsNullOrWhiteSpace(id))
+        if (!command.IsUpsert)
         {
-            id = Guid.NewGuid().ToString();
+            await command.ExecuteAsync(serviceProvider, ct);
+            return null;
         }
 
-        return Updater.UpdateRetriedAsync(5, async () =>
+        return await Updater.UpdateRetriedAsync(5, async () =>
         {
-            var (template, etag) = await repository.GetAsync(appId, id, ct);
+            var (template, etag) = await repository.GetAsync(command.AppId, command.TemplateCode, ct);
 
             // Calculate once to have some timestamp for created and updated when new entity is created.
             var now = clock.GetCurrentInstant();
@@ -97,10 +99,10 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T> where T :
             {
                 if (!command.CanCreate)
                 {
-                    throw new DomainObjectNotFoundException(id);
+                    throw new DomainObjectNotFoundException(command.TemplateCode);
                 }
 
-                template = new ChannelTemplate<T>(appId, id, now);
+                template = new ChannelTemplate<T>(command.AppId, command.TemplateCode, now);
             }
 
             var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
@@ -119,14 +121,5 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T> where T :
 
             return newTemplate;
         });
-    }
-
-    public Task DeleteAsync(string appId, string id,
-        CancellationToken ct = default)
-    {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(id);
-
-        return repository.DeleteAsync(appId, id, ct);
     }
 }

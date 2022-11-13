@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using NodaTime;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
@@ -16,6 +17,8 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Notifo.Pipeline;
+
+#pragma warning disable IDE0060 // Remove unused parameter
 
 namespace Notifo.Areas.Api.Controllers.Users;
 
@@ -146,14 +149,16 @@ public sealed class UsersController : BaseController
 
         foreach (var dto in request.Subscribe.OrEmpty())
         {
-            var update = dto.ToUpdate();
+            var command = dto.ToUpdate(id);
 
-            await subscriptionStore.UpsertAsync(appId, id, dto.TopicPrefix, update, HttpContext.RequestAborted);
+            await Mediator.Send(command, HttpContext.RequestAborted);
         }
 
         foreach (var topic in request.Unsubscribe.OrEmpty())
         {
-            await subscriptionStore.DeleteAsync(appId, id, topic, HttpContext.RequestAborted);
+            var command = new DeleteSubscription { UserId = id, Topic = topic };
+
+            await Mediator.Send(command, HttpContext.RequestAborted);
         }
 
         return NoContent();
@@ -179,7 +184,9 @@ public sealed class UsersController : BaseController
             return NotFound();
         }
 
-        await subscriptionStore.DeleteAsync(appId, id, Uri.UnescapeDataString(prefix), HttpContext.RequestAborted);
+        var command = new DeleteSubscription { UserId = id, Topic = Uri.UnescapeDataString(prefix) };
+
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -205,11 +212,11 @@ public sealed class UsersController : BaseController
 
         foreach (var dto in request.Requests.OrEmpty().NotNull())
         {
-            var update = dto.ToUpsert();
+            var command = dto.ToUpsert();
 
-            var user = await userStore.UpsertAsync(appId, dto.Id, update, HttpContext.RequestAborted);
+            var user = await Mediator.Send(command, HttpContext.RequestAborted);
 
-            response.Add(UserDto.FromDomainObject(user, null, null));
+            response.Add(UserDto.FromDomainObject(user!, null, null));
         }
 
         return Ok(response);
@@ -235,9 +242,9 @@ public sealed class UsersController : BaseController
             return NotFound();
         }
 
-        var update = request.ToUpdate();
+        var command = request.ToUpdate(id);
 
-        await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -262,9 +269,9 @@ public sealed class UsersController : BaseController
             return NotFound();
         }
 
-        var update = new RemoveUserAllowedTopic { Prefix = prefix };
+        var command = new RemoveUserAllowedTopic { UserId = id, Prefix = prefix };
 
-        await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -289,9 +296,9 @@ public sealed class UsersController : BaseController
             return NotFound();
         }
 
-        var update = new RemoveUserMobileToken { Token = token };
+        var command = new RemoveUserMobileToken { UserId = id, Token = token };
 
-        await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -316,9 +323,9 @@ public sealed class UsersController : BaseController
             return NotFound();
         }
 
-        var update = new RemoveUserWebPushSubscription { Endpoint = endpoint };
+        var command = new RemoveUserWebPushSubscription { UserId = id, Endpoint = endpoint };
 
-        await userStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -335,7 +342,9 @@ public sealed class UsersController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteUser(string appId, string id)
     {
-        await userStore.DeleteAsync(appId, id, HttpContext.RequestAborted);
+        var command = new DeleteUser { UserId = id };
+
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

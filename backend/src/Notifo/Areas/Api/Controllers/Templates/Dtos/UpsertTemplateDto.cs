@@ -32,7 +32,7 @@ public sealed class UpsertTemplateDto
     /// </summary>
     public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
 
-    public UpsertTemplate ToUpdate()
+    public UpsertTemplate ToUpdate(string code)
     {
         var result = SimpleMapper.Map(this, new UpsertTemplate());
 
@@ -57,6 +57,8 @@ public sealed class UpsertTemplateDto
                 }
             }
         }
+
+        result.TemplateCode = code;
 
         return result;
     }

@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
@@ -85,6 +86,7 @@ public sealed class TelegramIntegration : IIntegration
 
             return new TelegramMessagingSender(
                 () => botClientPool.GetBotClient(accessToken),
+                serviceProvider.GetRequiredService<IMediator>(),
                 serviceProvider.GetRequiredService<IUserStore>());
         }
 

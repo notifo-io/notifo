@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
@@ -15,22 +15,20 @@ using Squidex.Caching;
 
 namespace Notifo.Domain.Apps;
 
-public sealed class AppStore : IAppStore, ICounterTarget, IDisposable
+public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICounterTarget, IDisposable
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private readonly CounterCollector<string> collector;
     private readonly IAppRepository repository;
-    private readonly IServiceProvider services;
+    private readonly IServiceProvider serviceProvider;
     private readonly IReplicatedCache cache;
-    private readonly IClock clock;
 
     public AppStore(IAppRepository repository,
-        IServiceProvider services, IReplicatedCache cache, IClock clock, ILogger<AppStore> log)
+        IServiceProvider serviceProvider, IReplicatedCache cache, ILogger<AppStore> log)
     {
         this.repository = repository;
-        this.services = services;
+        this.serviceProvider = serviceProvider;
         this.cache = cache;
-        this.clock = clock;
 
         collector = new CounterCollector<string>(repository, log, 5000);
     }
@@ -114,38 +112,39 @@ public sealed class AppStore : IAppStore, ICounterTarget, IDisposable
         return app;
     }
 
-    public Task<App> UpsertAsync(string? id, ICommand<App> command,
-        CancellationToken ct = default)
+    public async Task<App?> Handle(AppCommand command,
+        CancellationToken ct)
     {
-        Guard.NotNull(command);
+        Guard.NotNull(command.AppId);
 
-        if (string.IsNullOrWhiteSpace(id))
+        if (!command.IsUpsert)
         {
-            id = Guid.NewGuid().ToString();
+            await command.ExecuteAsync(serviceProvider, ct);
+
+            // Invalidates all other copies in the cluster.
+            await cache.RemoveAsync(command.AppId, default);
+            return null;
         }
 
-        return Updater.UpdateRetriedAsync(5, async () =>
+        return await Updater.UpdateRetriedAsync(5, async () =>
         {
-            var (app, etag) = await repository.GetAsync(id, ct);
-
-            // Calculate once to have some timestamp for created and updated when new entity is created.
-            var now = clock.GetCurrentInstant();
+            var (app, etag) = await repository.GetAsync(command.AppId, ct);
 
             if (app == null)
             {
                 if (!command.CanCreate)
                 {
-                    throw new DomainObjectNotFoundException(id);
+                    throw new DomainObjectNotFoundException(command.AppId);
                 }
 
-                app = new App(id, now);
+                app = new App(command.AppId, command.Timestamp);
             }
             else
             {
                 app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
             }
 
-            var newApp = await command.ExecuteAsync(app, services, ct);
+            var newApp = await command.ExecuteAsync(app, serviceProvider, ct);
 
             if (newApp == null || ReferenceEquals(app, newApp))
             {
@@ -155,7 +154,7 @@ public sealed class AppStore : IAppStore, ICounterTarget, IDisposable
 
             newApp = newApp with
             {
-                LastUpdate = now
+                LastUpdate = command.Timestamp
             };
 
             await repository.UpsertAsync(newApp, etag, ct);

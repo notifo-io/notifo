@@ -118,9 +118,9 @@ public sealed class EmailPreferencesController : BaseController
     {
         try
         {
-            var update = new DisableUserChannel { Channel = Providers.Email };
+            var command = new DisableUserChannel { UserId = UserId, Channel = Providers.Email };
 
-            await userStore.UpsertAsync(App.Id, UserId, update, ct);
+            await Mediator.Send(command, ct);
         }
         catch (DomainObjectNotFoundException)
         {
@@ -133,9 +133,9 @@ public sealed class EmailPreferencesController : BaseController
     {
         try
         {
-            var update = new DisableSubscriptionChannel { Channel = Providers.Email };
+            var command = new DisableSubscriptionChannel { UserId = UserId, Channel = Providers.Email };
 
-            await subscriptionStore.UpsertAsync(App.Id, UserId, path, update, ct);
+            await Mediator.Send(command, ct);
         }
         catch (DomainObjectNotFoundException)
         {

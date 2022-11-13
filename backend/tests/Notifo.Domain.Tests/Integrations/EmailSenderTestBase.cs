@@ -15,7 +15,7 @@ public abstract class EmailSenderTestBase
 {
     protected abstract IEmailSender CreateSender();
 
-    public static string Address { get; } = TestHelpers.Configuration.GetValue<string>("email:address");
+    public static string Address { get; } = TestHelpers.Configuration.GetValue<string>("email:address")!;
 
     [Fact]
     public async Task Should_send_text_message()

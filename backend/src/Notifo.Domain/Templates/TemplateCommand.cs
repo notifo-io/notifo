@@ -5,15 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
-
 namespace Notifo.Domain.Templates;
 
-public interface ITemplateStore
+public abstract class TemplateCommand : AppCommandBase<Template>
 {
-    Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
-        CancellationToken ct = default);
-
-    Task<Template?> GetAsync(string appId, string code,
-        CancellationToken ct = default);
+    public string TemplateCode { get; set; }
 }

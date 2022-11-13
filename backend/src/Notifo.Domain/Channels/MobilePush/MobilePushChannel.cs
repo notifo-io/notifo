@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using Esprima;
+using MediatR;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -26,6 +28,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     private readonly IAppStore appStore;
     private readonly IClock clock;
     private readonly IIntegrationManager integrationManager;
+    private readonly IMediator mediator;
     private readonly ILogger<MobilePushChannel> log;
     private readonly ILogStore logStore;
     private readonly IUserNotificationQueue userNotificationQueue;
@@ -37,6 +40,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     public MobilePushChannel(ILogger<MobilePushChannel> log, ILogStore logStore,
         IAppStore appStore,
         IIntegrationManager integrationManager,
+        IMediator mediator,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
         IUserStore userStore,
@@ -46,6 +50,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         this.log = log;
         this.logStore = logStore;
         this.integrationManager = integrationManager;
+        this.mediator = mediator;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
         this.userStore = userStore;
@@ -201,13 +206,19 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
         try
         {
+            var userId = notification.UserId;
+
             var command = new UpdateMobileWakeupTime
             {
+                AppId = notification.AppId,
+                PrincipalId = userId,
+                Principal = CommandBase<User>.BackendUser(userId),
                 Token = token.Token,
-                Timestamp = nextWakeup.Value
+                Timestamp = nextWakeup.Value,
+                UserId = userId
             };
 
-            await userStore.UpsertAsync(notification.AppId, notification.UserId, command, ct);
+            await mediator.Send(command, ct);
         }
         catch (Exception ex)
         {
@@ -309,12 +320,18 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 await logStore.LogAsync(app.Id, sender.Name, Texts.MobilePush_TokenRemoved);
 
+                var userId = notification.UserId;
+
                 var command = new RemoveUserMobileToken
                 {
-                    Token = job.DeviceToken
+                    AppId = notification.AppId,
+                    PrincipalId = userId,
+                    Principal = CommandBase<User>.BackendUser(userId),
+                    Token = job.DeviceToken,
+                    UserId = userId
                 };
 
-                await userStore.UpsertAsync(app.Id, notification.UserId, command, ct);
+                await mediator.Send(command, ct);
                 break;
             }
             catch (DomainException ex)

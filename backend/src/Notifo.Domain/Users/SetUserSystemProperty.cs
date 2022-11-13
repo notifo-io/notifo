@@ -12,7 +12,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users;
 
-public sealed class SetUserSystemProperty : ICommand<User>
+public sealed class SetUserSystemProperty : UserCommand
 {
     public string PropertyKey { get; set; }
 
@@ -26,18 +26,18 @@ public sealed class SetUserSystemProperty : ICommand<User>
         }
     }
 
-    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        var newUser = user;
+        var newUser = target;
 
-        var existing = user.SystemProperties?.GetValueOrDefault(PropertyKey);
+        var existing = target.SystemProperties?.GetValueOrDefault(PropertyKey);
 
         if (!string.Equals(existing, PropertyValue, StringComparison.Ordinal))
         {
-            var newProperties = user.SystemProperties;
+            var newProperties = target.SystemProperties;
 
             if (PropertyValue == null)
             {

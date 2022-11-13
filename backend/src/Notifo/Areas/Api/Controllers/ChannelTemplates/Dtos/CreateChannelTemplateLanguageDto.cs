@@ -19,9 +19,11 @@ public sealed class CreateChannelTemplateLanguageDto
     [Required]
     public string Language { get; set; }
 
-    public CreateChannelTemplateLanguage<T> ToUpdate<T>()
+    public CreateChannelTemplateLanguage<T> ToUpdate<T>(string code)
     {
         var result = SimpleMapper.Map(this, new CreateChannelTemplateLanguage<T>());
+
+        result.TemplateCode = code;
 
         return result;
     }

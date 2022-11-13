@@ -72,12 +72,9 @@ public sealed class MobilePushController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PostMyToken([FromBody] RegisterMobileTokenDto request)
     {
-        var command = new AddUserMobileToken
-        {
-            Token = request.ToToken()
-        };
+        var command = request.ToUpdate(UserId);
 
-        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -107,12 +104,9 @@ public sealed class MobilePushController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteMyToken(string token)
     {
-        var command = new RemoveUserMobileToken
-        {
-            Token = token
-        };
+        var command = new RemoveUserMobileToken { UserId = UserId, Token = token };
 
-        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

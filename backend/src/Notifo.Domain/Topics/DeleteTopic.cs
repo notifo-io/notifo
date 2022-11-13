@@ -5,12 +5,18 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Notifo.Domain.Topics;
 
-public interface ITopicStore
+public sealed class DeleteTopic : TopicCommand
 {
-    Task<IResultList<Topic>> QueryAsync(string appId, TopicQuery query,
-        CancellationToken ct = default);
+    public override bool IsUpsert => false;
+
+    public override async ValueTask ExecuteAsync(IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        await serviceProvider.GetRequiredService<ITopicRepository>()
+            .DeleteAsync(AppId, Path, ct);
+    }
 }

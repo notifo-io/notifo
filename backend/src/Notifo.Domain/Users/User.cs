@@ -17,7 +17,7 @@ namespace Notifo.Domain.Users;
 
 public sealed record User(string AppId, string Id, Instant Created)
 {
-    public string UniqueId => $"{AppId}_{Id}";
+    public string UniqueId => BuildId(AppId, Id);
 
     public string ApiKey { get; init; }
 
@@ -48,4 +48,9 @@ public sealed record User(string AppId, string Id, Instant Created)
     public ChannelSettings Settings { get; init; } = new ChannelSettings();
 
     public CounterMap Counters { get; init; } = new CounterMap();
+
+    public static string BuildId(string appId, string userId)
+    {
+        return $"{appId}_{userId}";
+    }
 }

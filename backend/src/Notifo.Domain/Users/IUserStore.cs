@@ -28,10 +28,4 @@ public interface IUserStore
 
     Task<User?> GetByPropertyAsync(string appId, string key, string value,
         CancellationToken ct = default);
-
-    Task<User> UpsertAsync(string appId, string? id, ICommand<User> update,
-        CancellationToken ct = default);
-
-    Task DeleteAsync(string appId, string id,
-        CancellationToken ct = default);
 }

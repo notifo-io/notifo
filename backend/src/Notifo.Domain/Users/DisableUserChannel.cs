@@ -9,11 +9,11 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Users;
 
-public sealed class DisableUserChannel : ICommand<User>
+public sealed class DisableUserChannel : UserCommand
 {
     public string Channel { get; set; }
 
-    public ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         if (!target.Settings.TryGetValue(Channel, out var setting) || setting.Send != ChannelSend.Send)

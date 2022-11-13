@@ -5,12 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure;
+namespace Notifo.Domain.Apps;
 
-public interface ICommand<T> where T : notnull
+public abstract class AppCommand : AppCommandBase<App>
 {
-    bool CanCreate => false;
-
-    ValueTask<T?> ExecuteAsync(T target, IServiceProvider serviceProvider,
-        CancellationToken ct);
 }

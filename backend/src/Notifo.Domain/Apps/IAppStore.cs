@@ -25,7 +25,4 @@ public interface IAppStore
 
     Task<App?> GetCachedAsync(string id,
         CancellationToken ct = default);
-
-    Task<App> UpsertAsync(string? id, ICommand<App> update,
-        CancellationToken ct = default);
 }

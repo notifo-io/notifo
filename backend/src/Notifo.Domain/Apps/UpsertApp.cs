@@ -9,23 +9,20 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Utils;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps;
 
-public sealed class UpsertApp : ICommand<App>
+public sealed class UpsertApp : AppCommand
 {
-    public string UserId { get; set; }
-
     public string? Name { get; set; }
 
     public string? ConfirmUrl { get; set; }
 
     public string[]? Languages { get; set; }
 
-    public bool CanCreate => true;
+    public override bool CanCreate => true;
 
     private sealed class Validator : AbstractValidator<UpsertApp>
     {
@@ -36,14 +33,14 @@ public sealed class UpsertApp : ICommand<App>
         }
     }
 
-    public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+    public override async ValueTask<App?> ExecuteAsync(App target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        var newApp = app;
+        var newApp = target;
 
-        if (Is.Changed(Languages, app.Languages))
+        if (Is.Changed(Languages, target.Languages))
         {
             newApp = newApp with
             {
@@ -51,7 +48,7 @@ public sealed class UpsertApp : ICommand<App>
             };
         }
 
-        if (Is.Changed(Name, app.Name))
+        if (Is.Changed(Name, target.Name))
         {
             newApp = newApp with
             {
@@ -59,7 +56,7 @@ public sealed class UpsertApp : ICommand<App>
             };
         }
 
-        if (Is.Changed(ConfirmUrl, app.ConfirmUrl))
+        if (Is.Changed(ConfirmUrl, target.ConfirmUrl))
         {
             newApp = newApp with
             {
@@ -67,7 +64,7 @@ public sealed class UpsertApp : ICommand<App>
             };
         }
 
-        if (app.ApiKeys.Count == 0)
+        if (target.ApiKeys.Count == 0)
         {
             var apiKeyGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
 
@@ -75,21 +72,21 @@ public sealed class UpsertApp : ICommand<App>
             {
                 ApiKeys = new Dictionary<string, string>
                 {
-                    [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppAdmin,
-                    [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppAdmin,
-                    [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppWebManager,
-                    [await apiKeyGenerator.GenerateAppTokenAsync(app.Id)] = NotifoRoles.AppWebManager
+                    [await apiKeyGenerator.GenerateAppTokenAsync(target.Id)] = NotifoRoles.AppAdmin,
+                    [await apiKeyGenerator.GenerateAppTokenAsync(target.Id)] = NotifoRoles.AppAdmin,
+                    [await apiKeyGenerator.GenerateAppTokenAsync(target.Id)] = NotifoRoles.AppWebManager,
+                    [await apiKeyGenerator.GenerateAppTokenAsync(target.Id)] = NotifoRoles.AppWebManager
                 }.ToReadonlyDictionary()
             };
         }
 
-        if (app.Contributors.Count == 0 && !string.IsNullOrWhiteSpace(UserId))
+        if (target.Contributors.Count == 0 && !string.IsNullOrWhiteSpace(PrincipalId))
         {
             newApp = newApp with
             {
                 Contributors = new Dictionary<string, string>
                 {
-                    [UserId] = NotifoRoles.AppOwner
+                    [PrincipalId] = NotifoRoles.AppOwner
                 }.ToReadonlyDictionary()
             };
         }

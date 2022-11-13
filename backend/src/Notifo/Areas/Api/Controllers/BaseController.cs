@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure;
@@ -38,5 +39,10 @@ public abstract class BaseController : Controller
     public App App
     {
         get => HttpContext.Features.Get<IAppFeature>()!.App;
+    }
+
+    public IMediator Mediator
+    {
+        get => HttpContext.RequestServices.GetRequiredService<IMediator>();
     }
 }

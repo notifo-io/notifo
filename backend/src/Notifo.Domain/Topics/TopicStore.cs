@@ -5,26 +5,24 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Microsoft.Extensions.Logging;
-using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Topics;
 
-public sealed class TopicStore : ITopicStore, ICounterTarget, IDisposable
+public sealed class TopicStore : ITopicStore, IRequestHandler<TopicCommand, Topic?>, ICounterTarget, IDisposable
 {
     private readonly ITopicRepository repository;
-    private readonly IServiceProvider services;
-    private readonly IClock clock;
+    private readonly IServiceProvider serviceProvider;
     private readonly CounterCollector<(string AppId, string Path)> collector;
 
     public TopicStore(ITopicRepository repository,
-        IServiceProvider services, IClock clock, ILogger<TopicStore> log)
+        IServiceProvider serviceProvider, ILogger<TopicStore> log)
     {
         this.repository = repository;
-        this.services = services;
-        this.clock = clock;
+        this.serviceProvider = serviceProvider;
 
         collector = new CounterCollector<(string AppId, string Path)>(repository, log, 5000);
     }
@@ -56,31 +54,34 @@ public sealed class TopicStore : ITopicStore, ICounterTarget, IDisposable
         return topics;
     }
 
-    public Task<Topic> UpsertAsync(string appId, TopicId path, ICommand<Topic> command,
-        CancellationToken ct = default)
+    public async Task<Topic?> Handle(TopicCommand command,
+        CancellationToken ct)
     {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(path);
+        Guard.NotNullOrEmpty(command.AppId);
+        Guard.NotNullOrEmpty(command.Path);
         Guard.NotNull(command);
 
-        return Updater.UpdateRetriedAsync(5, async () =>
+        if (!command.IsUpsert)
         {
-            var (topic, etag) = await repository.GetAsync(appId, path, ct);
+            await command.ExecuteAsync(serviceProvider, ct);
+            return null;
+        }
 
-            // Calculate once to have some timestamp for created and updated when new entity is created.
-            var now = clock.GetCurrentInstant();
+        return await Updater.UpdateRetriedAsync(5, async () =>
+        {
+            var (topic, etag) = await repository.GetAsync(command.AppId, command.Path, ct);
 
             if (topic == null)
             {
                 if (!command.CanCreate)
                 {
-                    throw new DomainObjectNotFoundException(path);
+                    throw new DomainObjectNotFoundException(command.Path);
                 }
 
-                topic = new Topic(appId, path, now);
+                topic = new Topic(command.AppId, command.Path, command.Timestamp);
             }
 
-            var newTopic = await command.ExecuteAsync(topic, services, ct);
+            var newTopic = await command.ExecuteAsync(topic, serviceProvider, ct);
 
             if (newTopic == null || ReferenceEquals(newTopic, topic))
             {
@@ -89,21 +90,12 @@ public sealed class TopicStore : ITopicStore, ICounterTarget, IDisposable
 
             newTopic = newTopic with
             {
-                LastUpdate = now
+                LastUpdate = command.Timestamp
             };
 
             await repository.UpsertAsync(newTopic, etag, ct);
 
             return newTopic;
         });
-    }
-
-    public Task DeleteAsync(string appId, TopicId path,
-        CancellationToken ct = default)
-    {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(path);
-
-        return repository.DeleteAsync(appId, path, ct);
     }
 }

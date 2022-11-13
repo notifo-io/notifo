@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Users;
 using Notifo.Domain.Users.MongoDb;
@@ -16,7 +17,7 @@ public static class UsersServiceExtensions
     public static void AddMyUsers(this IServiceCollection services)
     {
         services.AddSingletonAs<UserStore>()
-            .As<IUserStore>().As<ICounterTarget>();
+            .As<IUserStore>().As<ICounterTarget>().As<IRequestHandler<UserCommand, User?>>();
     }
 
     public static void AddMyMongoUsers(this IServiceCollection services)

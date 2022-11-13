@@ -22,14 +22,10 @@ namespace Notifo.Areas.Api.Controllers.Registration;
 [ApiExplorerSettings(IgnoreApi = true)]
 public sealed class RegistrationController : BaseController
 {
-    private readonly IUserStore userStore;
-    private readonly ISubscriptionStore subscriptionStore;
     private readonly IWebPushService webPushService;
 
-    public RegistrationController(IUserStore userStore, ISubscriptionStore subscriptionStore, IWebPushService webPushService)
+    public RegistrationController(IWebPushService webPushService)
     {
-        this.userStore = userStore;
-        this.subscriptionStore = subscriptionStore;
         this.webPushService = webPushService;
     }
 
@@ -42,11 +38,9 @@ public sealed class RegistrationController : BaseController
 
         if (request.CreateUser)
         {
-            userId = Guid.NewGuid().ToString();
+            var userCommand = request.ToUpsert(Guid.NewGuid().ToString());
 
-            var update = request.ToUpsert();
-
-            var user = await userStore.UpsertAsync(App.Id, userId, update, HttpContext.RequestAborted);
+            var user = await Mediator.Send(userCommand, HttpContext.RequestAborted);
 
             if (request.Topics?.Any() == true)
             {
@@ -71,11 +65,14 @@ public sealed class RegistrationController : BaseController
 
                 foreach (var topic in request.Topics.OrEmpty())
                 {
-                    await subscriptionStore.UpsertAsync(App.Id, userId, topic, command, HttpContext.RequestAborted);
+                    command.Topic = topic;
+
+                    await Mediator.Send(command, HttpContext.RequestAborted);
                 }
             }
 
-            userToken = user.ApiKey;
+            userToken = user!.ApiKey;
+            userId = user!.Id;
         }
 
         var response = new RegisteredUserDto

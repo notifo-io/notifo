@@ -7,6 +7,8 @@
 
 using System.Diagnostics;
 using System.Net;
+using Google.Apis.Storage.v1.Data;
+using MediatR;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using Notifo.Domain.Log;
@@ -27,8 +29,8 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
     private readonly WebPushClient webPushClient = new WebPushClient();
     private readonly IJsonSerializer serializer;
     private readonly ILogStore logStore;
+    private readonly IMediator mediator;
     private readonly IUserNotificationStore userNotificationStore;
-    private readonly IUserStore userStore;
     private readonly IUserNotificationQueue userNotificationQueue;
 
     public string Name => Providers.WebPush;
@@ -36,16 +38,16 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
     public string PublicKey { get; }
 
     public WebPushChannel(ILogStore logStore, IOptions<WebPushOptions> options,
+        IMediator mediator,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
-        IUserStore userStore,
         IJsonSerializer serializer)
     {
         this.serializer = serializer;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
-        this.userStore = userStore;
         this.logStore = logStore;
+        this.mediator = mediator;
 
         webPushClient.SetVapidDetails(
             options.Value.Subject,
@@ -183,12 +185,18 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         {
             await logStore.LogAsync(job.Tracking.AppId!, Name, Texts.WebPush_TokenRemoved);
 
+            var userId = job.Tracking.UserId!;
+
             var command = new RemoveUserWebPushSubscription
             {
+                AppId = job.Tracking.AppId!,
+                PrincipalId = userId,
+                Principal = CommandBase<User>.BackendUser(userId),
+                UserId = userId,
                 Endpoint = job.Subscription.Endpoint
             };
 
-            await userStore.UpsertAsync(job.Tracking.AppId!, job.Tracking.UserId, command, ct);
+            await mediator.Send(command, ct);
         }
         catch (WebPushException ex)
         {

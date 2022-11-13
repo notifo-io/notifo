@@ -11,29 +11,29 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Subscriptions;
 
-public sealed class Subscribe : ICommand<Subscription>
+public sealed class Subscribe : SubscriptionCommand
 {
     public ChannelSettings? TopicSettings { get; set; }
 
     public bool MergeSettings { get; set; }
 
-    public bool CanCreate => true;
+    public override bool CanCreate => true;
 
-    public async ValueTask<Subscription?> ExecuteAsync(Subscription subscription, IServiceProvider serviceProvider,
+    public override async ValueTask<Subscription?> ExecuteAsync(Subscription target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         var userStore = serviceProvider.GetRequiredService<IUserStore>();
 
-        await CheckWhitelistAsync(userStore, subscription, ct);
+        await CheckWhitelistAsync(userStore, target, ct);
 
         var newSettings = TopicSettings;
 
         if (MergeSettings || newSettings == null)
         {
-            newSettings = ChannelSettings.Merged(subscription.TopicSettings, TopicSettings);
+            newSettings = ChannelSettings.Merged(target.TopicSettings, TopicSettings);
         }
 
-        var newSubscription = subscription with
+        var newSubscription = target with
         {
             TopicSettings = newSettings
         };

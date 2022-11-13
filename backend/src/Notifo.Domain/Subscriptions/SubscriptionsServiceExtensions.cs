@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Subscriptions.MongoDb;
 
@@ -15,7 +16,7 @@ public static class SubscriptionsServiceExtensions
     public static void AddMySubscriptions(this IServiceCollection services)
     {
         services.AddSingletonAs<SubscriptionStore>()
-            .As<ISubscriptionStore>();
+            .As<ISubscriptionStore>().As<IRequestHandler<SubscriptionCommand, Subscription?>>();
     }
 
     public static void AddMyMongoSubscriptions(this IServiceCollection services)

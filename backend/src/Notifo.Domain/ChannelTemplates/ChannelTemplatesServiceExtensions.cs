@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MediatR;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.ChannelTemplates.MongoDb;
 
@@ -15,7 +16,7 @@ public static class ChannelTemplatesServiceExtensions
     public static void AddChannelTemplates<T>(this IServiceCollection services) where T : class
     {
         services.AddSingletonAs<MongoDbChannelTemplateRepository<T>>()
-            .As<IChannelTemplateRepository<T>>();
+            .As<IChannelTemplateRepository<T>>().As<IRequestHandler<ChannelTemplateCommand<T>, ChannelTemplate<T>?>>();
 
         services.AddSingletonAs<ChannelTemplateStore<T>>()
             .As<IChannelTemplateStore<T>>();

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Globalization;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Notifo.Domain.Apps;
@@ -25,13 +26,15 @@ public sealed class TelegramMessagingSender : IMessagingSender
     private const int Attempts = 5;
     private const string TelegramChatId = nameof(TelegramChatId);
     private readonly Func<ITelegramBotClient> client;
+    private readonly IMediator mediator;
     private readonly IUserStore userStore;
 
     public string Name => "Telegram";
 
-    public TelegramMessagingSender(Func<ITelegramBotClient> client, IUserStore userStore)
+    public TelegramMessagingSender(Func<ITelegramBotClient> client, IMediator mediator, IUserStore userStore)
     {
         this.client = client;
+        this.mediator = mediator;
         this.userStore = userStore;
     }
 
@@ -104,11 +107,16 @@ public sealed class TelegramMessagingSender : IMessagingSender
             return;
         }
 
-        await userStore.UpsertAsync(app.Id, user.Id, new SetUserSystemProperty
+        var command = new SetUserSystemProperty
         {
+            AppId = app.Id,
+            PrincipalId = user.Id,
+            Principal = CommandBase<User>.BackendUser(user.Id),
             PropertyKey = TelegramIntegration.UserUsername.Name,
             PropertyValue = chatId
-        }, ct);
+        };
+
+        await mediator.Send(command, ct);
 
         await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
     }

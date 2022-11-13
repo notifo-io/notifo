@@ -16,24 +16,14 @@ namespace Notifo.Areas.Api.Controllers.WebPush;
 [ApiExplorerSettings(IgnoreApi = true)]
 public sealed class WebPushController : BaseController
 {
-    private readonly IUserStore userStore;
-
-    public WebPushController(IUserStore userStore)
-    {
-        this.userStore = userStore;
-    }
-
     [HttpPost("api/me/webpush")]
     [HttpPost("api/webpush")]
     [AppPermission(NotifoRoles.AppUser)]
     public async Task<IActionResult> PostMyToken([FromBody] RegisterWebTokenDto request)
     {
-        var command = new AddUserWebPushSubscription
-        {
-            Subscription = request.Subscription.ToSubscription()
-        };
+        var command = request.ToUpdate(UserId);
 
-        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -43,12 +33,9 @@ public sealed class WebPushController : BaseController
     [AppPermission(NotifoRoles.AppUser)]
     public async Task<IActionResult> DeleteMyToken([FromBody] RegisterWebTokenDto request)
     {
-        var command = new RemoveUserWebPushSubscription
-        {
-            Endpoint = request.Subscription.Endpoint
-        };
+        var command = request.ToDelete(UserId);
 
-        await userStore.UpsertAsync(App.Id, UserId, command, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
