@@ -205,17 +205,10 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
         try
         {
-            var userId = notification.UserId;
-
             var command = new UpdateMobileWakeupTime
             {
-                AppId = notification.AppId,
-                PrincipalId = userId,
-                Principal = CommandBase<User>.BackendUser(userId),
-                Token = token.Token,
-                Timestamp = nextWakeup.Value,
-                UserId = userId
-            };
+                Token = token.Token
+            }.WithTracking(notification.AppId, notification.UserId).WithTimestamp(nextWakeup.Value);
 
             await mediator.Send(command, ct);
         }
@@ -319,16 +312,10 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 await logStore.LogAsync(app.Id, sender.Name, Texts.MobilePush_TokenRemoved);
 
-                var userId = notification.UserId;
-
                 var command = new RemoveUserMobileToken
                 {
-                    AppId = notification.AppId,
-                    PrincipalId = userId,
-                    Principal = CommandBase<User>.BackendUser(userId),
-                    Token = job.DeviceToken,
-                    UserId = userId
-                };
+                    Token = job.DeviceToken
+                }.WithTracking(notification.AppId, notification.UserId);
 
                 await mediator.Send(command, ct);
                 break;

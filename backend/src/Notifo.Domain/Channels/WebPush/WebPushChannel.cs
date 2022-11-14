@@ -184,16 +184,10 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         {
             await logStore.LogAsync(job.Tracking.AppId!, Name, Texts.WebPush_TokenRemoved);
 
-            var userId = job.Tracking.UserId!;
-
             var command = new RemoveUserWebPushSubscription
             {
-                AppId = job.Tracking.AppId!,
-                PrincipalId = userId,
-                Principal = CommandBase<User>.BackendUser(userId),
-                UserId = userId,
                 Endpoint = job.Subscription.Endpoint
-            };
+            }.WithTracking(job.Tracking);
 
             await mediator.Send(command, ct);
         }

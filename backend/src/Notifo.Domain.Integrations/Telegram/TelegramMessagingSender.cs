@@ -109,12 +109,9 @@ public sealed class TelegramMessagingSender : IMessagingSender
 
         var command = new SetUserSystemProperty
         {
-            AppId = app.Id,
-            PrincipalId = user.Id,
-            Principal = CommandBase.BackendUser(user.Id),
             PropertyKey = TelegramIntegration.UserUsername.Name,
             PropertyValue = chatId
-        };
+        }.WithTracking(app.Id, user.Id);
 
         await mediator.Send(command, ct);
 
