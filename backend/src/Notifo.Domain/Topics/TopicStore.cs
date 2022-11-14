@@ -59,7 +59,6 @@ public sealed class TopicStore : ITopicStore, IRequestHandler<TopicCommand, Topi
     {
         Guard.NotNullOrEmpty(command.AppId);
         Guard.NotNullOrEmpty(command.Path);
-        Guard.NotNull(command);
 
         if (!command.IsUpsert)
         {

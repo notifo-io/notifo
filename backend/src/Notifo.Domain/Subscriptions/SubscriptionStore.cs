@@ -52,7 +52,7 @@ public sealed class SubscriptionStore : ISubscriptionStore, IRequestHandler<Subs
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);
-        Guard.NotNull(command.UserId);
+        Guard.NotNullOrEmpty(command.UserId);
 
         if (!command.IsUpsert)
         {

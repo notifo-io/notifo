@@ -42,7 +42,12 @@ public sealed class DefaultMediator : IMediator
     {
         var result = await pipeline.Value(request, ct);
 
-        if (result is not TResponse typed)
+        if (Equals(result, default(TResponse)))
+        {
+            return default(TResponse)!;
+        }
+
+        if ( result is not TResponse typed)
         {
             throw new InvalidOperationException("No handler returns matching result type.");
         }
