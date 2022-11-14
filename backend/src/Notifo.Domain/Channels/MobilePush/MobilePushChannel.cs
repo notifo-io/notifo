@@ -6,8 +6,6 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using Esprima;
-using MediatR;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
@@ -17,6 +15,7 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Scheduling;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.MobilePush.MobilePushJob>;
 

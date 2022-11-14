@@ -7,8 +7,6 @@
 
 using System.Diagnostics;
 using System.Net;
-using Google.Apis.Storage.v1.Data;
-using MediatR;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using Notifo.Domain.Log;
@@ -17,6 +15,7 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Json;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Scheduling;
 using WebPush;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.WebPush.WebPushJob>;

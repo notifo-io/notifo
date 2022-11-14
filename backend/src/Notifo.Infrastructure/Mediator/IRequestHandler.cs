@@ -5,15 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.Mediator;
+namespace Notifo.Infrastructure.Mediator;
 
-namespace Notifo.Domain;
-
-public abstract class AppCommandBase<T> : AppCommandBase, IRequest<T?> where T : notnull
+public interface IRequestHandler<in TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
-}
-
-public abstract class AppCommandBase : CommandBase
-{
-    public string AppId { get; set; }
+    ValueTask<TResponse> HandleAsync(TRequest request,
+        CancellationToken ct);
 }

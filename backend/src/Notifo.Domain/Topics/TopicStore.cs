@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Topics;
 
@@ -54,7 +54,7 @@ public sealed class TopicStore : ITopicStore, IRequestHandler<TopicCommand, Topi
         return topics;
     }
 
-    public async Task<Topic?> Handle(TopicCommand command,
+    public async ValueTask<Topic?> HandleAsync(TopicCommand command,
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);

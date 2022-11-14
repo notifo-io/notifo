@@ -32,7 +32,7 @@ public sealed record App(string Id, Instant Created)
 
     public ReadonlyDictionary<string, string> Contributors { get; init; } = ReadonlyDictionary.Empty<string, string>();
 
-    public ReadonlyDictionary<string, ConfiguredIntegration> Integrations { get; set; } = ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
+    public ReadonlyDictionary<string, ConfiguredIntegration> Integrations { get; init; } = ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
 
     public CounterMap? Counters { get; init; } = new CounterMap();
 }

@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Squidex.Caching;
 
 namespace Notifo.Domain.Users;
@@ -119,7 +119,7 @@ public sealed class UserStore : IUserStore, IRequestHandler<UserCommand, User?>,
         return user;
     }
 
-    public async Task<User?> Handle(UserCommand command,
+    public async ValueTask<User?> HandleAsync(UserCommand command,
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);

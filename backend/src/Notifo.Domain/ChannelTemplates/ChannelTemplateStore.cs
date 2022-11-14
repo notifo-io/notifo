@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using NodaTime;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.ChannelTemplates;
 
@@ -76,7 +76,7 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>, IRequest
         return (status, result);
     }
 
-    public async Task<ChannelTemplate<T>?> Handle(ChannelTemplateCommand<T> command,
+    public async ValueTask<ChannelTemplate<T>?> HandleAsync(ChannelTemplateCommand<T> command,
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);

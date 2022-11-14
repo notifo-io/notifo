@@ -6,12 +6,11 @@
 // ==========================================================================
 
 using System.Security.Claims;
-using MediatR;
 using NodaTime;
 
 namespace Notifo.Domain;
 
-public abstract class CommandBase<T> : IRequest<T?> where T : notnull
+public abstract class CommandBase
 {
     public Instant Timestamp { get; set; }
 

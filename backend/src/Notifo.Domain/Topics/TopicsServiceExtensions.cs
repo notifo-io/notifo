@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Topics;
 using Notifo.Domain.Topics.MongoDb;
@@ -17,7 +16,9 @@ public static class TopicsServiceExtensions
     public static void AddMyTopics(this IServiceCollection services)
     {
         services.AddSingletonAs<TopicStore>()
-            .As<ITopicStore>().As<ICounterTarget>().As<IRequestHandler<TopicCommand, Topic?>>();
+            .As<ITopicStore>().As<ICounterTarget>();
+
+        services.AddRequestHandler<TopicStore, TopicCommand, Topic?>();
     }
 
     public static void AddMyMongoTopics(this IServiceCollection services)

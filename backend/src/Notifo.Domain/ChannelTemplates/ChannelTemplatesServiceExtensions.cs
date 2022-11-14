@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.ChannelTemplates.MongoDb;
+using Notifo.Infrastructure.Mediator;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -20,5 +20,7 @@ public static class ChannelTemplatesServiceExtensions
 
         services.AddSingletonAs<ChannelTemplateStore<T>>()
             .As<IChannelTemplateStore<T>>();
+
+        services.AddRequestHandler<ChannelTemplateStore<T>, ChannelTemplateCommand<T>, ChannelTemplate<T>?>();
     }
 }

@@ -6,13 +6,13 @@
 // ==========================================================================
 
 using System.Globalization;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure.Mediator;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TelegramChat = Telegram.Bot.Types.Chat;

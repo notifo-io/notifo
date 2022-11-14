@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using NodaTime;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Templates;
 
@@ -62,7 +62,7 @@ public sealed class TemplateStore : ITemplateStore, IRequestHandler<TemplateComm
         return template;
     }
 
-    public async Task<Template?> Handle(TemplateCommand command,
+    public async ValueTask<Template?> HandleAsync(TemplateCommand command,
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);

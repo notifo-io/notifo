@@ -13,7 +13,6 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
-using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
 

@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Net.Http.Headers;
+using Notifo.Domain;
 using Notifo.Infrastructure.Diagnostics;
 using Notifo.Infrastructure.Json;
 
@@ -28,6 +29,11 @@ public static class PipelineServiceExtensions
 
         services.AddSingletonAs<FileCallbackResultExecutor>()
             .AsSelf();
+    }
+
+    public static void AddPipeline(this IServiceCollection services)
+    {
+        services.AddMiddleware<AppMediatorMiddleware, AppCommandBase>();
     }
 
     public static IApplicationBuilder UseMyHealthChecks(this IApplicationBuilder app)

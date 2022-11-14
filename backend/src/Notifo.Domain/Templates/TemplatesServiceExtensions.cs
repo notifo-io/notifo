@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Notifo.Domain.Templates;
 using Notifo.Domain.Templates.MongoDb;
 
@@ -16,7 +15,9 @@ public static class TemplatesServiceExtensions
     public static void AddMyTemplates(this IServiceCollection services)
     {
         services.AddSingletonAs<TemplateStore>()
-            .As<ITemplateStore>().As<IRequestHandler<TemplateCommand, Template?>>();
+            .As<ITemplateStore>();
+
+        services.AddRequestHandler<TemplateStore, TemplateCommand, Template?>();
     }
 
     public static void AddMyMongoTemplates(this IServiceCollection services)

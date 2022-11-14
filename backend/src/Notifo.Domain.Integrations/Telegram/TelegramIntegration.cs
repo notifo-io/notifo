@@ -5,13 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure.Mediator;
 using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;

@@ -7,7 +7,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Utils;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates;

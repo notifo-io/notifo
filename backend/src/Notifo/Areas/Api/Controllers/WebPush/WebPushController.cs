@@ -8,7 +8,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.WebPush.Dtos;
 using Notifo.Domain.Identity;
-using Notifo.Domain.Users;
 using Notifo.Pipeline;
 
 namespace Notifo.Areas.Api.Controllers.WebPush;

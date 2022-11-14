@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 

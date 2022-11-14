@@ -5,9 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
-using Notifo.Domain.Users;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Subscriptions;
 
@@ -49,7 +48,7 @@ public sealed class SubscriptionStore : ISubscriptionStore, IRequestHandler<Subs
         return subscription;
     }
 
-    public async Task<Subscription?> Handle(SubscriptionCommand command,
+    public async ValueTask<Subscription?> HandleAsync(SubscriptionCommand command,
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);

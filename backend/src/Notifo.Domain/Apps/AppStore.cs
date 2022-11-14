@@ -5,12 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MediatR;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
-using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Collections;
+using Notifo.Infrastructure.Mediator;
 using Squidex.Caching;
 
 namespace Notifo.Domain.Apps;
@@ -112,7 +110,7 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
         return app;
     }
 
-    public async Task<App?> Handle(AppCommand command,
+    public async ValueTask<App?> HandleAsync(AppCommand command,
         CancellationToken ct)
     {
         Guard.NotNull(command.AppId);
@@ -139,29 +137,24 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
 
                 app = new App(command.AppId, command.Timestamp);
             }
-            else
-            {
-                app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
-            }
 
             var newApp = await command.ExecuteAsync(app, serviceProvider, ct);
 
-            if (newApp == null || ReferenceEquals(app, newApp))
+            if (newApp != null && !ReferenceEquals(app, newApp))
             {
-                await DeliverAsync(app);
-                return app;
+                newApp = newApp with
+                {
+                    LastUpdate = command.Timestamp
+                };
+
+                await repository.UpsertAsync(newApp, etag, ct);
+
+                app = newApp;
             }
 
-            newApp = newApp with
-            {
-                LastUpdate = command.Timestamp
-            };
+            await DeliverAsync(app, true);
 
-            await repository.UpsertAsync(newApp, etag, ct);
-
-            await DeliverAsync(newApp, true);
-
-            return newApp;
+            return app;
         });
     }
 
@@ -173,8 +166,6 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
         }
 
         CounterMap.Cleanup(app.Counters);
-
-        app.Integrations ??= ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
 
         if (remove)
         {

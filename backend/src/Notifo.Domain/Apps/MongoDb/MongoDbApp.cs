@@ -7,6 +7,7 @@
 
 using MongoDB.Bson.Serialization.Attributes;
 using Notifo.Domain.Integrations;
+using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Notifo.Domain.Apps.MongoDb;
@@ -48,6 +49,16 @@ public sealed class MongoDbApp : MongoDbEntity<App>
 
     public App ToApp()
     {
-        return Doc;
+        var app = Doc;
+
+        if (app.Integrations == null)
+        {
+            app = app with
+            {
+                Integrations = ReadonlyDictionary.Empty<string, ConfiguredIntegration>()
+            };
+        }
+
+        return app;
     }
 }

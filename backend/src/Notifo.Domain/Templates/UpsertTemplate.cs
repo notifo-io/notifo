@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Domain.Templates;

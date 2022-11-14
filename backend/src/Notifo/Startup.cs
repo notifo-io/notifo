@@ -6,10 +6,8 @@
 // ==========================================================================
 
 using System.Globalization;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using MediatR;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -39,11 +37,7 @@ public class Startup
         services.AddDefaultWebServices(config);
         services.AddDefaultForwardRules();
         services.AddCors();
-
-        services.AddMediatR(options =>
-        {
-            options.AsSingleton();
-        }, typeof(Startup));
+        services.AddMediator().AddPipeline();
 
         services.AddLocalization(options =>
         {
