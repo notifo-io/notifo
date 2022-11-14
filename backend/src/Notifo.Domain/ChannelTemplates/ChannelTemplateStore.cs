@@ -80,7 +80,11 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>, IRequest
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);
-        Guard.NotNullOrEmpty(command.TemplateCode);
+
+        if (string.IsNullOrWhiteSpace(command.TemplateCode))
+        {
+            command.TemplateCode = Guid.NewGuid().ToString();
+        }
 
         if (!command.IsUpsert)
         {

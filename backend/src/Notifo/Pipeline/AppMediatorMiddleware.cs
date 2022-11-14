@@ -28,13 +28,13 @@ public sealed class AppMediatorMiddleware : IMessageMiddleware<AppCommandBase>
 
         if (string.IsNullOrEmpty(request.AppId))
         {
-            request.AppId = httpContext?.Features.Get<IAppFeature>()?.App?.Id ?? throw new InvalidOperationException("Cannot resolve App ID.");
+            request.AppId = httpContext?.Features.Get<IAppFeature>()?.App?.Id!;
         }
 
         if (request.Principal == null)
         {
-            request.Principal = httpContext?.User ?? throw new InvalidOperationException("Cannot resolve principal.");
-            request.PrincipalId = request.Principal.UserId();
+            request.Principal = httpContext?.User ?? throw new InvalidOperationException("Cannot resolve Principal.");
+            request.PrincipalId = request.Principal.Sub() ?? throw new InvalidOperationException("Cannot resolve Principal ID.");
         }
 
         if (request.Timestamp == default)

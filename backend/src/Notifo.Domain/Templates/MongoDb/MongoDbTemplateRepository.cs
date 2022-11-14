@@ -82,12 +82,12 @@ public sealed class MongoDbTemplateRepository : MongoDbStore<MongoDbTemplate>, I
         }
     }
 
-    public async Task DeleteAsync(string appId, string id,
+    public async Task DeleteAsync(string appId, string code,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbTemplateRepository/DeleteAsync"))
         {
-            var docId = MongoDbTemplate.CreateId(appId, id);
+            var docId = MongoDbTemplate.CreateId(appId, code);
 
             await Collection.DeleteOneAsync(x => x.DocId == docId, ct);
         }

@@ -16,7 +16,7 @@ public abstract class CommandBase
 
     public ClaimsPrincipal Principal { get; set; }
 
-    public string? PrincipalId { get; set; }
+    public string PrincipalId { get; set; }
 
     public virtual bool CanCreate => false;
 

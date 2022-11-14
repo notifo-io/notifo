@@ -80,18 +80,11 @@ public sealed class AppsController : BaseController
     [Produces(typeof(AppDto))]
     public async Task<IActionResult> PostApp([FromBody] UpsertAppDto request)
     {
-        var subject = User.Sub();
-
-        if (string.IsNullOrWhiteSpace(subject))
-        {
-            return Forbid();
-        }
-
-        var command = request.ToCreate();
+        var command = request.ToUpsert();
 
         var app = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        var response = AppDto.FromDomainObject(app!, subject);
+        var response = AppDto.FromDomainObject(app!, command.PrincipalId);
 
         return Ok(response);
     }

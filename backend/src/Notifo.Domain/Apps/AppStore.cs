@@ -113,7 +113,10 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
     public async ValueTask<App?> HandleAsync(AppCommand command,
         CancellationToken ct)
     {
-        Guard.NotNull(command.AppId);
+        if (string.IsNullOrWhiteSpace(command.AppId))
+        {
+            command.AppId = Guid.NewGuid().ToString();
+        }
 
         if (!command.IsUpsert)
         {

@@ -12,6 +12,8 @@ using Notifo.Domain.Templates;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace Notifo.Areas.Api.Controllers.Templates;
 
 [ApiExplorerSettings(GroupName = "Templates")]

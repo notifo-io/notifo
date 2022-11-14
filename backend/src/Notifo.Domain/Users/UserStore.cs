@@ -123,7 +123,11 @@ public sealed class UserStore : IUserStore, IRequestHandler<UserCommand, User?>,
         CancellationToken ct)
     {
         Guard.NotNullOrEmpty(command.AppId);
-        Guard.NotNullOrEmpty(command.UserId);
+
+        if (string.IsNullOrWhiteSpace(command.UserId))
+        {
+            command.UserId = Guid.NewGuid().ToString();
+        }
 
         if (!command.IsUpsert)
         {
