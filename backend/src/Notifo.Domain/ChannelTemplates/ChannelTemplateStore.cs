@@ -107,17 +107,16 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>, IRequest
 
             var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
 
-            if (newTemplate == null || ReferenceEquals(template, newTemplate))
+            if (newTemplate != null && !ReferenceEquals(template, newTemplate))
             {
-                return template;
+                newTemplate = newTemplate with
+                {
+                    LastUpdate = now
+                };
+
+                await repository.UpsertAsync(newTemplate, etag, ct);
+                template = newTemplate;
             }
-
-            newTemplate = newTemplate with
-            {
-                LastUpdate = now
-            };
-
-            await repository.UpsertAsync(newTemplate, etag, ct);
 
             return newTemplate;
         });

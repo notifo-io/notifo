@@ -111,7 +111,7 @@ public sealed class TelegramMessagingSender : IMessagingSender
         {
             AppId = app.Id,
             PrincipalId = user.Id,
-            Principal = CommandBase<User>.BackendUser(user.Id),
+            Principal = CommandBase.BackendUser(user.Id),
             PropertyKey = TelegramIntegration.UserUsername.Name,
             PropertyValue = chatId
         };

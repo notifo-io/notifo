@@ -22,18 +22,6 @@ public abstract class CommandBase
 
     public virtual bool IsUpsert => true;
 
-    public virtual ValueTask<T?> ExecuteAsync(T target, IServiceProvider serviceProvider,
-        CancellationToken ct)
-    {
-        return default;
-    }
-
-    public virtual ValueTask ExecuteAsync(IServiceProvider serviceProvider,
-        CancellationToken ct)
-    {
-        return default;
-    }
-
     public static ClaimsPrincipal BackendUser(string userId)
     {
         var claimsIdentity = new ClaimsIdentity();

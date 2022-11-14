@@ -83,19 +83,18 @@ public sealed class TopicStore : ITopicStore, IRequestHandler<TopicCommand, Topi
 
             var newTopic = await command.ExecuteAsync(topic, serviceProvider, ct);
 
-            if (newTopic == null || ReferenceEquals(newTopic, topic))
+            if (newTopic != null && !ReferenceEquals(newTopic, topic))
             {
-                return topic;
+                newTopic = newTopic with
+                {
+                    LastUpdate = command.Timestamp
+                };
+
+                await repository.UpsertAsync(newTopic, etag, ct);
+                topic = newTopic;
             }
 
-            newTopic = newTopic with
-            {
-                LastUpdate = command.Timestamp
-            };
-
-            await repository.UpsertAsync(newTopic, etag, ct);
-
-            return newTopic;
+            return topic;
         });
     }
 }

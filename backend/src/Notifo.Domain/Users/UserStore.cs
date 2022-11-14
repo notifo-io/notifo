@@ -149,22 +149,20 @@ public sealed class UserStore : IUserStore, IRequestHandler<UserCommand, User?>,
 
             var newUser = await command.ExecuteAsync(user, serviceProvider, ct);
 
-            if (newUser == null || ReferenceEquals(newUser, user))
+            if (newUser != null && !ReferenceEquals(newUser, user))
             {
-                await DeliverAsync(user);
-                return user;
+                newUser = newUser with
+                {
+                    LastUpdate = command.Timestamp
+                };
+
+                await repository.UpsertAsync(newUser, etag, ct);
+                user = newUser;
             }
 
-            newUser = newUser with
-            {
-                LastUpdate = command.Timestamp
-            };
+            await DeliverAsync(user);
 
-            await repository.UpsertAsync(newUser, etag, ct);
-
-            await DeliverAsync(newUser, true);
-
-            return newUser;
+            return user;
         });
     }
 

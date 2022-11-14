@@ -90,17 +90,16 @@ public sealed class TemplateStore : ITemplateStore, IRequestHandler<TemplateComm
 
             var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
 
-            if (newTemplate == null || ReferenceEquals(newTemplate, template))
+            if (newTemplate != null && ReferenceEquals(newTemplate, template))
             {
-                return template;
+                newTemplate = newTemplate with
+                {
+                    LastUpdate = command.Timestamp
+                };
+
+                await repository.UpsertAsync(newTemplate, etag, ct);
+                template = newTemplate;
             }
-
-            newTemplate = newTemplate with
-            {
-                LastUpdate = command.Timestamp
-            };
-
-            await repository.UpsertAsync(newTemplate, etag, ct);
 
             return newTemplate;
         });

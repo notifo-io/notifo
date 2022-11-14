@@ -76,14 +76,13 @@ public sealed class SubscriptionStore : ISubscriptionStore, IRequestHandler<Subs
 
             var newSubscription = await command.ExecuteAsync(subscription, serviceProvider, ct);
 
-            if (newSubscription == null || ReferenceEquals(subscription, newSubscription))
+            if (newSubscription != null && !ReferenceEquals(subscription, newSubscription))
             {
-                return subscription;
+                await repository.UpsertAsync(newSubscription, etag, ct);
+                newSubscription = subscription;
             }
 
-            await repository.UpsertAsync(newSubscription, etag, ct);
-
-            return newSubscription;
+            return subscription;
         });
     }
 }

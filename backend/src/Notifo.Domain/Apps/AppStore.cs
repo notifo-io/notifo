@@ -148,7 +148,6 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
                 };
 
                 await repository.UpsertAsync(newApp, etag, ct);
-
                 app = newApp;
             }
 
