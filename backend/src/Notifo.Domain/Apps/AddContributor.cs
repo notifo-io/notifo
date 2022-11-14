@@ -16,10 +16,8 @@ using ValidationException = Notifo.Infrastructure.Validation.ValidationException
 
 namespace Notifo.Domain.Apps;
 
-public sealed class AddContributor : ICommand<App>
+public sealed class AddContributor : AppCommand
 {
-    public string UserId { get; set; }
-
     public string Email { get; set; }
 
     public string Role { get; set; }
@@ -33,7 +31,7 @@ public sealed class AddContributor : ICommand<App>
         }
     }
 
-    public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+    public override async ValueTask<App?> ExecuteAsync(App target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
@@ -49,14 +47,14 @@ public sealed class AddContributor : ICommand<App>
             throw new ValidationException(error);
         }
 
-        if (string.Equals(user.Id, UserId, StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(user.Id, PrincipalId, StringComparison.OrdinalIgnoreCase))
         {
             throw new DomainException(Texts.App_CannotUpdateYourself);
         }
 
-        var newApp = app with
+        var newApp = target with
         {
-            Contributors = app.Contributors.Set(user.Id, Role)
+            Contributors = target.Contributors.Set(user.Id, Role)
         };
 
         return newApp;

@@ -7,12 +7,11 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Utils;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class UpdateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
+public sealed class UpdateChannelTemplate<T> : ChannelTemplateCommand<T>
 {
     public string? Name { get; set; }
 
@@ -20,10 +19,10 @@ public sealed class UpdateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
 
     public Dictionary<string, T>? Languages { get; set; }
 
-    public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+    public override async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
-        var newTemplate = template;
+        var newTemplate = target;
 
         if (Languages != null)
         {
@@ -42,7 +41,7 @@ public sealed class UpdateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
             };
         }
 
-        if (Is.Changed(Name, template.Name))
+        if (Is.Changed(Name, target.Name))
         {
             newTemplate = newTemplate with
             {
@@ -50,7 +49,7 @@ public sealed class UpdateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
             };
         }
 
-        if (Is.Changed(Primary, template.Primary))
+        if (Is.Changed(Primary, target.Primary))
         {
             newTemplate = newTemplate with
             {

@@ -5,37 +5,34 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users;
 
-public sealed class UpdateMobileWakeupTime : ICommand<User>
+public sealed class UpdateMobileWakeupTime : UserCommand
 {
     public string Token { get; set; }
 
-    public Instant Timestamp { get; set; }
-
-    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
-        var index = user.MobilePushTokens.IndexOf(x => x.Token == Token);
+        var index = target.MobilePushTokens.IndexOf(x => x.Token == Token);
 
         if (index < 0)
         {
             return default;
         }
 
-        var newTokens = new List<MobilePushToken>(user.MobilePushTokens);
+        var newTokens = new List<MobilePushToken>(target.MobilePushTokens);
 
         newTokens[index] = newTokens[index] with
         {
             LastWakeup = Timestamp
         };
 
-        var newUser = user with
+        var newUser = target with
         {
             MobilePushTokens = newTokens.ToReadonlyList()
         };

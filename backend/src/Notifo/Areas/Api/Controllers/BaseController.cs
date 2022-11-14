@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain.Apps;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;
 
@@ -38,5 +39,10 @@ public abstract class BaseController : Controller
     public App App
     {
         get => HttpContext.Features.Get<IAppFeature>()!.App;
+    }
+
+    public IMediator Mediator
+    {
+        get => HttpContext.RequestServices.GetRequiredService<IMediator>();
     }
 }

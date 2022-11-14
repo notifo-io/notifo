@@ -8,13 +8,12 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Utils;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users;
 
-public sealed class UpsertUser : ICommand<User>
+public sealed class UpsertUser : UserCommand
 {
     public string? FullName { get; set; }
 
@@ -34,7 +33,7 @@ public sealed class UpsertUser : ICommand<User>
 
     public bool MergeSettings { get; set; }
 
-    public bool CanCreate => true;
+    public override bool CanCreate => true;
 
     private sealed class Validator : AbstractValidator<UpsertUser>
     {
@@ -47,14 +46,14 @@ public sealed class UpsertUser : ICommand<User>
         }
     }
 
-    public async ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override async ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        var newUser = user;
+        var newUser = target;
 
-        if (Is.Changed(FullName, user.FullName))
+        if (Is.Changed(FullName, target.FullName))
         {
             newUser = newUser with
             {
@@ -62,7 +61,7 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (Is.Changed(EmailAddress, user.EmailAddress))
+        if (Is.Changed(EmailAddress, target.EmailAddress))
         {
             newUser = newUser with
             {
@@ -70,7 +69,7 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (Is.Changed(PhoneNumber, user.PhoneNumber))
+        if (Is.Changed(PhoneNumber, target.PhoneNumber))
         {
             newUser = newUser with
             {
@@ -78,7 +77,7 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (Is.Changed(Properties, user.Properties))
+        if (Is.Changed(Properties, target.Properties))
         {
             newUser = newUser with
             {
@@ -86,7 +85,7 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (Is.Changed(PreferredLanguage, user.PreferredLanguage))
+        if (Is.Changed(PreferredLanguage, target.PreferredLanguage))
         {
             newUser = newUser with
             {
@@ -94,7 +93,7 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (Is.Changed(PreferredTimezone, user.PreferredTimezone))
+        if (Is.Changed(PreferredTimezone, target.PreferredTimezone))
         {
             newUser = newUser with
             {
@@ -102,7 +101,7 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (Is.Changed(RequiresWhitelistedTopics, user.RequiresWhitelistedTopics))
+        if (Is.Changed(RequiresWhitelistedTopics, target.RequiresWhitelistedTopics))
         {
             newUser = newUser with
             {
@@ -116,7 +115,7 @@ public sealed class UpsertUser : ICommand<User>
 
             if (MergeSettings)
             {
-                newSettings = ChannelSettings.Merged(user.Settings, Settings);
+                newSettings = ChannelSettings.Merged(target.Settings, Settings);
             }
 
             newUser = newUser with
@@ -125,13 +124,13 @@ public sealed class UpsertUser : ICommand<User>
             };
         }
 
-        if (string.IsNullOrWhiteSpace(user.ApiKey))
+        if (string.IsNullOrWhiteSpace(target.ApiKey))
         {
             var tokenGenerator = serviceProvider.GetRequiredService<IApiKeyGenerator>();
 
             newUser = newUser with
             {
-                ApiKey = await tokenGenerator.GenerateUserTokenAsync(user.AppId, user.Id)
+                ApiKey = await tokenGenerator.GenerateUserTokenAsync(target.AppId, target.Id)
             };
         }
 

@@ -13,7 +13,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps;
 
-public sealed class UpdateAppIntegrationStatus : ICommand<App>
+public sealed class UpdateAppIntegrationStatus : AppCommand
 {
     public Dictionary<string, IntegrationStatus> Status { get; set; }
 
@@ -25,12 +25,12 @@ public sealed class UpdateAppIntegrationStatus : ICommand<App>
         }
     }
 
-    public ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+    public override ValueTask<App?> ExecuteAsync(App target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        var newIntegrations = app.Integrations.ToMutable();
+        var newIntegrations = target.Integrations.ToMutable();
 
         foreach (var (id, status) in Status)
         {
@@ -40,7 +40,7 @@ public sealed class UpdateAppIntegrationStatus : ICommand<App>
             }
         }
 
-        var newApp = app with
+        var newApp = target with
         {
             Integrations = newIntegrations.ToReadonlyDictionary()
         };

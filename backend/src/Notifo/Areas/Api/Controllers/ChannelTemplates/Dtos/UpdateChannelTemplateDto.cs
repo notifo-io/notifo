@@ -27,10 +27,11 @@ public class UpdateChannelTemplateDto<TDto>
     /// </summary>
     public Dictionary<string, TDto>? Languages { get; set; }
 
-    public UpdateChannelTemplate<T> ToUpdate<T>(Func<TDto, T> mapper)
+    public UpdateChannelTemplate<T> ToUpdate<T>(string code, Func<TDto, T> mapper)
     {
         var result = SimpleMapper.Map(this, new UpdateChannelTemplate<T>());
 
+        result.TemplateCode = code;
         result.Languages = Languages?.ToDictionary(x => x.Key, x => mapper(x.Value));
 
         return result;

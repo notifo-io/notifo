@@ -15,7 +15,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps;
 
-public sealed class UpsertAppIntegration : ICommand<App>
+public sealed class UpsertAppIntegration : AppCommand
 {
     public string Id { get; set; }
 
@@ -50,14 +50,14 @@ public sealed class UpsertAppIntegration : ICommand<App>
         }
     }
 
-    public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+    public override async ValueTask<App?> ExecuteAsync(App target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
         ConfiguredIntegration configured;
 
-        if (app.Integrations.TryGetValue(Id, out var previousIntegration))
+        if (target.Integrations.TryGetValue(Id, out var previousIntegration))
         {
             Validate<UpdateValidator>.It(this);
 
@@ -91,11 +91,11 @@ public sealed class UpsertAppIntegration : ICommand<App>
         }
 
         await integrationManager.ValidateAsync(configured, ct);
-        await integrationManager.HandleConfiguredAsync(Id, app, configured, previousIntegration, ct);
+        await integrationManager.HandleConfiguredAsync(Id, target, configured, previousIntegration, ct);
 
-        var newApp = app with
+        var newApp = target with
         {
-            Integrations = app.Integrations.Set(Id, configured)
+            Integrations = target.Integrations.Set(Id, configured)
         };
 
         return newApp;

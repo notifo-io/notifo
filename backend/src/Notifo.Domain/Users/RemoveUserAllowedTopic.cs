@@ -5,26 +5,25 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users;
 
-public sealed class RemoveUserAllowedTopic : ICommand<User>
+public sealed class RemoveUserAllowedTopic : UserCommand
 {
     public TopicId Prefix { get; set; }
 
-    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
-        if (!user.AllowedTopics.Contains(Prefix))
+        if (!target.AllowedTopics.Contains(Prefix))
         {
             return default;
         }
 
-        var newUser = user with
+        var newUser = target with
         {
-            AllowedTopics = user.AllowedTopics.Remove(Prefix)
+            AllowedTopics = target.AllowedTopics.Remove(Prefix)
         };
 
         return new ValueTask<User?>(newUser);

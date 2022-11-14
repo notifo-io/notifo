@@ -63,6 +63,8 @@ public sealed class UpsertUserDto
     {
         var result = SimpleMapper.Map(this, new UpsertUser());
 
+        result.UserId = Id ?? Guid.NewGuid().ToString();
+
         if (Settings != null)
         {
             result.Settings = new ChannelSettings();

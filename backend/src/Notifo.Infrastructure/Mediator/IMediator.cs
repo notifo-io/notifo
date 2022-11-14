@@ -5,12 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure;
+namespace Notifo.Infrastructure.Mediator;
 
-public interface ICommand<T> where T : notnull
+public interface IMediator
 {
-    bool CanCreate => false;
-
-    ValueTask<T?> ExecuteAsync(T target, IServiceProvider serviceProvider,
-        CancellationToken ct);
+    Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
+        CancellationToken ct = default);
 }

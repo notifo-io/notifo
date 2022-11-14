@@ -11,6 +11,7 @@ using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure.Mediator;
 using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;
@@ -85,6 +86,7 @@ public sealed class TelegramIntegration : IIntegration
 
             return new TelegramMessagingSender(
                 () => botClientPool.GetBotClient(accessToken),
+                serviceProvider.GetRequiredService<IMediator>(),
                 serviceProvider.GetRequiredService<IUserStore>());
         }
 

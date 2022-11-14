@@ -7,21 +7,20 @@
 
 using NodaTime;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Templates;
 
-public sealed class TemplateStore : ITemplateStore
+public sealed class TemplateStore : ITemplateStore, IRequestHandler<TemplateCommand, Template?>
 {
     private readonly ITemplateRepository repository;
-    private readonly IServiceProvider services;
-    private readonly IClock clock;
+    private readonly IServiceProvider serviceProvider;
 
     public TemplateStore(ITemplateRepository repository,
-        IServiceProvider services, IClock clock)
+        IServiceProvider serviceProvider)
     {
         this.repository = repository;
-        this.services = services;
-        this.clock = clock;
+        this.serviceProvider = serviceProvider;
     }
 
     public async Task<IResultList<Template>> QueryAsync(string appId, TemplateQuery query,
@@ -43,12 +42,9 @@ public sealed class TemplateStore : ITemplateStore
 
         var (template, _) = await repository.GetAsync(appId, code, ct);
 
-        // Calculate once to have some timestamp for created and updated when new entity is created.
-        var now = clock.GetCurrentInstant();
-
         if (template == null)
         {
-            template = new Template(appId, code, now)
+            template = new Template(appId, code, SystemClock.Instance.GetCurrentInstant())
             {
                 IsAutoCreated = true
             };
@@ -66,54 +62,46 @@ public sealed class TemplateStore : ITemplateStore
         return template;
     }
 
-    public Task<Template> UpsertAsync(string appId, string code, ICommand<Template> command,
-        CancellationToken ct = default)
+    public async ValueTask<Template?> HandleAsync(TemplateCommand command,
+        CancellationToken ct)
     {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(code);
-        Guard.NotNull(command);
+        Guard.NotNullOrEmpty(command.AppId);
+        Guard.NotNullOrEmpty(command.TemplateCode);
 
-        return Updater.UpdateRetriedAsync(5, async () =>
+        if (!command.IsUpsert)
         {
-            var (template, etag) = await repository.GetAsync(appId, code, ct);
+            await command.ExecuteAsync(serviceProvider, ct);
+            return null!;
+        }
 
-            // Calculate once to have some timestamp for created and updated when new entity is created.
-            var now = clock.GetCurrentInstant();
+        return await Updater.UpdateRetriedAsync(5, async () =>
+        {
+            var (template, etag) = await repository.GetAsync(command.AppId, command.TemplateCode, ct);
 
             if (template == null)
             {
                 if (!command.CanCreate)
                 {
-                    throw new DomainObjectNotFoundException(code);
+                    throw new DomainObjectNotFoundException(command.TemplateCode);
                 }
 
-                template = new Template(appId, code, now);
+                template = new Template(command.AppId, command.TemplateCode, command.Timestamp);
             }
 
-            var newTemplate = await command.ExecuteAsync(template, services, ct);
+            var newTemplate = await command.ExecuteAsync(template, serviceProvider, ct);
 
-            if (newTemplate == null || ReferenceEquals(newTemplate, template))
+            if (newTemplate != null && !ReferenceEquals(newTemplate, template))
             {
-                return template;
+                newTemplate = newTemplate with
+                {
+                    LastUpdate = command.Timestamp
+                };
+
+                await repository.UpsertAsync(newTemplate, etag, ct);
+                template = newTemplate;
             }
-
-            newTemplate = newTemplate with
-            {
-                LastUpdate = now
-            };
-
-            await repository.UpsertAsync(newTemplate, etag, ct);
 
             return newTemplate;
         });
-    }
-
-    public Task DeleteAsync(string appId, string code,
-        CancellationToken ct = default)
-    {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(code);
-
-        return repository.DeleteAsync(appId, code, ct);
     }
 }

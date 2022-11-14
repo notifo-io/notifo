@@ -16,6 +16,8 @@ public static class TemplatesServiceExtensions
     {
         services.AddSingletonAs<TemplateStore>()
             .As<ITemplateStore>();
+
+        services.AddRequestHandler<TemplateStore, TemplateCommand, Template?>();
     }
 
     public static void AddMyMongoTemplates(this IServiceCollection services)

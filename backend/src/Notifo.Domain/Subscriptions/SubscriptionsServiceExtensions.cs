@@ -16,6 +16,8 @@ public static class SubscriptionsServiceExtensions
     {
         services.AddSingletonAs<SubscriptionStore>()
             .As<ISubscriptionStore>();
+
+        services.AddRequestHandler<SubscriptionStore, SubscriptionCommand, Subscription?>();
     }
 
     public static void AddMyMongoSubscriptions(this IServiceCollection services)

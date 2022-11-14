@@ -12,6 +12,8 @@ using Notifo.Domain.Templates;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace Notifo.Areas.Api.Controllers.Templates;
 
 [ApiExplorerSettings(GroupName = "Templates")]
@@ -60,11 +62,11 @@ public sealed class TemplatesController : BaseController
 
         foreach (var dto in request.Requests.OrEmpty().NotNull())
         {
-            var update = dto.ToUpdate();
+            var command = dto.ToUpdate(dto.Code);
 
-            var template = await templateStore.UpsertAsync(appId, dto.Code, update, HttpContext.RequestAborted);
+            var template = await Mediator.Send(command, HttpContext.RequestAborted);
 
-            response.Add(TemplateDto.FromDomainObject(template));
+            response.Add(TemplateDto.FromDomainObject(template!));
         }
 
         return Ok(response);
@@ -81,7 +83,9 @@ public sealed class TemplatesController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteTemplate(string appId, string code)
     {
-        await templateStore.DeleteAsync(appId, code, HttpContext.RequestAborted);
+        var command = new DeleteTemplate { TemplateCode = code };
+
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

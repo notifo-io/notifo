@@ -12,6 +12,7 @@ using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Users;
+using Notifo.Infrastructure.Mediator;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TelegramChat = Telegram.Bot.Types.Chat;
@@ -25,13 +26,15 @@ public sealed class TelegramMessagingSender : IMessagingSender
     private const int Attempts = 5;
     private const string TelegramChatId = nameof(TelegramChatId);
     private readonly Func<ITelegramBotClient> client;
+    private readonly IMediator mediator;
     private readonly IUserStore userStore;
 
     public string Name => "Telegram";
 
-    public TelegramMessagingSender(Func<ITelegramBotClient> client, IUserStore userStore)
+    public TelegramMessagingSender(Func<ITelegramBotClient> client, IMediator mediator, IUserStore userStore)
     {
         this.client = client;
+        this.mediator = mediator;
         this.userStore = userStore;
     }
 
@@ -104,11 +107,13 @@ public sealed class TelegramMessagingSender : IMessagingSender
             return;
         }
 
-        await userStore.UpsertAsync(app.Id, user.Id, new SetUserSystemProperty
+        var command = new SetUserSystemProperty
         {
             PropertyKey = TelegramIntegration.UserUsername.Name,
             PropertyValue = chatId
-        }, ct);
+        }.WithTracking(app.Id, user.Id);
+
+        await mediator.Send(command, ct);
 
         await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
     }

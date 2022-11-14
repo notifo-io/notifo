@@ -6,29 +6,27 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Logging;
-using NodaTime;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Squidex.Caching;
 
 namespace Notifo.Domain.Users;
 
-public sealed class UserStore : IUserStore, ICounterTarget, IDisposable
+public sealed class UserStore : IUserStore, IRequestHandler<UserCommand, User?>, ICounterTarget, IDisposable
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     private readonly IUserRepository repository;
-    private readonly IServiceProvider services;
+    private readonly IServiceProvider serviceProvider;
     private readonly IReplicatedCache cache;
-    private readonly IClock clock;
     private readonly CounterCollector<(string, string)> collector;
 
     public UserStore(IUserRepository repository,
-        IServiceProvider services, IReplicatedCache cache, IClock clock, ILogger<UserStore> log)
+        IServiceProvider serviceProvider, IReplicatedCache cache, ILogger<UserStore> log)
     {
         this.repository = repository;
-        this.services = services;
+        this.serviceProvider = serviceProvider;
         this.cache = cache;
-        this.clock = clock;
 
         collector = new CounterCollector<(string, string)>(repository, log, 5000);
     }
@@ -121,63 +119,55 @@ public sealed class UserStore : IUserStore, ICounterTarget, IDisposable
         return user;
     }
 
-    public Task<User> UpsertAsync(string appId, string? id, ICommand<User> command,
-        CancellationToken ct = default)
+    public async ValueTask<User?> HandleAsync(UserCommand command,
+        CancellationToken ct)
     {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNull(command);
+        Guard.NotNullOrEmpty(command.AppId);
 
-        if (string.IsNullOrWhiteSpace(id))
+        if (string.IsNullOrWhiteSpace(command.UserId))
         {
-            id = Guid.NewGuid().ToString();
+            command.UserId = Guid.NewGuid().ToString();
         }
 
-        return Updater.UpdateRetriedAsync(5, async () =>
+        if (!command.IsUpsert)
         {
-            var (user, etag) = await repository.GetAsync(appId, id, ct);
+            await command.ExecuteAsync(serviceProvider, ct);
 
-            var now = clock.GetCurrentInstant();
+            await cache.RemoveAsync(User.BuildId(command.AppId, command.UserId), default);
+            return null;
+        }
+
+        return await Updater.UpdateRetriedAsync(5, async () =>
+        {
+            var (user, etag) = await repository.GetAsync(command.AppId, command.UserId, ct);
 
             if (user == null)
             {
                 if (!command.CanCreate)
                 {
-                    throw new DomainObjectNotFoundException(id);
+                    throw new DomainObjectNotFoundException(command.UserId);
                 }
 
-                user = new User(appId, id, now);
+                user = new User(command.AppId, command.UserId, command.Timestamp);
             }
 
-            var newUser = await command.ExecuteAsync(user, services, ct);
+            var newUser = await command.ExecuteAsync(user, serviceProvider, ct);
 
-            if (newUser == null || ReferenceEquals(newUser, user))
+            if (newUser != null && !ReferenceEquals(newUser, user))
             {
-                await DeliverAsync(user);
-                return user;
+                newUser = newUser with
+                {
+                    LastUpdate = command.Timestamp
+                };
+
+                await repository.UpsertAsync(newUser, etag, ct);
+                user = newUser;
             }
 
-            newUser = newUser with
-            {
-                LastUpdate = now
-            };
+            await DeliverAsync(user);
 
-            await repository.UpsertAsync(newUser, etag, ct);
-
-            await DeliverAsync(newUser, true);
-
-            return newUser;
+            return user;
         });
-    }
-
-    public async Task DeleteAsync(string appId, string id,
-        CancellationToken ct = default)
-    {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(id);
-
-        await repository.DeleteAsync(appId, id, ct);
-
-        await cache.RemoveAsync($"{appId}_{id}", default);
     }
 
     private async Task DeliverAsync(User? user, bool remove = false)

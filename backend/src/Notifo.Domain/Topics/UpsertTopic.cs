@@ -14,7 +14,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Topics;
 
-public sealed class UpsertTopic : ICommand<Topic>
+public sealed class UpsertTopic : TopicCommand
 {
     public LocalizedText? Name { get; set; }
 
@@ -24,7 +24,7 @@ public sealed class UpsertTopic : ICommand<Topic>
 
     public bool? ShowAutomatically { get; set; }
 
-    public bool CanCreate => true;
+    public override bool CanCreate => true;
 
     private sealed class Validator : AbstractValidator<UpsertTopic>
     {
@@ -34,17 +34,17 @@ public sealed class UpsertTopic : ICommand<Topic>
         }
     }
 
-    public ValueTask<Topic?> ExecuteAsync(Topic topic, IServiceProvider serviceProvider,
+    public override ValueTask<Topic?> ExecuteAsync(Topic target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        var newTopic = topic with
+        var newTopic = target with
         {
             IsExplicit = true
         };
 
-        if (Is.Changed(Name, topic.Name))
+        if (Is.Changed(Name, target.Name))
         {
             newTopic = newTopic with
             {
@@ -52,7 +52,7 @@ public sealed class UpsertTopic : ICommand<Topic>
             };
         }
 
-        if (Is.Changed(Description, topic.Description))
+        if (Is.Changed(Description, target.Description))
         {
             newTopic = newTopic with
             {
@@ -60,7 +60,7 @@ public sealed class UpsertTopic : ICommand<Topic>
             };
         }
 
-        if (Is.Changed(ShowAutomatically, topic.ShowAutomatically))
+        if (Is.Changed(ShowAutomatically, target.ShowAutomatically))
         {
             newTopic = newTopic with
             {

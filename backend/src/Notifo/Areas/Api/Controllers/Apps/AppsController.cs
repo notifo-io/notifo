@@ -80,18 +80,11 @@ public sealed class AppsController : BaseController
     [Produces(typeof(AppDto))]
     public async Task<IActionResult> PostApp([FromBody] UpsertAppDto request)
     {
-        var subject = User.Sub();
+        var command = request.ToUpsert();
 
-        if (string.IsNullOrWhiteSpace(subject))
-        {
-            return Forbid();
-        }
+        var app = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        var update = request.ToUpsert(subject);
-
-        var app = await appStore.UpsertAsync(null, update, HttpContext.RequestAborted);
-
-        var response = AppDto.FromDomainObject(app, subject);
+        var response = AppDto.FromDomainObject(app!, command.PrincipalId);
 
         return Ok(response);
     }
@@ -108,11 +101,11 @@ public sealed class AppsController : BaseController
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> PutApp(string appId, [FromBody] UpsertAppDto request)
     {
-        var update = request.ToUpsert(UserIdOrSub);
+        var command = request.ToUpsert();
 
-        var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+        var app = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        var response = await AppDetailsDto.FromDomainObjectAsync(app, UserIdOrSub, userResolver);
+        var response = await AppDetailsDto.FromDomainObjectAsync(app!, UserIdOrSub, userResolver);
 
         return Ok(response);
     }
@@ -129,11 +122,11 @@ public sealed class AppsController : BaseController
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> PostContributor(string appId, [FromBody] AddContributorDto request)
     {
-        var update = request.ToUpdate(UserIdOrSub);
+        var command = request.ToUpdate();
 
-        var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+        var app = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        var response = await AppDetailsDto.FromDomainObjectAsync(app, UserIdOrSub, userResolver);
+        var response = await AppDetailsDto.FromDomainObjectAsync(app!, UserIdOrSub, userResolver);
 
         return Ok(response);
     }
@@ -150,11 +143,11 @@ public sealed class AppsController : BaseController
     [Produces(typeof(AppDetailsDto))]
     public async Task<IActionResult> DeleteContributor(string appId, string contributorId)
     {
-        var update = new RemoveContributor { ContributorId = contributorId, UserId = UserIdOrSub };
+        var command = new RemoveContributor { ContributorId = contributorId };
 
-        var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+        var app = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        var response = await AppDetailsDto.FromDomainObjectAsync(app, UserIdOrSub, userResolver);
+        var response = await AppDetailsDto.FromDomainObjectAsync(app!, UserIdOrSub, userResolver);
 
         return Ok(response);
     }
@@ -187,11 +180,11 @@ public sealed class AppsController : BaseController
     [Produces(typeof(IntegrationCreatedDto))]
     public async Task<IActionResult> PostIntegration(string appId, [FromBody] CreateIntegrationDto request)
     {
-        var update = request.ToUpdate();
+        var command = request.ToUpdate();
 
-        var app = await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+        var app = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        var response = IntegrationCreatedDto.FromDomainObject(app, update.Id);
+        var response = IntegrationCreatedDto.FromDomainObject(app!, command.Id);
 
         return Ok(response);
     }
@@ -209,9 +202,9 @@ public sealed class AppsController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> PutIntegration(string appId, string id, [FromBody] UpdateIntegrationDto request)
     {
-        var update = request.ToUpdate(id);
+        var command = request.ToUpdate(id);
 
-        await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -228,9 +221,9 @@ public sealed class AppsController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteIntegration(string appId, string id)
     {
-        var update = new DeleteAppIntegration { Id = id };
+        var command = new DeleteAppIntegration { IntegrationId = id };
 
-        await appStore.UpsertAsync(appId, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

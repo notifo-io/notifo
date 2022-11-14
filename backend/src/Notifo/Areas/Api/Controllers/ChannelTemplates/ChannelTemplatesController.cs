@@ -13,6 +13,8 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 using Notifo.Pipeline;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates;
 
 public abstract class ChannelTemplatesController<T, TDto> : BaseController where T : class, new() where TDto : class, new()
@@ -77,48 +79,48 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     [AppPermission(NotifoRoles.AppAdmin)]
     public async Task<ChannelTemplateDetailsDto<TDto>> PostTemplate(string appId, [FromBody] CreateChannelTemplateDto request)
     {
-        var update = request.ToUpdate<T>(App.Language);
+        var command = request.ToUpdate<T>(App.Language);
 
-        var template = await channelTemplateStore.UpsertAsync(appId, null!, update, HttpContext.RequestAborted);
+        var template = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template, ToDto);
+        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template!, ToDto);
     }
 
     /// <summary>
     /// Create an app template language.
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
-    /// <param name="id">The template ID.</param>
+    /// <param name="code">The template code.</param>
     /// <param name="request">The request object.</param>
     /// <response code="200">Channel template created.</response>.
     /// <response code="404">Channel template or app not found.</response>.
-    [HttpPost("{id:notEmpty}")]
+    [HttpPost("{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    public async Task<TDto> PostTemplateLanguage(string appId, string id, [FromBody] CreateChannelTemplateLanguageDto request)
+    public async Task<TDto> PostTemplateLanguage(string appId, string code, [FromBody] CreateChannelTemplateLanguageDto request)
     {
-        var update = request.ToUpdate<T>();
+        var command = request.ToUpdate<T>(code);
 
-        var template = await channelTemplateStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        var template = await Mediator.Send(command, HttpContext.RequestAborted);
 
-        return ToDto(template.Languages[request.Language]);
+        return ToDto(template!.Languages[request.Language]);
     }
 
     /// <summary>
     /// Update an app template.
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
-    /// <param name="id">The template ID.</param>
+    /// <param name="code">The template code.</param>
     /// <param name="request">The request object.</param>
     /// <response code="204">Channel template updated.</response>.
     /// <response code="404">Channel template or app not found.</response>.
-    [HttpPut("{id:notEmpty}")]
+    [HttpPut("{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> PutTemplate(string appId, string id, [FromBody] UpdateChannelTemplateDto<TDto> request)
+    public async Task<IActionResult> PutTemplate(string appId, string code, [FromBody] UpdateChannelTemplateDto<TDto> request)
     {
-        var update = request.ToUpdate(FromDto);
+        var command = request.ToUpdate(code, FromDto);
 
-        await channelTemplateStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        var template = await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -127,19 +129,19 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// Update a channel template language.
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
-    /// <param name="id">The template ID.</param>
+    /// <param name="code">The template code.</param>
     /// <param name="language">The language.</param>
     /// <param name="request">The request object.</param>
     /// <response code="204">Channel template updated.</response>.
     /// <response code="404">Channel template or app not found.</response>.
-    [HttpPut("{id:notEmpty}/{language:notEmpty}")]
+    [HttpPut("{code:notEmpty}/{language:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> PutTemplateLanguage(string appId, string id, string language, [FromBody] TDto request)
+    public async Task<IActionResult> PutTemplateLanguage(string appId, string code, string language, [FromBody] TDto request)
     {
-        var update = new UpdateChannelTemplateLanguage<T> { Language = language, Template = FromDto(request) };
+        var command = new UpdateChannelTemplateLanguage<T> { TemplateCode = code, Language = language, Template = FromDto(request) };
 
-        await channelTemplateStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -148,18 +150,18 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// Delete a language channel template.
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
-    /// <param name="id">The template ID.</param>
+    /// <param name="code">The template ID.</param>
     /// <param name="language">The language.</param>
     /// <response code="204">Channel template updated.</response>.
     /// <response code="404">Channel template or app not found.</response>.
-    [HttpDelete("{id:notEmpty}/{language:notEmpty}")]
+    [HttpDelete("{code:notEmpty}/{language:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteTemplateLanguage(string appId, string id, string language)
+    public async Task<IActionResult> DeleteTemplateLanguage(string appId, string code, string language)
     {
-        var update = new DeleteChannelTemplateLanguage<T> { Language = language };
+        var command = new DeleteChannelTemplateLanguage<T> { TemplateCode = code, Language = language };
 
-        await channelTemplateStore.UpsertAsync(appId, id, update, HttpContext.RequestAborted);
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -168,15 +170,17 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// Delete a channel template.
     /// </summary>
     /// <param name="appId">The id of the app where the templates belong to.</param>
-    /// <param name="id">The template ID.</param>
+    /// <param name="code">The template ID.</param>
     /// <response code="204">Channel template deleted.</response>.
     /// <response code="404">Channel template or app not found.</response>.
-    [HttpDelete("{id:notEmpty}")]
+    [HttpDelete("{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteTemplate(string appId, string id)
+    public async Task<IActionResult> DeleteTemplate(string appId, string code)
     {
-        await channelTemplateStore.DeleteAsync(appId, id, HttpContext.RequestAborted);
+        var command = new DeleteChannelTemplate<T> { TemplateCode = code };
+
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

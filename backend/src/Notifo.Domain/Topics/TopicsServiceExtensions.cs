@@ -17,6 +17,8 @@ public static class TopicsServiceExtensions
     {
         services.AddSingletonAs<TopicStore>()
             .As<ITopicStore>().As<ICounterTarget>();
+
+        services.AddRequestHandler<TopicStore, TopicCommand, Topic?>();
     }
 
     public static void AddMyMongoTopics(this IServiceCollection services)

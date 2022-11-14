@@ -5,29 +5,28 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Users;
 
-public sealed class AddUserAllowedTopic : ICommand<User>
+public sealed class AddUserAllowedTopic : UserCommand
 {
     public TopicId Prefix { get; set; }
 
-    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
-        if (user.AllowedTopics.Contains(Prefix))
+        if (target.AllowedTopics.Contains(Prefix))
         {
             return default;
         }
 
-        var newAllowedTopics = new List<string>(user.AllowedTopics)
+        var newAllowedTopics = new List<string>(target.AllowedTopics)
         {
             Prefix
         };
 
-        var newUser = user with
+        var newUser = target with
         {
             AllowedTopics = newAllowedTopics.ToReadonlyList()
         };

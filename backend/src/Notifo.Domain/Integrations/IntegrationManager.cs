@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Timers;
 using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
@@ -18,8 +19,9 @@ namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 {
-    private readonly IEnumerable<IIntegration> appIntegrations;
+    private readonly IEnumerable<IIntegration> integrations;
     private readonly IAppStore appStore;
+    private readonly IMediator mediator;
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger<IntegrationManager> log;
     private readonly ConditionEvaluator conditionEvaluator;
@@ -27,14 +29,15 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
     public IEnumerable<IntegrationDefinition> Definitions
     {
-        get => appIntegrations.Select(x => x.Definition);
+        get => integrations.Select(x => x.Definition);
     }
 
-    public IntegrationManager(IEnumerable<IIntegration> appIntegrations, IAppStore appStore,
+    public IntegrationManager(IEnumerable<IIntegration> integrations, IAppStore appStore, IMediator mediator,
         IServiceProvider serviceProvider, ILogger<IntegrationManager> log)
     {
-        this.appIntegrations = appIntegrations;
+        this.integrations = integrations;
         this.appStore = appStore;
+        this.mediator = mediator;
         this.serviceProvider = serviceProvider;
         this.log = log;
 
@@ -60,7 +63,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     {
         Guard.NotNull(configured);
 
-        var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
         if (integration == null)
         {
@@ -96,7 +99,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         Guard.NotNull(app);
         Guard.NotNull(configured);
 
-        var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
         if (integration == null)
         {
@@ -115,7 +118,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         Guard.NotNull(app);
         Guard.NotNull(configured);
 
-        var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
         if (integration == null)
         {
@@ -189,7 +192,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                 continue;
             }
 
-            var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+            var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
             if (integration != null)
             {
@@ -243,7 +246,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                         continue;
                     }
 
-                    var integration = appIntegrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+                    var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
 
                     if (integration == null)
                     {
@@ -268,12 +271,9 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
                 if (updates.Count > 0)
                 {
-                    var command = new UpdateAppIntegrationStatus
-                    {
-                        Status = updates
-                    };
+                    var command = new UpdateAppIntegrationStatus { AppId = app.Id, Status = updates };
 
-                    await appStore.UpsertAsync(app.Id, command, ct);
+                    await mediator.Send(command, ct);
                 }
             }
         }

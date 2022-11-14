@@ -13,7 +13,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class CreateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<T>>
+public sealed class CreateChannelTemplateLanguage<T> : ChannelTemplateCommand<T>
 {
     public string Language { get; set; }
 
@@ -25,23 +25,23 @@ public sealed class CreateChannelTemplateLanguage<T> : ICommand<ChannelTemplate<
         }
     }
 
-    public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+    public override async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
         var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-        if (template.Languages.ContainsKey(Language))
+        if (target.Languages.ContainsKey(Language))
         {
             throw new DomainObjectConflictException(Language);
         }
 
-        var channelInstance = await channelFactory.CreateInitialAsync(template.Kind, ct);
+        var channelInstance = await channelFactory.CreateInitialAsync(target.Kind, ct);
 
-        var newTemplate = template with
+        var newTemplate = target with
         {
-            Languages = template.Languages.Set(Language, channelInstance)
+            Languages = target.Languages.Set(Language, channelInstance)
         };
 
         return newTemplate;

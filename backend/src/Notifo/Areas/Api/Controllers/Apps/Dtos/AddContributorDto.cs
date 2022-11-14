@@ -25,12 +25,8 @@ public sealed class AddContributorDto
     [Required]
     public string Role { get; set; }
 
-    public AddContributor ToUpdate(string userId)
+    public AddContributor ToUpdate()
     {
-        var result = SimpleMapper.Map(this, new AddContributor());
-
-        result.UserId = userId;
-
-        return result;
+        return SimpleMapper.Map(this, new AddContributor());
     }
 }

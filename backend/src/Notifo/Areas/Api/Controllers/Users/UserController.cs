@@ -13,7 +13,6 @@ using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
-using System.Net;
 
 namespace Notifo.Areas.Api.Controllers.Users;
 
@@ -57,9 +56,9 @@ public class UserController : BaseController
     [Produces(typeof(ProfileDto))]
     public async Task<IActionResult> PostUser([FromBody] UpdateProfileDto request)
     {
-        var update = request.ToUpsert();
+        var command = request.ToUpsert(UserId);
 
-        var user = await userStore.UpsertAsync(App.Id, UserIdOrSub, update, HttpContext.RequestAborted);
+        var user = await Mediator.Send(command, HttpContext.RequestAborted);
 
         var response = ProfileDto.FromDomainObject(user!, App);
 
@@ -144,14 +143,16 @@ public class UserController : BaseController
     {
         foreach (var dto in request.Subscribe.OrEmpty())
         {
-            var update = dto.ToUpdate();
+            var update = dto.ToUpdate(UserId);
 
-            await subscriptionStore.UpsertAsync(App.Id, UserId, dto.TopicPrefix, update, HttpContext.RequestAborted);
+            await Mediator.Send(update, HttpContext.RequestAborted);
         }
 
         foreach (var topic in request.Unsubscribe.OrEmpty())
         {
-            await subscriptionStore.DeleteAsync(App.Id, UserId, topic, HttpContext.RequestAborted);
+            var update = new DeleteSubscription { UserId = UserId, Topic = topic };
+
+            await Mediator.Send(update, HttpContext.RequestAborted);
         }
 
         return NoContent();
@@ -170,7 +171,9 @@ public class UserController : BaseController
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteSubscription(string prefix)
     {
-        await subscriptionStore.DeleteAsync(App.Id, UserId, Uri.UnescapeDataString(prefix), HttpContext.RequestAborted);
+        var command = new DeleteSubscription { UserId = UserId, Topic = Uri.UnescapeDataString(prefix) };
+
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

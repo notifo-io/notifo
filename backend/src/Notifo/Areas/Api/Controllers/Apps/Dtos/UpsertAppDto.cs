@@ -62,12 +62,8 @@ public sealed class UpsertAppDto
     /// </summary>
     public bool? AllowSms { get; set; }
 
-    public UpsertApp ToUpsert(string userId)
+    public UpsertApp ToUpsert()
     {
-        var result = SimpleMapper.Map(this, new UpsertApp());
-
-        result.UserId = userId;
-
-        return result;
+        return SimpleMapper.Map(this, new UpsertApp());
     }
 }

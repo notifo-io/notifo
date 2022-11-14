@@ -36,8 +36,8 @@ public class Startup
 
         services.AddDefaultWebServices(config);
         services.AddDefaultForwardRules();
-
         services.AddCors();
+        services.AddMediator().AddPipeline();
 
         services.AddLocalization(options =>
         {

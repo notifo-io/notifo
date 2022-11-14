@@ -19,10 +19,4 @@ public interface IChannelTemplateStore<T> where T : class
 
     Task<ChannelTemplate<T>?> GetAsync(string appId, string id,
         CancellationToken ct = default);
-
-    Task<ChannelTemplate<T>> UpsertAsync(string appId, string? id, ICommand<ChannelTemplate<T>> update,
-        CancellationToken ct = default);
-
-    Task DeleteAsync(string appId, string id,
-        CancellationToken ct = default);
 }

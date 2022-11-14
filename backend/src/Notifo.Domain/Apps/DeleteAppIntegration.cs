@@ -14,35 +14,35 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Apps;
 
-public sealed class DeleteAppIntegration : ICommand<App>
+public sealed class DeleteAppIntegration : AppCommand
 {
-    public string Id { get; set; }
+    public string IntegrationId { get; set; }
 
     private sealed class Validator : AbstractValidator<DeleteAppIntegration>
     {
         public Validator()
         {
-            RuleFor(x => x.Id).NotNull();
+            RuleFor(x => x.IntegrationId).NotNull();
         }
     }
 
-    public async ValueTask<App?> ExecuteAsync(App app, IServiceProvider serviceProvider,
+    public override async ValueTask<App?> ExecuteAsync(App target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
-        if (!app.Integrations.TryGetValue(Id, out var removed))
+        if (!target.Integrations.TryGetValue(IntegrationId, out var removed))
         {
             return default;
         }
 
         var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
-        await integrationManager.HandleRemovedAsync(Id, app, removed, ct);
+        await integrationManager.HandleRemovedAsync(IntegrationId, target, removed, ct);
 
-        var newApp = app with
+        var newApp = target with
         {
-            Integrations = app.Integrations.Where(x => x.Key != Id).ToReadonlyDictionary()
+            Integrations = target.Integrations.Where(x => x.Key != IntegrationId).ToReadonlyDictionary()
         };
 
         return newApp;

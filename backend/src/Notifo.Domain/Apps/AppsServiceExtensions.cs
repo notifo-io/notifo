@@ -17,6 +17,8 @@ public static class AppsServiceExtensions
     {
         services.AddSingletonAs<AppStore>()
             .As<IAppStore>().As<ICounterTarget>();
+
+        services.AddRequestHandler<AppStore, AppCommand, App?>();
     }
 
     public static void AddMyMongoApps(this IServiceCollection services)

@@ -12,7 +12,7 @@ using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Users;
 
-public sealed class RemoveUserWebPushSubscription : ICommand<User>
+public sealed class RemoveUserWebPushSubscription : UserCommand
 {
     public string Endpoint { get; set; }
 
@@ -24,21 +24,21 @@ public sealed class RemoveUserWebPushSubscription : ICommand<User>
         }
     }
 
-    public ValueTask<User?> ExecuteAsync(User user, IServiceProvider serviceProvider,
+    public override ValueTask<User?> ExecuteAsync(User target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         Validate<Validator>.It(this);
 
         var endpoint = Simplify(Endpoint);
 
-        if (user.WebPushSubscriptions.All(x => Simplify(x.Endpoint) != endpoint))
+        if (target.WebPushSubscriptions.All(x => Simplify(x.Endpoint) != endpoint))
         {
             return default;
         }
 
-        var newUser = user with
+        var newUser = target with
         {
-            WebPushSubscriptions = user.WebPushSubscriptions.RemoveAll(x => Simplify(x.Endpoint) == endpoint)
+            WebPushSubscriptions = target.WebPushSubscriptions.RemoveAll(x => Simplify(x.Endpoint) == endpoint)
         };
 
         return new ValueTask<User?>(newUser);

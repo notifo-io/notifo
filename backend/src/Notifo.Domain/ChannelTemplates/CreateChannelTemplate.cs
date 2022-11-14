@@ -6,25 +6,24 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.ChannelTemplates;
 
-public sealed class CreateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
+public sealed class CreateChannelTemplate<T> : ChannelTemplateCommand<T>
 {
     public string? Language { get; set; }
 
     public string? Kind { get; set; }
 
-    public bool CanCreate => true;
+    public override bool CanCreate => true;
 
-    public async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> template, IServiceProvider serviceProvider,
+    public override async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
-        var newTemplate = template;
+        var newTemplate = target;
 
-        if (Kind != null && !string.Equals(Kind, template.Name, StringComparison.Ordinal))
+        if (Kind != null && !string.Equals(Kind, target.Name, StringComparison.Ordinal))
         {
             newTemplate = newTemplate with
             {
@@ -39,7 +38,7 @@ public sealed class CreateChannelTemplate<T> : ICommand<ChannelTemplate<T>>
 
             newTemplate = newTemplate with
             {
-                Languages = template.Languages.Set(Language, channelInstance)
+                Languages = target.Languages.Set(Language, channelInstance)
             };
         }
 

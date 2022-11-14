@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
-
 namespace Notifo.Domain.Apps;
 
 public interface IAppStore
@@ -24,8 +22,5 @@ public interface IAppStore
         CancellationToken ct = default);
 
     Task<App?> GetCachedAsync(string id,
-        CancellationToken ct = default);
-
-    Task<App> UpsertAsync(string? id, ICommand<App> update,
         CancellationToken ct = default);
 }

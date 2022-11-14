@@ -24,9 +24,12 @@ public sealed class SubscribeDto
     /// </summary>
     public Dictionary<string, ChannelSettingDto>? TopicSettings { get; set; }
 
-    public Subscribe ToUpdate()
+    public Subscribe ToUpdate(string userId)
     {
-        var result = new Subscribe();
+        var result = new Subscribe
+        {
+            Topic = new TopicId(TopicPrefix)
+        };
 
         if (TopicSettings?.Any() == true)
         {
@@ -40,6 +43,8 @@ public sealed class SubscribeDto
                 }
             }
         }
+
+        result.UserId = userId;
 
         return result;
     }

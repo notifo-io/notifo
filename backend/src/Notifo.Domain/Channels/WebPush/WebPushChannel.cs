@@ -15,6 +15,7 @@ using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Json;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Scheduling;
 using WebPush;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.WebPush.WebPushJob>;
@@ -27,8 +28,8 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
     private readonly WebPushClient webPushClient = new WebPushClient();
     private readonly IJsonSerializer serializer;
     private readonly ILogStore logStore;
+    private readonly IMediator mediator;
     private readonly IUserNotificationStore userNotificationStore;
-    private readonly IUserStore userStore;
     private readonly IUserNotificationQueue userNotificationQueue;
 
     public string Name => Providers.WebPush;
@@ -36,16 +37,16 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
     public string PublicKey { get; }
 
     public WebPushChannel(ILogStore logStore, IOptions<WebPushOptions> options,
+        IMediator mediator,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
-        IUserStore userStore,
         IJsonSerializer serializer)
     {
         this.serializer = serializer;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
-        this.userStore = userStore;
         this.logStore = logStore;
+        this.mediator = mediator;
 
         webPushClient.SetVapidDetails(
             options.Value.Subject,
@@ -186,9 +187,9 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
             var command = new RemoveUserWebPushSubscription
             {
                 Endpoint = job.Subscription.Endpoint
-            };
+            }.WithTracking(job.Tracking);
 
-            await userStore.UpsertAsync(job.Tracking.AppId!, job.Tracking.UserId, command, ct);
+            await mediator.Send(command, ct);
         }
         catch (WebPushException ex)
         {

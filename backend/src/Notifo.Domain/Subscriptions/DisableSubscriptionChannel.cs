@@ -5,15 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure;
-
 namespace Notifo.Domain.Subscriptions;
 
-public sealed class DisableSubscriptionChannel : ICommand<Subscription>
+public sealed class DisableSubscriptionChannel : SubscriptionCommand
 {
     public string Channel { get; set; }
 
-    public ValueTask<Subscription?> ExecuteAsync(Subscription target, IServiceProvider serviceProvider,
+    public override ValueTask<Subscription?> ExecuteAsync(Subscription target, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         if (target.TopicSettings?.TryGetValue(Channel, out var setting) != true || setting?.Send != ChannelSend.Send)

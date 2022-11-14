@@ -17,6 +17,8 @@ public static class UsersServiceExtensions
     {
         services.AddSingletonAs<UserStore>()
             .As<IUserStore>().As<ICounterTarget>();
+
+        services.AddRequestHandler<UserStore, UserCommand, User?>();
     }
 
     public static void AddMyMongoUsers(this IServiceCollection services)

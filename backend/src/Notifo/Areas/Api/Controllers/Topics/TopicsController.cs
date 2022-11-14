@@ -12,6 +12,8 @@ using Notifo.Domain.Topics;
 using Notifo.Infrastructure;
 using Notifo.Pipeline;
 
+#pragma warning disable IDE0060 // Remove unused parameter
+
 namespace Notifo.Areas.Api.Controllers.Topics;
 
 [ApiExplorerSettings(GroupName = "Topics")]
@@ -61,11 +63,11 @@ public sealed class TopicsController : BaseController
 
         foreach (var dto in request.Requests.OrEmpty().NotNull())
         {
-            var update = dto.ToUpdate();
+            var command = dto.ToUpdate();
 
-            var topic = await topicStore.UpsertAsync(appId, dto.Path, update, HttpContext.RequestAborted);
+            var topic = await Mediator.Send(command, HttpContext.RequestAborted);
 
-            response.Add(TopicDto.FromDomainObject(topic));
+            response.Add(TopicDto.FromDomainObject(topic!));
         }
 
         return Ok(response);
@@ -75,14 +77,16 @@ public sealed class TopicsController : BaseController
     /// Delete a topic.
     /// </summary>
     /// <param name="appId">The app where the topics belong to.</param>
-    /// <param name="id">The ID of the topic to delete.</param>
+    /// <param name="path">The path of the topic to delete.</param>
     /// <response code="204">Topic deleted.</response>.
-    [HttpDelete("api/apps/{appId:notEmpty}/topics/{*id}")]
+    [HttpDelete("api/apps/{appId:notEmpty}/topics/{*path}")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteTopic(string appId, string id)
+    public async Task<IActionResult> DeleteTopic(string appId, string path)
     {
-        await topicStore.DeleteAsync(appId, Uri.UnescapeDataString(id), HttpContext.RequestAborted);
+        var command = new DeleteTopic { Path = Uri.UnescapeDataString(path) };
+
+        await Mediator.Send(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

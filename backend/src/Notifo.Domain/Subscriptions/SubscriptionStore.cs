@@ -5,23 +5,21 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Users;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Subscriptions;
 
-public sealed class SubscriptionStore : ISubscriptionStore
+public sealed class SubscriptionStore : ISubscriptionStore, IRequestHandler<SubscriptionCommand, Subscription?>
 {
     private readonly ISubscriptionRepository repository;
     private readonly IServiceProvider serviceProvider;
-    private readonly IUserStore userStore;
 
     public SubscriptionStore(ISubscriptionRepository repository,
-        IServiceProvider serviceProvider, IUserStore userStore)
+        IServiceProvider serviceProvider)
     {
         this.repository = repository;
         this.serviceProvider = serviceProvider;
-        this.userStore = userStore;
     }
 
     public IAsyncEnumerable<Subscription> QueryAsync(string appId, TopicId topic, string? userId,
@@ -50,67 +48,41 @@ public sealed class SubscriptionStore : ISubscriptionStore
         return subscription;
     }
 
-    public Task<Subscription> UpsertAsync(string appId, string userId, TopicId prefix, ICommand<Subscription> command,
-        CancellationToken ct = default)
+    public async ValueTask<Subscription?> HandleAsync(SubscriptionCommand command,
+        CancellationToken ct)
     {
-        Guard.NotNull(command);
+        Guard.NotNullOrEmpty(command.AppId);
+        Guard.NotNullOrEmpty(command.UserId);
 
-        return Updater.UpdateRetriedAsync(5, async () =>
+        if (!command.IsUpsert)
         {
-            var (subscription, etag) = await repository.GetAsync(appId, userId, prefix, ct);
+            await command.ExecuteAsync(serviceProvider, ct);
+            return null;
+        }
+
+        return await Updater.UpdateRetriedAsync(5, async () =>
+        {
+            var (subscription, etag) = await repository.GetAsync(command.AppId, command.UserId, command.Topic, ct);
 
             if (subscription == null)
             {
                 if (!command.CanCreate)
                 {
-                    throw new DomainObjectNotFoundException(prefix.ToString());
+                    throw new DomainObjectNotFoundException(command.Topic.ToString());
                 }
 
-                subscription = Subscription.Create(appId, userId, prefix);
+                subscription = Subscription.Create(command.AppId, command.UserId, command.Topic);
             }
 
             var newSubscription = await command.ExecuteAsync(subscription, serviceProvider, ct);
 
-            if (newSubscription == null || ReferenceEquals(subscription, newSubscription))
+            if (newSubscription != null && !ReferenceEquals(subscription, newSubscription))
             {
-                return subscription;
+                await repository.UpsertAsync(newSubscription, etag, ct);
+                newSubscription = subscription;
             }
 
-            await repository.UpsertAsync(newSubscription, etag, ct);
-
-            return newSubscription;
+            return subscription;
         });
-    }
-
-    public async Task AllowedTopicAddAsync(string appId, string userId, TopicId prefix,
-        CancellationToken ct = default)
-    {
-        var command = new AddUserAllowedTopic
-        {
-            Prefix = prefix
-        };
-
-        await userStore.UpsertAsync(appId, userId, command, ct);
-
-        await repository.DeletePrefixAsync(appId, userId, prefix, ct);
-    }
-
-    public async Task AllowedTopicRemoveAsync(string appId, string userId, TopicId prefix,
-        CancellationToken ct = default)
-    {
-        var command = new RemoveUserAllowedTopic
-        {
-            Prefix = prefix
-        };
-
-        await userStore.UpsertAsync(appId, userId, command, ct);
-
-        await repository.DeletePrefixAsync(appId, userId, prefix, ct);
-    }
-
-    public Task DeleteAsync(string appId, string userId, TopicId prefix,
-        CancellationToken ct = default)
-    {
-        return repository.DeleteAsync(appId, userId, prefix, ct);
     }
 }

@@ -43,7 +43,7 @@ public sealed class UpdateProfileDto
     /// </summary>
     public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
 
-    public UpsertUser ToUpsert()
+    public UpsertUser ToUpsert(string userId)
     {
         var result = SimpleMapper.Map(this, new UpsertUser());
 
@@ -59,6 +59,8 @@ public sealed class UpdateProfileDto
                 }
             }
         }
+
+        result.UserId = userId;
 
         return result;
     }
