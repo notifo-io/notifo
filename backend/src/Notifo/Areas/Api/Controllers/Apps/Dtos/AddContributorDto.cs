@@ -7,7 +7,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Apps;
-using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
 
@@ -22,11 +21,20 @@ public sealed class AddContributorDto
     /// <summary>
     /// The role.
     /// </summary>
-    [Required]
-    public string Role { get; set; }
+    public string? Role { get; set; }
 
     public AddContributor ToUpdate()
     {
-        return SimpleMapper.Map(this, new AddContributor());
+        var result = new AddContributor
+        {
+            EmailOrId = Email
+        };
+
+        if (Role != null)
+        {
+            result.Role = Role;
+        }
+
+        return result;
     }
 }

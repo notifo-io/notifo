@@ -210,7 +210,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 Token = token.Token
             }.WithTracking(notification.AppId, notification.UserId).WithTimestamp(nextWakeup.Value);
 
-            await mediator.Send(command, ct);
+            await mediator.SendAsync(command, ct);
         }
         catch (Exception ex)
         {
@@ -317,7 +317,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                     Token = job.DeviceToken
                 }.WithTracking(notification.AppId, notification.UserId);
 
-                await mediator.Send(command, ct);
+                await mediator.SendAsync(command, ct);
                 break;
             }
             catch (DomainException ex)

@@ -113,7 +113,7 @@ public sealed class TelegramMessagingSender : IMessagingSender
             PropertyValue = chatId
         }.WithTracking(app.Id, user.Id);
 
-        await mediator.Send(command, ct);
+        await mediator.SendAsync(command, ct);
 
         await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
     }

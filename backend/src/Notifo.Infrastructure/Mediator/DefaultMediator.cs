@@ -37,17 +37,23 @@ public sealed class DefaultMediator : IMediator
         return (c, ct) => middleware.HandleAsync(c, next, ct);
     }
 
-    public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
+    public async Task PublishAsync<TNotification>(TNotification notification,
+        CancellationToken ct = default) where TNotification : notnull
+    {
+        await pipeline.Value(notification, ct);
+    }
+
+    public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request,
         CancellationToken ct = default)
     {
         var result = await pipeline.Value(request, ct);
 
         if (Equals(result, default(TResponse)))
         {
-            return default(TResponse)!;
+            return default!;
         }
 
-        if ( result is not TResponse typed)
+        if (result is not TResponse typed)
         {
             throw new InvalidOperationException("No handler returns matching result type.");
         }

@@ -82,7 +82,7 @@ public sealed class AppsController : BaseController
     {
         var command = request.ToUpsert();
 
-        var app = await Mediator.Send(command, HttpContext.RequestAborted);
+        var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = AppDto.FromDomainObject(app!, command.PrincipalId);
 
@@ -103,7 +103,7 @@ public sealed class AppsController : BaseController
     {
         var command = request.ToUpsert();
 
-        var app = await Mediator.Send(command, HttpContext.RequestAborted);
+        var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = await AppDetailsDto.FromDomainObjectAsync(app!, UserIdOrSub, userResolver);
 
@@ -124,7 +124,7 @@ public sealed class AppsController : BaseController
     {
         var command = request.ToUpdate();
 
-        var app = await Mediator.Send(command, HttpContext.RequestAborted);
+        var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = await AppDetailsDto.FromDomainObjectAsync(app!, UserIdOrSub, userResolver);
 
@@ -145,7 +145,7 @@ public sealed class AppsController : BaseController
     {
         var command = new RemoveContributor { ContributorId = contributorId };
 
-        var app = await Mediator.Send(command, HttpContext.RequestAborted);
+        var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = await AppDetailsDto.FromDomainObjectAsync(app!, UserIdOrSub, userResolver);
 
@@ -182,7 +182,7 @@ public sealed class AppsController : BaseController
     {
         var command = request.ToUpdate();
 
-        var app = await Mediator.Send(command, HttpContext.RequestAborted);
+        var app = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = IntegrationCreatedDto.FromDomainObject(app!, command.Id);
 
@@ -204,7 +204,7 @@ public sealed class AppsController : BaseController
     {
         var command = request.ToUpdate(id);
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -223,7 +223,7 @@ public sealed class AppsController : BaseController
     {
         var command = new DeleteAppIntegration { IntegrationId = id };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

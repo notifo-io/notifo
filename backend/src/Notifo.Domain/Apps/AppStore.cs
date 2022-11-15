@@ -45,6 +45,12 @@ public sealed class AppStore : IAppStore, IRequestHandler<AppCommand, App?>, ICo
         }
     }
 
+    public IAsyncEnumerable<App> QueryAllAsync(
+        CancellationToken ct = default)
+    {
+        return repository.QueryAllAsync(ct);
+    }
+
     public Task<App?> GetCachedAsync(string id,
         CancellationToken ct = default)
     {

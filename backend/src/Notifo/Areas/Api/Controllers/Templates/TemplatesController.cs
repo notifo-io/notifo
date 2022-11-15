@@ -64,7 +64,7 @@ public sealed class TemplatesController : BaseController
         {
             var command = dto.ToUpdate(dto.Code);
 
-            var template = await Mediator.Send(command, HttpContext.RequestAborted);
+            var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
             response.Add(TemplateDto.FromDomainObject(template!));
         }
@@ -85,7 +85,7 @@ public sealed class TemplatesController : BaseController
     {
         var command = new DeleteTemplate { TemplateCode = code };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

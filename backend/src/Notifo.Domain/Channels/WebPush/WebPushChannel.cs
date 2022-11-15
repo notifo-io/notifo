@@ -189,7 +189,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
                 Endpoint = job.Subscription.Endpoint
             }.WithTracking(job.Tracking);
 
-            await mediator.Send(command, ct);
+            await mediator.SendAsync(command, ct);
         }
         catch (WebPushException ex)
         {

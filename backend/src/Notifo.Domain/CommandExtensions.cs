@@ -5,9 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 using NodaTime;
-using Notifo.Domain.Users;
 
 namespace Notifo.Domain;
 
@@ -33,15 +32,25 @@ public static class CommandExtensions
 
         if (userId != null)
         {
-            command.Principal = CommandBase.BackendUser(userId);
+            command.Principal = BackendUser(userId);
             command.PrincipalId = userId;
         }
 
-        if (userId != null && command is UserCommand userCommand)
+        if (userId != null && command is UserCommandBase userCommand)
         {
             userCommand.UserId = userId;
         }
 
         return command;
+    }
+
+    private static ClaimsPrincipal BackendUser(string userId)
+    {
+        var claimsIdentity = new ClaimsIdentity();
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+        claimsIdentity.AddClaim(new Claim("sub", userId));
+
+        return claimsPrincipal;
     }
 }

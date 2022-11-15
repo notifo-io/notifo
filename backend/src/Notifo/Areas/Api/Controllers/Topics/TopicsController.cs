@@ -65,7 +65,7 @@ public sealed class TopicsController : BaseController
         {
             var command = dto.ToUpdate();
 
-            var topic = await Mediator.Send(command, HttpContext.RequestAborted);
+            var topic = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
             response.Add(TopicDto.FromDomainObject(topic!));
         }
@@ -86,7 +86,7 @@ public sealed class TopicsController : BaseController
     {
         var command = new DeleteTopic { Path = Uri.UnescapeDataString(path) };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

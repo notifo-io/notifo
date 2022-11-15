@@ -9,6 +9,9 @@ namespace Notifo.Infrastructure.Mediator;
 
 public interface IMediator
 {
-    Task<TResponse> Send<TResponse>(IRequest<TResponse> request,
+    Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request,
         CancellationToken ct = default);
+
+    Task PublishAsync<TNotification>(TNotification notification,
+        CancellationToken ct = default) where TNotification : notnull;
 }

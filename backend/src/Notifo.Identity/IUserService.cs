@@ -14,6 +14,9 @@ namespace Notifo.Identity;
 
 public interface IUserService
 {
+    IAsyncEnumerable<IUser> StreamAsync(
+        CancellationToken ct = default);
+
     Task<IResultList<IUser>> QueryAsync(IEnumerable<string> ids,
         CancellationToken ct = default);
 
@@ -65,6 +68,6 @@ public interface IUserService
     Task<IUser> UpdateAsync(string id, UserValues values, bool silent = false,
         CancellationToken ct = default);
 
-    Task DeleteAsync(string id,
+    Task DeleteAsync(string id, bool silent = false,
         CancellationToken ct = default);
 }

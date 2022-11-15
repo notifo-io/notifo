@@ -21,15 +21,14 @@ public static class MediatorServiceExtensions
 
     public static IServiceCollection AddMiddleware<T>(this IServiceCollection services) where T : class, IMessageMiddleware
     {
-        services.AddSingleton<T>();
-        services.AddSingleton<IMessageMiddleware, T>();
+        services.AddSingleton<IMessageMiddleware>(
+            c => c.GetRequiredService<T>());
 
         return services;
     }
 
     public static IServiceCollection AddMiddleware<T, TRequest>(this IServiceCollection services) where T : class, IMessageMiddleware<TRequest>
     {
-        services.AddSingleton<T>();
         services.AddSingleton<IMessageMiddleware>(
             c => new TypedMessageMiddlewareWrapper<TRequest>(
                 c.GetRequiredService<T>()));

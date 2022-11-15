@@ -5,11 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using Notifo.Domain.Counters;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
+using System.Runtime.CompilerServices;
 
 namespace Notifo.Domain.Apps.MongoDb;
 
@@ -57,6 +59,15 @@ internal sealed class MongoDbAppRepository : MongoDbStore<MongoDbApp>, IAppRepos
                     .Ascending(x => x.ApiKeys),
                 new CreateIndexOptions { Unique = true }),
             null, ct);
+    }
+
+    public async IAsyncEnumerable<App> QueryAllAsync(
+        [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        await foreach (var document in Collection.Find(new BsonDocument()).ToAsyncEnumerable(ct))
+        {
+            yield return document.ToApp();
+        }
     }
 
     public async Task<List<App>> QueryWithPendingIntegrationsAsync(

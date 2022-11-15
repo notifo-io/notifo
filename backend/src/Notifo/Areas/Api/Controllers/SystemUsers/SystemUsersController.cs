@@ -171,7 +171,7 @@ public sealed class SystemUsersController : BaseController
             throw new DomainForbiddenException("You cannot update yourself.");
         }
 
-        await userService.DeleteAsync(id, HttpContext.RequestAborted);
+        await userService.DeleteAsync(id, false, HttpContext.RequestAborted);
 
         return NoContent();
     }

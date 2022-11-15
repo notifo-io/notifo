@@ -21,14 +21,4 @@ public abstract class CommandBase
     public virtual bool CanCreate => false;
 
     public virtual bool IsUpsert => true;
-
-    public static ClaimsPrincipal BackendUser(string userId)
-    {
-        var claimsIdentity = new ClaimsIdentity();
-        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-        claimsIdentity.AddClaim(new Claim("sub", userId));
-
-        return claimsPrincipal;
-    }
 }

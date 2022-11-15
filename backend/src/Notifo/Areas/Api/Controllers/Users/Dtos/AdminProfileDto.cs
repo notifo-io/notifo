@@ -5,8 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Users;
+namespace Notifo.Areas.Api.Controllers.Users.Dtos;
 
-public abstract class UserCommand : UserCommandBase<User>
+public sealed class AdminProfileDto
 {
+    /// <summary>
+    /// The token for the integrated app.
+    /// </summary>
+    public string? Token { get; set; }
 }

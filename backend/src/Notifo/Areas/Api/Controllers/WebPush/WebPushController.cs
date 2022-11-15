@@ -22,7 +22,7 @@ public sealed class WebPushController : BaseController
     {
         var command = request.ToUpdate(UserId);
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -34,7 +34,7 @@ public sealed class WebPushController : BaseController
     {
         var command = request.ToDelete(UserId);
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

@@ -5,16 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
-using Notifo.Infrastructure;
-
 namespace Notifo.Domain.Log;
 
-public interface ILogRepository
+public sealed class FirstLogCreated
 {
-    Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
-        CancellationToken ct = default);
-
-    Task<IResultList<LogEntry>> BulkWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
-        CancellationToken ct = default);
+    public LogEntry Entry { get; set; }
 }

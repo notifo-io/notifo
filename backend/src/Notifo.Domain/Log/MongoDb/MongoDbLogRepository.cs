@@ -60,11 +60,12 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
         }
     }
 
-    public async Task MatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
+    public async Task<IResultList<LogEntry>> BulkWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
         CancellationToken ct = default)
     {
-        using (Telemetry.Activities.StartActivity("MongoDbLogRepository/MatchWriteAsync"))
+        using (var activity = Telemetry.Activities.StartActivity("MongoDbLogRepository/MatchWriteAsync"))
         {
+            var writeId = Guid.NewGuid().ToString();
             var writes = new List<WriteModel<MongoDbLogEntry>>();
 
             foreach (var (appId, message, count) in updates)
@@ -74,6 +75,7 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
                 var update =
                     Update
                         .SetOnInsert(x => x.DocId, docId)
+                        .SetOnInsert(x => x.Entry.FirstWriteId, writeId)
                         .SetOnInsert(x => x.Entry.FirstSeen, now)
                         .SetOnInsert(x => x.Entry.AppId, appId)
                         .SetOnInsert(x => x.Entry.Message, message)
@@ -89,6 +91,13 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
             }
 
             await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+
+            var resultItems = await Collection.Find(x => x.Entry.FirstWriteId == writeId).ToListAsync(ct);
+            var resultTotal = (long)resultItems.Count;
+
+            activity?.SetTag("numNewEntries", resultItems.Count);
+
+            return ResultList.Create(resultTotal, resultItems.Select(x => x.ToEntry()));
         }
     }
 

@@ -8,6 +8,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
+using System.Runtime.CompilerServices;
 
 #pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
 
@@ -95,16 +96,17 @@ public sealed class DefaultUserResolver : IUserResolver
         }
     }
 
-    public async Task<List<IUser>> QueryAllAsync(
-        CancellationToken ct = default)
+    public async IAsyncEnumerable<IUser> QueryAllAsync(
+        [EnumeratorCancellation] CancellationToken ct = default)
     {
         await using (var scope = serviceProvider.CreateAsyncScope())
         {
             var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-            var result = await userService.QueryAsync(take: int.MaxValue, ct: ct);
-
-            return result.ToList();
+            await foreach (var user in userService.StreamAsync(ct))
+            {
+                yield return user;
+            }
         }
     }
 

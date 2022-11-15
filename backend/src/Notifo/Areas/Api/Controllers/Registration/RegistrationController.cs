@@ -39,7 +39,7 @@ public sealed class RegistrationController : BaseController
         {
             var userCommand = request.ToUpsert(Guid.NewGuid().ToString());
 
-            var user = await Mediator.Send(userCommand, HttpContext.RequestAborted);
+            var user = await Mediator.SendAsync(userCommand, HttpContext.RequestAborted);
 
             if (request.Topics?.Any() == true)
             {
@@ -66,7 +66,7 @@ public sealed class RegistrationController : BaseController
                 {
                     command.Topic = topic;
 
-                    await Mediator.Send(command, HttpContext.RequestAborted);
+                    await Mediator.SendAsync(command, HttpContext.RequestAborted);
                 }
             }
 

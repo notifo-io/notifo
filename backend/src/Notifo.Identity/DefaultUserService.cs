@@ -5,11 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Tasks;
 
 namespace Notifo.Identity;
@@ -18,15 +20,15 @@ public sealed class DefaultUserService : IUserService
 {
     private readonly UserManager<IdentityUser> userManager;
     private readonly IUserFactory userFactory;
-    private readonly IEnumerable<IUserEvents> userEvents;
+    private readonly IMediator mediator;
     private readonly ILogger<DefaultUserService> log;
 
     public DefaultUserService(UserManager<IdentityUser> userManager, IUserFactory userFactory,
-        IEnumerable<IUserEvents> userEvents, ILogger<DefaultUserService> log)
+        IMediator mediator, ILogger<DefaultUserService> log)
     {
         this.userManager = userManager;
         this.userFactory = userFactory;
-        this.userEvents = userEvents;
+        this.mediator = mediator;
 
         this.log = log;
     }
@@ -47,6 +49,15 @@ public sealed class DefaultUserService : IUserService
         return userManager.GetUserId(user)!;
     }
 
+    public async IAsyncEnumerable<IUser> StreamAsync(
+        [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        await foreach (var user in userManager.Users.ToAsyncEnumerable().WithCancellation(ct))
+        {
+            yield return await ResolveAsync(user);
+        }
+    }
+
     public async Task<IResultList<IUser>> QueryAsync(IEnumerable<string> ids,
         CancellationToken ct = default)
     {
@@ -59,11 +70,12 @@ public sealed class DefaultUserService : IUserService
             return ResultList.CreateFrom<IUser>(0);
         }
 
-        var users = userManager.Users.Where(x => ids.Contains(x.Id)).ToList();
+        var userItems = userManager.Users.Where(x => ids.Contains(x.Id)).ToList();
+        var userTotal = userItems.Count;
 
-        var resolved = await ResolveAsync(users);
+        var resolved = await ResolveAsync(userItems);
 
-        return ResultList.Create(users.Count, resolved);
+        return ResultList.Create(userTotal, resolved);
     }
 
     public async Task<IResultList<IUser>> QueryAsync(string? query = null, int take = 10, int skip = 0,
@@ -215,17 +227,11 @@ public sealed class DefaultUserService : IUserService
 
         var resolved = await ResolveAsync(user);
 
-        foreach (var events in userEvents)
-        {
-            await events.OnUserRegisteredAsync(resolved);
-        }
+        await mediator.PublishAsync(new UserRegistered { User = resolved }, default);
 
         if (HasConsentGiven(values, null!))
         {
-            foreach (var events in userEvents)
-            {
-                await events.OnConsentGivenAsync(resolved);
-            }
+            await mediator.PublishAsync(new UserConsentGiven { User = resolved }, default);
         }
 
         return resolved;
@@ -294,17 +300,11 @@ public sealed class DefaultUserService : IUserService
 
         if (!silent)
         {
-            foreach (var events in userEvents)
-            {
-                await events.OnUserUpdatedAsync(resolved, oldUser);
-            }
+            await mediator.PublishAsync(new UserUpdated { User = resolved, OldUser = oldUser }, default);
 
             if (HasConsentGiven(values, oldUser))
             {
-                foreach (var events in userEvents)
-                {
-                    await events.OnConsentGivenAsync(resolved);
-                }
+                await mediator.PublishAsync(new UserConsentGiven { User = resolved }, default);
             }
         }
 
@@ -343,20 +343,20 @@ public sealed class DefaultUserService : IUserService
         return ForUserAsync(id, user => userManager.RemoveLoginAsync(user, loginProvider, providerKey).Throw(log));
     }
 
-    public async Task DeleteAsync(string id,
+    public async Task DeleteAsync(string id, bool silent = false,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(id);
 
         var user = await GetUserAsync(id);
 
-        var resolved = await ResolveAsync(user);
-
         await userManager.DeleteAsync(user).Throw(log);
 
-        foreach (var events in userEvents)
+        if (!silent)
         {
-            await events.OnUserDeletedAsync(resolved);
+            var resolved = await ResolveAsync(user);
+
+            await mediator.PublishAsync(new UserDeleted { User = resolved }, default);
         }
     }
 
