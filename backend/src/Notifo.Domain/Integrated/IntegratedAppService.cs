@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Logging;
+using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Events;
 using Notifo.Domain.Identity;
@@ -14,6 +15,8 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.Templates;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Mediator;
+using Notifo.Infrastructure.Texts;
+using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrated;
 
@@ -30,6 +33,7 @@ public sealed partial class IntegratedAppService :
 {
     private readonly IAppStore appStore;
     private readonly IMediator mediator;
+    private readonly IUrlGenerator urlGenerator;
     private readonly IEventPublisher eventPublisher;
     private readonly IUserStore userStore;
     private readonly IUserResolver userResolver;
@@ -39,12 +43,14 @@ public sealed partial class IntegratedAppService :
         IAppStore appStore,
         IEventPublisher eventPublisher,
         IMediator mediator,
+        IUrlGenerator urlGenerator,
         IUserStore userStore,
         IUserResolver userResolver,
         ILogger<IntegratedAppService> log)
     {
         this.appStore = appStore;
         this.mediator = mediator;
+        this.urlGenerator = urlGenerator;
         this.eventPublisher = eventPublisher;
         this.userStore = userStore;
         this.userResolver = userResolver;
@@ -111,15 +117,21 @@ public sealed partial class IntegratedAppService :
 
             var user = await userResolver.FindByIdAsync(request.EmailOrId, ct);
 
-            if (user != null)
+            if (user == null)
             {
-                var properties = new NotificationProperties
+                return;
+            }
+
+            await PublishAsync(
+                request.AppId,
+                request.PrincipalId,
+                "app/{app}/settings",
+                Texts.NotificationContributorCreated,
+                new NotificationProperties
                 {
                     ["user"] = user.Email
-                };
-
-                await PublishAsync(request.AppId, request.PrincipalId, Texts.NotificationContributorCreated, properties, ct);
-            }
+                },
+                ct);
         }, ct);
     }
 
@@ -132,15 +144,20 @@ public sealed partial class IntegratedAppService :
 
             var user = await userResolver.FindByIdAsync(request.ContributorId, ct);
 
-            if (user != null)
+            if (user == null)
             {
-                var properties = new NotificationProperties
+                return;
+            }
+
+            await PublishAsync(
+                request.AppId,
+                request.PrincipalId,
+                "app/{app}/settings",
+                Texts.NotificationContributorRemoved,
+                new NotificationProperties
                 {
                     ["user"] = user.Email
-                };
-
-                await PublishAsync(request.AppId, request.PrincipalId, Texts.NotificationContributorRemoved, properties, ct);
-            }
+                }, ct);
         }, ct);
     }
 
@@ -149,12 +166,15 @@ public sealed partial class IntegratedAppService :
     {
         return HandleMessageAsync(request, next, async (request, ct) =>
         {
-            var properties = new NotificationProperties
-            {
-                ["log"] = request.Entry.Message
-            };
-
-            await PublishAsync(request.Entry.AppId, null, Texts.NotificationFirstLog, properties, ct);
+            await PublishAsync(
+                request.Entry.AppId,
+                null,
+                "app/{app}/log",
+                Texts.NotificationFirstLog,
+                new NotificationProperties
+                {
+                    ["log"] = request.Entry.Message
+                }, ct);
         }, ct);
     }
 
@@ -163,12 +183,16 @@ public sealed partial class IntegratedAppService :
     {
         return HandleMessageAsync(request, next, async (request, ct) =>
         {
-            var properties = new NotificationProperties
-            {
-                ["code"] = request.TemplateCode
-            };
-
-            await PublishAsync(request.AppId, request.PrincipalId, Texts.NotificationTemplateUpserted, properties, ct);
+            await PublishAsync(
+                request.AppId,
+                request.PrincipalId,
+                "/app/{app}/templates",
+                Texts.NotificationTemplateUpserted,
+                new NotificationProperties
+                {
+                    ["code"] = request.TemplateCode
+                },
+                ct);
         }, ct);
     }
 
@@ -177,13 +201,68 @@ public sealed partial class IntegratedAppService :
     {
         return HandleMessageAsync(request, next, async (request, ct) =>
         {
-            var properties = new NotificationProperties
-            {
-                ["code"] = request.TemplateCode
-            };
-
-            await PublishAsync(request.AppId, request.PrincipalId, Texts.NotificationTemplateDeleted, properties, ct);
+            await PublishAsync(
+                request.AppId,
+                request.PrincipalId,
+                "/app/{app}/templates",
+                Texts.NotificationTemplateDeleted,
+                new NotificationProperties
+                {
+                    ["code"] = request.TemplateCode
+                },
+                ct);
         }, ct);
+    }
+
+    private async Task PublishAsync(string appId, string? creator, string link, string message, NotificationProperties? properties,
+        CancellationToken ct)
+    {
+        var app = await appStore.GetCachedAsync(appId, ct);
+
+        // A user can be part of multiple apps. Therefore we need to resolve the app name.
+        if (app == null)
+        {
+            return;
+        }
+
+        properties ??= new NotificationProperties();
+        properties["app"] = app.Name;
+
+        var publish = new EventMessage
+        {
+            AppId = IntegratedAppId,
+            CreatorId = creator,
+            Created = SystemClock.Instance.GetCurrentInstant(),
+            Topic = CreateTopic(appId),
+            Formatting = new NotificationFormatting<LocalizedText>
+            {
+                Subject = new LocalizedText
+                {
+                    ["en"] = message
+                },
+                LinkText = new LocalizedText
+                {
+                    ["en"] = Texts.NotificationLink,
+                },
+                LinkUrl = new LocalizedText
+                {
+                    ["en"] = BuildLink(appId, link)!
+                }
+            },
+            Properties = properties,
+        };
+
+        await eventPublisher.PublishAsync(publish, ct);
+    }
+
+    private string? BuildLink(string appId, string? link)
+    {
+        if (string.IsNullOrWhiteSpace(link))
+        {
+            return null;
+        }
+
+        return urlGenerator.BuildUrl(link.Replace("{app}", appId, StringComparison.Ordinal));
     }
 
     private async ValueTask<object?> HandleMessageAsync<T>(T request, NextDelegate next, Func<T, CancellationToken, ValueTask> action,

@@ -394,7 +394,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Contributor {{user}} been added to app {{app}}..
+        ///   Looks up a localized string similar to Contributor &apos;{{user}} been added to app &apos;{{app}}&apos;..
         /// </summary>
         internal static string NotificationContributorCreated {
             get {
@@ -403,7 +403,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Contributor {{user}} been removed from app {{app}}..
+        ///   Looks up a localized string similar to Contributor &apos;{{user}}&apos; been removed from app &apos;{{app}}&apos;..
         /// </summary>
         internal static string NotificationContributorRemoved {
             get {
@@ -412,7 +412,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New log message in app {{app}}: {{log}}..
+        ///   Looks up a localized string similar to New log message in app &apos;{{app}}&apos;: {{log}}..
         /// </summary>
         internal static string NotificationFirstLog {
             get {
@@ -421,7 +421,16 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Template {{code}} has been removed from app {{app}}..
+        ///   Looks up a localized string similar to Go to Settings.
+        /// </summary>
+        internal static string NotificationLink {
+            get {
+                return ResourceManager.GetString("NotificationLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Template &apos;{{code}}&apos; has been removed from app &apos;{{app}}&apos;..
         /// </summary>
         internal static string NotificationTemplateDeleted {
             get {
@@ -430,7 +439,7 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Template {{code}} has been added or updated in app {{app}}..
+        ///   Looks up a localized string similar to Template &apos;{{code}}&apos; has been added or updated in app &apos;{{app}}&apos;..
         /// </summary>
         internal static string NotificationTemplateUpserted {
             get {

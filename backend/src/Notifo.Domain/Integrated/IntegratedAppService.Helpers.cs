@@ -141,38 +141,7 @@ public sealed partial class IntegratedAppService : IInitializable
             Topic = CreateTopic(appId)
         };
 
-        await SendAsync(unsubscribeCommand, userId);
-    }
-
-    private async Task PublishAsync(string appId, string? userId, string message, NotificationProperties? properties,
-        CancellationToken ct)
-    {
-        properties ??= new NotificationProperties();
-
-        var app = await appStore.GetAsync(appId, ct);
-
-        if (app != null)
-        {
-            properties["app"] = app.Name;
-        }
-
-        var publish = new EventMessage
-        {
-            AppId = IntegratedAppId,
-            CreatorId = userId,
-            Created = SystemClock.Instance.GetCurrentInstant(),
-            Topic = CreateTopic(appId),
-            Formatting = new NotificationFormatting<LocalizedText>
-            {
-                Subject = new LocalizedText
-                {
-                    ["en"] = message
-                }
-            },
-            Properties = properties,
-        };
-
-        await eventPublisher.PublishAsync(publish, ct);
+        await SendAsync(unsubscribeCommand, userId, ct);
     }
 
     private Task CreateUserAsync(IUser user,

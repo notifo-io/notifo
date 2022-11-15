@@ -40,6 +40,14 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Get the current admin user.
+        /// </summary>
+        /// <returns>User returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<AdminProfileDto> GetAdminUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Query the user topics.
         /// </summary>
         /// <param name="language">The optional language.</param>
@@ -278,6 +286,86 @@ namespace Notifo.SDK
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
                             }
                             throw new NotifoException<ErrorDto>("Validation error.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get the current admin user.
+        /// </summary>
+        /// <returns>User returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<AdminProfileDto> GetAdminUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/admin");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<AdminProfileDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 500)
@@ -2272,10 +2360,10 @@ namespace Notifo.SDK
         /// Delete a topic.
         /// </summary>
         /// <param name="appId">The app where the topics belong to.</param>
-        /// <param name="id">The ID of the topic to delete.</param>
+        /// <param name="path">The path of the topic to delete.</param>
         /// <returns>Topic deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTopicAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTopicAsync(string appId, string path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -2527,15 +2615,15 @@ namespace Notifo.SDK
         /// Delete a topic.
         /// </summary>
         /// <param name="appId">The app where the topics belong to.</param>
-        /// <param name="id">The ID of the topic to delete.</param>
+        /// <param name="path">The path of the topic to delete.</param>
         /// <returns>Topic deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTopicAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTopicAsync(string appId, string path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/topics/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/topics/{path}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{path}", System.Uri.EscapeDataString(ConvertToString(path, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -7890,55 +7978,55 @@ namespace Notifo.SDK
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string id, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -8475,19 +8563,19 @@ namespace Notifo.SDK
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string id, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8583,19 +8671,19 @@ namespace Notifo.SDK
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8685,15 +8773,15 @@ namespace Notifo.SDK
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -8779,20 +8867,20 @@ namespace Notifo.SDK
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}/{language}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -8883,16 +8971,16 @@ namespace Notifo.SDK
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}/{language}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -9118,55 +9206,55 @@ namespace Notifo.SDK
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string id, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -9509,19 +9597,19 @@ namespace Notifo.SDK
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string id, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9617,19 +9705,19 @@ namespace Notifo.SDK
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9719,15 +9807,15 @@ namespace Notifo.SDK
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -9813,20 +9901,20 @@ namespace Notifo.SDK
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{id}/{language}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -9917,16 +10005,16 @@ namespace Notifo.SDK
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{id}/{language}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -10152,55 +10240,55 @@ namespace Notifo.SDK
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string id, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -10543,19 +10631,19 @@ namespace Notifo.SDK
         /// Create an app template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string id, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -10651,19 +10739,19 @@ namespace Notifo.SDK
         /// Update an app template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string id, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -10753,15 +10841,15 @@ namespace Notifo.SDK
         /// Delete a channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <returns>Channel template deleted.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{id}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -10847,20 +10935,20 @@ namespace Notifo.SDK
         /// Update a channel template language.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string id, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{id}/{language}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -10951,16 +11039,16 @@ namespace Notifo.SDK
         /// Delete a language channel template.
         /// </summary>
         /// <param name="appId">The id of the app where the templates belong to.</param>
-        /// <param name="id">The template ID.</param>
+        /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
         /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string id, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{id}/{language}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
             var client_ = _httpClient;
@@ -12536,6 +12624,17 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("statusCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int StatusCode { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class AdminProfileDto
+    {
+        /// <summary>
+        /// The token for the integrated app.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Token { get; set; }
 
     }
 
@@ -14969,8 +15068,7 @@ namespace Notifo.SDK
         /// <summary>
         /// The role.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Role { get; set; }
 
     }
