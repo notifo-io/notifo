@@ -94,7 +94,7 @@ public sealed class LogCollector
         {
             var now = clock.GetCurrentInstant();
 
-            var newEntries = await repository.BulkWriteAsync(commands, now, ct);
+            var newEntries = await repository.BatchWriteAsync(commands, now, ct);
 
             if (newEntries.Count > 0)
             {
