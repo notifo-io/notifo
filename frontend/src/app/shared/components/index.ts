@@ -10,6 +10,7 @@ export * from './CounterCards';
 export * from './CounterRow';
 export * from './EmailTemplateInput';
 export * from './Forms';
+export * from './Integrated';
 export * from './Logo';
 export * from './MediaCard';
 export * from './MediaPicker';

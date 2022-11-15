@@ -215,7 +215,7 @@ module.exports = function (env) {
         config.plugins.push(
             new plugins.HtmlWebpackPlugin({
                 hash: true,
-                chunks: ['app'],
+                chunks: ['notifo-sdk', 'app'],
                 chunksSortMode: 'manual',
                 template: 'src/app/index.html',
             }),

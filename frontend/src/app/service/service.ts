@@ -116,6 +116,49 @@ export class UserClient {
     }
 
     /**
+     * Get the current admin user.
+     * @return User returned.
+     */
+    getAdminUser(): Promise<AdminProfileDto> {
+        let url_ = this.baseUrl + "/api/me/admin";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAdminUser(_response);
+        });
+    }
+
+    protected processGetAdminUser(response: Response): Promise<AdminProfileDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AdminProfileDto;
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<AdminProfileDto>(null as any);
+    }
+
+    /**
      * Query the user topics.
      * @param language (optional) The optional language.
      * @return User subscriptions returned.
@@ -1215,17 +1258,17 @@ export class TopicsClient {
     /**
      * Delete a topic.
      * @param appId The app where the topics belong to.
-     * @param id The ID of the topic to delete.
+     * @param path The path of the topic to delete.
      * @return Topic deleted.
      */
-    deleteTopic(appId: string | null, id: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/topics/{id}";
+    deleteTopic(appId: string | null, path: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/topics/{path}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (path === undefined || path === null)
+            throw new Error("The parameter 'path' must be defined.");
+        url_ = url_.replace("{path}", encodeURIComponent("" + path));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -3676,18 +3719,18 @@ export class EmailTemplatesClient {
     /**
      * Create an app template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string | null, id: string | null, request: CreateChannelTemplateLanguageDto): Promise<EmailTemplateDto> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}";
+    postTemplateLanguage(appId: string | null, code: string | null, request: CreateChannelTemplateLanguageDto): Promise<EmailTemplateDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -3742,18 +3785,18 @@ export class EmailTemplatesClient {
     /**
      * Update an app template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param request The request object.
      * @return Channel template updated.
      */
-    putTemplate(appId: string | null, id: string | null, request: UpdateChannelTemplateDtoOfEmailTemplateDto): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}";
+    putTemplate(appId: string | null, code: string | null, request: UpdateChannelTemplateDtoOfEmailTemplateDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -3805,17 +3848,17 @@ export class EmailTemplatesClient {
     /**
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template ID.
      * @return Channel template deleted.
      */
-    deleteTemplate(appId: string | null, id: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}";
+    deleteTemplate(appId: string | null, code: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -3863,19 +3906,19 @@ export class EmailTemplatesClient {
     /**
      * Update a channel template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param language The language.
      * @param request The request object.
      * @return Channel template updated.
      */
-    putTemplateLanguage(appId: string | null, id: string | null, language: string | null, request: EmailTemplateDto): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}/{language}";
+    putTemplateLanguage(appId: string | null, code: string | null, language: string | null, request: EmailTemplateDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         if (language === undefined || language === null)
             throw new Error("The parameter 'language' must be defined.");
         url_ = url_.replace("{language}", encodeURIComponent("" + language));
@@ -3930,18 +3973,18 @@ export class EmailTemplatesClient {
     /**
      * Delete a language channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template ID.
      * @param language The language.
      * @return Channel template updated.
      */
-    deleteTemplateLanguage(appId: string | null, id: string | null, language: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{id}/{language}";
+    deleteTemplateLanguage(appId: string | null, code: string | null, language: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         if (language === undefined || language === null)
             throw new Error("The parameter 'language' must be defined.");
         url_ = url_.replace("{language}", encodeURIComponent("" + language));
@@ -4184,18 +4227,18 @@ export class MessagingTemplatesClient {
     /**
      * Create an app template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string | null, id: string | null, request: CreateChannelTemplateLanguageDto): Promise<MessagingTemplateDto> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}";
+    postTemplateLanguage(appId: string | null, code: string | null, request: CreateChannelTemplateLanguageDto): Promise<MessagingTemplateDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -4250,18 +4293,18 @@ export class MessagingTemplatesClient {
     /**
      * Update an app template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param request The request object.
      * @return Channel template updated.
      */
-    putTemplate(appId: string | null, id: string | null, request: UpdateChannelTemplateDtoOfMessagingTemplateDto): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}";
+    putTemplate(appId: string | null, code: string | null, request: UpdateChannelTemplateDtoOfMessagingTemplateDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -4313,17 +4356,17 @@ export class MessagingTemplatesClient {
     /**
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template ID.
      * @return Channel template deleted.
      */
-    deleteTemplate(appId: string | null, id: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}";
+    deleteTemplate(appId: string | null, code: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -4371,19 +4414,19 @@ export class MessagingTemplatesClient {
     /**
      * Update a channel template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param language The language.
      * @param request The request object.
      * @return Channel template updated.
      */
-    putTemplateLanguage(appId: string | null, id: string | null, language: string | null, request: MessagingTemplateDto): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}/{language}";
+    putTemplateLanguage(appId: string | null, code: string | null, language: string | null, request: MessagingTemplateDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         if (language === undefined || language === null)
             throw new Error("The parameter 'language' must be defined.");
         url_ = url_.replace("{language}", encodeURIComponent("" + language));
@@ -4438,18 +4481,18 @@ export class MessagingTemplatesClient {
     /**
      * Delete a language channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template ID.
      * @param language The language.
      * @return Channel template updated.
      */
-    deleteTemplateLanguage(appId: string | null, id: string | null, language: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{id}/{language}";
+    deleteTemplateLanguage(appId: string | null, code: string | null, language: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         if (language === undefined || language === null)
             throw new Error("The parameter 'language' must be defined.");
         url_ = url_.replace("{language}", encodeURIComponent("" + language));
@@ -4692,18 +4735,18 @@ export class SmsTemplatesClient {
     /**
      * Create an app template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string | null, id: string | null, request: CreateChannelTemplateLanguageDto): Promise<SmsTemplateDto> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}";
+    postTemplateLanguage(appId: string | null, code: string | null, request: CreateChannelTemplateLanguageDto): Promise<SmsTemplateDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -4758,18 +4801,18 @@ export class SmsTemplatesClient {
     /**
      * Update an app template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param request The request object.
      * @return Channel template updated.
      */
-    putTemplate(appId: string | null, id: string | null, request: UpdateChannelTemplateDtoOfSmsTemplateDto): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}";
+    putTemplate(appId: string | null, code: string | null, request: UpdateChannelTemplateDtoOfSmsTemplateDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -4821,17 +4864,17 @@ export class SmsTemplatesClient {
     /**
      * Delete a channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template ID.
      * @return Channel template deleted.
      */
-    deleteTemplate(appId: string | null, id: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}";
+    deleteTemplate(appId: string | null, code: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -4879,19 +4922,19 @@ export class SmsTemplatesClient {
     /**
      * Update a channel template language.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template code.
      * @param language The language.
      * @param request The request object.
      * @return Channel template updated.
      */
-    putTemplateLanguage(appId: string | null, id: string | null, language: string | null, request: SmsTemplateDto): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}/{language}";
+    putTemplateLanguage(appId: string | null, code: string | null, language: string | null, request: SmsTemplateDto): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         if (language === undefined || language === null)
             throw new Error("The parameter 'language' must be defined.");
         url_ = url_.replace("{language}", encodeURIComponent("" + language));
@@ -4946,18 +4989,18 @@ export class SmsTemplatesClient {
     /**
      * Delete a language channel template.
      * @param appId The id of the app where the templates belong to.
-     * @param id The template ID.
+     * @param code The template ID.
      * @param language The language.
      * @return Channel template updated.
      */
-    deleteTemplateLanguage(appId: string | null, id: string | null, language: string | null): Promise<void> {
-        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{id}/{language}";
+    deleteTemplateLanguage(appId: string | null, code: string | null, language: string | null): Promise<void> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (code === undefined || code === null)
+            throw new Error("The parameter 'code' must be defined.");
+        url_ = url_.replace("{code}", encodeURIComponent("" + code));
         if (language === undefined || language === null)
             throw new Error("The parameter 'language' must be defined.");
         url_ = url_.replace("{language}", encodeURIComponent("" + language));
@@ -5640,6 +5683,11 @@ export interface ErrorDto {
     details?: string[] | undefined;
     /** Status code of the http response. */
     statusCode?: number;
+}
+
+export interface AdminProfileDto {
+    /** The token for the integrated app. */
+    token?: string | undefined;
 }
 
 export interface UpdateProfileDto {
@@ -6464,7 +6512,7 @@ export interface AddContributorDto {
     /** The email of the new contributor. */
     email: string;
     /** The role. */
-    role: string;
+    role?: string | undefined;
 }
 
 export interface ConfiguredIntegrationsDto {

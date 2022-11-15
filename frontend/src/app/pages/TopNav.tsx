@@ -9,9 +9,9 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar } from 'reactstrap';
+import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar, NavItem } from 'reactstrap';
 import { useBoolean, useEventCallback } from '@app/framework';
-import { AppsDropdown, Logo } from '@app/shared/components';
+import { AppsDropdown, Integrated, Logo } from '@app/shared/components';
 import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
 
@@ -19,6 +19,7 @@ export const TopNav = () => {
     const dispatch = useDispatch();
     const match = useRouteMatch();
     const user = useLogin(x => x.user)!;
+    const userProfile = useLogin(x => x.profile);
     const [isOpen, setIsOpen] = useBoolean();
 
     React.useEffect(() => {
@@ -42,6 +43,12 @@ export const TopNav = () => {
             </Nav>
 
             <Nav navbar className='ml-auto'>
+                {userProfile?.token &&
+                    <NavItem>
+                        <Integrated token={userProfile.token} />
+                    </NavItem>
+                }
+
                 <Dropdown nav inNavbar isOpen={isOpen} toggle={setIsOpen.toggle}>
                     <DropdownToggle nav caret>
                         {texts.common.profile}

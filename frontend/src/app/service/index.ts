@@ -6,7 +6,7 @@
  */
 
 import { Log, User, UserManager, WebStorageStateStore } from 'oidc-client';
-import { AppsClient, ConfigsClient, EmailTemplatesClient, EventsClient, LogsClient, MediaClient, MessagingTemplatesClient, NotificationsClient, SmsTemplatesClient, SystemUsersClient, TemplatesClient, TopicsClient, UsersClient } from './service';
+import { AppsClient, ConfigsClient, EmailTemplatesClient, EventsClient, LogsClient, MediaClient, MessagingTemplatesClient, NotificationsClient, SmsTemplatesClient, SystemUsersClient, TemplatesClient, TopicsClient, UserClient, UsersClient } from './service';
 
 export * from './service';
 
@@ -139,6 +139,8 @@ export module Clients {
     export const SystemUsers = new SystemUsersClient(getApiUrl(), http);
 
     export const Topics = new TopicsClient(getApiUrl(), http);
+
+    export const User = new UserClient(getApiUrl(), http);
 
     export const Users = new UsersClient(getApiUrl(), http);
 
