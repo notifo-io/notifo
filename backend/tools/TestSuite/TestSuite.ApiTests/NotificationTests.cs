@@ -293,7 +293,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 2: Mark as delivered
-        await MarkAsDeliveredAsync(notification_0, user_0, strategy);
+        await MarkAsDeliveredAsync(notification_0, strategy);
 
         // Test if it has been marked as seen.
         var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstDelivered != null);
@@ -381,7 +381,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
         }
     }
 
-    private async Task MarkAsDeliveredAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
+    private static async Task MarkAsDeliveredAsync(UserNotificationDetailsDto notification, TrackingStrategy strategy)
     {
         switch (strategy)
         {
