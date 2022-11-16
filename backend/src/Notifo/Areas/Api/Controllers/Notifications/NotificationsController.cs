@@ -67,7 +67,7 @@ public sealed class NotificationsController : BaseController
 
         var response = new ListResponseDto<UserNotificationDto>();
 
-        response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
+        response.Items.AddRange(notifications.Select(x => UserNotificationDto.FromDomainObject(x, q.Channel)));
         response.Total = notifications.Total;
 
         return Ok(response);
@@ -76,18 +76,19 @@ public sealed class NotificationsController : BaseController
     /// <summary>
     /// Query archhived user notifications of the current user.
     /// </summary>
+    /// <param name="channel">The tracking channel.</param>
     /// <response code="200">Notifications returned.</response>.
     [HttpGet]
     [Route("api/me/notifications/archive")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<UserNotificationDto>))]
-    public async Task<IActionResult> GetMyArchive()
+    public async Task<IActionResult> GetMyArchive([FromQuery] string? channel = null)
     {
         var notifications = await userNotificationsStore.QueryAsync(App.Id, UserId, ArchiveQuery, HttpContext.RequestAborted);
 
         var response = new ListResponseDto<UserNotificationDto>();
 
-        response.Items.AddRange(notifications.Select(UserNotificationDto.FromDomainObject));
+        response.Items.AddRange(notifications.Select(x => UserNotificationDto.FromDomainObject(x, channel)));
         response.Total = notifications.Total;
 
         return Ok(response);

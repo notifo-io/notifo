@@ -1,0 +1,29 @@
+﻿{
+  Token: token1,
+  Data: {
+    confirmUrl: https://confirm.notifo.com?channel=mobilepush&configurationId=d9e3afe8-06a2-493e-b7a7-03a4aba61544,
+    id: Guid_1,
+    isConfirmed: False,
+    silent: False,
+    trackingToken: Yzc5Y2E5MzUtYzg3OC00ZWU3LWJjYmItNDBmOTIwZDlmYzg2fG1vYmlsZXB1c2h8ZDllM2FmZTgtMDZhMi00OTNlLWI3YTctMDNhNGFiYTYxNTQ0
+  },
+  Android: {
+    Priority: High,
+    Data: {
+      subject: My Subject
+    }
+  },
+  Apns: {
+    Headers: {
+      apns-collapse-id: Guid_1,
+      apns-push-type: alert
+    },
+    Aps: {
+      Alert: {
+        Title: My Subject
+      },
+      ContentAvailable: false,
+      MutableContent: true
+    }
+  }
+}

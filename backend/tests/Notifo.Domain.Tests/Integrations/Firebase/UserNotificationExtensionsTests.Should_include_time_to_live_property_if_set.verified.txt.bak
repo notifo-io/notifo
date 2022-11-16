@@ -1,0 +1,25 @@
+﻿{
+  Token: token1,
+  Data: {
+    id: Guid_Empty,
+    isConfirmed: False,
+    silent: False,
+    trackingToken: MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwfG1vYmlsZXB1c2h8ZDllM2FmZTgtMDZhMi00OTNlLWI3YTctMDNhNGFiYTYxNTQ0
+  },
+  Android: {
+    Priority: High,
+    TimeToLive: 00:16:40
+  },
+  Apns: {
+    Headers: {
+      apns-collapse-id: Guid_Empty,
+      apns-expiration: 1668592309,
+      apns-push-type: alert
+    },
+    Aps: {
+      Alert: {},
+      ContentAvailable: false,
+      MutableContent: true
+    }
+  }
+}

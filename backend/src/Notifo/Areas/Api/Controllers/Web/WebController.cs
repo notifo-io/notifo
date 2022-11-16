@@ -11,6 +11,7 @@ using NodaTime;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Areas.Api.Controllers.Web.Dtos;
 using Notifo.Domain;
+using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
@@ -120,7 +121,7 @@ public sealed class WebController : BaseController
             }
             else
             {
-                response.Notifications.Add(UserNotificationDto.FromDomainObject(notification));
+                response.Notifications.Add(UserNotificationDto.FromDomainObject(notification, Providers.Web));
             }
         }
 

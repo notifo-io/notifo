@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
 using Xunit;
 
 namespace Notifo.Identity;
@@ -22,7 +23,7 @@ public class DefaultUserServiceTests
     private readonly CancellationToken ct;
     private readonly UserManager<IdentityUser> userManager = A.Fake<UserManager<IdentityUser>>();
     private readonly IUserFactory userFactory = A.Fake<IUserFactory>();
-    private readonly IUserEvents userEvents = A.Fake<IUserEvents>();
+    private readonly IMediator mediator = A.Fake<IMediator>();
     private readonly DefaultUserService sut;
 
     public DefaultUserServiceTests()
@@ -37,7 +38,7 @@ public class DefaultUserServiceTests
 
         var log = A.Fake<ILogger<DefaultUserService>>();
 
-        sut = new DefaultUserService(userManager, userFactory, Enumerable.Repeat(userEvents, 1), log);
+        sut = new DefaultUserService(userManager, userFactory, mediator, log);
     }
 
     [Fact]
@@ -180,10 +181,10 @@ public class DefaultUserServiceTests
 
         await sut.CreateAsync(values.Email!, values, ct: ct);
 
-        A.CallTo(() => userEvents.OnUserRegisteredAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
+        A.CallTo(() => mediator.PublishAsync(A<UserRegistered>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustHaveHappened();
 
-        A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
+        A.CallTo(() => mediator.PublishAsync(A<UserConsentGiven>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustNotHaveHappened();
 
         A.CallTo(() => userManager.AddToRoleAsync(identity, A<string>._))
@@ -210,7 +211,7 @@ public class DefaultUserServiceTests
 
         await sut.CreateAsync(identity.Email!, values, ct: ct);
 
-        A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
+        A.CallTo(() => mediator.PublishAsync(A<UserConsentGiven>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustHaveHappened();
     }
 
@@ -308,7 +309,7 @@ public class DefaultUserServiceTests
 
         await sut.UpdateAsync(identity.Id, update, ct: ct);
 
-        A.CallTo(() => userEvents.OnUserUpdatedAsync(A<IUser>.That.Matches(x => x.Identity == identity), A<IUser>._))
+        A.CallTo(() => mediator.PublishAsync(A<UserUpdated>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustHaveHappened();
     }
 
@@ -403,10 +404,10 @@ public class DefaultUserServiceTests
 
         await sut.UpdateAsync(identity.Id, update, ct: ct);
 
-        A.CallTo<Task<IdentityResult>>(() => userManager.AddClaimsAsync(identity, HasClaim(NotifoClaimTypes.Consent)))
+        A.CallTo(() => userManager.AddClaimsAsync(identity, HasClaim(NotifoClaimTypes.Consent)))
             .MustHaveHappened();
 
-        A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
+        A.CallTo(() => mediator.PublishAsync(A<UserConsentGiven>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustHaveHappened();
     }
 
@@ -422,10 +423,10 @@ public class DefaultUserServiceTests
 
         await sut.UpdateAsync(identity.Id, update, ct: ct);
 
-        A.CallTo<Task<IdentityResult>>(() => userManager.AddClaimsAsync(identity, HasClaim(NotifoClaimTypes.ConsentForEmails)))
+        A.CallTo(() => userManager.AddClaimsAsync(identity, HasClaim(NotifoClaimTypes.ConsentForEmails)))
             .MustHaveHappened();
 
-        A.CallTo(() => userEvents.OnConsentGivenAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
+        A.CallTo(() => mediator.PublishAsync(A<UserConsentGiven>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustHaveHappened();
     }
 
@@ -531,7 +532,7 @@ public class DefaultUserServiceTests
 
         await sut.LockAsync(identity.Id, ct);
 
-        A.CallTo<Task<IdentityResult>>(() => userManager.SetLockoutEndDateAsync(identity, InFuture()))
+        A.CallTo(() => userManager.SetLockoutEndDateAsync(identity, InFuture()))
             .MustHaveHappened();
     }
 
@@ -559,9 +560,9 @@ public class DefaultUserServiceTests
     {
         var identity = CreateIdentity(found: false);
 
-        await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.DeleteAsync(identity.Id, ct));
+        await Assert.ThrowsAsync<DomainObjectNotFoundException>(() => sut.DeleteAsync(identity.Id, false, ct));
 
-        A.CallTo(() => userEvents.OnUserDeletedAsync(A<IUser>._))
+        A.CallTo(() => mediator.PublishAsync(A<UserDeleted>._, A<CancellationToken>._))
             .MustNotHaveHappened();
     }
 
@@ -570,12 +571,12 @@ public class DefaultUserServiceTests
     {
         var identity = CreateIdentity(found: true);
 
-        await sut.DeleteAsync(identity.Id, ct);
+        await sut.DeleteAsync(identity.Id, false, ct);
 
         A.CallTo(() => userManager.DeleteAsync(identity))
             .MustHaveHappened();
 
-        A.CallTo(() => userEvents.OnUserDeletedAsync(A<IUser>.That.Matches(x => x.Identity == identity)))
+        A.CallTo(() => mediator.PublishAsync(A<UserDeleted>.That.Matches(x => x.User.Identity == identity), A<CancellationToken>._))
             .MustHaveHappened();
     }
 

@@ -7,6 +7,7 @@
 
 using Microsoft.AspNetCore.SignalR;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
+using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Web;
 using Notifo.Domain.UserNotifications;
 
@@ -23,7 +24,7 @@ public sealed class NotificationHubAccessor : IStreamClient
 
     public Task SendAsync(UserNotification userNotification)
     {
-        var dto = UserNotificationDto.FromDomainObject(userNotification);
+        var dto = UserNotificationDto.FromDomainObject(userNotification, Providers.Web);
 
         var userId = $"{userNotification.AppId}_{userNotification.UserId}";
 

@@ -28,4 +28,10 @@ public sealed class TrackNotificationDto
     /// The configuration ID.
     /// </summary>
     public Guid ConfigurationId { get; set; }
+
+    /// <summary>
+    /// The device identifier.
+    /// </summary>
+    [Obsolete]
+    public string? DeviceIdentifier { get; set; }
 }

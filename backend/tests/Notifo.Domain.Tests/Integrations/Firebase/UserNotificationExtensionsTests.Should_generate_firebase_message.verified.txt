@@ -1,0 +1,40 @@
+﻿{
+  Token: token1,
+  Data: {
+    confirmText: My Confirm,
+    confirmUrl: https://confirm.notifo.com?channel=mobilepush&configurationId=d9e3afe8-06a2-493e-b7a7-03a4aba61544,
+    data: data1,
+    id: Guid_1,
+    imageLarge: https://via.placeholder.com/600,
+    imageSmall: https://via.placeholder.com/100,
+    isConfirmed: True,
+    linkText: My Link,
+    linkUrl: https://app.notifo.io,
+    silent: False,
+    trackDeliveredUrl: https://track-delivered.notifo.com?channel=mobilepush&configurationId=d9e3afe8-06a2-493e-b7a7-03a4aba61544,
+    trackingToken: ZDllM2FmZTgtMDZhMi00OTNlLWI3YTctMDNhNGFiYTYxNTQ0fG1vYmlsZXB1c2h8ZDllM2FmZTgtMDZhMi00OTNlLWI3YTctMDNhNGFiYTYxNTQ0,
+    trackingUrl: https://track-seen.notifo.com?channel=mobilepush&configurationId=d9e3afe8-06a2-493e-b7a7-03a4aba61544,
+    trackSeenUrl: https://track-seen.notifo.com?channel=mobilepush&configurationId=d9e3afe8-06a2-493e-b7a7-03a4aba61544
+  },
+  Android: {
+    Priority: High,
+    Data: {
+      body: My Body,
+      subject: My Subject
+    }
+  },
+  Apns: {
+    Headers: {
+      apns-collapse-id: Guid_1,
+      apns-push-type: alert
+    },
+    Aps: {
+      Alert: {
+        Title: My Subject,
+        Body: My Body
+      },
+      ContentAvailable: false,
+      MutableContent: true
+    }
+  }
+}

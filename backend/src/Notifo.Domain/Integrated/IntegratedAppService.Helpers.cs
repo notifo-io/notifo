@@ -5,15 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
-using Notifo.Domain.Events;
 using Notifo.Domain.Identity;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
-using Notifo.Infrastructure.Mediator;
-using Notifo.Infrastructure.Texts;
 using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrated;
