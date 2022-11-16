@@ -20,7 +20,7 @@ public sealed class UserNotificationQueryDto : QueryDto
     /// <summary>
     /// The source channel.
     /// </summary>
-    public string Channel { get; set; }
+    public string? Channel { get; set; }
 
     public UserNotificationQuery ToQuery(bool needsTotal)
     {
