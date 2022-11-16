@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain;
+using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Security;
@@ -38,7 +39,8 @@ public sealed class NotificationHub : Hub
     {
         var notifications = await userNotificationsStore.QueryAsync(AppId, UserId, DefaultQuery, Context.ConnectionAborted);
 
-        var dtos = notifications.Select(UserNotificationDto.FromDomainObject).ToArray();
+        // Create the notifications with the correct channel (web).
+        var dtos = notifications.Select(x => UserNotificationDto.FromDomainObject(x, Providers.Web)).ToArray();
 
         await Clients.Caller.SendAsync("notifications", dtos, Context.ConnectionAborted);
     }

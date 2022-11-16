@@ -74,7 +74,7 @@ public sealed class MobilePushController : BaseController
     {
         var command = request.ToUpdate(UserId);
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -106,7 +106,7 @@ public sealed class MobilePushController : BaseController
     {
         var command = new RemoveUserMobileToken { UserId = UserId, Token = token };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

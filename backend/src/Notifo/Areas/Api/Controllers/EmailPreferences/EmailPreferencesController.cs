@@ -120,7 +120,7 @@ public sealed class EmailPreferencesController : BaseController
         {
             var command = new DisableUserChannel { UserId = UserId, Channel = Providers.Email };
 
-            await Mediator.Send(command, ct);
+            await Mediator.SendAsync(command, ct);
         }
         catch (DomainObjectNotFoundException)
         {
@@ -135,7 +135,7 @@ public sealed class EmailPreferencesController : BaseController
         {
             var command = new DisableSubscriptionChannel { UserId = UserId, Channel = Providers.Email };
 
-            await Mediator.Send(command, ct);
+            await Mediator.SendAsync(command, ct);
         }
         catch (DomainObjectNotFoundException)
         {

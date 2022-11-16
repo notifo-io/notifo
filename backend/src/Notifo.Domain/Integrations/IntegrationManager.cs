@@ -273,7 +273,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                 {
                     var command = new UpdateAppIntegrationStatus { AppId = app.Id, Status = updates };
 
-                    await mediator.Send(command, ct);
+                    await mediator.SendAsync(command, ct);
                 }
             }
         }

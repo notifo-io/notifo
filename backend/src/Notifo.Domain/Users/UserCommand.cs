@@ -7,7 +7,6 @@
 
 namespace Notifo.Domain.Users;
 
-public abstract class UserCommand : AppCommandBase<User>
+public abstract class UserCommand : UserCommandBase<User>
 {
-    public string UserId { get; set; }
 }

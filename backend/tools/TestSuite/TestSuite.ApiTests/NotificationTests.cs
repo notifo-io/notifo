@@ -63,7 +63,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that user notifications have been created.
-        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsyn(null, TimeSpan.FromSeconds(30));
+        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsync(null, TimeSpan.FromSeconds(30));
 
         Assert.Contains(userNotifications, x => x.Subject == subjectId);
 
@@ -128,7 +128,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that user notifications have been created.
-        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsyn(null, TimeSpan.FromSeconds(30));
+        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsync(null, TimeSpan.FromSeconds(30));
 
         Assert.Contains(userNotifications, x => x.Subject == subjectId);
 

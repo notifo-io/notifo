@@ -21,9 +21,9 @@ public interface IUserResolver
     Task<List<IUser>> QueryByEmailAsync(string email,
         CancellationToken ct = default);
 
-    Task<List<IUser>> QueryAllAsync(
+    Task<Dictionary<string, IUser>> QueryManyAsync(string[] ids,
         CancellationToken ct = default);
 
-    Task<Dictionary<string, IUser>> QueryManyAsync(string[] ids,
+    IAsyncEnumerable<IUser> QueryAllAsync(
         CancellationToken ct = default);
 }

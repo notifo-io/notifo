@@ -5,23 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Identity;
+namespace Notifo.Domain.Integrated;
 
-public interface IUserEvents
+public interface IIntegratedAppService
 {
-    void OnUserRegistered(IUser user)
-    {
-    }
-
-    void OnUserUpdated(IUser user)
-    {
-    }
-
-    void OnUserDeleted(IUser user)
-    {
-    }
-
-    void OnConsentGiven(IUser user)
-    {
-    }
+    Task<string?> GetTokenAsync(string userId,
+        CancellationToken ct = default);
 }

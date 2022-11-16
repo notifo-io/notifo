@@ -33,6 +33,7 @@ public static class PipelineServiceExtensions
 
     public static void AddPipeline(this IServiceCollection services)
     {
+        services.AddSingleton<AppMediatorMiddleware>();
         services.AddMiddleware<AppMediatorMiddleware, AppCommandBase>();
     }
 

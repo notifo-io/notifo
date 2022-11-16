@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Log.Internal;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Mediator;
+using Notifo.Infrastructure.Tasks;
 
 namespace Notifo.Domain.Log;
 
@@ -16,21 +18,38 @@ public sealed class LogStore : ILogStore, IDisposable
 {
     private readonly LogCollector collector;
     private readonly ILogRepository repository;
+    private readonly IMediator mediator;
     private readonly ILogger<LogStore> log;
 
-    public LogStore(ILogRepository repository,
+    public LogStore(ILogRepository repository, IMediator mediator,
         ILogger<LogStore> log, IClock clock)
     {
         this.repository = repository;
-
+        this.mediator = mediator;
         this.log = log;
 
-        collector = new LogCollector(repository, clock, 10, 3000);
+        collector = new LogCollector(repository, clock, 10, 3000)
+        {
+            OnNewEntries = OnNewEntries
+        };
     }
 
     public void Dispose()
     {
         collector.StopAsync().Wait();
+    }
+
+    private void OnNewEntries(IResultList<LogEntry> newEntries)
+    {
+        foreach (var entry in newEntries)
+        {
+            var notification = new FirstLogCreated
+            {
+                Entry = entry
+            };
+
+            mediator.PublishAsync(notification, default).Forget();
+        }
     }
 
     public Task LogAsync(string appId, string system, string message)

@@ -9,16 +9,26 @@ import { createAction, createReducer } from '@reduxjs/toolkit';
 import { routerActions } from 'react-router-redux';
 import { Dispatch, Middleware } from 'redux';
 import { Types } from '@app/framework';
-import { AuthService } from '@app/service';
+import { AuthService, Clients } from '@app/service';
+import { createApiThunk } from './../shared';
 import { LoginState, User } from './state';
 
 const loginStarted = createAction('login/started');
+
 const loginDoneSilent = createAction<{ user: User }>('login/done/silent');
+
 const loginDoneRedirect = createAction<{ user: User; redirectPath?: string }>('login/done/redirect');
+
 const loginFailed = createAction('login/failed');
 
 const logoutStarted = createAction('logout/started');
+
 const logoutDoneRedirect = createAction('logout/redirect');
+
+export const loadProfile = createApiThunk('login/profile',
+    () => {
+        return Clients.User.getAdminUser();
+    });
 
 export const loginStart = () => {
     return async (dispatch: Dispatch) => {
@@ -113,6 +123,9 @@ export const loginMiddleware: Middleware = (state) => next => action => {
 const initialState: LoginState = {};
 
 export const loginReducer = createReducer(initialState, builder => builder
+    .addCase(loadProfile.fulfilled, (state, action) => {
+        state.profile = action.payload;
+    })
     .addCase(loginStarted, (state) => {
         state.isAuthenticating = true;
         state.isAuthenticated = false;

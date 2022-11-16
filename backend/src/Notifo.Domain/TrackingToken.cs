@@ -66,7 +66,7 @@ public readonly record struct TrackingToken(Guid NotificationId, string? Channel
                 channel = null;
             }
 
-            result = new TrackingToken(guid, channel, configurationId);
+            result = new TrackingToken(guid, channel?.ToLowerInvariant(), configurationId);
             return true;
         }
         catch (FormatException)
@@ -77,10 +77,12 @@ public readonly record struct TrackingToken(Guid NotificationId, string? Channel
 
     public readonly string ToParsableString()
     {
+        var channel = Channel?.ToLowerInvariant();
+
         var compound =
             ConfigurationId == default ?
-            $"{NotificationId}|{Channel}" :
-            $"{NotificationId}|{Channel}|{ConfigurationId}";
+            $"{NotificationId}|{channel}" :
+            $"{NotificationId}|{channel}|{ConfigurationId}";
 
         return compound.ToBase64();
     }

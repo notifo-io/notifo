@@ -7,6 +7,7 @@
 
 using System.Collections.Concurrent;
 using NodaTime;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Timers;
 
 namespace Notifo.Domain.Log.Internal;
@@ -19,6 +20,8 @@ public sealed class LogCollector
     private readonly int updatesCapacity;
     private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
     private readonly ConcurrentDictionary<(string AppId, string Message), int> updates;
+
+    public Action<IResultList<LogEntry>>? OnNewEntries { get; set; }
 
     public LogCollector(ILogRepository repository, IClock clock, int updateInterval, int capacity = 2000)
     {
@@ -91,7 +94,12 @@ public sealed class LogCollector
         {
             var now = clock.GetCurrentInstant();
 
-            await repository.MatchWriteAsync(commands, now, ct);
+            var newEntries = await repository.BatchWriteAsync(commands, now, ct);
+
+            if (newEntries.Count > 0)
+            {
+                OnNewEntries?.Invoke(newEntries);
+            }
         }
     }
 }

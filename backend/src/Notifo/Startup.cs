@@ -104,6 +104,9 @@ public class Startup
             })
             .AddRazorRuntimeCompilation();
 
+        // Run this first because it injects middlewares.
+        services.AddIntegratedApp();
+
         services.AddMyApi(signalROptions);
         services.AddMyApiKey();
         services.AddMyApps();

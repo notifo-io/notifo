@@ -161,10 +161,10 @@ public class DefaultUserResolverTests
     {
         var users = ResultList.CreateFrom(0, A.Fake<IUser>());
 
-        A.CallTo(() => userService.QueryAsync(null, int.MaxValue, 0, ct))
-            .Returns(users);
+        A.CallTo(() => userService.StreamAsync(ct))
+            .Returns(users.ToAsyncEnumerable());
 
-        var result = await sut.QueryAllAsync(ct);
+        var result = await sut.QueryAllAsync(ct).ToListAsync(ct);
 
         Assert.Single(result);
     }

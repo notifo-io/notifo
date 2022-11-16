@@ -18,15 +18,15 @@ namespace Notifo.Domain.Apps;
 
 public sealed class AddContributor : AppCommand
 {
-    public string Email { get; set; }
+    public string EmailOrId { get; set; }
 
-    public string Role { get; set; }
+    public string Role { get; set; } = NotifoRoles.AppAdmin;
 
     private sealed class Validator : AbstractValidator<AddContributor>
     {
         public Validator()
         {
-            RuleFor(x => x.Email).NotNull();
+            RuleFor(x => x.EmailOrId).NotNull();
             RuleFor(x => x.Role).NotNull().Role();
         }
     }
@@ -38,11 +38,11 @@ public sealed class AddContributor : AppCommand
 
         var userResolver = serviceProvider.GetRequiredService<IUserResolver>();
 
-        var (user, _) = await userResolver.CreateUserIfNotExistsAsync(Email, ct: ct);
+        var (user, _) = await userResolver.CreateUserIfNotExistsAsync(EmailOrId, ct: ct);
 
         if (user == null)
         {
-            var error = new ValidationError(Texts.Apps_UserNotFound, nameof(Email));
+            var error = new ValidationError(Texts.Apps_UserNotFound, nameof(EmailOrId));
 
             throw new ValidationException(error);
         }
@@ -51,6 +51,8 @@ public sealed class AddContributor : AppCommand
         {
             throw new DomainException(Texts.App_CannotUpdateYourself);
         }
+
+        EmailOrId = user.Id;
 
         var newApp = target with
         {

@@ -216,6 +216,24 @@
   <data name="MobilePush_TokenRemoved" xml:space="preserve">
     <value>Token has been removed.</value>
   </data>
+  <data name="NotificationContributorCreated" xml:space="preserve">
+    <value>Contributor '{{user}} been added to app '{{app}}'.</value>
+  </data>
+  <data name="NotificationContributorRemoved" xml:space="preserve">
+    <value>Contributor '{{user}}' been removed from app '{{app}}'.</value>
+  </data>
+  <data name="NotificationFirstLog" xml:space="preserve">
+    <value>New log message in app '{{app}}': {{log}}.</value>
+  </data>
+  <data name="NotificationLink" xml:space="preserve">
+    <value>Go to Settings</value>
+  </data>
+  <data name="NotificationTemplateDeleted" xml:space="preserve">
+    <value>Template '{{code}}' has been removed from app '{{app}}'.</value>
+  </data>
+  <data name="NotificationTemplateUpserted" xml:space="preserve">
+    <value>Template '{{code}}' has been added or updated in app '{{app}}'.</value>
+  </data>
   <data name="Notification_AlreadyProcessed" xml:space="preserve">
     <value>Notification has already been processed.</value>
   </data>

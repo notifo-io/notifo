@@ -32,7 +32,8 @@ public sealed class MongoDbMediaRepository : MongoDbStore<MongoDbMedia>, IMediaR
             new CreateIndexModel<MongoDbMedia>(
                 IndexKeys
                     .Ascending(x => x.Doc.AppId)
-                    .Ascending(x => x.Doc.FileName)),
+                    .Ascending(x => x.Doc.FileName)
+                    .Descending(x => x.Doc.LastUpdate)),
             null, ct);
     }
 
@@ -43,7 +44,7 @@ public sealed class MongoDbMediaRepository : MongoDbStore<MongoDbMedia>, IMediaR
         {
             var filter = BuildFilter(appId, query);
 
-            var resultItems = await Collection.Find(filter).ToListAsync(query, ct);
+            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Doc.LastUpdate).ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
 
             if (query.ShouldQueryTotal(resultItems))

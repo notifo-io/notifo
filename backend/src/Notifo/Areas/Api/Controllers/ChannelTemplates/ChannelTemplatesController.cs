@@ -81,7 +81,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var command = request.ToUpdate<T>(App.Language);
 
-        var template = await Mediator.Send(command, HttpContext.RequestAborted);
+        var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template!, ToDto);
     }
@@ -100,7 +100,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var command = request.ToUpdate<T>(code);
 
-        var template = await Mediator.Send(command, HttpContext.RequestAborted);
+        var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return ToDto(template!.Languages[request.Language]);
     }
@@ -120,7 +120,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var command = request.ToUpdate(code, FromDto);
 
-        var template = await Mediator.Send(command, HttpContext.RequestAborted);
+        var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -141,7 +141,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var command = new UpdateChannelTemplateLanguage<T> { TemplateCode = code, Language = language, Template = FromDto(request) };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -161,7 +161,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var command = new DeleteChannelTemplateLanguage<T> { TemplateCode = code, Language = language };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -180,7 +180,7 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var command = new DeleteChannelTemplate<T> { TemplateCode = code };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

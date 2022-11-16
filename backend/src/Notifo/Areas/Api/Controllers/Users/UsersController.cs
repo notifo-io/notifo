@@ -151,14 +151,14 @@ public sealed class UsersController : BaseController
         {
             var command = dto.ToUpdate(id);
 
-            await Mediator.Send(command, HttpContext.RequestAborted);
+            await Mediator.SendAsync(command, HttpContext.RequestAborted);
         }
 
         foreach (var topic in request.Unsubscribe.OrEmpty())
         {
             var command = new DeleteSubscription { UserId = id, Topic = topic };
 
-            await Mediator.Send(command, HttpContext.RequestAborted);
+            await Mediator.SendAsync(command, HttpContext.RequestAborted);
         }
 
         return NoContent();
@@ -186,7 +186,7 @@ public sealed class UsersController : BaseController
 
         var command = new DeleteSubscription { UserId = id, Topic = Uri.UnescapeDataString(prefix) };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -214,7 +214,7 @@ public sealed class UsersController : BaseController
         {
             var command = dto.ToUpsert();
 
-            var user = await Mediator.Send(command, HttpContext.RequestAborted);
+            var user = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
             response.Add(UserDto.FromDomainObject(user!, null, null));
         }
@@ -244,7 +244,7 @@ public sealed class UsersController : BaseController
 
         var command = request.ToUpdate(id);
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -271,7 +271,7 @@ public sealed class UsersController : BaseController
 
         var command = new RemoveUserAllowedTopic { UserId = id, Prefix = prefix };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -298,7 +298,7 @@ public sealed class UsersController : BaseController
 
         var command = new RemoveUserMobileToken { UserId = id, Token = token };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -325,7 +325,7 @@ public sealed class UsersController : BaseController
 
         var command = new RemoveUserWebPushSubscription { UserId = id, Endpoint = endpoint };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }
@@ -344,7 +344,7 @@ public sealed class UsersController : BaseController
     {
         var command = new DeleteUser { UserId = id };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

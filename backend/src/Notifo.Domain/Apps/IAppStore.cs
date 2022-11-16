@@ -9,6 +9,9 @@ namespace Notifo.Domain.Apps;
 
 public interface IAppStore
 {
+    IAsyncEnumerable<App> QueryAllAsync(
+        CancellationToken ct = default);
+
     Task<List<App>> QueryWithPendingIntegrationsAsync(
         CancellationToken ct = default);
 

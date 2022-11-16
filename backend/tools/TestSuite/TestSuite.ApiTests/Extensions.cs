@@ -59,7 +59,7 @@ public static class Extensions
         return result;
     }
 
-    public static async Task<UserNotificationDto[]> WaitForMyNotificationsAsyn(this INotificationsClient notificationsClient,
+    public static async Task<UserNotificationDto[]> WaitForMyNotificationsAsync(this INotificationsClient notificationsClient,
         Func<UserNotificationDto, bool> condition, TimeSpan timeout)
     {
         var result = Array.Empty<UserNotificationDto>();

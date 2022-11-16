@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Users.Dtos;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Integrated;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Topics;
 using Notifo.Domain.Users;
@@ -21,12 +22,14 @@ public class UserController : BaseController
 {
     private readonly ISubscriptionStore subscriptionStore;
     private readonly ITopicStore topicStore;
+    private readonly IIntegratedAppService integratedApp;
     private readonly IUserStore userStore;
 
-    public UserController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IUserStore userStore)
+    public UserController(ISubscriptionStore subscriptionStore, ITopicStore topicStore, IIntegratedAppService integratedApp, IUserStore userStore)
     {
         this.subscriptionStore = subscriptionStore;
         this.topicStore = topicStore;
+        this.integratedApp = integratedApp;
         this.userStore = userStore;
     }
 
@@ -47,6 +50,25 @@ public class UserController : BaseController
     }
 
     /// <summary>
+    /// Get the current admin user.
+    /// </summary>
+    /// <response code="200">User returned.</response>.
+    [HttpGet("api/me/admin")]
+    [AppPermission]
+    [Produces(typeof(AdminProfileDto))]
+    public async Task<IActionResult> GetAdminUser()
+    {
+        var token = await integratedApp.GetTokenAsync(UserIdOrSub, HttpContext.RequestAborted);
+
+        var response = new AdminProfileDto
+        {
+            Token = token
+        };
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Update the user.
     /// </summary>
     /// <param name="request">The upsert request.</param>
@@ -58,7 +80,7 @@ public class UserController : BaseController
     {
         var command = request.ToUpsert(UserId);
 
-        var user = await Mediator.Send(command, HttpContext.RequestAborted);
+        var user = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         var response = ProfileDto.FromDomainObject(user!, App);
 
@@ -145,14 +167,14 @@ public class UserController : BaseController
         {
             var update = dto.ToUpdate(UserId);
 
-            await Mediator.Send(update, HttpContext.RequestAborted);
+            await Mediator.SendAsync(update, HttpContext.RequestAborted);
         }
 
         foreach (var topic in request.Unsubscribe.OrEmpty())
         {
             var update = new DeleteSubscription { UserId = UserId, Topic = topic };
 
-            await Mediator.Send(update, HttpContext.RequestAborted);
+            await Mediator.SendAsync(update, HttpContext.RequestAborted);
         }
 
         return NoContent();
@@ -173,7 +195,7 @@ public class UserController : BaseController
     {
         var command = new DeleteSubscription { UserId = UserId, Topic = Uri.UnescapeDataString(prefix) };
 
-        await Mediator.Send(command, HttpContext.RequestAborted);
+        await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
     }

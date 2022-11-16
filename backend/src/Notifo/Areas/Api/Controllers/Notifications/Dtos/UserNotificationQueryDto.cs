@@ -17,6 +17,11 @@ public sealed class UserNotificationQueryDto : QueryDto
     /// </summary>
     public string[]? Channels { get; set; }
 
+    /// <summary>
+    /// The source channel.
+    /// </summary>
+    public string? Channel { get; set; }
+
     public UserNotificationQuery ToQuery(bool needsTotal)
     {
         var result = SimpleMapper.Map(this, new UserNotificationQuery

@@ -7,7 +7,6 @@
 
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain;
-using Notifo.Domain.Channels;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
 
@@ -27,7 +26,7 @@ public sealed class UserNotificationDto : UserNotificationBaseDto
     [Required]
     public bool IsConfirmed { get; set; }
 
-    public static UserNotificationDto FromDomainObject(UserNotification source)
+    public static UserNotificationDto FromDomainObject(UserNotification source, string? channel)
     {
         var result = new UserNotificationDto
         {
@@ -38,7 +37,7 @@ public sealed class UserNotificationDto : UserNotificationBaseDto
         SimpleMapper.Map(source, result);
         SimpleMapper.Map(source.Formatting, result);
 
-        result.TrackingToken = new TrackingToken(source.Id, Providers.Web).ToParsableString();
+        result.TrackingToken = new TrackingToken(source.Id, channel).ToParsableString();
 
         return result;
     }

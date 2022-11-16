@@ -227,6 +227,8 @@ fieldset {
     }
 
     &-nav {
+        flex-direction: row;
+
         .nav-link {
             color: $color-white !important;
             padding-bottom: .5rem !important;
@@ -235,6 +237,34 @@ fieldset {
 
         .dropdown-menu {
             position: absolute !important;
+        }
+    }
+
+    & .notifo {
+        .notifo {
+            &-button {
+                margin-left: .5rem;
+                margin-right: 1rem;
+                padding: .375rem;
+
+                svg {
+                    fill: $color-white;
+                    height: 20px;
+                    max-height: 20px;
+                    max-width: 20px;
+                }
+
+                @media (max-width: $breakpoint-lg) {
+                    margin-right: 1.5rem;
+                }
+            }
+
+            &-modal {
+                @media (max-width: $breakpoint-xl) {
+                    @include fixed(60px, 10px, 20px, auto);
+                    max-width: 90vw;
+                }
+            }
         }
     }
 }

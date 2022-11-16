@@ -44,6 +44,7 @@ public static class UserNotificationExtensions
                 .WithNonEmpty("linkText", formatting.LinkText)
                 .WithNonEmpty("linkUrl", formatting.LinkUrl)
                 .WithNonEmpty("silent", notification.Silent.ToString())
+                .WithNonEmpty("trackingToken", new TrackingToken(notification.Id, Providers.MobilePush, configurationId).ToParsableString())
                 .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, configurationId))
                 .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, configurationId))
                 .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, configurationId))
