@@ -87,7 +87,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 return;
             }
 
-            var notification = await userNotificationStore.FindAsync(token.NotificationId);
+            var notification = await userNotificationStore.FindAsync(token.UserNotificationId);
 
             if (notification == null)
             {

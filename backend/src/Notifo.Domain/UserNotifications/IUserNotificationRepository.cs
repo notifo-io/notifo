@@ -36,15 +36,15 @@ public interface IUserNotificationRepository
     Task DeleteAsync(Guid id,
         CancellationToken ct = default);
 
-    Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens, Instant now,
-        CancellationToken ct = default);
-
-    Task TrackSeenAsync(IEnumerable<TrackingToken> tokens, Instant now,
-        CancellationToken ct = default);
-
     Task InsertAsync(UserNotification notification,
         CancellationToken ct = default);
 
-    Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, Guid ConfigurationId, ChannelSendInfo Info)> updates,
+    Task TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
+        CancellationToken ct = default);
+
+    Task TrackSeenAsync(TrackingToken[] tokens, Instant now,
+        CancellationToken ct = default);
+
+    Task BatchWriteAsync((TrackingToken Token, ProcessStatus Status, string? Detail)[] updates, Instant now,
         CancellationToken ct = default);
 }

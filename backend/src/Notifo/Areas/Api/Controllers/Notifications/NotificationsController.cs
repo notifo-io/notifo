@@ -46,7 +46,7 @@ public sealed class NotificationsController : BaseController
 
         var response = new ListResponseDto<UserNotificationDetailsDto>();
 
-        response.Items.AddRange(notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails));
+        response.Items.AddRange(notifications.Select(x => UserNotificationDetailsDto.FromDomainObjectAsDetails(x, q.Channel)));
         response.Total = notifications.Total;
 
         return Ok(response);
@@ -106,18 +106,29 @@ public sealed class NotificationsController : BaseController
     {
         if (request.Confirmed != null)
         {
-            var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.ConfigurationId);
+            var token = ParseToken(request.Confirmed, request);
 
             await userNotificationService.TrackConfirmedAsync(token);
         }
 
         if (request.Seen?.Length > 0)
         {
-            var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.ConfigurationId));
+            var tokens = request.Seen.Select(x => ParseToken(x, request));
 
             await userNotificationService.TrackSeenAsync(tokens);
         }
 
         return NoContent();
+    }
+
+    private static TrackingToken ParseToken(string id, TrackNotificationDto request)
+    {
+#pragma warning disable CS0612 // Type or member is obsolete
+        return TrackingToken.Parse(
+            id,
+            request.Channel,
+            request.ConfigurationId,
+            request.DeviceIdentifier);
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 }

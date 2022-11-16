@@ -70,32 +70,34 @@ public sealed class WebController : BaseController
             requestToken = requestToken.Minus(Duration.FromSeconds(10));
         }
 
-#pragma warning disable MA0040 // Flow the cancellation token
         if (request.Delivered?.Length > 0)
         {
             var tokens = request.Delivered.Select(x => TrackingToken.Parse(x));
 
-            await userNotificationStore.TrackSeenAsync(tokens);
+            // It is not worth to cancel the request here and stop the tracking.
+            await userNotificationStore.TrackSeenAsync(tokens, default);
         }
 
         if (request.Seen?.Length > 0)
         {
             var tokens = request.Seen.Select(x => TrackingToken.Parse(x));
 
-            await userNotificationStore.TrackSeenAsync(tokens);
+            // It is not worth to cancel the request here and stop the tracking.
+            await userNotificationStore.TrackSeenAsync(tokens, default);
         }
 
         foreach (var id in request.Confirmed.OrEmpty())
         {
             var token = TrackingToken.Parse(id);
 
-            await userNotificationStore.TrackConfirmedAsync(token);
+            // It is not worth to cancel the request here and stop the tracking.
+            await userNotificationStore.TrackConfirmedAsync(token, default);
         }
-#pragma warning restore MA0040 // Flow the cancellation token
 
         foreach (var id in request.Deleted.OrEmpty())
         {
-            await userNotificationStore.DeleteAsync(id, HttpContext.RequestAborted);
+            // It is not worth to cancel the request here and stop the tracking.
+            await userNotificationStore.DeleteAsync(id, default);
         }
 
         var notifications = await userNotificationStore.QueryAsync(App.Id, UserId, DefaultQuery with { After = requestToken }, HttpContext.RequestAborted);

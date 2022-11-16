@@ -28,7 +28,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         this.counters = counters;
         this.clock = clock;
 
-        collector = new StatisticsCollector(repository, 5000);
+        collector = new StatisticsCollector(repository, clock, 5000);
     }
 
     public void Dispose()
@@ -109,7 +109,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     {
         Guard.NotNull(tokens);
 
-        return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
+        return repository.TrackDeliveredAsync(tokens.ToArray(), clock.GetCurrentInstant(), ct);
     }
 
     public Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
@@ -117,7 +117,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     {
         Guard.NotNull(tokens);
 
-        return repository.TrackSeenAsync(tokens, clock.GetCurrentInstant(), ct);
+        return repository.TrackSeenAsync(tokens.ToArray(), clock.GetCurrentInstant(), ct);
     }
 
     public Task TrackAttemptAsync(UserEventMessage userEvent,
@@ -170,7 +170,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
         return Task.WhenAll(
             StoreCountersAsync(counterKey, counterMap, ct),
-            StoreInternalAsync(identifier.UserNotificationId, identifier.Channel!, identifier.ConfigurationId, status, detail));
+            StoreInternalAsync(identifier.ToToken(), status, detail));
     }
 
     private Task StoreCountersAsync(TrackingKey key, CounterMap counterValues,
@@ -185,11 +185,9 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.InsertAsync(notification, ct);
     }
 
-    private async Task StoreInternalAsync(Guid id, string channel, Guid configurationId, ProcessStatus status, string? detail)
+    private async Task StoreInternalAsync(TrackingToken token, ProcessStatus status, string? details)
     {
-        var info = CreateInfo(status, detail);
-
-        await collector.AddAsync(id, channel, configurationId, info);
+        await collector.AddAsync(token, status, details);
     }
 
     private ChannelSendInfo CreateInfo(ProcessStatus status, string? detail)

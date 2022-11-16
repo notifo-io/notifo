@@ -28,6 +28,11 @@ public sealed record TrackingKey
 
     public Guid ConfigurationId { get; init; }
 
+    public TrackingToken ToToken()
+    {
+        return new TrackingToken(UserNotificationId, Channel, ConfigurationId);
+    }
+
     public static TrackingKey ForEvent(EventMessage @event)
     {
         Guard.NotNull(@event, nameof(@event));

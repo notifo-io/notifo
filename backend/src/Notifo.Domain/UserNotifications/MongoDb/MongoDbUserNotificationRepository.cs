@@ -241,40 +241,43 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         }
     }
 
-    public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens, Instant now,
+    public async Task BatchWriteAsync((TrackingToken Token, ProcessStatus Status, string? Detail)[] updates, Instant now,
+        CancellationToken ct = default)
+    {
+        using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))
+        {
+            var batch = await TrackingBatch.CreateAsync(Collection, updates.Select(x => x.Token), ct);
+
+            batch.UpdateStatus(updates, now);
+
+            await batch.WriteAsync(ct);
+        }
+    }
+
+    public async Task TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackDeliveredAsync"))
         {
-            var writes = new List<WriteModel<UserNotification>>();
+            var batch = await TrackingBatch.CreateAsync(Collection, tokens, ct);
 
-            AddStatusUpdateWrites(writes, tokens, now, "FirstDelivered");
+            batch.MarkIfNotDelivered(tokens, now);
 
-            if (writes.Count == 0)
-            {
-                return;
-            }
-
-            await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            await batch.WriteAsync(ct);
         }
     }
 
-    public async Task TrackSeenAsync(IEnumerable<TrackingToken> tokens, Instant now,
+    public async Task TrackSeenAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackSeenAsync"))
         {
-            var writes = new List<WriteModel<UserNotification>>();
+            var batch = await TrackingBatch.CreateAsync(Collection, tokens, ct);
 
-            AddStatusUpdateWrites(writes, tokens, now, "FirstDelivered");
-            AddStatusUpdateWrites(writes, tokens, now, "FirstSeen");
+            batch.MarkIfNotSeen(tokens, now);
+            batch.MarkIfNotDelivered(tokens, now);
 
-            if (writes.Count == 0)
-            {
-                return;
-            }
-
-            await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            await batch.WriteAsync(ct);
         }
     }
 
@@ -283,67 +286,17 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackConfirmedAsync"))
         {
-            await TrackSeenAsync(Enumerable.Repeat(token, 1), now, ct);
+            var tokens = new[] { token };
 
-            var handle = new HandledInfo(now, token.Channel);
+            var batch = await TrackingBatch.CreateAsync(Collection, tokens, ct);
 
-            var entity =
-                await Collection.FindOneAndUpdateAsync(
-                    Filter.And(
-                        Filter.Eq(x => x.Id, token.NotificationId),
-                        Filter.Eq(x => x.Formatting.ConfirmMode, ConfirmMode.Explicit),
-                        Filter.Exists(x => x.FirstConfirmed, false)),
-                    Update
-                        .Set(x => x.FirstConfirmed, handle).Max(x => x.Updated, handle.Timestamp),
-                    cancellationToken: ct);
+            batch.MarkIfNotConfirmed(tokens, now);
+            batch.MarkIfNotSeen(tokens, now);
+            batch.MarkIfNotDelivered(tokens, now);
 
-            if (entity != null)
-            {
-                if (entity.FirstConfirmed == null)
-                {
-                    entity.FirstConfirmed = handle;
-                }
+            await batch.WriteAsync(ct);
 
-                entity.Updated = handle.Timestamp;
-            }
-
-            return entity;
-        }
-    }
-
-    public async Task BatchWriteAsync(IEnumerable<(Guid Id, string Channel, Guid ConfigurationId, ChannelSendInfo Info)> updates,
-        CancellationToken ct = default)
-    {
-        using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))
-        {
-            var writes = new List<WriteModel<UserNotification>>();
-
-            var documentUpdates = new List<UpdateDefinition<UserNotification>>();
-
-            foreach (var group in updates.GroupBy(x => x.Id))
-            {
-                documentUpdates.Clear();
-
-                foreach (var (_, channel, configurationId, info) in group)
-                {
-                    var path = $"Channels.{channel}.Status.{configurationId}";
-
-                    documentUpdates.Add(Update.Set($"{path}.Detail", info.Detail));
-                    documentUpdates.Add(Update.Set($"{path}.Status", info.Status));
-                    documentUpdates.Add(Update.Set($"{path}.LastUpdate", info.LastUpdate));
-                }
-
-                var update = Update.Combine(documentUpdates);
-
-                writes.Add(new UpdateOneModel<UserNotification>(Filter.Eq(x => x.Id, group.Key), update));
-            }
-
-            if (writes.Count == 0)
-            {
-                return;
-            }
-
-            await Collection.BulkWriteAsync(writes, cancellationToken: ct);
+            return batch.GetNotification(token.UserNotificationId);
         }
     }
 
@@ -392,35 +345,6 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
             catch (Exception ex)
             {
                 log.LogError(ex, "Failed to cleanup notifications.");
-            }
-        }
-    }
-
-    private static void AddStatusUpdateWrites(List<WriteModel<UserNotification>> writes, IEnumerable<TrackingToken> tokens, Instant now, string propertyName)
-    {
-        foreach (var (guid, channel, configurationId) in tokens.Where(x => x.IsValid))
-        {
-            writes.Add(new UpdateOneModel<UserNotification>(
-                Filter.And(
-                    Filter.Eq(x => x.Id, guid),
-                    Filter.Exists(propertyName, false)),
-                Update
-                    .Set(x => x.FirstSeen, new HandledInfo(now, channel)).Max(x => x.Updated, now)));
-
-            if (!string.IsNullOrWhiteSpace(channel))
-            {
-                var update = Update.Min($"Channels.{channel}.{propertyName}", now);
-
-                if (configurationId != default)
-                {
-                    update = update.Min($"Channels.{channel}.Status.{configurationId}.{propertyName}", now);
-                }
-
-                writes.Add(new UpdateOneModel<UserNotification>(
-                    Filter.And(
-                        Filter.Eq(x => x.Id, guid),
-                        Filter.Exists($"Channels.{channel}")),
-                    update));
             }
         }
     }

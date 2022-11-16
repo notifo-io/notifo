@@ -4407,32 +4407,35 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user id.</param>
         /// <param name="channels">The active channels.</param>
+        /// <param name="channel">The source channel.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Query user notifications of the current user.
         /// </summary>
         /// <param name="channels">The active channels.</param>
+        /// <param name="channel">The source channel.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
         /// Query archhived user notifications of the current user.
         /// </summary>
+        /// <param name="channel">The tracking channel.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(string channel = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -4486,12 +4489,13 @@ namespace Notifo.SDK
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user id.</param>
         /// <param name="channels">The active channels.</param>
+        /// <param name="channel">The source channel.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/notifications?");
@@ -4500,6 +4504,10 @@ namespace Notifo.SDK
             if (channels != null)
             {
                 foreach (var item_ in channels) { urlBuilder_.Append(System.Uri.EscapeDataString("Channels") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (channel != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("Channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (query != null)
             {
@@ -4595,18 +4603,23 @@ namespace Notifo.SDK
         /// Query user notifications of the current user.
         /// </summary>
         /// <param name="channels">The active channels.</param>
+        /// <param name="channel">The source channel.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications?");
             if (channels != null)
             {
                 foreach (var item_ in channels) { urlBuilder_.Append(System.Uri.EscapeDataString("Channels") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (channel != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("Channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (query != null)
             {
@@ -4695,12 +4708,18 @@ namespace Notifo.SDK
         /// <summary>
         /// Query archhived user notifications of the current user.
         /// </summary>
+        /// <param name="channel">The tracking channel.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(string channel = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/archive");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/archive?");
+            if (channel != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -13860,6 +13879,13 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("configurationId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid ConfigurationId { get; set; }
+
+        /// <summary>
+        /// The device identifier.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("deviceIdentifier", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.Obsolete]
+        public string DeviceIdentifier { get; set; }
 
     }
 

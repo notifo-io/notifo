@@ -75,7 +75,7 @@ public class TrackingTokenTests
 
         var result = TrackingToken.Parse(sourceString, "push", configurationId);
 
-        Assert.Equal(result, new TrackingToken(sourceToken.NotificationId, "push", configurationId));
+        Assert.Equal(result, new TrackingToken(sourceToken.UserNotificationId, "push", configurationId));
     }
 
     [Fact]

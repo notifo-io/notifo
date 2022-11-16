@@ -139,62 +139,11 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
             .IgnoreMember<UserNotificationBaseDto>(x => x.TrackSeenUrl);
     }
 
-    [Fact]
-    public async Task Should_mark_notification_as_seen()
-    {
-        // STEP 0: Create user.
-        var user_0 = await CreateUserAsync();
-
-
-        // STEP 1: Send Notification
-        var publishRequest = new PublishManyDto
-        {
-            Requests = new List<PublishDto>
-            {
-                new PublishDto
-                {
-                    Topic = $"users/{user_0.Id}",
-                    Preformatted = new NotificationFormattingDto
-                    {
-                        Subject = new LocalizedText
-                        {
-                            ["en"] = subjectId
-                        }
-                    }
-                }
-            }
-        };
-
-        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
-
-
-        // Test that notification has been created.
-        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
-
-        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
-        var notification_0 = notifications_0.SingleOrDefault();
-
-        Assert.NotNull(notification_0);
-        Assert.Null(notification_0.FirstSeen);
-
-
-        // STEP 2: Mark as seen
-        using (var httpClient = new HttpClient())
-        {
-            await httpClient.GetAsync(notification_0.TrackSeenUrl);
-        }
-
-        // Test if it has been marked as seen.
-        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstSeen != null);
-
-        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
-        var notification_1 = notifications_1.SingleOrDefault();
-
-        Assert.NotNull(notification_1.FirstSeen);
-    }
-
-    [Fact]
-    public async Task Should_mark_notification_as_confirmed_explicitely()
+    [Theory]
+    [InlineData(TrackingStrategy.TrackingToken)]
+    [InlineData(TrackingStrategy.TrackingUrl)]
+    [InlineData(TrackingStrategy.Id)]
+    public async Task Should_mark_notification_as_confirmed(TrackingStrategy strategy)
     {
         // STEP 0: Create user.
         var user_0 = await CreateUserAsync();
@@ -233,11 +182,8 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
         Assert.Null(notification_0.FirstConfirmed);
 
 
-        // STEP 2: Mark as seen
-        using (var httpClient = new HttpClient())
-        {
-            await httpClient.GetAsync(notification_0.ConfirmUrl);
-        }
+        // STEP 2: Mark as confirmed
+        await MarkAsConfirmedAsync(notification_0, user_0, strategy);
 
         // Test if it has been marked as seen.
         var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstConfirmed != null);
@@ -245,7 +191,218 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
         var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
         var notification_1 = notifications_1.SingleOrDefault();
 
+        Assert.NotNull(notification_1.FirstConfirmed);
         Assert.NotNull(notification_1.FirstSeen);
+        Assert.NotNull(notification_1.FirstDelivered);
+    }
+
+    [Theory]
+    [InlineData(TrackingStrategy.TrackingToken)]
+    [InlineData(TrackingStrategy.TrackingUrl)]
+    [InlineData(TrackingStrategy.Id)]
+    public async Task Should_mark_notification_as_seen(TrackingStrategy strategy)
+    {
+        // STEP 0: Create user.
+        var user_0 = await CreateUserAsync();
+
+
+        // STEP 1: Send Notification
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
+                {
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subjectId
+                        }
+                    }
+                }
+            }
+        };
+
+        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+
+
+        // Test that notification has been created.
+        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
+
+        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notification_0 = notifications_0.SingleOrDefault();
+
+        Assert.NotNull(notification_0);
+        Assert.Null(notification_0.FirstSeen);
+
+
+        // STEP 2: Mark as seen
+        await MarkAsSeenAsync(notification_0, user_0, strategy);
+
+        // Test if it has been marked as seen.
+        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstSeen != null);
+
+        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notification_1 = notifications_1.SingleOrDefault();
+
+        Assert.NotNull(notification_1.FirstSeen);
+        Assert.NotNull(notification_1.FirstDelivered);
+    }
+
+    [Theory]
+    [InlineData(TrackingStrategy.TrackingUrl)]
+    public async Task Should_mark_notification_as_delivered(TrackingStrategy strategy)
+    {
+        // STEP 0: Create user.
+        var user_0 = await CreateUserAsync();
+
+
+        // STEP 1: Send Notification
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
+                {
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subjectId
+                        },
+                        ConfirmMode = ConfirmMode.Explicit
+                    }
+                }
+            }
+        };
+
+        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+
+
+        // Test that notification has been created.
+        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
+
+        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notification_0 = notifications_0.SingleOrDefault();
+
+        Assert.NotNull(notification_0);
+        Assert.Null(notification_0.FirstConfirmed);
+
+
+        // STEP 2: Mark as delivered
+        await MarkAsDeliveredAsync(notification_0, user_0, strategy);
+
+        // Test if it has been marked as seen.
+        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstDelivered != null);
+
+        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notification_1 = notifications_1.SingleOrDefault();
+
+        Assert.NotNull(notification_1.FirstDelivered);
+    }
+
+    public enum TrackingStrategy
+    {
+        TrackingUrl,
+        TrackingToken,
+        Id
+    }
+
+    private async Task MarkAsSeenAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
+    {
+        switch (strategy)
+        {
+            case TrackingStrategy.TrackingUrl:
+                using (var httpClient = new HttpClient())
+                {
+                    await httpClient.GetAsync(notification.TrackSeenUrl);
+                }
+
+                break;
+
+            case TrackingStrategy.TrackingToken:
+                var tokenRequest = new TrackNotificationDto
+                {
+                    Seen = new List<string>
+                    {
+                        notification.TrackingToken
+                    }
+                };
+
+                await BuildClient(user).ConfirmMeAsync(tokenRequest);
+                break;
+
+            case TrackingStrategy.Id:
+                var idRequest = new TrackNotificationDto
+                {
+                    Seen = new List<string>
+                    {
+                        notification.Id.ToString()
+                    }
+                };
+
+                await BuildClient(user).ConfirmMeAsync(idRequest);
+                break;
+        }
+    }
+
+    private async Task MarkAsConfirmedAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
+    {
+        switch (strategy)
+        {
+            case TrackingStrategy.TrackingUrl:
+                using (var httpClient = new HttpClient())
+                {
+                    await httpClient.GetAsync(notification.ConfirmUrl);
+                }
+
+                break;
+
+            case TrackingStrategy.TrackingToken:
+                var tokenRequest = new TrackNotificationDto
+                {
+                    Confirmed = notification.TrackingToken
+                };
+
+                await BuildClient(user).ConfirmMeAsync(tokenRequest);
+                break;
+
+            case TrackingStrategy.Id:
+                var idRequest = new TrackNotificationDto
+                {
+                    Confirmed = notification.Id.ToString()
+                };
+
+                await BuildClient(user).ConfirmMeAsync(idRequest);
+                break;
+        }
+    }
+
+    private async Task MarkAsDeliveredAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
+    {
+        switch (strategy)
+        {
+            case TrackingStrategy.TrackingUrl:
+                using (var httpClient = new HttpClient())
+                {
+                    await httpClient.GetAsync(notification.TrackDeliveredUrl);
+                }
+
+                break;
+        }
+    }
+
+    private INotificationsClient BuildClient(UserDto user)
+    {
+        return
+            NotifoClientBuilder.Create()
+                .SetApiUrl(_.ServerUrl)
+                .SetApiKey(user.ApiKey)
+                .Build()
+                .Notifications;
     }
 
     private async Task<UserDto> CreateUserAsync()
