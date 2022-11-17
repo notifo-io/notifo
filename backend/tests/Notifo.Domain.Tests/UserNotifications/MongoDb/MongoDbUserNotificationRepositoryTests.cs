@@ -14,6 +14,7 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
+[Trait("Category", "Dependencies")]
 public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserNotificationRepositoryFixture>
 {
     private readonly Guid configurationId1 = Guid.NewGuid();

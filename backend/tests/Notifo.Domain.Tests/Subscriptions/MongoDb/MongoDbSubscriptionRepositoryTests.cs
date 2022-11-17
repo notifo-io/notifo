@@ -13,6 +13,7 @@ using Notifo.Domain.Channels;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
+[Trait("Category", "Dependencies")]
 public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscriptionRepositoryFixture>
 {
     private readonly string topic = Guid.NewGuid().ToString();
@@ -29,7 +30,6 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
     }
 
     [Fact]
-    [Trait("Category", "Dependencies")]
     public async Task Should_be_fast()
     {
         var count = await _.Repository.Collection.CountDocumentsAsync(new BsonDocument());
