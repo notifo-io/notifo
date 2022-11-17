@@ -37,33 +37,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 1: Send Notification
-        var publishRequest = new PublishManyDto
-        {
-            Requests = new List<PublishDto>
-            {
-                new PublishDto
-                {
-                    Topic = $"users/{user_0.Id}",
-                    Preformatted = new NotificationFormattingDto
-                    {
-                        Subject = new LocalizedText
-                        {
-                            ["en"] = subjectId
-                        },
-                        ConfirmMode = ConfirmMode.Explicit
-                    },
-                    Settings = new Dictionary<string, ChannelSettingDto>
-                    {
-                        [Providers.MobilePush] = new ChannelSettingDto
-                        {
-                            Send = ChannelSend.Send
-                        }
-                    }
-                }
-            }
-        };
-
-        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+        await CreateNotificationAsync(user_0);
 
 
         // Test that notification has been created.
@@ -100,32 +74,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 1: Send Notification
-        var publishRequest = new PublishManyDto
-        {
-            Requests = new List<PublishDto>
-            {
-                new PublishDto
-                {
-                    Topic = $"users/{user_0.Id}",
-                    Preformatted = new NotificationFormattingDto
-                    {
-                        Subject = new LocalizedText
-                        {
-                            ["en"] = subjectId
-                        }
-                    },
-                    Settings = new Dictionary<string, ChannelSettingDto>
-                    {
-                        [Providers.MobilePush] = new ChannelSettingDto
-                        {
-                            Send = ChannelSend.Send
-                        }
-                    }
-                }
-            }
-        };
-
-        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+        await CreateNotificationAsync(user_0);
 
 
         // Test that notification has been created.
@@ -237,5 +186,36 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
             });
 
         return user_0;
+    }
+
+    private async Task CreateNotificationAsync(UserDto user_0)
+    {
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
+                {
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subjectId
+                        },
+                        ConfirmMode = ConfirmMode.Explicit
+                    },
+                    Settings = new Dictionary<string, ChannelSettingDto>
+                    {
+                        [Providers.MobilePush] = new ChannelSettingDto
+                        {
+                            Send = ChannelSend.Send
+                        }
+                    }
+                }
+            }
+        };
+
+        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
     }
 }

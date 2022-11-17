@@ -11,7 +11,7 @@ using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos;
 
-public sealed class MobileNotificationsQueryDto
+public sealed class DeviceNotificationsQueryDto
 {
     /// <summary>
     /// The device identifier (aka mobile push token).
@@ -24,12 +24,17 @@ public sealed class MobileNotificationsQueryDto
     public Instant After { get; set; }
 
     /// <summary>
+    /// True to also include unseen notifications.
+    /// </summary>
+    public bool IncludeUnseen { get; set; }
+
+    /// <summary>
     /// The number of notifications to query.
     /// </summary>
     public int Take { get; set; }
 
-    public MobileNotificationsQuery ToQuery()
+    public DeviceNotificationsQuery ToQuery()
     {
-        return SimpleMapper.Map(this, new MobileNotificationsQuery());
+        return SimpleMapper.Map(this, new DeviceNotificationsQuery());
     }
 }

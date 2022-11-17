@@ -75,7 +75,7 @@ public sealed class NotificationsController : BaseController
     }
 
     /// <summary>
-    /// Query archhived user notifications of the current user.
+    /// Query archived user notifications of the current user.
     /// </summary>
     /// <param name="channel">The tracking channel.</param>
     /// <response code="200">Notifications returned.</response>.
@@ -96,17 +96,17 @@ public sealed class NotificationsController : BaseController
     }
 
     /// <summary>
-    /// Query archhived user notifications of the current user.
+    /// Query user notifications of the current user for a specific device.
     /// </summary>
     /// <param name="q">The query object.</param>
     /// <response code="200">Notifications returned.</response>.
     [HttpGet]
-    [Route("api/me/notifications/mobilepush")]
+    [Route("api/me/notifications/device")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<UserNotificationDto>))]
-    public async Task<IActionResult> GetMyMobilePushNotifications([FromQuery] MobileNotificationsQueryDto q)
+    public async Task<IActionResult> GetMyMobilePushNotifications([FromQuery] DeviceNotificationsQueryDto q)
     {
-        var notifications = await userNotificationsStore.QueryPendingMobileAsync(App.Id, UserId, q.ToQuery(), HttpContext.RequestAborted);
+        var notifications = await userNotificationsStore.QueryForDeviceAsync(App.Id, UserId, q.ToQuery(), HttpContext.RequestAborted);
 
         var response = new ListResponseDto<UserNotificationDto>();
 

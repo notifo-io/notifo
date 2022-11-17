@@ -150,26 +150,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 1: Send Notification
-        var publishRequest = new PublishManyDto
-        {
-            Requests = new List<PublishDto>
-            {
-                new PublishDto
-                {
-                    Topic = $"users/{user_0.Id}",
-                    Preformatted = new NotificationFormattingDto
-                    {
-                        Subject = new LocalizedText
-                        {
-                            ["en"] = subjectId
-                        },
-                        ConfirmMode = ConfirmMode.Explicit
-                    }
-                }
-            }
-        };
-
-        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+        await CreateNotificationAsync(user_0);
 
 
         // Test that notification has been created.
@@ -207,25 +188,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 1: Send Notification
-        var publishRequest = new PublishManyDto
-        {
-            Requests = new List<PublishDto>
-            {
-                new PublishDto
-                {
-                    Topic = $"users/{user_0.Id}",
-                    Preformatted = new NotificationFormattingDto
-                    {
-                        Subject = new LocalizedText
-                        {
-                            ["en"] = subjectId
-                        }
-                    }
-                }
-            }
-        };
-
-        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+        await CreateNotificationAsync(user_0);
 
 
         // Test that notification has been created.
@@ -260,26 +223,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 1: Send Notification
-        var publishRequest = new PublishManyDto
-        {
-            Requests = new List<PublishDto>
-            {
-                new PublishDto
-                {
-                    Topic = $"users/{user_0.Id}",
-                    Preformatted = new NotificationFormattingDto
-                    {
-                        Subject = new LocalizedText
-                        {
-                            ["en"] = subjectId
-                        },
-                        ConfirmMode = ConfirmMode.Explicit
-                    }
-                }
-            }
-        };
-
-        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+        await CreateNotificationAsync(user_0);
 
 
         // Test that notification has been created.
@@ -402,5 +346,29 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         var user_0 = users_0.First();
 
         return user_0;
+    }
+
+    private async Task CreateNotificationAsync(UserDto user_0)
+    {
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
+                {
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subjectId
+                        },
+                        ConfirmMode = ConfirmMode.Explicit
+                    }
+                }
+            }
+        };
+
+        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
     }
 }

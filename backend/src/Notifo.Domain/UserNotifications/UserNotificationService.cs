@@ -86,7 +86,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             {
                 await logStore.LogAsync(userEvent.AppId, ex.Message);
 
-                await userNotificationsStore.TrackFailedAsync(userEvent);
+                await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
             }
         }
     }
@@ -99,7 +99,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
         using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, parentContext, links: links))
         {
-            await userNotificationsStore.TrackAttemptAsync(userEvent);
+            await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Attempt);
 
             try
             {
@@ -162,7 +162,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             {
                 if (isLastAttempt)
                 {
-                    await userNotificationsStore.TrackFailedAsync(userEvent);
+                    await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
                 }
 
                 if (ex is DomainException domainException)

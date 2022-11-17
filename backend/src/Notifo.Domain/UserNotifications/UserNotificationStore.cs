@@ -36,7 +36,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         collector.StopAsync();
     }
 
-    public async Task<IResultList<UserNotification>> QueryPendingMobileAsync(string appId, string userId, MobileNotificationsQuery query,
+    public async Task<IResultList<UserNotification>> QueryForDeviceAsync(string appId, string userId, DeviceNotificationsQuery query,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(appId);
@@ -59,7 +59,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
             var status = channel.Status.Values.FirstOrDefault(x => x.Configuration.ContainsValue(query.DeviceIdentifier));
 
-            return status != null && status.FirstSeen == null;
+            return status != null && (query.IncludeUnseen || status.FirstSeen == null);
         }).ToList();
 
         return ResultList.Create(filteredNotifications.Count, filteredNotifications);
@@ -149,23 +149,12 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
-    public Task TrackAttemptAsync(UserEventMessage userEvent,
+    public Task TrackAsync(UserEventMessage userEvent, ProcessStatus status,
         CancellationToken ct = default)
     {
         Guard.NotNull(userEvent);
 
-        var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt);
-        var counterKey = TrackingKey.ForUserEvent(userEvent);
-
-        return StoreCountersAsync(counterKey, counterMap, ct);
-    }
-
-    public Task TrackFailedAsync(UserEventMessage userEvent,
-        CancellationToken ct = default)
-    {
-        Guard.NotNull(userEvent);
-
-        var counterMap = CounterMap.ForNotification(ProcessStatus.Failed);
+        var counterMap = CounterMap.ForNotification(status);
         var counterKey = TrackingKey.ForUserEvent(userEvent);
 
         return StoreCountersAsync(counterKey, counterMap, ct);

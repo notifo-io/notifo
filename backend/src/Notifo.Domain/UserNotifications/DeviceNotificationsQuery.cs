@@ -6,20 +6,21 @@
 // ==========================================================================
 
 using NodaTime;
-using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.UserNotifications;
 
-public sealed class MobileNotificationsQuery
+public sealed class DeviceNotificationsQuery
 {
     public string? DeviceIdentifier { get; set; }
 
     public Instant After { get; set; }
 
+    public bool IncludeUnseen { get; set; }
+
     public int Take { get; set; }
 
     public UserNotificationQuery ToBaseQuery()
     {
-        return SimpleMapper.Map(this, new UserNotificationQuery());
+        return new UserNotificationQuery { Take = Take, After = After };
     }
 }

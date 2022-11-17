@@ -7,25 +7,14 @@
 
 using MongoDB.Driver;
 using NodaTime;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
 public sealed class TrackingBatch
 {
-    private readonly Dictionary<Guid, Updates> pendingChanges = new Dictionary<Guid, Updates>();
+    private readonly Dictionary<Guid, TrackingChange> pendingChanges = new Dictionary<Guid, TrackingChange>();
     private readonly IMongoCollection<UserNotification> collection;
-
-    private class Updates
-    {
-        public UserNotification Notification { get; init; }
-
-        public Dictionary<string, object?> Changes { get; } = new Dictionary<string, object?>();
-
-        public void Add(string key, object? value)
-        {
-            Changes[key] = value;
-        }
-    }
 
     public TrackingBatch(IMongoCollection<UserNotification> collection)
     {
@@ -40,7 +29,7 @@ public sealed class TrackingBatch
 
         foreach (var notification in notificationItems)
         {
-            pendingChanges[notification.Id] = new Updates
+            pendingChanges[notification.Id] = new TrackingChange
             {
                 Notification = notification
             };
@@ -49,7 +38,7 @@ public sealed class TrackingBatch
 
     public List<(UserNotification, bool Updated)> GetNotifications()
     {
-        return pendingChanges.Select(x => (x.Value.Notification, x.Value.Changes.Count > 0)).ToList();
+        return pendingChanges.Select(x => (x.Value.Notification, x.Value.HasChanges)).ToList();
     }
 
     public static async Task<TrackingBatch> CreateAsync(IMongoCollection<UserNotification> collection, IEnumerable<TrackingToken> tokens,
@@ -65,26 +54,12 @@ public sealed class TrackingBatch
     public async Task WriteAsync(
         CancellationToken ct)
     {
-        if (pendingChanges.Count == 0)
+        if (pendingChanges.Count == 0 || !pendingChanges.Any(x => x.Value.HasChanges))
         {
             return;
         }
 
-        var writes = new List<WriteModel<UserNotification>>();
-
-        foreach (var (id, updates) in pendingChanges)
-        {
-            if (updates.Changes.Count == 0)
-            {
-                continue;
-            }
-
-            writes.Add(
-                new UpdateOneModel<UserNotification>(
-                    Builders<UserNotification>.Filter.Eq(x => x.Id, id),
-                    Builders<UserNotification>.Update.Combine(
-                        updates.Changes.Select(update => Builders<UserNotification>.Update.Set(update.Key, update.Value)))));
-        }
+        var writes = pendingChanges.Select(x => x.Value.ToWrite()).NotNull().ToList();
 
         if (writes.Count == 0)
         {
@@ -119,9 +94,9 @@ public sealed class TrackingBatch
                     configuration.Status = status;
                     configuration.Detail = detail;
 
-                    changes.Add($"Channels.{channel}.Status.{configurationId}.Status", status);
-                    changes.Add($"Channels.{channel}.Status.{configurationId}.Detail", detail);
-                    changes.Add($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
+                    changes.Min($"Channels.{channel}.Status.{configurationId}.Status", status);
+                    changes.Min($"Channels.{channel}.Status.{configurationId}.Detail", detail);
+                    changes.Min($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
                 }
             }
         }
@@ -144,8 +119,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstConfirmed = new HandledInfo(now, channel);
 
-                changes.Add("FirstConfirmed.Timestamp", now);
-                changes.Add("FirstConfirmed.Channel", channel);
+                changes.Min("FirstConfirmed.Timestamp", now);
+                changes.Min("FirstConfirmed.Channel", channel);
             }
 
             // We only change the updated flag for notifications because otherwise the order could change with each tracking.
@@ -153,7 +128,7 @@ public sealed class TrackingBatch
             {
                 notification.Updated = now;
 
-                changes.Add("Updated", now);
+                changes.Max("Updated", now);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
@@ -162,7 +137,7 @@ public sealed class TrackingBatch
                 {
                     channelInfo.FirstConfirmed = now;
 
-                    changes.Add($"Channels.{channel}.FirstConfirmed", now);
+                    changes.Min($"Channels.{channel}.FirstConfirmed", now);
                 }
 
                 if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstConfirmed, now))
@@ -174,12 +149,12 @@ public sealed class TrackingBatch
                     {
                         if (!string.IsNullOrWhiteSpace(token.Configuration))
                         {
-                            changes.Add($"Channels.{channel}.Status.{token.Configuration}.FirstConfirmed", now);
+                            changes.Min($"Channels.{channel}.Status.{token.Configuration}.FirstConfirmed", now);
                         }
                     }
                     else
                     {
-                        changes.Add($"Channels.{channel}.Status.{configurationId}.FirstConfirmed", now);
+                        changes.Min($"Channels.{channel}.Status.{configurationId}.FirstConfirmed", now);
                     }
                 }
             }
@@ -203,8 +178,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstSeen = new HandledInfo(now, channel);
 
-                changes.Add("FirstSeen.Timestamp", now);
-                changes.Add("FirstSeen.Channel", channel);
+                changes.Min("FirstSeen.Timestamp", now);
+                changes.Min("FirstSeen.Channel", channel);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
@@ -213,7 +188,7 @@ public sealed class TrackingBatch
                 {
                     channelInfo.FirstSeen = now;
 
-                    changes.Add($"Channels.{channel}.FirstSeen", now);
+                    changes.Min($"Channels.{channel}.FirstSeen", now);
                 }
 
                 if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstSeen, now))
@@ -225,12 +200,12 @@ public sealed class TrackingBatch
                     {
                         if (!string.IsNullOrWhiteSpace(token.Configuration))
                         {
-                            changes.Add($"Channels.{channel}.Status.{token.Configuration}.FirstSeen", now);
+                            changes.Min($"Channels.{channel}.Status.{token.Configuration}.FirstSeen", now);
                         }
                     }
                     else
                     {
-                        changes.Add($"Channels.{channel}.Status.{configurationId}.FirstSeen", now);
+                        changes.Min($"Channels.{channel}.Status.{configurationId}.FirstSeen", now);
                     }
                 }
             }
@@ -254,8 +229,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstDelivered = new HandledInfo(now, channel);
 
-                changes.Add("FirstDelivered.Timestamp", now);
-                changes.Add("FirstDelivered.Channel", channel);
+                changes.Min("FirstDelivered.Timestamp", now);
+                changes.Min("FirstDelivered.Channel", channel);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
@@ -264,7 +239,7 @@ public sealed class TrackingBatch
                 {
                     channelInfo.FirstDelivered = now;
 
-                    changes.Add($"Channels.{channel}.FirstDelivered", now);
+                    changes.Min($"Channels.{channel}.FirstDelivered", now);
                 }
 
                 if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstDelivered, now))
@@ -276,12 +251,12 @@ public sealed class TrackingBatch
                     {
                         if (!string.IsNullOrWhiteSpace(token.Configuration))
                         {
-                            changes.Add($"Channels.{channel}.Status.{token.Configuration}.FirstDelivered", now);
+                            changes.Min($"Channels.{channel}.Status.{token.Configuration}.FirstDelivered", now);
                         }
                     }
                     else
                     {
-                        changes.Add($"Channels.{channel}.Status.{configurationId}.FirstDelivered", now);
+                        changes.Min($"Channels.{channel}.Status.{configurationId}.FirstDelivered", now);
                     }
                 }
             }

@@ -20,7 +20,7 @@ public interface IUserNotificationStore
     Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
         CancellationToken ct = default);
 
-    Task<IResultList<UserNotification>> QueryPendingMobileAsync(string appId, string userId, MobileNotificationsQuery query,
+    Task<IResultList<UserNotification>> QueryForDeviceAsync(string appId, string userId, DeviceNotificationsQuery query,
         CancellationToken ct = default);
 
     Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
@@ -32,6 +32,9 @@ public interface IUserNotificationStore
     Task DeleteAsync(Guid id,
         CancellationToken ct = default);
 
+    Task InsertAsync(UserNotification notification,
+        CancellationToken ct = default);
+
     Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
@@ -41,15 +44,9 @@ public interface IUserNotificationStore
     Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
-    Task TrackAttemptAsync(UserEventMessage userEvent,
-        CancellationToken ct = default);
-
-    Task TrackFailedAsync(UserEventMessage userEvent,
+    Task TrackAsync(UserEventMessage userEvent, ProcessStatus status,
         CancellationToken ct = default);
 
     Task TrackAsync(TrackingKey identifier, ProcessStatus status, string? detail = null,
-        CancellationToken ct = default);
-
-    Task InsertAsync(UserNotification notification,
         CancellationToken ct = default);
 }
