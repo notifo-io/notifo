@@ -23,19 +23,19 @@ public interface IUserNotificationStore
     Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
         CancellationToken ct = default);
 
-    Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
-        CancellationToken ct = default);
-
     Task<UserNotification?> FindAsync(Guid id,
         CancellationToken ct = default);
 
     Task DeleteAsync(Guid id,
         CancellationToken ct = default);
 
-    Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
-    Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackSeenAsync(TrackingToken[] tokens,
+        CancellationToken ct = default);
+
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
     Task TrackAttemptAsync(UserEventMessage userEvent,

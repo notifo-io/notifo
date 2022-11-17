@@ -7,7 +7,6 @@
 
 using FakeItEasy;
 using Squidex.Hosting;
-using Xunit;
 
 namespace Notifo.Domain.Utils;
 

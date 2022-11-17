@@ -8,7 +8,6 @@
 using System.Diagnostics;
 using MongoDB.Bson;
 using Notifo.Domain.Channels;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 

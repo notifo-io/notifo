@@ -5,13 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using EphemeralMongo;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
-using System.Diagnostics;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
@@ -21,6 +21,10 @@ public sealed class MongoDbUserNotificationRepositoryFixture : IDisposable
 
     public MongoDbUserNotificationRepository Repository { get; }
 
+    public IMongoClient MongoClient { get; }
+
+    public IMongoDatabase MongoDatabase { get; }
+
     public MongoDbUserNotificationRepositoryFixture()
     {
         ActivityContextSerializer.Register();
@@ -29,20 +33,18 @@ public sealed class MongoDbUserNotificationRepositoryFixture : IDisposable
 
         InstantSerializer.Register();
 
-        IMongoClient mongoClient;
-
         if (Debugger.IsAttached)
         {
-            mongoClient = new MongoClient("mongodb://localhost");
+            MongoClient = new MongoClient("mongodb://localhost");
         }
         else
         {
             runner = MongoRunner.Run();
 
-            mongoClient = new MongoClient(runner.ConnectionString);
+            MongoClient = new MongoClient(runner.ConnectionString);
         }
 
-        var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
+        MongoDatabase = MongoClient.GetDatabase("Notifo_Testing");
 
         var options = new UserNotificationsOptions
         {
@@ -51,7 +53,7 @@ public sealed class MongoDbUserNotificationRepositoryFixture : IDisposable
 
         var log = A.Fake<ILogger<MongoDbUserNotificationRepository>>();
 
-        Repository = new MongoDbUserNotificationRepository(mongoDatabase, Options.Create(options), log);
+        Repository = new MongoDbUserNotificationRepository(MongoDatabase, Options.Create(options), log);
         Repository.InitializeAsync(default).Wait();
     }
 

@@ -7,7 +7,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Channels.Email;
-using Xunit;
 
 namespace Notifo.Domain.Integrations;
 

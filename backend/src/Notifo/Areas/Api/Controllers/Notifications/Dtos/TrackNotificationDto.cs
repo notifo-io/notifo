@@ -32,6 +32,5 @@ public sealed class TrackNotificationDto
     /// <summary>
     /// The device identifier.
     /// </summary>
-    [Obsolete]
     public string? DeviceIdentifier { get; set; }
 }

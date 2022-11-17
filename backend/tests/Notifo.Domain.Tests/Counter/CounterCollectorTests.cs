@@ -9,7 +9,6 @@ using System.Globalization;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
-using Xunit;
 
 namespace Notifo.Domain.Counter;
 

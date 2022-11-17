@@ -5,13 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.Tracking.Dtos;
+namespace Notifo.Domain.UserNotifications.MongoDb;
 
-public class TrackingQueryDto
+public static class Constants
 {
-    public string? Channel { get; set; }
-
-    public Guid ConfigurationId { get; set; }
-
-    public string? DeviceIdentifier { get; set; }
+    public const string Convertedkey = "__converted";
 }

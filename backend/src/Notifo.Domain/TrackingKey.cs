@@ -41,8 +41,8 @@ public sealed record TrackingKey
         {
             AppId = @event.AppId,
             EventId = @event.Id,
-            UserId = null,
             UserNotificationId = default,
+            UserId = null,
             Topic = @event.Topic,
         };
     }
@@ -55,8 +55,8 @@ public sealed record TrackingKey
         {
             AppId = @event.AppId,
             EventId = @event.EventId,
-            UserId = @event.UserId,
             UserNotificationId = default,
+            UserId = @event.UserId,
             Topic = @event.Topic,
         };
     }
@@ -71,8 +71,8 @@ public sealed record TrackingKey
             Channel = channel,
             ConfigurationId = configurationId,
             EventId = notification.EventId,
-            UserId = notification.UserId,
             UserNotificationId = notification.Id,
+            UserId = notification.UserId,
             Topic = notification.Topic,
         };
     }

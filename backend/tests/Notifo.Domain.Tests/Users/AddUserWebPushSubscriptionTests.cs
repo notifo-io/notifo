@@ -8,7 +8,6 @@
 using FakeItEasy;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure.Collections;
-using Xunit;
 
 namespace Notifo.Domain.Users;
 

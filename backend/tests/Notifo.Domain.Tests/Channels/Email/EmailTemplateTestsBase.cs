@@ -9,7 +9,6 @@ using FakeItEasy;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
-using Xunit;
 
 #pragma warning disable MA0056 // Do not call overridable members in constructor
 

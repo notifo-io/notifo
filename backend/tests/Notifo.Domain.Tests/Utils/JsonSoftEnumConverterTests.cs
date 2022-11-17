@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.Infrastructure.TestHelpers;
-using Xunit;
 
 namespace Notifo.Domain.Utils;
 

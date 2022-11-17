@@ -7,7 +7,6 @@
 
 using MongoDB.Driver;
 using NodaTime;
-using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
 
@@ -55,9 +54,9 @@ public sealed class TrackingBatch
         }
     }
 
-    public UserNotification? GetNotification(Guid id)
+    public List<(UserNotification, bool Updated)> GetNotifications()
     {
-        return pendingChanges.GetOrAddDefault(id)?.Notification;
+        return pendingChanges.Select(x => (x.Value.Notification, x.Value.Changes.Count > 0)).ToList();
     }
 
     public static async Task<TrackingBatch> CreateAsync(IMongoCollection<UserNotification> collection, IEnumerable<TrackingToken> tokens,
@@ -174,7 +173,18 @@ public sealed class TrackingBatch
                 {
                     status.FirstConfirmed = now;
 
-                    changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstConfirmed", now);
+                    // Status value has been converted from old value.
+                    if (status.Configuration.ContainsKey(Constants.Convertedkey))
+                    {
+                        if (!string.IsNullOrWhiteSpace(token.Configuration))
+                        {
+                            changes.Add(now, $"Channels.{channel}.Status.{token.Configuration}.FirstConfirmed", now);
+                        }
+                    }
+                    else
+                    {
+                        changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstConfirmed", now);
+                    }
                 }
             }
         }
@@ -214,7 +224,18 @@ public sealed class TrackingBatch
                 {
                     status.FirstSeen = now;
 
-                    changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstSeen", now);
+                    // Status value has been converted from old value.
+                    if (status.Configuration.ContainsKey(Constants.Convertedkey))
+                    {
+                        if (!string.IsNullOrWhiteSpace(token.Configuration))
+                        {
+                            changes.Add(now, $"Channels.{channel}.Status.{token.Configuration}.FirstSeen", now);
+                        }
+                    }
+                    else
+                    {
+                        changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstSeen", now);
+                    }
                 }
             }
         }
@@ -254,7 +275,18 @@ public sealed class TrackingBatch
                 {
                     status.FirstDelivered = now;
 
-                    changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstDelivered", now);
+                    // Status value has been converted from old value.
+                    if (status.Configuration.ContainsKey(Constants.Convertedkey))
+                    {
+                        if (!string.IsNullOrWhiteSpace(token.Configuration))
+                        {
+                            changes.Add(now, $"Channels.{channel}.Status.{token.Configuration}.FirstDelivered", now);
+                        }
+                    }
+                    else
+                    {
+                        changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstDelivered", now);
+                    }
                 }
             }
         }
@@ -280,7 +312,7 @@ public sealed class TrackingBatch
             foreach (var (key, status) in channel.Status)
             {
                 // If at least one of the configurations match to configuration string, we use the configuration ID of this status.
-                if (status.Configuration?.ContainsValue(token.Configuration!) == true)
+                if (status.Configuration.ContainsValue(token.Configuration!) == true)
                 {
                     configuration = status;
                     configurationId = key;

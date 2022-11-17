@@ -20,12 +20,7 @@ public interface ICommunicationChannel
 
     IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context);
 
-    Task HandleDeliveredAsync(TrackingToken token)
-    {
-        return Task.CompletedTask;
-    }
-
-    Task HandleSeenAsync(TrackingToken token)
+    Task HandleSeenAsync(UserNotification notification, Guid configurationId)
     {
         return Task.CompletedTask;
     }

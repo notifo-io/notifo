@@ -6,10 +6,10 @@
 // ==========================================================================
 
 using FluentAssertions;
-using Google.Rpc;
+using MongoDB.Bson;
 using NodaTime;
 using Notifo.Domain.Channels;
-using Xunit;
+using Notifo.Infrastructure;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 
@@ -182,284 +182,329 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
     [Fact]
     public async Task Should_mark_as_delivered()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification1.Id, channel, configurationId1) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification.Id, channel, configurationId1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.FirstDelivered = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
+    }
+
+    [Fact]
+    public async Task Should_mark_as_delivered_with_old_format()
+    {
+        var notification = CreateNotification(userId1);
+
+        await InsertOldRepresentation(notification);
+
+        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification.Id, channel, default, configuration1) }, now, default);
+
+        var result = (await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
+
+        Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstDelivered == now);
     }
 
     [Fact]
     public async Task Should_mark_as_delivered_with_configuration()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification1.Id, channel, default, configuration1) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification.Id, channel, default, configuration1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.FirstDelivered = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_delivered_without_configuration_id()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification1.Id, channel) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification.Id, channel) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.FirstDelivered = info;
+        notification.Updated = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_delivered_without_channel()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification1.Id) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackDeliveredAsync(new[] { new TrackingToken(notification.Id) }, now, default);
 
         var info = new HandledInfo(now, null);
 
-        notification1.Updated = now;
-        notification1.FirstDelivered = info;
+        notification.Updated = now;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_seen()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification1.Id, channel, configurationId1) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification.Id, channel, configurationId1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].Status[configurationId1].FirstSeen = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstSeen = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
+    }
+
+    [Fact]
+    public async Task Should_mark_as_seen_with_old_format()
+    {
+        var notification = CreateNotification(userId1);
+
+        await InsertOldRepresentation(notification);
+
+        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification.Id, channel, default, configuration1) }, now, default);
+
+        var result = (await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
+
+        Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstSeen == now);
+        Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstDelivered == now);
     }
 
     [Fact]
     public async Task Should_mark_as_seen_with_configuration()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification1.Id, channel, default, configuration1) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification.Id, channel, default, configuration1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].Status[configurationId1].FirstSeen = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstSeen = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_seen_without_configuration_id()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification1.Id, channel) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification.Id, channel) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_seen_without_channel()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification1.Id) }, now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackSeenAsync(new[] { new TrackingToken(notification.Id) }, now, default);
 
         var info = new HandledInfo(now, null);
 
-        notification1.Updated = now;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_not_mark_as_confirmed_if_confirm_mode_not_set()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        notification1.Formatting.ConfirmMode = ConfirmMode.None;
+        notification.Formatting.ConfirmMode = ConfirmMode.None;
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackConfirmedAsync(new TrackingToken(notification1.Id, channel, configurationId1), now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackConfirmedAsync(new[] { new TrackingToken(notification.Id, channel, configurationId1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].Status[configurationId1].FirstSeen = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstSeen = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_confirmed()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackConfirmedAsync(new TrackingToken(notification1.Id, channel, configurationId1), now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackConfirmedAsync(new[] { new TrackingToken(notification.Id, channel, configurationId1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstConfirmed = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].Status[configurationId1].FirstSeen = now;
-        notification1.Channels[channel].FirstConfirmed = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstConfirmed = info;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstConfirmed = now;
+        notification.Channels[channel].Status[configurationId1].FirstSeen = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstConfirmed = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstConfirmed = info;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
+    }
+
+    [Fact]
+    public async Task Should_mark_as_confirmed_with_old_format()
+    {
+        var notification = CreateNotification(userId1);
+
+        await InsertOldRepresentation(notification);
+
+        await _.Repository.TrackConfirmedAsync(new[] { new TrackingToken(notification.Id, channel, default, configuration1) }, now, default);
+
+        var result = (await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default)).Single();
+
+        Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstConfirmed == now);
+        Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstSeen == now);
+        Assert.Contains(result.Channels[channel].Status, x => x.Value.FirstDelivered == now);
     }
 
     [Fact]
     public async Task Should_mark_as_confirmed_with_configuration()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackConfirmedAsync(new TrackingToken(notification1.Id, channel, default, configuration1), now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackConfirmedAsync(new[] { new TrackingToken(notification.Id, channel, default, configuration1) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].Status[configurationId1].FirstConfirmed = now;
-        notification1.Channels[channel].Status[configurationId1].FirstDelivered = now;
-        notification1.Channels[channel].Status[configurationId1].FirstSeen = now;
-        notification1.Channels[channel].FirstConfirmed = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstConfirmed = info;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].Status[configurationId1].FirstConfirmed = now;
+        notification.Channels[channel].Status[configurationId1].FirstSeen = now;
+        notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
+        notification.Channels[channel].FirstConfirmed = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstConfirmed = info;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_confirmed_without_configuration_id()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackConfirmedAsync(new TrackingToken(notification1.Id, channel), now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackConfirmedAsync(new[] { new TrackingToken(notification.Id, channel) }, now, default);
 
         var info = new HandledInfo(now, channel);
 
-        notification1.Updated = now;
-        notification1.Channels[channel].FirstConfirmed = now;
-        notification1.Channels[channel].FirstDelivered = now;
-        notification1.Channels[channel].FirstSeen = now;
-        notification1.FirstConfirmed = info;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.Channels[channel].FirstConfirmed = now;
+        notification.Channels[channel].FirstSeen = now;
+        notification.Channels[channel].FirstDelivered = now;
+        notification.FirstConfirmed = info;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     [Fact]
     public async Task Should_mark_as_confirmed_without_channel()
     {
-        var notification1 = CreateNotification(userId1);
+        var notification = CreateNotification(userId1);
 
-        await _.Repository.InsertAsync(notification1, default);
-        await _.Repository.TrackConfirmedAsync(new TrackingToken(notification1.Id), now, default);
+        await _.Repository.InsertAsync(notification, default);
+        await _.Repository.TrackConfirmedAsync(new[] { new TrackingToken(notification.Id) }, now, default);
 
         var info = new HandledInfo(now, null);
 
-        notification1.Updated = now;
-        notification1.FirstConfirmed = info;
-        notification1.FirstDelivered = info;
-        notification1.FirstSeen = info;
+        notification.Updated = now;
+        notification.FirstConfirmed = info;
+        notification.FirstSeen = info;
+        notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
 
-        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification1 });
+        notifications1.ToArray().Should().BeEquivalentTo(new[] { notification });
     }
 
     private void UpdateStatus(UserNotification notification, string channel, Guid configurationId, ProcessStatus status, string? detail)
@@ -471,6 +516,26 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
         statusItem.Detail = detail;
 
         notification.Updated = now;
+    }
+
+    private async Task InsertOldRepresentation(UserNotification notification)
+    {
+        var bsonDocument = notification.ToBsonDocument();
+
+        var oldStatus = new Dictionary<string, ChannelSendInfo>
+        {
+            [configuration1.ToBase64()] = new ChannelSendInfo(),
+            [configuration2.ToBase64()] = new ChannelSendInfo(),
+        }.ToBsonDocument();
+
+        foreach (var element in bsonDocument["Channels"].AsBsonDocument)
+        {
+            element.Value.AsBsonDocument["Status"] = oldStatus;
+        }
+
+        var collection = _.MongoDatabase.GetCollection<BsonDocument>(_.Repository.Collection.CollectionNamespace.CollectionName);
+
+        await collection.InsertOneAsync(bsonDocument);
     }
 
     private UserNotification CreateNotification(string userId, Instant created = default)

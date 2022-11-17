@@ -30,19 +30,19 @@ public interface IUserNotificationRepository
     Task<UserNotification?> FindAsync(Guid id,
         CancellationToken ct = default);
 
-    Task<UserNotification?> TrackConfirmedAsync(TrackingToken token, Instant now,
-        CancellationToken ct = default);
-
     Task DeleteAsync(Guid id,
         CancellationToken ct = default);
 
     Task InsertAsync(UserNotification notification,
         CancellationToken ct = default);
 
-    Task TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default);
 
-    Task TrackSeenAsync(TrackingToken[] tokens, Instant now,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackSeenAsync(TrackingToken[] tokens, Instant now,
+        CancellationToken ct = default);
+
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default);
 
     Task BatchWriteAsync((TrackingToken Token, ProcessStatus Status, string? Detail)[] updates, Instant now,

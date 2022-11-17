@@ -96,28 +96,28 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.IsHandledOrSeenAsync(id, channel, configurationId, ct);
     }
 
-    public Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
-        CancellationToken ct = default)
-    {
-        Guard.NotDefault(token);
-
-        return repository.TrackConfirmedAsync(token, clock.GetCurrentInstant(), ct);
-    }
-
-    public Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens,
+    public Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens,
         CancellationToken ct = default)
     {
         Guard.NotNull(tokens);
 
-        return repository.TrackDeliveredAsync(tokens.ToArray(), clock.GetCurrentInstant(), ct);
+        return repository.TrackConfirmedAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
-    public Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
+    public Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackSeenAsync(TrackingToken[] tokens,
         CancellationToken ct = default)
     {
         Guard.NotNull(tokens);
 
-        return repository.TrackSeenAsync(tokens.ToArray(), clock.GetCurrentInstant(), ct);
+        return repository.TrackSeenAsync(tokens, clock.GetCurrentInstant(), ct);
+    }
+
+    public Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens,
+        CancellationToken ct = default)
+    {
+        Guard.NotNull(tokens);
+
+        return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
     public Task TrackAttemptAsync(UserEventMessage userEvent,
@@ -188,12 +188,5 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     private async Task StoreInternalAsync(TrackingToken token, ProcessStatus status, string? details)
     {
         await collector.AddAsync(token, status, details);
-    }
-
-    private ChannelSendInfo CreateInfo(ProcessStatus status, string? detail)
-    {
-        var now = clock.GetCurrentInstant();
-
-        return new ChannelSendInfo { LastUpdate = now, Detail = detail, Status = status };
     }
 }

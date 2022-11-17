@@ -36,7 +36,7 @@ public sealed class TrackingController : Controller
     [Route("api/tracking/notifications/{id:notEmpty}/seen")]
     public async Task<IActionResult> Seen(string id, [FromQuery] TrackingQueryDto? request = null)
     {
-        await userNotificationService.TrackSeenAsync(new[] { ParseToken(id, request) });
+        await userNotificationService.TrackSeenAsync(ParseToken(id, request));
 
         return TrackingPixel();
     }
@@ -47,7 +47,7 @@ public sealed class TrackingController : Controller
     [Route("api/tracking/notifications/{id:notEmpty}/delivered")]
     public async Task<IActionResult> Delivered(string id, [FromQuery] TrackingQueryDto? request = null)
     {
-        await userNotificationService.TrackDeliveredAsync(new[] { ParseToken(id, request) });
+        await userNotificationService.TrackDeliveredAsync(ParseToken(id, request));
 
         return TrackingPixel();
     }
@@ -99,13 +99,11 @@ public sealed class TrackingController : Controller
 
     private static TrackingToken ParseToken(string id, TrackingQueryDto? request)
     {
-#pragma warning disable CS0612 // Type or member is obsolete
         return TrackingToken.Parse(
             id,
             request?.Channel,
             request?.ConfigurationId ?? default,
             request?.DeviceIdentifier);
-#pragma warning restore CS0612 // Type or member is obsolete
     }
 
     private IActionResult TrackingPixel()

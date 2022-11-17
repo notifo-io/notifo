@@ -7,7 +7,6 @@
 
 using FakeItEasy;
 using NodaTime;
-using Xunit;
 
 namespace Notifo.Domain;
 

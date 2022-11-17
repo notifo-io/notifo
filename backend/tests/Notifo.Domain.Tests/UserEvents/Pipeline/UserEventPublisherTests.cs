@@ -17,7 +17,6 @@ using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Texts;
 using Squidex.Messaging;
-using Xunit;
 
 namespace Notifo.Domain.UserEvents.Pipeline;
 

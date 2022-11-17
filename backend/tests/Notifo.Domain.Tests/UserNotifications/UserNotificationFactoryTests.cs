@@ -17,7 +17,6 @@ using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
-using Xunit;
 
 namespace Notifo.Domain.UserNotifications;
 

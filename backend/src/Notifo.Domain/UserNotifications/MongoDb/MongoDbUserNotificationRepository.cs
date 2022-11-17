@@ -75,8 +75,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
                 .SetIgnoreIfNull(true);
 
             cm.MapProperty(x => x.Status)
-                .SetSerializer(new DictionaryInterfaceImplementerSerializer<Dictionary<Guid, ChannelSendInfo>, Guid, ChannelSendInfo>()
-                    .WithKeySerializer(new RandomGuidSerializer()));
+                .SetSerializer(new StatusDictionarySerializer());
         });
     }
 
@@ -254,20 +253,24 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         }
     }
 
-    public async Task TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
+    public async Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default)
     {
-        using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackDeliveredAsync"))
+        using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackConfirmedAsync"))
         {
             var batch = await TrackingBatch.CreateAsync(Collection, tokens, ct);
 
+            batch.MarkIfNotConfirmed(tokens, now);
+            batch.MarkIfNotSeen(tokens, now);
             batch.MarkIfNotDelivered(tokens, now);
 
             await batch.WriteAsync(ct);
+
+            return batch.GetNotifications();
         }
     }
 
-    public async Task TrackSeenAsync(TrackingToken[] tokens, Instant now,
+    public async Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackSeenAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackSeenAsync"))
@@ -278,25 +281,23 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
             batch.MarkIfNotDelivered(tokens, now);
 
             await batch.WriteAsync(ct);
+
+            return batch.GetNotifications();
         }
     }
 
-    public async Task<UserNotification?> TrackConfirmedAsync(TrackingToken token, Instant now,
+    public async Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default)
     {
-        using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackConfirmedAsync"))
+        using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/TrackDeliveredAsync"))
         {
-            var tokens = new[] { token };
-
             var batch = await TrackingBatch.CreateAsync(Collection, tokens, ct);
 
-            batch.MarkIfNotConfirmed(tokens, now);
-            batch.MarkIfNotSeen(tokens, now);
             batch.MarkIfNotDelivered(tokens, now);
 
             await batch.WriteAsync(ct);
 
-            return batch.GetNotification(token.UserNotificationId);
+            return batch.GetNotifications();
         }
     }
 

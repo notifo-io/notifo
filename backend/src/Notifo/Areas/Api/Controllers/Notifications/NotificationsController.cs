@@ -108,12 +108,12 @@ public sealed class NotificationsController : BaseController
         {
             var token = ParseToken(request.Confirmed, request);
 
-            await userNotificationService.TrackConfirmedAsync(token);
+            await userNotificationService.TrackConfirmedAsync(new[] { token });
         }
 
         if (request.Seen?.Length > 0)
         {
-            var tokens = request.Seen.Select(x => ParseToken(x, request));
+            var tokens = request.Seen.Select(x => ParseToken(x, request)).ToArray();
 
             await userNotificationService.TrackSeenAsync(tokens);
         }
@@ -123,12 +123,10 @@ public sealed class NotificationsController : BaseController
 
     private static TrackingToken ParseToken(string id, TrackNotificationDto request)
     {
-#pragma warning disable CS0612 // Type or member is obsolete
         return TrackingToken.Parse(
             id,
             request.Channel,
             request.ConfigurationId,
             request.DeviceIdentifier);
-#pragma warning restore CS0612 // Type or member is obsolete
     }
 }
