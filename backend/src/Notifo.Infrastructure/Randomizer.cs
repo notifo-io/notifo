@@ -9,10 +9,8 @@ namespace Notifo.Infrastructure;
 
 public class Randomizer
 {
-    private readonly Random random = new Random();
-
     public virtual double NextDouble()
     {
-        return random.NextDouble();
+        return Random.Shared.NextDouble();
     }
 }

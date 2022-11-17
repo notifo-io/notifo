@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;

@@ -6,8 +6,6 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using Notifo.Infrastructure.TestHelpers;
-using Xunit;
 
 namespace Notifo.Infrastructure.MongoDB;
 

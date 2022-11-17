@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FluentAssertions;
 using MongoDB.Bson;
 using NodaTime;
 using Notifo.Domain.Channels;
@@ -189,7 +188,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstDelivered = info;
@@ -223,7 +221,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstDelivered = info;
@@ -243,7 +240,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstDelivered = info;
 
@@ -262,7 +258,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, null);
 
-        notification.Updated = now;
         notification.FirstDelivered = info;
 
         var notifications1 = await _.Repository.QueryAsync(appId, userId1, new UserNotificationQuery(), default);
@@ -280,7 +275,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].Status[configurationId1].FirstSeen = now;
         notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
         notification.Channels[channel].FirstSeen = now;
@@ -318,7 +312,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].Status[configurationId1].FirstSeen = now;
         notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
         notification.Channels[channel].FirstSeen = now;
@@ -341,7 +334,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].FirstSeen = now;
         notification.Channels[channel].FirstDelivered = now;
         notification.FirstSeen = info;
@@ -362,7 +354,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, null);
 
-        notification.Updated = now;
         notification.FirstSeen = info;
         notification.FirstDelivered = info;
 
@@ -383,7 +374,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
 
         var info = new HandledInfo(now, channel);
 
-        notification.Updated = now;
         notification.Channels[channel].Status[configurationId1].FirstSeen = now;
         notification.Channels[channel].Status[configurationId1].FirstDelivered = now;
         notification.Channels[channel].FirstSeen = now;
@@ -514,8 +504,6 @@ public class MongoDbUserNotificationRepositoryTests : IClassFixture<MongoDbUserN
         statusItem.LastUpdate = now;
         statusItem.Status = status;
         statusItem.Detail = detail;
-
-        notification.Updated = now;
     }
 
     private async Task InsertOldRepresentation(UserNotification notification)

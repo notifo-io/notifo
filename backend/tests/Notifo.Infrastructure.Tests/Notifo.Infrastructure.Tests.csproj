@@ -27,6 +27,12 @@
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
+	
+  <ItemGroup>
+	<Using Include="Notifo.Infrastructure.TestHelpers" />
+	<Using Include="FakeItEasy" />
+	<Using Include="Xunit" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />

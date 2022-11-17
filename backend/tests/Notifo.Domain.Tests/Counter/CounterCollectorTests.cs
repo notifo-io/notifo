@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Globalization;
-using FakeItEasy;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 

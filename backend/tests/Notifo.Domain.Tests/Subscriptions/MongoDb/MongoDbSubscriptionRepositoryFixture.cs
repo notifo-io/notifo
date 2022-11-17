@@ -5,24 +5,17 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MongoDB.Driver;
+using Notifo.Domain.UserNotifications.MongoDb;
 
 namespace Notifo.Domain.Subscriptions.MongoDb;
 
-public sealed class MongoDbSubscriptionRepositoryFixture : IDisposable
+public sealed class MongoDbSubscriptionRepositoryFixture : MongoFixtureBase
 {
     public MongoDbSubscriptionRepository Repository { get; }
 
     public MongoDbSubscriptionRepositoryFixture()
     {
-        var mongoClient = new MongoClient("mongodb://localhost");
-        var mongoDatabase = mongoClient.GetDatabase("Notifo_Testing");
-
-        Repository = new MongoDbSubscriptionRepository(mongoDatabase);
+        Repository = new MongoDbSubscriptionRepository(MongoDatabase);
         Repository.InitializeAsync(default).Wait();
-    }
-
-    public void Dispose()
-    {
     }
 }

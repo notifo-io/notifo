@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Infrastructure.Collections;
 

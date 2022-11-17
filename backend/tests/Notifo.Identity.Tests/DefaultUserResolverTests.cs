@@ -5,11 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
-using Xunit;
 
 namespace Notifo.Identity;
 

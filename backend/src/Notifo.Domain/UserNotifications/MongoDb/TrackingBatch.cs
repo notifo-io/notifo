@@ -17,19 +17,12 @@ public sealed class TrackingBatch
 
     private class Updates
     {
-        public Instant Timestamp { get; set; }
-
         public UserNotification Notification { get; init; }
 
         public Dictionary<string, object?> Changes { get; } = new Dictionary<string, object?>();
 
-        public void Add(Instant now, string key, object? value)
+        public void Add(string key, object? value)
         {
-            if (Timestamp < now)
-            {
-                Timestamp = now;
-            }
-
             Changes[key] = value;
         }
     }
@@ -86,11 +79,6 @@ public sealed class TrackingBatch
                 continue;
             }
 
-            if (updates.Timestamp != default)
-            {
-                updates.Changes["Updated"] = updates.Timestamp;
-            }
-
             writes.Add(
                 new UpdateOneModel<UserNotification>(
                     Builders<UserNotification>.Filter.Eq(x => x.Id, id),
@@ -131,9 +119,9 @@ public sealed class TrackingBatch
                     configuration.Status = status;
                     configuration.Detail = detail;
 
-                    changes.Add(now, $"Channels.{channel}.Status.{configurationId}.Status", status);
-                    changes.Add(now, $"Channels.{channel}.Status.{configurationId}.Detail", detail);
-                    changes.Add(now, $"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
+                    changes.Add($"Channels.{channel}.Status.{configurationId}.Status", status);
+                    changes.Add($"Channels.{channel}.Status.{configurationId}.Detail", detail);
+                    changes.Add($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
                 }
             }
         }
@@ -156,8 +144,16 @@ public sealed class TrackingBatch
             {
                 notification.FirstConfirmed = new HandledInfo(now, channel);
 
-                changes.Add(now, "FirstConfirmed.Timestamp", now);
-                changes.Add(now, "FirstConfirmed.Channel", channel);
+                changes.Add("FirstConfirmed.Timestamp", now);
+                changes.Add("FirstConfirmed.Channel", channel);
+            }
+
+            // We only change the updated flag for notifications because otherwise the order could change with each tracking.
+            if (ShouldUpdate(notification.Updated, now))
+            {
+                notification.Updated = now;
+
+                changes.Add("Updated", now);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
@@ -166,7 +162,7 @@ public sealed class TrackingBatch
                 {
                     channelInfo.FirstConfirmed = now;
 
-                    changes.Add(now, $"Channels.{channel}.FirstConfirmed", now);
+                    changes.Add($"Channels.{channel}.FirstConfirmed", now);
                 }
 
                 if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstConfirmed, now))
@@ -178,12 +174,12 @@ public sealed class TrackingBatch
                     {
                         if (!string.IsNullOrWhiteSpace(token.Configuration))
                         {
-                            changes.Add(now, $"Channels.{channel}.Status.{token.Configuration}.FirstConfirmed", now);
+                            changes.Add($"Channels.{channel}.Status.{token.Configuration}.FirstConfirmed", now);
                         }
                     }
                     else
                     {
-                        changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstConfirmed", now);
+                        changes.Add($"Channels.{channel}.Status.{configurationId}.FirstConfirmed", now);
                     }
                 }
             }
@@ -207,8 +203,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstSeen = new HandledInfo(now, channel);
 
-                changes.Add(now, "FirstSeen.Timestamp", now);
-                changes.Add(now, "FirstSeen.Channel", channel);
+                changes.Add("FirstSeen.Timestamp", now);
+                changes.Add("FirstSeen.Channel", channel);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
@@ -217,7 +213,7 @@ public sealed class TrackingBatch
                 {
                     channelInfo.FirstSeen = now;
 
-                    changes.Add(now, $"Channels.{channel}.FirstSeen", now);
+                    changes.Add($"Channels.{channel}.FirstSeen", now);
                 }
 
                 if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstSeen, now))
@@ -229,12 +225,12 @@ public sealed class TrackingBatch
                     {
                         if (!string.IsNullOrWhiteSpace(token.Configuration))
                         {
-                            changes.Add(now, $"Channels.{channel}.Status.{token.Configuration}.FirstSeen", now);
+                            changes.Add($"Channels.{channel}.Status.{token.Configuration}.FirstSeen", now);
                         }
                     }
                     else
                     {
-                        changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstSeen", now);
+                        changes.Add($"Channels.{channel}.Status.{configurationId}.FirstSeen", now);
                     }
                 }
             }
@@ -258,8 +254,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstDelivered = new HandledInfo(now, channel);
 
-                changes.Add(now, "FirstDelivered.Timestamp", now);
-                changes.Add(now, "FirstDelivered.Channel", channel);
+                changes.Add("FirstDelivered.Timestamp", now);
+                changes.Add("FirstDelivered.Channel", channel);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
@@ -268,7 +264,7 @@ public sealed class TrackingBatch
                 {
                     channelInfo.FirstDelivered = now;
 
-                    changes.Add(now, $"Channels.{channel}.FirstDelivered", now);
+                    changes.Add($"Channels.{channel}.FirstDelivered", now);
                 }
 
                 if (TryGetConfiguration(channelInfo, token, out var status, out var configurationId) && ShouldUpdate(status.FirstDelivered, now))
@@ -280,12 +276,12 @@ public sealed class TrackingBatch
                     {
                         if (!string.IsNullOrWhiteSpace(token.Configuration))
                         {
-                            changes.Add(now, $"Channels.{channel}.Status.{token.Configuration}.FirstDelivered", now);
+                            changes.Add($"Channels.{channel}.Status.{token.Configuration}.FirstDelivered", now);
                         }
                     }
                     else
                     {
-                        changes.Add(now, $"Channels.{channel}.Status.{configurationId}.FirstDelivered", now);
+                        changes.Add($"Channels.{channel}.Status.{configurationId}.FirstDelivered", now);
                     }
                 }
             }
@@ -294,7 +290,7 @@ public sealed class TrackingBatch
 
     private static bool ShouldUpdate(Instant? current, Instant now)
     {
-        return current == null || current > now;
+        return current == null || current < now;
     }
 
     private static bool TryGetConfiguration(UserNotificationChannel channel, TrackingToken token, out ChannelSendInfo configuration, out Guid configurationId)

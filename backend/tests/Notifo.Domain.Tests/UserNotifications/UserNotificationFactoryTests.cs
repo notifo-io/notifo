@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
-using FluentAssertions;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
