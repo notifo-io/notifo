@@ -36,6 +36,35 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         collector.StopAsync();
     }
 
+    public async Task<IResultList<UserNotification>> QueryPendingMobileAsync(string appId, string userId, MobileNotificationsQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(userId);
+        Guard.NotNull(query);
+
+        if (string.IsNullOrWhiteSpace(query.DeviceIdentifier))
+        {
+            return ResultList.Empty<UserNotification>();
+        }
+
+        var notifications = await repository.QueryAsync(appId, userId, query.ToBaseQuery(), ct);
+
+        var filteredNotifications = notifications.Where(notification =>
+        {
+            if (!notification.Channels.TryGetValue(Providers.MobilePush, out var channel))
+            {
+                return false;
+            }
+
+            var status = channel.Status.Values.FirstOrDefault(x => x.Configuration.ContainsValue(query.DeviceIdentifier));
+
+            return status != null && status.FirstSeen == null;
+        }).ToList();
+
+        return ResultList.Create(filteredNotifications.Count, filteredNotifications);
+    }
+
     public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
         CancellationToken ct = default)
     {

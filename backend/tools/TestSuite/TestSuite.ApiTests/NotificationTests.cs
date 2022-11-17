@@ -14,7 +14,7 @@ using TestSuite.Fixtures;
 namespace TestSuite.ApiTests;
 
 [UsesVerify]
-public class NotificationTests : IClassFixture<CreatedAppFixture>
+public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 {
     private readonly string subjectId = Guid.NewGuid().ToString();
 
@@ -304,13 +304,6 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
         Assert.NotNull(notification_1.FirstDelivered);
     }
 
-    public enum TrackingStrategy
-    {
-        TrackingUrl,
-        TrackingToken,
-        Id
-    }
-
     private async Task MarkAsSeenAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
     {
         switch (strategy)
@@ -332,7 +325,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
                     }
                 };
 
-                await BuildClient(user).ConfirmMeAsync(tokenRequest);
+                await _.BuildUserClient(user).Notifications.ConfirmMeAsync(tokenRequest);
                 break;
 
             case TrackingStrategy.Id:
@@ -344,7 +337,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
                     }
                 };
 
-                await BuildClient(user).ConfirmMeAsync(idRequest);
+                await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
                 break;
         }
     }
@@ -367,7 +360,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
                     Confirmed = notification.TrackingToken
                 };
 
-                await BuildClient(user).ConfirmMeAsync(tokenRequest);
+                await _.BuildUserClient(user).Notifications.ConfirmMeAsync(tokenRequest);
                 break;
 
             case TrackingStrategy.Id:
@@ -376,7 +369,7 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
                     Confirmed = notification.Id.ToString()
                 };
 
-                await BuildClient(user).ConfirmMeAsync(idRequest);
+                await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
                 break;
         }
     }
@@ -393,16 +386,6 @@ public class NotificationTests : IClassFixture<CreatedAppFixture>
 
                 break;
         }
-    }
-
-    private INotificationsClient BuildClient(UserDto user)
-    {
-        return
-            NotifoClientBuilder.Create()
-                .SetApiUrl(_.ServerUrl)
-                .SetApiKey(user.ApiKey)
-                .Build()
-                .Notifications;
     }
 
     private async Task<UserDto> CreateUserAsync()

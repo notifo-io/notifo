@@ -316,7 +316,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     {
         Guard.NotNull(tokens);
 
-        var notifications = await userNotificationsStore.TrackDeliveredAsync(tokens);
+        var notifications = await userNotificationsStore.TrackSeenAsync(tokens);
 
         var handled = new HashSet<(Guid NotificationID, string Channel, Guid ConfigurationId)>();
 

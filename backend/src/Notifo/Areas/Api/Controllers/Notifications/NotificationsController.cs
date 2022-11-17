@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain;
+using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
@@ -89,6 +90,27 @@ public sealed class NotificationsController : BaseController
         var response = new ListResponseDto<UserNotificationDto>();
 
         response.Items.AddRange(notifications.Select(x => UserNotificationDto.FromDomainObject(x, channel)));
+        response.Total = notifications.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
+    /// Query archhived user notifications of the current user.
+    /// </summary>
+    /// <param name="q">The query object.</param>
+    /// <response code="200">Notifications returned.</response>.
+    [HttpGet]
+    [Route("api/me/notifications/mobilepush")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Produces(typeof(ListResponseDto<UserNotificationDto>))]
+    public async Task<IActionResult> GetMyMobilePushNotifications([FromQuery] MobileNotificationsQueryDto q)
+    {
+        var notifications = await userNotificationsStore.QueryPendingMobileAsync(App.Id, UserId, q.ToQuery(), HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<UserNotificationDto>();
+
+        response.Items.AddRange(notifications.Select(x => UserNotificationDto.FromDomainObject(x, Providers.MobilePush)));
         response.Total = notifications.Total;
 
         return Ok(response);

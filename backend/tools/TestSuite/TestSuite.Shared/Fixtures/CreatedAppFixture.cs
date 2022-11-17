@@ -28,7 +28,7 @@ public class CreatedAppFixture : ClientFixture
 
             try
             {
-                await Client.Apps.PostAppAsync(new UpsertAppDto
+                var createRequest = new UpsertAppDto
                 {
                     Name = AppName,
                     Languages = new List<string>
@@ -36,7 +36,9 @@ public class CreatedAppFixture : ClientFixture
                         "en",
                         "de"
                     }
-                });
+                };
+
+                await Client.Apps.PostAppAsync(createRequest);
             }
             catch (NotifoException ex)
             {
@@ -48,22 +50,53 @@ public class CreatedAppFixture : ClientFixture
 
             appId = await FindAppAsync();
 
-            string[] contributors =
-            {
-                "hello@squidex.io"
-            };
-
-            var invite = new AddContributorDto { Role = "Owner" };
-
-            foreach (var contributor in contributors)
-            {
-                invite.Email = contributor;
-
-                await Client.Apps.PostContributorAsync(appId, invite);
-            }
-
             return appId;
         });
+
+        await CreateContributorAsync("sebastian@squidex.io");
+        await CreateFirebaseAsync();
+    }
+
+    private async Task CreateContributorAsync(string email)
+    {
+        var app = await Client.Apps.GetAppAsync(AppId);
+
+        if (app.Contributors.Any(x => x.UserName == email))
+        {
+            return;
+        }
+
+        var request = new AddContributorDto
+        {
+            Role = "Owner", Email = email
+        };
+
+        await Client.Apps.PostContributorAsync(AppId, request);
+    }
+
+    private async Task CreateFirebaseAsync()
+    {
+        var integrations = await Client.Apps.GetIntegrationsAsync(AppId);
+
+        if (integrations.Configured.Any(x => x.Value.Type == "Firebase"))
+        {
+            return;
+        }
+
+        var request = new CreateIntegrationDto
+        {
+            Type = "Firebase",
+            Properties = new Dictionary<string, string>
+            {
+                ["projectId"] = "PROJECT",
+                ["silentAndroid"] = "false",
+                ["silentIOS"] = "false",
+                ["credentials"] = "CREDENTIALS"
+            },
+            Enabled = true
+        };
+
+        await Client.Apps.PostIntegrationAsync(AppId, request);
     }
 
     private async Task<string> FindAppAsync()
