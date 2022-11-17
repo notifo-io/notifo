@@ -34,7 +34,7 @@ public abstract class MongoFixtureBase : IDisposable
         }
         else
         {
-            runner = MongoRunner.Run();
+            runner = MongoRunnerProvider.Get();
 
             MongoClient = new MongoClient(runner.ConnectionString);
         }
@@ -44,6 +44,88 @@ public abstract class MongoFixtureBase : IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
         runner?.Dispose();
+    }
+}
+
+#pragma warning disable MA0048 // File name must match type name
+public static class MongoRunnerProvider
+#pragma warning restore MA0048 // File name must match type name
+{
+    private static readonly object LockObject = new object();
+    private static IMongoRunner? runner;
+    private static int useCounter;
+
+    public static IMongoRunner Get()
+    {
+        lock (LockObject)
+        {
+            runner ??= MongoRunner.Run();
+
+            useCounter++;
+
+            return new MongoRunnerWrapper(runner);
+        }
+    }
+
+    private sealed class MongoRunnerWrapper : IMongoRunner
+    {
+        private IMongoRunner? underlyingMongoRunner;
+
+        public string ConnectionString
+        {
+            get => GetRunner().ConnectionString;
+        }
+
+        public MongoRunnerWrapper(IMongoRunner underlyingMongoRunner)
+        {
+            this.underlyingMongoRunner = underlyingMongoRunner;
+        }
+
+        public void Import(string database, string collection, string inputFilePath, string? additionalArguments = null, bool drop = false)
+        {
+            GetRunner().Import(database, collection, inputFilePath, additionalArguments, drop);
+        }
+
+        public void Export(string database, string collection, string outputFilePath, string? additionalArguments = null)
+        {
+            GetRunner().Export(database, collection, outputFilePath, additionalArguments);
+        }
+
+        private IMongoRunner GetRunner()
+        {
+            if (underlyingMongoRunner == null)
+            {
+                throw new ObjectDisposedException(nameof(IMongoRunner));
+            }
+
+            return underlyingMongoRunner;
+        }
+
+        public void Dispose()
+        {
+            if (underlyingMongoRunner != null)
+            {
+                underlyingMongoRunner = null;
+                StaticDispose();
+            }
+        }
+
+        private static void StaticDispose()
+        {
+            lock (LockObject)
+            {
+                if (runner != null)
+                {
+                    useCounter--;
+                    if (useCounter == 0)
+                    {
+                        runner.Dispose();
+                        runner = null;
+                    }
+                }
+            }
+        }
     }
 }
