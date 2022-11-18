@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-
 namespace TestSuite.ApiTests;
 
 public enum TrackingStrategy

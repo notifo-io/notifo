@@ -15,8 +15,9 @@ namespace TestSuite.ApiTests;
 
 public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 {
-    private readonly string mobileToken = Guid.NewGuid().ToString();
-    private readonly string subjectId = Guid.NewGuid().ToString();
+    private readonly string deviceIdentifier = Guid.NewGuid().ToString();
+    private readonly string token = Guid.NewGuid().ToString();
+    private readonly string subject = Guid.NewGuid().ToString();
 
     public CreatedAppFixture _ { get; set; }
 
@@ -28,9 +29,11 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
     }
 
     [Theory]
-    [InlineData(TrackingStrategy.TrackingToken)]
-    [InlineData(TrackingStrategy.Id)]
-    public async Task Should_mark_notification_as_confirmed(TrackingStrategy strategy)
+    [InlineData(TrackingStrategy.TrackingToken, true)]
+    [InlineData(TrackingStrategy.TrackingToken, false)]
+    [InlineData(TrackingStrategy.Id, true)]
+    [InlineData(TrackingStrategy.Id, false)]
+    public async Task Should_mark_notification_as_confirmed(TrackingStrategy strategy, bool useDeviceIdentifier)
     {
         // STEP 0: Create user.
         var user_0 = await CreateUserAsync();
@@ -41,9 +44,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
-
-        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -51,12 +52,10 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 2: Mark as confirmed
-        await MarkAsConfirmedAsync(notification_0, user_0, strategy);
+        await MarkAsConfirmedAsync(notification_0, user_0, strategy, useDeviceIdentifier);
 
         // Test if it has been marked as seen.
-        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstConfirmed != null);
-
-        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstConfirmed != null);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstConfirmed);
@@ -65,9 +64,11 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
     }
 
     [Theory]
-    [InlineData(TrackingStrategy.TrackingToken)]
-    [InlineData(TrackingStrategy.Id)]
-    public async Task Should_mark_notification_as_seen(TrackingStrategy strategy)
+    [InlineData(TrackingStrategy.TrackingToken, true)]
+    [InlineData(TrackingStrategy.TrackingToken, false)]
+    [InlineData(TrackingStrategy.Id, true)]
+    [InlineData(TrackingStrategy.Id, false)]
+    public async Task Should_mark_notification_as_seen(TrackingStrategy strategy, bool useDeviceIdentifier)
     {
         // STEP 0: Create user.
         var user_0 = await CreateUserAsync();
@@ -78,9 +79,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
-
-        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -88,12 +87,10 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // STEP 2: Mark as seen
-        await MarkAsSeenAsync(notification_0, user_0, strategy);
+        await MarkAsSeenAsync(notification_0, user_0, strategy, useDeviceIdentifier);
 
         // Test if it has been marked as seen.
-        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstSeen != null);
-
-        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstSeen != null);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstSeen);
@@ -104,7 +101,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
         Assert.NotNull(notification_1.Channels[Providers.MobilePush].Status.First().Value.FirstDelivered);
     }
 
-    private async Task MarkAsSeenAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
+    private async Task MarkAsSeenAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy, bool useDeviceIdentifier)
     {
         switch (strategy)
         {
@@ -116,7 +113,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                     {
                         notification.TrackingToken
                     },
-                    DeviceIdentifier = mobileToken
+                    DeviceIdentifier = useDeviceIdentifier ? deviceIdentifier : token
                 };
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(tokenRequest);
@@ -130,15 +127,18 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                     {
                         notification.Id.ToString()
                     },
-                    DeviceIdentifier = mobileToken
+                    DeviceIdentifier = useDeviceIdentifier ? deviceIdentifier : token
                 };
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
                 break;
+
+            default:
+                throw new NotSupportedException();
         }
     }
 
-    private async Task MarkAsConfirmedAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
+    private async Task MarkAsConfirmedAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy, bool useDeviceIdentifier)
     {
         switch (strategy)
         {
@@ -147,7 +147,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                 {
                     Channel = Providers.MobilePush,
                     Confirmed = notification.TrackingToken,
-                    DeviceIdentifier = mobileToken
+                    DeviceIdentifier = useDeviceIdentifier ? deviceIdentifier : token
                 };
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(tokenRequest);
@@ -158,11 +158,14 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                 {
                     Channel = Providers.MobilePush,
                     Confirmed = notification.Id.ToString(),
-                    DeviceIdentifier = mobileToken
+                    DeviceIdentifier = useDeviceIdentifier ? deviceIdentifier : token
                 };
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
                 break;
+
+            default:
+                throw new NotSupportedException();
         }
     }
 
@@ -182,7 +185,9 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
         await _.BuildUserClient(user_0)
             .MobilePush.PostMyTokenAsync(new RegisterMobileTokenDto
             {
-                Token = mobileToken
+                Token = token,
+                DeviceIdentifier = deviceIdentifier,
+                DeviceType = MobileDeviceType.IOS
             });
 
         return user_0;
@@ -201,7 +206,7 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
                     {
                         Subject = new LocalizedText
                         {
-                            ["en"] = subjectId
+                            ["en"] = subject
                         },
                         ConfirmMode = ConfirmMode.Explicit
                     },

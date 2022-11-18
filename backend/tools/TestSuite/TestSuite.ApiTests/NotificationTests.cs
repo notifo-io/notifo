@@ -16,7 +16,7 @@ namespace TestSuite.ApiTests;
 [UsesVerify]
 public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 {
-    private readonly string subjectId = Guid.NewGuid().ToString();
+    private readonly string subject = Guid.NewGuid().ToString();
 
     public CreatedAppFixture _ { get; set; }
 
@@ -46,7 +46,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                     {
                         Subject = new LocalizedText
                         {
-                            ["en"] = subjectId
+                            ["en"] = subject
                         }
                     }
                 }
@@ -57,15 +57,15 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var notifications = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, null, TimeSpan.FromSeconds(30));
+        var notifications = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, null);
 
-        Assert.Contains(notifications, x => x.Subject == subjectId);
+        Assert.Contains(notifications, x => x.Subject == subject);
 
 
         // Test that user notifications have been created.
-        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsync(null, TimeSpan.FromSeconds(30));
+        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.PollMyAsync(null);
 
-        Assert.Contains(userNotifications, x => x.Subject == subjectId);
+        Assert.Contains(userNotifications, x => x.Subject == subject);
 
         await Verify(userNotifications)
             .IgnoreMembersWithType<DateTimeOffset>()
@@ -95,7 +95,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                     {
                         Subject = new LocalizedText
                         {
-                            ["en"] = subjectId
+                            ["en"] = subject
                         }
                     }
                 }
@@ -122,15 +122,15 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var notifications = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, null, TimeSpan.FromSeconds(30));
+        var notifications = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, null);
 
-        Assert.Contains(notifications, x => x.Subject == subjectId);
+        Assert.Contains(notifications, x => x.Subject == subject);
 
 
         // Test that user notifications have been created.
-        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.WaitForMyNotificationsAsync(null, TimeSpan.FromSeconds(30));
+        var userNotifications = await _.Notifo.CreateUserClient(user_0).Notifications.PollMyAsync(null);
 
-        Assert.Contains(userNotifications, x => x.Subject == subjectId);
+        Assert.Contains(userNotifications, x => x.Subject == subject);
 
         await Verify(userNotifications)
             .IgnoreMembersWithType<DateTimeOffset>()
@@ -154,9 +154,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
-
-        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -167,9 +165,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         await MarkAsConfirmedAsync(notification_0, user_0, strategy);
 
         // Test if it has been marked as seen.
-        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstConfirmed != null);
-
-        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstConfirmed != null);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstConfirmed);
@@ -192,9 +188,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
-
-        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -205,9 +199,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         await MarkAsSeenAsync(notification_0, user_0, strategy);
 
         // Test if it has been marked as seen.
-        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstSeen != null);
-
-        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstSeen != null);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstSeen);
@@ -227,9 +219,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var predicate_0 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId);
-
-        var notifications_0 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_0, TimeSpan.FromSeconds(30));
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -240,9 +230,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         await MarkAsDeliveredAsync(notification_0, strategy);
 
         // Test if it has been marked as seen.
-        var predicate_1 = new Func<UserNotificationDetailsDto, bool>(x => x.Subject == subjectId && x.FirstDelivered != null);
-
-        var notifications_1 = await _.Client.Notifications.WaitForNotificationsAsync(_.AppId, user_0.Id, predicate_1, TimeSpan.FromSeconds(30));
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstDelivered != null);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstDelivered);
@@ -283,6 +271,9 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
                 break;
+
+            default:
+                throw new NotSupportedException();
         }
     }
 
@@ -315,6 +306,9 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
                 await _.BuildUserClient(user).Notifications.ConfirmMeAsync(idRequest);
                 break;
+
+            default:
+                throw new NotSupportedException();
         }
     }
 
@@ -361,7 +355,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
                     {
                         Subject = new LocalizedText
                         {
-                            ["en"] = subjectId
+                            ["en"] = subject
                         },
                         ConfirmMode = ConfirmMode.Explicit
                     }

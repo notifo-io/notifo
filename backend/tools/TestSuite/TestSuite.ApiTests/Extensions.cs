@@ -11,7 +11,7 @@ namespace TestSuite.ApiTests;
 
 public static class Extensions
 {
-    public static async Task<LogEntryDto[]> WaitForLogEntriesAsync(this ILogsClient logsClient, string appId,
+    public static async Task<LogEntryDto[]> PollAsync(this ILogsClient logsClient, string appId,
         Func<LogEntryDto, bool> condition, TimeSpan timeout)
     {
         var result = Array.Empty<LogEntryDto>();
@@ -35,10 +35,15 @@ public static class Extensions
         return result;
     }
 
-    public static async Task<UserNotificationDetailsDto[]> WaitForNotificationsAsync(this INotificationsClient notificationsClient, string appId, string userId,
-        Func<UserNotificationDetailsDto, bool> condition, TimeSpan timeout)
+    public static async Task<UserNotificationDetailsDto[]> PollAsync(this INotificationsClient notificationsClient, string appId, string userId,
+        Func<UserNotificationDetailsDto, bool> condition, TimeSpan timeout = default)
     {
         var result = Array.Empty<UserNotificationDetailsDto>();
+
+        if (timeout == default)
+        {
+            timeout = TimeSpan.FromSeconds(30);
+        }
 
         using (var cts = new CancellationTokenSource(timeout))
         {
@@ -59,10 +64,15 @@ public static class Extensions
         return result;
     }
 
-    public static async Task<UserNotificationDto[]> WaitForMyNotificationsAsync(this INotificationsClient notificationsClient,
-        Func<UserNotificationDto, bool> condition, TimeSpan timeout)
+    public static async Task<UserNotificationDto[]> PollMyAsync(this INotificationsClient notificationsClient,
+        Func<UserNotificationDto, bool> condition, TimeSpan timeout = default)
     {
         var result = Array.Empty<UserNotificationDto>();
+
+        if (timeout == default)
+        {
+            timeout = TimeSpan.FromSeconds(30);
+        }
 
         using (var cts = new CancellationTokenSource(timeout))
         {
