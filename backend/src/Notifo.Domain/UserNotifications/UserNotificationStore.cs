@@ -52,14 +52,30 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
         var filteredNotifications = notifications.Where(notification =>
         {
+            if (notification.Silent)
+            {
+                return false;
+            }
+
             if (!notification.Channels.TryGetValue(Providers.MobilePush, out var channel))
             {
                 return false;
             }
 
-            var status = channel.Status.Values.FirstOrDefault(x => x.Configuration.ContainsValue(query.DeviceIdentifier));
+            foreach (var (_, status) in channel.Status)
+            {
+                if (!status.Configuration.ContainsValue(query.DeviceIdentifier))
+                {
+                    continue;
+                }
 
-            return status != null && (query.IncludeUnseen || status.FirstSeen == null);
+                if (status.Status == ProcessStatus.Handled && (query.IncludeUnseen || status.FirstSeen == null))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }).ToList();
 
         return ResultList.Create(filteredNotifications.Count, filteredNotifications);
