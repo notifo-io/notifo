@@ -11,7 +11,7 @@
       <PackageProjectUrl>https://gibt.com/notifo.io/notifo</PackageProjectUrl>
       <PublishRepositoryUrl>true</PublishRepositoryUrl>
       <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-      <Version>1.3.0</Version>
+      <Version>1.4.0</Version>
     </PropertyGroup>
   
     <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
