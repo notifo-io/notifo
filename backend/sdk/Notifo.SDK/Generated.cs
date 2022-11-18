@@ -4430,7 +4430,7 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Query archhived user notifications of the current user.
+        /// Query archived user notifications of the current user.
         /// </summary>
         /// <param name="channel">The tracking channel.</param>
         /// <returns>Notifications returned.</returns>
@@ -4439,14 +4439,15 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Query archhived user notifications of the current user.
+        /// Query user notifications of the current user for a specific device.
         /// </summary>
         /// <param name="deviceIdentifier">The device identifier (aka mobile push token).</param>
         /// <param name="after">The max age of the notifications.</param>
+        /// <param name="includeUnseen">True to also include unseen notifications.</param>
         /// <param name="take">The number of notifications to query.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyMobilePushNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, bool? includeUnseen = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -4717,7 +4718,7 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Query archhived user notifications of the current user.
+        /// Query archived user notifications of the current user.
         /// </summary>
         /// <param name="channel">The tracking channel.</param>
         /// <returns>Notifications returned.</returns>
@@ -4803,17 +4804,18 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
-        /// Query archhived user notifications of the current user.
+        /// Query user notifications of the current user for a specific device.
         /// </summary>
         /// <param name="deviceIdentifier">The device identifier (aka mobile push token).</param>
         /// <param name="after">The max age of the notifications.</param>
+        /// <param name="includeUnseen">True to also include unseen notifications.</param>
         /// <param name="take">The number of notifications to query.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyMobilePushNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, bool? includeUnseen = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/mobilepush?");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/device?");
             if (deviceIdentifier != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("DeviceIdentifier") + "=").Append(System.Uri.EscapeDataString(ConvertToString(deviceIdentifier, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -4821,6 +4823,10 @@ namespace Notifo.SDK
             if (after != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("After") + "=").Append(System.Uri.EscapeDataString(after.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (includeUnseen != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("IncludeUnseen") + "=").Append(System.Uri.EscapeDataString(ConvertToString(includeUnseen, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (take != null)
             {

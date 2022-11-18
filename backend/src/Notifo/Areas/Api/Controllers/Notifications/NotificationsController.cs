@@ -104,7 +104,7 @@ public sealed class NotificationsController : BaseController
     [Route("api/me/notifications/device")]
     [AppPermission(NotifoRoles.AppUser)]
     [Produces(typeof(ListResponseDto<UserNotificationDto>))]
-    public async Task<IActionResult> GetMyMobilePushNotifications([FromQuery] DeviceNotificationsQueryDto q)
+    public async Task<IActionResult> GetMyDeviceNotifications([FromQuery] DeviceNotificationsQueryDto q)
     {
         var notifications = await userNotificationsStore.QueryForDeviceAsync(App.Id, UserId, q.ToQuery(), HttpContext.RequestAborted);
 

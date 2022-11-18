@@ -2101,7 +2101,7 @@ export class NotificationsClient {
     }
 
     /**
-     * Query archhived user notifications of the current user.
+     * Query archived user notifications of the current user.
      * @param channel (optional) The tracking channel.
      * @return Notifications returned.
      */
@@ -2147,20 +2147,25 @@ export class NotificationsClient {
     }
 
     /**
-     * Query archhived user notifications of the current user.
+     * Query user notifications of the current user for a specific device.
      * @param deviceIdentifier (optional) The device identifier (aka mobile push token).
      * @param after (optional) The max age of the notifications.
+     * @param includeUnseen (optional) True to also include unseen notifications.
      * @param take (optional) The number of notifications to query.
      * @return Notifications returned.
      */
-    getMyMobilePushNotifications(deviceIdentifier?: string | null | undefined, after?: string | undefined, take?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
-        let url_ = this.baseUrl + "/api/me/notifications/mobilepush?";
+    getMyDeviceNotifications(deviceIdentifier?: string | null | undefined, after?: string | undefined, includeUnseen?: boolean | undefined, take?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+        let url_ = this.baseUrl + "/api/me/notifications/device?";
         if (deviceIdentifier !== undefined && deviceIdentifier !== null)
             url_ += "DeviceIdentifier=" + encodeURIComponent("" + deviceIdentifier) + "&";
         if (after === null)
             throw new Error("The parameter 'after' cannot be null.");
         else if (after !== undefined)
             url_ += "After=" + encodeURIComponent("" + after) + "&";
+        if (includeUnseen === null)
+            throw new Error("The parameter 'includeUnseen' cannot be null.");
+        else if (includeUnseen !== undefined)
+            url_ += "IncludeUnseen=" + encodeURIComponent("" + includeUnseen) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
         else if (take !== undefined)
@@ -2175,11 +2180,11 @@ export class NotificationsClient {
         };
 
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processGetMyMobilePushNotifications(_response);
+            return this.processGetMyDeviceNotifications(_response);
         });
     }
 
-    protected processGetMyMobilePushNotifications(response: Response): Promise<ListResponseDtoOfUserNotificationDto> {
+    protected processGetMyDeviceNotifications(response: Response): Promise<ListResponseDtoOfUserNotificationDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
