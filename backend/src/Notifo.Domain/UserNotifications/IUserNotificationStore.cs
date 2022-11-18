@@ -20,10 +20,10 @@ public interface IUserNotificationStore
     Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
         CancellationToken ct = default);
 
-    Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
+    Task<IResultList<UserNotification>> QueryForDeviceAsync(string appId, string userId, DeviceNotificationsQuery query,
         CancellationToken ct = default);
 
-    Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
+    Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
         CancellationToken ct = default);
 
     Task<UserNotification?> FindAsync(Guid id,
@@ -32,21 +32,21 @@ public interface IUserNotificationStore
     Task DeleteAsync(Guid id,
         CancellationToken ct = default);
 
-    Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens,
+    Task InsertAsync(UserNotification notification,
         CancellationToken ct = default);
 
-    Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
-    Task TrackAttemptAsync(UserEventMessage userEvent,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackSeenAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
-    Task TrackFailedAsync(UserEventMessage userEvent,
+    Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens,
+        CancellationToken ct = default);
+
+    Task TrackAsync(UserEventMessage userEvent, ProcessStatus status,
         CancellationToken ct = default);
 
     Task TrackAsync(TrackingKey identifier, ProcessStatus status, string? detail = null,
-        CancellationToken ct = default);
-
-    Task InsertAsync(UserNotification notification,
         CancellationToken ct = default);
 }

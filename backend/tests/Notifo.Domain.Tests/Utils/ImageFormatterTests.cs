@@ -5,9 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
 using Squidex.Hosting;
-using Xunit;
 
 namespace Notifo.Domain.Utils;
 

@@ -5,17 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserEvents;
+namespace Notifo.Areas.Api.Controllers.Tracking.Dtos;
 
-namespace Notifo.Domain.UserNotifications;
-
-public interface IUserNotificationService
+public class TrackingQueryDto
 {
-    Task DistributeAsync(UserEventMessage userEvent);
+    public string? Channel { get; set; }
 
-    Task TrackDeliveredAsync(params TrackingToken[] tokens);
+    public Guid ConfigurationId { get; set; }
 
-    Task TrackSeenAsync(params TrackingToken[] tokens);
-
-    Task TrackConfirmedAsync(params TrackingToken[] token);
+    public string? DeviceIdentifier { get; set; }
 }

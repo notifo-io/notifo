@@ -5,9 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Diagnostics;
 using Notifo.Infrastructure.TestHelpers;
-using Xunit;
+using System.Diagnostics;
 
 namespace Notifo.Infrastructure.Json;
 

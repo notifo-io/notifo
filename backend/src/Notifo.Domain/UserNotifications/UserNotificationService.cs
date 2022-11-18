@@ -25,7 +25,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 {
     private readonly IAppStore appStore;
     private readonly IClock clock;
-    private readonly IEnumerable<ICommunicationChannel> channels;
+    private readonly Dictionary<string, ICommunicationChannel> channels;
     private readonly ILogger<UserNotificationService> log;
     private readonly ILogStore logStore;
     private readonly IMessageBus messageBus;
@@ -46,7 +46,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         IClock clock)
     {
         this.appStore = appStore;
-        this.channels = channels;
+        this.channels = channels.ToDictionary(x => x.Name);
         this.log = log;
         this.logStore = logStore;
         this.messageBus = messageBus;
@@ -86,7 +86,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             {
                 await logStore.LogAsync(userEvent.AppId, ex.Message);
 
-                await userNotificationsStore.TrackFailedAsync(userEvent);
+                await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
             }
         }
     }
@@ -99,7 +99,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
         using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, parentContext, links: links))
         {
-            await userNotificationsStore.TrackAttemptAsync(userEvent);
+            await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Attempt);
 
             try
             {
@@ -140,7 +140,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                     throw new DomainException(Texts.Notification_AlreadyProcessed);
                 }
 
-                foreach (var channel in channels)
+                foreach (var channel in channels.Values)
                 {
                     if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
                     {
@@ -149,13 +149,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
                     foreach (var (id, status) in notificationChannel.Status)
                     {
-                        var configuration = status.Configuration;
-
-                        // Can be null for old status values.
-                        if (configuration != null)
-                        {
-                            await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, default);
-                        }
+                        await channel.SendAsync(notification, notificationChannel.Setting, id, status.Configuration, context, default);
                     }
                 }
 
@@ -168,7 +162,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             {
                 if (isLastAttempt)
                 {
-                    await userNotificationsStore.TrackFailedAsync(userEvent);
+                    await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
                 }
 
                 if (ex is DomainException domainException)
@@ -198,7 +192,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 throw new DomainException(Texts.Notification_NoSubject);
             }
 
-            foreach (var channel in channels)
+            foreach (var channel in channels.Values)
             {
                 if (channel.IsSystem && !string.IsNullOrWhiteSpace(channel.Name))
                 {
@@ -246,7 +240,10 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     public async Task HandleAsync(ConfirmMessage message,
         CancellationToken ct)
     {
-        var notification = await userNotificationsStore.TrackConfirmedAsync(message.Token, ct);
+        var notifications = await userNotificationsStore.TrackConfirmedAsync(new[] { message.Token }, ct);
+#pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
+        var notification = notifications.FirstOrDefault().Item1;
+#pragma warning restore CA1826 // Do not use Enumerable methods on indexable collections
 
         if (notification == null || !notification.Channels.Any())
         {
@@ -278,22 +275,16 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 IsUpdate = true
             };
 
-            foreach (var channel in channels)
+            foreach (var channel in channels.Values)
             {
-                if (!notification.Channels.TryGetValue(channel.Name, out var notificationChannel))
+                if (!notification.Channels.TryGetValue(channel.Name, out var channelInfo))
                 {
                     continue;
                 }
 
-                foreach (var (id, status) in notificationChannel.Status)
+                foreach (var (id, status) in channelInfo.Status)
                 {
-                    var configuration = status.Configuration;
-
-                    // Can be null for old status values.
-                    if (configuration != null)
-                    {
-                        await channel.SendAsync(notification, notificationChannel.Setting, id, configuration, context, ct);
-                    }
+                    await channel.SendAsync(notification, channelInfo.Setting, id, status.Configuration, context, ct);
                 }
             }
         }
@@ -304,42 +295,61 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         }
     }
 
-    public async Task TrackConfirmedAsync(TrackingToken token)
+    public async Task TrackDeliveredAsync(params TrackingToken[] tokens)
     {
-        if (!token.IsValid)
-        {
-            return;
-        }
+        Guard.NotNull(tokens);
 
-        await messageBus.PublishAsync(new ConfirmMessage { Token = token }, token.ToString());
-    }
-
-    public async Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens)
-    {
         await userNotificationsStore.TrackDeliveredAsync(tokens);
+    }
 
-        foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
+    public async Task TrackConfirmedAsync(params TrackingToken[] tokens)
+    {
+        Guard.NotNull(tokens);
+
+        foreach (var token in tokens.Where(x => x.IsValid))
         {
-            var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
-
-            if (channel != null)
-            {
-                await channel.HandleDeliveredAsync(token);
-            }
+            await messageBus.PublishAsync(new ConfirmMessage { Token = token }, token.ToString());
         }
     }
 
-    public async Task TrackSeenAsync(IEnumerable<TrackingToken> tokens)
+    public async Task TrackSeenAsync(params TrackingToken[] tokens)
     {
-        await userNotificationsStore.TrackSeenAsync(tokens);
+        Guard.NotNull(tokens);
 
-        foreach (var token in tokens.Where(x => x.IsValid && !string.IsNullOrWhiteSpace(x.Channel)))
+        var notifications = await userNotificationsStore.TrackSeenAsync(tokens);
+
+        var handled = new HashSet<(Guid NotificationID, string Channel, Guid ConfigurationId)>();
+
+        foreach (var (notification, updated) in notifications)
         {
-            var channel = channels.FirstOrDefault(x => x.Name == token.Channel);
-
-            if (channel != null)
+            // If the notification has not been updated this tracking has happened before.
+            if (!updated)
             {
-                await channel.HandleSeenAsync(token);
+                continue;
+            }
+
+            foreach (var token in tokens.Where(x => x.UserNotificationId == notification.Id))
+            {
+                // Ensure that we only call the channel once for each notification and configuration.
+                if (string.IsNullOrWhiteSpace(token.Channel) || !handled.Add((notification.Id, token.Channel, token.ConfigurationId)))
+                {
+                    continue;
+                }
+
+                var numConfiguration = notification.Channels.GetOrAddDefault(token.Channel)?.Status.Count ?? 0;
+
+                // There is no configuration for this channel, so the notification has never been sent over.
+                if (numConfiguration == 0)
+                {
+                    continue;
+                }
+
+                if (!channels.TryGetValue(token.Channel, out var channel))
+                {
+                    continue;
+                }
+
+                await channel.HandleSeenAsync(notification, token.ConfigurationId);
             }
         }
     }

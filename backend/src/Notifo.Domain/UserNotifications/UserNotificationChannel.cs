@@ -15,9 +15,9 @@ public sealed record UserNotificationChannel
 
     public Dictionary<Guid, ChannelSendInfo> Status { get; init; } = new Dictionary<Guid, ChannelSendInfo>();
 
-    public Instant? FirstConfirmed { get; init; }
+    public Instant? FirstConfirmed { get; set; }
 
-    public Instant? FirstSeen { get; init; }
+    public Instant? FirstSeen { get; set; }
 
-    public Instant? FirstDelivered { get; init; }
+    public Instant? FirstDelivered { get; set; }
 }

@@ -12,17 +12,17 @@ namespace Notifo.Domain;
 
 public sealed class ChannelSendInfo
 {
-    public SendConfiguration? Configuration { get; init; }
+    public SendConfiguration Configuration { get; set; }
 
-    public ProcessStatus Status { get; init; }
+    public ProcessStatus Status { get; set; }
 
-    public Instant LastUpdate { get; init; }
+    public Instant LastUpdate { get; set; }
 
-    public Instant? FirstConfirmed { get; init; }
+    public Instant? FirstConfirmed { get; set; }
 
-    public Instant? FirstSeen { get; init; }
+    public Instant? FirstSeen { get; set; }
 
-    public Instant? FirstDelivered { get; init; }
+    public Instant? FirstDelivered { get; set; }
 
-    public string? Detail { get; init; }
+    public string? Detail { get; set; }
 }

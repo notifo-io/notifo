@@ -56,16 +56,25 @@ public sealed class NotificationHub : Hub
     {
         if (request.Confirmed != null)
         {
-            var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.ConfigurationId);
+            var token = ParseToken(request.Confirmed, request);
 
-            await userNotificationService.TrackConfirmedAsync(token);
+            await userNotificationService.TrackConfirmedAsync(new[] { token });
         }
 
         if (request.Seen?.Length > 0)
         {
-            var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.ConfigurationId));
+            var tokens = request.Seen.Select(x => ParseToken(x, request)).ToArray();
 
             await userNotificationService.TrackSeenAsync(tokens);
         }
+    }
+
+    private static TrackingToken ParseToken(string id, TrackNotificationDto request)
+    {
+        return TrackingToken.Parse(
+            id,
+            request.Channel,
+            request.ConfigurationId,
+            request.DeviceIdentifier);
     }
 }

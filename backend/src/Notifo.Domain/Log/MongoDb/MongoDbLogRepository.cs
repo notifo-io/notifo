@@ -39,7 +39,6 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
             new CreateIndexModel<MongoDbLogEntry>(
                 IndexKeys
                     .Ascending(x => x.Entry.FirstWriteId)),
-
         }, null, ct);
     }
 

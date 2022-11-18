@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.Infrastructure.Texts;
-using Xunit;
 
 namespace Notifo.Domain.Utils;
 

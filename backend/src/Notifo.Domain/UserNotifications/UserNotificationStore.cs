@@ -28,12 +28,41 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         this.counters = counters;
         this.clock = clock;
 
-        collector = new StatisticsCollector(repository, 5000);
+        collector = new StatisticsCollector(repository, clock, 5000);
     }
 
     public void Dispose()
     {
         collector.StopAsync();
+    }
+
+    public async Task<IResultList<UserNotification>> QueryForDeviceAsync(string appId, string userId, DeviceNotificationsQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(userId);
+        Guard.NotNull(query);
+
+        if (string.IsNullOrWhiteSpace(query.DeviceIdentifier))
+        {
+            return ResultList.Empty<UserNotification>();
+        }
+
+        var notifications = await repository.QueryAsync(appId, userId, query.ToBaseQuery(), ct);
+
+        var filteredNotifications = notifications.Where(notification =>
+        {
+            if (!notification.Channels.TryGetValue(Providers.MobilePush, out var channel))
+            {
+                return false;
+            }
+
+            var status = channel.Status.Values.FirstOrDefault(x => x.Configuration.ContainsValue(query.DeviceIdentifier));
+
+            return status != null && (query.IncludeUnseen || status.FirstSeen == null);
+        }).ToList();
+
+        return ResultList.Create(filteredNotifications.Count, filteredNotifications);
     }
 
     public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
@@ -96,23 +125,15 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.IsHandledOrSeenAsync(id, channel, configurationId, ct);
     }
 
-    public Task<UserNotification?> TrackConfirmedAsync(TrackingToken token,
-        CancellationToken ct = default)
-    {
-        Guard.NotDefault(token);
-
-        return repository.TrackConfirmedAsync(token, clock.GetCurrentInstant(), ct);
-    }
-
-    public Task TrackDeliveredAsync(IEnumerable<TrackingToken> tokens,
+    public Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackConfirmedAsync(TrackingToken[] tokens,
         CancellationToken ct = default)
     {
         Guard.NotNull(tokens);
 
-        return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
+        return repository.TrackConfirmedAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
-    public Task TrackSeenAsync(IEnumerable<TrackingToken> tokens,
+    public Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackSeenAsync(TrackingToken[] tokens,
         CancellationToken ct = default)
     {
         Guard.NotNull(tokens);
@@ -120,23 +141,20 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.TrackSeenAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
-    public Task TrackAttemptAsync(UserEventMessage userEvent,
+    public Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens,
         CancellationToken ct = default)
     {
-        Guard.NotNull(userEvent);
+        Guard.NotNull(tokens);
 
-        var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt);
-        var counterKey = TrackingKey.ForUserEvent(userEvent);
-
-        return StoreCountersAsync(counterKey, counterMap, ct);
+        return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
-    public Task TrackFailedAsync(UserEventMessage userEvent,
+    public Task TrackAsync(UserEventMessage userEvent, ProcessStatus status,
         CancellationToken ct = default)
     {
         Guard.NotNull(userEvent);
 
-        var counterMap = CounterMap.ForNotification(ProcessStatus.Failed);
+        var counterMap = CounterMap.ForNotification(status);
         var counterKey = TrackingKey.ForUserEvent(userEvent);
 
         return StoreCountersAsync(counterKey, counterMap, ct);
@@ -170,7 +188,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
         return Task.WhenAll(
             StoreCountersAsync(counterKey, counterMap, ct),
-            StoreInternalAsync(identifier.UserNotificationId, identifier.Channel!, identifier.ConfigurationId, status, detail));
+            StoreInternalAsync(identifier.ToToken(), status, detail));
     }
 
     private Task StoreCountersAsync(TrackingKey key, CounterMap counterValues,
@@ -185,17 +203,8 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.InsertAsync(notification, ct);
     }
 
-    private async Task StoreInternalAsync(Guid id, string channel, Guid configurationId, ProcessStatus status, string? detail)
+    private async Task StoreInternalAsync(TrackingToken token, ProcessStatus status, string? details)
     {
-        var info = CreateInfo(status, detail);
-
-        await collector.AddAsync(id, channel, configurationId, info);
-    }
-
-    private ChannelSendInfo CreateInfo(ProcessStatus status, string? detail)
-    {
-        var now = clock.GetCurrentInstant();
-
-        return new ChannelSendInfo { LastUpdate = now, Detail = detail, Status = status };
+        await collector.AddAsync(token, status, details);
     }
 }

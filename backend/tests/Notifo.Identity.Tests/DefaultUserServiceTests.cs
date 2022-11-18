@@ -7,13 +7,11 @@
 
 using System.Globalization;
 using System.Security.Claims;
-using FakeItEasy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Mediator;
-using Xunit;
 
 namespace Notifo.Identity;
 

@@ -5,10 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Identity;
 using Notifo.Infrastructure;
-using System.Runtime.CompilerServices;
 
 #pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
 

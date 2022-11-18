@@ -36,6 +36,14 @@ public class ClientFixture : IAsyncLifetime
         });
     }
 
+    public INotifoClient BuildUserClient(UserDto user)
+    {
+        return NotifoClientBuilder.Create()
+            .SetApiUrl(ServerUrl)
+            .SetApiKey(user.ApiKey)
+            .Build();
+    }
+
     public virtual Task DisposeAsync()
     {
         return Task.CompletedTask;

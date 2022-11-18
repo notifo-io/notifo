@@ -1969,12 +1969,13 @@ export class NotificationsClient {
      * @param appId The app where the user belongs to.
      * @param id The user id.
      * @param channels (optional) The active channels.
+     * @param channel (optional) The source channel.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getNotifications(appId: string | null, id: string | null, channels?: string[] | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+    getNotifications(appId: string | null, id: string | null, channels?: string[] | null | undefined, channel?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1984,6 +1985,8 @@ export class NotificationsClient {
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
+        if (channel !== undefined && channel !== null)
+            url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -2038,15 +2041,18 @@ export class NotificationsClient {
     /**
      * Query user notifications of the current user.
      * @param channels (optional) The active channels.
+     * @param channel (optional) The source channel.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return Notifications returned.
      */
-    getMyNotifications(channels?: string[] | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyNotifications(channels?: string[] | null | undefined, channel?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications?";
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
+        if (channel !== undefined && channel !== null)
+            url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -2096,10 +2102,13 @@ export class NotificationsClient {
 
     /**
      * Query archhived user notifications of the current user.
+     * @param channel (optional) The tracking channel.
      * @return Notifications returned.
      */
-    getMyArchive(): Promise<ListResponseDtoOfUserNotificationDto> {
-        let url_ = this.baseUrl + "/api/me/notifications/archive";
+    getMyArchive(channel?: string | null | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+        let url_ = this.baseUrl + "/api/me/notifications/archive?";
+        if (channel !== undefined && channel !== null)
+            url_ += "channel=" + encodeURIComponent("" + channel) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -2115,6 +2124,62 @@ export class NotificationsClient {
     }
 
     protected processGetMyArchive(response: Response): Promise<ListResponseDtoOfUserNotificationDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ListResponseDtoOfUserNotificationDto;
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfUserNotificationDto>(null as any);
+    }
+
+    /**
+     * Query archhived user notifications of the current user.
+     * @param deviceIdentifier (optional) The device identifier (aka mobile push token).
+     * @param after (optional) The max age of the notifications.
+     * @param take (optional) The number of notifications to query.
+     * @return Notifications returned.
+     */
+    getMyMobilePushNotifications(deviceIdentifier?: string | null | undefined, after?: string | undefined, take?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+        let url_ = this.baseUrl + "/api/me/notifications/mobilepush?";
+        if (deviceIdentifier !== undefined && deviceIdentifier !== null)
+            url_ += "DeviceIdentifier=" + encodeURIComponent("" + deviceIdentifier) + "&";
+        if (after === null)
+            throw new Error("The parameter 'after' cannot be null.");
+        else if (after !== undefined)
+            url_ += "After=" + encodeURIComponent("" + after) + "&";
+        if (take === null)
+            throw new Error("The parameter 'take' cannot be null.");
+        else if (take !== undefined)
+            url_ += "Take=" + encodeURIComponent("" + take) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetMyMobilePushNotifications(_response);
+        });
+    }
+
+    protected processGetMyMobilePushNotifications(response: Response): Promise<ListResponseDtoOfUserNotificationDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -6116,6 +6181,8 @@ export interface TrackNotificationDto {
     channel?: string | undefined;
     /** The configuration ID. */
     configurationId?: string;
+    /** The device identifier. */
+    deviceIdentifier?: string | undefined;
 }
 
 export interface ListResponseDtoOfMobilePushTokenDto {

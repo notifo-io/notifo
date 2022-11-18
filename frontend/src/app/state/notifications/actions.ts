@@ -12,7 +12,7 @@ import { selectApp } from './../shared';
 import { NotificationsState } from './state';
 
 const list = listThunk<NotificationsState, UserNotificationDetailsDto>('notifications', 'notifications', async (params) => {
-    const { items, total } = await Clients.Notifications.getNotifications(params.appId, params.userId, params.channels, params.search, params.take, params.skip);
+    const { items, total } = await Clients.Notifications.getNotifications(params.appId, params.userId, params.channels, undefined, params.search, params.take, params.skip);
 
     return { items, total };
 });

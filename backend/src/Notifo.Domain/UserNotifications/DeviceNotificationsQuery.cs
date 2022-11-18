@@ -5,17 +5,22 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserEvents;
+using NodaTime;
 
 namespace Notifo.Domain.UserNotifications;
 
-public interface IUserNotificationService
+public sealed class DeviceNotificationsQuery
 {
-    Task DistributeAsync(UserEventMessage userEvent);
+    public string? DeviceIdentifier { get; set; }
 
-    Task TrackDeliveredAsync(params TrackingToken[] tokens);
+    public Instant After { get; set; }
 
-    Task TrackSeenAsync(params TrackingToken[] tokens);
+    public bool IncludeUnseen { get; set; }
 
-    Task TrackConfirmedAsync(params TrackingToken[] token);
+    public int Take { get; set; }
+
+    public UserNotificationQuery ToBaseQuery()
+    {
+        return new UserNotificationQuery { Take = Take, After = After };
+    }
 }

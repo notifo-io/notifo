@@ -8,7 +8,6 @@
 using System.Diagnostics;
 using MongoDB.Bson;
 using Notifo.Domain.Channels;
-using Xunit;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 
@@ -21,6 +20,7 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
     private readonly string appId = "my-app";
     private readonly string userId1 = Guid.NewGuid().ToString();
     private readonly string userId2 = Guid.NewGuid().ToString();
+    private readonly string empty = Guid.Empty.ToString();
 
     public MongoDbSubscriptionRepositoryFixture _ { get; }
 
@@ -32,11 +32,7 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
     [Fact]
     public async Task Should_be_fast()
     {
-        var empty = Guid.Empty.ToString();
-
         var count = await _.Repository.Collection.CountDocumentsAsync(new BsonDocument());
-
-        var random = new Random();
 
         const int Count = 1_000_000;
 
@@ -46,7 +42,7 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
 
             for (var i = 0; i < Count; i++)
             {
-                TopicId randomTopic = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}/{random.Next(10000)}a";
+                TopicId randomTopic = $"{Guid.NewGuid()}/{Random.Shared.Next(10000)}/{Random.Shared.Next(10000)}/{Random.Shared.Next(10000)}/{Random.Shared.Next(10000)}/{Random.Shared.Next(10000)}a";
 
                 inserts.Add(new MongoDbSubscription
                 {
@@ -61,7 +57,7 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
             await _.Repository.Collection.InsertManyAsync(inserts);
         }
 
-        var topicToSearch = $"{Guid.NewGuid()}/{random.Next(10000)}/{random.Next(10000)}a";
+        var topicToSearch = $"{Guid.NewGuid()}/{Random.Shared.Next(10000)}/{Random.Shared.Next(10000)}a";
 
         await ToList(_.Repository.QueryAsync(empty, topicToSearch));
         await ToList(_.Repository.QueryAsync(empty, topicToSearch));

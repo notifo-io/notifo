@@ -8,7 +8,6 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Smtp;
-using Xunit;
 
 namespace Notifo.Domain.Integrations.AmazonSES;
 

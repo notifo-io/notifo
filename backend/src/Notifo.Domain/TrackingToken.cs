@@ -11,18 +11,18 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain;
 
-public readonly record struct TrackingToken(Guid NotificationId, string? Channel = null, Guid ConfigurationId = default)
+public readonly record struct TrackingToken(Guid UserNotificationId, string? Channel = null, Guid ConfigurationId = default, string? Configuration = null)
 {
-    public readonly bool IsValid => NotificationId != default;
+    public readonly bool IsValid => UserNotificationId != default;
 
-    public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default)
+    public static TrackingToken Parse(string id, string? channel = null, Guid configurationId = default, string? configuration = null)
     {
-        TryParse(id, channel, configurationId, out var result);
+        TryParse(id, channel, configurationId, configuration, out var result);
 
         return result;
     }
 
-    public static bool TryParse(string id, string? channel, Guid configurationId, out TrackingToken result)
+    public static bool TryParse(string id, string? channel, Guid configurationId, string? configuration, out TrackingToken result)
     {
         result = default;
 
@@ -33,7 +33,7 @@ public readonly record struct TrackingToken(Guid NotificationId, string? Channel
 
         if (Guid.TryParse(id, out var guid))
         {
-            result = new TrackingToken(guid, channel, configurationId);
+            result = new TrackingToken(guid, channel, configurationId, configuration);
             return true;
         }
 
@@ -51,14 +51,9 @@ public readonly record struct TrackingToken(Guid NotificationId, string? Channel
                 channel = decoded[1];
             }
 
-            if (decoded.Length > 2 && !string.IsNullOrWhiteSpace(decoded[2]))
+            if (decoded.Length > 2 && Guid.TryParse(decoded[2], out var parsed) && parsed != default)
             {
-                var configurationIdString = string.Join('|', decoded.Skip(2));
-
-                if (Guid.TryParse(configurationIdString, out var parsed) && parsed != default)
-                {
-                    configurationId = parsed;
-                }
+                configurationId = parsed;
             }
 
             if (string.IsNullOrWhiteSpace(channel))
@@ -66,7 +61,7 @@ public readonly record struct TrackingToken(Guid NotificationId, string? Channel
                 channel = null;
             }
 
-            result = new TrackingToken(guid, channel?.ToLowerInvariant(), configurationId);
+            result = new TrackingToken(guid, channel?.ToLowerInvariant(), configurationId, configuration);
             return true;
         }
         catch (FormatException)
@@ -81,8 +76,8 @@ public readonly record struct TrackingToken(Guid NotificationId, string? Channel
 
         var compound =
             ConfigurationId == default ?
-            $"{NotificationId}|{channel}" :
-            $"{NotificationId}|{channel}|{ConfigurationId}";
+            $"{UserNotificationId}|{channel}" :
+            $"{UserNotificationId}|{channel}|{ConfigurationId}";
 
         return compound.ToBase64();
     }

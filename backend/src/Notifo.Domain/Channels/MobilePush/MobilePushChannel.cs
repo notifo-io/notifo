@@ -75,23 +75,13 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    public async Task HandleSeenAsync(TrackingToken token)
+    public async Task HandleSeenAsync(UserNotification notification, Guid configurationId)
     {
         using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
         {
-            var configurationId = token.ConfigurationId;
-
             if (configurationId == default)
             {
                 // Old tracking code.
-                return;
-            }
-
-            var notification = await userNotificationStore.FindAsync(token.NotificationId);
-
-            if (notification == null)
-            {
-                // The notification does not exist anymore.
                 return;
             }
 
@@ -107,7 +97,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 return;
             }
 
-            if (status.Configuration?.TryGetValue(MobilePushToken, out var mobileToken) != true)
+            if (status.Configuration.TryGetValue(MobilePushToken, out var mobileToken))
             {
                 // The configuration has no token.
                 return;

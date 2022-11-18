@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Xunit;
-
 namespace Notifo.Domain.Utils;
 
 public class TemplateCacheTests

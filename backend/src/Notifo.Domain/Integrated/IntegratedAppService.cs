@@ -288,7 +288,6 @@ public sealed partial class IntegratedAppService :
             {
                 log.LogError(ex, "Failed to run sync command.");
             }
-
         }, default);
 
         return result;

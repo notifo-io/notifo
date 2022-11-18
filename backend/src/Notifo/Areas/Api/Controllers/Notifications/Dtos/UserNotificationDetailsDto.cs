@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
 
@@ -34,7 +35,7 @@ public sealed class UserNotificationDetailsDto : UserNotificationBaseDto
     /// </summary>
     public HandledInfoDto? FirstConfirmed { get; set; }
 
-    public static UserNotificationDetailsDto FromDomainObjectAsDetails(UserNotification source)
+    public static UserNotificationDetailsDto FromDomainObjectAsDetails(UserNotification source, string? channel)
     {
         var result = new UserNotificationDetailsDto();
 
@@ -65,6 +66,8 @@ public sealed class UserNotificationDetailsDto : UserNotificationBaseDto
                 result.Channels[key] = UserNotificationChannelDto.FromDomainObject(value);
             }
         }
+
+        result.TrackingToken = new TrackingToken(source.Id, channel).ToParsableString();
 
         return result;
     }

@@ -5,12 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure;
+namespace Notifo.Domain.UserNotifications.MongoDb;
 
-public class Randomizer
+public static class Constants
 {
-    public virtual double NextDouble()
-    {
-        return Random.Shared.NextDouble();
-    }
+    public const string Convertedkey = "__converted";
 }

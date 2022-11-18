@@ -5,11 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
-using Xunit;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 

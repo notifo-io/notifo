@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using FakeItEasy;
-using FluentAssertions;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
@@ -17,7 +15,6 @@ using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Texts;
-using Xunit;
 
 namespace Notifo.Domain.UserNotifications;
 

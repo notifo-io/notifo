@@ -8,6 +8,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain;
+using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
@@ -46,7 +47,7 @@ public sealed class NotificationsController : BaseController
 
         var response = new ListResponseDto<UserNotificationDetailsDto>();
 
-        response.Items.AddRange(notifications.Select(UserNotificationDetailsDto.FromDomainObjectAsDetails));
+        response.Items.AddRange(notifications.Select(x => UserNotificationDetailsDto.FromDomainObjectAsDetails(x, q.Channel)));
         response.Total = notifications.Total;
 
         return Ok(response);
@@ -74,7 +75,7 @@ public sealed class NotificationsController : BaseController
     }
 
     /// <summary>
-    /// Query archhived user notifications of the current user.
+    /// Query archived user notifications of the current user.
     /// </summary>
     /// <param name="channel">The tracking channel.</param>
     /// <response code="200">Notifications returned.</response>.
@@ -95,6 +96,27 @@ public sealed class NotificationsController : BaseController
     }
 
     /// <summary>
+    /// Query user notifications of the current user for a specific device.
+    /// </summary>
+    /// <param name="q">The query object.</param>
+    /// <response code="200">Notifications returned.</response>.
+    [HttpGet]
+    [Route("api/me/notifications/device")]
+    [AppPermission(NotifoRoles.AppUser)]
+    [Produces(typeof(ListResponseDto<UserNotificationDto>))]
+    public async Task<IActionResult> GetMyMobilePushNotifications([FromQuery] DeviceNotificationsQueryDto q)
+    {
+        var notifications = await userNotificationsStore.QueryForDeviceAsync(App.Id, UserId, q.ToQuery(), HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<UserNotificationDto>();
+
+        response.Items.AddRange(notifications.Select(x => UserNotificationDto.FromDomainObject(x, Providers.MobilePush)));
+        response.Total = notifications.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Confirms the user notifications for the current user.
     /// </summary>
     /// <param name="request">The request object.</param>
@@ -106,18 +128,27 @@ public sealed class NotificationsController : BaseController
     {
         if (request.Confirmed != null)
         {
-            var token = TrackingToken.Parse(request.Confirmed, request.Channel, request.ConfigurationId);
+            var token = ParseToken(request.Confirmed, request);
 
-            await userNotificationService.TrackConfirmedAsync(token);
+            await userNotificationService.TrackConfirmedAsync(new[] { token });
         }
 
         if (request.Seen?.Length > 0)
         {
-            var tokens = request.Seen.Select(x => TrackingToken.Parse(x, request.Channel, request.ConfigurationId));
+            var tokens = request.Seen.Select(x => ParseToken(x, request)).ToArray();
 
             await userNotificationService.TrackSeenAsync(tokens);
         }
 
         return NoContent();
+    }
+
+    private static TrackingToken ParseToken(string id, TrackNotificationDto request)
+    {
+        return TrackingToken.Parse(
+            id,
+            request.Channel,
+            request.ConfigurationId,
+            request.DeviceIdentifier);
     }
 }

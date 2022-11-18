@@ -11,6 +11,8 @@ public static class ResultList
 {
     private sealed class Impl<T> : List<T>, IResultList<T>
     {
+        public static readonly Impl<T> EmptyInstance = new Impl<T>(Enumerable.Empty<T>(), 0);
+
         public long Total { get; }
 
         public Impl(IEnumerable<T> items, long total)
@@ -28,5 +30,10 @@ public static class ResultList
     public static IResultList<T> CreateFrom<T>(long total, params T[] items)
     {
         return new Impl<T>(items, total);
+    }
+
+    public static IResultList<T> Empty<T>()
+    {
+        return Impl<T>.EmptyInstance;
     }
 }

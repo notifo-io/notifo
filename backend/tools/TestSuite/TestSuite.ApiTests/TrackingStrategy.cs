@@ -5,12 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure;
 
-public class Randomizer
+namespace TestSuite.ApiTests;
+
+public enum TrackingStrategy
 {
-    public virtual double NextDouble()
-    {
-        return Random.Shared.NextDouble();
-    }
+    TrackingUrl,
+    TrackingToken,
+    Id
 }

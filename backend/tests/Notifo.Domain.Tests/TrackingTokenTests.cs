@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Xunit;
-
 namespace Notifo.Domain;
 
 public class TrackingTokenTests
@@ -75,7 +73,7 @@ public class TrackingTokenTests
 
         var result = TrackingToken.Parse(sourceString, "push", configurationId);
 
-        Assert.Equal(result, new TrackingToken(sourceToken.NotificationId, "push", configurationId));
+        Assert.Equal(result, new TrackingToken(sourceToken.UserNotificationId, "push", configurationId));
     }
 
     [Fact]

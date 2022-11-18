@@ -58,12 +58,12 @@ public sealed class UserEventPublisher : IUserEventPublisher
         this.counters = counters;
         this.eventStore = eventStore;
         this.log = log;
-        this.randomizer = randomizer;
         this.logStore = logStore;
         this.subscriptionStore = subscriptionStore;
         this.templateStore = templateStore;
         this.userEventProducer = userEventProducer;
         this.userStore = userStore;
+        this.randomizer = randomizer;
     }
 
     public async Task PublishAsync(EventMessage @event,

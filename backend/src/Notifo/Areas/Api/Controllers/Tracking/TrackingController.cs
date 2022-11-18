@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Areas.Api.Controllers.Tracking.Dtos;
 using Notifo.Domain;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
@@ -33,11 +34,9 @@ public sealed class TrackingController : Controller
     [HttpPut]
     [HttpPost]
     [Route("api/tracking/notifications/{id:notEmpty}/seen")]
-    public async Task<IActionResult> Seen(string id, [FromQuery] string? channel = null, [FromQuery] Guid configurationId = default)
+    public async Task<IActionResult> Seen(string id, [FromQuery] TrackingQueryDto? request = null)
     {
-        var tokens = Enumerable.Repeat(TrackingToken.Parse(id, channel, configurationId), 1);
-
-        await userNotificationService.TrackSeenAsync(tokens);
+        await userNotificationService.TrackSeenAsync(ParseToken(id, request));
 
         return TrackingPixel();
     }
@@ -46,24 +45,31 @@ public sealed class TrackingController : Controller
     [HttpPut]
     [HttpPost]
     [Route("api/tracking/notifications/{id:notEmpty}/delivered")]
-    public async Task<IActionResult> Delivered(string id, [FromQuery] string? channel = null, [FromQuery] Guid configurationId = default)
+    public async Task<IActionResult> Delivered(string id, [FromQuery] TrackingQueryDto? request = null)
     {
-        var tokens = Enumerable.Repeat(TrackingToken.Parse(id, channel, configurationId), 1);
-
-        await userNotificationService.TrackDeliveredAsync(tokens);
+        await userNotificationService.TrackDeliveredAsync(ParseToken(id, request));
 
         return TrackingPixel();
     }
 
+    [HttpPost]
+    [Route("api/tracking/notifications/{id:notEmpty}/confirm")]
+    public async Task<IActionResult> ConfirmPost(string id, [FromQuery] TrackingQueryDto? request = null)
+    {
+        await userNotificationService.TrackConfirmedAsync(ParseToken(id, request));
+
+        return NoContent();
+    }
+
     [HttpGet]
     [Route("api/tracking/notifications/{id:notEmpty}/confirm")]
-    public async Task<IActionResult> Confirm(string id, [FromQuery] string? channel = null, [FromQuery] Guid configurationId = default)
+    public async Task<IActionResult> Confirm(string id, [FromQuery] TrackingQueryDto? request = null)
     {
-        var token = TrackingToken.Parse(id, channel, configurationId);
+        var token = ParseToken(id, request);
 
         await userNotificationService.TrackConfirmedAsync(token);
 
-        var notification = await userNotificationStore.FindAsync(token.NotificationId, HttpContext.RequestAborted);
+        var notification = await userNotificationStore.FindAsync(token.UserNotificationId, HttpContext.RequestAborted);
 
         if (notification == null)
         {
@@ -91,15 +97,13 @@ public sealed class TrackingController : Controller
         return View();
     }
 
-    [HttpPost]
-    [Route("api/tracking/notifications/{id:notEmpty}/confirm")]
-    public async Task<IActionResult> ConfirmPost(string id, [FromQuery] string? channel = null, [FromQuery] Guid configurationId = default)
+    private static TrackingToken ParseToken(string id, TrackingQueryDto? request)
     {
-        var token = TrackingToken.Parse(id, channel, configurationId);
-
-        await userNotificationService.TrackConfirmedAsync(token);
-
-        return NoContent();
+        return TrackingToken.Parse(
+            id,
+            request?.Channel,
+            request?.ConfigurationId ?? default,
+            request?.DeviceIdentifier);
     }
 
     private IActionResult TrackingPixel()

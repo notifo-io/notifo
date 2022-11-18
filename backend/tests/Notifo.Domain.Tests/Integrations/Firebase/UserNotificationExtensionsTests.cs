@@ -7,7 +7,6 @@
 
 using System.Globalization;
 using FirebaseAdmin.Messaging;
-using Jint;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Integrations.Firebase;

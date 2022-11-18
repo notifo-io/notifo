@@ -24,12 +24,16 @@ public sealed class WebController : BaseController
 {
     private static readonly UserNotificationQuery DefaultQuery = new UserNotificationQuery { Take = 100 };
 
+    private readonly IUserNotificationService userNotificationService;
     private readonly IUserNotificationStore userNotificationStore;
     private readonly SignalROptions signalROptions;
 
-    public WebController(IUserNotificationStore userNotificationStore,
+    public WebController(
+        IUserNotificationService userNotificationService,
+        IUserNotificationStore userNotificationStore,
         IOptions<SignalROptions> signalROptions)
     {
+        this.userNotificationService = userNotificationService;
         this.userNotificationStore = userNotificationStore;
         this.signalROptions = signalROptions.Value;
     }
@@ -70,36 +74,36 @@ public sealed class WebController : BaseController
             requestToken = requestToken.Minus(Duration.FromSeconds(10));
         }
 
-#pragma warning disable MA0040 // Flow the cancellation token
         if (request.Delivered?.Length > 0)
         {
-            var tokens = request.Delivered.Select(x => TrackingToken.Parse(x));
+            var tokens = request.Delivered.Select(x => TrackingToken.Parse(x)).ToArray();
 
-            await userNotificationStore.TrackSeenAsync(tokens);
+            await userNotificationService.TrackDeliveredAsync(tokens);
         }
 
         if (request.Seen?.Length > 0)
         {
-            var tokens = request.Seen.Select(x => TrackingToken.Parse(x));
+            var tokens = request.Seen.Select(x => TrackingToken.Parse(x)).ToArray();
 
-            await userNotificationStore.TrackSeenAsync(tokens);
+            await userNotificationService.TrackSeenAsync(tokens);
         }
 
-        foreach (var id in request.Confirmed.OrEmpty())
+        if (request.Confirmed?.Length > 0)
         {
-            var token = TrackingToken.Parse(id);
+            var tokens = request.Confirmed.Select(x => TrackingToken.Parse(x)).ToArray();
 
-            await userNotificationStore.TrackConfirmedAsync(token);
+            await userNotificationService.TrackConfirmedAsync(tokens);
         }
-#pragma warning restore MA0040 // Flow the cancellation token
 
         foreach (var id in request.Deleted.OrEmpty())
         {
-            await userNotificationStore.DeleteAsync(id, HttpContext.RequestAborted);
+            // It is not worth to cancel the request here and stop the tracking.
+            await userNotificationStore.DeleteAsync(id, default);
         }
 
         var notifications = await userNotificationStore.QueryAsync(App.Id, UserId, DefaultQuery with { After = requestToken }, HttpContext.RequestAborted);
 
+        // Calculate the continuation token from the hightest update value.
         var continuationToken = notifications.Select(x => x.Updated).OrderBy(x => x).LastOrDefault();
 
         if (continuationToken == default)
