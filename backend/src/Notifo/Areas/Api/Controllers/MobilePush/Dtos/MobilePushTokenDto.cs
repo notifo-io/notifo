@@ -24,6 +24,11 @@ public sealed class MobilePushTokenDto
     /// </summary>
     public MobileDeviceType DeviceType { get; set; }
 
+    /// <summary>
+    /// A unique identifier for the device.
+    /// </summary>
+    public string? DeviceIdentifier { get; set; }
+
     public static MobilePushTokenDto FromDomainObject(MobilePushToken source)
     {
         return SimpleMapper.Map(source, new MobilePushTokenDto());

@@ -23,7 +23,9 @@ namespace Notifo.Domain.Channels.MobilePush;
 
 public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>
 {
-    private const string MobilePushToken = nameof(MobilePushToken);
+    private const string Token = nameof(Token);
+    private const string DeviceType = nameof(DeviceType);
+    private const string DeviceIdentifier = nameof(DeviceIdentifier);
     private readonly IAppStore appStore;
     private readonly IClock clock;
     private readonly IIntegrationManager integrationManager;
@@ -69,7 +71,9 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 yield return new SendConfiguration
                 {
-                    [MobilePushToken] = token.Token
+                    [Token] = token.Token,
+                    [DeviceIdentifier] = token.DeviceIdentifier ?? string.Empty,
+                    [DeviceType] = token.DeviceType.ToString()
                 };
             }
         }
@@ -97,7 +101,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 return;
             }
 
-            if (status.Configuration.TryGetValue(MobilePushToken, out var mobileToken))
+            if (status.Configuration.TryGetValue(Token, out var mobileToken))
             {
                 // The configuration has no token.
                 return;
@@ -126,7 +130,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
         CancellationToken ct)
     {
-        if (!properties.TryGetValue(MobilePushToken, out var tokenString))
+        if (!properties.TryGetValue(Token, out var tokenString))
         {
             // Old configuration without a mobile push token.
             return;
@@ -147,7 +151,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 await TryWakeupAsync(notification, configurationId, token, ct);
             }
 
-            var job = new MobilePushJob(notification, setting, configurationId, token.Token, token.DeviceType, context.IsUpdate);
+            var job = new MobilePushJob(notification, setting, configurationId, token, context.IsUpdate);
 
             if (context.IsUpdate)
             {
@@ -185,7 +189,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             UserLanguage = notification.UserLanguage
         };
 
-        var wakeupJob = new MobilePushJob(dummyNotification, null, configurationId, token.Token, token.DeviceType, false);
+        var wakeupJob = new MobilePushJob(dummyNotification, null, configurationId, token, false);
 
         await userNotificationQueue.ScheduleAsync(
             wakeupJob.ScheduleKey,
@@ -291,7 +295,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 {
                     IsConfirmed = job.IsConfirmed,
                     DeviceType = job.DeviceType,
-                    DeviceToken = job.DeviceToken,
+                    Token = job.Token,
                     Wakeup = notification.Formatting == null
                 };
 
@@ -304,7 +308,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
                 var command = new RemoveUserMobileToken
                 {
-                    Token = job.DeviceToken
+                    Token = job.Token
                 }.WithTracking(notification.AppId, notification.UserId);
 
                 await mediator.SendAsync(command, ct);

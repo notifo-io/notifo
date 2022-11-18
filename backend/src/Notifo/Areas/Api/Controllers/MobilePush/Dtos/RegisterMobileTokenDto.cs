@@ -25,6 +25,11 @@ public sealed class RegisterMobileTokenDto
     /// </summary>
     public MobileDeviceType DeviceType { get; set; }
 
+    /// <summary>
+    /// A unique identifier for the device.
+    /// </summary>
+    public string? DeviceIdentifier { get; set; }
+
     public MobilePushToken ToToken()
     {
         return SimpleMapper.Map(this, new MobilePushToken());

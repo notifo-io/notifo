@@ -13085,6 +13085,12 @@ namespace Notifo.SDK
         public MobileDeviceType DeviceType { get; set; }
 
         /// <summary>
+        /// A unique identifier for the device.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("deviceIdentifier", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string DeviceIdentifier { get; set; }
+
+        /// <summary>
         /// The last time the device was woken up.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastWakeup", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -14036,6 +14042,12 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MobileDeviceType DeviceType { get; set; }
 
+        /// <summary>
+        /// A unique identifier for the device.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("deviceIdentifier", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string DeviceIdentifier { get; set; }
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
@@ -14054,6 +14066,12 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("deviceType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MobileDeviceType DeviceType { get; set; }
+
+        /// <summary>
+        /// A unique identifier for the device.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("deviceIdentifier", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string DeviceIdentifier { get; set; }
 
     }
 

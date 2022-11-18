@@ -27,6 +27,11 @@ public sealed class MobilePushTokenDto
     public MobileDeviceType DeviceType { get; set; }
 
     /// <summary>
+    /// A unique identifier for the device.
+    /// </summary>
+    public string? DeviceIdentifier { get; set; }
+
+    /// <summary>
     /// The last time the device was woken up.
     /// </summary>
     public Instant? LastWakeup { get; set; }

@@ -13,6 +13,8 @@ public sealed record MobilePushToken
 {
     public string Token { get; init; }
 
+    public string? DeviceIdentifier { get; init; }
+
     public MobileDeviceType DeviceType { get; init; }
 
     public Instant LastWakeup { get; init; }

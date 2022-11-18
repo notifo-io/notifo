@@ -40,7 +40,7 @@ public sealed class FirebaseMobilePushSender : IMobilePushSender
         try
         {
             var message = userNotification.ToFirebaseMessage(
-                options.DeviceToken,
+                options.Token,
                 options.ConfigurationId,
                 options.Wakeup,
                 options.IsConfirmed);

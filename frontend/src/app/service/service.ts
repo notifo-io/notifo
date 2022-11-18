@@ -5867,6 +5867,8 @@ export interface MobilePushTokenDto {
     token: string;
     /** The device type. */
     deviceType: MobileDeviceType;
+    /** A unique identifier for the device. */
+    deviceIdentifier?: string | undefined;
     /** The last time the device was woken up. */
     lastWakeup?: string | undefined;
 }
@@ -6202,6 +6204,8 @@ export interface MobilePushTokenDto2 {
     token: string;
     /** The device type. */
     deviceType?: MobileDeviceType;
+    /** A unique identifier for the device. */
+    deviceIdentifier?: string | undefined;
 }
 
 export interface RegisterMobileTokenDto {
@@ -6209,6 +6213,8 @@ export interface RegisterMobileTokenDto {
     token: string;
     /** The device type. */
     deviceType?: MobileDeviceType;
+    /** A unique identifier for the device. */
+    deviceIdentifier?: string | undefined;
 }
 
 export interface ListResponseDtoOfMediaDto {
