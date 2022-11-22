@@ -45,6 +45,19 @@ public sealed partial class EmailFormatterLiquid
             templateContext.SetValue("notifications", emailNotifications);
             templateContext.SetValue("preferencesUrl", emailPreferencesUrl);
 
+            foreach (var job in jobs)
+            {
+                var jobProperties = job.Notification.Properties;
+
+                if (jobProperties != null)
+                {
+                    foreach (var (key, value) in jobProperties)
+                    {
+                        templateContext.SetValue($"notification.custom.{key}", value);
+                    }
+                }
+            }
+
             return new Context { TemplateContext = templateContext, App = app, User = user, Jobs = jobs.ToList() };
         }
 

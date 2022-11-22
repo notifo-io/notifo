@@ -40,11 +40,19 @@ public sealed class MessageBirdIntegration : IIntegration
         IsRequired = true
     };
 
+    private static readonly IntegrationProperty OriginatorProperty = new IntegrationProperty("phoneNumber", PropertyType.Number)
+    {
+        EditorLabel = Texts.MessageBird_OriginatorNameLabel,
+        EditorDescription = Texts.MessageBird_OriginatorNameDescription,
+        IsRequired = false,
+        Summary = true
+    };
+
     private static readonly IntegrationProperty PhoneNumberProperty = new IntegrationProperty("phoneNumber", PropertyType.Number)
     {
         EditorLabel = Texts.MessageBird_PhoneNumberLabel,
         EditorDescription = null,
-        IsRequired = true,
+        IsRequired = false,
         Summary = true
     };
 
@@ -142,9 +150,11 @@ public sealed class MessageBirdIntegration : IIntegration
             return null;
         }
 
+        var originatorName = OriginatorProperty.GetString(configured);
+
         var phoneNumber = PhoneNumberProperty.GetNumber(configured);
 
-        if (phoneNumber == 0)
+        if (phoneNumber == 0 && string.IsNullOrWhiteSpace(originatorName))
         {
             return null;
         }
@@ -159,6 +169,7 @@ public sealed class MessageBirdIntegration : IIntegration
             serviceProvider.GetRequiredService<ISmsCallback>(),
             serviceProvider.GetRequiredService<ISmsUrl>(),
             id,
+            originatorName,
             phoneNumber.ToString(CultureInfo.InvariantCulture),
             phoneNumbersMap);
     }

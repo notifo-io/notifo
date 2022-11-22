@@ -21,7 +21,8 @@ public sealed class MessageBirdSmsSender : ISmsSender
     private readonly ISmsCallback smsCallback;
     private readonly ISmsUrl smsUrl;
     private readonly string integrationId;
-    private readonly string phoneNumber;
+    private readonly string? originatorName;
+    private readonly string? originatorNumber;
     private readonly Dictionary<string, string>? phoneNumbers;
 
     public string Name => "MessageBird SMS";
@@ -31,14 +32,16 @@ public sealed class MessageBirdSmsSender : ISmsSender
         ISmsCallback smsCallback,
         ISmsUrl smsUrl,
         string integrationId,
-        string phoneNumber,
+        string? originatorName,
+        string? originatorNumber,
         Dictionary<string, string>? phoneNumbers)
     {
         this.messageBirdClient = messageBirdClient;
         this.smsCallback = smsCallback;
         this.smsUrl = smsUrl;
         this.integrationId = integrationId;
-        this.phoneNumber = phoneNumber;
+        this.originatorName = originatorName;
+        this.originatorNumber = originatorNumber;
         this.phoneNumbers = phoneNumbers;
     }
 
@@ -76,6 +79,11 @@ public sealed class MessageBirdSmsSender : ISmsSender
 
     private string GetOriginator(string to)
     {
+        if (!string.IsNullOrWhiteSpace(originatorName))
+        {
+            return originatorName;
+        }
+
         if (phoneNumbers?.Count > 0 && to.Length > 2)
         {
             // Use the country code of the phone number to lookup up the phone number..
@@ -87,7 +95,7 @@ public sealed class MessageBirdSmsSender : ISmsSender
             }
         }
 
-        return phoneNumber;
+        return originatorNumber!;
     }
 
     public async Task HandleCallbackAsync(App app, HttpContext httpContext)
