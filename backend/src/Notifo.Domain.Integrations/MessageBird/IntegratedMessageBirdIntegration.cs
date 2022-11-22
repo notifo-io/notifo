@@ -47,6 +47,7 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration
                 serviceProvider.GetRequiredService<ISmsCallback>(),
                 serviceProvider.GetRequiredService<ISmsUrl>(),
                 id,
+                null,
                 options.Value.PhoneNumber,
                 options.Value.PhoneNumbers);
         }

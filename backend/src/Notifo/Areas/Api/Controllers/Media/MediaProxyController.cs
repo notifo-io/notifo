@@ -7,6 +7,7 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
 using Notifo.Infrastructure;
@@ -81,14 +82,21 @@ public sealed class MediaProxyController : MediaBaseController
                     return Redirect("~/Empty.png");
                 }
 
+                var encoding = response.Content.Headers.ContentEncoding;
+
                 var source = new ResizeSource
                 {
                     FileId = url.Sha256Base64(),
-                    FileName = (response.Content.Headers.ContentDisposition?.FileName).OrDefault("file"),
-                    FileSize = (response.Content.Headers.ContentLength) ?? 0,
-                    MimeType = (response.Content.Headers.ContentType?.ToString()).OrDefault("application/octet-stream"),
-                    OpenRead = async (stream, ct) =>
+                    FileName = response.Content.Headers.ContentDisposition?.FileName.OrDefault("file")!,
+                    FileSize = response.Content.Headers.ContentLength,
+                    MimeType = response.Content.Headers.ContentType?.ToString().OrDefault("application/octet-stream")!,
+                    OpenRead = async (stream, context, original, ct) =>
                     {
+                        if (original && encoding.Count > 0)
+                        {
+                            context.Response.Headers[HeaderNames.ContentEncoding] = new StringValues(encoding.ToArray());
+                        }
+
                         await using (var sourceStream = await response.Content.ReadAsStreamAsync(ct))
                         {
                             await sourceStream.CopyToAsync(stream, ct);

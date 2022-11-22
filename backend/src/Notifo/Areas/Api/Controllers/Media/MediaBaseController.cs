@@ -27,11 +27,11 @@ public abstract class MediaBaseController : BaseController
 
         public string MimeType { get; init; }
 
-        public long FileSize { get; init; }
+        public long? FileSize { get; init; }
 
         public bool IsImage { get; init; } = true;
 
-        public Func<Stream, CancellationToken, Task> OpenRead { get; init; }
+        public Func<Stream, HttpContext, bool, CancellationToken, Task> OpenRead { get; init; }
     }
 
     protected MediaBaseController(
@@ -69,13 +69,13 @@ public abstract class MediaBaseController : BaseController
                 contentType = destinationMimeType;
             }
 
-            contentCallback = async (bodyStream, range, ct) =>
+            contentCallback = async (bodyStream, context, range, ct) =>
             {
                 var cacheId = $"{source.FileId}_{resizeOptions}";
 
                 if (query.ForceResize)
                 {
-                    await ResizeAsync(source, contentType, bodyStream, cacheId, resizeOptions, true, ct);
+                    await ResizeAsync(source, contentType, context, bodyStream, cacheId, resizeOptions, true, ct);
                 }
                 else
                 {
@@ -85,7 +85,7 @@ public abstract class MediaBaseController : BaseController
                     }
                     catch (AssetNotFoundException)
                     {
-                        await ResizeAsync(source, contentType, bodyStream, cacheId, resizeOptions, false, ct);
+                        await ResizeAsync(source, contentType, context, bodyStream, cacheId, resizeOptions, false, ct);
                     }
                 }
             };
@@ -94,9 +94,9 @@ public abstract class MediaBaseController : BaseController
         {
             contentLength = source.FileSize;
 
-            contentCallback = async (bodyStream, range, ct) =>
+            contentCallback = async (bodyStream, context, range, ct) =>
             {
-                await source.OpenRead(bodyStream, ct);
+                await source.OpenRead(bodyStream, context, true, ct);
             };
         }
 
@@ -110,7 +110,7 @@ public abstract class MediaBaseController : BaseController
         };
     }
 
-    private async Task ResizeAsync(ResizeSource source, string destinationContentType, Stream target, string cacheId, ResizeOptions resizeOptions, bool overwrite,
+    private async Task ResizeAsync(ResizeSource source, string destinationContentType, HttpContext httpContext, Stream target, string cacheId, ResizeOptions resizeOptions, bool overwrite,
         CancellationToken ct)
     {
 #pragma warning disable MA0040 // Flow the cancellation token
@@ -123,7 +123,7 @@ public abstract class MediaBaseController : BaseController
         {
             await using (var originalStream = assetOriginal.OpenWrite())
             {
-                await source.OpenRead(originalStream, ct);
+                await source.OpenRead(originalStream, httpContext, false, ct);
             }
         }
 

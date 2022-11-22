@@ -34,11 +34,20 @@ public sealed class FileCallbackResultExecutor : FileResultExecutorBase
                 context.HttpContext.Response.Headers[HeaderNames.ContentDisposition] = headerValue.ToString();
             }
 
+            if (result.FileSize == null)
+            {
+                context.HttpContext.Response.Headers[HeaderNames.TransferEncoding] = "chunked";
+            }
+
             if (serveBody)
             {
                 var bytesRange = new BytesRange(range?.From, range?.To);
 
-                await result.Callback(context.HttpContext.Response.Body, bytesRange, context.HttpContext.RequestAborted);
+                await result.Callback(
+                    context.HttpContext.Response.Body,
+                    context.HttpContext,
+                    bytesRange,
+                    context.HttpContext.RequestAborted);
             }
         }
         catch (OperationCanceledException)

@@ -14,7 +14,8 @@ namespace Notifo.Domain.Integrations.MessageBird;
 [Trait("Category", "Dependencies")]
 public class MessageBirdTests
 {
-    private readonly string phoneNumber = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumber")!;
+    private readonly string phoneNumberFrom = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumberFrom")!;
+    private readonly string phoneNumberTo = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumberTo")!;
     private readonly MessageBirdClient sut;
 
     public MessageBirdTests()
@@ -26,7 +27,7 @@ public class MessageBirdTests
 
         sut = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
         {
-            PhoneNumber = phoneNumber,
+            PhoneNumber = phoneNumberFrom,
             PhoneNumbers = null,
             AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")!
         }));
@@ -35,7 +36,7 @@ public class MessageBirdTests
     [Fact]
     public async Task Should_send_sms()
     {
-        var sms = new SmsMessage(phoneNumber, "4917683297281", "Hello");
+        var sms = new SmsMessage(phoneNumberFrom, phoneNumberTo, "Hello MessageBird");
 
         var response = await sut.SendSmsAsync(sms, default);
 

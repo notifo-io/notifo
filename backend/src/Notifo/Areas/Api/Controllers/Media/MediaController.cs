@@ -88,7 +88,7 @@ public sealed class MediaController : MediaBaseController
                 FileName = media.FileName,
                 FileSize = media.FileSize,
                 MimeType = media.MimeType,
-                OpenRead = (stream, ct) =>
+                OpenRead = (stream, context, original, ct) =>
                 {
                     return mediaFileStore.DownloadAsync(appId, media, stream, default, ct);
                 }

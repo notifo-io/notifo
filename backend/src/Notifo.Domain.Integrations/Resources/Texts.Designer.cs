@@ -675,6 +675,60 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Api Key.
+        /// </summary>
+        internal static string Telekom_ApiKeyLabel {
+            get {
+                return ResourceManager.GetString("Telekom_ApiKeyLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Telekom integration for sending SMS messages..
+        /// </summary>
+        internal static string Telekom_Description {
+            get {
+                return ResourceManager.GetString("Telekom_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send sms to &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string Telekom_Error {
+            get {
+                return ResourceManager.GetString("Telekom_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to send sms to &apos;{0}&apos;..
+        /// </summary>
+        internal static string Telekom_ErrorUnknown {
+            get {
+                return ResourceManager.GetString("Telekom_ErrorUnknown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Telekom.
+        /// </summary>
+        internal static string Telekom_Name {
+            get {
+                return ResourceManager.GetString("Telekom_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phone Number.
+        /// </summary>
+        internal static string Telekom_PhoneNumberLabel {
+            get {
+                return ResourceManager.GetString("Telekom_PhoneNumberLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to API Identity.
         /// </summary>
         internal static string ThreemaSimple_ApiIdentityLabel {

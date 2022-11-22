@@ -225,6 +225,12 @@
   <data name="MessageBird_Name" xml:space="preserve">
     <value>Messagebird</value>
   </data>
+  <data name="MessageBird_OriginatorNameDescription" xml:space="preserve">
+    <value>Company Name as alternative to Phone Number</value>
+  </data>
+  <data name="MessageBird_OriginatorNameLabel" xml:space="preserve">
+    <value>Originator</value>
+  </data>
   <data name="MessageBird_PhoneNumberLabel" xml:space="preserve">
     <value>Phone Number</value>
   </data>
@@ -316,6 +322,24 @@ When you have done this send me an /update command.</value>
   </data>
   <data name="Telegram_WelcomeMessage" xml:space="preserve">
     <value>Welcome to the {0} bot. I will send you your notifications.</value>
+  </data>
+  <data name="Telekom_ApiKeyLabel" xml:space="preserve">
+    <value>Api Key</value>
+  </data>
+  <data name="Telekom_Description" xml:space="preserve">
+    <value>Telekom integration for sending SMS messages.</value>
+  </data>
+  <data name="Telekom_Error" xml:space="preserve">
+    <value>Failed to send sms to '{0}': {1}</value>
+  </data>
+  <data name="Telekom_ErrorUnknown" xml:space="preserve">
+    <value>Failed to send sms to '{0}'.</value>
+  </data>
+  <data name="Telekom_Name" xml:space="preserve">
+    <value>Telekom</value>
+  </data>
+  <data name="Telekom_PhoneNumberLabel" xml:space="preserve">
+    <value>Phone Number</value>
   </data>
   <data name="ThreemaSimple_ApiIdentityLabel" xml:space="preserve">
     <value>API Identity</value>

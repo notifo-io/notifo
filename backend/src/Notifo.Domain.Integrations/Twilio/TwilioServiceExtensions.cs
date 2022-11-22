@@ -10,7 +10,7 @@ using Notifo.Domain.Integrations.Twilio;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class TwiliioServiceExtensions
+public static class TwilioServiceExtensions
 {
     public static void IntegrateTwilio(this IServiceCollection services)
     {

@@ -6,38 +6,40 @@
 // ==========================================================================
 
 using System.Globalization;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
-using Twilio.Clients;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Types;
 
-namespace Notifo.Domain.Integrations.Twilio;
+namespace Notifo.Domain.Integrations.Telekom;
 
-public sealed class TwilioSmsSender : ISmsSender
+public sealed class TelekomSmsSender : ISmsSender
 {
-    private readonly ITwilioRestClient twilioClient;
+    private readonly IHttpClientFactory httpClientFactory;
     private readonly ISmsCallback smsCallback;
     private readonly ISmsUrl smsUrl;
+    private readonly string apikey;
     private readonly string phoneNumber;
     private readonly string integrationId;
 
-    public string Name => "Twilio SMS";
+    public string Name => "Telekom SMS";
 
-    public TwilioSmsSender(
-        string phoneNumber,
-        ITwilioRestClient twilioClient,
+    public TelekomSmsSender(
+        IHttpClientFactory httpClientFactory,
         ISmsCallback smsCallback,
         ISmsUrl smsUrl,
+        string apikey,
+        string phoneNumber,
         string integrationId)
     {
-        this.twilioClient = twilioClient;
+        this.apikey = apikey;
+        this.phoneNumber = phoneNumber;
+        this.httpClientFactory = httpClientFactory;
         this.smsCallback = smsCallback;
         this.smsUrl = smsUrl;
-        this.phoneNumber = phoneNumber;
         this.integrationId = integrationId;
     }
 
@@ -46,15 +48,31 @@ public sealed class TwilioSmsSender : ISmsSender
     {
         try
         {
-            var result = await MessageResource.CreateAsync(
-                ConvertPhoneNumber(to), null,
-                ConvertPhoneNumber(phoneNumber), null,
-                body,
-                statusCallback: BuildCallbackUrl(app, to, reference), client: twilioClient);
+            var httpClient = httpClientFactory.CreateClient();
 
-            if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, to, result.ErrorMessage);
+                [RequestKeys.From] = ConvertPhoneNumber(phoneNumber),
+                [RequestKeys.To] = ConvertPhoneNumber(to),
+                [RequestKeys.Body] = body,
+                [RequestKeys.StatusCallback] = BuildCallbackUrl(app, to, reference),
+            });
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://developer-api.telekom.com/vms/Messages.json")
+            {
+                Content = content
+            };
+
+            request.Headers.TryAddWithoutValidation("Authorization", apikey);
+
+            var response = await httpClient.SendAsync(request, ct);
+
+            var x = await response.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadFromJsonAsync<Response>((JsonSerializerOptions?)null, ct);
+
+            if (!string.IsNullOrWhiteSpace(result?.ErrorMessage))
+            {
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, to, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
@@ -63,13 +81,13 @@ public sealed class TwilioSmsSender : ISmsSender
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, to);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, to);
 
             throw new DomainException(errorMessage, ex);
         }
     }
 
-    private Uri BuildCallbackUrl(App app, string to, string reference)
+    private string BuildCallbackUrl(App app, string to, string reference)
     {
         var query = new Dictionary<string, string>
         {
@@ -77,12 +95,10 @@ public sealed class TwilioSmsSender : ISmsSender
             [RequestKeys.ReferenceNumber] = to
         };
 
-        var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId, query);
-
-        return new Uri(callbackUrl);
+        return smsUrl.SmsWebhookUrl(app.Id, integrationId, query);
     }
 
-    private static PhoneNumber ConvertPhoneNumber(string number)
+    private static string ConvertPhoneNumber(string number)
     {
         number = number.TrimStart('0');
 
@@ -91,7 +107,7 @@ public sealed class TwilioSmsSender : ISmsSender
             number = $"+{number}";
         }
 
-        return new PhoneNumber(number);
+        return number;
     }
 
     public Task HandleCallbackAsync(App app, HttpContext httpContext)
