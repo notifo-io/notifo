@@ -84,11 +84,11 @@ public sealed class MediaController : MediaBaseController
         {
             var source = new ResizeSource
             {
+                MimeType = media.MimeType,
                 FileId = $"{appId}_{media.FileName}",
                 FileName = media.FileName,
                 FileSize = media.FileSize,
-                MimeType = media.MimeType,
-                OpenRead = (stream, context, original, ct) =>
+                OpenRead = (stream, context, ct) =>
                 {
                     return mediaFileStore.DownloadAsync(appId, media, stream, default, ct);
                 }

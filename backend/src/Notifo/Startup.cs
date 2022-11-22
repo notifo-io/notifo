@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Globalization;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Localization;
@@ -71,7 +72,10 @@ public class Startup
             {
                 return new HttpClientHandler
                 {
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+
+                    // Decompress response so we can open the image.
+                    AutomaticDecompression = DecompressionMethods.All
                 };
             });
 

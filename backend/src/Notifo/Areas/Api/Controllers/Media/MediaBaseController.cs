@@ -31,7 +31,7 @@ public abstract class MediaBaseController : BaseController
 
         public bool IsImage { get; init; } = true;
 
-        public Func<Stream, HttpContext, bool, CancellationToken, Task> OpenRead { get; init; }
+        public Func<Stream, HttpContext, CancellationToken, Task> OpenRead { get; init; }
     }
 
     protected MediaBaseController(
@@ -96,7 +96,7 @@ public abstract class MediaBaseController : BaseController
 
             contentCallback = async (bodyStream, context, range, ct) =>
             {
-                await source.OpenRead(bodyStream, context, true, ct);
+                await source.OpenRead(bodyStream, context, ct);
             };
         }
 
@@ -110,7 +110,7 @@ public abstract class MediaBaseController : BaseController
         };
     }
 
-    private async Task ResizeAsync(ResizeSource source, string destinationContentType, HttpContext httpContext, Stream target, string cacheId, ResizeOptions resizeOptions, bool overwrite,
+    private async Task ResizeAsync(ResizeSource source, string destinationContentType, HttpContext context, Stream target, string cacheId, ResizeOptions resizeOptions, bool overwrite,
         CancellationToken ct)
     {
 #pragma warning disable MA0040 // Flow the cancellation token
@@ -123,7 +123,7 @@ public abstract class MediaBaseController : BaseController
         {
             await using (var originalStream = assetOriginal.OpenWrite())
             {
-                await source.OpenRead(originalStream, httpContext, false, ct);
+                await source.OpenRead(originalStream, context, ct);
             }
         }
 

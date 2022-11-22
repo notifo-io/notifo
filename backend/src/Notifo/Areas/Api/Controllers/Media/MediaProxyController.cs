@@ -82,21 +82,14 @@ public sealed class MediaProxyController : MediaBaseController
                     return Redirect("~/Empty.png");
                 }
 
-                var encoding = response.Content.Headers.ContentEncoding;
-
                 var source = new ResizeSource
                 {
+                    MimeType = response.Content.Headers.ContentType?.ToString().OrDefault("application/octet-stream")!,
                     FileId = url.Sha256Base64(),
                     FileName = response.Content.Headers.ContentDisposition?.FileName.OrDefault("file")!,
                     FileSize = response.Content.Headers.ContentLength,
-                    MimeType = response.Content.Headers.ContentType?.ToString().OrDefault("application/octet-stream")!,
-                    OpenRead = async (stream, context, original, ct) =>
+                    OpenRead = async (stream, context, ct) =>
                     {
-                        if (original && encoding.Count > 0)
-                        {
-                            context.Response.Headers[HeaderNames.ContentEncoding] = new StringValues(encoding.ToArray());
-                        }
-
                         await using (var sourceStream = await response.Content.ReadAsStreamAsync(ct))
                         {
                             await sourceStream.CopyToAsync(stream, ct);
