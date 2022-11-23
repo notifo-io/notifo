@@ -153,7 +153,7 @@ public class Startup
         services.IntegrateMessageBird(config);
         services.IntegrateSmtp();
         services.IntegrateTelegram();
-        services.IntegrateTelekom();
+        // services.IntegrateTelekom();
         services.IntegrateThreema();
         services.IntegrateTwilio();
 
