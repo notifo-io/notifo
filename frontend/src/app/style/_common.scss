@@ -1112,6 +1112,8 @@ em-emoji-picker {
 .header {
     & {
         margin-bottom: .5rem;
+        margin-top: 0;
+        min-height: 2.75rem;
     }
 
     h2 {
