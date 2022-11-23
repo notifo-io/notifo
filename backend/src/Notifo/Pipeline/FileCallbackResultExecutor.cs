@@ -34,11 +34,6 @@ public sealed class FileCallbackResultExecutor : FileResultExecutorBase
                 context.HttpContext.Response.Headers[HeaderNames.ContentDisposition] = headerValue.ToString();
             }
 
-            if (result.FileSize == null)
-            {
-                context.HttpContext.Response.Headers[HeaderNames.TransferEncoding] = "chunked";
-            }
-
             if (serveBody)
             {
                 var bytesRange = new BytesRange(range?.From, range?.To);
