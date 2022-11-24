@@ -1,0 +1,7 @@
+﻿{
+  id: Guid_1,
+  fullName: name1_0,
+  preferredLanguage: en,
+  preferredTimezone: UTC,
+  requiresWhitelistedTopics: false
+}

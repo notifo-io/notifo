@@ -6,12 +6,15 @@
 // ==========================================================================
 
 using Notifo.SDK;
+using System.Collections.Concurrent;
 using Xunit;
 
 namespace TestSuite.Fixtures;
 
 public class ClientFixture : IAsyncLifetime
 {
+    private readonly ConcurrentDictionary<string, INotifoClient> clients = new ConcurrentDictionary<string, INotifoClient>();
+
     public ClientManagerWrapper Notifo { get; private set; }
 
     public string AppName => Notifo.AppName;
@@ -38,10 +41,23 @@ public class ClientFixture : IAsyncLifetime
 
     public INotifoClient BuildUserClient(UserDto user)
     {
-        return NotifoClientBuilder.Create()
-            .SetApiUrl(ServerUrl)
-            .SetApiKey(user.ApiKey)
-            .Build();
+        return BuildClient(user.ApiKey);
+    }
+
+    public INotifoClient BuildAppClient(AppDto app)
+    {
+        return BuildClient(app.ApiKeys.First(x => x.Value != "WebManager").Key);
+    }
+
+    public INotifoClient BuildClient(string apiKey)
+    {
+        return clients.GetOrAdd(apiKey, x =>
+        {
+            return NotifoClientBuilder.Create()
+                .SetApiUrl(ServerUrl)
+                .SetApiKey(x)
+                .Build();
+        });
     }
 
     public virtual Task DisposeAsync()

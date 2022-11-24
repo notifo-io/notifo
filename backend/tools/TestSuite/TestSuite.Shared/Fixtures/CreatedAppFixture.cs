@@ -11,19 +11,21 @@ namespace TestSuite.Fixtures;
 
 public class CreatedAppFixture : ClientFixture
 {
-    public string AppId { get; private set; }
+    public AppDto App { get; private set; }
+
+    public string AppId => App.Id;
 
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
 
-        AppId = await Factories.CreateAsync(nameof(AppName), async () =>
+        App = await Factories.CreateAsync(nameof(AppName), async () =>
         {
-            var appId = await FindAppAsync();
+            var app = await FindAppAsync();
 
-            if (appId != null)
+            if (app != null)
             {
-                return appId;
+                return app;
             }
 
             try
@@ -48,9 +50,9 @@ public class CreatedAppFixture : ClientFixture
                 }
             }
 
-            appId = await FindAppAsync();
+            app = await FindAppAsync();
 
-            return appId;
+            return app;
         });
 
         await CreateContributorAsync("sebastian@squidex.io");
@@ -99,10 +101,22 @@ public class CreatedAppFixture : ClientFixture
         await Client.Apps.PostIntegrationAsync(AppId, request);
     }
 
-    private async Task<string> FindAppAsync()
+    private async Task<AppDto> FindAppAsync()
     {
         var apps = await Client.Apps.GetAppsAsync();
 
-        return apps.FirstOrDefault(x => x.Name == AppName)?.Id;
+        return apps.FirstOrDefault(x => x.Name == AppName);
+    }
+
+    public INotifoClient GetClient(ClientMode mode)
+    {
+        if (mode == ClientMode.ClientId)
+        {
+            return Client;
+        }
+        else
+        {
+            return BuildAppClient(App);
+        }
     }
 }

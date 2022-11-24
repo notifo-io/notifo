@@ -1,0 +1,12 @@
+﻿{
+  items: [
+    {
+      id: Guid_1,
+      fullName: Guid_1,
+      preferredLanguage: en,
+      preferredTimezone: UTC,
+      requiresWhitelistedTopics: false
+    }
+  ],
+  total: 1
+}

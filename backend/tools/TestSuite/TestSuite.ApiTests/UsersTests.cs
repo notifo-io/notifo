@@ -23,8 +23,10 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
         _ = fixture;
     }
 
-    [Fact]
-    public async Task Should_create_users()
+    [Theory]
+    [InlineData(ClientMode.ClientId)]
+    [InlineData(ClientMode.ApiKey)]
+    public async Task Should_create_users(ClientMode mode)
     {
         // STEP 0: Create user.
         var userId1 = Guid.NewGuid().ToString();
@@ -47,7 +49,7 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
             }
         };
 
-        var users = await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
+        var users = await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
 
         Assert.Equal(2, users.Count);
 
@@ -60,12 +62,15 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
         Assert.Equal("name2_0", user2.FullName);
 
         await Verify(user1)
+            .UseParameters(mode)
             .IgnoreMembersWithType<DateTimeOffset>()
             .IgnoreMember<UserDto>(x => x.ApiKey);
     }
 
-    [Fact]
-    public async Task Should_find_user()
+    [Theory]
+    [InlineData(ClientMode.ClientId)]
+    [InlineData(ClientMode.ApiKey)]
+    public async Task Should_find_user(ClientMode mode)
     {
         // STEP 0: Create user.
         var userId1 = Guid.NewGuid().ToString();
@@ -88,22 +93,25 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
             }
         };
 
-        await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
+        await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
 
 
         // STEP 1: Query users
-        var users = await _.Client.Users.GetUsersAsync(_.AppId, userId1);
+        var users = await _.GetClient(mode).Users.GetUsersAsync(_.AppId, userId1);
 
         Assert.Equal(1, users.Total);
         Assert.Equal(userId1, users.Items[0].Id);
 
         await Verify(users)
+            .UseParameters(mode)
             .IgnoreMembersWithType<DateTimeOffset>()
             .IgnoreMember<UserDto>(x => x.ApiKey);
     }
 
-    [Fact]
-    public async Task Should_update_users()
+    [Theory]
+    [InlineData(ClientMode.ClientId)]
+    [InlineData(ClientMode.ApiKey)]
+    public async Task Should_update_users(ClientMode mode)
     {
         // STEP 0: Create user.
         var userId1 = Guid.NewGuid().ToString();
@@ -126,7 +134,7 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
             }
         };
 
-        await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
+        await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
 
 
         // STEP 1: Update user.
@@ -142,11 +150,11 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
             }
         };
 
-        await _.Client.Users.PostUsersAsync(_.AppId, userRequest2);
+        await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest2);
 
 
         // Get users
-        var users = await _.Client.Users.GetUsersAsync(_.AppId, take: 100000);
+        var users = await _.GetClient(mode).Users.GetUsersAsync(_.AppId, take: 100000);
 
         var user1 = users.Items.SingleOrDefault(x => x.Id == userId1);
         var user2 = users.Items.SingleOrDefault(x => x.Id == userId2);
@@ -155,12 +163,15 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
         Assert.Equal("name2_0", user2?.FullName);
 
         await Verify(user1)
+            .UseParameters(mode)
             .IgnoreMembersWithType<DateTimeOffset>()
             .IgnoreMember<UserDto>(x => x.ApiKey);
     }
 
-    [Fact]
-    public async Task Should_delete_users()
+    [Theory]
+    [InlineData(ClientMode.ClientId)]
+    [InlineData(ClientMode.ApiKey)]
+    public async Task Should_delete_users(ClientMode mode)
     {
         // STEP 0: Create user.
         var userId1 = Guid.NewGuid().ToString();
@@ -183,15 +194,15 @@ public class UsersTests : IClassFixture<CreatedAppFixture>
             }
         };
 
-        await _.Client.Users.PostUsersAsync(_.AppId, userRequest);
+        await _.GetClient(mode).Users.PostUsersAsync(_.AppId, userRequest);
 
 
         // STEP 1: Delete user.
-        await _.Client.Users.DeleteUserAsync(_.AppId, userId1);
+        await _.GetClient(mode).Users.DeleteUserAsync(_.AppId, userId1);
 
 
         // Get users
-        var users = await _.Client.Users.GetUsersAsync(_.AppId, take: 100000);
+        var users = await _.GetClient(mode).Users.GetUsersAsync(_.AppId, take: 100000);
 
         var user1 = users.Items.SingleOrDefault(x => x.Id == userId1);
         var user2 = users.Items.SingleOrDefault(x => x.Id == userId2);

@@ -9,6 +9,7 @@ using NodaTime;
 using Notifo.Domain;
 using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Security;
+using System.Security.Claims;
 
 namespace Notifo.Pipeline;
 
@@ -33,8 +34,8 @@ public sealed class AppMediatorMiddleware : IMessageMiddleware<AppCommandBase>
 
         if (request.Principal == null)
         {
-            request.Principal = httpContext?.User ?? throw new InvalidOperationException("Cannot resolve Principal.");
-            request.PrincipalId = request.Principal.Sub() ?? throw new InvalidOperationException("Cannot resolve Principal ID.");
+            request.Principal = GetPrincipal(httpContext);
+            request.PrincipalId = GetPrincipalId(httpContext);
         }
 
         if (request.Timestamp == default)
@@ -45,5 +46,19 @@ public sealed class AppMediatorMiddleware : IMessageMiddleware<AppCommandBase>
         }
 
         return next(request, ct);
+    }
+
+    private static ClaimsPrincipal GetPrincipal(HttpContext? httpContext)
+    {
+        var user = httpContext?.User;
+
+        return user ?? throw new InvalidOperationException("Cannot resolve Principal.");
+    }
+
+    private static string GetPrincipalId(HttpContext? httpContext)
+    {
+        var id = httpContext?.User?.Sub() ?? httpContext?.User.AppId();
+
+        return id ?? throw new InvalidOperationException("Cannot resolve Principal ID.");
     }
 }

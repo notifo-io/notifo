@@ -4,6 +4,7 @@
 *.vs
 *.log
 *.received.txt
+*.verified.txt.bak
 
 .awCache
 
