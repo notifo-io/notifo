@@ -5,16 +5,14 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using Notifo.Areas.Api.Controllers.Media.Dtos;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Validation;
 using Squidex.Assets;
-
-#pragma warning disable SA1119 // Statement should not use unnecessary parenthesis
 
 namespace Notifo.Areas.Api.Controllers.Media;
 
@@ -82,11 +80,25 @@ public sealed class MediaProxyController : MediaBaseController
                     return Redirect("~/Empty.png");
                 }
 
+                static string MimeType(HttpContentHeaders headers)
+                {
+                    var mimeType = headers.ContentType?.ToString();
+
+                    return mimeType.OrDefault("application/octet-stream");
+                }
+
+                static string FileName(HttpContentHeaders headers)
+                {
+                    var mimeType = headers.ContentDisposition?.FileName;
+
+                    return mimeType.OrDefault("file");
+                }
+
                 var source = new ResizeSource
                 {
-                    MimeType = response.Content.Headers.ContentType?.ToString().OrDefault("application/octet-stream")!,
+                    MimeType = MimeType(response.Content.Headers),
                     FileId = url.Sha256Base64(),
-                    FileName = response.Content.Headers.ContentDisposition?.FileName.OrDefault("file")!,
+                    FileName = FileName(response.Content.Headers),
                     FileSize = response.Content.Headers.ContentLength,
                     OpenRead = async (stream, context, ct) =>
                     {
