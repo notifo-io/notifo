@@ -54,6 +54,12 @@ public sealed class MediaFileQueryDto
     public int Download { get; set; } = 0;
 
     /// <summary>
+    /// Optional background color.
+    /// </summary>
+    [FromQuery(Name = "bg")]
+    public string? Background { get; set; }
+
+    /// <summary>
     /// The target width when an image.
     /// </summary>
     [FromQuery(Name = "width")]
