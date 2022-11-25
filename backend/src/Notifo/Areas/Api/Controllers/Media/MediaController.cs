@@ -98,7 +98,7 @@ public sealed class MediaController : MediaBaseController
         }
         catch when (query?.EmptyOnFailure == true)
         {
-            return Redirect("~/Empty.png");
+            return new VirtualFileResult("~/Empty.png", "image/png");
         }
     }
 

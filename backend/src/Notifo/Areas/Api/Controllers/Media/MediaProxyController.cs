@@ -74,9 +74,9 @@ public sealed class MediaProxyController : MediaBaseController
             {
                 var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, HttpContext.RequestAborted);
 
-                if (response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
-                    return Redirect("~/Empty.png");
+                    return new VirtualFileResult("~/Empty.png", "image/png");
                 }
 
                 static string MimeType(HttpContentHeaders headers)
@@ -112,7 +112,7 @@ public sealed class MediaProxyController : MediaBaseController
             }
             catch
             {
-                return Redirect("~/Empty.png");
+                return new VirtualFileResult("~/Empty.png", "image/png");
             }
         }
     }
