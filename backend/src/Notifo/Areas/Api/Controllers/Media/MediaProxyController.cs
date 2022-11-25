@@ -25,8 +25,7 @@ public sealed class MediaProxyController : MediaBaseController
         HeaderNames.AcceptCharset,
         HeaderNames.AcceptEncoding,
         HeaderNames.AcceptLanguage,
-        HeaderNames.CacheControl,
-        HeaderNames.UserAgent
+        HeaderNames.CacheControl
     };
 
     private readonly IHttpClientFactory httpClientFactory;
@@ -75,7 +74,7 @@ public sealed class MediaProxyController : MediaBaseController
             {
                 var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, HttpContext.RequestAborted);
 
-                if (!response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode)
                 {
                     return Redirect("~/Empty.png");
                 }

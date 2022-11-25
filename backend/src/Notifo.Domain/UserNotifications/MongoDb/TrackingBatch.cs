@@ -229,8 +229,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstDelivered = new HandledInfo(now, channel);
 
-                changes.Min("FirstDelivered.Timestamp", now);
-                changes.Min("FirstDelivered.Channel", channel);
+                changes.Set("FirstDelivered.Timestamp", now);
+                changes.Set("FirstDelivered.Channel", channel);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))
