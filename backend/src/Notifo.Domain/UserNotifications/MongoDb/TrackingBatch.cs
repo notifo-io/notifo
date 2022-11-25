@@ -94,9 +94,9 @@ public sealed class TrackingBatch
                     configuration.Status = status;
                     configuration.Detail = detail;
 
-                    changes.Min($"Channels.{channel}.Status.{configurationId}.Status", status);
-                    changes.Min($"Channels.{channel}.Status.{configurationId}.Detail", detail);
-                    changes.Min($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
+                    changes.Set($"Channels.{channel}.Status.{configurationId}.Status", status);
+                    changes.Set($"Channels.{channel}.Status.{configurationId}.Detail", detail);
+                    changes.Max($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
                 }
             }
         }
@@ -119,8 +119,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstConfirmed = new HandledInfo(now, channel);
 
-                changes.Min("FirstConfirmed.Timestamp", now);
-                changes.Min("FirstConfirmed.Channel", channel);
+                changes.Set("FirstConfirmed.Timestamp", now);
+                changes.Set("FirstConfirmed.Channel", channel);
             }
 
             // We only change the updated flag for notifications because otherwise the order could change with each tracking.
@@ -178,8 +178,8 @@ public sealed class TrackingBatch
             {
                 notification.FirstSeen = new HandledInfo(now, channel);
 
-                changes.Min("FirstSeen.Timestamp", now);
-                changes.Min("FirstSeen.Channel", channel);
+                changes.Set("FirstSeen.Timestamp", now);
+                changes.Set("FirstSeen.Channel", channel);
             }
 
             if (!string.IsNullOrWhiteSpace(channel) && notification.Channels.TryGetValue(channel, out var channelInfo))

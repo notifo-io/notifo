@@ -11,7 +11,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb;
 
 internal sealed class TrackingChange
 {
-    private Dictionary<string, (object Value, bool Max)> changes = new Dictionary<string, (object Value, bool Max)>();
+    private Dictionary<string, UpdateDefinition<UserNotification>> changes = new Dictionary<string, UpdateDefinition<UserNotification>>();
 
     public UserNotification Notification { get; init; }
 
@@ -24,7 +24,7 @@ internal sealed class TrackingChange
             return;
         }
 
-        changes[key] = (value, false);
+        changes[key] = Builders<UserNotification>.Update.Min(key, value);
     }
 
     public void Max(string key, object? value)
@@ -34,7 +34,17 @@ internal sealed class TrackingChange
             return;
         }
 
-        changes[key] = (value, true);
+        changes[key] = Builders<UserNotification>.Update.Max(key, value);
+    }
+
+    public void Set(string key, object? value)
+    {
+        if (value == null)
+        {
+            return;
+        }
+
+        changes[key] = Builders<UserNotification>.Update.Set(key, value);
     }
 
     public WriteModel<UserNotification>? ToWrite()
@@ -44,15 +54,9 @@ internal sealed class TrackingChange
             return null;
         }
 
-        var update =
-            Builders<UserNotification>.Update.Combine(
-                changes.Select(change =>
-                        change.Value.Max ?
-                        Builders<UserNotification>.Update.Max(change.Key, change.Value.Value) :
-                        Builders<UserNotification>.Update.Min(change.Key, change.Value.Value)));
-
         var filter = Builders<UserNotification>.Filter.Eq(x => x.Id, Notification.Id);
 
-        return new UpdateOneModel<UserNotification>(filter, update);
+        return new UpdateOneModel<UserNotification>(filter,
+            Builders<UserNotification>.Update.Combine(changes.Values));
     }
 }

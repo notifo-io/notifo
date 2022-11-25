@@ -23,12 +23,13 @@ public sealed class StatisticsCollector
     public StatisticsCollector(IUserNotificationRepository repository, IClock clock, int updateInterval, int capacity = 2000)
     {
         this.repository = repository;
-        this.clock = clock;
 
         updatesCapacity = capacity;
         updateQueue = new ConcurrentQueue<(TrackingToken Token, ProcessStatus Status, string? Details)>();
 
         timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
+
+        this.clock = clock;
     }
 
     public async Task AddAsync(TrackingToken token, ProcessStatus status, string? detail)
