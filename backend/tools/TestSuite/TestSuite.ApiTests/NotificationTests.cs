@@ -75,6 +75,57 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     }
 
     [Fact]
+    public async Task Should_query_notifications_by_correlation_id()
+    {
+        var correlationId = Guid.NewGuid().ToString();
+
+        // STEP 0: Create users.
+        var user_0 = await CreateUserAsync();
+        var user_1 = await CreateUserAsync();
+
+
+        // STEP 1: Send Notification
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
+                {
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subject
+                        }
+                    },
+                    CorrelationId = correlationId
+                },
+                new PublishDto
+                {
+                    Topic = $"users/{user_1.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subject
+                        }
+                    },
+                    CorrelationId = correlationId
+                }
+            }
+        };
+
+        await _.Client.Events.PostEventsAsync(_.AppId, publishRequest);
+
+
+        // Test that notification has been created.
+        var notifications = await _.Client.Notifications.PollCorrelatedAsync(_.AppId, correlationId, null, 2);
+
+        Assert.Equal(2, notifications.Count(x => x.CorrelationId == correlationId));
+    }
+
+    [Fact]
     public async Task Should_send_template_formatted_notifications()
     {
         // STEP 0: Create user.

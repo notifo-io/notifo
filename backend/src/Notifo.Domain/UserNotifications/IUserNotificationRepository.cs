@@ -24,6 +24,9 @@ public interface IUserNotificationRepository
     Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
         CancellationToken ct = default);
 
+    Task<IResultList<UserNotification>> QueryAsync(string appId, UserNotificationQuery query,
+        CancellationToken ct = default);
+
     Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
         CancellationToken ct = default);
 

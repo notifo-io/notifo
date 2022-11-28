@@ -91,6 +91,15 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.QueryAsync(appId, userId, query, ct);
     }
 
+    public Task<IResultList<UserNotification>> QueryAsync(string appId, UserNotificationQuery query,
+        CancellationToken ct = default)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNull(query);
+
+        return repository.QueryAsync(appId, query, ct);
+    }
+
     public Task<IReadOnlyDictionary<string, Instant>> QueryLastNotificationsAsync(string appId, IEnumerable<string> userIds,
         CancellationToken ct = default)
     {

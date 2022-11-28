@@ -25,6 +25,8 @@ public class BaseUserNotification : IIntegrationTarget
 
     public string Topic { get; set; }
 
+    public string? CorrelationId { get; set; }
+
     public string? Data { get; set; }
 
     public string? TrackDeliveredUrl { get; set; }

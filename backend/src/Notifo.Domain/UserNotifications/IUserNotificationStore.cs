@@ -20,6 +20,9 @@ public interface IUserNotificationStore
     Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,
         CancellationToken ct = default);
 
+    Task<IResultList<UserNotification>> QueryAsync(string appId, UserNotificationQuery query,
+        CancellationToken ct = default);
+
     Task<IResultList<UserNotification>> QueryForDeviceAsync(string appId, string userId, DeviceNotificationsQuery query,
         CancellationToken ct = default);
 

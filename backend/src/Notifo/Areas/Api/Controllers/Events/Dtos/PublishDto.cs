@@ -32,6 +32,11 @@ public sealed class PublishDto
     public string? TemplateCode { get; set; }
 
     /// <summary>
+    /// The correlation ID, that can be used to query notifications.
+    /// </summary>
+    public string? CorrelationId { get; set; }
+
+    /// <summary>
     /// The template variants with propability.
     /// </summary>
     public Dictionary<string, double>? TemplateVariants { get; set; }

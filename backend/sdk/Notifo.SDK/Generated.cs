@@ -4402,18 +4402,34 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Query notifications.
+        /// </summary>
+        /// <param name="appId">The app where the user belongs to.</param>
+        /// <param name="channels">The active channels.</param>
+        /// <param name="channel">The source channel.</param>
+        /// <param name="correlationId">The correlation ID, that can be used to query notifications.</param>
+        /// <param name="query">The optional query to search for items.</param>
+        /// <param name="take">The number of items to return.</param>
+        /// <param name="skip">The number of items to skip.</param>
+        /// <returns>User notifications returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetAllNotificationsAsync(string appId, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Query user notifications.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user id.</param>
         /// <param name="channels">The active channels.</param>
         /// <param name="channel">The source channel.</param>
+        /// <param name="correlationId">The correlation ID, that can be used to query notifications.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -4421,12 +4437,13 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="channels">The active channels.</param>
         /// <param name="channel">The source channel.</param>
+        /// <param name="correlationId">The correlation ID, that can be used to query notifications.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -4496,18 +4513,138 @@ namespace Notifo.SDK
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
+        /// Query notifications.
+        /// </summary>
+        /// <param name="appId">The app where the user belongs to.</param>
+        /// <param name="channels">The active channels.</param>
+        /// <param name="channel">The source channel.</param>
+        /// <param name="correlationId">The correlation ID, that can be used to query notifications.</param>
+        /// <param name="query">The optional query to search for items.</param>
+        /// <param name="take">The number of items to return.</param>
+        /// <param name="skip">The number of items to skip.</param>
+        /// <returns>User notifications returned.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetAllNotificationsAsync(string appId, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/notifications?");
+            urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
+            if (channels != null)
+            {
+                foreach (var item_ in channels) { urlBuilder_.Append(System.Uri.EscapeDataString("Channels") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (channel != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("Channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (correlationId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("CorrelationId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (query != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("query") + "=").Append(System.Uri.EscapeDataString(ConvertToString(query, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (take != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("take") + "=").Append(System.Uri.EscapeDataString(ConvertToString(take, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (skip != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("skip") + "=").Append(System.Uri.EscapeDataString(ConvertToString(skip, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == 404)
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("User or app not found.", status_, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
         /// Query user notifications.
         /// </summary>
         /// <param name="appId">The app where the user belongs to.</param>
         /// <param name="id">The user id.</param>
         /// <param name="channels">The active channels.</param>
         /// <param name="channel">The source channel.</param>
+        /// <param name="correlationId">The correlation ID, that can be used to query notifications.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>User notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/notifications?");
@@ -4520,6 +4657,10 @@ namespace Notifo.SDK
             if (channel != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("Channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (correlationId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("CorrelationId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (query != null)
             {
@@ -4616,12 +4757,13 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="channels">The active channels.</param>
         /// <param name="channel">The source channel.</param>
+        /// <param name="correlationId">The correlation ID, that can be used to query notifications.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications?");
@@ -4632,6 +4774,10 @@ namespace Notifo.SDK
             if (channel != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("Channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (correlationId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("CorrelationId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(correlationId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (query != null)
             {
@@ -5558,6 +5704,7 @@ namespace Notifo.SDK
         /// <param name="fileName">The name of the media to download.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -5569,7 +5716,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -5589,6 +5736,7 @@ namespace Notifo.SDK
         /// <param name="fileName">The name of the media to download.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -5600,7 +5748,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -5610,6 +5758,7 @@ namespace Notifo.SDK
         /// <param name="fileName">The name of the media to download.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -5621,7 +5770,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -5630,6 +5779,7 @@ namespace Notifo.SDK
         /// <param name="url">The app id where the media belongs to.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -5641,7 +5791,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -5896,6 +6046,7 @@ namespace Notifo.SDK
         /// <param name="fileName">The name of the media to download.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -5907,7 +6058,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/media/{fileName}?");
@@ -5920,6 +6071,10 @@ namespace Notifo.SDK
             if (download != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("download") + "=").Append(System.Uri.EscapeDataString(ConvertToString(download, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (bg != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("bg") + "=").Append(System.Uri.EscapeDataString(ConvertToString(bg, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (width != null)
             {
@@ -6134,6 +6289,7 @@ namespace Notifo.SDK
         /// <param name="fileName">The name of the media to download.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -6145,7 +6301,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/asset/{appId}/{fileName}?");
@@ -6158,6 +6314,10 @@ namespace Notifo.SDK
             if (download != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("download") + "=").Append(System.Uri.EscapeDataString(ConvertToString(download, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (bg != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("bg") + "=").Append(System.Uri.EscapeDataString(ConvertToString(bg, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (width != null)
             {
@@ -6278,6 +6438,7 @@ namespace Notifo.SDK
         /// <param name="fileName">The name of the media to download.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -6289,7 +6450,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/{appId}/{fileName}?");
@@ -6302,6 +6463,10 @@ namespace Notifo.SDK
             if (download != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("download") + "=").Append(System.Uri.EscapeDataString(ConvertToString(download, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (bg != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("bg") + "=").Append(System.Uri.EscapeDataString(ConvertToString(bg, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (width != null)
             {
@@ -6421,6 +6586,7 @@ namespace Notifo.SDK
         /// <param name="url">The app id where the media belongs to.</param>
         /// <param name="cache">The cache duration.</param>
         /// <param name="download">Set it to 1 to create a download response.</param>
+        /// <param name="bg">Optional background color.</param>
         /// <param name="width">The target width when an image.</param>
         /// <param name="height">The target height when an image.</param>
         /// <param name="quality">The target quality when an image.</param>
@@ -6432,7 +6598,7 @@ namespace Notifo.SDK
         /// <param name="emptyOnFailure">True, to return an empty image on failure.</param>
         /// <returns>Media returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/proxy?");
@@ -6447,6 +6613,10 @@ namespace Notifo.SDK
             if (download != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("download") + "=").Append(System.Uri.EscapeDataString(ConvertToString(download, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (bg != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("bg") + "=").Append(System.Uri.EscapeDataString(ConvertToString(bg, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (width != null)
             {
@@ -13924,6 +14094,12 @@ namespace Notifo.SDK
         public string ConfirmUrl { get; set; }
 
         /// <summary>
+        /// The correlation ID, that can be used to query notifications.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("correlationId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string CorrelationId { get; set; }
+
+        /// <summary>
         /// Optional data, usually a json object.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -14483,6 +14659,12 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("templateCode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string TemplateCode { get; set; }
+
+        /// <summary>
+        /// The correlation ID, that can be used to query notifications.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("correlationId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string CorrelationId { get; set; }
 
         /// <summary>
         /// The template variants with propability.

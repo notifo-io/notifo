@@ -1965,17 +1965,91 @@ export class NotificationsClient {
     }
 
     /**
-     * Query user notifications.
+     * Query notifications.
      * @param appId The app where the user belongs to.
-     * @param id The user id.
      * @param channels (optional) The active channels.
      * @param channel (optional) The source channel.
+     * @param correlationId (optional) The correlation ID, that can be used to query notifications.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getNotifications(appId: string | null, id: string | null, channels?: string[] | null | undefined, channel?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+    getAllNotifications(appId: string | null, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+        let url_ = this.baseUrl + "/api/apps/{appId}/notifications?";
+        if (appId === undefined || appId === null)
+            throw new Error("The parameter 'appId' must be defined.");
+        url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (channels !== undefined && channels !== null)
+            channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
+        if (channel !== undefined && channel !== null)
+            url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
+        if (correlationId !== undefined && correlationId !== null)
+            url_ += "CorrelationId=" + encodeURIComponent("" + correlationId) + "&";
+        if (query !== undefined && query !== null)
+            url_ += "query=" + encodeURIComponent("" + query) + "&";
+        if (take === null)
+            throw new Error("The parameter 'take' cannot be null.");
+        else if (take !== undefined)
+            url_ += "take=" + encodeURIComponent("" + take) + "&";
+        if (skip === null)
+            throw new Error("The parameter 'skip' cannot be null.");
+        else if (skip !== undefined)
+            url_ += "skip=" + encodeURIComponent("" + skip) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAllNotifications(_response);
+        });
+    }
+
+    protected processGetAllNotifications(response: Response): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ListResponseDtoOfUserNotificationDetailsDto;
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            return throwException("User or app not found.", status, _responseText, _headers);
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ListResponseDtoOfUserNotificationDetailsDto>(null as any);
+    }
+
+    /**
+     * Query user notifications.
+     * @param appId The app where the user belongs to.
+     * @param id The user id.
+     * @param channels (optional) The active channels.
+     * @param channel (optional) The source channel.
+     * @param correlationId (optional) The correlation ID, that can be used to query notifications.
+     * @param query (optional) The optional query to search for items.
+     * @param take (optional) The number of items to return.
+     * @param skip (optional) The number of items to skip.
+     * @return User notifications returned.
+     */
+    getNotifications(appId: string | null, id: string | null, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1987,6 +2061,8 @@ export class NotificationsClient {
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
         if (channel !== undefined && channel !== null)
             url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
+        if (correlationId !== undefined && correlationId !== null)
+            url_ += "CorrelationId=" + encodeURIComponent("" + correlationId) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -2042,17 +2118,20 @@ export class NotificationsClient {
      * Query user notifications of the current user.
      * @param channels (optional) The active channels.
      * @param channel (optional) The source channel.
+     * @param correlationId (optional) The correlation ID, that can be used to query notifications.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return Notifications returned.
      */
-    getMyNotifications(channels?: string[] | null | undefined, channel?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyNotifications(channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications?";
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
         if (channel !== undefined && channel !== null)
             url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
+        if (correlationId !== undefined && correlationId !== null)
+            url_ += "CorrelationId=" + encodeURIComponent("" + correlationId) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -2554,6 +2633,7 @@ export class MediaClient {
      * @param fileName The name of the media to download.
      * @param cache (optional) The cache duration.
      * @param download (optional) Set it to 1 to create a download response.
+     * @param bg (optional) Optional background color.
      * @param width (optional) The target width when an image.
      * @param height (optional) The target height when an image.
      * @param quality (optional) The target quality when an image.
@@ -2565,7 +2645,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download(appId: string | null, fileName: string | null, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download(appId: string | null, fileName: string | null, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2581,6 +2661,8 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
+        if (bg !== undefined && bg !== null)
+            url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
         if (height !== undefined && height !== null)
@@ -2713,6 +2795,7 @@ export class MediaClient {
      * @param fileName The name of the media to download.
      * @param cache (optional) The cache duration.
      * @param download (optional) Set it to 1 to create a download response.
+     * @param bg (optional) Optional background color.
      * @param width (optional) The target width when an image.
      * @param height (optional) The target height when an image.
      * @param quality (optional) The target quality when an image.
@@ -2724,7 +2807,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download2(appId: string | null, fileName: string | null, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download2(appId: string | null, fileName: string | null, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/asset/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2740,6 +2823,8 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
+        if (bg !== undefined && bg !== null)
+            url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
         if (height !== undefined && height !== null)
@@ -2814,6 +2899,7 @@ export class MediaClient {
      * @param fileName The name of the media to download.
      * @param cache (optional) The cache duration.
      * @param download (optional) Set it to 1 to create a download response.
+     * @param bg (optional) Optional background color.
      * @param width (optional) The target width when an image.
      * @param height (optional) The target height when an image.
      * @param quality (optional) The target quality when an image.
@@ -2825,7 +2911,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download3(appId: string | null, fileName: string | null, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download3(appId: string | null, fileName: string | null, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2841,6 +2927,8 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
+        if (bg !== undefined && bg !== null)
+            url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
         if (height !== undefined && height !== null)
@@ -2914,6 +3002,7 @@ export class MediaClient {
      * @param url (optional) The app id where the media belongs to.
      * @param cache (optional) The cache duration.
      * @param download (optional) Set it to 1 to create a download response.
+     * @param bg (optional) Optional background color.
      * @param width (optional) The target width when an image.
      * @param height (optional) The target height when an image.
      * @param quality (optional) The target quality when an image.
@@ -2925,7 +3014,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    proxyImage(url?: string | null | undefined, cache?: number | undefined, download?: number | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    proxyImage(url?: string | null | undefined, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/proxy?";
         if (url !== undefined && url !== null)
             url_ += "url=" + encodeURIComponent("" + url) + "&";
@@ -2937,6 +3026,8 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
+        if (bg !== undefined && bg !== null)
+            url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
         if (height !== undefined && height !== null)
@@ -6104,6 +6195,8 @@ export interface UserNotificationBaseDto {
     confirmText?: string | undefined;
     /** The tracking url that needs to be invoked to mark the notification as confirmed. */
     confirmUrl?: string | undefined;
+    /** The correlation ID, that can be used to query notifications. */
+    correlationId?: string | undefined;
     /** Optional data, usually a json object. */
     data?: string | undefined;
     /** Optional properties. */
@@ -6336,6 +6429,8 @@ export interface PublishDto {
     creatorId?: string | undefined;
     /** The template code. */
     templateCode?: string | undefined;
+    /** The correlation ID, that can be used to query notifications. */
+    correlationId?: string | undefined;
     /** The template variants with propability. */
     templateVariants?: { [key: string]: number; } | undefined;
     /** Additional user defined data. */

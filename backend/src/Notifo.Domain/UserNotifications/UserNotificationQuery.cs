@@ -18,6 +18,8 @@ public sealed record UserNotificationQuery : QueryBase
 
     public string? Query { get; set; }
 
+    public string? CorrelationId { get; set; }
+
     public string[]? Channels { get; set; }
 
     public UserNotificationQuery()

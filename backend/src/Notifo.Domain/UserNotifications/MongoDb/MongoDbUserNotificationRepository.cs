@@ -109,6 +109,16 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         await Collection.Indexes.CreateOneAsync(
             new CreateIndexModel<UserNotification>(
                 IndexKeys
+                    .Ascending(x => x.AppId)
+                    .Ascending(x => x.CorrelationId)
+                    .Ascending(x => x.Updated)
+                    .Ascending(x => x.IsDeleted)
+                    .Descending(x => x.Created)),
+            null, ct);
+
+        await Collection.Indexes.CreateOneAsync(
+            new CreateIndexModel<UserNotification>(
+                IndexKeys
                     .Descending(x => x.Created),
                 new CreateIndexOptions
                 {
@@ -181,6 +191,28 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         using (var activity = Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/QueryAsync"))
         {
             var filter = BuildFilter(appId, userId, query);
+
+            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
+            var resultTotal = (long)resultItems.Count;
+
+            if (query.ShouldQueryTotal(resultItems))
+            {
+                resultTotal = await Collection.Find(filter).CountDocumentsAsync(ct);
+            }
+
+            activity?.SetTag("numResults", resultItems.Count);
+            activity?.SetTag("numTotal", resultTotal);
+
+            return ResultList.Create(resultTotal, resultItems);
+        }
+    }
+
+    public async Task<IResultList<UserNotification>> QueryAsync(string appId, UserNotificationQuery query,
+        CancellationToken ct = default)
+    {
+        using (var activity = Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/QueryAsync"))
+        {
+            var filter = BuildFilter(appId, query);
 
             var resultItems = await Collection.Find(filter).SortByDescending(x => x.Created).ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
@@ -366,9 +398,44 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         var filters = new List<FilterDefinition<UserNotification>>
         {
             Filter.Eq(x => x.AppId, appId),
-            Filter.Eq(x => x.UserId, userId),
-            Filter.Gte(x => x.Updated, query?.After ?? default)
+            Filter.Eq(x => x.UserId, userId)
         };
+
+        AddDefaultFilters(query, filters);
+
+        if (!string.IsNullOrWhiteSpace(query?.CorrelationId))
+        {
+            filters.Add(Filter.Eq(x => x.CorrelationId, query.CorrelationId));
+        }
+
+        return Filter.And(filters);
+    }
+
+    private static FilterDefinition<UserNotification> BuildFilter(string appId, UserNotificationQuery? query = null)
+    {
+        var filters = new List<FilterDefinition<UserNotification>>
+        {
+            Filter.Eq(x => x.AppId, appId)
+        };
+
+        if (!string.IsNullOrWhiteSpace(query?.CorrelationId))
+        {
+            filters.Add(Filter.Eq(x => x.CorrelationId, query.CorrelationId));
+        }
+        else
+        {
+            filters.Add(Filter.Gte(x => x.CorrelationId, null));
+        }
+
+        AddDefaultFilters(query, filters);
+
+        return Filter.And(filters);
+    }
+
+    private static void AddDefaultFilters(UserNotificationQuery? query, List<FilterDefinition<UserNotification>> filters)
+    {
+        // Always query by updated flag to force the index to be used.
+        filters.Add(Filter.Gte(x => x.Updated, query?.After ?? default));
 
         switch (query?.Scope)
         {
@@ -396,7 +463,5 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
 
             filters.Add(Filter.Or(channelFilters));
         }
-
-        return Filter.And(filters);
     }
 }

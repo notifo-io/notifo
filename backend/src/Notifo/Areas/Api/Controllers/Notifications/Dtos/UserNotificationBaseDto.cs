@@ -94,6 +94,11 @@ public abstract class UserNotificationBaseDto
     public string? ConfirmUrl { get; set; }
 
     /// <summary>
+    /// The correlation ID, that can be used to query notifications.
+    /// </summary>
+    public string? CorrelationId { get; set; }
+
+    /// <summary>
     /// Optional data, usually a json object.
     /// </summary>
     public string? Data { get; set; }

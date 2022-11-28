@@ -23,6 +23,8 @@ public sealed class UserEventMessage
 
     public string EventId { get; set; }
 
+    public string? CorrelationId { get; set; }
+
     public string? Data { get; set; }
 
     public bool Silent { get; set; }

@@ -31,6 +31,28 @@ public sealed class NotificationsController : BaseController
     }
 
     /// <summary>
+    /// Query notifications.
+    /// </summary>
+    /// <param name="appId">The app where the user belongs to.</param>
+    /// <param name="q">The query object.</param>
+    /// <response code="200">User notifications returned.</response>.
+    /// <response code="404">User or app not found.</response>.
+    [HttpGet("api/apps/{appId:notEmpty}/notifications")]
+    [AppPermission(NotifoRoles.AppAdmin)]
+    [Produces(typeof(ListResponseDto<UserNotificationDetailsDto>))]
+    public async Task<IActionResult> GetAllNotifications(string appId, [FromQuery] UserNotificationQueryDto q)
+    {
+        var notifications = await userNotificationsStore.QueryAsync(appId, q.ToQuery(true), HttpContext.RequestAborted);
+
+        var response = new ListResponseDto<UserNotificationDetailsDto>();
+
+        response.Items.AddRange(notifications.Select(x => UserNotificationDetailsDto.FromDomainObjectAsDetails(x, q.Channel)));
+        response.Total = notifications.Total;
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// Query user notifications.
     /// </summary>
     /// <param name="appId">The app where the user belongs to.</param>
