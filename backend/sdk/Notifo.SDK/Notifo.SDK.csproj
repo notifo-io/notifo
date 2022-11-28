@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-	<LangVersion>latest</LangVersion>
+  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

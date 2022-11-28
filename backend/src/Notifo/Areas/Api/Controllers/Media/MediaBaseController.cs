@@ -21,17 +21,15 @@ public abstract class MediaBaseController : BaseController
 
     public sealed class ResizeSource
     {
-        public string FileId { get; init; }
+        required public string FileId { get; init; }
 
-        public string FileName { get; init; }
+        required public string FileName { get; init; }
 
-        public string MimeType { get; init; }
+        required public string MimeType { get; init; }
 
-        public long? FileSize { get; init; }
+        required public long? FileSize { get; init; }
 
-        public bool IsImage { get; init; } = true;
-
-        public Func<Stream, HttpContext, CancellationToken, Task> OpenRead { get; init; }
+        required public Func<Stream, HttpContext, CancellationToken, Task> OpenRead { get; init; }
     }
 
     protected MediaBaseController(
@@ -62,7 +60,7 @@ public abstract class MediaBaseController : BaseController
         var contentCallback = (FileCallback?)null;
         var contentType = source.MimeType;
 
-        if (source.IsImage && assetThumbnailGenerator.IsResizable(source.MimeType, resizeOptions, out var destinationMimeType))
+        if (assetThumbnailGenerator.IsResizable(source.MimeType, resizeOptions, out var destinationMimeType))
         {
             if (destinationMimeType != null)
             {

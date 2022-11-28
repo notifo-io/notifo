@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<IsPackable>false</IsPackable>
-	<LangVersion>10.0</LangVersion>
-	<Nullable>enable</Nullable>
-	<RootNamespace>Notifo.Identity</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Notifo.Identity</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,10 +27,10 @@
     </PackageReference>
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
   </ItemGroup>
-	
+  
   <ItemGroup>
-	<Using Include="FakeItEasy" />
-	<Using Include="Xunit" />
+    <Using Include="FakeItEasy" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>

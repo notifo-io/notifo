@@ -14,19 +14,19 @@ namespace Notifo.Domain;
 
 public sealed record TrackingKey
 {
-    public Guid UserNotificationId { get; init; }
+    required public Guid UserNotificationId { get; init; }
 
-    public string? EventId { get; init; }
+    required public string? EventId { get; init; }
 
-    public string? AppId { get; init; }
+    required public string? AppId { get; init; }
 
-    public string? UserId { get; init; }
+    required public string? UserId { get; init; }
 
-    public string? Topic { get; init; }
+    required public string? Topic { get; init; }
 
-    public string? Channel { get; init; }
+    required public string? Channel { get; init; }
 
-    public Guid ConfigurationId { get; init; }
+    required public Guid ConfigurationId { get; init; }
 
     public TrackingToken ToToken()
     {
@@ -40,6 +40,8 @@ public sealed record TrackingKey
         return new TrackingKey
         {
             AppId = @event.AppId,
+            Channel = null,
+            ConfigurationId = default,
             EventId = @event.Id,
             UserNotificationId = default,
             UserId = null,
@@ -54,6 +56,8 @@ public sealed record TrackingKey
         return new TrackingKey
         {
             AppId = @event.AppId,
+            Channel = null,
+            ConfigurationId = default,
             EventId = @event.EventId,
             UserNotificationId = default,
             UserId = @event.UserId,

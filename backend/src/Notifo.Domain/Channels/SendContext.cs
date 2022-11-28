@@ -12,13 +12,13 @@ namespace Notifo.Domain.Channels;
 
 public readonly struct SendContext
 {
-    public App App { get; init; }
+    required public App App { get; init; }
 
-    public User User { get; init; }
+    required public User User { get; init; }
 
-    public string AppId { get; init; }
+    required public string AppId { get; init; }
 
-    public string UserId { get; init; }
+    required public string UserId { get; init; }
 
-    public bool IsUpdate { get; init; }
+    required public bool IsUpdate { get; init; }
 }

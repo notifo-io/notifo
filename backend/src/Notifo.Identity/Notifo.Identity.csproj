@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-	<ImplicitUsings>enable</ImplicitUsings>
-	<LangVersion>10.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<LangVersion>latest</LangVersion>
 	<NeutralLanguage>en</NeutralLanguage>
 	<Nullable>enable</Nullable>
   </PropertyGroup>
@@ -11,8 +11,8 @@
   <ItemGroup>
 	<PackageReference Include="AspNet.Security.OAuth.GitHub" Version="7.0.0" />
 	<PackageReference Include="Meziantou.Analyzer" Version="1.0.746">
-	  <PrivateAssets>all</PrivateAssets>
-	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.0" />
 	<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-	<ProjectReference Include="..\Notifo.Domain\Notifo.Domain.csproj" />
-	<ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
+  	<ProjectReference Include="..\Notifo.Domain\Notifo.Domain.csproj" />
+  	<ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
