@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: squidex/notifo-build
@@ -152,7 +152,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
@@ -165,7 +165,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
