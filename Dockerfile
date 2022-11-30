@@ -25,10 +25,10 @@ RUN dotnet restore
 COPY backend .
  
 # Test Backend
-RUN dotnet test --no-restore --filter Category!=Dependencies
+RUN dotnet test --no-restore --use-current-runtime --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -p:version=$NOTIFO__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --use-current-runtime -p:version=$NOTIFO__VERSION
 
 # Install tools
 RUN dotnet tool install --tool-path /tools dotnet-counters \
