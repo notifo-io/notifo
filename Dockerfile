@@ -28,7 +28,7 @@ COPY backend .
 RUN dotnet build --configuration Release --use-current-runtime
  
 # Test Backend
-RUN dotnet test --no-build --use-current-runtime --filter Category!=Dependencies
+RUN dotnet test --no-build --filter Category!=Dependencies
 
 # Publish
 RUN dotnet publish src/Notifo/Notifo.csproj --no-build --output /build/ -p:version=$NOTIFO__VERSION
