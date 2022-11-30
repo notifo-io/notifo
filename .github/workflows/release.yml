@@ -129,6 +129,13 @@ jobs:
           string: "${{ env.GITHUB_REF_SLUG }}"
           split-by: "."
 
+      - name: Check Tag
+        id: normal-version
+        run: |
+          if [[ ${{ env.GITHUB_REF_SLUG }} =~ ^[0-9]+\.[0-9]+$ ]]; then
+              echo ::set-output name=match::true
+          fi
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
 
@@ -152,6 +159,19 @@ jobs:
             squidex/notifo:latest
             squidex/notifo:${{ env.GITHUB_REF_SLUG }}
             squidex/notifo:${{ steps.version.outputs._0 }}
+        if: steps.normal-version.outputs.match == 'true'
+
+      - name: BUILD
+        uses: docker/build-push-action@v3.2.0
+        with:
+          push: true
+          build-args: "NOTIFO__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            squidex/notifo:${{ env.GITHUB_REF_SLUG }}
+            squidex/notifo:${{ steps.version.outputs._0 }}
+        if: steps.normal-version.outputs.match != 'true'
 
   release:
     needs: publish
