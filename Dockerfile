@@ -20,18 +20,15 @@ COPY backend/tests/*/*.csproj ./
 
 RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
 
-RUN dotnet restore
+RUN dotnet restore --use-current-runtime
 
 COPY backend .
-
-# Build Backend
-RUN dotnet build --configuration Release --use-current-runtime
  
 # Test Backend
-RUN dotnet test --no-build --filter Category!=Dependencies
+RUN dotnet test --no-restore --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --no-build --output /build/ -p:version=$NOTIFO__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --use-current-runtime -p:version=$NOTIFO__VERSION
 
 # Install tools
 RUN dotnet tool install --tool-path /tools dotnet-counters \
