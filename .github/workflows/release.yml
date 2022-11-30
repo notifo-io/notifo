@@ -21,15 +21,21 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2.2.1
-        
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
       - name: BUILD
         uses: docker/build-push-action@v3.2.0
         with:
-          push: false
-          build-args: "NOTIFO__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
+          push: true
+          build-args: "NOTIFO__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: notifo-tmp
+          tags: squidex/notifo-build
 
   test:
     needs: build
@@ -40,31 +46,19 @@ jobs:
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4.3.2
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2.1.0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2.2.1
         
-      - name: Pull from Cache via Build
-        uses: docker/build-push-action@v3.2.0
-        with:
-          push: false
-          build-args: "NOTIFO__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: notifo-tmp
+      - name: Pull from Cache
+        run: docker pull squidex/notifo-build
 
       - name: Replace Image Name1
         uses: mikefarah/yq@v4.9.1
         with:
-          cmd: yq e '.services.notifo1.image = "notifo-tmp"' -i backend/tests/docker-compose.yml
+          cmd: yq e '.services.notifo1.image = "squidex/notifo-build"' -i backend/tests/docker-compose.yml
 
       - name: Replace Image Name2
         uses: mikefarah/yq@v4.9.1
         with:
-          cmd: yq e '.services.notifo2.image = "notifo-tmp"' -i backend/tests/docker-compose.yml
+          cmd: yq e '.services.notifo2.image = "squidex/notifo-build"' -i backend/tests/docker-compose.yml
 
       - name: Inject Google Credentials
         run: mkdir secrets && echo "$GOOGLE__KEYFILE" >| secrets/keyfile.json
@@ -110,7 +104,7 @@ jobs:
         if: failure()
         uses: jwalton/gh-docker-logs@v2.2.1
         with:
-         images: 'notifo-tmp,squidex/resizer'
+         images: 'squidex/notifo-build,squidex/resizer'
          tail: '100'
 
       - name: Cleanup Test
@@ -128,33 +122,6 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4.3.2
 
-      - name: Calculate Version
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
-        run: |
-          echo "BUILD_NUMBER=$(($BUILD_NUMBER + 1000))" >> $GITHUB_ENV
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2.1.0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2.2.1
-        
-      - name: Pull from Cache via Build
-        uses: docker/build-push-action@v3.2.0
-        with:
-          push: false
-          build-args: "NOTIFO__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: notifo-tmp
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2.1.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Get Major Version
         id: version
         uses: rishabhgupta/split-by@v1
@@ -162,17 +129,29 @@ jobs:
           string: "${{ env.GITHUB_REF_SLUG }}"
           split-by: "."
 
-      - name: Rename Tags
-        run: |
-          docker tag notifo-tmp squidex/notifo:latest
-          docker tag notifo-tmp squidex/notifo:${{ env.GITHUB_REF_SLUG }}
-          docker tag notifo-tmp squidex/notifo:${{ steps.version.outputs._0 }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2.1.0
 
-      - name: Push Tags
-        run: |
-          docker push squidex/notifo:latest
-          docker push squidex/notifo:${{ env.GITHUB_REF_SLUG }}
-          docker push squidex/notifo:${{ steps.version.outputs._0 }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2.2.1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2.1.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: BUILD
+        uses: docker/build-push-action@v3.2.0
+        with:
+          push: true
+          build-args: "NOTIFO__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+            squidex/notifo:latest
+            squidex/notifo:${{ env.GITHUB_REF_SLUG }}
+            squidex/notifo:${{ steps.version.outputs._0 }}
 
   release:
     needs: publish
@@ -183,33 +162,15 @@ jobs:
 
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4.3.2
-
-      - name: Calculate Version
-        env:
-          BUILD_NUMBER: ${{ github.run_number }}
-        run: |
-          echo "BUILD_NUMBER=$(($BUILD_NUMBER + 1000))" >> $GITHUB_ENV
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2.1.0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2.2.1
         
-      - name: Pull from Cache via Build
-        uses: docker/build-push-action@v3.2.0
-        with:
-          push: false
-          build-args: "NOTIFO__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: notifo-tmp
-          
+      - name: Pull from Cache
+        run: docker pull squidex/notifo-build
+
       - name: Make directories
         run: sudo mkdir /build /release
 
       - name: Create container
-        run: docker create --name notifo-container notifo-tmp:latest
+        run: docker create --name notifo-container squidex/notifo-build
 
       - name: Get binaries
         run: sudo docker cp notifo-container:/app/. /build
