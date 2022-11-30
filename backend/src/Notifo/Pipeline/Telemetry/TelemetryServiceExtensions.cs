@@ -9,6 +9,7 @@ using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Google.Cloud.Diagnostics.Common;
 using Notifo;
+using Notifo.Pipeline;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -21,7 +22,7 @@ public static class TelemetryServiceExtensions
         services.AddOpenTelemetryTracing(builder =>
         {
             var serviceName = config.GetValue<string>("logging:name") ?? "Notifo";
-            var serviceVersion = Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
+            var serviceVersion = VersionProvider.Current;
 
             builder.SetResourceBuilder(
                 ResourceBuilder.CreateDefault()
