@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.TestHelpers;
 using System.Diagnostics;
+using Notifo.Infrastructure.TestHelpers;
 
 namespace Notifo.Infrastructure.MongoDB;
 
