@@ -3,7 +3,7 @@
 #
 FROM mcr.microsoft.com/dotnet/sdk:7.0 as backend
 
-ARG NOTIFO__VERSION=1.0.0
+ARG NOTIFO__BUILD__VERSION=1.0.0
 
 WORKDIR /src
 
@@ -28,7 +28,7 @@ COPY backend .
 RUN dotnet test --no-restore --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -p:version=$NOTIFO__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -p:version=$NOTIFO__BUILD__VERSION
 
 # Install tools
 RUN dotnet tool install --tool-path /tools dotnet-counters \
@@ -65,6 +65,8 @@ RUN cp -a build /build/
 #
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim
 
+ARG NOTIFO__RUNTIME__VERSION=1.0.0
+
 RUN apt-get update \
  && apt-get install -y curl
 
@@ -90,3 +92,5 @@ ENV DIAGNOSTICS__GCDUMPTOOL=/tools/dotnet-gcdump
 ENV DIAGNOSTICS__TRACETOOL=/tools/dotnet-trace
 
 ENTRYPOINT ["dotnet", "Notifo.dll"]
+
+ENV NOTIFO__RUNTIME__VERSION=$NOTIFO__RUNTIME__VERSION

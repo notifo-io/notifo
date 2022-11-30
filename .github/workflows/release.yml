@@ -32,7 +32,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          build-args: "NOTIFO__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: squidex/notifo-build
@@ -133,7 +133,7 @@ jobs:
         id: normal-version
         run: |
           if [[ ${{ env.GITHUB_REF_SLUG }} =~ ^[0-9]+\.[0-9]+$ ]]; then
-              echo ::set-output name=match::true
+              echo "STABLE_VERSION=true" >> $GITHUB_ENV
           fi
 
       - name: Set up QEMU
@@ -152,26 +152,26 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          build-args: "NOTIFO__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
             squidex/notifo:latest
             squidex/notifo:${{ env.GITHUB_REF_SLUG }}
             squidex/notifo:${{ steps.version.outputs._0 }}
-        if: steps.normal-version.outputs.match == 'true'
+        if: env.STABLE_VERSION == 'true'
 
       - name: BUILD
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
-          build-args: "NOTIFO__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
             squidex/notifo:${{ env.GITHUB_REF_SLUG }}
             squidex/notifo:${{ steps.version.outputs._0 }}
-        if: steps.normal-version.outputs.match != 'true'
+        if: env.STABLE_VERSION != 'true'
 
   release:
     needs: publish

@@ -37,6 +37,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
+          build-args: "NOTIFO__RUNTIME__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: squidex/notifo-build
@@ -149,6 +150,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
+          build-args: "NOTIFO__RUNTIME__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
