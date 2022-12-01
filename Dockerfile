@@ -1,7 +1,7 @@
 #
 # Stage 1, Build Backend
 #
-FROM mcr.microsoft.com/dotnet/sdk:7.0 as backend
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 as backend
 
 ARG NOTIFO__BUILD__VERSION=1.0.0
 
@@ -30,21 +30,21 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
     echo "linux-x64" > /tmp/rid; \
     fi
 
-RUN dotnet restore --runtime $(cat /tmp/rid)
+RUN dotnet restore -r $(cat /tmp/rid)
 
 COPY backend .
  
 # Test Backend
-RUN dotnet test --runtime $(cat /tmp/rid) --no-restore --filter Category!=Dependencies
+RUN dotnet test -r $(cat /tmp/rid) --no-restore --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --runtime $(cat /tmp/rid) --no-self-contained -p:version=$NOTIFO__BUILD__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release -r $(cat /tmp/rid) --no-self-contained -p:version=$NOTIFO__BUILD__VERSION
 
 # Install tools
-RUN dotnet tool install --tool-path /tools dotnet-counters \
- && dotnet tool install --tool-path /tools dotnet-dump \
- && dotnet tool install --tool-path /tools dotnet-gcdump \
- && dotnet tool install --tool-path /tools dotnet-trace
+RUN dotnet tool install -v q --tool-path /tools dotnet-counters \
+ && dotnet tool install -v q --tool-path /tools dotnet-dump \
+ && dotnet tool install -v q --tool-path /tools dotnet-gcdump \
+ && dotnet tool install -v q --tool-path /tools dotnet-trace
 
 
 #
