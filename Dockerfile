@@ -38,7 +38,7 @@ COPY backend .
 RUN dotnet test --runtime $(cat /tmp/rid) --no-restore --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --runtime $(cat /tmp/rid) -p:version=$NOTIFO__BUILD__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --runtime $(cat /tmp/rid) --no-self-contained -p:version=$NOTIFO__BUILD__VERSION
 
 # Install tools
 RUN dotnet tool install --tool-path /tools dotnet-counters \
