@@ -1,7 +1,7 @@
 #
 # Stage 1, Build Backend
 #
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 as backend
+FROM mcr.microsoft.com/dotnet/sdk:7.0 as backend
 
 ARG NOTIFO__BUILD__VERSION=1.0.0
 
@@ -20,23 +20,24 @@ COPY backend/tests/*/*.csproj ./
 
 RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
 
+ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-    export RID=linux-x64 ; \
+    echo "linux-x64" > /tmp/rid; \
     elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
-    export RID=linux-arm64 ; \
+    echo "linux-arm64" > /tmp/rid; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-    export RID=linux-arm ; \
+    echo "RID=linux-arm" > /tmp/rid; \
     fi
 
-RUN dotnet restore --runtime $RID
+RUN dotnet restore --runtime $(cat /tmp/rid)
 
 COPY backend .
  
 # Test Backend
-RUN dotnet test --runtime $RID --no-restore --filter Category!=Dependencies
+RUN dotnet test --runtime $(cat /tmp/rid) --no-restore --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --runtime $RID -p:version=$NOTIFO__BUILD__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --runtime $(cat /tmp/rid) -p:version=$NOTIFO__BUILD__VERSION
 
 # Install tools
 RUN dotnet tool install --tool-path /tools dotnet-counters \
