@@ -10,11 +10,12 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain;
 
-public readonly record struct TopicId
+public readonly partial record struct TopicId
 {
-#pragma warning disable MA0023 // Add RegexOptions.ExplicitCapture
-    private static readonly Regex Regex = new Regex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled);
-#pragma warning restore MA0023 // Add RegexOptions.ExplicitCapture
+    private static readonly Regex Regex = RegexFactory();
+
+    [GeneratedRegex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled)]
+    private static partial Regex RegexFactory();
 
     public readonly string Id;
 

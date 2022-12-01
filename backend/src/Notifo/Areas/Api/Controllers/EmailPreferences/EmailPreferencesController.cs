@@ -133,7 +133,7 @@ public sealed class EmailPreferencesController : BaseController
     {
         try
         {
-            var command = new DisableSubscriptionChannel { UserId = UserId, Channel = Providers.Email };
+            var command = new DisableSubscriptionChannel { UserId = UserId, Topic = path, Channel = Providers.Email };
 
             await Mediator.SendAsync(command, ct);
         }

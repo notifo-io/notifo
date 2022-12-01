@@ -12,7 +12,10 @@ namespace Notifo.Infrastructure;
 
 public partial record Language
 {
-    private static readonly Regex CultureRegex = new Regex("^([a-z]{2})(\\-[a-z]{2})?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture);
+    private static readonly Regex CultureRegex = CultureRegexFactory();
+
+    [GeneratedRegex("^([a-z]{2})(\\-[a-z]{2})?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, "en-US")]
+    private static partial Regex CultureRegexFactory();
 
     public static Language GetLanguage(string iso2Code)
     {

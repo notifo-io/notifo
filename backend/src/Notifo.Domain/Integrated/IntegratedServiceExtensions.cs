@@ -24,7 +24,6 @@ public static class IntegratedServiceExtensions
         services.AddMiddleware<IntegratedAppService, DeleteTemplate>();
         services.AddMiddleware<IntegratedAppService, FirstLogCreated>();
         services.AddMiddleware<IntegratedAppService, RemoveContributor>();
-        services.AddMiddleware<IntegratedAppService, UpsertTemplate>();
         services.AddMiddleware<IntegratedAppService, UserDeleted>();
         services.AddMiddleware<IntegratedAppService, UserRegistered>();
         services.AddMiddleware<IntegratedAppService, UserUpdated>();

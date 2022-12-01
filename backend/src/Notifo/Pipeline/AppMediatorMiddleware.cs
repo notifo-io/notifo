@@ -5,11 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Security.Claims;
 using NodaTime;
 using Notifo.Domain;
 using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Security;
-using System.Security.Claims;
 
 namespace Notifo.Pipeline;
 

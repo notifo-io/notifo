@@ -1,9 +1,9 @@
 #
 # Stage 1, Build Backend
 #
-FROM mcr.microsoft.com/dotnet/sdk:7.0 as backend
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 as backend
 
-ARG NOTIFO__VERSION=1.0.0
+ARG NOTIFO__BUILD__VERSION=1.0.0
 
 WORKDIR /src
 
@@ -20,15 +20,23 @@ COPY backend/tests/*/*.csproj ./
 
 RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
 
-RUN dotnet restore --use-current-runtime
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+    export RID=linux-x64 ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+    export RID=linux-arm64 ; \
+    elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
+    export RID=linux-arm ; \
+    fi
+
+RUN dotnet restore --runtime $RID
 
 COPY backend .
  
 # Test Backend
-RUN dotnet test --no-restore --filter Category!=Dependencies
+RUN dotnet test --runtime $RID --no-restore --filter Category!=Dependencies
 
 # Publish
-RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --use-current-runtime -p:version=$NOTIFO__VERSION
+RUN dotnet publish src/Notifo/Notifo.csproj --output /build/ --configuration Release --runtime $RID -p:version=$NOTIFO__BUILD__VERSION
 
 # Install tools
 RUN dotnet tool install --tool-path /tools dotnet-counters \
@@ -65,6 +73,8 @@ RUN cp -a build /build/
 #
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-bullseye-slim
 
+ARG NOTIFO__RUNTIME__VERSION=1.0.0
+
 RUN apt-get update \
  && apt-get install -y curl
 
@@ -90,3 +100,5 @@ ENV DIAGNOSTICS__GCDUMPTOOL=/tools/dotnet-gcdump
 ENV DIAGNOSTICS__TRACETOOL=/tools/dotnet-trace
 
 ENTRYPOINT ["dotnet", "Notifo.dll"]
+
+ENV NOTIFO__RUNTIME__VERSION=$NOTIFO__RUNTIME__VERSION
