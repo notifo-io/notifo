@@ -32,6 +32,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -152,6 +153,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -165,6 +167,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
           build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
