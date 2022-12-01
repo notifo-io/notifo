@@ -21,12 +21,13 @@ COPY backend/tests/*/*.csproj ./
 RUN for file in $(ls *.csproj); do mkdir -p tests/${file%.*}/ && mv $file tests/${file%.*}/; done
 
 ARG TARGETPLATFORM
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
-    echo "linux-x64" > /tmp/rid; \
-    elif [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
+
+RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
     echo "linux-arm64" > /tmp/rid; \
     elif [ "$TARGETPLATFORM" = "linux/arm/v7" ]; then \
-    echo "RID=linux-arm" > /tmp/rid; \
+    echo "linux-arm" > /tmp/rid; \
+    else \
+    echo "linux-x64" > /tmp/rid; \
     fi
 
 RUN dotnet restore --runtime $(cat /tmp/rid)
