@@ -26,7 +26,6 @@ public sealed partial class IntegratedAppService :
     IMessageMiddleware<DeleteTemplate>,
     IMessageMiddleware<FirstLogCreated>,
     IMessageMiddleware<RemoveContributor>,
-    IMessageMiddleware<UpsertTemplate>,
     IMessageMiddleware<UserDeleted>,
     IMessageMiddleware<UserRegistered>,
     IMessageMiddleware<UserUpdated>
@@ -175,24 +174,6 @@ public sealed partial class IntegratedAppService :
                 {
                     ["log"] = request.Entry.Message
                 }, ct);
-        }, ct);
-    }
-
-    public ValueTask<object?> HandleAsync(UpsertTemplate request, NextDelegate next,
-        CancellationToken ct)
-    {
-        return HandleMessageAsync(request, next, async (request, ct) =>
-        {
-            await PublishAsync(
-                request.AppId,
-                request.PrincipalId,
-                "/app/{app}/templates",
-                Texts.NotificationTemplateUpserted,
-                new NotificationProperties
-                {
-                    ["code"] = request.TemplateCode
-                },
-                ct);
         }, ct);
     }
 
