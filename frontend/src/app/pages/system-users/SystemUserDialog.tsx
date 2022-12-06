@@ -5,8 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Formik } from 'formik';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
@@ -63,49 +64,49 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
         dispatch(upsertSystemUser({ userId: user?.id, params }));
     });
 
-    const initialValues: any = React.useMemo(() => {
+    const defaultValues: any = React.useMemo(() => {
         const result: Partial<UpdateSystemUserDto> = Types.clone(user || { roles: [] });
 
         return result;
     }, [user]);
 
+    const form = useForm<UpdateSystemUserDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
-            <Formik<UpdateSystemUserDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
-                {({ handleSubmit }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={onClose}>
-                            {user ? texts.systemUsers.editHeader : texts.systemUsers.createHeader}
-                        </ModalHeader>
+            <FormProvider {...form}>
+                <Form onSubmit={form.handleSubmit(doSave)}>
+                    <ModalHeader toggle={onClose}>
+                        {user ? texts.systemUsers.editHeader : texts.systemUsers.createHeader}
+                    </ModalHeader>
 
-                        <ModalBody>
-                            <fieldset className='mt-3' disabled={upserting}>
-                                <Forms.Text name='email'
-                                    label={texts.common.emailAddress} />
-                    
-                                <Forms.Checkboxes name='roles' options={ROLES}
-                                    label={texts.common.roles} />
-                    
-                                <Forms.Password name='password'
-                                    label={texts.common.password} />
-                    
-                                <Forms.Password name='passwordConfirm'
-                                    label={texts.common.passwordConfirm} />
-                            </fieldset>
+                    <ModalBody>
+                        <fieldset className='mt-3' disabled={upserting}>
+                            <Forms.Text name='email'
+                                label={texts.common.emailAddress} />
+                
+                            <Forms.Checkboxes name='roles' options={ROLES}
+                                label={texts.common.roles} />
+                
+                            <Forms.Password name='password'
+                                label={texts.common.password} />
+                
+                            <Forms.Password name='passwordConfirm'
+                                label={texts.common.passwordConfirm} />
+                        </fieldset>
 
-                            <FormError error={upsertingError} />
-                        </ModalBody>
-                        <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={onClose} disabled={upserting}>
-                                {texts.common.cancel}
-                            </Button>
-                            <Button type='submit' color='primary' disabled={upserting}>
-                                <Loader light small visible={upserting} /> {texts.common.save}
-                            </Button>
-                        </ModalFooter>
-                    </Form>
-                )}
-            </Formik>
+                        <FormError error={upsertingError} />
+                    </ModalBody>
+                    <ModalFooter className='justify-content-between'>
+                        <Button type='button' color='none' onClick={onClose} disabled={upserting}>
+                            {texts.common.cancel}
+                        </Button>
+                        <Button type='submit' color='primary' disabled={upserting}>
+                            <Loader light small visible={upserting} /> {texts.common.save}
+                        </Button>
+                    </ModalFooter>
+                </Form>
+            </FormProvider>
         </Modal>
     );
 };

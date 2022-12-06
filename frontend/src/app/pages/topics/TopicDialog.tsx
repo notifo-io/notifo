@@ -5,8 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Formik } from 'formik';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import * as Yup from 'yup';
@@ -66,7 +67,7 @@ export const TopicDialog = (props: TopicDialogProps) => {
         dispatch(upsertTopic({ appId, params, scope }));
     });
     
-    const initialValues: any = React.useMemo(() => {
+    const defaultValues: any = React.useMemo(() => {
         const result: Partial<TopicDto> = Types.clone(topic || {});
 
         result.channels ||= {};
@@ -78,60 +79,60 @@ export const TopicDialog = (props: TopicDialogProps) => {
         return result;
     }, [topic]);
 
+    const form = useForm<UpsertTopicDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
-            <Formik<UpsertTopicDto> initialValues={initialValues} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
-                {({ handleSubmit }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={onClose}>
-                            {texts.topics.createHeader}
-                        </ModalHeader>
+            <FormProvider {...form}>
+                <Form onSubmit={form.handleSubmit(doSave)}>
+                    <ModalHeader toggle={onClose}>
+                        {texts.topics.createHeader}
+                    </ModalHeader>
 
-                        <ModalBody>
-                            <fieldset className='mt-3' disabled={upserting}>
-                                <Forms.Text name='path' placeholder='news/features/tech'
-                                    label={texts.common.topicPath} />
+                    <ModalBody>
+                        <fieldset className='mt-3' disabled={upserting}>
+                            <Forms.Text name='path' placeholder='news/features/tech'
+                                label={texts.common.topicPath} />
 
-                                <Forms.LocalizedText name='name'
-                                    placeholder={texts.topics.namePlaceholder}
-                                    label={texts.common.name}
-                                    language={language}
-                                    languages={appLanguages}
-                                    onLanguageSelect={setLanguage}
-                                />
+                            <Forms.LocalizedText name='name'
+                                placeholder={texts.topics.namePlaceholder}
+                                label={texts.common.name}
+                                language={language}
+                                languages={appLanguages}
+                                onLanguageSelect={setLanguage}
+                            />
 
-                                <Forms.LocalizedTextArea name='description'
-                                    placeholder={texts.topics.descriptionPlaceholder}
-                                    label={texts.common.description}
-                                    language={language}
-                                    languages={appLanguages}
-                                    onLanguageSelect={setLanguage}
-                                />
+                            <Forms.LocalizedTextArea name='description'
+                                placeholder={texts.topics.descriptionPlaceholder}
+                                label={texts.common.description}
+                                language={language}
+                                languages={appLanguages}
+                                onLanguageSelect={setLanguage}
+                            />
 
-                                <Forms.Boolean name='showAutomatically'
-                                    label={texts.topics.showAutomatically} hints={texts.topics.showAutomaticallyHints} />
+                            <Forms.Boolean name='showAutomatically'
+                                label={texts.topics.showAutomatically} hints={texts.topics.showAutomaticallyHints} />
 
-                                <hr />
+                            <hr />
 
-                                {CHANNELS.map(channel =>
-                                    <Forms.Select key={channel} name={`channels.${channel}`}
-                                        label={texts.notificationSettings[channel].title} options={ALLOWED_MODES} />,
-                                )}
-                            </fieldset>
+                            {CHANNELS.map(channel =>
+                                <Forms.Select key={channel} name={`channels.${channel}`}
+                                    label={texts.notificationSettings[channel].title} options={ALLOWED_MODES} />,
+                            )}
+                        </fieldset>
 
-                            <FormError error={upsertingError} />
-                        </ModalBody>
-                        <ModalFooter className='justify-content-between'>
-                            <Button type='button' color='none' onClick={onClose} disabled={upserting}>
-                                {texts.common.cancel}
-                            </Button>
-                            <Button type='submit' color='primary' disabled={upserting}>
-                                <Loader light small visible={upserting} /> {texts.common.save}
-                            </Button>
-                        </ModalFooter>
-                    </Form>
-                )}
-            </Formik>
+                        <FormError error={upsertingError} />
+                    </ModalBody>
+                    <ModalFooter className='justify-content-between'>
+                        <Button type='button' color='none' onClick={onClose} disabled={upserting}>
+                            {texts.common.cancel}
+                        </Button>
+                        <Button type='submit' color='primary' disabled={upserting}>
+                            <Loader light small visible={upserting} /> {texts.common.save}
+                        </Button>
+                    </ModalFooter>
+                </Form>
+            </FormProvider>
         </Modal>
     );
 };

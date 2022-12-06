@@ -5,14 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { useField, useFormikContext } from 'formik';
 import * as React from 'react';
+import { useController } from 'react-hook-form';
 import { Col, CustomInput, Row } from 'reactstrap';
-import { FormAlert, isErrorVisible, Types } from '@app/framework';
+import { FormAlert, Types } from '@app/framework';
 import { texts } from '@app/texts';
 import { CHANNELS, CONDITION_MODES, CONFIRM_MODES, SEND_MODES } from './../utils/model';
 import { EmailTemplateInput } from './EmailTemplateInput';
-import { FormEditorProps, Forms } from './Forms';
+import { FormEditorProps, Forms, isInvalid } from './Forms';
 import { MessagingTemplateInput } from './MessagingTemplateInput';
 import { SmsTemplateInput } from './SmsTemplateInput';
 import { WebhookInput } from './WebhookInput';
@@ -180,15 +180,11 @@ export module NotificationsForm {
 }
 
 export const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Option<string | number>[] }) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useField<string | number>(name);
+    const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <CustomInput type='select' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-            >
+            <CustomInput type='select' id={name} {...field} invalid={isInvalid(fieldState, formState)}>
                 {Types.isUndefined(field.value) && !options.find(x => x.value === field.value) &&
                     <option></option>
                 }
