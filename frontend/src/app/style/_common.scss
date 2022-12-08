@@ -415,6 +415,10 @@ $small-gutters: 4px;
             padding-bottom: .5rem;
             padding-left: .5rem;
             padding-right: .5rem;
+
+            & > div {
+                overflow-x: hidden;
+            }
         }
     }
 
@@ -1117,14 +1121,17 @@ em-emoji-picker {
     }
 
     h2 {
+        @include truncate;
         margin: 0;
     }
 
     h3 {
+        @include truncate;
         margin: 0;
     }
 
     h4 {
+        @include truncate;
         margin: 0;
     }
 }
@@ -1207,6 +1214,49 @@ textarea {
         width: 600px;
         text-align: left;
         text-decoration: none;
+    }
+}
+
+.multi-filter {
+    flex-wrap: nowrap;
+    flex-direction: row;
+    margin-bottom: .25rem;
+
+    .col {
+        overflow: hidden;
+        padding-left: 2px;
+        padding-right: 2px;
+
+        &:first-child {
+            padding-left: 0;
+        }
+
+        &:last-child {
+            padding-right: 0;
+        }
+    }
+
+    .btn {
+        @include truncate;
+        background: $color-white;
+        border: 1px solid $color-border;
+        border-radius: $border-radius;
+        box-shadow: none;
+        font-size: $font-size-sm;
+        font-weight: normal;
+        padding: .75rem .25rem !important;
+        opacity: .6;
+        text-align: center;
+        text-transform: none;
+        width: 100%;
+
+        &:hover {
+            background: $color-white;
+        }
+
+        &.active {
+            opacity: 1;
+        }
     }
 }
 

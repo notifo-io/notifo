@@ -23,6 +23,7 @@ export * from './react/hooks';
 export * from './react/Icon';
 export * from './react/IFrame';
 export * from './react/LanguageSelector';
+export * from './react/ListMultiFilter';
 export * from './react/Loader';
 export * from './react/LoadScript';
 export * from './react/ListPager';

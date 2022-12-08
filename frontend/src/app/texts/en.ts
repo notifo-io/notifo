@@ -173,6 +173,7 @@ export const EN = {
         statisticsLabelFn: (name: string) => `${name} (Handled / Attempts / Failed)`,
         status: 'Status',
         subject: 'Subject',
+        system: 'System',
         template: 'Template',
         templateCode: 'Template Code',
         templateCodeHints: 'If a template is used all properties (subject, body and so on) are used from the template, but can be overridden if necessary.',
@@ -240,6 +241,7 @@ export const EN = {
         header: 'Log',
         logEntriesNotFound: 'No matching log entry found',
         searchPlaceholder: 'Search',
+        userHeader: 'User Log',
     },
     media: {
         confirmDelete: 'Do you really want to delete the Media?',
@@ -362,6 +364,7 @@ export const EN = {
         editHeader: 'Edit User',
         header: 'Users',
         lock: 'Lock',
+        logs: 'View User Log',
         searchPlaceholder: 'Search',
         unlock: 'Unlock',
         userDetails: 'User Details',

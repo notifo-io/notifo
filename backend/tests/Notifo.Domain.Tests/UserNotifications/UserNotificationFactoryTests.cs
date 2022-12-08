@@ -155,7 +155,7 @@ public sealed class UserNotificationFactoryTests
         Assert.Equal("deText", notification.Formatting.Subject);
         Assert.Equal("de", notification.UserLanguage);
 
-        A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
+        A.CallTo(() => logStore.LogAsync(app.Id, A<LogMessage>._))
             .MustNotHaveHappened();
     }
 
@@ -174,7 +174,7 @@ public sealed class UserNotificationFactoryTests
         Assert.Equal("enText", notification.Formatting.Subject);
         Assert.Equal("en", notification.UserLanguage);
 
-        A.CallTo(() => logStore.LogAsync(app.Id, A<string>._))
+        A.CallTo(() => logStore.LogAsync(app.Id, A<LogMessage>._))
             .MustHaveHappened();
     }
 

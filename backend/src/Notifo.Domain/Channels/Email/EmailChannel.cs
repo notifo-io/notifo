@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.ChannelTemplates;
@@ -167,13 +166,13 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
                 if (user == null)
                 {
-                    await SkipAsync(jobs, Texts.Email_UserDeleted);
+                    await SkipAsync(jobs, LogMessage.User_Deleted(Name, commonUser));
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(user.EmailAddress))
                 {
-                    await SkipAsync(jobs, Texts.Email_UserNoEmail);
+                    await SkipAsync(jobs, LogMessage.User_EmailRemoved(Name, commonUser));
                     return;
                 }
 
@@ -181,7 +180,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
                 if (senders.Count == 0)
                 {
-                    await SkipAsync(jobs, Texts.Email_ConfigReset);
+                    await SkipAsync(jobs, LogMessage.Integration_Removed(Name));
                     return;
                 }
 
@@ -197,7 +196,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
                     if (skip != null)
                     {
-                        await SkipAsync(jobs, skip!);
+                        await SkipAsync(jobs, skip.Value);
                         return;
                     }
 
@@ -229,7 +228,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(app.Id, Name, ex.Message);
+                await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -249,7 +248,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(appId, sender.Name, ex.Message);
+                await logStore.LogAsync(appId, LogMessage.General_Exception(Name, ex));
 
                 if (sender == lastSender)
                 {
@@ -271,11 +270,11 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         return userNotificationStore.TrackAsync(notification.Tracking, status, reason);
     }
 
-    private async Task SkipAsync(List<EmailJob> jobs, string reason)
+    private async Task SkipAsync(List<EmailJob> jobs, LogMessage message)
     {
-        await logStore.LogAsync(jobs[0].Notification.AppId, Name, reason);
+        await logStore.LogAsync(jobs[0].Notification.AppId, message);
 
-        await UpdateAsync(jobs, ProcessStatus.Skipped);
+        await UpdateAsync(jobs, ProcessStatus.Skipped, message.Reason);
     }
 
     private async Task UpdateAsync(List<EmailJob> jobs, ProcessStatus status, string? reason = null)
@@ -286,7 +285,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         }
     }
 
-    private async Task<(string? Skip, EmailTemplate?)> GetTemplateAsync(
+    private async Task<(LogMessage? Skip, EmailTemplate?)> GetTemplateAsync(
         string appId,
         string language,
         string? name,
@@ -298,24 +297,24 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         {
             case TemplateResolveStatus.ResolvedWithFallback:
                 {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name ?? "Unnamed");
+                    var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
 
-                    await logStore.LogAsync(appId, Name, error);
+                    await logStore.LogAsync(appId, message);
                     break;
                 }
 
             case TemplateResolveStatus.NotFound:
                 {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name ?? "Unnamed");
+                    var message = LogMessage.ChannelTemplate_NotFound(Name, name);
 
-                    return (error, null);
+                    return (message, null);
                 }
 
             case TemplateResolveStatus.LanguageNotFound:
                 {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name ?? "Unnamed");
+                    var message = LogMessage.ChannelTemplate_LanguageNotFound(Name, language, name);
 
-                    return (error, null);
+                    return (message, null);
                 }
         }
 

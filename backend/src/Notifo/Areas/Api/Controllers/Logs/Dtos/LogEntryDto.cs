@@ -21,6 +21,12 @@ public sealed class LogEntryDto
     public string Message { get; set; }
 
     /// <summary>
+    /// The system.
+    /// </summary>
+    [Required]
+    public string System { get; set; }
+
+    /// <summary>
     /// The first time this message has been seen.
     /// </summary>
     [Required]
@@ -31,6 +37,12 @@ public sealed class LogEntryDto
     /// </summary>
     [Required]
     public Instant LastSeen { get; set; }
+
+    /// <summary>
+    /// The event code.
+    /// </summary>
+    [Required]
+    public long EventCode { get; set; }
 
     /// <summary>
     /// The number of items the message has been seen.

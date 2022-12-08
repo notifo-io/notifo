@@ -84,7 +84,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(userEvent.AppId, ex.Message);
+                await logStore.LogAsync(userEvent.AppId, LogMessage.General_Exception("System", ex));
 
                 await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
             }
@@ -167,7 +167,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
                 if (ex is DomainException domainException)
                 {
-                    await logStore.LogAsync(userEvent.AppId, domainException.Message);
+                    await logStore.LogAsync(userEvent.AppId, LogMessage.General_Exception("System", domainException));
                 }
                 else
                 {
@@ -288,9 +288,9 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 }
             }
         }
-        catch (DomainException domainException)
+        catch (DomainException ex)
         {
-            await logStore.LogAsync(notification.AppId, domainException.Message);
+            await logStore.LogAsync(notification.AppId, LogMessage.General_Exception("System", ex));
             throw;
         }
     }

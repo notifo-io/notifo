@@ -10,7 +10,6 @@ using System.Net;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using Notifo.Domain.Log;
-using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
@@ -160,7 +159,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Tracking.AppId!, Name, ex.Message);
+                await logStore.LogAsync(job.Tracking.AppId!, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -182,7 +181,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
         catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
         {
-            await logStore.LogAsync(job.Tracking.AppId!, Name, Texts.WebPush_TokenRemoved);
+            await logStore.LogAsync(job.Tracking.AppId!, LogMessage.WebPush_TokenInvalid(Name, job.Tracking.UserId!, job.Subscription.Endpoint));
 
             var command = new RemoveUserWebPushSubscription
             {

@@ -162,6 +162,8 @@ public sealed class UserStore : IUserStore, IRequestHandler<UserCommand, User?>,
 
                 await repository.UpsertAsync(newUser, etag, ct);
                 user = newUser;
+
+                await command.ExecutedAsync(serviceProvider);
             }
 
             await DeliverAsync(user);

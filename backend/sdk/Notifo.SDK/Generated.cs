@@ -4178,7 +4178,29 @@ namespace Notifo.SDK
         /// </remarks>
         /// <returns>Service ping successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
+        [System.Obsolete]
+        System.Threading.Tasks.Task GetOldPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get ping status of the API.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to test, if the Squidex API is alive and responding.
+        /// </remarks>
+        /// <returns>Service ping successful.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
         System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get some info about the API.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to test, if the Squidex API is alive and responding.
+        /// </remarks>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<InfoDto> GetInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -4225,7 +4247,8 @@ namespace Notifo.SDK
         /// </remarks>
         /// <returns>Service ping successful.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        [System.Obsolete]
+        public virtual async System.Threading.Tasks.Task GetOldPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/ping");
@@ -4262,6 +4285,165 @@ namespace Notifo.SDK
                         if (status_ == 204)
                         {
                             return;
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get ping status of the API.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to test, if the Squidex API is alive and responding.
+        /// </remarks>
+        /// <returns>Service ping successful.</returns>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/ping");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 204)
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == 500)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ErrorDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            throw new NotifoException<ErrorDto>("Operation failed.", status_, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new NotifoException("The HTTP status code of the response was not expected (" + status_ + ").", status_, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (disposeResponse_)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+                if (disposeClient_)
+                    client_.Dispose();
+            }
+        }
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>
+        /// Get some info about the API.
+        /// </summary>
+        /// <remarks>
+        /// Can be used to test, if the Squidex API is alive and responding.
+        /// </remarks>
+        /// <exception cref="NotifoException">A server side error occurred.</exception>
+        public virtual async System.Threading.Tasks.Task<InfoDto> GetInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/info");
+
+            var client_ = _httpClient;
+            var disposeClient_ = false;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+                    PrepareRequest(client_, request_, urlBuilder_);
+
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+
+                    PrepareRequest(client_, request_, url_);
+
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    var disposeResponse_ = true;
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+
+                        ProcessResponse(client_, response_);
+
+                        var status_ = (int)response_.StatusCode;
+                        if (status_ == 200)
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<InfoDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 500)
@@ -6841,12 +7023,15 @@ namespace Notifo.SDK
         /// Query log entries.
         /// </summary>
         /// <param name="appId">The app where the log entries belongs to.</param>
+        /// <param name="systems">The systems.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="eventCode">The event code.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Log entries returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfLogEntryDto> GetLogsAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfLogEntryDto> GetLogsAsync(string appId, System.Collections.Generic.IEnumerable<string> systems = null, string userId = null, int? eventCode = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -6889,16 +7074,31 @@ namespace Notifo.SDK
         /// Query log entries.
         /// </summary>
         /// <param name="appId">The app where the log entries belongs to.</param>
+        /// <param name="systems">The systems.</param>
+        /// <param name="userId">The user id.</param>
+        /// <param name="eventCode">The event code.</param>
         /// <param name="query">The optional query to search for items.</param>
         /// <param name="take">The number of items to return.</param>
         /// <param name="skip">The number of items to skip.</param>
         /// <returns>Log entries returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfLogEntryDto> GetLogsAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfLogEntryDto> GetLogsAsync(string appId, System.Collections.Generic.IEnumerable<string> systems = null, string userId = null, int? eventCode = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/logs?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
+            if (systems != null)
+            {
+                foreach (var item_ in systems) { urlBuilder_.Append(System.Uri.EscapeDataString("Systems") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (userId != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("UserId") + "=").Append(System.Uri.EscapeDataString(ConvertToString(userId, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (eventCode != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("EventCode") + "=").Append(System.Uri.EscapeDataString(ConvertToString(eventCode, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
             if (query != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("query") + "=").Append(System.Uri.EscapeDataString(ConvertToString(query, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -13820,6 +14020,18 @@ namespace Notifo.SDK
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class InfoDto
+    {
+        /// <summary>
+        /// The actual version.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string Version { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class ListResponseDtoOfUserNotificationDetailsDto
     {
         /// <summary>
@@ -14417,6 +14629,13 @@ namespace Notifo.SDK
         public string Message { get; set; }
 
         /// <summary>
+        /// The system.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("system", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string System { get; set; }
+
+        /// <summary>
         /// The first time this message has been seen.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("firstSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -14429,6 +14648,12 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("lastSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
         public System.DateTimeOffset LastSeen { get; set; }
+
+        /// <summary>
+        /// The event code.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("eventCode", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long EventCode { get; set; }
 
         /// <summary>
         /// The number of items the message has been seen.

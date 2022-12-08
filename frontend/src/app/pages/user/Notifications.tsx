@@ -5,18 +5,20 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListPager, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
+import { FormError, Icon, ListMultiFilter, ListPager, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { CHANNELS } from '@app/shared/utils/model';
 import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationRow } from './NotificationRow';
 
-const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook');
+const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook').map(value => ({
+    value,
+    label: texts.notificationSettings[value]?.name || value,
+}));
 
 export interface NotificationsProps {
     // The user id.
@@ -49,20 +51,6 @@ export const Notifications = (props: NotificationsProps) => {
 
     const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadNotifications(appId, userId, q, undefined, channels));
-    });
-
-    const doToggleChannel = useEventCallback((channel: string) => {
-        setChannels(channels => {
-            let newChannels: string[];
-
-            if (channels.indexOf(channel) >= 0) {
-                newChannels = channels.filter(x => x !== channel);
-            } else {
-                newChannels = [...channels, channel];
-            }
-
-            return newChannels.length >= NON_WEBHOOKS.length ? [] : newChannels;
-        });
     });
 
     return (
@@ -102,60 +90,54 @@ export const Notifications = (props: NotificationsProps) => {
 
             <FormError error={notifications.error} />
 
-            <Row className='channels-filter' noGutters>
-                {NON_WEBHOOKS.map(channel => 
-                    <Col key={channel} style={{ width: `100/${NON_WEBHOOKS.length}%` }}>
-                        <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 })} onClick={() => doToggleChannel(channel)}>
-                            {texts.notificationSettings[channel].name}
-                        </Button>
-                    </Col>,
-                )}
-            </Row>
+            <ListMultiFilter value={channels} onChange={setChannels} options={NON_WEBHOOKS} />
 
             <Card className='card-table'>
                 <CardBody>
-                    <Table className='table-fixed table-simple table-middle'>
-                        <colgroup>
-                            <col style={{ width: 50 }} />
-                            <col />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 240 }} />
-                        </colgroup>
+                    <div>
+                        <Table className='table-fixed table-simple table-middle'>
+                            <colgroup>
+                                <col style={{ width: 50 }} />
+                                <col />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 240 }} />
+                            </colgroup>
 
-                        <thead>
-                            <tr>
-                                <th>&nbsp;</th>
-                                <th>
-                                    <span className='truncate'>{texts.common.subject}</span>
-                                </th>
-                                <th colSpan={4} data-tip={`${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
-                                    <span className='truncate'>{texts.common.status}</span>
-                                </th>
-                                <th className='text-right'>
-                                    <span className='truncate'>{texts.common.timestamp}</span>
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {notifications.items &&
-                                <>
-                                    {notifications.items.map(notification => (
-                                        <NotificationRow key={notification.id} notification={notification} />
-                                    ))}
-                                </>
-                            }
-
-                            {notifications.isLoaded && notifications.items && notifications.items.length === 0 &&
+                            <thead>
                                 <tr>
-                                    <td colSpan={7}>{texts.notifications.notificationsNotFound}</td>
+                                    <th>&nbsp;</th>
+                                    <th>
+                                        <span className='truncate'>{texts.common.subject}</span>
+                                    </th>
+                                    <th colSpan={4} data-tip={`${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
+                                        <span className='truncate'>{texts.common.status}</span>
+                                    </th>
+                                    <th className='text-right'>
+                                        <span className='truncate'>{texts.common.timestamp}</span>
+                                    </th>
                                 </tr>
-                            }
-                        </tbody>
-                    </Table>
+                            </thead>
+
+                            <tbody>
+                                {notifications.items &&
+                                    <>
+                                        {notifications.items.map(notification => (
+                                            <NotificationRow key={notification.id} notification={notification} />
+                                        ))}
+                                    </>
+                                }
+
+                                {notifications.isLoaded && notifications.items && notifications.items.length === 0 &&
+                                    <tr>
+                                        <td colSpan={7}>{texts.notifications.notificationsNotFound}</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </Table>
+                    </div>
                 </CardBody>
             </Card>
 

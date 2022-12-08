@@ -33,9 +33,9 @@ public class LogsController : BaseController
     [HttpGet("api/apps/{appId:notEmpty}/logs/")]
     [AppPermission(NotifoRoles.AppAdmin)]
     [Produces(typeof(ListResponseDto<LogEntryDto>))]
-    public async Task<IActionResult> GetLogs(string appId, [FromQuery] QueryDto q)
+    public async Task<IActionResult> GetLogs(string appId, [FromQuery] LogQueryDto q)
     {
-        var medias = await logStore.QueryAsync(appId, q.ToQuery<LogQuery>(true), HttpContext.RequestAborted);
+        var medias = await logStore.QueryAsync(appId, q.ToQuery(true), HttpContext.RequestAborted);
 
         var response = new ListResponseDto<LogEntryDto>();
 

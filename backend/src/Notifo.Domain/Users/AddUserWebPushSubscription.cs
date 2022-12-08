@@ -5,8 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Esprima;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels.WebPush;
+using Notifo.Domain.Log;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
@@ -47,5 +50,13 @@ public sealed class AddUserWebPushSubscription : UserCommand
         };
 
         return new ValueTask<User?>(newUser);
+    }
+
+    public override ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    {
+        serviceProvider.GetRequiredService<ILogStore>()
+            .LogAsync(AppId, UserId, LogMessage.WebPush_TokenAdded("System", UserId, Subscription.Endpoint));
+
+        return default;
     }
 }

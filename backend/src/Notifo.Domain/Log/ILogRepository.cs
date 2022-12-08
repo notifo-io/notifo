@@ -15,6 +15,6 @@ public interface ILogRepository
     Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,
         CancellationToken ct = default);
 
-    Task<IResultList<LogEntry>> BatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
+    Task<IResultList<LogEntry>> BatchWriteAsync(IEnumerable<(LogWrite Write, int Count, Instant Now)> updates,
         CancellationToken ct = default);
 }

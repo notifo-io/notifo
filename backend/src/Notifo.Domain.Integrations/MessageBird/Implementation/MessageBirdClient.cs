@@ -119,7 +119,7 @@ public sealed class MessageBirdClient : IMessageBirdClient
                         policy = "deterministic",
                         code
                     },
-                    ["params"] = parameters?.Select(x => new Dictionary<string, object>
+                    ["params"] = parameters?.Select<string, Dictionary<string, object>>(x => new Dictionary<string, object>
                     {
                         ["default"] = x
                     }),

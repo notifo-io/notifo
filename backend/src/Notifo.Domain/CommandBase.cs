@@ -21,4 +21,9 @@ public abstract class CommandBase
     public virtual bool CanCreate => false;
 
     public virtual bool IsUpsert => true;
+
+    public virtual ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    {
+        return default;
+    }
 }

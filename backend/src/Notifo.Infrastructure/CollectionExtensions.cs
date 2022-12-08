@@ -148,7 +148,7 @@ public static class CollectionExtensions
         return source.Concat(Enumerable.Repeat(value, 1));
     }
 
-    public static TResult[] Map<TResult, T>(this T[] value, Func<T, TResult> convert)
+    public static TResult[] Select<TResult, T>(this T[] value, Func<T, TResult> convert)
     {
         var result = new TResult[value.Length];
 

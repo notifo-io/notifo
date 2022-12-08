@@ -20,6 +20,12 @@ export const LogEntryRow = React.memo((props: LogEntryRowProps) => {
     return (
         <tr>
             <td>
+                <span className='truncate'>{entry.eventCode}</span>
+            </td>
+            <td>
+                <span className='truncate'>{entry.system}</span>
+            </td>
+            <td>
                 <span className='truncate'>{entry.message}</span>
             </td>
             <td>

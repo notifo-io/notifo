@@ -120,6 +120,8 @@ public sealed class ChannelTemplateStore<T> : IChannelTemplateStore<T>, IRequest
 
                 await repository.UpsertAsync(newTemplate, etag, ct);
                 template = newTemplate;
+
+                await command.ExecutedAsync(serviceProvider);
             }
 
             return newTemplate;

@@ -7,6 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 import { Button, Col, FormGroup, Label, Row } from 'reactstrap';
 import { ApiValue, FormatDate, Icon, useEventCallback } from '@app/framework';
 import { UserDto } from '@app/service';
@@ -92,6 +93,14 @@ export const UserDetails = (props: UserDetailsProps) => {
                     <FormatDate date={user.lastNotification} />
                 </Col>
             </FormGroup>
+
+            <hr />
+
+            <div className='text-sm'>
+                <NavLink to={`/app/${appId}/log/${user.id}`}>
+                    {texts.users.logs}
+                </NavLink>
+            </div>
 
             <hr />
 
