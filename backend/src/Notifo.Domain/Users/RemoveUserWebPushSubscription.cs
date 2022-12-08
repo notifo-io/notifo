@@ -6,6 +6,9 @@
 // ==========================================================================
 
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Log;
+using Notifo.Domain.Subscriptions;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
@@ -42,6 +45,14 @@ public sealed class RemoveUserWebPushSubscription : UserCommand
         };
 
         return new ValueTask<User?>(newUser);
+    }
+
+    public override ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    {
+        serviceProvider.GetRequiredService<ILogStore>()
+            .LogAsync(AppId, UserId, LogMessage.WebPush_TokenRemoved("System", UserId, Endpoint));
+
+        return default;
     }
 
     private static string Simplify(string url)

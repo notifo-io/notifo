@@ -181,7 +181,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
         catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
         {
-            await logStore.LogAsync(job.Tracking.AppId!, LogMessage.WebPush_TokenRemoved(Name, job.Tracking.UserId!, job.Subscription.Endpoint));
+            await logStore.LogAsync(job.Tracking.AppId!, LogMessage.WebPush_TokenInvalid(Name, job.Tracking.UserId!, job.Subscription.Endpoint));
 
             var command = new RemoveUserWebPushSubscription
             {

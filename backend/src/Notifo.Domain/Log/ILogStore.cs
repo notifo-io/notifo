@@ -15,4 +15,6 @@ public interface ILogStore
         CancellationToken ct = default);
 
     Task LogAsync(string appId, LogMessage message);
+
+    Task LogAsync(string appId, string userId, LogMessage message);
 }

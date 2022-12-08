@@ -303,7 +303,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (MobilePushTokenExpiredException)
             {
-                await logStore.LogAsync(app.Id, LogMessage.MobilePush_TokenRemoved(Name, job.Tracking.UserId!, job.Token));
+                await logStore.LogAsync(app.Id, LogMessage.MobilePush_TokenInvalid(Name, job.Tracking.UserId!, job.Token));
 
                 var command = new RemoveUserMobileToken
                 {

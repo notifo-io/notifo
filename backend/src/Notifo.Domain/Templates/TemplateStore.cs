@@ -99,6 +99,8 @@ public sealed class TemplateStore : ITemplateStore, IRequestHandler<TemplateComm
 
                 await repository.UpsertAsync(newTemplate, etag, ct);
                 template = newTemplate;
+
+                await command.ExecutedAsync(serviceProvider);
             }
 
             return newTemplate;

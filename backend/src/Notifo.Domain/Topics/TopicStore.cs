@@ -91,6 +91,8 @@ public sealed class TopicStore : ITopicStore, IRequestHandler<TopicCommand, Topi
 
                 await repository.UpsertAsync(newTopic, etag, ct);
                 topic = newTopic;
+
+                await command.ExecutedAsync(serviceProvider);
             }
 
             return topic;

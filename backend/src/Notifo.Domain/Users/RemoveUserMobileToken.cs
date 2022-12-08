@@ -6,6 +6,8 @@
 // ==========================================================================
 
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.Log;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
@@ -42,6 +44,14 @@ public sealed class RemoveUserMobileToken : UserCommand
         };
 
         return new ValueTask<User?>(newUser);
+    }
+
+    public override ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    {
+        serviceProvider.GetRequiredService<ILogStore>()
+            .LogAsync(AppId, UserId, LogMessage.MobilePush_TokenRemoved("System", UserId, Token));
+
+        return default;
     }
 
     private static string Simplify(string url)

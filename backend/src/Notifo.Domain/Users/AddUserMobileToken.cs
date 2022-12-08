@@ -6,7 +6,9 @@
 // ==========================================================================
 
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels.MobilePush;
+using Notifo.Domain.Log;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Validation;
@@ -47,5 +49,13 @@ public sealed class AddUserMobileToken : UserCommand
         };
 
         return new ValueTask<User?>(newUser);
+    }
+
+    public override ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    {
+        serviceProvider.GetRequiredService<ILogStore>()
+            .LogAsync(AppId, UserId, LogMessage.MobilePush_TokenAdded("System", UserId, Token.Token));
+
+        return default;
     }
 }

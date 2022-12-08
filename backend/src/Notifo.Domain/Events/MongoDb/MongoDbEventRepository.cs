@@ -140,14 +140,14 @@ public sealed class MongoDbEventRepository : MongoDbStore<MongoDbEvent>, IEventR
         }
     }
 
-    private static FilterDefinition<MongoDbEvent> BuildFilter(string appId, EventQuery? query)
+    private static FilterDefinition<MongoDbEvent> BuildFilter(string appId, EventQuery query)
     {
         var filters = new List<FilterDefinition<MongoDbEvent>>
         {
             Filter.Eq(x => x.Doc.AppId, appId)
         };
 
-        if (!string.IsNullOrWhiteSpace(query?.Query))
+        if (!string.IsNullOrWhiteSpace(query.Query))
         {
             var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
@@ -157,9 +157,9 @@ public sealed class MongoDbEventRepository : MongoDbStore<MongoDbEvent>, IEventR
                     Filter.Regex(x => x.SearchText, regex)));
         }
 
-        if (query?.Channels?.Length > 0)
+        if (query.Channels?.Length > 0)
         {
-            var channelFilters = query.Channels.Map(x => Filter.Eq($"d.Settings.{x}.Send", "Send"));
+            var channelFilters = query.Channels.Select(x => Filter.Eq($"d.Settings.{x}.Send", "Send"));
 
             filters.Add(Filter.Or(channelFilters));
         }

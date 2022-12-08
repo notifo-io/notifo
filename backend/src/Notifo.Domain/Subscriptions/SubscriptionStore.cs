@@ -80,6 +80,8 @@ public sealed class SubscriptionStore : ISubscriptionStore, IRequestHandler<Subs
             {
                 await repository.UpsertAsync(newSubscription, etag, ct);
                 newSubscription = subscription;
+
+                await command.ExecutedAsync(serviceProvider);
             }
 
             return subscription;

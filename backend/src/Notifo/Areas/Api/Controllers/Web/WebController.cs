@@ -76,21 +76,21 @@ public sealed class WebController : BaseController
 
         if (request.Delivered?.Length > 0)
         {
-            var tokens = request.Delivered.Select(x => TrackingToken.Parse(x)).ToArray();
+            var tokens = Enumerable.Select(request.Delivered, x => TrackingToken.Parse(x)).ToArray();
 
             await userNotificationService.TrackDeliveredAsync(tokens);
         }
 
         if (request.Seen?.Length > 0)
         {
-            var tokens = request.Seen.Select(x => TrackingToken.Parse(x)).ToArray();
+            var tokens = Enumerable.Select(request.Seen, x => TrackingToken.Parse(x)).ToArray();
 
             await userNotificationService.TrackSeenAsync(tokens);
         }
 
         if (request.Confirmed?.Length > 0)
         {
-            var tokens = request.Confirmed.Select(x => TrackingToken.Parse(x)).ToArray();
+            var tokens = Enumerable.Select(request.Confirmed, x => TrackingToken.Parse(x)).ToArray();
 
             await userNotificationService.TrackConfirmedAsync(tokens);
         }

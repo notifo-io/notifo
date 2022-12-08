@@ -12,6 +12,8 @@ using Notifo.Infrastructure;
 using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Tasks;
 
+#pragma warning disable CA2254 // Template should be a static expression
+
 namespace Notifo.Domain.Log;
 
 public sealed class LogStore : ILogStore, IDisposable
@@ -50,8 +52,9 @@ public sealed class LogStore : ILogStore, IDisposable
 
     public Task LogAsync(string appId, LogMessage message)
     {
+        Guard.NotNullOrEmpty(appId);
         Guard.NotNullOrEmpty(message.System);
-        Guard.NotNullOrEmpty(message.Text);
+        Guard.NotNullOrEmpty(message.Message);
 
         var (eventCode, text, system) = message;
 
@@ -62,21 +65,47 @@ public sealed class LogStore : ILogStore, IDisposable
             var args = new object?[argCount + 2];
 
             args[0] = appId;
-            args[1] = system;
+            args[1] = message.System;
 
             if (message.FormatArgs != null)
             {
                 Array.Copy(message.FormatArgs, 0, args, 2, message.FormatArgs.Length);
             }
 
-#pragma warning disable CA2254 // Template should be a static expression
             log.LogInformation(message.EventCode, message.Exception, $"User log for app {{appId}} from system {{system}}: {text}.", args);
-#pragma warning restore CA2254 // Template should be a static expression
         }
 
-        var combinedText = $"{system.ToUpperInvariant()}: {text}";
+        return collector.AddAsync(new LogWrite(appId, null, eventCode, text, system));
+    }
 
-        return collector.AddAsync(appId, eventCode, combinedText, system);
+    public Task LogAsync(string appId, string userId, LogMessage message)
+    {
+        Guard.NotNullOrEmpty(appId);
+        Guard.NotNullOrEmpty(userId);
+        Guard.NotNullOrEmpty(message.System);
+        Guard.NotNullOrEmpty(message.Message);
+
+        var (eventCode, text, system) = message;
+
+        if (message.FormatText != null)
+        {
+            var argCount = message.FormatArgs?.Length ?? 0;
+
+            var args = new object?[argCount + 3];
+
+            args[0] = appId;
+            args[1] = userId;
+            args[2] = message.System;
+
+            if (message.FormatArgs != null)
+            {
+                Array.Copy(message.FormatArgs, 0, args, 3, message.FormatArgs.Length);
+            }
+
+            log.LogInformation(message.EventCode, message.Exception, $"User log for app {{appId}} and user {{userId}} from system {{system}}: {message.Message}.", args);
+        }
+
+        return collector.AddAsync(new LogWrite(appId, userId, eventCode, text, system));
     }
 
     public Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,

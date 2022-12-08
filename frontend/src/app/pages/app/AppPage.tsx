@@ -214,7 +214,7 @@ export const AppPage = () => {
                     <MessagingTemplatePage />
                 </Route>
 
-                <Route path={combineUrl(match.url, 'log/')} exact>
+                <Route path={combineUrl(match.url, 'log/:userId?')} exact>
                     <LogPage />
                 </Route>
 

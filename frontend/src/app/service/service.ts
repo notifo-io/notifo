@@ -1916,9 +1916,50 @@ export class PingClient {
     /**
      * Get ping status of the API.
      * @return Service ping successful.
+     * @deprecated
+     */
+    getOldPing(): Promise<void> {
+        let url_ = this.baseUrl + "/ping";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetOldPing(_response);
+        });
+    }
+
+    protected processGetOldPing(response: Response): Promise<void> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Get ping status of the API.
+     * @return Service ping successful.
      */
     getPing(): Promise<void> {
-        let url_ = this.baseUrl + "/ping";
+        let url_ = this.baseUrl + "/api/ping";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_: RequestInit = {
@@ -1951,6 +1992,48 @@ export class PingClient {
             });
         }
         return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Get some info about the API.
+     */
+    getInfo(): Promise<InfoDto> {
+        let url_ = this.baseUrl + "/api/info";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetInfo(_response);
+        });
+    }
+
+    protected processGetInfo(response: Response): Promise<InfoDto> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as InfoDto;
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<InfoDto>(null as any);
     }
 }
 
@@ -3110,16 +3193,27 @@ export class LogsClient {
     /**
      * Query log entries.
      * @param appId The app where the log entries belongs to.
+     * @param systems (optional) The systems.
+     * @param userId (optional) The user id.
+     * @param eventCode (optional) The event code.
      * @param query (optional) The optional query to search for items.
      * @param take (optional) The number of items to return.
      * @param skip (optional) The number of items to skip.
      * @return Log entries returned.
      */
-    getLogs(appId: string | null, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfLogEntryDto> {
+    getLogs(appId: string | null, systems?: string[] | null | undefined, userId?: string | null | undefined, eventCode?: number | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfLogEntryDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/logs?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
+        if (systems !== undefined && systems !== null)
+            systems && systems.forEach(item => { url_ += "Systems=" + encodeURIComponent("" + item) + "&"; });
+        if (userId !== undefined && userId !== null)
+            url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
+        if (eventCode === null)
+            throw new Error("The parameter 'eventCode' cannot be null.");
+        else if (eventCode !== undefined)
+            url_ += "EventCode=" + encodeURIComponent("" + eventCode) + "&";
         if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
@@ -6157,6 +6251,11 @@ export interface UpdateSystemUserDto {
     roles: string[];
 }
 
+export interface InfoDto {
+    /** The actual version. */
+    version: string;
+}
+
 export interface ListResponseDtoOfUserNotificationDetailsDto {
     /** The items. */
     items: UserNotificationDetailsDto[];
@@ -6357,10 +6456,14 @@ export interface ListResponseDtoOfLogEntryDto {
 export interface LogEntryDto {
     /** The log message. */
     message: string;
+    /** The system. */
+    system: string;
     /** The first time this message has been seen. */
     firstSeen: string;
     /** The last time this message has been seen. */
     lastSeen: string;
+    /** The event code. */
+    eventCode: number;
     /** The number of items the message has been seen. */
     count: number;
 }

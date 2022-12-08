@@ -15,7 +15,9 @@ public sealed class LogEntry
 
     public string Message { get; init; }
 
-    public string? System { get; init; }
+    public string System { get; set; }
+
+    public string? UserId { get; init; }
 
     public string FirstWriteId { get; init; }
 

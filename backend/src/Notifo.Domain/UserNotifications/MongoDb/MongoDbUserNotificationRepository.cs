@@ -238,7 +238,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
 
             foreach (var userId in userIds)
             {
-                var filter = BuildFilter(appId, userId);
+                var filter = BuildFilter(appId, userId, new UserNotificationQuery());
 
                 var item = await Collection.Find(filter).Limit(1).SortByDescending(x => x.Created).Only(x => x.Created).FirstOrDefaultAsync(ct);
 
@@ -277,7 +277,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))
         {
-            var batch = await TrackingBatch.CreateAsync(Collection, updates.Select(x => x.Token), ct);
+            var batch = await TrackingBatch.CreateAsync(Collection, Enumerable.Select(updates, x => x.Token), ct);
 
             batch.UpdateStatus(updates, now);
 
@@ -393,7 +393,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         return Filter.And(filters);
     }
 
-    private static FilterDefinition<UserNotification> BuildFilter(string appId, string userId, UserNotificationQuery? query = null)
+    private static FilterDefinition<UserNotification> BuildFilter(string appId, string userId, UserNotificationQuery query)
     {
         var filters = new List<FilterDefinition<UserNotification>>
         {
@@ -403,7 +403,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
 
         AddDefaultFilters(query, filters);
 
-        if (!string.IsNullOrWhiteSpace(query?.CorrelationId))
+        if (!string.IsNullOrWhiteSpace(query.CorrelationId))
         {
             filters.Add(Filter.Eq(x => x.CorrelationId, query.CorrelationId));
         }
@@ -411,7 +411,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         return Filter.And(filters);
     }
 
-    private static FilterDefinition<UserNotification> BuildFilter(string appId, UserNotificationQuery? query = null)
+    private static FilterDefinition<UserNotification> BuildFilter(string appId, UserNotificationQuery query)
     {
         var filters = new List<FilterDefinition<UserNotification>>
         {
@@ -432,12 +432,12 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         return Filter.And(filters);
     }
 
-    private static void AddDefaultFilters(UserNotificationQuery? query, List<FilterDefinition<UserNotification>> filters)
+    private static void AddDefaultFilters(UserNotificationQuery query, List<FilterDefinition<UserNotification>> filters)
     {
         // Always query by updated flag to force the index to be used.
-        filters.Add(Filter.Gte(x => x.Updated, query?.After ?? default));
+        filters.Add(Filter.Gte(x => x.Updated, query.After));
 
-        switch (query?.Scope)
+        switch (query.Scope)
         {
             case UserNotificationQueryScope.Deleted:
                 filters.Add(Filter.Eq(x => x.IsDeleted, true));
@@ -450,16 +450,16 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
                 break;
         }
 
-        if (!string.IsNullOrWhiteSpace(query?.Query))
+        if (!string.IsNullOrWhiteSpace(query.Query))
         {
             var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
             filters.Add(Filter.Regex(x => x.Formatting.Subject, regex));
         }
 
-        if (query?.Channels?.Length > 0)
+        if (query.Channels?.Length > 0)
         {
-            var channelFilters = query.Channels.Map(x => Filter.Eq($"Channels.{x}.Setting.Send", "Send"));
+            var channelFilters = query.Channels.Select(x => Filter.Eq($"Channels.{x}.Setting.Send", "Send"));
 
             filters.Add(Filter.Or(channelFilters));
         }

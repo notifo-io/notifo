@@ -5,18 +5,20 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
-import { FormError, Icon, ListPager, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
+import { FormError, Icon, ListMultiFilter, ListPager, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { CHANNELS } from '@app/shared/utils/model';
 import { loadNotifications, useApp, useNotifications } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationRow } from './NotificationRow';
 
-const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook');
+const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook').map(value => ({
+    value,
+    label: texts.notificationSettings[value]?.name || value,
+}));
 
 export interface NotificationsProps {
     // The user id.
@@ -49,20 +51,6 @@ export const Notifications = (props: NotificationsProps) => {
 
     const doLoad = useEventCallback((q?: Partial<Query>) => {
         dispatch(loadNotifications(appId, userId, q, undefined, channels));
-    });
-
-    const doToggleChannel = useEventCallback((channel: string) => {
-        setChannels(channels => {
-            let newChannels: string[];
-
-            if (channels.indexOf(channel) >= 0) {
-                newChannels = channels.filter(x => x !== channel);
-            } else {
-                newChannels = [...channels, channel];
-            }
-
-            return newChannels.length >= NON_WEBHOOKS.length ? [] : newChannels;
-        });
     });
 
     return (
@@ -102,15 +90,7 @@ export const Notifications = (props: NotificationsProps) => {
 
             <FormError error={notifications.error} />
 
-            <Row className='channels-filter' noGutters>
-                {NON_WEBHOOKS.map(channel => 
-                    <Col key={channel} style={{ width: `100/${NON_WEBHOOKS.length}%` }}>
-                        <Button block color='blank' className={classNames('btn-flat', { active: channels.indexOf(channel) >= 0 })} onClick={() => doToggleChannel(channel)}>
-                            {texts.notificationSettings[channel].name}
-                        </Button>
-                    </Col>,
-                )}
-            </Row>
+            <ListMultiFilter value={channels} onChange={setChannels} options={NON_WEBHOOKS} />
 
             <Card className='card-table'>
                 <CardBody>

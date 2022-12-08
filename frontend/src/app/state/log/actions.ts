@@ -12,13 +12,13 @@ import { selectApp } from './../shared';
 import { LogState } from './state';
 
 const list = listThunk<LogState, LogEntryDto>('log', 'entries', async params => {
-    const { items, total } = await Clients.Logs.getLogs(params.appId, params.search, params.take, params.skip);
+    const { items, total } = await Clients.Logs.getLogs(params.appId, params.systems, params.userId, undefined, params.search, params.take, params.skip);
 
     return { items, total };
 });
 
-export const loadLog = (appId: string, query?: Partial<Query>, reset = false) => {
-    return list.action({ appId, query, reset });
+export const loadLog = (appId: string, query?: Partial<Query>, reset = false, systems?: string[], userId?: string) => {
+    return list.action({ appId, query, reset, systems, userId });
 };
 
 const initialState: LogState = {

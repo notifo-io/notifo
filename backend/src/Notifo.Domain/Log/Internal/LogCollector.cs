@@ -19,7 +19,7 @@ public sealed class LogCollector
     private readonly IClock clock;
     private readonly int updatesCapacity;
     private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-    private readonly ConcurrentDictionary<(string AppId, int EventCode, string Text, string System), int> updateQueue;
+    private readonly ConcurrentDictionary<LogWrite, int> updateQueue;
 
     public Action<IResultList<LogEntry>>? OnNewEntries { get; set; }
 
@@ -28,19 +28,19 @@ public sealed class LogCollector
         this.repository = repository;
 
         updatesCapacity = capacity;
-        updateQueue = new ConcurrentDictionary<(string AppId, int EventCode, string Text, string System), int>(Environment.ProcessorCount, updatesCapacity);
+        updateQueue = new ConcurrentDictionary<LogWrite, int>(Environment.ProcessorCount, updatesCapacity);
 
         timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
 
         this.clock = clock;
     }
 
-    public async Task AddAsync(string appId, int eventCode, string text, string system)
+    public async Task AddAsync(LogWrite write)
     {
         readerWriterLock.EnterReadLock();
         try
         {
-            updateQueue.AddOrUpdate((appId, eventCode, text, system), 1, (_, value) => value + 1);
+            updateQueue.AddOrUpdate(write, 1, (_, value) => value + 1);
         }
         finally
         {
@@ -66,7 +66,9 @@ public sealed class LogCollector
             return;
         }
 
-        List<(string AppId, int EventCode, string Message, string Reason, int Count)> commands;
+        var now = clock.GetCurrentInstant();
+
+        List<(LogWrite, int, Instant)> commands;
 
         readerWriterLock.EnterWriteLock();
         try
@@ -76,7 +78,7 @@ public sealed class LogCollector
                 return;
             }
 
-            commands = updateQueue.Select(x => (x.Key.AppId, x.Key.EventCode, x.Key.Text, x.Key.System, x.Value)).ToList();
+            commands = updateQueue.Select(x => (x.Key, x.Value, now)).ToList();
         }
         finally
         {
@@ -87,9 +89,7 @@ public sealed class LogCollector
 
         if (commands.Count > 0)
         {
-            var now = clock.GetCurrentInstant();
-
-            var newEntries = await repository.BatchWriteAsync(commands, now, ct);
+            var newEntries = await repository.BatchWriteAsync(commands, ct);
 
             if (newEntries.Count > 0)
             {

@@ -7,6 +7,7 @@
 
 using System.Text.RegularExpressions;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using NodaTime;
 using Notifo.Infrastructure;
@@ -16,6 +17,17 @@ namespace Notifo.Domain.Log.MongoDb;
 
 public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRepository
 {
+    static MongoDbLogRepository()
+    {
+        BsonClassMap.RegisterClassMap<LogEntry>(cm =>
+        {
+            cm.AutoMap();
+
+            cm.MapProperty(x => x.UserId)
+                .SetIgnoreIfNull(true);
+        });
+    }
+
     public MongoDbLogRepository(IMongoDatabase database)
         : base(database)
     {
@@ -33,12 +45,11 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
         {
             new CreateIndexModel<MongoDbLogEntry>(
                 IndexKeys
-                    .Ascending(x => x.Entry.AppId)
-                    .Ascending(x => x.Entry.Message)
-                    .Descending(x => x.Entry.LastSeen)),
+                    .Ascending(x => x.Doc.AppId)
+                    .Ascending(x => x.Doc.UserId)),
             new CreateIndexModel<MongoDbLogEntry>(
                 IndexKeys
-                    .Ascending(x => x.Entry.FirstWriteId)),
+                    .Ascending(x => x.Doc.FirstWriteId)),
         }, null, ct);
     }
 
@@ -49,7 +60,7 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
         {
             var filter = BuildFilter(appId, query);
 
-            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Entry.LastSeen).ToListAsync(query, ct);
+            var resultItems = await Collection.Find(filter).SortByDescending(x => x.Doc.LastSeen).ToListAsync(query, ct);
             var resultTotal = (long)resultItems.Count;
 
             if (query.ShouldQueryTotal(resultItems))
@@ -64,7 +75,7 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
         }
     }
 
-    public async Task<IResultList<LogEntry>> BatchWriteAsync(IEnumerable<(string AppId, int EventCode, string Text, string System, int Count)> updates, Instant now,
+    public async Task<IResultList<LogEntry>> BatchWriteAsync(IEnumerable<(LogWrite Write, int Count, Instant Now)> updates,
         CancellationToken ct = default)
     {
         using (var activity = Telemetry.Activities.StartActivity("MongoDbLogRepository/BatchWriteAsync"))
@@ -73,21 +84,23 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
             var writeId = Guid.NewGuid().ToString();
             var writes = new List<WriteModel<MongoDbLogEntry>>();
 
-            foreach (var (appId, eventCode, text, system, count) in updates)
+            foreach (var (write, count, now) in updates)
             {
-                var docId = MongoDbLogEntry.CreateId(appId, text);
+                var (appId, userId, eventCode, message, system) = write;
+                var docId = MongoDbLogEntry.CreateId(appId, userId, eventCode, message, system);
 
                 var update =
                     Update
                         .SetOnInsert(x => x.DocId, docId)
-                        .SetOnInsert(x => x.Entry.AppId, appId)
-                        .SetOnInsert(x => x.Entry.EventCode, eventCode)
-                        .SetOnInsert(x => x.Entry.FirstSeen, now)
-                        .SetOnInsert(x => x.Entry.FirstWriteId, writeId)
-                        .SetOnInsert(x => x.Entry.Message, text)
-                        .SetOnInsert(x => x.Entry.System, system)
-                        .Set(x => x.Entry.LastSeen, now)
-                        .Inc(x => x.Entry.Count, count);
+                        .SetOnInsert(x => x.Doc.AppId, appId)
+                        .SetOnInsert(x => x.Doc.EventCode, eventCode)
+                        .SetOnInsert(x => x.Doc.FirstSeen, now)
+                        .SetOnInsert(x => x.Doc.FirstWriteId, writeId)
+                        .SetOnInsert(x => x.Doc.Message, message)
+                        .SetOnInsert(x => x.Doc.UserId, userId)
+                        .SetOnInsert(x => x.Doc.System, system)
+                        .Set(x => x.Doc.LastSeen, now)
+                        .Inc(x => x.Doc.Count, count);
 
                 var model = new UpdateOneModel<MongoDbLogEntry>(Filter.Eq(x => x.DocId, docId), update)
                 {
@@ -100,7 +113,7 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
             await Collection.BulkWriteAsync(writes, cancellationToken: ct);
 
             // Every log enty with the first write token has been just created.
-            var resultItems = await Collection.Find(x => x.Entry.FirstWriteId == writeId).ToListAsync(ct);
+            var resultItems = await Collection.Find(x => x.Doc.FirstWriteId == writeId).ToListAsync(ct);
             var resultTotal = (long)resultItems.Count;
 
             activity?.SetTag("numNewEntries", resultItems.Count);
@@ -113,14 +126,43 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
     {
         var filters = new List<FilterDefinition<MongoDbLogEntry>>
         {
-            Filter.Eq(x => x.Entry.AppId, appId)
+            Filter.Eq(x => x.Doc.AppId, appId)
         };
+
+        if (!string.IsNullOrWhiteSpace(query.UserId))
+        {
+            filters.Add(Filter.Eq(x => x.Doc.UserId, query.UserId));
+        }
+        else
+        {
+            filters.Add(Filter.Or(Filter.Exists(x => x.Doc.UserId, false), Filter.Eq(x => x.Doc.UserId, null)));
+        }
 
         if (!string.IsNullOrWhiteSpace(query.Query))
         {
             var regex = new BsonRegularExpression(Regex.Escape(query.Query), "i");
 
-            filters.Add(Filter.Regex(x => x.Entry.Message, regex));
+            filters.Add(Filter.Regex(x => x.Doc.Message, regex));
+        }
+
+        if (query.Systems?.Length > 0)
+        {
+            var ors = new List<FilterDefinition<MongoDbLogEntry>>()
+            {
+                Filter.In(x => x.Doc.System, query.Systems)
+            };
+
+            foreach (var system in query.Systems)
+            {
+                ors.Add(Filter.Regex(x => x.Doc.System, new BsonRegularExpression($"^{system}:", "i")));
+            }
+
+            filters.Add(Filter.Or(ors));
+        }
+
+        if (query.EventCode > 0)
+        {
+            filters.Add(Filter.Eq(x => x.Doc.EventCode, query.EventCode));
         }
 
         return Filter.And(filters);
