@@ -5,11 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Globalization;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Log;
-using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
@@ -53,8 +51,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
 
         if (!app.Languages.Contains(language))
         {
-            logstore.LogAsync(app.Id, string.Format(CultureInfo.InvariantCulture, Texts.UserLanguage_NotValid, language, app.Language));
-
+            logstore.LogAsync(app.Id, LogMessage.User_LanguageNotValid("System", user.Id, language, app.Language));
             language = app.Language;
         }
 

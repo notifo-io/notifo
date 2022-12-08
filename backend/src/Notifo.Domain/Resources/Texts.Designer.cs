@@ -169,83 +169,11 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to User has been deleted before sending email..
-        /// </summary>
-        internal static string Email_UserDeleted {
-            get {
-                return ResourceManager.GetString("Email_UserDeleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User has no email address anymore..
-        /// </summary>
-        internal static string Email_UserNoEmail {
-            get {
-                return ResourceManager.GetString("Email_UserNoEmail", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Email template generates unknown error..
         /// </summary>
         internal static string EmailUnknownErrror {
             get {
                 return ResourceManager.GetString("EmailUnknownErrror", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event with this id has already been processed..
-        /// </summary>
-        internal static string Events_AlreadyProcessed {
-            get {
-                return ResourceManager.GetString("Events_AlreadyProcessed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to create event..
-        /// </summary>
-        internal static string Events_CreationFailed {
-            get {
-                return ResourceManager.GetString("Events_CreationFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event has neither a subject nor a template code..
-        /// </summary>
-        internal static string Events_NoSubjectOrTemplateCode {
-            get {
-                return ResourceManager.GetString("Events_NoSubjectOrTemplateCode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event has no subscriber..
-        /// </summary>
-        internal static string Events_NoSubscriber {
-            get {
-                return ResourceManager.GetString("Events_NoSubscriber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event has no topic..
-        /// </summary>
-        internal static string Events_NoTopic {
-            get {
-                return ResourceManager.GetString("Events_NoTopic", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Event is too old and will be skipped..
-        /// </summary>
-        internal static string Events_TooOld {
-            get {
-                return ResourceManager.GetString("Events_TooOld", resourceCulture);
             }
         }
         
@@ -327,33 +255,6 @@ namespace Notifo.Domain.Resources {
         internal static string IntegrationPropertyRequired {
             get {
                 return ResourceManager.GetString("IntegrationPropertyRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Integration has been removed..
-        /// </summary>
-        internal static string Messaging_ConfigReset {
-            get {
-                return ResourceManager.GetString("Messaging_ConfigReset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Integration has been removed..
-        /// </summary>
-        internal static string MobilePush_ConfigReset {
-            get {
-                return ResourceManager.GetString("MobilePush_ConfigReset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Token has been removed..
-        /// </summary>
-        internal static string MobilePush_TokenRemoved {
-            get {
-                return ResourceManager.GetString("MobilePush_TokenRemoved", resourceCulture);
             }
         }
         
@@ -444,15 +345,6 @@ namespace Notifo.Domain.Resources {
         internal static string NotificationTemplateUpserted {
             get {
                 return ResourceManager.GetString("NotificationTemplateUpserted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Integration has been removed..
-        /// </summary>
-        internal static string Sms_ConfigReset {
-            get {
-                return ResourceManager.GetString("Sms_ConfigReset", resourceCulture);
             }
         }
         
@@ -651,15 +543,6 @@ namespace Notifo.Domain.Resources {
         internal static string Webhook_URLLabel {
             get {
                 return ResourceManager.GetString("Webhook_URLLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Token does not exist anymore..
-        /// </summary>
-        internal static string WebPush_TokenRemoved {
-            get {
-                return ResourceManager.GetString("WebPush_TokenRemoved", resourceCulture);
             }
         }
     }

@@ -11,7 +11,6 @@ using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
-using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
@@ -264,7 +263,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
                 if (senders.Count == 0)
                 {
-                    await SkipAsync(job, Texts.MobilePush_ConfigReset);
+                    await SkipAsync(job, LogMessage.Integration_Removed(Name));
                     return;
                 }
 
@@ -274,7 +273,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(app.Id, Name, ex.Message);
+                await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -295,7 +294,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 {
                     IsConfirmed = job.IsConfirmed,
                     DeviceType = job.DeviceType,
-                    Token = job.Token,
+                    DeviceToken = job.Token,
                     Wakeup = notification.Formatting == null
                 };
 
@@ -304,7 +303,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (MobilePushTokenExpiredException)
             {
-                await logStore.LogAsync(app.Id, sender.Name, Texts.MobilePush_TokenRemoved);
+                await logStore.LogAsync(app.Id, LogMessage.MobilePush_TokenRemoved(Name, job.Tracking.UserId!, job.Token));
 
                 var command = new RemoveUserMobileToken
                 {
@@ -316,7 +315,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(app.Id, sender.Name, ex.Message);
+                await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
 
                 if (sender == lastSender)
                 {
@@ -342,10 +341,10 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    private async Task SkipAsync(MobilePushJob job, string reason)
+    private async Task SkipAsync(MobilePushJob job, LogMessage message)
     {
-        await logStore.LogAsync(job.Notification.AppId, Name, reason);
+        await logStore.LogAsync(job.Notification.AppId, message);
 
-        await UpdateAsync(job, ProcessStatus.Skipped);
+        await UpdateAsync(job, ProcessStatus.Skipped, message.Reason);
     }
 }

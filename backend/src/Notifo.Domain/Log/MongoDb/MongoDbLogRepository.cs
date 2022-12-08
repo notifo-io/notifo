@@ -64,7 +64,7 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
         }
     }
 
-    public async Task<IResultList<LogEntry>> BatchWriteAsync(IEnumerable<(string AppId, string Message, int Count)> updates, Instant now,
+    public async Task<IResultList<LogEntry>> BatchWriteAsync(IEnumerable<(string AppId, int EventCode, string Text, string System, int Count)> updates, Instant now,
         CancellationToken ct = default)
     {
         using (var activity = Telemetry.Activities.StartActivity("MongoDbLogRepository/BatchWriteAsync"))
@@ -73,17 +73,19 @@ public sealed class MongoDbLogRepository : MongoDbStore<MongoDbLogEntry>, ILogRe
             var writeId = Guid.NewGuid().ToString();
             var writes = new List<WriteModel<MongoDbLogEntry>>();
 
-            foreach (var (appId, message, count) in updates)
+            foreach (var (appId, eventCode, text, system, count) in updates)
             {
-                var docId = MongoDbLogEntry.CreateId(appId, message);
+                var docId = MongoDbLogEntry.CreateId(appId, text);
 
                 var update =
                     Update
                         .SetOnInsert(x => x.DocId, docId)
-                        .SetOnInsert(x => x.Entry.FirstWriteId, writeId)
-                        .SetOnInsert(x => x.Entry.FirstSeen, now)
                         .SetOnInsert(x => x.Entry.AppId, appId)
-                        .SetOnInsert(x => x.Entry.Message, message)
+                        .SetOnInsert(x => x.Entry.EventCode, eventCode)
+                        .SetOnInsert(x => x.Entry.FirstSeen, now)
+                        .SetOnInsert(x => x.Entry.FirstWriteId, writeId)
+                        .SetOnInsert(x => x.Entry.Message, text)
+                        .SetOnInsert(x => x.Entry.System, system)
                         .Set(x => x.Entry.LastSeen, now)
                         .Inc(x => x.Entry.Count, count);
 

@@ -7,11 +7,9 @@
 
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
-using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Integrations.Telekom;
 

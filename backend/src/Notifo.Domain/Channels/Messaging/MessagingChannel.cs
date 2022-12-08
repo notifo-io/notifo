@@ -6,13 +6,11 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
-using Notifo.Domain.Resources;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
@@ -79,19 +77,14 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
             if (notification != null)
             {
-                await UpdateAsync(notification, result);
-
-                if (!string.IsNullOrEmpty(details))
-                {
-                    await logStore.LogAsync(notification.AppId, sender.Name, details);
-                }
+                await UpdateAsync(notification, result, sender, details);
             }
 
             userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
         }
     }
 
-    private async Task UpdateAsync(UserNotification notification, MessagingResult result)
+    private async Task UpdateAsync(UserNotification notification, MessagingResult result, IMessagingSender sender, string? details)
     {
         if (!notification.Channels.TryGetValue(Name, out var channel))
         {
@@ -111,14 +104,18 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         {
             var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
 
-            switch (result)
+            if (result == MessagingResult.Delivered)
             {
-                case MessagingResult.Delivered:
-                    await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
-                    break;
-                case MessagingResult.Failed:
-                    await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
-                    break;
+                await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
+            }
+            else if (result == MessagingResult.Failed)
+            {
+                var message = LogMessage.Sms_CallbackError(sender.Name, details);
+
+                // Also log the error to the app log.
+                await logStore.LogAsync(notification.AppId, message);
+
+                await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
             }
         }
     }
@@ -207,7 +204,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
                 if (senders.Count == 0)
                 {
-                    await SkipAsync(job, Texts.Messaging_ConfigReset);
+                    await SkipAsync(job, LogMessage.Integration_Removed(Name));
                     return;
                 }
 
@@ -219,7 +216,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
                 if (skip != null)
                 {
-                    await SkipAsync(job, skip);
+                    await SkipAsync(job, skip.Value);
                     return;
                 }
 
@@ -229,7 +226,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -255,7 +252,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, sender.Name, ex.Message);
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
 
                 if (sender == lastSender)
                 {
@@ -277,14 +274,14 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         return userNotificationStore.TrackAsync(job.Tracking, status, reason);
     }
 
-    private async Task SkipAsync(MessagingJob job, string reason)
+    private async Task SkipAsync(MessagingJob job, LogMessage message)
     {
-        await logStore.LogAsync(job.Notification.AppId, Name, reason);
+        await logStore.LogAsync(job.Notification.AppId, message);
 
-        await UpdateAsync(job, ProcessStatus.Skipped);
+        await UpdateAsync(job, ProcessStatus.Skipped, message.Reason);
     }
 
-    private async Task<(string? Skip, MessagingTemplate?)> GetTemplateAsync(
+    private async Task<(LogMessage? Skip, MessagingTemplate?)> GetTemplateAsync(
         string appId,
         string language,
         string? name,
@@ -296,24 +293,24 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         {
             case TemplateResolveStatus.ResolvedWithFallback:
                 {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_ResolvedWithFallback, name);
+                    var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
 
-                    await logStore.LogAsync(appId, Name, error);
+                    await logStore.LogAsync(appId, message);
                     break;
                 }
 
-            case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
+            case TemplateResolveStatus.NotFound:
                 {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_NotFound, name);
+                    var message = LogMessage.ChannelTemplate_NotFound(Name, name);
 
-                    return (error, null);
+                    return (message, null);
                 }
 
             case TemplateResolveStatus.LanguageNotFound:
                 {
-                    var error = string.Format(CultureInfo.InvariantCulture, Texts.ChannelTemplate_LanguageNotFound, language, name);
+                    var message = LogMessage.ChannelTemplate_LanguageNotFound(Name, language, name);
 
-                    return (error, null);
+                    return (message, null);
                 }
         }
 

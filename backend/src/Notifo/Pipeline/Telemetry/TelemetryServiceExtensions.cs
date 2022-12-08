@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Reflection;
 using Azure.Monitor.OpenTelemetry.Exporter;
 using Google.Cloud.Diagnostics.Common;
 using Notifo;

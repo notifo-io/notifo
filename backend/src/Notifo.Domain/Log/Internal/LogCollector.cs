@@ -19,7 +19,7 @@ public sealed class LogCollector
     private readonly IClock clock;
     private readonly int updatesCapacity;
     private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-    private readonly ConcurrentDictionary<(string AppId, string Message), int> updates;
+    private readonly ConcurrentDictionary<(string AppId, int EventCode, string Text, string System), int> updateQueue;
 
     public Action<IResultList<LogEntry>>? OnNewEntries { get; set; }
 
@@ -27,32 +27,27 @@ public sealed class LogCollector
     {
         this.repository = repository;
 
-        this.clock = clock;
-
         updatesCapacity = capacity;
-        updates = CreateUpdates();
+        updateQueue = new ConcurrentDictionary<(string AppId, int EventCode, string Text, string System), int>(Environment.ProcessorCount, updatesCapacity);
 
         timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
+
+        this.clock = clock;
     }
 
-    private ConcurrentDictionary<(string AppId, string Message), int> CreateUpdates()
-    {
-        return new ConcurrentDictionary<(string AppId, string Message), int>(Environment.ProcessorCount, updatesCapacity);
-    }
-
-    public async Task AddAsync(string appId, string message)
+    public async Task AddAsync(string appId, int eventCode, string text, string system)
     {
         readerWriterLock.EnterReadLock();
         try
         {
-            updates.AddOrUpdate((appId, message), 1, (_, value) => value + 1);
+            updateQueue.AddOrUpdate((appId, eventCode, text, system), 1, (_, value) => value + 1);
         }
         finally
         {
             readerWriterLock.ExitReadLock();
         }
 
-        if (updates.Count >= updatesCapacity)
+        if (updateQueue.Count >= updatesCapacity)
         {
             await StoreAsync(default);
         }
@@ -66,26 +61,26 @@ public sealed class LogCollector
     private async Task StoreAsync(
         CancellationToken ct)
     {
-        if (updates.IsEmpty)
+        if (updateQueue.IsEmpty)
         {
             return;
         }
 
-        List<(string AppId, string Message, int Count)> commands;
+        List<(string AppId, int EventCode, string Message, string Reason, int Count)> commands;
 
         readerWriterLock.EnterWriteLock();
         try
         {
-            if (updates.IsEmpty)
+            if (updateQueue.IsEmpty)
             {
                 return;
             }
 
-            commands = updates.Select(x => (x.Key.AppId, x.Key.Message, x.Value)).ToList();
+            commands = updateQueue.Select(x => (x.Key.AppId, x.Key.EventCode, x.Key.Text, x.Key.System, x.Value)).ToList();
         }
         finally
         {
-            updates.Clear();
+            updateQueue.Clear();
 
             readerWriterLock.ExitWriteLock();
         }

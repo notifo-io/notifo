@@ -137,7 +137,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
         }
         catch (Exception ex)
         {
-            await logStore.LogAsync(job.Notification.AppId, Name, ex.Message);
+            await logStore.LogAsync(job.Notification.AppId, LogMessage.General_InternalException(Name, ex));
             throw;
         }
     }

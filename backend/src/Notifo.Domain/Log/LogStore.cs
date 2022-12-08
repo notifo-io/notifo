@@ -18,20 +18,29 @@ public sealed class LogStore : ILogStore, IDisposable
 {
     private readonly LogCollector collector;
     private readonly ILogRepository repository;
-    private readonly IMediator mediator;
     private readonly ILogger<LogStore> log;
 
     public LogStore(ILogRepository repository, IMediator mediator,
         ILogger<LogStore> log, IClock clock)
     {
         this.repository = repository;
-        this.mediator = mediator;
-        this.log = log;
 
         collector = new LogCollector(repository, clock, 10, 3000)
         {
-            OnNewEntries = OnNewEntries
+            OnNewEntries = newEntries =>
+            {
+                foreach (var entry in newEntries)
+                {
+                    var notification = new FirstLogCreated
+                    {
+                        Entry = entry
+                    };
+
+                    mediator.PublishAsync(notification, default).Forget();
+                }
+            }
         };
+        this.log = log;
     }
 
     public void Dispose()
@@ -39,37 +48,35 @@ public sealed class LogStore : ILogStore, IDisposable
         collector.StopAsync().Wait();
     }
 
-    private void OnNewEntries(IResultList<LogEntry> newEntries)
+    public Task LogAsync(string appId, LogMessage message)
     {
-        foreach (var entry in newEntries)
+        Guard.NotNullOrEmpty(message.System);
+        Guard.NotNullOrEmpty(message.Text);
+
+        var (eventCode, text, system) = message;
+
+        if (message.FormatText != null)
         {
-            var notification = new FirstLogCreated
+            var argCount = message.FormatArgs?.Length ?? 0;
+
+            var args = new object?[argCount + 2];
+
+            args[0] = appId;
+            args[1] = system;
+
+            if (message.FormatArgs != null)
             {
-                Entry = entry
-            };
+                Array.Copy(message.FormatArgs, 0, args, 2, message.FormatArgs.Length);
+            }
 
-            mediator.PublishAsync(notification, default).Forget();
+#pragma warning disable CA2254 // Template should be a static expression
+            log.LogInformation(message.EventCode, message.Exception, $"User log for app {{appId}} from system {{system}}: {text}.", args);
+#pragma warning restore CA2254 // Template should be a static expression
         }
-    }
 
-    public Task LogAsync(string appId, string system, string message)
-    {
-        Guard.NotNullOrEmpty(system);
-        Guard.NotNullOrEmpty(message);
+        var combinedText = $"{system.ToUpperInvariant()}: {text}";
 
-        log.LogInformation("User log for app {appId} from system {system}: {message}.", appId, system, message);
-
-        return collector.AddAsync(appId, $"{system.ToUpperInvariant()}: {message}");
-    }
-
-    public Task LogAsync(string appId, string message)
-    {
-        Guard.NotNullOrEmpty(appId);
-        Guard.NotNullOrEmpty(message);
-
-        log.LogInformation("User log for app {appId}: {message}.", appId, message);
-
-        return collector.AddAsync(appId, message);
+        return collector.AddAsync(appId, eventCode, combinedText, system);
     }
 
     public Task<IResultList<LogEntry>> QueryAsync(string appId, LogQuery query,

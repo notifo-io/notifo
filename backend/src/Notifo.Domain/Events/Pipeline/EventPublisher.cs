@@ -8,7 +8,6 @@
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Log;
-using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
 using Squidex.Messaging;
 
@@ -52,7 +51,7 @@ public sealed class EventPublisher : IEventPublisher
 
                 if (age > MaxAge)
                 {
-                    await logStore.LogAsync(message.AppId, Texts.Events_TooOld);
+                    await logStore.LogAsync(message.AppId, LogMessage.Events_TooOld("System"));
                     return;
                 }
             }

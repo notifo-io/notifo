@@ -156,30 +156,6 @@
   <data name="Email_TemplateUndefined" xml:space="preserve">
     <value>Either template for text or html body must be defined.</value>
   </data>
-  <data name="Email_UserDeleted" xml:space="preserve">
-    <value>User has been deleted before sending email.</value>
-  </data>
-  <data name="Email_UserNoEmail" xml:space="preserve">
-    <value>User has no email address anymore.</value>
-  </data>
-  <data name="Events_AlreadyProcessed" xml:space="preserve">
-    <value>Event with this id has already been processed.</value>
-  </data>
-  <data name="Events_CreationFailed" xml:space="preserve">
-    <value>Failed to create event.</value>
-  </data>
-  <data name="Events_NoSubjectOrTemplateCode" xml:space="preserve">
-    <value>Event has neither a subject nor a template code.</value>
-  </data>
-  <data name="Events_NoSubscriber" xml:space="preserve">
-    <value>Event has no subscriber.</value>
-  </data>
-  <data name="Events_NoTopic" xml:space="preserve">
-    <value>Event has no topic.</value>
-  </data>
-  <data name="Events_TooOld" xml:space="preserve">
-    <value>Event is too old and will be skipped.</value>
-  </data>
   <data name="IntegrationNotFound" xml:space="preserve">
     <value>Integration of type {0} does not exist.</value>
   </data>
@@ -206,15 +182,6 @@
   </data>
   <data name="IntegrationPropertyRequired" xml:space="preserve">
     <value>Field is required.</value>
-  </data>
-  <data name="Messaging_ConfigReset" xml:space="preserve">
-    <value>Integration has been removed.</value>
-  </data>
-  <data name="MobilePush_ConfigReset" xml:space="preserve">
-    <value>Integration has been removed.</value>
-  </data>
-  <data name="MobilePush_TokenRemoved" xml:space="preserve">
-    <value>Token has been removed.</value>
   </data>
   <data name="NotificationContributorCreated" xml:space="preserve">
     <value>Contributor '{{user}} been added to app '{{app}}'.</value>
@@ -245,9 +212,6 @@
   </data>
   <data name="Notification_NoUser" xml:space="preserve">
     <value>Notification has no existing user. It has probably been deleted.</value>
-  </data>
-  <data name="Sms_ConfigReset" xml:space="preserve">
-    <value>Integration has been removed.</value>
   </data>
   <data name="Template_NoSubject" xml:space="preserve">
     <value>Template '{0}' has no subject.</value>
@@ -314,8 +278,5 @@
   </data>
   <data name="Webhook_URLLabel" xml:space="preserve">
     <value>URL</value>
-  </data>
-  <data name="WebPush_TokenRemoved" xml:space="preserve">
-    <value>Token does not exist anymore.</value>
   </data>
 </root>
