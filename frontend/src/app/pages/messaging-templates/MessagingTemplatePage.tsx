@@ -5,8 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Formik } from 'formik';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
@@ -61,7 +61,7 @@ export const MessagingTemplatePage = () => {
         dispatch(updateMessagingTemplate({ appId, id: templateId, update }));
     });
 
-    const initialValues = React.useMemo(() => {
+    const defaultValues = React.useMemo(() => {
         const result: any = { ...Types.clone(template), languages: {} };
 
         if (template?.languages) {
@@ -72,6 +72,8 @@ export const MessagingTemplatePage = () => {
 
         return result;
     }, [template]);
+
+    const form = useForm<FormValues>({ defaultValues, mode: 'onChange' });
 
     return (
         <div className='messaging-form'>
@@ -95,37 +97,35 @@ export const MessagingTemplatePage = () => {
                 </Row>
             </div>
 
-            <Formik<FormValues> initialValues={initialValues} enableReinitialize onSubmit={doSave}>
-                {({ handleSubmit }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <Card>
-                            <CardBody>
-                                <fieldset disabled={updating}>
-                                    <Forms.Text name='name'
-                                        label={texts.common.name} />
+            <FormProvider {...form}>
+                <Form onSubmit={form.handleSubmit(doSave)}>
+                    <Card>
+                        <CardBody>
+                            <fieldset disabled={updating}>
+                                <Forms.Text name='name'
+                                    label={texts.common.name} />
 
-                                    <Forms.Boolean name='primary'
-                                        label={texts.common.primary} />
+                                <Forms.Boolean name='primary'
+                                    label={texts.common.primary} />
 
-                                    <Forms.LocalizedTextArea name='languages'
-                                        languages={app.languages}
-                                        language={language}
-                                        onLanguageSelect={setLanguage}
-                                        label={texts.common.templates} />
-                                </fieldset>
+                                <Forms.LocalizedTextArea name='languages'
+                                    languages={app.languages}
+                                    language={language}
+                                    onLanguageSelect={setLanguage}
+                                    label={texts.common.templates} />
+                            </fieldset>
 
-                                <FormError error={updatingError} />
+                            <FormError error={updatingError} />
 
-                                <div className='text-right mt-2'>
-                                    <Button type='submit' color='success' disabled={updating}>
-                                        <Loader light small visible={updating} /> {texts.common.save}
-                                    </Button>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </Form>
-                )}
-            </Formik>
+                            <div className='text-right mt-2'>
+                                <Button type='submit' color='success' disabled={updating}>
+                                    <Loader light small visible={updating} /> {texts.common.save}
+                                </Button>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </Form>
+            </FormProvider>
         </div>
     );
 };

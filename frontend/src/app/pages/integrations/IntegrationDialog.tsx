@@ -5,8 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Formik } from 'formik';
+
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { Badge, Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import * as Yup from 'yup';
@@ -157,100 +159,100 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         }
     }, [configured, definition.properties]);
 
+    const form = useForm<UpdateIntegrationDto>({ resolver: yupResolver(schema), defaultValues: initialValues, mode: 'onChange' });
+
     return (
         <Modal isOpen={true} size='lg' className='integration-dialog' backdrop={false} toggle={onClose}>
-            <Formik<UpdateIntegrationDto> initialValues={initialValues} enableReinitialize onSubmit={doUpsert} validationSchema={schema}>
-                {({ handleSubmit }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={onClose}>
-                            <Row noGutters>
-                                <Col xs='auto' className='col-image'>
-                                    <img src={definition.logoUrl} alt={definition.title} />
-                                </Col>
+            <FormProvider {...form}>
+                <Form onSubmit={form.handleSubmit(doUpsert)}>
+                    <ModalHeader toggle={onClose}>
+                        <Row noGutters>
+                            <Col xs='auto' className='col-image'>
+                                <img src={definition.logoUrl} alt={definition.title} />
+                            </Col>
 
-                                <Col>
-                                    <h4>{definition.title}</h4>
+                            <Col>
+                                <h4>{definition.title}</h4>
 
-                                    <div>
-                                        {definition.capabilities.map(capability => (
-                                            <Badge key={capability} className='mr-1' color='secondary' pill>{capability}</Badge>
-                                        ))}
-                                    </div>
-                                </Col>
-                            </Row>
-                        </ModalHeader>
+                                <div>
+                                    {definition.capabilities.map(capability => (
+                                        <Badge key={capability} className='mr-1' color='secondary' pill>{capability}</Badge>
+                                    ))}
+                                </div>
+                            </Col>
+                        </Row>
+                    </ModalHeader>
 
-                        <ModalBody>
-                            <fieldset className='mt-3' disabled={upserting}>
-                                {configured &&
-                                    <Row className='mb-4'>
-                                        <Col sm={4}>
-                                            {texts.common.status}
-                                        </Col>
+                    <ModalBody>
+                        <fieldset className='mt-3' disabled={upserting}>
+                            {configured &&
+                                <Row className='mb-4'>
+                                    <Col sm={4}>
+                                        {texts.common.status}
+                                    </Col>
+
+                                    <Col sm={8}>
+                                        <StatusLabel status={configured.status} />
+                                    </Col>
+                                </Row>
+                            }
+
+                            <Forms.Text name='condition' placeholder='properties.myProp == 1'
+                                label={texts.integrations.condition} hints={texts.integrations.conditionHints} />
+
+                            <Forms.Boolean name='test'
+                                label={texts.integrations.test} hints={texts.integrations.testHints} indeterminate />
+
+                            <Forms.Boolean name='enabled'
+                                label={texts.common.enabled} hints={texts.integrations.enabledHints} />
+
+                            <Forms.Number name='priority'
+                                label={texts.integrations.priority} hints={texts.integrations.priorityHints} />
+
+                            {definition.properties.length > 0 &&
+                                <hr />
+                            }
+
+                            {definition.properties.map(property => (
+                                <FormField key={property.name} property={property} />
+                            ))}
+
+                            {configuredId &&
+                                <div>
+                                    <hr />
+
+                                    <Row>
+                                        <Label sm={4} className='text-danger'>
+                                            {texts.common.dangerZone}
+                                        </Label>
 
                                         <Col sm={8}>
-                                            <StatusLabel status={configured.status} />
+                                            <Confirm onConfirm={doDelete} text={texts.templates.confirmDelete}>
+                                                {({ onClick }) => (
+                                                    <Button color='danger' onClick={onClick} data-tip={texts.common.delete}>
+                                                        <Icon type='delete' /> {texts.common.delete}
+                                                    </Button>
+                                                )}
+                                            </Confirm>
                                         </Col>
                                     </Row>
-                                }
+                                </div>
+                            }
+                        </fieldset>
 
-                                <Forms.Text name='condition' placeholder='properties.myProp == 1'
-                                    label={texts.integrations.condition} hints={texts.integrations.conditionHints} />
+                        <FormError className='mt-4 mb-0' error={upsertingError} />
+                    </ModalBody>
+                    <ModalFooter className='justify-content-between' disabled={upserting}>
+                        <Button type='button' color='none' onClick={onClose}>
+                            {texts.common.cancel}
+                        </Button>
 
-                                <Forms.Boolean name='test'
-                                    label={texts.integrations.test} hints={texts.integrations.testHints} indeterminate />
-
-                                <Forms.Boolean name='enabled'
-                                    label={texts.common.enabled} hints={texts.integrations.enabledHints} />
-
-                                <Forms.Number name='priority'
-                                    label={texts.integrations.priority} hints={texts.integrations.priorityHints} />
-
-                                {definition.properties.length > 0 &&
-                                    <hr />
-                                }
-
-                                {definition.properties.map(property => (
-                                    <FormField key={property.name} property={property} />
-                                ))}
-
-                                {configuredId &&
-                                    <div>
-                                        <hr />
-
-                                        <Row>
-                                            <Label sm={4} className='text-danger'>
-                                                {texts.common.dangerZone}
-                                            </Label>
-
-                                            <Col sm={8}>
-                                                <Confirm onConfirm={doDelete} text={texts.templates.confirmDelete}>
-                                                    {({ onClick }) => (
-                                                        <Button color='danger' onClick={onClick} data-tip={texts.common.delete}>
-                                                            <Icon type='delete' /> {texts.common.delete}
-                                                        </Button>
-                                                    )}
-                                                </Confirm>
-                                            </Col>
-                                        </Row>
-                                    </div>
-                                }
-                            </fieldset>
-
-                            <FormError className='mt-4 mb-0' error={upsertingError} />
-                        </ModalBody>
-                        <ModalFooter className='justify-content-between' disabled={upserting}>
-                            <Button type='button' color='none' onClick={onClose}>
-                                {texts.common.cancel}
-                            </Button>
-
-                            <Button type='submit' color='success' disabled={upserting}>
-                                <Loader light small visible={upserting} /> {texts.common.save}
-                            </Button>
-                        </ModalFooter>
-                    </Form>
-                )}
-            </Formik>
+                        <Button type='submit' color='success' disabled={upserting}>
+                            <Loader light small visible={upserting} /> {texts.common.save}
+                        </Button>
+                    </ModalFooter>
+                </Form>
+            </FormProvider>
         </Modal>
     );
 };

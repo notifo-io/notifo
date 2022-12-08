@@ -5,9 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
+import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames';
-import { Formik } from 'formik';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Row } from 'reactstrap';
@@ -53,6 +54,7 @@ const FormSchema = Yup.object({
 });
 
 type PublishForms = Omit<PublishDto, 'templateVariants'> & {
+    templated?: boolean;
     templateVariants: { probability: number; templateCode: string }[];
 };
 
@@ -117,7 +119,7 @@ const PublishDialogInner = () => {
         dispatch(publish({ appId, params }));
     });
 
-    const initialValues: any = React.useMemo(() => {
+    const defaultValues: any = React.useMemo(() => {
         const result = { ...dialogValues };
 
         result.settings ||= {};
@@ -129,108 +131,108 @@ const PublishDialogInner = () => {
         return result;
     }, [dialogValues]);
 
+    const form = useForm<PublishForms>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm} className={classNames('publish-modal', { ['fullscreen-mode']: viewFullscreen })}>
-            <Formik<PublishForms> initialValues={initialValues} enableReinitialize onSubmit={doPublish} validationSchema={FormSchema}>
-                {({ handleSubmit, values }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <ModalHeader toggle={doCloseForm}>
-                            &nbsp;
+            <FormProvider {...form}>
+                <Form onSubmit={form.handleSubmit(doPublish)}>
+                    <ModalHeader toggle={doCloseForm}>
+                        &nbsp;
 
-                            <Nav className='nav-tabs2'>
-                                <NavItem>
-                                    <NavLink onClick={() => setViewModus(0)} active={viewModus === 0}>{texts.common.publish}</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink onClick={() => setViewModus(1)} active={viewModus === 1}>{texts.common.channels}</NavLink>
-                                </NavItem>
-                            </Nav>
+                        <Nav className='nav-tabs2'>
+                            <NavItem>
+                                <NavLink onClick={() => setViewModus(0)} active={viewModus === 0}>{texts.common.publish}</NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink onClick={() => setViewModus(1)} active={viewModus === 1}>{texts.common.channels}</NavLink>
+                            </NavItem>
+                        </Nav>
+                        
+                        <button type="button" className='fullscreen' onClick={doToggleFullscreen}>
+                            <Icon type={viewFullscreen ? 'fullscreen_exit' : 'fullscreen'} />
+                        </button>
+                    </ModalHeader>
+
+                    <ModalBody>
+                        <Row className='flex-nowrap'>
+                            <Col className='col-form'>
+                                <fieldset className='mt-3' disabled={publishing}>
+                                    {viewModus === 0 ? (
+                                        <>
+                                            <Forms.Text name='topic'
+                                                label={texts.common.topic} />
+
+                                            <Forms.Boolean name='templated'
+                                                label={texts.common.templateMode} />
+
+                                            {form.watch('templated') &&
+                                                <>
+                                                    <TemplateInput name='templateCode' templates={templates.items}
+                                                        label={texts.common.templateCode} hints={texts.common.templateCodeHints} />
+
+                                                    <TemplateVariantsInput name='templateVariants' templates={templates.items}
+                                                        label={texts.common.variants} />
+                                                </>
+                                            }
+
+                                            <NotificationsForm.Formatting
+                                                onLanguageSelect={setLanguage}
+                                                language={language}
+                                                languages={appLanguages}
+                                                field='preformatted' disabled={publishing} />
+
+                                            <hr />
+
+                                            <Forms.Boolean name='test'
+                                                label={texts.integrations.test} />
+
+                                            <hr />
+
+                                            <Forms.Boolean name='silent'
+                                                label={texts.common.silent} />
+
+                                            <Forms.Textarea name='data'
+                                                label={texts.common.data} hints={texts.common.dataHints} />
+
+                                            <hr />
+
+                                            <Forms.Number name='timeToLiveInSeconds'
+                                                label={texts.common.timeToLive} min={0} max={2419200} />
+                                        </>
+                                    ) : (
+                                        <NotificationsForm.Settings field='settings' disabled={publishing} />
+                                    )}
+                                </fieldset>
+                            </Col>
                             
-                            <button type="button" className='fullscreen' onClick={doToggleFullscreen}>
-                                <Icon type={viewFullscreen ? 'fullscreen_exit' : 'fullscreen'} />
-                            </button>
-                        </ModalHeader>
+                            {viewFullscreen &&
+                                <Col xs='auto' className='col-template'>
+                                    <div className='publish-form-preview sticky-top'>
+                                        <Label>{texts.common.preview}</Label>
 
-                        <ModalBody>
-                            <Row className='flex-nowrap'>
-                                <Col className='col-form'>
-                                    <fieldset className='mt-3' disabled={publishing}>
-                                        {viewModus === 0 ? (
-                                            <>
-                                                <Forms.Text name='topic'
-                                                    label={texts.common.topic} />
-
-                                                <Forms.Boolean name='templated'
-                                                    label={texts.common.templateMode} />
-
-                                                {values['templated'] &&
-                                                    <>
-                                                        <TemplateInput name='templateCode' templates={templates.items}
-                                                            label={texts.common.templateCode} hints={texts.common.templateCodeHints} />
-
-                                                        <TemplateVariantsInput name='templateVariants' templates={templates.items} variants={values.templateVariants} 
-                                                            label={texts.common.variants} />
-                                                    </>
-                                                }
-
-                                                <NotificationsForm.Formatting
-                                                    onLanguageSelect={setLanguage}
-                                                    language={language}
-                                                    languages={appLanguages}
-                                                    field='preformatted' disabled={publishing} />
-
-                                                <hr />
-
-                                                <Forms.Boolean name='test'
-                                                    label={texts.integrations.test} />
-
-                                                <hr />
-
-                                                <Forms.Boolean name='silent'
-                                                    label={texts.common.silent} />
-
-                                                <Forms.Textarea name='data'
-                                                    label={texts.common.data} hints={texts.common.dataHints} />
-
-                                                <hr />
-
-                                                <Forms.Number name='timeToLiveInSeconds'
-                                                    label={texts.common.timeToLive} min={0} max={2419200} />
-                                            </>
+                                        {form.watch('templated') ? (
+                                            <div className='text-center'>{texts.common.notAvailable}</div>
                                         ) : (
-                                            <NotificationsForm.Settings field='settings' disabled={publishing} />
+                                            <NotificationPreview formatting={form.watch('preformatted')} language={language}></NotificationPreview>
                                         )}
-                                    </fieldset>
+                                    </div>
                                 </Col>
-                                
-                                {viewFullscreen &&
-                                    <Col xs='auto' className='col-template'>
-                                        <div className='publish-form-preview sticky-top'>
-                                            <Label>{texts.common.preview}</Label>
+                            }
+                        </Row>
 
-                                            {values['templated'] ? (
-                                                <div className='text-center'>{texts.common.notAvailable}</div>
-                                            ) : (
-                                                <NotificationPreview formatting={values?.preformatted} language={language}></NotificationPreview>
-                                            )}
-                                        </div>
-                                    </Col>
-                                }
-                            </Row>
-
-                            <FormError error={publishingError} />
-                        </ModalBody>
-                        <ModalFooter className='justify-content-between' disabled={publishing}>
-                            <Button type='button' color='none' onClick={doCloseForm}>
-                                {texts.common.cancel}
-                            </Button>
-                            <Button type='submit' color='success' disabled={publishing}>
-                                <Loader light small visible={publishing} /> {texts.common.publish}
-                            </Button>
-                        </ModalFooter>
-                    </Form>
-                )}
-            </Formik>
+                        <FormError error={publishingError} />
+                    </ModalBody>
+                    <ModalFooter className='justify-content-between' disabled={publishing}>
+                        <Button type='button' color='none' onClick={doCloseForm}>
+                            {texts.common.cancel}
+                        </Button>
+                        <Button type='submit' color='success' disabled={publishing}>
+                            <Loader light small visible={publishing} /> {texts.common.publish}
+                        </Button>
+                    </ModalFooter>
+                </Form>
+            </FormProvider>
         </Modal>
     );
 };

@@ -6,11 +6,11 @@
  */
 
 import classNames from 'classnames';
-import { FieldHelperProps, FieldInputProps, FieldMetaProps, FormikContextType, useField, useFormikContext } from 'formik';
 import * as React from 'react';
+import { ControllerFieldState, FormState, useController } from 'react-hook-form';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
 import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle, useEventCallback } from '@app/framework';
-import { isErrorVisible, Types } from '@app/framework/utils';
+import { Types } from '@app/framework/utils';
 import { Picker, PickerOptions } from './Picker';
 
 export type FormEditorOption<T> = { value?: T; label: string };
@@ -78,36 +78,14 @@ export interface LocalizedFormProps extends FormEditorProps {
     onLanguageSelect: (language: string) => void;
 }
 
-export function useFieldNew<T = any>(name: string): [FieldInputProps<T>, FieldMetaProps<T>, FieldHelperProps<T>] {
-    const [field, meta] = useField<T>(name);
-    const { setFieldTouched, setFieldValue, setFieldError } = useFormikContext();
-
-    const helpers = React.useMemo(() => ({
-        setValue: (value: T, shouldValidate?: boolean) => {
-            setFieldValue(field.name, value, shouldValidate);
-        },
-        setTouched: (isTouched?: boolean, shouldValidate?: boolean) => {
-            setFieldTouched(field.name, isTouched, shouldValidate);
-        },
-        setError: (message?: string) => {
-            setFieldError(field.name, message);
-        },
-    }), [setFieldTouched, setFieldValue, setFieldError, field.name]);
-
-    return [field, meta, helpers];
-}
-
 export module Forms {
     export type Option<T = any> = { value?: T | string; label: string };
 
-    export const Error = (props: { name: string }) => {
-        const { name } = props;
-
-        const { submitCount } = useFormikContext();
-        const [, meta] = useFieldNew(name);
+    export const Error = ({ name }: { name: string }) => {
+        const { fieldState, formState } = useController({ name });
 
         return (
-            <FormControlError error={meta.error} touched={meta.touched} submitCount={submitCount} />
+            <FormControlError error={fieldState.error?.message} submitCount={formState.submitCount} touched={fieldState.isTouched} />
         );
     };
 
@@ -270,34 +248,11 @@ const FormDescription = ({ hints }: { hints?: string }) => {
     );
 };
 
-const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta, helper] = useFieldNew(name);
-
-    const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        helper.setValue(parseInt(event.target.value, 10));
-    });
-
-    return (
-        <>
-            <Input type='number' name={name} id={field.name} value={field.value} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                max={max}
-                min={min}
-                step={step}
-                onChange={doChange}
-                onBlur={field.onBlur}
-                placeholder={placeholder}
-            />
-        </>
-    );
-};
-
 const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta, helper] = useFieldNew(name);
+    const { field, fieldState, formState } = useController({ name });
 
-    const doAddPick = useEventCallback((value: string) => {
-        helper.setValue((field.value || '') + value);
+    const doAddPick = useEventCallback((pick: string) => {
+        field.onChange((field.value || '') + pick, SET_OPTIONS);
     });
 
     return (
@@ -306,9 +261,7 @@ const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
                 <Picker {...picker} onPick={doAddPick} value={field.value} />
             }
 
-            <Input type='text' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
+            <Input type='text' id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </div>
@@ -316,11 +269,10 @@ const InputText = ({ name, picker, placeholder }: FormEditorProps) => {
 };
 
 const InputTextarea = ({ name, picker, placeholder }: FormEditorProps) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta, helper] = useFieldNew(name);
+    const { field, fieldState, formState } = useController({ name });
 
-    const doAddPick = useEventCallback((value: string) => {
-        helper.setValue((field.value || '') + value);
+    const doAddPick = useEventCallback((pick: string) => {
+        field.onChange((field.value || '') + pick, SET_OPTIONS);
     });
 
     return (
@@ -329,24 +281,31 @@ const InputTextarea = ({ name, picker, placeholder }: FormEditorProps) => {
                 <Picker {...picker} onPick={doAddPick} value={field.value} />
             }
 
-            <Input type='textarea' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
+            <Input type='textarea' id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </div>
     );
 };
 
-const InputUrl = ({ name, placeholder }: FormEditorProps) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useFieldNew(name);
+const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { min?: number; max?: number; step?: number }) => {
+    const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <Input type='url' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
+            <Input type='number' id={name} {...field} invalid={isInvalid(fieldState, formState)}
+                max={max} min={min} step={step} placeholder={placeholder}
+            />
+        </>
+    );
+};
+
+const InputUrl = ({ name, placeholder }: FormEditorProps) => {
+    const { field, fieldState, formState } = useController({ name });
+
+    return (
+        <>
+            <Input type='url' id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </>
@@ -354,14 +313,11 @@ const InputUrl = ({ name, placeholder }: FormEditorProps) => {
 };
 
 const InputEmail = ({ name, placeholder }: FormEditorProps) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useFieldNew(name);
+    const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <Input type='email' name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
+            <Input type='email' id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </>
@@ -369,41 +325,33 @@ const InputEmail = ({ name, placeholder }: FormEditorProps) => {
 };
 
 const InputPassword = ({ name, placeholder }: FormEditorProps) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useFieldNew(name);
+    const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <PasswordInput name={name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
+            <PasswordInput id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </>
     );
 };
 
-const InputToggle = (props: BooleanFormProps) => {
-    const { name } = props;
-    const [field, , helpers] = useFieldNew(name);
+const InputToggle = ({ name, ...other }: BooleanFormProps) => {
+    const { field } = useController({ name });
 
     return (
         <>
-            <Toggle {...props} value={field.value} onChange={helpers.setValue} />
+            <Toggle {...other} value={field.value} onChange={field.onChange} />
         </>
     );
 };
 
 const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Option<string | number>[] }) => {
-    const { submitCount } = useFormikContext();
-    const [field, meta] = useField<string | number>(name);
+    const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <CustomInput type='select' name={field.name} id={field.name} value={field.value || ''} invalid={isErrorVisible(meta.error, meta.touched, submitCount)}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-            >
+            <CustomInput type='select' id={name} {...field} invalid={isInvalid(fieldState, formState)}>
                 {Types.isUndefined(field.value) && !options.find(x => x.value === field.value) &&
                     <option></option>
                 }
@@ -417,65 +365,58 @@ const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Optio
 };
 
 const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.Option<string>[] }) => {
-    const form = useFormikContext();
-    const [field] = useFieldNew(name);
-
     return (
         <div style={{ paddingTop: '.625rem' }}>
             {options.map(option =>
-                <InputCheckboxOption key={option.value} field={field} form={form} option={option} />,
+                <InputCheckboxOption key={option.value} name={name} option={option} />,
             )}
         </div>
     );
 };
 
 const EMPTY_ARRAY: any[] = [];
+const SET_OPTIONS = { shouldTouch: true, shouldDirty: true, shouldValidate: true };
 
-const InputCheckboxOption = (props: { field: FieldInputProps<string[]>; form: FormikContextType<unknown>; option: Forms.Option<string> }) => {
-    const { field, form, option } = props;
-
-    const valueArray: string[] = field.value || EMPTY_ARRAY;
-    const valueExist = valueArray && valueArray.indexOf(option.value!) >= 0;
+const InputCheckboxOption = ({ name, option }: { name: string; option: Forms.Option<string> }) => {
+    const { field } = useController({ name });
+    const fieldArray = field.value as string[] || EMPTY_ARRAY;
+    const fieldChecked = fieldArray && fieldArray.indexOf(option.value!) >= 0;
 
     const doChange = useEventCallback(() => {
-        if (valueExist) {
-            form.setFieldValue(field.name, valueArray.filter(x => x !== option.value));
+        if (fieldChecked) {
+            field.onChange(fieldArray.filter(x => x !== option.value), SET_OPTIONS);
         } else {
-            form.setFieldValue(field.name, [...valueArray, option.value]);
+            field.onChange(name, [...fieldArray, option.value], SET_OPTIONS);
         }
     });
 
     return (
-        <CustomInput type='checkbox' name={option.value} id={option.value || 'none'} checked={valueExist}
-            onChange={doChange}
-            onBlur={field.onBlur}
+        <CustomInput type='checkbox' name={option.value} id={option.value || 'none'} checked={fieldChecked} onChange={doChange}
             label={option.label}
         />
     );
 };
 
-const InputArray = (props: ArrayFormProps<any>) => {
-    const { allowedValues, name } = props;
-
-    const [field, , helpers] = useField<any[]>(name);
-    const fieldValue = field.value || EMPTY_ARRAY;
-
+const InputArray = ({ allowedValues, name }: ArrayFormProps<any>) => {
+    const { field } = useController({ name });
+    const fieldValue = field.value as any[];
+    const fieldArray = fieldValue || EMPTY_ARRAY;
     const [newValue, setNewValue] = React.useState<any>(undefined);
 
     const newValues = React.useMemo(() => {
-        return allowedValues.filter(x => fieldValue.indexOf(x) < 0);
-    }, [fieldValue, allowedValues]);
+        return allowedValues.filter(x => fieldArray.indexOf(x) < 0);
+    }, [fieldArray, allowedValues]);
 
     React.useEffect(() => {
         setNewValue(newValues[0]);
     }, [newValues]);
 
     const doRemove = useEventCallback((value: any) => {
-        helpers.setValue(fieldValue.filter(x => x !== value));
+        field.onChange(fieldArray.filter(x => x !== value), SET_OPTIONS);
     });
 
     const doAdd = useEventCallback(() => {
-        helpers.setValue([...fieldValue, newValue]);
+        field.onChange([...fieldArray, newValue], SET_OPTIONS);
     });
 
     const doSelectValue = useEventCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
@@ -485,7 +426,7 @@ const InputArray = (props: ArrayFormProps<any>) => {
     return (
         <div>
             <div>
-                {fieldValue.map(v => (
+                {fieldArray.map(v => (
                     <Badge key={v} color='secondary' className='mr-2 mb-2 badge-lg badge-option'>
                         {v}
 
@@ -515,7 +456,6 @@ const InputArray = (props: ArrayFormProps<any>) => {
 
 const InputLocalizedText = (props: LocalizedFormProps) => {
     const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
-
     const fieldName = `${name}.${language}`;
 
     return (
@@ -536,7 +476,6 @@ const InputLocalizedText = (props: LocalizedFormProps) => {
 
 const InputLocalizedTextArea = (props: LocalizedFormProps) => {
     const { className, label, language, languages, name, onLanguageSelect, ...other } = props;
-
     const fieldName = `${name}.${language}`;
 
     return (
@@ -554,3 +493,7 @@ const InputLocalizedTextArea = (props: LocalizedFormProps) => {
         </div>
     );
 };
+
+export function isInvalid(fieldState: ControllerFieldState, formState: FormState<any>) {
+    return !!fieldState.error && (fieldState.isTouched || formState.submitCount > 0);
+}
