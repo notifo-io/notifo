@@ -6,8 +6,8 @@
  */
 
 import { ComponentMeta } from '@storybook/react';
-import { Formik } from 'formik';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Form } from 'reactstrap';
 import { NotificationsForm } from './NotificationSettingsForm';
 
@@ -33,14 +33,14 @@ export default {
 } as ComponentMeta<any>;
 
 const Template = (args: any) => {
+    const form = useForm();
+
     return (
-        <Formik initialValues={{}} onSubmit={() => { }}>
-            {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
-                    <NotificationsForm.Formatting {...args} />
-                </Form>
-            )}
-        </Formik>
+        <FormProvider {...form}>
+            <Form>
+                <NotificationsForm.Formatting {...args} />
+            </Form>
+        </FormProvider>
     );
 };
 

@@ -5,8 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Formik } from 'formik';
+import { yupResolver } from '@hookform/resolvers/yup';
 import * as React from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { Button, Card, CardBody, Form } from 'reactstrap';
 import * as Yup from 'yup';
@@ -50,43 +51,43 @@ export const AppSettings = (props: AppSettingsProps) => {
     const doSave = useEventCallback((params: UpsertAppDto) => {
         dispatch(upsertApp({ appId: appDetails.id, params }));
     });
+    
+    const form = useForm<UpsertAppDto>({ resolver: yupResolver(FormSchema), defaultValues: appDetails, mode: 'onChange' });
 
     return (
         <>
             <h2 className='mt-5'>{texts.common.settings}</h2>
 
-            <Formik<UpsertAppDto> initialValues={appDetails} enableReinitialize onSubmit={doSave} validationSchema={FormSchema}>
-                {({ handleSubmit }) => (
-                    <Form onSubmit={handleSubmit}>
-                        <Card>
-                            <CardBody>
-                                <fieldset disabled={upserting}>
-                                    <Forms.Text name='name' vertical
-                                        label={texts.common.name} />
+            <FormProvider {...form}>
+                <Form onSubmit={form.handleSubmit(doSave)}>
+                    <Card>
+                        <CardBody>
+                            <fieldset disabled={upserting}>
+                                <Forms.Text name='name' vertical
+                                    label={texts.common.name} />
 
-                                    <Forms.Array name='languages' vertical allowedValues={languageValues}
-                                        label={texts.common.languages} />
-                                </fieldset>
+                                <Forms.Array name='languages' vertical allowedValues={languageValues}
+                                    label={texts.common.languages} />
+                            </fieldset>
 
-                                <fieldset disabled={upserting}>
-                                    <legend>{texts.app.urls}</legend>
+                            <fieldset disabled={upserting}>
+                                <legend>{texts.app.urls}</legend>
 
-                                    <Forms.Text name='confirmUrl' vertical placeholder={texts.common.urlPlaceholder}
-                                        label={texts.app.confirmUrl} />
-                                </fieldset>
+                                <Forms.Text name='confirmUrl' vertical placeholder={texts.common.urlPlaceholder}
+                                    label={texts.app.confirmUrl} />
+                            </fieldset>
 
-                                <FormError error={upsertingError} />
+                            <FormError error={upsertingError} />
 
-                                <div className='text-right mt-2'>
-                                    <Button type='submit' color='success' disabled={upserting}>
-                                        <Loader light small visible={upserting} /> {texts.common.save}
-                                    </Button>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    </Form>
-                )}
-            </Formik>
+                            <div className='text-right mt-2'>
+                                <Button type='submit' color='success' disabled={upserting}>
+                                    <Loader light small visible={upserting} /> {texts.common.save}
+                                </Button>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </Form>
+            </FormProvider>
         </>
     );
 };
