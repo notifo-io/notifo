@@ -96,7 +96,7 @@ export const UserDetails = (props: UserDetailsProps) => {
 
             <hr />
 
-            <div>
+            <div className='text-sm'>
                 <NavLink to={`/app/${appId}/log/${user.id}`}>
                     {texts.users.logs}
                 </NavLink>
