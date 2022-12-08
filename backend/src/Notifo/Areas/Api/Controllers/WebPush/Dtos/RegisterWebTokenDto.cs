@@ -17,22 +17,11 @@ public sealed class RegisterWebTokenDto
     {
         var result = new AddUserWebPushSubscription
         {
-            Subscription = Subscription.ToSubscription()
+            Subscription = Subscription.ToSubscription(),
+
+            // User ID is coming from the route in this context.
+            UserId = userId
         };
-
-        result.UserId = userId;
-
-        return result;
-    }
-
-    public RemoveUserWebPushSubscription ToDelete(string userId)
-    {
-        var result = new RemoveUserWebPushSubscription
-        {
-            Endpoint = Subscription.Endpoint
-        };
-
-        result.UserId = userId;
 
         return result;
     }

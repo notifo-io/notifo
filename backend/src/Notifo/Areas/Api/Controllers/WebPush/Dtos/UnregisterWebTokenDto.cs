@@ -5,24 +5,19 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Users;
 
-namespace Notifo.Areas.Api.Controllers.Users.Dtos;
+namespace Notifo.Areas.Api.Controllers.WebPush.Dtos;
 
-public sealed class AddAllowedTopicDto
+public sealed class UnregisterWebTokenDto
 {
-    /// <summary>
-    /// The topic to add.
-    /// </summary>
-    [Required]
-    public string Prefix { get; set; }
+    public string Endpoint { get; set; }
 
-    public AddUserAllowedTopic ToUpdate(string userId)
+    public RemoveUserWebPushSubscription ToDelete(string userId)
     {
-        var result = new AddUserAllowedTopic
+        var result = new RemoveUserWebPushSubscription
         {
-            Prefix = Prefix,
+            Endpoint = Endpoint,
 
             // User ID is coming from the route in this context.
             UserId = userId

@@ -57,7 +57,7 @@ public class UserEventPublisherTests
         A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -73,7 +73,7 @@ public class UserEventPublisherTests
         A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
@@ -89,7 +89,7 @@ public class UserEventPublisherTests
         A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
@@ -105,7 +105,7 @@ public class UserEventPublisherTests
         A.CallTo(() => subscriptionStore.QueryAsync(@event.AppId, A<TopicId>._, @event.CreatorId, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
@@ -121,7 +121,7 @@ public class UserEventPublisherTests
         A.CallTo(() => eventStore.InsertAsync(@event, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
@@ -182,7 +182,7 @@ public class UserEventPublisherTests
         A.CallTo(() => eventStore.InsertAsync(@event, ct))
             .MustHaveHappenedOnceExactly();
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -210,7 +210,7 @@ public class UserEventPublisherTests
 
         Assert.Null(publishedUserEvents[0].Properties);
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -237,7 +237,7 @@ public class UserEventPublisherTests
 
         Assert.NotNull(publishedUserEvents[0].Settings);
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -262,7 +262,7 @@ public class UserEventPublisherTests
             }, @event)
         });
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -305,7 +305,7 @@ public class UserEventPublisherTests
         A.CallTo(() => subscriptionStore.QueryAsync(A<string>._, A<TopicId>._, A<string>._, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -335,7 +335,7 @@ public class UserEventPublisherTests
 
         Assert.Empty(publishedUserEvents);
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
@@ -401,7 +401,7 @@ public class UserEventPublisherTests
         A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
             .MustHaveHappenedOnceExactly();
 
-        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(A<string>._, A<LogMessage>._, false))
             .MustNotHaveHappened();
     }
 
@@ -436,7 +436,7 @@ public class UserEventPublisherTests
 
         Assert.Empty(publishedUserEvents);
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
@@ -458,7 +458,7 @@ public class UserEventPublisherTests
         A.CallTo(() => templateStore.GetAsync(@event.AppId, @event.TemplateCode, ct))
             .MustNotHaveHappened();
 
-        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._))
+        A.CallTo(() => logStore.LogAsync(@event.AppId, A<LogMessage>._, false))
             .MustHaveHappened();
     }
 
