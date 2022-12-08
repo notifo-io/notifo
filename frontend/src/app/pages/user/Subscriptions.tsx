@@ -117,43 +117,45 @@ export const Subscriptions = (props: SubscriptionsProps) => {
 
             <Card className='card-table'>
                 <CardBody>
-                    <Table className='table-fixed table-simple table-middle'>
-                        <colgroup>
-                            <col />
-                            <col style={{ width: 170 }} />
-                        </colgroup>
+                    <div>
+                        <Table className='table-fixed table-simple table-middle'>
+                            <colgroup>
+                                <col />
+                                <col style={{ width: 170 }} />
+                            </colgroup>
 
-                        <thead>
-                            <tr>
-                                <th>
-                                    <span className='truncate'>{texts.common.topic}</span>
-                                </th>
-                                <th className='text-right'>
-                                    <span className='truncate'>{texts.common.actions}</span>
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {subscriptions.items &&
-                                <>
-                                    {subscriptions.items.map(subscription => (
-                                        <SubscriptionRow key={subscription.topicPrefix} subscription={subscription}
-                                            onPublish={doPublish}
-                                            onDelete={doDelete}
-                                            onEdit={doEdit}
-                                        />
-                                    ))}
-                                </>
-                            }
-
-                            {subscriptions.isLoaded && subscriptions.items && subscriptions.items.length === 0 &&
+                            <thead>
                                 <tr>
-                                    <td colSpan={2}>{texts.subscriptions.subscriptionsNotFound}</td>
+                                    <th>
+                                        <span className='truncate'>{texts.common.topic}</span>
+                                    </th>
+                                    <th className='text-right'>
+                                        <span className='truncate'>{texts.common.actions}</span>
+                                    </th>
                                 </tr>
-                            }
-                        </tbody>
-                    </Table>
+                            </thead>
+
+                            <tbody>
+                                {subscriptions.items &&
+                                    <>
+                                        {subscriptions.items.map(subscription => (
+                                            <SubscriptionRow key={subscription.topicPrefix} subscription={subscription}
+                                                onPublish={doPublish}
+                                                onDelete={doDelete}
+                                                onEdit={doEdit}
+                                            />
+                                        ))}
+                                    </>
+                                }
+
+                                {subscriptions.isLoaded && subscriptions.items && subscriptions.items.length === 0 &&
+                                    <tr>
+                                        <td colSpan={2}>{texts.subscriptions.subscriptionsNotFound}</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </Table>
+                    </div>
                 </CardBody>
             </Card>
 

@@ -415,6 +415,10 @@ $small-gutters: 4px;
             padding-bottom: .5rem;
             padding-left: .5rem;
             padding-right: .5rem;
+
+            & > div {
+                overflow-x: hidden;
+            }
         }
     }
 
@@ -1117,14 +1121,17 @@ em-emoji-picker {
     }
 
     h2 {
+        @include truncate;
         margin: 0;
     }
 
     h3 {
+        @include truncate;
         margin: 0;
     }
 
     h4 {
+        @include truncate;
         margin: 0;
     }
 }

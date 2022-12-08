@@ -53,7 +53,11 @@ export const LogPage = () => {
                 <Col xs={12} md={5}>
                     <Row className='align-items-center flex-nowrap'>
                         <Col>
-                            <h2>{texts.log.header}</h2>
+                            {userId ? (
+                                <h2>{texts.log.userHeader} '{userId}'</h2>
+                            ) : (
+                                <h2>{texts.log.header}</h2>
+                            )}
                         </Col>
                         <Col xs='auto' className='col-refresh'>
                             {logEntries.isLoading ? (
@@ -77,55 +81,57 @@ export const LogPage = () => {
 
             <Card className='card-table'>
                 <CardBody>
-                    <Table className='table-fixed table-simple table-middle'>
-                        <colgroup>
-                            <col style={{ width: 120 }} />
-                            <col style={{ width: 160 }} />
-                            <col />
-                            <col style={{ width: 120 }} />
-                            <col style={{ width: 200 }} />
-                            <col style={{ width: 200 }} />
-                        </colgroup>
+                    <div>
+                        <Table className='table-fixed table-simple table-middle'>
+                            <colgroup>
+                                <col style={{ width: 80 }} />
+                                <col style={{ width: 160 }} />
+                                <col />
+                                <col style={{ width: 80 }} />
+                                <col style={{ width: 200 }} />
+                                <col style={{ width: 200 }} />
+                            </colgroup>
 
-                        <thead>
-                            <tr>
-                                <th>
-                                    <span className='truncate'>{texts.common.code}</span>
-                                </th>
-                                <th>
-                                    <span className='truncate'>{texts.common.system}</span>
-                                </th>
-                                <th>
-                                    <span className='truncate'>{texts.common.message}</span>
-                                </th>
-                                <th>
-                                    <span className='truncate'>{texts.common.count}</span>
-                                </th>
-                                <th className='text-right'>
-                                    <span className='truncate'>{texts.common.lastSeen}</span>
-                                </th>
-                                <th className='text-right'>
-                                    <span className='truncate'>{texts.common.firstSeen}</span>
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {logEntries.items &&
-                                <>
-                                    {logEntries.items.map(entry => (
-                                        <LogEntryRow key={entry.message} entry={entry} />
-                                    ))}
-                                </>
-                            }
-
-                            {logEntries.isLoaded && logEntries.items && logEntries.items.length === 0 &&
+                            <thead>
                                 <tr>
-                                    <td colSpan={6}>{texts.log.logEntriesNotFound}</td>
+                                    <th>
+                                        <span className='truncate'>{texts.common.code}</span>
+                                    </th>
+                                    <th>
+                                        <span className='truncate'>{texts.common.system}</span>
+                                    </th>
+                                    <th>
+                                        <span className='truncate'>{texts.common.message}</span>
+                                    </th>
+                                    <th>
+                                        <span className='truncate'>{texts.common.count}</span>
+                                    </th>
+                                    <th className='text-right'>
+                                        <span className='truncate'>{texts.common.lastSeen}</span>
+                                    </th>
+                                    <th className='text-right'>
+                                        <span className='truncate'>{texts.common.firstSeen}</span>
+                                    </th>
                                 </tr>
-                            }
-                        </tbody>
-                    </Table>
+                            </thead>
+
+                            <tbody>
+                                {logEntries.items &&
+                                    <>
+                                        {logEntries.items.map(entry => (
+                                            <LogEntryRow key={entry.message} entry={entry} />
+                                        ))}
+                                    </>
+                                }
+
+                                {logEntries.isLoaded && logEntries.items && logEntries.items.length === 0 &&
+                                    <tr>
+                                        <td colSpan={6}>{texts.log.logEntriesNotFound}</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </Table>
+                    </div>
                 </CardBody>
             </Card>
 

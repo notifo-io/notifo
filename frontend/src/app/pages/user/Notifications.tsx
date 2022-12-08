@@ -94,48 +94,50 @@ export const Notifications = (props: NotificationsProps) => {
 
             <Card className='card-table'>
                 <CardBody>
-                    <Table className='table-fixed table-simple table-middle'>
-                        <colgroup>
-                            <col style={{ width: 50 }} />
-                            <col />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 25 }}  />
-                            <col style={{ width: 240 }} />
-                        </colgroup>
+                    <div>
+                        <Table className='table-fixed table-simple table-middle'>
+                            <colgroup>
+                                <col style={{ width: 50 }} />
+                                <col />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 240 }} />
+                            </colgroup>
 
-                        <thead>
-                            <tr>
-                                <th>&nbsp;</th>
-                                <th>
-                                    <span className='truncate'>{texts.common.subject}</span>
-                                </th>
-                                <th colSpan={4} data-tip={`${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
-                                    <span className='truncate'>{texts.common.status}</span>
-                                </th>
-                                <th className='text-right'>
-                                    <span className='truncate'>{texts.common.timestamp}</span>
-                                </th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {notifications.items &&
-                                <>
-                                    {notifications.items.map(notification => (
-                                        <NotificationRow key={notification.id} notification={notification} />
-                                    ))}
-                                </>
-                            }
-
-                            {notifications.isLoaded && notifications.items && notifications.items.length === 0 &&
+                            <thead>
                                 <tr>
-                                    <td colSpan={7}>{texts.notifications.notificationsNotFound}</td>
+                                    <th>&nbsp;</th>
+                                    <th>
+                                        <span className='truncate'>{texts.common.subject}</span>
+                                    </th>
+                                    <th colSpan={4} data-tip={`${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
+                                        <span className='truncate'>{texts.common.status}</span>
+                                    </th>
+                                    <th className='text-right'>
+                                        <span className='truncate'>{texts.common.timestamp}</span>
+                                    </th>
                                 </tr>
-                            }
-                        </tbody>
-                    </Table>
+                            </thead>
+
+                            <tbody>
+                                {notifications.items &&
+                                    <>
+                                        {notifications.items.map(notification => (
+                                            <NotificationRow key={notification.id} notification={notification} />
+                                        ))}
+                                    </>
+                                }
+
+                                {notifications.isLoaded && notifications.items && notifications.items.length === 0 &&
+                                    <tr>
+                                        <td colSpan={7}>{texts.notifications.notificationsNotFound}</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </Table>
+                    </div>
                 </CardBody>
             </Card>
 

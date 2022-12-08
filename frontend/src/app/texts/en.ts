@@ -241,6 +241,7 @@ export const EN = {
         header: 'Log',
         logEntriesNotFound: 'No matching log entry found',
         searchPlaceholder: 'Search',
+        userHeader: 'User Log',
     },
     media: {
         confirmDelete: 'Do you really want to delete the Media?',
