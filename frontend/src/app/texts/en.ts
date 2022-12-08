@@ -149,6 +149,11 @@ export const EN = {
         property: 'Property',
         publish: 'Publish',
         refresh: 'Refresh',
+        requiredModes: {
+            Inherit: '-',
+            NotRequired: 'Not Required',
+            Required: 'Required',
+        },
         roles: 'Roles',
         rules: 'Rules',
         sampleSubject: '-- No Subject yet --',

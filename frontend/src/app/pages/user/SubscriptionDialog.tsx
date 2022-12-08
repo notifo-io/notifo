@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import { FormError, Loader, Types, useEventCallback } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
 import { Forms, NotificationsForm } from '@app/shared/components';
-import { CHANNELS } from '@app/shared/utils/model';
+import { fillChannelSettings } from '@app/shared/utils/model';
 import { upsertSubscription, useApp, useSubscriptions } from '@app/state';
 import { texts } from '@app/texts';
 
@@ -64,13 +64,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     const defaultValues: any = React.useMemo(() => {
         const result: Partial<SubscriptionDto> = Types.clone(subscription || { topicPrefix: '' });
 
-        result.topicSettings ||= {};
-
-        for (const channel of CHANNELS) {
-            result.topicSettings[channel] ||= { send: 'Inherit', condition: 'Inherit', required: 'Inherit' };
-        }
-
-        return result;
+        return fillChannelSettings(result, 'topicSettings');
     }, [subscription]);
 
     const form = useForm<SubscriptionDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
