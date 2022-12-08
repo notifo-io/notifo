@@ -9,13 +9,15 @@ namespace Notifo.Domain;
 
 public sealed record ChannelSetting
 {
+    public string? Template { get; set; }
+
     public ChannelSend Send { get; set; }
+
+    public ChannelRequired Required { get; set; }
 
     public ChannelCondition Condition { get; set; }
 
     public int? DelayInSeconds { get; set; }
-
-    public string? Template { get; set; }
 
     public NotificationProperties? Properties { get; set; }
 
@@ -29,6 +31,11 @@ public sealed record ChannelSetting
         if (source.Send != ChannelSend.Inherit)
         {
             Send = source.Send;
+        }
+
+        if (source.Required != ChannelRequired.Inherit)
+        {
+            Required = source.Required;
         }
 
         if (source.Condition != ChannelCondition.Inherit)

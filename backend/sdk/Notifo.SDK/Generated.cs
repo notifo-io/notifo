@@ -13027,6 +13027,14 @@ namespace Notifo.SDK
         public ChannelCondition Condition { get; set; }
 
         /// <summary>
+        /// Defines the requirements for this channel.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ChannelRequired Required { get; set; }
+
+        /// <summary>
         /// The delay in seconds.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("delayInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -13079,6 +13087,21 @@ namespace Notifo.SDK
 
         [System.Runtime.Serialization.EnumMember(Value = @"Always")]
         Always = 3,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum ChannelRequired
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Inherit")]
+        Inherit = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"NotRequired")]
+        NotRequired = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Required")]
+        Required = 2,
 
     }
 

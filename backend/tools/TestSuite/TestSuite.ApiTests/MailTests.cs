@@ -224,6 +224,99 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         Assert.Contains(logs, x => x.EventCode == 1100);
     }
 
+    [Fact]
+    public async Task Should_not_send_email_when_user_has_no_email_address()
+    {
+        var appName = Guid.NewGuid().ToString();
+
+        // STEP 0: Create app
+        var createRequest = new UpsertAppDto
+        {
+            Name = appName
+        };
+
+        var app_0 = await _.Client.Apps.PostAppAsync(createRequest);
+
+
+        // STEP 1: Create integration
+        var emailIntegrationRequest = new CreateIntegrationDto
+        {
+            Type = "SMTP",
+            Properties = new Dictionary<string, string>
+            {
+                ["host"] = mailcatcher.SmtpHost,
+                ["fromEmail"] = "hello@notifo.io",
+                ["fromName"] = "Hello Notifo",
+                ["port"] = mailcatcher.SmtpPort.ToString(CultureInfo.InvariantCulture)
+            },
+            Enabled = true
+        };
+
+        await _.Client.Apps.PostIntegrationAsync(app_0.Id, emailIntegrationRequest);
+
+
+        // STEP 2: Create user
+        var userRequest = new UpsertUsersDto
+        {
+            Requests = new List<UpsertUserDto>
+            {
+                new UpsertUserDto
+                {
+                    EmailAddress = null,
+                }
+            }
+        };
+
+        var users_0 = await _.Client.Users.PostUsersAsync(app_0.Id, userRequest);
+        var user_0 = users_0.First();
+
+
+        // STEP 3: Send email
+        var subjectId = Guid.NewGuid().ToString();
+
+        var publishRequest = new PublishManyDto
+        {
+            Requests = new List<PublishDto>
+            {
+                new PublishDto
+                {
+                    Topic = $"users/{user_0.Id}",
+                    Preformatted = new NotificationFormattingDto
+                    {
+                        Subject = new LocalizedText
+                        {
+                            ["en"] = subjectId
+                        }
+                    },
+                    Settings = new Dictionary<string, ChannelSettingDto>
+                    {
+                        [Providers.Email] = new ChannelSettingDto
+                        {
+                            Send = ChannelSend.Send,
+
+                            // This channel is required and we expect a log entry for the failure.
+                            Required = ChannelRequired.Required
+                        }
+                    }
+                }
+            }
+        };
+
+        await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
+
+
+        // STEP 4: Wait for log entries.
+        var logs = await _.Client.Logs.PollAsync(app_0.Id, null, 1, TimeSpan.FromSeconds(30));
+
+        Assert.Contains(logs, x => x.EventCode == 1207);
+
+
+        // STEP 5: Wait for user log entries.
+        var userLogs = await _.Client.Logs.PollAsync(app_0.Id, user_0.Id, null, 1, TimeSpan.FromSeconds(30));
+
+        Assert.Contains(userLogs, x => x.EventCode == 1207);
+    }
+
     [Theory]
     [InlineData("Default")]
     [InlineData("Liquid")]

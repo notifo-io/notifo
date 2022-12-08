@@ -26,6 +26,12 @@ public sealed class ChannelSettingDto
     public ChannelCondition Condition { get; set; }
 
     /// <summary>
+    /// Defines the requirements for this channel.
+    /// </summary>
+    [Required]
+    public ChannelRequired Required { get; set; }
+
+    /// <summary>
     /// The delay in seconds.
     /// </summary>
     public int? DelayInSeconds { get; set; }

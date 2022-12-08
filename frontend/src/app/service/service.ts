@@ -5908,6 +5908,8 @@ export interface ChannelSettingDto {
     send: ChannelSend;
     /** Defines when to send a notification through this channel. */
     condition: ChannelCondition;
+    /** Defines the requirements for this channel. */
+    required: ChannelRequired;
     /** The delay in seconds. */
     delayInSeconds?: number | undefined;
     /** The template if the channel supports it. */
@@ -5919,6 +5921,8 @@ export interface ChannelSettingDto {
 export type ChannelSend = "Inherit" | "Send" | "NotSending" | "NotAllowed";
 
 export type ChannelCondition = "Inherit" | "IfNotSeen" | "IfNotConfirmed" | "Always";
+
+export type ChannelRequired = "Inherit" | "NotRequired" | "Required";
 
 export interface NotificationProperties {
 

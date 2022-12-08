@@ -51,7 +51,7 @@ public sealed class EventPublisher : IEventPublisher
 
                 if (age > MaxAge)
                 {
-                    await logStore.LogAsync(message.AppId, LogMessage.Events_TooOld("System"));
+                    await logStore.LogAsync(message.AppId, LogMessage.Event_TooOld("System"));
                     return;
                 }
             }
