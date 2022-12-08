@@ -221,7 +221,7 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         // STEP 4: Wait for log entries.
         var logs = await _.Client.Logs.PollAsync(app_0.Id, null, 1, TimeSpan.FromSeconds(30));
 
-        Assert.Contains(logs, x => x.Message.Contains("Cannot find template", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(logs, x => x.EventCode == 1100);
     }
 
     [Theory]

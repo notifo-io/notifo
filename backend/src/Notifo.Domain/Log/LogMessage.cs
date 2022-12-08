@@ -21,6 +21,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     required public object[]? FormatArgs { get; init; }
 
+    // Event Code 0000: General
     public static LogMessage General_Exception(string system, DomainException exception)
     {
         return new LogMessage(0000, exception.Message, system)
@@ -43,6 +44,9 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 1000: System
+
+    // Event Code 1100: Channel Templates
     public static LogMessage ChannelTemplate_NotFound(string system, string? templateName)
     {
         templateName ??= "Unnamed";
@@ -79,6 +83,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 1200: Events
     public static LogMessage Events_NoTopic(string system)
     {
         return new LogMessage(1200, "Event has not topic.", system)
@@ -91,7 +96,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage Events_TooOld(string system)
     {
-        return new LogMessage(1200, "Event is too old and will be skipped.", system)
+        return new LogMessage(1201, "Event is too old and will be skipped.", system)
         {
             FormatText = "Event is too old and will be skipped.",
             FormatArgs = null,
@@ -101,7 +106,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage Events_NoTemplateSubject(string system, string templateName)
     {
-        return new LogMessage(1200, $"Template '{templateName}' has no subject.", system)
+        return new LogMessage(1202, $"Template '{templateName}' has no subject.", system)
         {
             FormatText = "Template '{templateName}' has no subject.",
             FormatArgs = new[] { templateName },
@@ -111,7 +116,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage Events_AlreadyProcessed(string system)
     {
-        return new LogMessage(1200, "Event with this id has already been processed.", system)
+        return new LogMessage(1203, "Event with this id has already been processed.", system)
         {
             FormatText = "Event with this id has already been processed.",
             FormatArgs = null,
@@ -121,7 +126,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage Events_NoSubscriber(string system)
     {
-        return new LogMessage(1200, "Event has no subscriber.", system)
+        return new LogMessage(1204, "Event has no subscriber.", system)
         {
             FormatText = "Event has no subscriber.",
             FormatArgs = null,
@@ -131,7 +136,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage Events_CreationFailed(string system)
     {
-        return new LogMessage(1200, "Failed to create event.", system)
+        return new LogMessage(1205, "Failed to create event.", system)
         {
             FormatText = "Event with this id has already been processed.",
             FormatArgs = null,
@@ -141,7 +146,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage Events_NoSubjectOrTemplateCode(string system)
     {
-        return new LogMessage(1200, "Event with this id has already been processed.", system)
+        return new LogMessage(1206, "Event with this id has already been processed.", system)
         {
             FormatText = "Event has neither a subject nor a template code.",
             FormatArgs = null,
@@ -149,9 +154,10 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 1300: Integrations
     public static LogMessage Integration_Removed(string system)
     {
-        return new LogMessage(1103, $"Integration has been removed and is not available anymore.", system)
+        return new LogMessage(1300, $"Integration has been removed and is not available anymore.", system)
         {
             FormatText = "Integration has been removed and is not available anymore.",
             FormatArgs = null,
@@ -159,9 +165,10 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 2000: Users
     public static LogMessage User_Deleted(string system, string userId)
     {
-        return new LogMessage(2200, "User has been deleted", system)
+        return new LogMessage(2000, "User has been deleted", system)
         {
             FormatText = "User '{userId}' has been deleted.",
             FormatArgs = new[] { userId },
@@ -171,7 +178,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage User_EmailRemoved(string system, string userId)
     {
-        return new LogMessage(2201, "User has removed the email address.", system)
+        return new LogMessage(2001, "User has removed the email address.", system)
         {
             FormatText = "User '{userId}' has removed the email address.",
             FormatArgs = new[] { userId },
@@ -181,7 +188,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage User_LanguageNotValid(string system, string userId, string language, string fallback)
     {
-        return new LogMessage(2202, $"User has unsupported language '{language}', using '{fallback}' instead.", system)
+        return new LogMessage(2002, $"User has unsupported language '{language}', using '{fallback}' instead.", system)
         {
             FormatText = "User '{userId}' has unsupported language '{language}', using '{fallback}' instead.",
             FormatArgs = new[] { userId, language, fallback },
@@ -189,9 +196,12 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 3000: Channels
+
+    // Event Code 3100: MobilePush
     public static LogMessage MobilePush_TokenInvalid(string system, string userId, string token)
     {
-        return new LogMessage(3000, "Mobile Token became invalid.", system)
+        return new LogMessage(3100, "Mobile Token became invalid.", system)
         {
             FormatText = "Mobile Token '{token}' became invalid for user '{userId}'.",
             FormatArgs = new[] { token, userId },
@@ -201,7 +211,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage MobilePush_TokenRemoved(string system, string userId, string token)
     {
-        return new LogMessage(3001, $"Mobile Token '{token}' has been removed.", system)
+        return new LogMessage(3101, $"Mobile Token '{token}' has been removed.", system)
         {
             FormatText = "Mobile Token '{token}' has been removed from user '{userId}'.",
             FormatArgs = new[] { token, userId },
@@ -211,7 +221,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage MobilePush_TokenAdded(string system, string userId, string token)
     {
-        return new LogMessage(3002, $"Mobile Token '{token}' has been added.", system)
+        return new LogMessage(3102, $"Mobile Token '{token}' has been added.", system)
         {
             FormatText = "Mobile Token '{token}' has been added to user '{userId}'.",
             FormatArgs = new[] { token, userId },
@@ -219,9 +229,10 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 3200: WebPush
     public static LogMessage WebPush_TokenInvalid(string system, string userId, string token)
     {
-        return new LogMessage(4000, "Web Token became invalid.", system)
+        return new LogMessage(3200, "Web Token became invalid.", system)
         {
             FormatText = "Web Token '{token}' became invalid for user '{userId}'.",
             FormatArgs = new[] { token, userId },
@@ -231,7 +242,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage WebPush_TokenRemoved(string system, string userId, string token)
     {
-        return new LogMessage(4001, $"Web Token '{token}' has been removed.", system)
+        return new LogMessage(3201, $"Web Token '{token}' has been removed.", system)
         {
             FormatText = "Web Token '{token}' has been removed from user '{userId}'.",
             FormatArgs = new[] { token, userId },
@@ -241,7 +252,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage WebPush_TokenAdded(string system, string userId, string token)
     {
-        return new LogMessage(4002, $"Web Token '{token}' has been added.", system)
+        return new LogMessage(3203, $"Web Token '{token}' has been added.", system)
         {
             FormatText = "Web Token '{token}' has been added to user '{userId}'.",
             FormatArgs = new[] { token, userId },
@@ -249,11 +260,12 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 3300: Messaging
     public static LogMessage Messaging_CallbackError(string system, string? details)
     {
         details ??= "NoDetails";
 
-        return new LogMessage(5000, $"Callback failed with '{details}'.", system)
+        return new LogMessage(3300, $"Callback failed with '{details}'.", system)
         {
             FormatText = "Callback failed with '{details}'.",
             FormatArgs = new[] { details },
@@ -261,11 +273,12 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
+    // Event Code 3400: SMS
     public static LogMessage Sms_CallbackError(string system, string? details)
     {
         details ??= "NoDetails";
 
-        return new LogMessage(6000, $"Callback failed with '{details}'.", system)
+        return new LogMessage(3400, $"Callback failed with '{details}'.", system)
         {
             FormatText = "Callback failed with '{details}'.",
             FormatArgs = new[] { details },
