@@ -6,7 +6,7 @@
  */
 
 import * as React from 'react';
-import { useController } from 'react-hook-form';
+import { useController, useFormContext } from 'react-hook-form';
 import { Col, CustomInput, Row } from 'reactstrap';
 import { FormAlert, Types } from '@app/framework';
 import { texts } from '@app/texts';
@@ -147,11 +147,27 @@ export module NotificationsForm {
 
     const Channel = (props: SettingsProps & { channel: string }) => {
         const { channel, field } = props;
+        const { getValues, setValue } = useFormContext();
+        const fieldSend = `${field}.${channel}.send`;
+        const fieldDelay = `${field}.${channel}.delayInSeconds`;
+        const fieldCondition = `${field}.${channel}.condition`;
+        
+        React.useEffect(() => {
+            if (!getValues(fieldSend)) {
+                setValue(fieldSend, SEND_MODES[0].value);
+            }
+        }, [fieldSend, getValues, setValue]);
+        
+        React.useEffect(() => {
+            if (!getValues(fieldCondition)) {
+                setValue(fieldCondition, SEND_MODES[0].value);
+            }
+        }, [fieldCondition, getValues, setValue]);
     
         return (
             <Row noGutters>
                 <Col className='rules-send'>
-                    <Forms.Select name={`${field}.${channel}.send`} vertical options={SEND_MODES} />
+                    <Forms.Select name={fieldSend} vertical options={SEND_MODES} />
                 </Col>
                 <Col className='rules-label' xs='auto'>
                     <small>{texts.common.via}</small>
@@ -163,7 +179,7 @@ export module NotificationsForm {
                     <small>{texts.common.after}</small>
                 </Col>
                 <Col className='rules-delay'>
-                    <Forms.Number name={`${field}.${channel}.delayInSeconds`} vertical min={0} max={6000} />
+                    <Forms.Number name={fieldDelay} vertical min={0} max={6000} />
                 </Col>
                 <Col className='rules-label' xs='auto'>
                     <small>{texts.common.secondsShort}</small>
@@ -172,7 +188,7 @@ export module NotificationsForm {
                     <small>{texts.common.when}</small>
                 </Col>
                 <Col className='rules-condition'>
-                    <Forms.Select name={`${field}.${channel}.condition`} vertical options={CONDITION_MODES} />
+                    <Forms.Select name={fieldCondition} vertical options={CONDITION_MODES} />
                 </Col>
             </Row>
         );

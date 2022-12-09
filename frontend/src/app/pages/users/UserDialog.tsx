@@ -12,7 +12,6 @@ import { Button, Form, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem,
 import { FormError, Loader, Types, useEventCallback } from '@app/framework';
 import { Clients, UpsertUserDto, UserDto } from '@app/service';
 import { Forms, NotificationsForm } from '@app/shared/components';
-import { fillChannelSettings } from '@app/shared/utils/model';
 import { upsertUser, useApp, useCore, useUsers } from '@app/state';
 import { texts } from '@app/texts';
 
@@ -84,13 +83,11 @@ export const UserDialog = (props: UserDialogProps) => {
         return properties.sortByString(x => x.name);
     }, [dialogUser]);
 
-    const defaultValues: any = React.useMemo(() => {
-        const result: Partial<UserDto> = Types.clone(dialogUser || {});
-
-        return fillChannelSettings(result, 'settings');
+    const defaultValues = React.useMemo(() => {
+        return Types.clone(dialogUser || {});
     }, [dialogUser]);
 
-    const form = useForm<UpsertUserDto>({ defaultValues, mode: 'onChange' });
+    const form = useForm<UpsertUserDto>({ defaultValues });
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>

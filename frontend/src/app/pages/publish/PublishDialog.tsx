@@ -16,7 +16,6 @@ import * as Yup from 'yup';
 import { FormError, Icon, Loader, Types, useEventCallback, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { Forms, NotificationsForm, TemplateInput, TemplateVariantsInput } from '@app/shared/components';
-import { fillChannelSettings } from '@app/shared/utils/model';
 import { loadTemplates, publish, togglePublishDialog, useApp, usePublish, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationPreview } from '../templates/NotificationPreview';
@@ -120,9 +119,7 @@ const PublishDialogInner = () => {
     });
 
     const defaultValues = React.useMemo(() => {
-        const result: Partial<PublishForms> = Types.clone(dialogValues || {}) as any;
-
-        return fillChannelSettings(result, 'settings');
+        return Types.clone(dialogValues || {}) as any;
     }, [dialogValues]);
 
     const form = useForm<PublishForms>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });

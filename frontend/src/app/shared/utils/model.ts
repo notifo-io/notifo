@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ChannelCondition, ChannelRequired, ChannelSend, ChannelSettingDto, ConfirmMode, TopicChannel } from '@app/service';
+import { ChannelCondition, ChannelRequired, ChannelSend, ConfirmMode, TopicChannel } from '@app/service';
 import { texts } from '@app/texts';
 
 export const CHANNELS = [
@@ -16,18 +16,6 @@ export const CHANNELS = [
     'webpush',
     'webhook',
 ];
-
-export function fillChannelSettings<T>(source: T, property: keyof T) {
-    const settings: { [key: string]: ChannelSettingDto } = (source as any)[property] || {};
-
-    for (const channel of CHANNELS) {
-        settings[channel] ||= { send: 'Inherit', condition: 'Inherit', required: 'Inherit' };
-    }
-
-    (source as any)[property] = settings;
-
-    return source;
-}
 
 type Mode<T> = { value: T | string; label: string };
 
