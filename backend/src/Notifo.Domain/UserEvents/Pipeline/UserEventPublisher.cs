@@ -84,13 +84,13 @@ public sealed class UserEventPublisher : IUserEventPublisher
 
             if (string.IsNullOrWhiteSpace(@event.Topic))
             {
-                await logStore.LogAsync(@event.AppId, LogMessage.Events_NoTopic("System"));
+                await logStore.LogAsync(@event.AppId, LogMessage.Event_NoTopic("System"));
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(@event.TemplateCode) && @event.Formatting?.HasSubject() != true)
             {
-                await logStore.LogAsync(@event.AppId, LogMessage.Events_NoSubjectOrTemplateCode("System"));
+                await logStore.LogAsync(@event.AppId, LogMessage.Event_NoSubjectOrTemplateCode("System"));
                 return;
             }
 
@@ -148,7 +148,7 @@ public sealed class UserEventPublisher : IUserEventPublisher
 
                     if (@event.Formatting?.HasSubject() != true)
                     {
-                        await logStore.LogAsync(@event.AppId, LogMessage.Events_NoTemplateSubject("System", templateCode!));
+                        await logStore.LogAsync(@event.AppId, LogMessage.Event_NoTemplateSubject("System", templateCode!));
                         return;
                     }
 
@@ -163,7 +163,7 @@ public sealed class UserEventPublisher : IUserEventPublisher
                     }
                     catch (UniqueConstraintException)
                     {
-                        await logStore.LogAsync(@event.AppId, LogMessage.Events_AlreadyProcessed("System"));
+                        await logStore.LogAsync(@event.AppId, LogMessage.Event_AlreadyProcessed("System"));
                         break;
                     }
                 }
@@ -188,7 +188,7 @@ public sealed class UserEventPublisher : IUserEventPublisher
             }
             else
             {
-                await logStore.LogAsync(@event.AppId, LogMessage.Events_NoSubscriber("System"));
+                await logStore.LogAsync(@event.AppId, LogMessage.Event_NoSubscriber("System"));
             }
 
             log.LogInformation("Processed event for app {appId} with ID {id} to topic {topic}.",

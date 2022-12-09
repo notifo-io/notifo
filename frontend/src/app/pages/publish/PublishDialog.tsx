@@ -13,10 +13,9 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Button, Col, Form, Label, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Row } from 'reactstrap';
 import * as Yup from 'yup';
-import { FormError, Icon, Loader, useEventCallback, usePrevious } from '@app/framework';
+import { FormError, Icon, Loader, Types, useEventCallback, usePrevious } from '@app/framework';
 import { PublishDto } from '@app/service';
 import { Forms, NotificationsForm, TemplateInput, TemplateVariantsInput } from '@app/shared/components';
-import { CHANNELS } from '@app/shared/utils/model';
 import { loadTemplates, publish, togglePublishDialog, useApp, usePublish, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationPreview } from '../templates/NotificationPreview';
@@ -119,16 +118,8 @@ const PublishDialogInner = () => {
         dispatch(publish({ appId, params }));
     });
 
-    const defaultValues: any = React.useMemo(() => {
-        const result = { ...dialogValues };
-
-        result.settings ||= {};
-
-        for (const channel of CHANNELS) {
-            result.settings[channel] ||= { send: 'Inherit', condition: 'Inherit' };
-        }
-
-        return result;
+    const defaultValues = React.useMemo(() => {
+        return Types.clone(dialogValues || {}) as any;
     }, [dialogValues]);
 
     const form = useForm<PublishForms>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });

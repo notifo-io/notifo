@@ -84,7 +84,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
     }
 
     // Event Code 1200: Events
-    public static LogMessage Events_NoTopic(string system)
+    public static LogMessage Event_NoTopic(string system)
     {
         return new LogMessage(1200, "Event has not topic.", system)
         {
@@ -94,7 +94,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
-    public static LogMessage Events_TooOld(string system)
+    public static LogMessage Event_TooOld(string system)
     {
         return new LogMessage(1201, "Event is too old and will be skipped.", system)
         {
@@ -104,7 +104,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
-    public static LogMessage Events_NoTemplateSubject(string system, string templateName)
+    public static LogMessage Event_NoTemplateSubject(string system, string templateName)
     {
         return new LogMessage(1202, $"Template '{templateName}' has no subject.", system)
         {
@@ -114,7 +114,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
-    public static LogMessage Events_AlreadyProcessed(string system)
+    public static LogMessage Event_AlreadyProcessed(string system)
     {
         return new LogMessage(1203, "Event with this id has already been processed.", system)
         {
@@ -124,7 +124,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
-    public static LogMessage Events_NoSubscriber(string system)
+    public static LogMessage Event_NoSubscriber(string system)
     {
         return new LogMessage(1204, "Event has no subscriber.", system)
         {
@@ -134,7 +134,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
-    public static LogMessage Events_CreationFailed(string system)
+    public static LogMessage Event_CreationFailed(string system)
     {
         return new LogMessage(1205, "Failed to create event.", system)
         {
@@ -144,11 +144,21 @@ public record struct LogMessage(int EventCode, string Message, string System)
         };
     }
 
-    public static LogMessage Events_NoSubjectOrTemplateCode(string system)
+    public static LogMessage Event_NoSubjectOrTemplateCode(string system)
     {
         return new LogMessage(1206, "Event with this id has already been processed.", system)
         {
             FormatText = "Event has neither a subject nor a template code.",
+            FormatArgs = null,
+            Reason = null
+        };
+    }
+
+    public static LogMessage Event_ChannelRequired(string system)
+    {
+        return new LogMessage(1207, "No configuration found for channel.", system)
+        {
+            FormatText = "No configuration found for channel.",
             FormatArgs = null,
             Reason = null
         };

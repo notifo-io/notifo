@@ -39,10 +39,11 @@ public sealed class RegisterMobileTokenDto
     {
         var result = new AddUserMobileToken
         {
-            Token = ToToken()
-        };
+            Token = ToToken(),
 
-        result.UserId = userId;
+            // User ID is coming from the route in this context.
+            UserId = userId
+        };
 
         return result;
     }

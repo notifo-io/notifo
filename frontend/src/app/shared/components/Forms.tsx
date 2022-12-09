@@ -215,7 +215,7 @@ export module Forms {
         );
     };
 
-    export const Select = ({ options, placeholder, ...other }: FormEditorProps & { options: Option<string | number>[] }) => {
+    export const Select = ({ options, placeholder, ...other }: FormEditorProps & { options: ReadonlyArray<Option<string | number>> }) => {
         return (
             <Forms.Row {...other}>
                 <InputSelect name={other.name} placeholder={placeholder} options={options} />
@@ -223,7 +223,7 @@ export module Forms {
         );
     };
 
-    export const Checkboxes = ({ options, ...other }: FormEditorProps & { options: Option<string>[] }) => {
+    export const Checkboxes = ({ options, ...other }: FormEditorProps & { options: ReadonlyArray<Option<string>> }) => {
         if (!options || options.length === 0) {
             return null;
         }
@@ -346,7 +346,7 @@ const InputToggle = ({ name, ...other }: BooleanFormProps) => {
     );
 };
 
-const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Option<string | number>[] }) => {
+const InputSelect = ({ name, options }: FormEditorProps & { options: ReadonlyArray<Forms.Option<string | number>> }) => {
     const { field, fieldState, formState } = useController({ name });
 
     return (
@@ -364,7 +364,7 @@ const InputSelect = ({ name, options }: FormEditorProps & { options: Forms.Optio
     );
 };
 
-const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.Option<string>[] }) => {
+const InputCheckboxes = ({ name, options }: FormEditorProps & { options: ReadonlyArray<Forms.Option<string>> }) => {
     return (
         <div style={{ paddingTop: '.625rem' }}>
             {options.map(option =>
@@ -375,6 +375,7 @@ const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Forms.O
 };
 
 const EMPTY_ARRAY: any[] = [];
+
 const SET_OPTIONS = { shouldTouch: true, shouldDirty: true, shouldValidate: true };
 
 const InputCheckboxOption = ({ name, option }: { name: string; option: Forms.Option<string> }) => {

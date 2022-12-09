@@ -8,7 +8,7 @@ services:
       - internal
 
   notifo1:
-    image: squidex/notifo:dev-1074
+    image: notifo-local
     ports:
       - "8080:80"
     environment:
@@ -24,7 +24,7 @@ services:
       - mongo
 
   notifo2:
-    image: squidex/notifo:dev-1074
+    image: notifo-local
     ports:
       - "8081:80"
     environment:

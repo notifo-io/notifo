@@ -50,7 +50,7 @@ public sealed class LogStore : ILogStore, IDisposable
         collector.StopAsync().Wait();
     }
 
-    public Task LogAsync(string appId, LogMessage message)
+    public Task LogAsync(string appId, LogMessage message, bool skipDefaultLog = false)
     {
         Guard.NotNullOrEmpty(appId);
         Guard.NotNullOrEmpty(message.System);
@@ -58,7 +58,7 @@ public sealed class LogStore : ILogStore, IDisposable
 
         var (eventCode, text, system) = message;
 
-        if (message.FormatText != null)
+        if (message.FormatText != null && !skipDefaultLog)
         {
             var argCount = message.FormatArgs?.Length ?? 0;
 
@@ -72,13 +72,14 @@ public sealed class LogStore : ILogStore, IDisposable
                 Array.Copy(message.FormatArgs, 0, args, 2, message.FormatArgs.Length);
             }
 
-            log.LogInformation(message.EventCode, message.Exception, $"User log for app {{appId}} from system {{system}}: {text}.", args);
+            log.LogInformation(message.EventCode, message.Exception,
+                $"User log for app {{appId}} from system {{system}}: {text}.", args);
         }
 
         return collector.AddAsync(new LogWrite(appId, null, eventCode, text, system));
     }
 
-    public Task LogAsync(string appId, string userId, LogMessage message)
+    public Task LogAsync(string appId, string userId, LogMessage message, bool skipDefaultLog = false)
     {
         Guard.NotNullOrEmpty(appId);
         Guard.NotNullOrEmpty(userId);
@@ -87,7 +88,7 @@ public sealed class LogStore : ILogStore, IDisposable
 
         var (eventCode, text, system) = message;
 
-        if (message.FormatText != null)
+        if (message.FormatText != null && !skipDefaultLog)
         {
             var argCount = message.FormatArgs?.Length ?? 0;
 
@@ -102,7 +103,8 @@ public sealed class LogStore : ILogStore, IDisposable
                 Array.Copy(message.FormatArgs, 0, args, 3, message.FormatArgs.Length);
             }
 
-            log.LogInformation(message.EventCode, message.Exception, $"User log for app {{appId}} and user {{userId}} from system {{system}}: {message.Message}.", args);
+            log.LogInformation(message.EventCode, message.Exception,
+                $"User log for app {{appId}} and user {{userId}} from system {{system}}: {message.Message}.", args);
         }
 
         return collector.AddAsync(new LogWrite(appId, userId, eventCode, text, system));

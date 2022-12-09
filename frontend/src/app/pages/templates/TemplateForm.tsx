@@ -15,7 +15,6 @@ import * as Yup from 'yup';
 import { FormError, Icon, Loader, Types, useEventCallback } from '@app/framework';
 import { TemplateDto } from '@app/service';
 import { Forms, NotificationsForm } from '@app/shared/components';
-import { CHANNELS } from '@app/shared/utils/model';
 import { upsertTemplate, useApp, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
 import { NotificationPreview } from './NotificationPreview';
@@ -70,15 +69,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
     });
 
     const defaultValues: any = React.useMemo(() => {
-        const result: Partial<TemplateDto> = Types.clone(template || {});
-
-        result.settings ||= {};
-
-        for (const channel of CHANNELS) {
-            result.settings[channel] ||= { send: 'Inherit', condition: 'Inherit' };
-        }
-
-        return result;
+        return Types.clone(template || {});
     }, [template]);
 
     const form = useForm<TemplateDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });

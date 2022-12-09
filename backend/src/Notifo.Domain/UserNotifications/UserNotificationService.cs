@@ -213,22 +213,28 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.Send == ChannelSend.Send)
                 {
                     var configurations = channel.GetConfigurations(notification, channelConfig.Setting, context);
+                    var configurationSet = false;
 
-                    foreach (var configuration in configurations)
+                    foreach (var configuration in configurations.NotNull())
                     {
-                        if (configuration != null)
+                        var status = new ChannelSendInfo
                         {
-                            var configurationId = Guid.NewGuid();
+                            Configuration = configuration
+                        };
 
-                            channelConfig.Status[configurationId] = new ChannelSendInfo
-                            {
-                                Configuration = configuration
-                            };
+                        channelConfig.Status[Guid.NewGuid()] = status;
 
-                            var identifier = TrackingKey.ForNotification(notification, channel.Name, configurationId);
+                        // Use this flag to avoid allocations.
+                        configurationSet = true;
+                    }
 
-                            await userNotificationsStore.TrackAsync(identifier, ProcessStatus.Attempt);
-                        }
+                    if (!configurationSet && channelConfig.Setting.Required == ChannelRequired.Required)
+                    {
+                        var message = LogMessage.Event_ChannelRequired(channel.Name);
+
+                        // Write to app and to user log store, but only log to standard out once.
+                        await logStore.LogAsync(notification.AppId, message, true);
+                        await logStore.LogAsync(notification.AppId, notification.UserId, message);
                     }
                 }
             }

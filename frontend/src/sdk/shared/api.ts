@@ -377,7 +377,7 @@ export async function apiDeleteWebPush(config: SDKConfig, subscription: PushSubs
             ...getAuthHeader(config),
             'Content-Type': 'text/json',
         },
-        body: JSON.stringify({ subscription }),
+        body: JSON.stringify({ endpoint: subscription.endpoint }),
     });
 
     if (!response.ok) {

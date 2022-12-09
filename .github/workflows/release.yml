@@ -10,54 +10,38 @@ jobs:
   build_test:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Prepare - Checkout
         uses: actions/checkout@v3.1.0
 
-      - name: Inject slug/short variables
+      - name: Prepare - Inject short Variables
         uses: rlespinasse/github-slug-action@v4.3.2
 
-      - name: Set up QEMU
+      - name: Prepare - Set up QEMU
         uses: docker/setup-qemu-action@v2.1.0
 
-      - name: Set up Docker Buildx
+      - name: Prepare - Set up Docker Buildx
         uses: docker/setup-buildx-action@v2.2.1
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2.1.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: BUILD
+      - name: Build - BUILD
         uses: docker/build-push-action@v3.2.0
         with:
-          push: true
-          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
+          load: true
+          build-args: "NOTIFO__RUNTIME__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: squidex/notifo-build
+          tags: notifo-local
 
-      - name: Replace Image Name1
-        uses: mikefarah/yq@v4.9.1
-        with:
-          cmd: yq e '.services.notifo1.image = "squidex/notifo-build"' -i backend/tests/docker-compose.yml
-
-      - name: Replace Image Name2
-        uses: mikefarah/yq@v4.9.1
-        with:
-          cmd: yq e '.services.notifo2.image = "squidex/notifo-build"' -i backend/tests/docker-compose.yml
-
-      - name: Inject Google Credentials
+      - name: Test - Inject Google Credentials
         run: mkdir secrets && echo "$GOOGLE__KEYFILE" >| secrets/keyfile.json
         working-directory: backend/tests
         env:
           GOOGLE__KEYFILE: ${{ secrets.GOOGLE__KEYFILE }}
 
-      - name: Start Test
+      - name: Test - Start Compose
         run: docker-compose up -d
         working-directory: backend/tests
 
-      - name: RUN TEST
+      - name: Test - RUN
         uses: kohlerdominik/docker-run-action@v1.1.0
         with:
           image: mcr.microsoft.com/dotnet/sdk:7.0
@@ -72,7 +56,7 @@ jobs:
           volumes: ${{ github.workspace }}:/src
           run: dotnet test /src/backend/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
 
-      - name: RUN TEST GooglePubSub
+      - name: Test - RUN on GooglePubSub
         uses: kohlerdominik/docker-run-action@v1.1.0
         with:
           image: mcr.microsoft.com/dotnet/sdk:7.0
@@ -87,113 +71,77 @@ jobs:
           volumes: ${{ github.workspace }}:/src
           run: dotnet test /src/backend/tools/TestSuite/TestSuite.ApiTests/TestSuite.ApiTests.csproj --filter Category!=NotAutomated
        
-      - name: Dump docker logs on failure
+      - name: Test - Dump docker logs on failure
         if: failure()
         uses: jwalton/gh-docker-logs@v2.2.1
         with:
          images: 'squidex/notifo-build,squidex/resizer'
          tail: '100'
 
-      - name: Cleanup Test
+      - name: Test - Cleanup
         if: always()
         run: docker-compose down
         working-directory: backend/tests
 
-  publish:
-    needs: build_test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.1.0
-
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4.3.2
-
-      - name: Get Major Version
+      - name: Publish - Get Major Version
         id: version
         uses: rishabhgupta/split-by@v1
         with:
           string: "${{ env.GITHUB_REF_SLUG }}"
           split-by: "."
 
-      - name: Check Tag
+      - name: Publish - Check Tag
         id: normal-version
         run: |
           if [[ ${{ env.GITHUB_REF_SLUG }} =~ ^[0-9]+\.[0-9]+$ ]]; then
               echo "STABLE_VERSION=true" >> $GITHUB_ENV
           fi
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2.1.0
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2.2.1
-
-      - name: Login to Docker Hub
+      - name: Publish - Login to Docker Hub
         uses: docker/login-action@v2.1.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: BUILD
-        uses: docker/build-push-action@v3.2.0
-        with:
-          push: true
-          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: |
-            squidex/notifo:latest
-            squidex/notifo:${{ env.GITHUB_REF_SLUG }}
-            squidex/notifo:${{ steps.version.outputs._0 }}
+      - name: Publish - Rename Tags
+        run: |
+          docker tag notifo-local squidex/notifo:latest
+          docker tag notifo-local squidex/notifo:${{ env.GITHUB_REF_SLUG }}
+          docker tag notifo-local squidex/notifo:${{ steps.version.outputs._0 }}
+    
+      - name: Publish - Push Tags
         if: env.STABLE_VERSION == 'true'
-
-      - name: BUILD
-        uses: docker/build-push-action@v3.2.0
-        with:
-          push: true
-          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          tags: |
-            squidex/notifo:${{ env.GITHUB_REF_SLUG }}
-            squidex/notifo:${{ steps.version.outputs._0 }}
+        run: |
+          docker tag notifo-local squidex/notifo:latest
+          docker tag notifo-local squidex/notifo:${{ env.GITHUB_REF_SLUG }}
+          docker tag notifo-local squidex/notifo:${{ steps.version.outputs._0 }}
+    
+      - name: Publish - Push Tags
         if: env.STABLE_VERSION != 'true'
+        run: |
+          docker tag notifo-local squidex/notifo:${{ env.GITHUB_REF_SLUG }}
 
-  release:
-    needs: publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3.1.0
-
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v4.3.2
-        
-      - name: Pull from Cache
-        run: docker pull squidex/notifo-build
-
-      - name: Make directories
+      - name: Release - Make directories
         run: sudo mkdir /build /release
 
-      - name: Create container
-        run: docker create --name notifo-container squidex/notifo-build
+      - name: Release - Create container
+        run: docker create --name notifo-container notifo-local
 
-      - name: Get binaries
+      - name: Release - Get binaries
         run: sudo docker cp notifo-container:/app/. /build
 
-      - name: ZIP Binaries
+      - name: Release - Zip Binaries
         run: sudo zip -r /release/binaries.zip .
         working-directory: /build
 
-      - name: Get Changelog Entry
+      - name: Release - Get Changelog Entry
         id: changelog_reader
         uses: mindsers/changelog-reader-action@v2
         with:
           version: ${{ env.GITHUB_REF_SLUG }}
           path: ./CHANGELOG.md
 
-      - name: Publish Binaries
+      - name: Release - Publish Binaries
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
@@ -204,6 +152,6 @@ jobs:
           replacesArtifacts: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Cleanup Binaries
+      - name: Release - Cleanup Binaries
         if: always()
         run: docker rm notifo-container

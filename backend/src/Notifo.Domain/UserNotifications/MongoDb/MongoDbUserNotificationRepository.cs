@@ -418,7 +418,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
             Filter.Eq(x => x.AppId, appId)
         };
 
-        if (!string.IsNullOrWhiteSpace(query?.CorrelationId))
+        if (!string.IsNullOrWhiteSpace(query.CorrelationId))
         {
             filters.Add(Filter.Eq(x => x.CorrelationId, query.CorrelationId));
         }

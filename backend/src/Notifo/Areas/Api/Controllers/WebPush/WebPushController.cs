@@ -30,7 +30,7 @@ public sealed class WebPushController : BaseController
     [HttpDelete("api/me/webpush")]
     [HttpDelete("api/webpush")]
     [AppPermission(NotifoRoles.AppUser)]
-    public async Task<IActionResult> DeleteMyToken([FromBody] RegisterWebTokenDto request)
+    public async Task<IActionResult> DeleteMyToken([FromBody] UnregisterWebTokenDto request)
     {
         var command = request.ToDelete(UserId);
 
