@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v3.2.0
         with:
           load: true
-          build-args: "NOTIFO__RUNTIME__VERSION=1.0.0-dev-${{ env.BUILD_NUMBER }}"
+          build-args: "NOTIFO__BUILD__VERSION=${{ env.GITHUB_REF_SLUG }},NOTIFO__RUNTIME__VERSION=${{ env.GITHUB_REF_SLUG }}"
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: notifo-local
@@ -75,7 +75,7 @@ jobs:
         if: failure()
         uses: jwalton/gh-docker-logs@v2.2.1
         with:
-         images: 'squidex/notifo-build,squidex/resizer'
+         images: 'notifo-local,squidex/resizer'
          tail: '100'
 
       - name: Test - Cleanup
