@@ -19,8 +19,8 @@ jobs:
 
       - name: Pack
         run: |
-          cd backend/sdk/Notifo.SDK && dotnet pack -c Release
+          cd tools/sdk/Notifo.SDK && dotnet pack -c Release
 
       - name: Publish
         run: |
-          cd backend/sdk/Notifo.SDK && dotnet nuget push **/*.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k ${{ secrets.NUGET }}
+          cd tools/sdk/Notifo.SDK && dotnet nuget push **/*.nupkg --source 'https://api.nuget.org/v3/index.json' --skip-duplicate -k ${{ secrets.NUGET }}
