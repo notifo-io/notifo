@@ -10,7 +10,7 @@ module.exports = function (config) {
         frameworks: ['jasmine'],
 
         /**
-         * Load additional test shim to setup angular for testing.
+         * Load additional test shim to setup react for testing.
          */
         files: [
             { pattern: './config/karma-test-shim.js', watched: false },
