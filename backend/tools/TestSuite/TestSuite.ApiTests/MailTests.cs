@@ -11,9 +11,9 @@ using TestSuite.Fixtures;
 
 #pragma warning disable SA1300 // Element should begin with upper-case letter
 #pragma warning disable SA1507 // Code should not contain multiple blank lines in a row
+#pragma warning disable xUnit1033 // Test classes decorated with 'Xunit.IClassFixture<TFixture>' or 'Xunit.ICollectionFixture<TFixture>' should add a constructor argument of type TFixture
 
 namespace TestSuite.ApiTests;
-
 public class MailTests : IClassFixture<ClientFixture>, IClassFixture<MailcatcherFixture>
 {
     private readonly MailcatcherClient mailcatcher;
@@ -219,7 +219,7 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
 
         // STEP 4: Wait for log entries.
-        var logs = await _.Client.Logs.PollAsync(app_0.Id, null, 1, TimeSpan.FromSeconds(30));
+        var logs = await _.Client.Logs.PollAsync(app_0.Id, null);
 
         Assert.Contains(logs, x => x.EventCode == 1100);
     }
@@ -306,13 +306,13 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
 
         // STEP 4: Wait for log entries.
-        var logs = await _.Client.Logs.PollAsync(app_0.Id, null, 1, TimeSpan.FromSeconds(30));
+        var logs = await _.Client.Logs.PollAsync(app_0.Id, null);
 
         Assert.Contains(logs, x => x.EventCode == 1207);
 
 
         // STEP 5: Wait for user log entries.
-        var userLogs = await _.Client.Logs.PollAsync(app_0.Id, user_0.Id, null, 1, TimeSpan.FromSeconds(30));
+        var userLogs = await _.Client.Logs.PollAsync(app_0.Id, user_0.Id);
 
         Assert.Contains(userLogs, x => x.EventCode == 1207);
     }

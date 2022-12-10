@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.SDK;
 using System.Collections.Concurrent;
+using Notifo.SDK;
 using Xunit;
 
 namespace TestSuite.Fixtures;
@@ -51,13 +51,13 @@ public class ClientFixture : IAsyncLifetime
 
     public INotifoClient BuildClient(string apiKey)
     {
-        return clients.GetOrAdd(apiKey, x =>
+        return clients.GetOrAdd(apiKey, (x, self) =>
         {
             return NotifoClientBuilder.Create()
-                .SetApiUrl(ServerUrl)
+                .SetApiUrl(self.ServerUrl)
                 .SetApiKey(x)
                 .Build();
-        });
+        }, this);
     }
 
     public virtual Task DisposeAsync()

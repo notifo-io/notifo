@@ -44,7 +44,12 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
+        var args0 = new PollingArguments<UserNotificationDetailsDto>
+        {
+            Condition = x => x.Subject == subject
+        };
+
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args0);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -55,7 +60,12 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
         await MarkAsConfirmedAsync(notification_0, user_0, strategy, useDeviceIdentifier);
 
         // Test if it has been marked as seen.
-        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstConfirmed != null);
+        var args1 = new PollingArguments<UserNotificationDetailsDto>
+        {
+            Condition = x => x.Subject == subject && x.FirstConfirmed != null
+        };
+
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstConfirmed);
@@ -79,7 +89,12 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
 
 
         // Test that notification has been created.
-        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject);
+        var args0 = new PollingArguments<UserNotificationDetailsDto>
+        {
+            Condition = x => x.Subject == subject
+        };
+
+        var notifications_0 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args0);
         var notification_0 = notifications_0.SingleOrDefault();
 
         Assert.NotNull(notification_0);
@@ -90,7 +105,12 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
         await MarkAsSeenAsync(notification_0, user_0, strategy, useDeviceIdentifier);
 
         // Test if it has been marked as seen.
-        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, x => x.Subject == subject && x.FirstSeen != null);
+        var args1 = new PollingArguments<UserNotificationDetailsDto>
+        {
+            Condition = x => x.Subject == subject && x.FirstSeen != null
+        };
+
+        var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
         Assert.NotNull(notification_1.FirstSeen);
