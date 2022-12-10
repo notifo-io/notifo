@@ -17,7 +17,7 @@ namespace TestSuite.ApiTests;
 public class SmsTests : IClassFixture<ClientFixture>
 {
     private static readonly string PhoneNumber = "00436703091161";
-    private static readonly string AccessKey = TestHelpers.GetAndPrintValue("messagebird:accessKey", "invalid");
+    private static readonly string AccessKey = TestHelpers.GetAndPrintValue("messagebird:accessKey", string.Empty);
 
     public ClientFixture _ { get; }
 
