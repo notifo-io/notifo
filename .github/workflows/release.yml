@@ -81,7 +81,7 @@ jobs:
       - name: Test - Cleanup
         if: always()
         run: docker-compose down
-        working-directory: backend/tests
+        working-directory: tools/TestSuite
 
       - name: Publish - Get Major Version
         id: version

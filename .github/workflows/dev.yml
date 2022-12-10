@@ -45,7 +45,7 @@ jobs:
 
       - name: Test - Start Compose
         run: docker-compose up -d
-        working-directory: backend/tests
+        working-directory: tools/TestSuite
 
       - name: Test - RUN
         uses: kohlerdominik/docker-run-action@v1.1.0
