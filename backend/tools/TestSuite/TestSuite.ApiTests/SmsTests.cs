@@ -29,6 +29,12 @@ public class SmsTests : IClassFixture<ClientFixture>
     [Fact]
     public async Task Should_send_sms_with_template()
     {
+        // In pull requests from forks we cannot inject the secret key.
+        if (string.IsNullOrWhiteSpace(AccessKey))
+        {
+            return;
+        }
+
         var appName = Guid.NewGuid().ToString();
 
         // STEP 0: Create app
@@ -144,6 +150,12 @@ public class SmsTests : IClassFixture<ClientFixture>
     [Fact]
     public async Task Should_send_sms_without_template()
     {
+        // In pull requests from forks we cannot inject the secret key.
+        if (string.IsNullOrWhiteSpace(AccessKey))
+        {
+            return;
+        }
+
         var appName = Guid.NewGuid().ToString();
 
         // STEP 0: Create app
