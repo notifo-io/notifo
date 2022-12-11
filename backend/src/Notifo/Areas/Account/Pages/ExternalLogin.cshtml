@@ -15,8 +15,8 @@
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
     @if (Model.MustAcceptsTermsOfService)
-{
-    <div class="form-group">
+    {
+        <div class="form-group">
             <div class="custom-control custom-checkbox">
                 <input asp-for="Model.AcceptTermsOfService" type="checkbox" class="custom-control-input">
                 <label asp-for="Model.AcceptTermsOfService" class="custom-control-label">@T["AgreeToTermsOfService", Model.TermsOfServiceUrl]</label>
@@ -24,11 +24,11 @@
 
             <span asp-validation-for="Model.AcceptTermsOfService" class="invalid-feedback"></span>
         </div>
-}
+    }
 
     @if (Model.MustAcceptsPrivacyPolicy)
-{
-    <div class="form-group">
+    {
+        <div class="form-group">
             <div class="custom-control custom-checkbox">
                 <input asp-for="Model.AcceptPrivacyPolicy" type="checkbox" class="custom-control-input">
                 <label asp-for="Model.AcceptPrivacyPolicy" class="custom-control-label">@T["AgreeToPrivacyPolicy", Model.PrivacyPolicyUrl]</label>
@@ -36,7 +36,7 @@
 
             <span asp-validation-for="Model.AcceptPrivacyPolicy" class="invalid-feedback"></span>
         </div>
-}
+    }
 
     <button type="submit" class="btn btn-primary">@T["RegisterButton"]</button>
 </form>

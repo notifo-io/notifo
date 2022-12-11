@@ -80,9 +80,9 @@ public sealed class IntegrationPropertyDto
     /// </summary>
     public object? DefaultValue { get; set; }
 
-    public static IntegrationPropertyDto FromDomainObject(IntegrationProperty property)
+    public static IntegrationPropertyDto FromDomainObject(IntegrationProperty source)
     {
-        var result = SimpleMapper.Map(property, new IntegrationPropertyDto());
+        var result = SimpleMapper.Map(source, new IntegrationPropertyDto());
 
         return result;
     }

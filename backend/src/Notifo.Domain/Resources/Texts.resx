@@ -201,18 +201,6 @@
   <data name="NotificationTemplateUpserted" xml:space="preserve">
     <value>Template '{{code}}' has been added or updated in app '{{app}}'.</value>
   </data>
-  <data name="Notification_AlreadyProcessed" xml:space="preserve">
-    <value>Notification has already been processed.</value>
-  </data>
-  <data name="Notification_NoApp" xml:space="preserve">
-    <value>Notification has no existing app. It has probably been deleted.</value>
-  </data>
-  <data name="Notification_NoSubject" xml:space="preserve">
-    <value>Notification has no subject for user.</value>
-  </data>
-  <data name="Notification_NoUser" xml:space="preserve">
-    <value>Notification has no existing user. It has probably been deleted.</value>
-  </data>
   <data name="Template_NoSubject" xml:space="preserve">
     <value>Template '{0}' has no subject.</value>
   </data>

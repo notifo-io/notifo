@@ -24,11 +24,10 @@ public sealed class UserEventConsumer : IMessageHandler<UserEventMessage>
     public async Task HandleAsync(UserEventMessage message,
         CancellationToken ct)
     {
-        var links = message.Links();
+        var activityLinks = message.Links();
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (Telemetry.Activities.StartActivity("ConsumeUserEvent", ActivityKind.Internal, parentContext, links: links))
+        using (Telemetry.Activities.StartActivity("ConsumeUserEvent", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             await userNotificationService.DistributeAsync(message);
         }

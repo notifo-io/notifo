@@ -103,11 +103,10 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
     public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
-        var links = jobs.SelectMany(x => x.Notification.Links());
+        var activityLinks = jobs.SelectMany(x => x.Notification.Links());
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (Telemetry.Activities.StartActivity("EmailChannel/Handle", ActivityKind.Internal, parentContext, links: links))
+        using (Telemetry.Activities.StartActivity("EmailChannel/Handle", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             var unhandledJobs = new List<EmailJob>();
 

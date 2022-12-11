@@ -45,6 +45,8 @@ public sealed record User(string AppId, string Id, Instant Created)
 
     public ReadonlyList<WebPushSubscription> WebPushSubscriptions { get; init; } = ReadonlyList.Empty<WebPushSubscription>();
 
+    public Scheduling? Scheduling { get; init; }
+
     public ChannelSettings Settings { get; init; } = new ChannelSettings();
 
     public CounterMap Counters { get; init; } = new CounterMap();

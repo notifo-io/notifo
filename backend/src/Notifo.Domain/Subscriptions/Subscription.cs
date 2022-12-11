@@ -17,6 +17,8 @@ public sealed record Subscription
 
     public ChannelSettings? TopicSettings { get; init; }
 
+    public Scheduling? Scheduling { get; init; }
+
     public static Subscription Create(string appId, string userId, TopicId prefix)
     {
         var subscription = new Subscription

@@ -24,6 +24,16 @@ public sealed class SubscribeDto
     /// </summary>
     public Dictionary<string, ChannelSettingDto>? TopicSettings { get; set; }
 
+    /// <summary>
+    /// The scheduling settings.
+    /// </summary>
+    public SchedulingDto? Scheduling { get; set; }
+
+    /// <summary>
+    /// Indicates whether scheduling should be overriden.
+    /// </summary>
+    public bool HasScheduling { get; set; }
+
     public Subscribe ToUpdate(string userId)
     {
         var result = new Subscribe
@@ -44,6 +54,8 @@ public sealed class SubscribeDto
             }
         }
 
+        result.Scheduling = Scheduling?.ToDomainObject();
+        result.HasScheduling = HasScheduling;
         result.UserId = userId;
 
         return result;

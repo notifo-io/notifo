@@ -33,7 +33,7 @@ public static class Is
         return value != null && !Equals(value, other);
     }
 
-    public static bool Changed<T>([NotNullWhen(true)] T? value, T other) where T : class
+    public static bool Changed<T>([NotNullWhen(true)] T? value, T? other) where T : class
     {
         return value != null && !Equals(value, other);
     }

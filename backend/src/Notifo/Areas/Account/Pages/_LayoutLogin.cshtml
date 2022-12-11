@@ -19,9 +19,9 @@ var galleryEnabled = false;
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap">
 
     @if (IsSectionDefined("header"))
-{
-    @await RenderSectionAsync("header")
-}
+    {
+        @await RenderSectionAsync("header")
+    }
 
     <environment include="Development">
         <script type="text/javascript" src="@Url.Content("~/app.js")"></script>
@@ -41,42 +41,42 @@ var galleryEnabled = false;
 
         <div class="login-right-content">
             @if (galleryEnabled)
-        {
-            <div class="gallery">
+            {
+                <div class="gallery">
                     <div class="gallery-images">
                         @for (var i = 1; i <= gallerySteps; i++)
-                    {
-                        var activeClass = i == 1 ? "active" : string.Empty;
+                        {
+                            var activeClass = i == 1 ? "active" : string.Empty;
 
-                        <img class="gallery-image @activeClass" src="~/gallery/step_@(i).png" />
-                    }
+                            <img class="gallery-image @activeClass" src="~/gallery/step_@(i).png" />
+                        }
                     </div>
 
                     <div class="gallery-labels">
                         @for (var i = 1; i <= gallerySteps; i++)
-                    {
-                        var activeClass = i == 1 ? "active" : string.Empty;
+                        {
+                            var activeClass = i == 1 ? "active" : string.Empty;
 
-                        <div class="gallery-label @activeClass">@T[$"Gallery{i}"]</div>
-                    }
+                            <div class="gallery-label @activeClass">@T[$"Gallery{i}"]</div>
+                        }
                     </div>
 
                     <div class="gallery-steps">
                         @for (var i = 1; i <= gallerySteps; i++)
-                    {
-                        var activeClass = i == 1 ? "active" : string.Empty;
+                        {
+                            var activeClass = i == 1 ? "active" : string.Empty;
 
-                        <div class="gallery-step @activeClass"></div>
-                    }
+                            <div class="gallery-step @activeClass"></div>
+                        }
                     </div>
                 </div>
-        }
+            }
         </div>
     </div>
     
     @if (galleryEnabled)
-{
-    <script type="text/javascript">
+    {
+        <script type="text/javascript">
             var stepImages = document.getElementsByClassName('gallery-image');
             var stepLabels = document.getElementsByClassName('gallery-label');
             var stepLinks = document.getElementsByClassName('gallery-step');
@@ -137,6 +137,6 @@ var galleryEnabled = false;
 
             setStep(1);
         </script>
-}
+    }
 </body>
 </html>
