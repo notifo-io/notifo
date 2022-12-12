@@ -192,7 +192,13 @@ const PublishDialogInner = () => {
                                                 label={texts.common.timeToLive} min={0} max={2419200} />
                                         </>
                                     ) : (
-                                        <NotificationsForm.Settings field='settings' disabled={publishing} />
+                                        <>
+                                            <NotificationsForm.Settings field='settings'
+                                                disabled={publishing} />
+                                                
+                                            <NotificationsForm.Scheduling field='scheduling'
+                                                disabled={publishing} />
+                                        </>
                                     )}
                                 </fieldset>
                             </Col>

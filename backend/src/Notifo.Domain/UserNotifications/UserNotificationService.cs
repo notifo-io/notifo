@@ -6,10 +6,12 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using Jint.Runtime.Debugger;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
+using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
@@ -69,35 +71,29 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     {
         using (Telemetry.Activities.StartActivity("HandleUserEvent"))
         {
-            try
+            var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
+
+            if (user == null)
             {
-                var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
-
-                if (user == null)
-                {
-                    throw new DomainException(Texts.Notification_NoUser);
-                }
-
-                var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
-
-                await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
+                await MarkFailedAsync(userEvent, LogMessage.User_Deleted("System", userEvent.UserId));
+                return;
             }
-            catch (DomainException ex)
-            {
-                await logStore.LogAsync(userEvent.AppId, LogMessage.General_Exception("System", ex));
 
-                await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
-            }
+            // The scheduling from the event has preference over the user scheduling.
+            userEvent.Scheduling = Scheduling.Merged(user.Scheduling, userEvent.Scheduling);
+
+            var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
+
+            await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
         }
     }
 
     public async Task DistributeScheduledAsync(UserEventMessage userEvent, bool isLastAttempt)
     {
-        var links = userEvent.Links();
+        var activityLinks = userEvent.Links();
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, parentContext, links: links))
+        using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Attempt);
 
@@ -107,14 +103,15 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
                 if (user == null)
                 {
-                    throw new DomainException(Texts.Notification_NoApp);
+                    await MarkFailedAsync(userEvent, LogMessage.User_Deleted("System", userEvent.UserId));
+                    return;
                 }
 
                 var app = await appStore.GetCachedAsync(userEvent.AppId);
 
                 if (app == null)
                 {
-                    throw new DomainException(Texts.Notification_NoUser);
+                    return;
                 }
 
                 var context = new SendContext
@@ -128,6 +125,11 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
                 var notification = await CreateUserNotificationAsync(userEvent, context);
 
+                if (notification == null)
+                {
+                    return;
+                }
+
                 // Assign the notification activity, so that we can continue with that when the handle the event.
                 notification.UserNotificationActivity = activity?.Context ?? default;
 
@@ -137,7 +139,8 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 }
                 catch (UniqueConstraintException)
                 {
-                    throw new DomainException(Texts.Notification_AlreadyProcessed);
+                    await logStore.LogAsync(userEvent.AppId, LogMessage.Notification_AlreadyProcessed("System"));
+                    return;
                 }
 
                 foreach (var channel in channels.Values)
@@ -165,23 +168,16 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                     await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
                 }
 
-                if (ex is DomainException domainException)
-                {
-                    await logStore.LogAsync(userEvent.AppId, LogMessage.General_Exception("System", domainException));
-                }
-                else
-                {
-                    log.LogError(ex, "Failed to process user event for app {appId} with ID {id} to topic {topic}.",
-                        userEvent.AppId,
-                        userEvent.EventId,
-                        userEvent.Topic);
-                    throw;
-                }
+                log.LogError(ex, "Failed to process user event for app {appId} with ID {id} to topic {topic}.",
+                    userEvent.AppId,
+                    userEvent.EventId,
+                    userEvent.Topic);
+                throw;
             }
         }
     }
 
-    private async Task<UserNotification> CreateUserNotificationAsync(UserEventMessage userEvent, SendContext context)
+    private async Task<UserNotification?> CreateUserNotificationAsync(UserEventMessage userEvent, SendContext context)
     {
         using (Telemetry.Activities.StartActivity("CreateUserNotification"))
         {
@@ -189,7 +185,8 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
             if (notification == null)
             {
-                throw new DomainException(Texts.Notification_NoSubject);
+                await logStore.LogAsync(userEvent.AppId, LogMessage.Notification_NoSubject("System"));
+                return null;
             }
 
             foreach (var channel in channels.Values)
@@ -269,7 +266,8 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
             if (user == null)
             {
-                throw new DomainException(Texts.Notification_NoUser);
+                await logStore.LogAsync(notification.AppId, LogMessage.User_Deleted("System", notification.UserId));
+                return;
             }
 
             var context = new SendContext
@@ -358,6 +356,13 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 await channel.HandleSeenAsync(notification, token.ConfigurationId);
             }
         }
+    }
+
+    private async Task MarkFailedAsync(UserEventMessage userEvent, LogMessage message)
+    {
+        await logStore.LogAsync(userEvent.AppId!, message);
+
+        await userNotificationsStore.TrackAsync(TrackingKey.ForUserEvent(userEvent), ProcessStatus.Failed, message.Reason);
     }
 
     private static string ScheduleKey(UserEventMessage userEvent)

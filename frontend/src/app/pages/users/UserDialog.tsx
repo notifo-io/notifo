@@ -140,7 +140,13 @@ export const UserDialog = (props: UserDialogProps) => {
                                     }
                                 </>
                             ) : (
-                                <NotificationsForm.Settings field='settings' disabled={upserting} />
+                                <>
+                                    <NotificationsForm.Settings field='settings'
+                                        disabled={upserting} />
+                                        
+                                    <NotificationsForm.Scheduling field='scheduling'
+                                        disabled={upserting} />
+                                </>
                             )}
                         </fieldset>
 

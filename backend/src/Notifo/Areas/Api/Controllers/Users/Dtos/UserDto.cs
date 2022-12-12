@@ -85,6 +85,11 @@ public sealed class UserDto
     public ReadonlyDictionary<string, string>? Properties { get; set; }
 
     /// <summary>
+    /// The scheduling settings.
+    /// </summary>
+    public SchedulingDto? Scheduling { get; set; }
+
+    /// <summary>
     /// Notification settings per channel.
     /// </summary>
     [Required]
@@ -136,6 +141,11 @@ public sealed class UserDto
         foreach (var token in source.MobilePushTokens.OrEmpty())
         {
             result.MobilePushTokens.Add(MobilePushTokenDto.FromDomainObject(token));
+        }
+
+        if (source.Scheduling != null)
+        {
+            result.Scheduling = SchedulingDto.FromDomainObject(source.Scheduling);
         }
 
         if (userProperties != null)

@@ -105,11 +105,10 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
     public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt,
         CancellationToken ct)
     {
-        var links = job.Notification.Links();
+        var activityLinks = job.Notification.Links();
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (Telemetry.Activities.StartActivity("WebhookChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+        using (Telemetry.Activities.StartActivity("WebhookChannel/HandleAsync", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {

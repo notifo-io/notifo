@@ -42,9 +42,9 @@ public sealed class SystemUserDto
     /// </summary>
     public bool CanUpdate { get; set; }
 
-    public static SystemUserDto FromDomainObject(IUser user, bool canUpdate)
+    public static SystemUserDto FromDomainObject(IUser source, bool canUpdate)
     {
-        var result = SimpleMapper.Map(user, new SystemUserDto());
+        var result = SimpleMapper.Map(source, new SystemUserDto());
 
         result.CanUpdate = canUpdate;
 

@@ -24,11 +24,10 @@ public sealed class EventConsumer : IMessageHandler<EventMessage>
     public async Task HandleAsync(EventMessage message,
         CancellationToken ct)
     {
-        var links = message.Links();
+        var activityLinks = message.Links();
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (Telemetry.Activities.StartActivity("ConsumeEvent", ActivityKind.Internal, parentContext, links: links))
+        using (Telemetry.Activities.StartActivity("ConsumeEvent", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             await userEventPublisher.PublishAsync(message, ct);
         }

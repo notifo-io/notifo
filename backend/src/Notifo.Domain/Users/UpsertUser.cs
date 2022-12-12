@@ -31,6 +31,10 @@ public sealed class UpsertUser : UserCommand
 
     public ChannelSettings? Settings { get; set; }
 
+    public Scheduling? Scheduling { get; set; }
+
+    public bool HasScheduling { get; set; }
+
     public bool MergeSettings { get; set; }
 
     public override bool CanCreate => true;
@@ -106,6 +110,14 @@ public sealed class UpsertUser : UserCommand
             newUser = newUser with
             {
                 RequiresWhitelistedTopics = RequiresWhitelistedTopics.Value
+            };
+        }
+
+        if (HasScheduling && Is.Changed(Scheduling, target.Scheduling))
+        {
+            newUser = newUser with
+            {
+                Scheduling = Scheduling
             };
         }
 

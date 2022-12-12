@@ -214,11 +214,10 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
         CancellationToken ct)
     {
-        var links = job.Notification.Links();
+        var activityLinks = job.Notification.Links();
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+        using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleAsync", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {

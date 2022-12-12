@@ -149,11 +149,10 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
     public async Task<bool> HandleAsync(SmsJob job, bool isLastAttempt,
         CancellationToken ct)
     {
-        var links = job.Links();
+        var activityLinks = job.Links();
+        var activityContext = Activity.Current?.Context ?? default;
 
-        var parentContext = Activity.Current?.Context ?? default;
-
-        using (Telemetry.Activities.StartActivity("SmsChannel/HandleAsync", ActivityKind.Internal, parentContext, links: links))
+        using (Telemetry.Activities.StartActivity("SmsChannel/HandleAsync", ActivityKind.Internal, activityContext, links: activityLinks))
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ChannelCondition, ChannelRequired, ChannelSend, ConfirmMode, TopicChannel } from '@app/service';
+import { ChannelCondition, ChannelRequired, ChannelSend, ConfirmMode, IsoDayOfWeek, SchedulingType, TopicChannel } from '@app/service';
 import { texts } from '@app/texts';
 
 export const CHANNELS = [
@@ -17,7 +17,7 @@ export const CHANNELS = [
     'webhook',
 ];
 
-type Mode<T> = { value: T | string; label: string };
+type Mode<T> = { value: T; label: string };
 
 export const CONFIRM_MODES: ReadonlyArray<Mode<ConfirmMode>> = [{
     value: 'Explicit',
@@ -72,4 +72,38 @@ export const ALLOWED_MODES: ReadonlyArray<Mode<TopicChannel>> = [{
 }, {
     value: 'NotAllowed',
     label: texts.common.allowedModes.NotAllowed,
+}];
+
+export const SCHEDULING_TYPES: ReadonlyArray<Mode<SchedulingType>> = [{
+    value: 'UTC',
+    label: texts.notificationSettings.schedulingTypes.utc,
+}, {
+    value: 'UserTime',
+    label: texts.notificationSettings.schedulingTypes.userTime,
+}];
+
+export const WEEK_DAYS: ReadonlyArray<Mode<IsoDayOfWeek | undefined>> = [{
+    value: undefined,
+    label: '-',
+}, {
+    value: 'Sunday',
+    label: texts.common.weekDays.sunday,
+}, {
+    value: 'Monday',
+    label: texts.common.weekDays.monday,
+}, {
+    value: 'Tuesday',
+    label: texts.common.weekDays.tuesday,
+}, {
+    value: 'Wednesday',
+    label: texts.common.weekDays.wednesday,
+}, {
+    value: 'Thursday',
+    label: texts.common.weekDays.thursday,
+}, {
+    value: 'Friday',
+    label: texts.common.weekDays.friday,
+}, {
+    value: 'Saturday',
+    label: texts.common.weekDays.saturday,
 }];

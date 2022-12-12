@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Google.Apis.Storage.v1.Data;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Log;
@@ -172,6 +173,27 @@ public record struct LogMessage(int EventCode, string Message, string System)
             FormatText = "Integration has been removed and is not available anymore.",
             FormatArgs = null,
             Reason = "Integration removed."
+        };
+    }
+
+    // Event Code 1300: Notifications
+    public static LogMessage Notification_AlreadyProcessed(string system)
+    {
+        return new LogMessage(1300, "Notification has already been processed.", system)
+        {
+            FormatText = "Notification has already been processed.",
+            FormatArgs = null,
+            Reason = null
+        };
+    }
+
+    public static LogMessage Notification_NoSubject(string system)
+    {
+        return new LogMessage(1301, "Notification has no subject.", system)
+        {
+            FormatText = "Notification has no subjectd.",
+            FormatArgs = null,
+            Reason = null
         };
     }
 

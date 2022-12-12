@@ -278,6 +278,8 @@ public sealed class UserEventPublisher : IUserEventPublisher
             result.Settings = ChannelSettings.Merged(@event.Settings, subscription.TopicSettings);
         }
 
+        result.Scheduling = Scheduling.Merged(@event.Scheduling, subscription.Scheduling);
+
         return result;
     }
 }

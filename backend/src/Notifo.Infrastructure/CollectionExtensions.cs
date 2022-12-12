@@ -148,6 +148,26 @@ public static class CollectionExtensions
         return source.Concat(Enumerable.Repeat(value, 1));
     }
 
+    public static T[] Concat<T>(this T[] array1, T[]? array2)
+    {
+        if (array2 == null || array2.Length == 0)
+        {
+            return array1;
+        }
+
+        if (array1 == null || array1.Length == 0)
+        {
+            return array2 ?? Array.Empty<T>();
+        }
+
+        var result = new T[array1.Length + array2.Length];
+
+        array1.CopyTo(result, 0);
+        array2.CopyTo(result, array1.Length);
+
+        return result;
+    }
+
     public static TResult[] Select<TResult, T>(this T[] value, Func<T, TResult> convert)
     {
         var result = new TResult[value.Length];

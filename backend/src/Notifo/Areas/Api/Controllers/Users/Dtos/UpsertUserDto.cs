@@ -59,6 +59,16 @@ public sealed class UpsertUserDto
     /// </summary>
     public Dictionary<string, ChannelSettingDto>? Settings { get; set; }
 
+    /// <summary>
+    /// The scheduling settings.
+    /// </summary>
+    public SchedulingDto? Scheduling { get; set; }
+
+    /// <summary>
+    /// Indicates whether scheduling should be overriden.
+    /// </summary>
+    public bool HasScheduling { get; set; }
+
     public UpsertUser ToUpsert()
     {
         var result = SimpleMapper.Map(this, new UpsertUser());
@@ -77,6 +87,8 @@ public sealed class UpsertUserDto
                 }
             }
         }
+
+        result.Scheduling = Scheduling?.ToDomainObject();
 
         return result;
     }

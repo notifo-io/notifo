@@ -259,42 +259,6 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Notification has already been processed..
-        /// </summary>
-        internal static string Notification_AlreadyProcessed {
-            get {
-                return ResourceManager.GetString("Notification_AlreadyProcessed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Notification has no existing app. It has probably been deleted..
-        /// </summary>
-        internal static string Notification_NoApp {
-            get {
-                return ResourceManager.GetString("Notification_NoApp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Notification has no subject for user..
-        /// </summary>
-        internal static string Notification_NoSubject {
-            get {
-                return ResourceManager.GetString("Notification_NoSubject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Notification has no existing user. It has probably been deleted..
-        /// </summary>
-        internal static string Notification_NoUser {
-            get {
-                return ResourceManager.GetString("Notification_NoUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Contributor &apos;{{user}} been added to app &apos;{{app}}&apos;..
         /// </summary>
         internal static string NotificationContributorCreated {

@@ -15,6 +15,10 @@ public sealed class Subscribe : SubscriptionCommand
 {
     public ChannelSettings? TopicSettings { get; set; }
 
+    public Scheduling? Scheduling { get; set; }
+
+    public bool HasScheduling { get; set; }
+
     public bool MergeSettings { get; set; }
 
     public override bool CanCreate => true;
@@ -37,6 +41,14 @@ public sealed class Subscribe : SubscriptionCommand
         {
             TopicSettings = newSettings
         };
+
+        if (HasScheduling)
+        {
+            newSubscription = newSubscription with
+            {
+                Scheduling = Scheduling
+            };
+        }
 
         return newSubscription;
     }

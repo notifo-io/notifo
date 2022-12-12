@@ -5991,7 +5991,25 @@ export interface SubscriptionDto {
     topicPrefix: string;
     /** Notification settings per channel. */
     topicSettings: { [key: string]: ChannelSettingDto; };
+    /** The scheduling settings. */
+    scheduling?: SchedulingDto | undefined;
 }
+
+export interface SchedulingDto {
+    /** The scheduling type. */
+    type?: SchedulingType;
+    /** To schedule the event at the next day of the week. */
+    nextWeekDay?: IsoDayOfWeek | undefined;
+    /** The scheduling date. */
+    date?: string | undefined;
+    /** The scheduling time. */
+    time?: string;
+}
+
+export type SchedulingType = "UTC" | "UserTime";
+
+/** Equates the days of the week with their numerical value according to ISO-8601. This corresponds with System.DayOfWeek except for Sunday, which is 7 in the ISO numbering and 0 in System.DayOfWeek. */
+export type IsoDayOfWeek = "None" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 
 export interface SubscribeManyDto {
     /** A list of topics to create. */
@@ -6005,6 +6023,10 @@ export interface SubscribeDto {
     topicPrefix: string;
     /** Notification settings per channel. */
     topicSettings?: { [key: string]: ChannelSettingDto; } | undefined;
+    /** The scheduling settings. */
+    scheduling?: SchedulingDto | undefined;
+    /** Indicates whether scheduling should be overriden. */
+    hasScheduling?: boolean;
 }
 
 export interface ListResponseDtoOfUserDto {
@@ -6039,6 +6061,8 @@ export interface UserDto {
     requiresWhitelistedTopics: boolean;
     /** The user properties. */
     properties?: { [key: string]: string; } | undefined;
+    /** The scheduling settings. */
+    scheduling?: SchedulingDto | undefined;
     /** Notification settings per channel. */
     settings: { [key: string]: ChannelSettingDto; };
     /** The statistics counters. */
@@ -6102,6 +6126,10 @@ export interface UpsertUserDto {
     properties?: { [key: string]: string; } | undefined;
     /** Notification settings per channel. */
     settings?: { [key: string]: ChannelSettingDto; } | undefined;
+    /** The scheduling settings. */
+    scheduling?: SchedulingDto | undefined;
+    /** Indicates whether scheduling should be overriden. */
+    hasScheduling?: boolean;
 }
 
 export interface AddAllowedTopicDto {
@@ -6507,22 +6535,6 @@ export interface EventDto {
     /** The time to live in seconds. */
     timeToLiveInSeconds?: number | undefined;
 }
-
-export interface SchedulingDto {
-    /** The scheduling type. */
-    type?: SchedulingType;
-    /** To schedule the event at the next day of the week. */
-    nextWeekDay?: IsoDayOfWeek | undefined;
-    /** The scheduling date. */
-    date?: string | undefined;
-    /** The scheduling time. */
-    time?: string;
-}
-
-export type SchedulingType = "UTC" | "UserTime";
-
-/** Equates the days of the week with their numerical value according to ISO-8601. This corresponds with System.DayOfWeek except for Sunday, which is 7 in the ISO numbering and 0 in System.DayOfWeek. */
-export type IsoDayOfWeek = "None" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 
 export interface PublishManyDto {
     /** The publish requests. */
