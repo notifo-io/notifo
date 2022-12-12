@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain.Subscriptions;
 
 namespace Notifo.Domain;
 
@@ -18,6 +19,16 @@ public sealed class Scheduling
     public LocalDate? Date { get; init; }
 
     public LocalTime Time { get; init; }
+
+    public static Scheduling? Merged(Scheduling? target, Scheduling? source)
+    {
+        if (target == null)
+        {
+            return source;
+        }
+
+        return target;
+    }
 
     public static Instant CalculateScheduleTime(Scheduling? scheduling, IClock clock, string userTimeZone)
     {

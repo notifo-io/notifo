@@ -80,7 +80,11 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
                                 label={texts.common.topic} />
                         </fieldset>
 
-                        <NotificationsForm.Settings field='topicSettings' disabled={upserting} />
+                        <NotificationsForm.Settings field='topicSettings'
+                            disabled={upserting} />
+                            
+                        <NotificationsForm.Scheduling field='scheduling'
+                            disabled={upserting} />
 
                         <FormError error={upsertingError} />
                     </ModalBody>

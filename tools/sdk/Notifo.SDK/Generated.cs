@@ -13289,6 +13289,91 @@ namespace Notifo.SDK
         [System.ComponentModel.DataAnnotations.Required]
         public System.Collections.Generic.Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new System.Collections.Generic.Dictionary<string, ChannelSettingDto>();
 
+        /// <summary>
+        /// The scheduling settings.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SchedulingDto Scheduling { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public partial class SchedulingDto
+    {
+        /// <summary>
+        /// The scheduling type.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public SchedulingType Type { get; set; }
+
+        /// <summary>
+        /// To schedule the event at the next day of the week.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("nextWeekDay", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public IsoDayOfWeek? NextWeekDay { get; set; }
+
+        /// <summary>
+        /// The scheduling date.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(DateFormatConverter))]
+        public System.DateTimeOffset? Date { get; set; }
+
+        /// <summary>
+        /// The scheduling time.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.TimeSpan Time { get; set; }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum SchedulingType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"UTC")]
+        UTC = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"UserTime")]
+        UserTime = 1,
+
+    }
+
+    /// <summary>
+    /// Equates the days of the week with their numerical value according to
+    /// <br/>ISO-8601. This corresponds with System.DayOfWeek except for Sunday, which
+    /// <br/>is 7 in the ISO numbering and 0 in System.DayOfWeek.
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum IsoDayOfWeek
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"None")]
+        None = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Monday")]
+        Monday = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Tuesday")]
+        Tuesday = 2,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Wednesday")]
+        Wednesday = 3,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Thursday")]
+        Thursday = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Friday")]
+        Friday = 5,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Saturday")]
+        Saturday = 6,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Sunday")]
+        Sunday = 7,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
@@ -13323,6 +13408,18 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("topicSettings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.Dictionary<string, ChannelSettingDto> TopicSettings { get; set; }
+
+        /// <summary>
+        /// The scheduling settings.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SchedulingDto Scheduling { get; set; }
+
+        /// <summary>
+        /// Indicates whether scheduling should be overriden.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("hasScheduling", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool HasScheduling { get; set; }
 
     }
 
@@ -13422,6 +13519,12 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.Dictionary<string, string> Properties { get; set; }
+
+        /// <summary>
+        /// The scheduling settings.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SchedulingDto Scheduling { get; set; }
 
         /// <summary>
         /// Notification settings per channel.
@@ -13610,6 +13713,18 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("settings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.Dictionary<string, ChannelSettingDto> Settings { get; set; }
+
+        /// <summary>
+        /// The scheduling settings.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("scheduling", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SchedulingDto Scheduling { get; set; }
+
+        /// <summary>
+        /// Indicates whether scheduling should be overriden.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("hasScheduling", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool HasScheduling { get; set; }
 
     }
 
@@ -14792,85 +14907,6 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("timeToLiveInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? TimeToLiveInSeconds { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public partial class SchedulingDto
-    {
-        /// <summary>
-        /// The scheduling type.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public SchedulingType Type { get; set; }
-
-        /// <summary>
-        /// To schedule the event at the next day of the week.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("nextWeekDay", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public IsoDayOfWeek? NextWeekDay { get; set; }
-
-        /// <summary>
-        /// The scheduling date.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(DateFormatConverter))]
-        public System.DateTimeOffset? Date { get; set; }
-
-        /// <summary>
-        /// The scheduling time.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.TimeSpan Time { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public enum SchedulingType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"UTC")]
-        UTC = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"UserTime")]
-        UserTime = 1,
-
-    }
-
-    /// <summary>
-    /// Equates the days of the week with their numerical value according to
-    /// <br/>ISO-8601. This corresponds with System.DayOfWeek except for Sunday, which
-    /// <br/>is 7 in the ISO numbering and 0 in System.DayOfWeek.
-    /// </summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public enum IsoDayOfWeek
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"None")]
-        None = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Monday")]
-        Monday = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Tuesday")]
-        Tuesday = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Wednesday")]
-        Wednesday = 3,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Thursday")]
-        Thursday = 4,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Friday")]
-        Friday = 5,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Saturday")]
-        Saturday = 6,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Sunday")]
-        Sunday = 7,
 
     }
 

@@ -110,26 +110,96 @@ const SettingsTemplate = (args: NotificationsForm.SettingsProps) => {
     );
 };
 
+const SchedulingTemplate = (args: NotificationsForm.SchedulingProps) => {
+    const form = useForm();
+
+    return (
+        <Row>
+            <Col>
+                <FormProvider {...form}>
+                    <Form>
+                        <NotificationsForm.Scheduling {...args} />
+                    </Form>
+                </FormProvider>
+            </Col>
+            <Col>
+                <Input readOnly style={{ height: 600 }} type='textarea' value={JSON.stringify(form.watch(), undefined, 2)} />
+            </Col>
+        </Row>
+    );
+};
+
 export const Formatting = FormattingTemplate.bind({});
 
 Formatting['args'] = {
     field: 'formatting',
+    language: 'de',
     languages: [
         'de',
         'it',
         'en',
     ],
+};
+
+export const FormattingDisabled = FormattingTemplate.bind({});
+
+FormattingDisabled['args'] = {
+    field: 'formatting',
     language: 'de',
+    languages: [
+        'de',
+        'it',
+        'en',
+    ],
+    disabled: true,
 };
 
 export const Settings = SettingsTemplate.bind({});
 
 Settings['args'] = {
-    field: 'formatting',
+    field: 'settings',
+    language: 'de',
     languages: [
         'de',
         'it',
         'en',
     ],
+};
+
+export const SettingsDisabled = SettingsTemplate.bind({});
+
+SettingsDisabled['args'] = {
+    field: 'settings',
     language: 'de',
+    languages: [
+        'de',
+        'it',
+        'en',
+    ],
+    disabled: true,
+};
+
+export const Scheduling = SchedulingTemplate.bind({});
+
+Scheduling['args'] = {
+    field: 'scheduling',
+    language: 'de',
+    languages: [
+        'de',
+        'it',
+        'en',
+    ],
+};
+
+export const SchedulingDisabled = SchedulingTemplate.bind({});
+
+SchedulingDisabled['args'] = {
+    field: 'scheduling',
+    language: 'de',
+    languages: [
+        'de',
+        'it',
+        'en',
+    ],
+    disabled: true,
 };

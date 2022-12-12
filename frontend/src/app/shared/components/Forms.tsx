@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import { ControllerFieldState, FormState, useController } from 'react-hook-form';
 import { Badge, Button, Col, CustomInput, FormGroup, Input, InputGroup, InputGroupAddon, InputGroupText, Label } from 'reactstrap';
+import { InputType } from 'reactstrap/es/Input';
 import { FormControlError, Icon, LanguageSelector, PasswordInput, Toggle, useEventCallback } from '@app/framework';
 import { Types } from '@app/framework/utils';
 import { Picker, PickerOptions } from './Picker';
@@ -170,7 +171,31 @@ export module Forms {
     export const Url = ({ placeholder, ...other }: FormEditorProps) => {
         return (
             <Forms.Row {...other}>
-                <InputUrl name={other.name} placeholder={placeholder} />
+                <InputSpecial type='url' name={other.name} placeholder={placeholder} />
+            </Forms.Row>
+        );
+    };
+
+    export const Email = ({ placeholder, ...other }: FormEditorProps) => {
+        return (
+            <Forms.Row {...other}>
+                <InputSpecial type='email' name={other.name} placeholder={placeholder} />
+            </Forms.Row>
+        );
+    };
+
+    export const Time = ({ placeholder, ...other }: FormEditorProps) => {
+        return (
+            <Forms.Row {...other}>
+                <InputSpecial type='time' name={other.name} placeholder={placeholder} />
+            </Forms.Row>
+        );
+    };
+
+    export const Date = ({ placeholder, ...other }: FormEditorProps) => {
+        return (
+            <Forms.Row {...other}>
+                <InputSpecial type='date' name={other.name} placeholder={placeholder} />
             </Forms.Row>
         );
     };
@@ -195,14 +220,6 @@ export module Forms {
                         </InputGroupAddon>
                     }
                 </InputGroup>
-            </Forms.Row>
-        );
-    };
-
-    export const Email = ({ placeholder, ...other }: FormEditorProps) => {
-        return (
-            <Forms.Row {...other}>
-                <InputEmail name={other.name} placeholder={placeholder} />
             </Forms.Row>
         );
     };
@@ -300,30 +317,17 @@ const InputNumber = ({ name, max, min, placeholder, step }: FormEditorProps & { 
     );
 };
 
-const InputUrl = ({ name, placeholder }: FormEditorProps) => {
+const InputSpecial = ({ name, placeholder, type }: FormEditorProps & { type: InputType }) => {
     const { field, fieldState, formState } = useController({ name });
 
     return (
         <>
-            <Input type='url' id={name} {...field} invalid={isInvalid(fieldState, formState)}
+            <Input type={type} id={name} {...field} invalid={isInvalid(fieldState, formState)}
                 placeholder={placeholder}
             />
         </>
     );
 };
-
-const InputEmail = ({ name, placeholder }: FormEditorProps) => {
-    const { field, fieldState, formState } = useController({ name });
-
-    return (
-        <>
-            <Input type='email' id={name} {...field} invalid={isInvalid(fieldState, formState)}
-                placeholder={placeholder}
-            />
-        </>
-    );
-};
-
 const InputPassword = ({ name, placeholder }: FormEditorProps) => {
     const { field, fieldState, formState } = useController({ name });
 
@@ -349,15 +353,25 @@ const InputToggle = ({ name, ...other }: BooleanFormProps) => {
 const InputSelect = ({ name, options }: FormEditorProps & { options: ReadonlyArray<Forms.Option<string | number>> }) => {
     const { field, fieldState, formState } = useController({ name });
 
+    const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+
+        if (value === SET_UNDEFINED) {
+            field.onChange(undefined);
+        } else {
+            field.onChange(event);
+        }
+    });
+
     return (
         <>
-            <CustomInput type='select' id={name} {...field} invalid={isInvalid(fieldState, formState)}>
+            <CustomInput type='select' id={name} {...field} onChange={doChange} invalid={isInvalid(fieldState, formState)}>
                 {Types.isUndefined(field.value) && !options.find(x => x.value === field.value) &&
                     <option></option>
                 }
 
                 {options.map((option, i) =>
-                    <option key={i} value={option.value}>{option.label}</option>,
+                    <option key={i} value={Types.isUndefined(option.value) ? SET_UNDEFINED : option.value}>{option.label}</option>,
                 )}
             </CustomInput>
         </>
@@ -375,8 +389,8 @@ const InputCheckboxes = ({ name, options }: FormEditorProps & { options: Readonl
 };
 
 const EMPTY_ARRAY: any[] = [];
-
 const SET_OPTIONS = { shouldTouch: true, shouldDirty: true, shouldValidate: true };
+const SET_UNDEFINED = '__UNDEFINED';
 
 const InputCheckboxOption = ({ name, option }: { name: string; option: Forms.Option<string> }) => {
     const { field } = useController({ name });

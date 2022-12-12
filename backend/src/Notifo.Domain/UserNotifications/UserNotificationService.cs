@@ -79,10 +79,8 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                 return;
             }
 
-            if (user.Scheduling != null && userEvent.Scheduling == null)
-            {
-                userEvent.Scheduling = user.Scheduling;
-            }
+            // The scheduling from the event has preference over the user scheduling.
+            userEvent.Scheduling = Scheduling.Merged(user.Scheduling, userEvent.Scheduling);
 
             var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
 
