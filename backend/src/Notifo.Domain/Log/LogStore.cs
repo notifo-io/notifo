@@ -31,7 +31,8 @@ public sealed class LogStore : ILogStore, IDisposable
         {
             OnNewEntries = newEntries =>
             {
-                foreach (var entry in newEntries)
+                // Only create notifications for app logs.
+                foreach (var entry in newEntries.Where(x => x.UserId == null))
                 {
                     var notification = new FirstLogCreated
                     {
@@ -60,20 +61,9 @@ public sealed class LogStore : ILogStore, IDisposable
 
         if (message.FormatText != null && !skipDefaultLog)
         {
-            var argCount = message.FormatArgs?.Length ?? 0;
+            var args = new object[] { appId, message.System };
 
-            var args = new object?[argCount + 2];
-
-            args[0] = appId;
-            args[1] = message.System;
-
-            if (message.FormatArgs != null)
-            {
-                Array.Copy(message.FormatArgs, 0, args, 2, message.FormatArgs.Length);
-            }
-
-            log.LogInformation(message.EventCode, message.Exception,
-                $"User log for app {{appId}} from system {{system}}: {text}.", args);
+            LogInternal(message, $"User log for app {{appId}} from system {{system}}: {text}.", args);
         }
 
         return collector.AddAsync(new LogWrite(appId, null, eventCode, text, system));
@@ -90,21 +80,9 @@ public sealed class LogStore : ILogStore, IDisposable
 
         if (message.FormatText != null && !skipDefaultLog)
         {
-            var argCount = message.FormatArgs?.Length ?? 0;
+            var args = new object[] { appId, userId, message.System };
 
-            var args = new object?[argCount + 3];
-
-            args[0] = appId;
-            args[1] = userId;
-            args[2] = message.System;
-
-            if (message.FormatArgs != null)
-            {
-                Array.Copy(message.FormatArgs, 0, args, 3, message.FormatArgs.Length);
-            }
-
-            log.LogInformation(message.EventCode, message.Exception,
-                $"User log for app {{appId}} and user {{userId}} from system {{system}}: {message.Message}.", args);
+            LogInternal(message, $"User log for app {{appId}} and user {{userId}} from system {{system}}: {text}.", args);
         }
 
         return collector.AddAsync(new LogWrite(appId, userId, eventCode, text, system));
@@ -114,5 +92,10 @@ public sealed class LogStore : ILogStore, IDisposable
         CancellationToken ct = default)
     {
         return repository.QueryAsync(appId, query, ct);
+    }
+
+    private void LogInternal(LogMessage message, string text, params object[] systemArgs)
+    {
+        log.LogInformation(message.EventCode, message.Exception, text, systemArgs.Concat(message.FormatArgs));
     }
 }
