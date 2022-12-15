@@ -15,7 +15,7 @@ type RequestCode = { code: any };
 
 type MarkupResponse = { rendering: EmailPreviewDto; emailMarkup?: string };
 
-export function usePreview(appId: string, type: EmailPreviewType, kind: string | undefined): [MarkupResponse, string, (value: string) => void] {
+export function usePreview(appId: string, type: EmailPreviewType): [MarkupResponse, string, (value: string) => void] {
     const [emailMarkup, setEmailMarkup] = React.useState<string>('');
     const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({ rendering: {} });
 
@@ -28,7 +28,7 @@ export function usePreview(appId: string, type: EmailPreviewType, kind: string |
             status.current.code = code;
 
             try {
-                const rendering = await Clients.EmailTemplates.postPreview(appId, { template: emailMarkup, type, kind });
+                const rendering = await Clients.EmailTemplates.postPreview(appId, { template: emailMarkup, type });
 
                 if (status.current.code === code) {
                     setEmailPreview({ rendering, emailMarkup });
@@ -49,7 +49,7 @@ export function usePreview(appId: string, type: EmailPreviewType, kind: string |
         return () => {
             clearTimeout(timeout);
         };
-    }, [appId, emailMarkup, kind, type]);
+    }, [appId, emailMarkup, type]);
 
     return [emailPreview, emailMarkup, setEmailMarkup];
 }

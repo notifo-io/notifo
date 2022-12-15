@@ -129,29 +129,11 @@
   <data name="App_CannotUpdateYourself" xml:space="preserve">
     <value>You cannot update yourself.</value>
   </data>
-  <data name="ChannelTemplate_LanguageNotFound" xml:space="preserve">
-    <value>Cannot find language {0} in template '{1}'.</value>
-  </data>
-  <data name="ChannelTemplate_NotFound" xml:space="preserve">
-    <value>Cannot find template '{0}'.</value>
-  </data>
-  <data name="ChannelTemplate_ResolvedWithFallback" xml:space="preserve">
-    <value>Cannot find named template {0}, falling back to primary.</value>
-  </data>
   <data name="EmailUnknownErrror" xml:space="preserve">
     <value>Email template generates unknown error.</value>
   </data>
-  <data name="Email_ConfigReset" xml:space="preserve">
-    <value>Integration has been removed.</value>
-  </data>
-  <data name="Email_TemplateLiquidInvalid" xml:space="preserve">
+  <data name="Email_TemplateInvalid" xml:space="preserve">
     <value>Email template does not render notification subject, loop over notification and use '{{ notification.subject }}'.</value>
-  </data>
-  <data name="Email_TemplateNormalInvalid" xml:space="preserve">
-    <value>Email template does not render notification subject, add '{{ notification.subject }}' to each template.</value>
-  </data>
-  <data name="Email_TemplateNormalNoItem" xml:space="preserve">
-    <value>Template must have a default template for notifcations, add '&lt;!-- START: NOTIFICATION --&gt;'.</value>
   </data>
   <data name="Email_TemplateUndefined" xml:space="preserve">
     <value>Either template for text or html body must be defined.</value>
@@ -201,11 +183,8 @@
   <data name="NotificationTemplateUpserted" xml:space="preserve">
     <value>Template '{{code}}' has been added or updated in app '{{app}}'.</value>
   </data>
-  <data name="Template_NoSubject" xml:space="preserve">
-    <value>Template '{0}' has no subject.</value>
-  </data>
-  <data name="UserLanguage_NotValid" xml:space="preserve">
-    <value>User has unsupported language '{0}', using '{1}' instead.</value>
+  <data name="TemplateError" xml:space="preserve">
+    <value>Unhandled template error.</value>
   </data>
   <data name="ValidationLanguage" xml:space="preserve">
     <value>{PropertyName} must be a valid language.</value>

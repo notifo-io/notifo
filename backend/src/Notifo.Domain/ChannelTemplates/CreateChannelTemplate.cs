@@ -14,8 +14,6 @@ public sealed class CreateChannelTemplate<T> : ChannelTemplateCommand<T>
 {
     public string? Language { get; set; }
 
-    public string? Kind { get; set; }
-
     public override bool CanCreate => true;
 
     public override async ValueTask<ChannelTemplate<T>?> ExecuteAsync(ChannelTemplate<T> target, IServiceProvider serviceProvider,
@@ -23,18 +21,10 @@ public sealed class CreateChannelTemplate<T> : ChannelTemplateCommand<T>
     {
         var newTemplate = target;
 
-        if (Kind != null && !string.Equals(Kind, target.Name, StringComparison.Ordinal))
-        {
-            newTemplate = newTemplate with
-            {
-                Kind = Kind.Trim()
-            };
-        }
-
         if (Language != null)
         {
             var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
-            var channelInstance = await channelFactory.CreateInitialAsync(newTemplate.Kind, ct);
+            var channelInstance = await channelFactory.CreateInitialAsync(ct);
 
             newTemplate = newTemplate with
             {

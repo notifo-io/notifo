@@ -49,10 +49,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultHtml.liquid.mjml" />
-    <EmbeddedResource Include="Channels\Email\Formatting\DefaultHtml.mjml" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultSubject.text" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultText.liquid.text" />
-    <EmbeddedResource Include="Channels\Email\Formatting\DefaultText.text" />
   </ItemGroup>
 
   <ItemGroup>

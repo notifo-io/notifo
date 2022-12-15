@@ -6,35 +6,32 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
-public sealed class EmailTemplateDto
+public sealed class EmailPreviewErrorDto
 {
     /// <summary>
-    /// The subject text.
+    /// The error message.
     /// </summary>
     [Required]
-    public string Subject { get; set; }
+    public string Message { get; set; }
 
     /// <summary>
-    /// The body html template.
+    /// The line number.
     /// </summary>
-    [Required]
-    public string BodyHtml { get; set; }
+    public int Line { get; set; }
 
     /// <summary>
-    /// The body text template.
+    /// The line column.
     /// </summary>
-    public string? BodyText { get; set; }
+    public int Column { get; set; }
 
-    /// <summary>
-    /// The optional from email.
-    /// </summary>
-    public string? FromEmail { get; set; }
+    public static EmailPreviewErrorDto FromDomainObject(EmailFormattingError source)
+    {
+        var error = source.Error;
 
-    /// <summary>
-    /// The optional from name.
-    /// </summary>
-    public string? FromName { get; set; }
+        return new EmailPreviewErrorDto { Message = error.Message, Column = error.Column, Line = error.Line };
+    }
 }

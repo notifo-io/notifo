@@ -89,11 +89,11 @@ public class EmailTemplatePreviewController : BaseController
                 response.Result = formatted.Message?.BodyText;
             }
 
-            response.Errors = formatted.Errors?.ToArray();
+            response.Errors = formatted.Errors?.Select(EmailPreviewErrorDto.FromDomainObject).ToArray();
         }
         catch (EmailFormattingException ex)
         {
-            response.Errors = ex.Errors.ToArray();
+            response.Errors = ex.Errors.Select(EmailPreviewErrorDto.FromDomainObject).ToArray();
         }
 
         return Ok(response);
@@ -101,7 +101,7 @@ public class EmailTemplatePreviewController : BaseController
 
     private async ValueTask<FormattedEmail> FormatAsync(EmailTemplate emailTemplate)
     {
-        emailTemplate = await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
+        await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
 
         return await emailFormatter.FormatAsync(emailTemplate,
             PreviewData.Jobs, App,

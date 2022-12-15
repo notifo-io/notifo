@@ -210,9 +210,9 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     {
                         errors ??= new List<EmailFormattingError>();
 
-                        if (errors.Count > 0)
+                        if (errors.Count == 0)
                         {
-                            errors.Add(new EmailFormattingError(Texts.EmailUnknownErrror, EmailTemplateType.General));
+                            errors.Add(new EmailFormattingError(EmailTemplateType.General, Texts.Email_UnknownErrror));
                         }
 
                         throw new EmailFormattingException(errors);

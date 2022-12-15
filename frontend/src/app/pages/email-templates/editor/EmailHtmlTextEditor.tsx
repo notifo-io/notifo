@@ -25,7 +25,7 @@ import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
 import * as React from 'react';
-import { EmailFormattingError } from '@app/service';
+import { EmailPreviewErrorDto } from '@app/service';
 import { completeAfter, completeIfAfterLt, completeIfInTag, tags } from './helpers';
 
 export interface EmailHtmlTextEditorProps {
@@ -33,7 +33,7 @@ export interface EmailHtmlTextEditorProps {
     value: string;
 
     // The template errors.
-    errors?: EmailFormattingError[];
+    errors?: EmailPreviewErrorDto[];
 
     // When the html has changed.
     onChange?: (value: string) => void;

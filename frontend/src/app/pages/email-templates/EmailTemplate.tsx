@@ -112,7 +112,6 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
             ...params,
             fromEmail: templateCopy?.fromEmail,
             fromName: templateCopy?.fromName,
-            kind: templateCopy?.kind,
         };
 
         dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
@@ -157,8 +156,8 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                             <Forms.Text name='subject' label={texts.common.subject} vertical />
                         </div>
 
-                        <BodyHtml appId={appId} kind={template?.kind} visible={showHtml.value} />
-                        <BodyText appId={appId} kind={template?.kind} visible={!showHtml.value} />
+                        <BodyHtml appId={appId} visible={showHtml.value} />
+                        <BodyText appId={appId} visible={!showHtml.value} />
                     </div>
                 </Form>
             </FormProvider>
@@ -178,7 +177,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     );
 };
 
-const BodyText = ({ visible, ...other }: { appId: string; kind: string | undefined; visible: boolean }) => {
+const BodyText = ({ visible, ...other }: { appId: string; visible: boolean }) => {
     const { field } = useController({ name: 'bodyText' });
 
     return (
@@ -192,7 +191,7 @@ const BodyText = ({ visible, ...other }: { appId: string; kind: string | undefin
     );
 };
 
-const BodyHtml = ({ visible, ...other }: { appId: string; kind: string | undefined; visible: boolean }) => {
+const BodyHtml = ({ visible, ...other }: { appId: string; visible: boolean }) => {
     const { field } = useController({ name: 'bodyHtml' });
 
     return (

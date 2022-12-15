@@ -32,7 +32,7 @@ public sealed class UpdateChannelTemplate<T> : ChannelTemplateCommand<T>
 
             foreach (var (key, value) in Languages)
             {
-                languages[key] = await factory.ParseAsync(value, false, ct);
+                await factory.ParseAsync(value, false, ct);
             }
 
             newTemplate = newTemplate with

@@ -97,65 +97,11 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find language {0} in template &apos;{1}&apos;..
-        /// </summary>
-        internal static string ChannelTemplate_LanguageNotFound {
-            get {
-                return ResourceManager.GetString("ChannelTemplate_LanguageNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find template &apos;{0}&apos;..
-        /// </summary>
-        internal static string ChannelTemplate_NotFound {
-            get {
-                return ResourceManager.GetString("ChannelTemplate_NotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find named template {0}, falling back to primary..
-        /// </summary>
-        internal static string ChannelTemplate_ResolvedWithFallback {
-            get {
-                return ResourceManager.GetString("ChannelTemplate_ResolvedWithFallback", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Integration has been removed..
-        /// </summary>
-        internal static string Email_ConfigReset {
-            get {
-                return ResourceManager.GetString("Email_ConfigReset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Email template does not render notification subject, loop over notification and use &apos;{{ notification.subject }}&apos;..
         /// </summary>
-        internal static string Email_TemplateLiquidInvalid {
+        internal static string Email_TemplateInvalid {
             get {
-                return ResourceManager.GetString("Email_TemplateLiquidInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Email template does not render notification subject, add &apos;{{ notification.subject }}&apos; to each template..
-        /// </summary>
-        internal static string Email_TemplateNormalInvalid {
-            get {
-                return ResourceManager.GetString("Email_TemplateNormalInvalid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Template must have a default template for notifcations, add &apos;&lt;!-- START: NOTIFICATION --&gt;&apos;..
-        /// </summary>
-        internal static string Email_TemplateNormalNoItem {
-            get {
-                return ResourceManager.GetString("Email_TemplateNormalNoItem", resourceCulture);
+                return ResourceManager.GetString("Email_TemplateInvalid", resourceCulture);
             }
         }
         
@@ -171,9 +117,9 @@ namespace Notifo.Domain.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email template generates unknown error..
         /// </summary>
-        internal static string EmailUnknownErrror {
+        internal static string Email_UnknownErrror {
             get {
-                return ResourceManager.GetString("EmailUnknownErrror", resourceCulture);
+                return ResourceManager.GetString("Email_UnknownErrror", resourceCulture);
             }
         }
         
@@ -313,20 +259,11 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Template &apos;{0}&apos; has no subject..
+        ///   Looks up a localized string similar to Unhandled template error..
         /// </summary>
-        internal static string Template_NoSubject {
+        internal static string TemplateError {
             get {
-                return ResourceManager.GetString("Template_NoSubject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to User has unsupported language &apos;{0}&apos;, using &apos;{1}&apos; instead..
-        /// </summary>
-        internal static string UserLanguage_NotValid {
-            get {
-                return ResourceManager.GetString("UserLanguage_NotValid", resourceCulture);
+                return ResourceManager.GetString("TemplateError", resourceCulture);
             }
         }
         

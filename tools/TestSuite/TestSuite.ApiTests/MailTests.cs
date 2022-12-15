@@ -27,10 +27,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         this.mailcatcher = mailcatcher.Client;
     }
 
-    [Theory]
-    [InlineData("Default")]
-    [InlineData("Liquid")]
-    public async Task Should_send_email(string kind)
+    [Fact]
+    public async Task Should_send_email()
     {
         var appName = Guid.NewGuid().ToString();
 
@@ -44,10 +42,7 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
 
         // STEP 1: Create email template.
-        var emailTemplateRequest = new CreateChannelTemplateDto
-        {
-            Kind = kind
-        };
+        var emailTemplateRequest = new CreateChannelTemplateDto();
 
         await _.Client.EmailTemplates.PostTemplateAsync(app_0.Id, emailTemplateRequest);
 
@@ -317,10 +312,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         Assert.Contains(userLogs, x => x.EventCode == 1207);
     }
 
-    [Theory]
-    [InlineData("Default")]
-    [InlineData("Liquid")]
-    public async Task Should_render_email_preview(string kind)
+    [Fact]
+    public async Task Should_render_email_preview()
     {
         var appName = Guid.NewGuid().ToString();
 
@@ -334,10 +327,7 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
 
 
         // STEP 1: Create email template.
-        var emailTemplateRequest = new CreateChannelTemplateDto
-        {
-            Kind = kind
-        };
+        var emailTemplateRequest = new CreateChannelTemplateDto();
 
         var template_0 = await _.Client.EmailTemplates.PostTemplateAsync(app_0.Id, emailTemplateRequest);
 
@@ -345,7 +335,6 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         // STEP 2: Render preview
         var previewRequest = new EmailPreviewRequestDto
         {
-            Kind = kind,
             Template = template_0.Languages.First().Value.BodyHtml
         };
 
@@ -356,10 +345,8 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         Assert.Empty(preview_0.Errors);
     }
 
-    [Theory]
-    [InlineData("Default")]
-    [InlineData("Liquid")]
-    public async Task Should_not_render_invalid_email_preview(string kind)
+    [Fact]
+    public async Task Should_not_render_invalid_email_preview()
     {
         var appName = Guid.NewGuid().ToString();
 
@@ -375,7 +362,6 @@ public class MailTests : IClassFixture<ClientFixture>, IClassFixture<Mailcatcher
         // STEP 1: Render preview
         var previewRequest = new EmailPreviewRequestDto
         {
-            Kind = kind,
             Template = "invalid"
         };
 

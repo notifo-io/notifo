@@ -6576,25 +6576,23 @@ export interface EmailPreviewDto {
     /** The rendered preview. */
     result?: string | undefined;
     /** The errors when rendering a preview. */
-    errors?: EmailFormattingError[] | undefined;
+    errors?: EmailPreviewErrorDto[] | undefined;
 }
 
-export interface EmailFormattingError {
-    message?: string;
-    template?: EmailTemplateType;
+export interface EmailPreviewErrorDto {
+    /** The error message. */
+    message: string;
+    /** The line number. */
     line?: number;
+    /** The line column. */
     column?: number;
 }
-
-export type EmailTemplateType = "General" | "BodyHtml" | "BodyText" | "Subject";
 
 export interface EmailPreviewRequestDto {
     /** The preview to render. */
     template: string;
     /** The template type. */
     type?: EmailPreviewType;
-    /** The kind of the template. */
-    kind?: string | undefined;
 }
 
 export type EmailPreviewType = "Html" | "Text";
@@ -6611,8 +6609,6 @@ export interface ChannelTemplateDto {
     id: string;
     /** The optional name of the template. */
     name?: string | undefined;
-    /** The kind of the template. */
-    kind?: string | undefined;
     /** True, when the template is the primary template. */
     primary: boolean;
     /** The last time the template has been updated. */
@@ -6645,13 +6641,9 @@ export interface EmailTemplateDto {
     fromEmail?: string | undefined;
     /** The optional from name. */
     fromName?: string | undefined;
-    /** The type of the template. */
-    kind?: string | undefined;
 }
 
 export interface CreateChannelTemplateDto {
-    /** The kind of the template. */
-    kind?: string | undefined;
 }
 
 export interface CreateChannelTemplateLanguageDto {

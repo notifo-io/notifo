@@ -9,7 +9,7 @@ import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
-import { Button, Col, DropdownItem, DropdownMenu, DropdownToggle, Label, Row, UncontrolledButtonDropdown } from 'reactstrap';
+import { Button, Col, Label, Row } from 'reactstrap';
 import { FormError, Icon, Loader, useEventCallback } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { createEmailTemplate, deleteEmailTemplate, loadEmailTemplates, useApp, useEmailTemplates } from '@app/state';
@@ -46,10 +46,6 @@ export const EmailTemplatesPage = () => {
         dispatch(createEmailTemplate({ appId }));
     });
 
-    const doCreateWithLiquid = useEventCallback(() => {
-        dispatch(createEmailTemplate({ appId, kind: 'Liquid' }));
-    });
-
     const doDelete = useEventCallback((template: ChannelTemplateDto) => {
         dispatch(deleteEmailTemplate({ appId, id: template.id }));
     });
@@ -65,19 +61,9 @@ export const EmailTemplatesPage = () => {
                         <Loader visible={emailTemplates.isLoading} />
                     </Col>
                     <Col xs='auto'>
-                        <UncontrolledButtonDropdown>
-                            <DropdownToggle color='success' caret>
-                                <Icon type='add' /> {texts.emailTemplates.create}
-                            </DropdownToggle>
-                            <DropdownMenu right>
-                                <DropdownItem onClick={doCreateWithLiquid}>
-                                    {texts.emailTemplates.createWithLiquid}
-                                </DropdownItem>
-                                <DropdownItem onClick={doCreate}>
-                                    {texts.emailTemplates.createWithInterpolation}
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </UncontrolledButtonDropdown>
+                        <Button color='success' onClick={doCreate}>
+                            <Icon type='add' /> {texts.emailTemplates.create}
+                        </Button>
                     </Col>
                 </Row>
             </div>
