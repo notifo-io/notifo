@@ -74,7 +74,7 @@ internal sealed class EmailContext : Dictionary<string, object>
 
         if (Jobs.Any(x => !template.Contains(x.Notification.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
         {
-            AddError(type, Texts.Email_TemplateLiquidInvalid);
+            AddError(type, Texts.Email_TemplateInvalid);
         }
     }
 }
