@@ -212,7 +212,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
                         if (errors.Count > 0)
                         {
-                            errors.Add(new EmailFormattingError(Texts.EmailUnknownErrror, EmailTemplateType.General));
+                            errors.Add(new EmailFormattingError(EmailTemplateType.General, Texts.EmailUnknownErrror));
                         }
 
                         throw new EmailFormattingException(errors);

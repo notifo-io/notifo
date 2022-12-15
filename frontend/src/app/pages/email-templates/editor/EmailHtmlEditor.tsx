@@ -21,9 +21,6 @@ export interface EmailHtmlEditorProps {
     // The app name.
     appId: string;
 
-    // The kind ot the template.
-    kind?: string | undefined;
-
     // When the html has changed.
     onChange?: (value: string) => void;
 
@@ -32,9 +29,9 @@ export interface EmailHtmlEditorProps {
 }
 
 export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
-    const { appId, kind, onChange, initialValue } = props;
+    const { appId, onChange, initialValue } = props;
 
-    const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html', kind);
+    const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
 
     React.useEffect(() => {
         onChange && emailPreview.emailMarkup && onChange(emailPreview.emailMarkup);

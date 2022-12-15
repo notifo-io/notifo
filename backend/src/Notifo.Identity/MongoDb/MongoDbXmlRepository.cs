@@ -30,9 +30,7 @@ public sealed class MongoDbXmlRepository : MongoDbRepository<MongoDbXmlEntity>, 
     {
         var documents = Collection.Find(new BsonDocument()).ToList();
 
-        var elements = documents.Select(x => XElement.Parse(x.Xml)).ToList();
-
-        return elements;
+        return documents.Select(x => XElement.Parse(x.Xml)).ToList();
     }
 
     public void StoreElement(XElement element, string friendlyName)

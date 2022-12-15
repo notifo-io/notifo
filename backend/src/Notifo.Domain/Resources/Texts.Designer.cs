@@ -322,6 +322,15 @@ namespace Notifo.Domain.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unhandled template error..
+        /// </summary>
+        internal static string TemplateError {
+            get {
+                return ResourceManager.GetString("TemplateError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User has unsupported language &apos;{0}&apos;, using &apos;{1}&apos; instead..
         /// </summary>
         internal static string UserLanguage_NotValid {

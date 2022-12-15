@@ -16,7 +16,7 @@ namespace Notifo.Domain.Utils;
 
 public readonly record struct CachedTemplate(IFluidTemplate? Template, TemplateError? Error);
 
-public static class TemplateCache
+public static class LiquidCache
 {
     private static readonly LRUCache<string, CachedTemplate> Cache = new LRUCache<string, CachedTemplate>(1000);
     private static readonly FluidParser Parser = new FluidParser();
@@ -46,7 +46,7 @@ public static class TemplateCache
 
         Parser.TryParse(input, out var template, out var errorMessage);
 
-        var error = TemplateError.Parse(errorMessage);
+        var error = LiquidErrorParser.Parse(errorMessage);
 
         result = new CachedTemplate(template, error);
 

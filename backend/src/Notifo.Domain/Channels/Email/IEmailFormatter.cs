@@ -13,8 +13,6 @@ namespace Notifo.Domain.Channels.Email;
 
 public interface IEmailFormatter : IChannelTemplateFactory<EmailTemplate>
 {
-    bool Accepts(string? kind);
-
     ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,
         CancellationToken ct = default);
 }

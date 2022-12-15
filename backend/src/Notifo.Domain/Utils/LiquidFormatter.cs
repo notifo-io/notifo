@@ -21,7 +21,7 @@ public static class LiquidFormatter
 
         try
         {
-            var (template, _) = TemplateCache.Parse(text);
+            var (template, _) = LiquidCache.Parse(text);
 
             if (template == null)
             {

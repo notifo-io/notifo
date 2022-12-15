@@ -16,8 +16,6 @@ public sealed record ChannelTemplate<T>(string AppId, string Id, Instant Created
 {
     public string? Name { get; init; }
 
-    public string? Kind { get; init; }
-
     public bool Primary { get; init; }
 
     public Instant LastUpdate { get; init; }

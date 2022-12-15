@@ -37,7 +37,7 @@ public sealed class CreateChannelTemplateLanguage<T> : ChannelTemplateCommand<T>
             throw new DomainObjectConflictException(Language);
         }
 
-        var channelInstance = await channelFactory.CreateInitialAsync(target.Kind, ct);
+        var channelInstance = await channelFactory.CreateInitialAsync(ct);
 
         var newTemplate = target with
         {

@@ -22,7 +22,7 @@ public sealed class SmsFormatter : ISmsFormatter
         }
     }
 
-    public ValueTask<SmsTemplate> CreateInitialAsync(string? kind = null,
+    public ValueTask<SmsTemplate> CreateInitialAsync(
         CancellationToken ct = default)
     {
         var template = new SmsTemplate
@@ -33,12 +33,12 @@ public sealed class SmsFormatter : ISmsFormatter
         return new ValueTask<SmsTemplate>(template);
     }
 
-    public ValueTask<SmsTemplate> ParseAsync(SmsTemplate input, bool strict,
+    public ValueTask ParseAsync(SmsTemplate input, bool strict,
         CancellationToken ct = default)
     {
         Validate<Validator>.It(input);
 
-        return new ValueTask<SmsTemplate>(input);
+        return default;
     }
 
     public string Format(SmsTemplate? template, string text)

@@ -42,12 +42,12 @@ public class EmailFormattingException : Exception
         {
             sb.Append(" * ");
             sb.Append("Line: ");
-            sb.Append(error.Line);
+            sb.Append(error.Error.Line);
             sb.Append(", ");
             sb.Append("Template: ");
             sb.Append(error.Template);
             sb.Append(", ");
-            sb.Append(error.Message);
+            sb.Append(error.Error.Message);
             sb.AppendLine();
         }
 

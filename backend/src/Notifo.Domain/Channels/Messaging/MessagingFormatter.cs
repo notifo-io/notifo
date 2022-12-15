@@ -30,7 +30,7 @@ public sealed class MessagingFormatter : IMessagingFormatter
         this.imageFormatter = imageFormatter;
     }
 
-    public ValueTask<MessagingTemplate> CreateInitialAsync(string? kind = null,
+    public ValueTask<MessagingTemplate> CreateInitialAsync(
         CancellationToken ct = default)
     {
         var template = new MessagingTemplate
@@ -41,12 +41,12 @@ public sealed class MessagingFormatter : IMessagingFormatter
         return new ValueTask<MessagingTemplate>(template);
     }
 
-    public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input, bool strict,
+    public ValueTask ParseAsync(MessagingTemplate input, bool strict,
         CancellationToken ct = default)
     {
         Validate<Validator>.It(input);
 
-        return new ValueTask<MessagingTemplate>(input);
+        return default;
     }
 
     public string Format(MessagingTemplate? template, BaseUserNotification notification)

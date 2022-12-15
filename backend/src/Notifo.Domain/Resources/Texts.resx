@@ -201,6 +201,9 @@
   <data name="NotificationTemplateUpserted" xml:space="preserve">
     <value>Template '{{code}}' has been added or updated in app '{{app}}'.</value>
   </data>
+  <data name="TemplateError" xml:space="preserve">
+    <value>Unhandled template error.</value>
+  </data>
   <data name="Template_NoSubject" xml:space="preserve">
     <value>Template '{0}' has no subject.</value>
   </data>

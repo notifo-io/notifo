@@ -15025,43 +15025,31 @@ namespace Notifo.SDK
         /// The errors when rendering a preview.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("errors", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<EmailFormattingError> Errors { get; set; }
+        public System.Collections.Generic.List<EmailPreviewErrorDto> Errors { get; set; }
 
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public partial class EmailFormattingError
+    public partial class EmailPreviewErrorDto
     {
+        /// <summary>
+        /// The error message.
+        /// </summary>
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required]
         public string Message { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("template", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public EmailTemplateType Template { get; set; }
-
+        /// <summary>
+        /// The line number.
+        /// </summary>
         [Newtonsoft.Json.JsonProperty("line", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Line { get; set; }
 
+        /// <summary>
+        /// The line column.
+        /// </summary>
         [Newtonsoft.Json.JsonProperty("column", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Column { get; set; }
-
-    }
-
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public enum EmailTemplateType
-    {
-
-        [System.Runtime.Serialization.EnumMember(Value = @"General")]
-        General = 0,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BodyHtml")]
-        BodyHtml = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"BodyText")]
-        BodyText = 2,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Subject")]
-        Subject = 3,
 
     }
 
@@ -15081,12 +15069,6 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public EmailPreviewType Type { get; set; }
-
-        /// <summary>
-        /// The kind of the template.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("kind", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Kind { get; set; }
 
     }
 
@@ -15135,12 +15117,6 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
-
-        /// <summary>
-        /// The kind of the template.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("kind", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Kind { get; set; }
 
         /// <summary>
         /// True, when the template is the primary template.
@@ -15237,22 +15213,11 @@ namespace Notifo.SDK
         [Newtonsoft.Json.JsonProperty("fromName", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string FromName { get; set; }
 
-        /// <summary>
-        /// The type of the template.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("kind", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Kind { get; set; }
-
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class CreateChannelTemplateDto
     {
-        /// <summary>
-        /// The kind of the template.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("kind", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Kind { get; set; }
 
     }
 
