@@ -8,6 +8,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
 using Notifo.Pipeline;
+using Squidex.Hosting.Web;
 
 namespace Notifo.Areas.Frontend;
 
@@ -34,7 +35,14 @@ public static class Startup
 
         app.UseWhen(c => c.IsSpaFile() || c.IsHtmlPath(), builder =>
         {
-            builder.UseHtmlTransform();
+            // Adjust the base for all potential html files.
+            builder.UseHtmlTransform(new HtmlTransformOptions
+            {
+                Transform = (html, context) =>
+                {
+                    return new ValueTask<string>(html.AddOptions(context));
+                }
+            });
         });
 
         app.UseNotifoStaticFiles(fileProvider);

@@ -93,6 +93,7 @@ export const EN = {
         enabled: 'Enabled',
         error: 'Error has occurred',
         failed: 'Failed',
+        feedback: 'Feedback',
         firstConfirmed: 'First Confirmed',
         firstDelivered: 'First Delivered',
         firstSeen: 'First seen',

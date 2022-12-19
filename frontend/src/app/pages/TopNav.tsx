@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { useRouteMatch } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar, NavItem } from 'reactstrap';
-import { useBoolean, useEventCallback } from '@app/framework';
+import { Marker, useBoolean, useEventCallback } from '@app/framework';
 import { AppsDropdown, Integrated, Logo } from '@app/shared/components';
 import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
@@ -43,6 +43,10 @@ export const TopNav = () => {
             </Nav>
 
             <Nav navbar className='ml-auto'>
+                <NavItem>
+                    <Marker projectId={window['options'].markerProject} />
+                </NavItem>
+            
                 {userProfile?.token &&
                     <NavItem>
                         <Integrated token={userProfile.token} />

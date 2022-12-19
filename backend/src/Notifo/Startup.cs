@@ -34,6 +34,7 @@ public class Startup
         var signalROptions = config.GetSection("web:signalR").Get<SignalROptions>() ?? new SignalROptions();
 
         services.ConfigureAndValidate<SignalROptions>(config, "web:signalR");
+        services.Configure<SpaOptions>(config, "spa");
 
         services.AddDefaultWebServices(config);
         services.AddDefaultForwardRules();

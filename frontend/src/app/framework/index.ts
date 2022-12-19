@@ -20,6 +20,7 @@ export * from './react/FormControlError';
 export * from './react/FormError';
 export * from './react/Gist';
 export * from './react/hooks';
+export * from './react/Marker';
 export * from './react/Icon';
 export * from './react/IFrame';
 export * from './react/LanguageSelector';

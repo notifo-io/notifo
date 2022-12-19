@@ -28,6 +28,10 @@ main {
     flex-wrap: nowrap;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 .col-refresh {
     width: 4rem;
 }
@@ -276,7 +280,7 @@ fieldset {
     & .notifo {
         .notifo {
             &-button {
-                margin-left: .5rem;
+                margin-left: 1rem;
                 margin-right: 1rem;
                 padding: .375rem;
 
