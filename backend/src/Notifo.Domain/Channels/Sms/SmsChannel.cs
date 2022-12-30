@@ -28,6 +28,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
     private readonly ILogStore logStore;
     private readonly ISmsFormatter smsFormatter;
     private readonly ISmsTemplateStore smsTemplateStore;
+    private readonly ISmsUrl smsUrl;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
 
@@ -38,6 +39,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         IIntegrationManager integrationManager,
         ISmsFormatter smsFormatter,
         ISmsTemplateStore smsTemplateStore,
+        ISmsUrl smsUrl,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore)
     {
@@ -47,6 +49,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         this.logStore = logStore;
         this.smsFormatter = smsFormatter;
         this.smsTemplateStore = smsTemplateStore;
+        this.smsUrl = smsUrl;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
     }
@@ -67,24 +70,30 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         }
     }
 
-    public async Task HandleCallbackAsync(ISmsSender sender, SmsCallbackResponse response,
+    public async Task HandleCallbackAsync(string integrationId, string integrationName, Guid notificationId, string phoneNumber, SmsCallbackResponse response,
         CancellationToken ct)
     {
         using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
         {
-            var (notificationId, to, result, details) = response;
+            var (result, details) = response;
+
+            if (result == SmsResult.Unknown)
+            {
+                return;
+            }
+
             var notification = await userNotificationStore.FindAsync(notificationId, ct);
 
             if (notification != null)
             {
-                await UpdateAsync(notification, result, sender, details);
+                await UpdateAsync(notification, result, integrationName, details);
             }
 
-            userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, to));
+            userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, phoneNumber));
         }
     }
 
-    private async Task UpdateAsync(UserNotification notification, SmsResult result, ISmsSender sender, string? details)
+    private async Task UpdateAsync(UserNotification notification, SmsResult result, string integrationName, string? details)
     {
         if (!notification.Channels.TryGetValue(Name, out var channel))
         {
@@ -105,7 +114,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             }
             else if (result == SmsResult.Failed)
             {
-                var message = LogMessage.Sms_CallbackError(sender.Name, details);
+                var message = LogMessage.Sms_CallbackError(integrationName, details);
 
                 // Also log the error to the app log.
                 await logStore.LogAsync(notification.AppId, message);
@@ -186,7 +195,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             {
                 await UpdateAsync(job, ProcessStatus.Attempt);
 
-                var senders = integrationManager.Resolve<ISmsSender>(app, job).Select(x => x.Target).ToList();
+                var senders = integrationManager.Resolve<ISmsSender>(app, job).ToList();
 
                 if (senders.Count == 0)
                 {
@@ -204,12 +213,12 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         }
     }
 
-    private async Task SendCoreAsync(App app, SmsJob job, List<ISmsSender> senders,
+    private async Task SendCoreAsync(App app, SmsJob job, List<(string Id, ISmsSender Sender)> senders,
         CancellationToken ct)
     {
-        var lastSender = senders[^1];
+        var lastSender = senders[^1].Sender;
 
-        foreach (var sender in senders)
+        foreach (var (integrationId, sender) in senders)
         {
             try
             {
@@ -224,9 +233,12 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                     await SkipAsync(job, skip.Value);
                 }
 
-                var text = smsFormatter.Format(template, job.PhoneText);
+                var smsRequest = new SmsRequest(
+                    job.PhoneNumber,
+                    smsFormatter.Format(template, job.Text),
+                    smsUrl.SmsWebhookUrl(app.Id, integrationId, job.Tracking.UserNotificationId, job.PhoneNumber));
 
-                var result = await sender.SendAsync(app, job.PhoneNumber, text, job.Tracking.UserNotificationId.ToString(), ct);
+                var result = await sender.SendAsync(smsRequest, ct);
 
                 // Some integrations provide the actual result via webhook at a later point.
                 if (result == SmsResult.Delivered)

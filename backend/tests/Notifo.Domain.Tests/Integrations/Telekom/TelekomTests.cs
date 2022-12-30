@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Sms;
 
 namespace Notifo.Domain.Integrations.Telekom;
@@ -27,15 +26,11 @@ public sealed class TelekomTests
             .ReturnsLazily(() => new HttpClient());
 
         var sut = new TelekomSmsSender(clientFactory,
-            A.Fake<ISmsCallback>(),
-            A.Fake<ISmsUrl>(),
             apiKey,
-            phoneNumberFrom,
-            "1");
+            phoneNumberFrom);
 
-        var app = new App("1", default);
-
-        var response = await sut.SendAsync(app, phoneNumberTo, "Hello Telekom", "1");
+        var request = new SmsRequest(phoneNumberTo, "Hello Telekom");
+        var response = await sut.SendAsync(request);
 
         Assert.Equal(SmsResult.Sent, response);
     }

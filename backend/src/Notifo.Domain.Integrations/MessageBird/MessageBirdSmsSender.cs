@@ -7,7 +7,6 @@
 
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Domain.Integrations.Resources;
@@ -18,9 +17,6 @@ namespace Notifo.Domain.Integrations.MessageBird;
 public sealed class MessageBirdSmsSender : ISmsSender
 {
     private readonly IMessageBirdClient messageBirdClient;
-    private readonly ISmsCallback smsCallback;
-    private readonly ISmsUrl smsUrl;
-    private readonly string integrationId;
     private readonly string? originatorName;
     private readonly string? originatorNumber;
     private readonly Dictionary<string, string>? phoneNumbers;
@@ -29,39 +25,31 @@ public sealed class MessageBirdSmsSender : ISmsSender
 
     public MessageBirdSmsSender(
         IMessageBirdClient messageBirdClient,
-        ISmsCallback smsCallback,
-        ISmsUrl smsUrl,
-        string integrationId,
         string? originatorName,
         string? originatorNumber,
         Dictionary<string, string>? phoneNumbers)
     {
         this.messageBirdClient = messageBirdClient;
-        this.smsCallback = smsCallback;
-        this.smsUrl = smsUrl;
-        this.integrationId = integrationId;
         this.originatorName = originatorName;
         this.originatorNumber = originatorNumber;
         this.phoneNumbers = phoneNumbers;
     }
 
-    public async Task<SmsResult> SendAsync(App app, string to, string body, string token,
+    public async Task<SmsResult> SendAsync(SmsRequest request,
         CancellationToken ct = default)
     {
+        var (to, message, callbackUrl) = request;
         try
         {
-            // The callback URL is used to get delivery status.
-            var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId);
-
             // Call the phone number and use a local phone number for the user.
-            var sms = new SmsMessage(GetOriginator(to), to, body, token, callbackUrl);
+            var sms = new SmsMessage(GetOriginator(to), to, message, null, callbackUrl);
 
             var response = await messageBirdClient.SendSmsAsync(sms, ct);
 
             // Usually an error is received by the error response in the client, but in some cases it was not working properly.
             if (response.Recipients.TotalSentCount != 1)
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_ErrorUnknown, to);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_ErrorUnknown, request.To);
 
                 throw new DomainException(errorMessage);
             }
@@ -98,38 +86,25 @@ public sealed class MessageBirdSmsSender : ISmsSender
         return originatorNumber!;
     }
 
-    public async Task HandleCallbackAsync(App app, HttpContext httpContext)
+    public async ValueTask<SmsCallbackResponse> HandleCallbackAsync(HttpContext httpContext)
     {
         var status = await messageBirdClient.ParseSmsWebhookAsync(httpContext);
 
-        // If the reference is not a valid guid (notification-id), something just went wrong.
-        if (!Guid.TryParse(status.Reference, out var reference) || reference == default)
+        return new SmsCallbackResponse(ParseStatus(status));
+
+        static SmsResult ParseStatus(SmsWebhookRequest status)
         {
-            return;
+            switch (status.Status)
+            {
+                case MessageBirdStatus.Delivered:
+                    return SmsResult.Delivered;
+                case MessageBirdStatus.Delivery_Failed:
+                    return SmsResult.Failed;
+                case MessageBirdStatus.Sent:
+                    return SmsResult.Sent;
+                default:
+                    return default;
+            }
         }
-
-        var result = default(SmsResult);
-
-        switch (status.Status)
-        {
-            case MessageBirdStatus.Delivered:
-                result = SmsResult.Delivered;
-                break;
-            case MessageBirdStatus.Delivery_Failed:
-                result = SmsResult.Failed;
-                break;
-            case MessageBirdStatus.Sent:
-                result = SmsResult.Sent;
-                break;
-        }
-
-        if (result == SmsResult.Unknown)
-        {
-            return;
-        }
-
-        var callback = new SmsCallbackResponse(reference, status.Recipient, result);
-
-        await smsCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
     }
 }

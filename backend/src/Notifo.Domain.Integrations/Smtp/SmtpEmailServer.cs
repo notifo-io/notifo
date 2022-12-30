@@ -38,7 +38,7 @@ public class SmtpEmailServer : IEmailSender, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task SendAsync(EmailMessage message,
+    public async Task SendAsync(EmailRequest request,
         CancellationToken ct = default)
     {
         var smtpClient = clientPool.Get();
@@ -49,15 +49,15 @@ public class SmtpEmailServer : IEmailSender, IDisposable
             var smtpMessage = new MimeMessage();
 
             smtpMessage.From.Add(new MailboxAddress(
-                message.FromName,
-                message.FromEmail));
+                request.FromName,
+                request.FromEmail));
 
             smtpMessage.To.Add(new MailboxAddress(
-                message.ToName,
-                message.ToEmail));
+                request.ToName,
+                request.ToEmail));
 
-            var hasHtml = !string.IsNullOrWhiteSpace(message.BodyHtml);
-            var hasText = !string.IsNullOrWhiteSpace(message.BodyText);
+            var hasHtml = !string.IsNullOrWhiteSpace(request.BodyHtml);
+            var hasText = !string.IsNullOrWhiteSpace(request.BodyText);
 
             if (hasHtml && hasText)
             {
@@ -65,12 +65,12 @@ public class SmtpEmailServer : IEmailSender, IDisposable
                 {
                     new TextPart(TextFormat.Plain)
                     {
-                        Text = message.BodyText
+                        Text = request.BodyText
                     },
 
                     new TextPart(TextFormat.Html)
                     {
-                        Text = message.BodyHtml
+                        Text = request.BodyHtml
                     }
                 };
             }
@@ -78,14 +78,14 @@ public class SmtpEmailServer : IEmailSender, IDisposable
             {
                 smtpMessage.Body = new TextPart(TextFormat.Html)
                 {
-                    Text = message.BodyHtml
+                    Text = request.BodyHtml
                 };
             }
             else if (hasText)
             {
                 smtpMessage.Body = new TextPart(TextFormat.Plain)
                 {
-                    Text = message.BodyText
+                    Text = request.BodyText
                 };
             }
             else
@@ -94,7 +94,7 @@ public class SmtpEmailServer : IEmailSender, IDisposable
                 return;
             }
 
-            smtpMessage.Subject = message.Subject;
+            smtpMessage.Subject = request.Subject;
 
             await smtpClient.SendAsync(smtpMessage, ct);
         }

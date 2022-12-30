@@ -28,7 +28,12 @@ public sealed class CallbacksController : BaseController
     [HttpGet]
     [HttpPost]
     [Route("api/callback/sms")]
-    public async Task<IActionResult> SmsCallback([FromQuery] string appId, [FromQuery] string integrationId)
+    public async Task<IActionResult> SmsCallback(
+        [FromServices] ISmsCallback callback,
+        [FromQuery] string appId,
+        [FromQuery] string integrationId,
+        [FromQuery] string phoneNumber,
+        [FromQuery] Guid notificationId)
     {
         var (app, sender) = await GetIntegrationAsync<ISmsSender>(appId, integrationId);
 
@@ -37,7 +42,14 @@ public sealed class CallbacksController : BaseController
             return NotFound();
         }
 
-        await sender.HandleCallbackAsync(app, HttpContext);
+        var response = await sender.HandleCallbackAsync(HttpContext);
+
+        if (response.Result == SmsResult.Unknown)
+        {
+            return Ok();
+        }
+
+        await callback.HandleCallbackAsync(integrationId, sender.Name, notificationId, phoneNumber, response, default);
 
         return Ok();
     }

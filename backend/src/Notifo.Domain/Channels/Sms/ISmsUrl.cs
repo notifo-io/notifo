@@ -9,7 +9,7 @@ using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Sms;
 
-public interface ISmsUrl : IUserNotificationUrl
+public interface ISmsUrl
 {
-    string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
+    string SmsWebhookUrl(string appId, string integrationId, Guid notificationId, string phoneNumber);
 }

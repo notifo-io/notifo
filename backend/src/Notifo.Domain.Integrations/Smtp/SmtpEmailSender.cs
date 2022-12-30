@@ -31,17 +31,17 @@ public sealed class SmtpEmailSender : IEmailSender
         this.fromName = fromName;
     }
 
-    public async Task SendAsync(EmailMessage message,
+    public async Task SendAsync(EmailRequest request,
         CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(message.FromEmail))
+        if (string.IsNullOrWhiteSpace(request.FromEmail))
         {
-            message.FromEmail = fromEmail;
+            request = request with { FromEmail = fromEmail };
         }
 
-        if (string.IsNullOrWhiteSpace(message.FromName))
+        if (string.IsNullOrWhiteSpace(request.FromName))
         {
-            message.FromName = fromName;
+            request = request with { FromName = fromName };
         }
 
         // Try a few attempts to get a non-disposed server instance.
@@ -49,7 +49,7 @@ public sealed class SmtpEmailSender : IEmailSender
         {
             try
             {
-                await server().SendAsync(message, ct);
+                await server().SendAsync(request, ct);
                 break;
             }
             catch (ObjectDisposedException)

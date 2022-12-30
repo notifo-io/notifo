@@ -183,7 +183,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     return;
                 }
 
-                EmailMessage? message;
+                EmailRequest? message;
 
                 using (Telemetry.Activities.StartActivity("Format"))
                 {
@@ -233,7 +233,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         }
     }
 
-    private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders,
+    private async Task SendCoreAsync(EmailRequest message, string appId, List<IEmailSender> senders,
         CancellationToken ct)
     {
         var lastSender = senders[^1];

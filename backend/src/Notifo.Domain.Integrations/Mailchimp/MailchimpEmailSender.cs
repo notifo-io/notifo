@@ -55,7 +55,7 @@ public sealed class MailchimpEmailSender : IEmailSender
         this.fromName = fromName;
     }
 
-    public async Task SendAsync(EmailMessage message,
+    public async Task SendAsync(EmailRequest request,
         CancellationToken ct = default)
     {
         using (var httpClient = httpClientFactory.CreateClient("Mailchimp"))
@@ -65,16 +65,16 @@ public sealed class MailchimpEmailSender : IEmailSender
                 key = apiKey,
                 message = new
                 {
-                    subject = message.Subject,
-                    html = message.BodyHtml,
-                    text = message.BodyText,
+                    subject = request.Subject,
+                    html = request.BodyHtml,
+                    text = request.BodyText,
                     from_email = fromEmail,
                     from_name = fromName,
                     to = new[]
                     {
                         new
                         {
-                            email = message.ToEmail, name = message.ToName
+                            email = request.ToEmail, name = request.ToName
                         }
                     }
                 }
@@ -88,7 +88,7 @@ public sealed class MailchimpEmailSender : IEmailSender
 
             if (responses is not { Length: 1 })
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error, message.FromEmail);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error, request.FromEmail);
 
                 throw new DomainException(errorMessage);
             }
@@ -100,7 +100,7 @@ public sealed class MailchimpEmailSender : IEmailSender
             {
                 var errorMessage =
                     string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error,
-                        message.FromEmail,
+                        request.FromEmail,
                         responseType,
                         response.Reason);
 

@@ -166,9 +166,6 @@ public sealed class MessageBirdIntegration : IIntegration
 
         return new MessageBirdSmsSender(
             client,
-            serviceProvider.GetRequiredService<ISmsCallback>(),
-            serviceProvider.GetRequiredService<ISmsUrl>(),
-            id,
             originatorName,
             phoneNumber.ToString(CultureInfo.InvariantCulture),
             phoneNumbersMap);

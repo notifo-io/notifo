@@ -86,7 +86,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
         return new ValueTask<FormattedEmail>(new FormattedEmail(message, context.Errors));
     }
 
-    private static EmailMessage Format(EmailTemplate template, EmailContext context, bool noCache, bool strict)
+    private static EmailRequest Format(EmailTemplate template, EmailContext context, bool noCache, bool strict)
     {
         var subject = string.Empty;
 
@@ -111,7 +111,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
 
         var firstJob = context.Jobs[0];
 
-        var message = new EmailMessage
+        var message = new EmailRequest
         {
             BodyHtml = bodyHtml,
             BodyText = bodyText,

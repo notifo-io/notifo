@@ -6,7 +6,9 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Apps;
+
+#pragma warning disable MA0048 // File name must match type name
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
 namespace Notifo.Domain.Channels.Sms;
 
@@ -14,8 +16,21 @@ public interface ISmsSender
 {
     string Name { get; }
 
-    Task<SmsResult> SendAsync(App app, string to, string body, string token,
+    Task<SmsResult> SendAsync(SmsRequest message,
         CancellationToken ct = default);
 
-    Task HandleCallbackAsync(App app, HttpContext httpContext);
+    ValueTask<SmsCallbackResponse> HandleCallbackAsync(HttpContext httpContext);
 }
+
+public enum SmsResult
+{
+    Unknown,
+    Skipped,
+    Sent,
+    Delivered,
+    Failed
+}
+
+public record struct SmsRequest(string To, string Message, string? CallbackUrl = null);
+
+public record struct SmsCallbackResponse(SmsResult Result, string? Details = null);

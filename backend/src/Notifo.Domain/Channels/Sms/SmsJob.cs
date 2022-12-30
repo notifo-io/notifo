@@ -8,7 +8,6 @@
 using System.Diagnostics;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
-using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Domain.Channels.Sms;
@@ -17,7 +16,7 @@ public sealed class SmsJob : ChannelJob, IIntegrationTarget
 {
     public string PhoneNumber { get; init; }
 
-    public string PhoneText { get; init; }
+    public string Text { get; init; }
 
     public string TemplateLanguage { get; init; }
 
@@ -61,9 +60,9 @@ public sealed class SmsJob : ChannelJob, IIntegrationTarget
         SimpleMapper.Map(notification, this);
 
         PhoneNumber = phoneNumber;
-        PhoneText = notification.Formatting.Subject.Truncate(140);
         TemplateLanguage = notification.UserLanguage;
         TemplateName = setting.Template;
+        Text = notification.Formatting.Subject;
     }
 
     public static string ComputeScheduleKey(Guid notificationId, string phoneNumber)

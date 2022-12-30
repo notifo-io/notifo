@@ -23,25 +23,25 @@ public sealed class MailjetEmailServer
         this.mailjetClient = mailjetClient;
     }
 
-    public async Task SendAsync(EmailMessage message)
+    public async Task SendAsync(EmailRequest request)
     {
         var email = new TransactionalEmailBuilder()
             .WithFrom(new SendContact(
-                message.FromEmail,
-                message.FromName))
+                request.FromEmail,
+                request.FromName))
             .WithTo(new SendContact(
-                message.ToEmail,
-                message.ToName))
-            .WithSubject(message.Subject)
-            .WithHtmlPart(message.BodyHtml)
-            .WithTextPart(message.BodyText)
+                request.ToEmail,
+                request.ToName))
+            .WithSubject(request.Subject)
+            .WithHtmlPart(request.BodyHtml)
+            .WithTextPart(request.BodyText)
             .Build();
 
         var responses = await mailjetClient.SendTransactionalEmailAsync(email);
 
         if (responses.Messages is not { Length: 1 })
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error, message.FromEmail);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error, request.FromEmail);
 
             throw new DomainException(errorMessage);
         }
@@ -53,7 +53,7 @@ public sealed class MailjetEmailServer
         {
             var errorMessage =
                 string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error,
-                    message.FromEmail,
+                    request.FromEmail,
                     responseError.ErrorMessage,
                     responseError.ErrorCode);
 

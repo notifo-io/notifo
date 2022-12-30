@@ -21,7 +21,7 @@ public abstract class EmailSenderTestBase
     {
         var sender = CreateSender();
 
-        await sender.SendAsync(new EmailMessage
+        await sender.SendAsync(new EmailRequest
         {
             ToEmail = Address,
             ToName = Address,
@@ -36,7 +36,7 @@ public abstract class EmailSenderTestBase
     {
         var sender = CreateSender();
 
-        await sender.SendAsync(new EmailMessage
+        await sender.SendAsync(new EmailRequest
         {
             ToEmail = Address,
             ToName = Address,
@@ -51,7 +51,7 @@ public abstract class EmailSenderTestBase
     {
         var sender = CreateSender();
 
-        await sender.SendAsync(new EmailMessage
+        await sender.SendAsync(new EmailRequest
         {
             ToEmail = Address,
             ToName = Address,

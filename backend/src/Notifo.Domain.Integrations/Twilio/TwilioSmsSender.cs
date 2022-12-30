@@ -7,7 +7,6 @@
 
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
@@ -20,37 +19,27 @@ namespace Notifo.Domain.Integrations.Twilio;
 public sealed class TwilioSmsSender : ISmsSender
 {
     private readonly ITwilioRestClient twilioClient;
-    private readonly ISmsCallback smsCallback;
-    private readonly ISmsUrl smsUrl;
     private readonly string phoneNumber;
-    private readonly string integrationId;
 
     public string Name => "Twilio SMS";
 
-    public TwilioSmsSender(
-        string phoneNumber,
-        ITwilioRestClient twilioClient,
-        ISmsCallback smsCallback,
-        ISmsUrl smsUrl,
-        string integrationId)
+    public TwilioSmsSender(ITwilioRestClient twilioClient, string phoneNumber)
     {
         this.twilioClient = twilioClient;
-        this.smsCallback = smsCallback;
-        this.smsUrl = smsUrl;
         this.phoneNumber = phoneNumber;
-        this.integrationId = integrationId;
     }
 
-    public async Task<SmsResult> SendAsync(App app, string to, string body, string reference,
+    public async Task<SmsResult> SendAsync(SmsRequest request,
         CancellationToken ct = default)
     {
+        var (to, message, callbackUrl) = request;
         try
         {
             var result = await MessageResource.CreateAsync(
                 ConvertPhoneNumber(to), null,
                 ConvertPhoneNumber(phoneNumber), null,
-                body,
-                statusCallback: BuildCallbackUrl(app, to, reference), client: twilioClient);
+                message,
+                statusCallback: new Uri(callbackUrl!), client: twilioClient);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {
@@ -69,19 +58,6 @@ public sealed class TwilioSmsSender : ISmsSender
         }
     }
 
-    private Uri BuildCallbackUrl(App app, string to, string reference)
-    {
-        var query = new Dictionary<string, string>
-        {
-            [RequestKeys.ReferenceValue] = reference,
-            [RequestKeys.ReferenceNumber] = to
-        };
-
-        var callbackUrl = smsUrl.SmsWebhookUrl(app.Id, integrationId, query);
-
-        return new Uri(callbackUrl);
-    }
-
     private static PhoneNumber ConvertPhoneNumber(string number)
     {
         number = number.TrimStart('0');
@@ -94,43 +70,26 @@ public sealed class TwilioSmsSender : ISmsSender
         return new PhoneNumber(number);
     }
 
-    public Task HandleCallbackAsync(App app, HttpContext httpContext)
+    public ValueTask<SmsCallbackResponse> HandleCallbackAsync(HttpContext httpContext)
     {
-        var request = httpContext.Request;
+        var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
-        var status = request.Form[RequestKeys.MessageStatus].ToString();
+        return new ValueTask<SmsCallbackResponse>(new SmsCallbackResponse(ParseStatus(status)));
 
-        var referenceString = request.Query[RequestKeys.ReferenceValue].ToString();
-        var referenceNumber = request.Query[RequestKeys.ReferenceNumber].ToString();
-
-        if (!Guid.TryParse(referenceString, out var notificationId))
+        static SmsResult ParseStatus(string status)
         {
-            return Task.CompletedTask;
+            switch (status)
+            {
+                case "sent":
+                    return SmsResult.Sent;
+                case "delivered":
+                    return SmsResult.Delivered;
+                case "failed":
+                case "undelivered":
+                    return SmsResult.Failed;
+                default:
+                    return default;
+            }
         }
-
-        var result = default(SmsResult);
-
-        switch (status)
-        {
-            case "sent":
-                result = SmsResult.Sent;
-                break;
-            case "delivered":
-                result = SmsResult.Delivered;
-                break;
-            case "failed":
-            case "undelivered":
-                result = SmsResult.Failed;
-                break;
-        }
-
-        if (result == SmsResult.Unknown)
-        {
-            return Task.CompletedTask;
-        }
-
-        var callback = new SmsCallbackResponse(notificationId, referenceNumber, result);
-
-        return smsCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
     }
 }

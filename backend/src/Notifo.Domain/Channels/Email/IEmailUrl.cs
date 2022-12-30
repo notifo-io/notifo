@@ -5,11 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
-
 namespace Notifo.Domain.Channels.Email;
 
-public interface IEmailUrl : IUserNotificationUrl
+public interface IEmailUrl
 {
     string EmailPreferences(string apiKey, string language);
 }

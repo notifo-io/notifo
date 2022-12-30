@@ -43,9 +43,9 @@ public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotific
         return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
     }
 
-    public string SmsWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
+    public string SmsWebhookUrl(string appId, string integrationId, Guid notificationId, string phoneNumber)
     {
-        return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}{Query(query)}");
+        return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}&notificationId={notificationId}&phoneNumber={Uri.EscapeDataString(phoneNumber)}");
     }
 
     public string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
