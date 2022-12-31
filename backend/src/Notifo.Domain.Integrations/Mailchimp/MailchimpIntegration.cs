@@ -6,8 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Mailchimp;
@@ -57,12 +55,12 @@ public sealed class MailchimpIntegration : IIntegration
             Description = Texts.Mailchimp_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(IEmailSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {

@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Smtp;
 
 namespace Notifo.Domain.Integrations.AmazonSES;

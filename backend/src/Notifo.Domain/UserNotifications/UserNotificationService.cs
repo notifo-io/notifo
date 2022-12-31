@@ -6,14 +6,11 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using Jint.Runtime.Debugger;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Log;
-using Notifo.Domain.Resources;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;

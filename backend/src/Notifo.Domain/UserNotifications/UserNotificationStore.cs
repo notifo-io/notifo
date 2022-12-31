@@ -8,6 +8,7 @@
 using NodaTime;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Counters;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.UserNotifications.Internal;
 using Notifo.Infrastructure;

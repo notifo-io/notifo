@@ -70,23 +70,20 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         }
     }
 
-    public async Task HandleCallbackAsync(string integrationId, string integrationName, Guid notificationId, string phoneNumber, SmsCallbackResponse response,
-        CancellationToken ct)
+    public async Task HandleCallbackAsync(ISmsSender source, Guid notificationId, string phoneNumber, SmsResult result, string? details = null)
     {
         using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
         {
-            var (result, details) = response;
-
             if (result == SmsResult.Unknown)
             {
                 return;
             }
 
-            var notification = await userNotificationStore.FindAsync(notificationId, ct);
+            var notification = await userNotificationStore.FindAsync(notificationId, default);
 
             if (notification != null)
             {
-                await UpdateAsync(notification, result, integrationName, details);
+                await UpdateAsync(notification, result, source.Name, details);
             }
 
             userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, phoneNumber));
@@ -233,10 +230,11 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                     await SkipAsync(job, skip.Value);
                 }
 
-                var smsRequest = new SmsRequest(
+                var smsRequest = new SmsMessage(
+                    job.Tracking.UserNotificationId,
                     job.PhoneNumber,
                     smsFormatter.Format(template, job.Text),
-                    smsUrl.SmsWebhookUrl(app.Id, integrationId, job.Tracking.UserNotificationId, job.PhoneNumber));
+                    smsUrl.SmsWebhookUrl(app.Id, integrationId));
 
                 var result = await sender.SendAsync(smsRequest, ct);
 
@@ -247,7 +245,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                     return;
                 }
 
-                // If the SMS has been sent, but not delivered yet, we also do not try other integrations.
+                // If the message has been sent, but not delivered yet, we also do not try other integrations.
                 if (result == SmsResult.Sent)
                 {
                     return;

@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Domain.Integrations"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmarks", "tests\Benchmarks\Benchmarks.csproj", "{281E0369-640F-415C-B6A8-4B51F954C801}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Notifo.Domain.Integrations.Abstractions", "src\Notifo.Domain.Integrations.Abstractions\Notifo.Domain.Integrations.Abstractions.csproj", "{734B33F7-48EC-4B8D-9052-291D0DD48055}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{281E0369-640F-415C-B6A8-4B51F954C801}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{281E0369-640F-415C-B6A8-4B51F954C801}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{281E0369-640F-415C-B6A8-4B51F954C801}.Release|Any CPU.Build.0 = Release|Any CPU
+		{734B33F7-48EC-4B8D-9052-291D0DD48055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{734B33F7-48EC-4B8D-9052-291D0DD48055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{734B33F7-48EC-4B8D-9052-291D0DD48055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{734B33F7-48EC-4B8D-9052-291D0DD48055}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +83,7 @@ Global
 		{CB41164D-A385-4D06-B964-D3AD5E10CA3C} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
 		{E7C401D3-02CC-4AB6-A916-C1BAC35693AA} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
 		{8E099EF7-6D26-49A6-B5E5-BB4ADA06FBB7} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
+		{734B33F7-48EC-4B8D-9052-291D0DD48055} = {E7F037EF-6C30-4084-B754-2F215D34E8F9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50EA5E74-22D7-410A-BB1F-05D94D7F9F9B}

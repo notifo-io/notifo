@@ -7,8 +7,6 @@
 
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Telekom;
@@ -49,12 +47,12 @@ public sealed class TelekomIntegration : IIntegration
             Description = Texts.Telekom_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(ISmsSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {
@@ -73,8 +71,8 @@ public sealed class TelekomIntegration : IIntegration
             }
 
             return new TelekomSmsSender(
-                serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                apikey,
+                serviceProvider.GetRequiredService<ISmsCallback>(),
+                serviceProvider.GetRequiredService<IHttpClientFactory>(), apikey,
                 phoneNumber.ToString(CultureInfo.InvariantCulture));
         }
 

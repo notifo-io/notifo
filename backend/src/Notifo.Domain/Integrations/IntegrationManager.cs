@@ -92,7 +92,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         return Task.CompletedTask;
     }
 
-    public Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    public Task<IntegrationStatus> HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(id);
@@ -108,7 +108,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
             throw new ValidationException(error);
         }
 
-        return integration.OnConfiguredAsync(app, id, configured, previous, ct);
+        return integration.OnConfiguredAsync(app.ToContext(), id, configured, previous, ct);
     }
 
     public Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
@@ -127,7 +127,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
             throw new ValidationException(error);
         }
 
-        return integration.OnRemovedAsync(app, id, configured, ct);
+        return integration.OnRemovedAsync(app.ToContext(), id, configured, ct);
     }
 
     public bool IsConfigured<T>(App app, IIntegrationTarget? target = null)
@@ -254,9 +254,10 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                         continue;
                     }
 
+                    IntegrationStatus newStatus = configured.Status;
                     try
                     {
-                        await integration.CheckStatusAsync(app, id, configured, ct);
+                        await integration.CheckStatusAsync(app.ToContext(), id, configured, ct);
                     }
                     catch (Exception ex)
                     {

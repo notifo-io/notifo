@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Google.Apis.Storage.v1.Data;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Log;

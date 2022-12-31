@@ -7,7 +7,7 @@
 
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Notifo.Domain.Resources;
+using Notifo.Domain.Integrations.Resources;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
@@ -109,17 +109,17 @@ public sealed record IntegrationProperty(string Name, PropertyType Type) : Prope
         }
     }
 
-    public string? GetString(ConfiguredIntegration configured)
+    public string? GetString(IntegrationConfiguration configured)
     {
         return GetString(configured.Properties);
     }
 
-    public long GetNumber(ConfiguredIntegration configured)
+    public long GetNumber(IntegrationConfiguration configured)
     {
         return GetNumber(configured.Properties);
     }
 
-    public bool GetBoolean(ConfiguredIntegration configured)
+    public bool GetBoolean(IntegrationConfiguration configured)
     {
         return GetBoolean(configured.Properties);
     }

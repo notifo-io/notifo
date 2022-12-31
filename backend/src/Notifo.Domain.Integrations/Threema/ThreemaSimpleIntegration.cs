@@ -6,8 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Threema;
@@ -48,12 +46,12 @@ public sealed class ThreemaSimpleIntegration : IIntegration
             Description = Texts.ThreemaSimple_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(IMessagingSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {

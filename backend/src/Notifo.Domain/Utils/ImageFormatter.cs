@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Infrastructure;
 using Squidex.Hosting;
 
 namespace Notifo.Domain.Utils;
@@ -29,12 +30,12 @@ public sealed class ImageFormatter : IImageFormatter
 
         if (url.StartsWith(baseUrl, StringComparison.OrdinalIgnoreCase))
         {
-            return AppendQuery(url, "emptyOnFailure", "true");
+            return url.AppendQueries("emptyOnFailure", true);
         }
 
         var proxy = urlGenerator.BuildUrl("/api/assets/proxy", false);
 
-        return AppendQuery(proxy, "url", url);
+        return proxy.AppendQueries(nameof(url), url);
     }
 
     public string? AddPreset(string? url, string? preset)
@@ -44,19 +45,7 @@ public sealed class ImageFormatter : IImageFormatter
             return url;
         }
 
-        return AppendQuery(url, "preset", preset);
-    }
-
-    private static string AppendQuery(string url, string key, string value)
-    {
-        var separator = '?';
-
-        if (url.Contains('?', StringComparison.Ordinal))
-        {
-            separator = '&';
-        }
-
-        return $"{url}{separator}{key}={Uri.EscapeDataString(value)}";
+        return url.AppendQueries(nameof(preset), preset);
     }
 
     private static bool IsValidUrl(string url)

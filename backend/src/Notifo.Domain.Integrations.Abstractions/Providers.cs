@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels;
+namespace Notifo.Domain.Integrations;
 
 public static class Providers
 {

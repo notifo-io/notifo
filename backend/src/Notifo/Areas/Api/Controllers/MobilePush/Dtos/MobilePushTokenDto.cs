@@ -7,6 +7,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Channels.MobilePush;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.MobilePush.Dtos;

@@ -289,15 +289,30 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         {
             try
             {
-                var options = new MobilePushOptions
+                var message = new MobilePushMessage
                 {
-                    IsConfirmed = job.IsConfirmed,
-                    DeviceType = job.DeviceType,
+                    Body = notification.Formatting.Body,
+                    ConfirmText = notification.Formatting.ConfirmText,
+                    ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
+                    Data = notification.Data,
                     DeviceToken = job.Token,
+                    DeviceType = job.DeviceType,
+                    ImageLarge = notification.Formatting.ImageLarge,
+                    ImageSmall = notification.Formatting.ImageSmall,
+                    IsConfirmed = job.IsConfirmed,
+                    LinkText = notification.Formatting.LinkText,
+                    LinkUrl = notification.Formatting.LinkUrl,
+                    NotificationId = job.Notification.Id,
+                    Silent = notification.Silent,
+                    Subject = notification.Formatting.Subject,
+                    TimeToLiveInSeconds = notification.TimeToLiveInSeconds,
+                    TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.MobilePush, job.ConfigurationId),
+                    TrackingToken = new TrackingToken(job.Notification.Id, Providers.MobilePush, job.ConfigurationId).ToParsableString(),
+                    TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.MobilePush, job.ConfigurationId),
                     Wakeup = notification.Formatting == null
                 };
 
-                await sender.SendAsync(notification, options, ct);
+                await sender.SendAsync(message, ct);
                 return;
             }
             catch (MobilePushTokenExpiredException)

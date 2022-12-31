@@ -6,8 +6,6 @@
 // ==========================================================================
 
 using FirebaseAdmin.Messaging;
-using Notifo.Domain.Channels.MobilePush;
-using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
@@ -29,28 +27,24 @@ public sealed class FirebaseMobilePushSender : IMobilePushSender
         this.sendSilentIOS = sendSilentIOS;
     }
 
-    public async Task SendAsync(BaseUserNotification userNotification, MobilePushOptions options,
+    public async Task SendAsync(MobilePushMessage message,
         CancellationToken ct)
     {
-        if (!ShouldSend(userNotification.Silent, options.DeviceType))
+        if (!ShouldSend(message.Silent, message.DeviceType))
         {
             return;
         }
 
         try
         {
-            var message = userNotification.ToFirebaseMessage(
-                options.DeviceToken,
-                options.ConfigurationId,
-                options.Wakeup,
-                options.IsConfirmed);
+            var firebaseMessage = message.ToFirebaseMessage(DateTimeOffset.UtcNow);
 
             // Try a few attempts to get a non-disposed messaging service.
             for (var i = 1; i <= Attempts; i++)
             {
                 try
                 {
-                    await wrapper().Messaging.SendAsync(message, ct);
+                    await wrapper().Messaging.SendAsync(firebaseMessage, ct);
                     break;
                 }
                 catch (ObjectDisposedException)

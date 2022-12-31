@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.Channels.Webhook.Integrations;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Webhook;

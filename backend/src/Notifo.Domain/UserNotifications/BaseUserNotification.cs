@@ -6,8 +6,8 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using System.Text;
 using Notifo.Domain.Integrations;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications;
 
@@ -79,43 +79,6 @@ public class BaseUserNotification : IIntegrationTarget
 
     private static string? ComputeUrl(string? url, string channel, Guid configurationId)
     {
-        if (!string.IsNullOrWhiteSpace(url))
-        {
-            var builder = new StringBuilder(url);
-
-            var hasQuery = url.Contains('?', StringComparison.OrdinalIgnoreCase);
-
-            void Append(string key, string value)
-            {
-                if (hasQuery)
-                {
-                    builder.Append('&');
-                }
-                else
-                {
-                    builder.Append('?');
-                }
-
-                builder.Append(key);
-                builder.Append('=');
-                builder.Append(Uri.EscapeDataString(value));
-
-                hasQuery = true;
-            }
-
-            if (channel != null)
-            {
-                Append(nameof(channel), channel);
-            }
-
-            if (configurationId != default)
-            {
-                Append(nameof(configurationId), configurationId.ToString());
-            }
-
-            return builder.ToString();
-        }
-
-        return null;
+        return url.AppendQueries(nameof(channel), channel, nameof(configurationId), configurationId);
     }
 }

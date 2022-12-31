@@ -5,9 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Messaging;
+namespace Notifo.Domain.Integrations;
 
-public interface IMessagingUrl
+public enum SmsResult
 {
-    string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null);
+    Unknown,
+    Skipped,
+    Sent,
+    Delivered,
+    Failed
 }

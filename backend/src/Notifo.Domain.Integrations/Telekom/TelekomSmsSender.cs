@@ -9,14 +9,14 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Telekom;
 
-public sealed class TelekomSmsSender : ISmsSender
+public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
 {
+    private readonly ISmsCallback callback;
     private readonly IHttpClientFactory httpClientFactory;
     private readonly string apikey;
     private readonly string phoneNumber;
@@ -24,19 +24,21 @@ public sealed class TelekomSmsSender : ISmsSender
     public string Name => "Telekom SMS";
 
     public TelekomSmsSender(
+        ISmsCallback callback,
         IHttpClientFactory httpClientFactory,
         string apikey,
         string phoneNumber)
     {
         this.apikey = apikey;
         this.phoneNumber = phoneNumber;
+        this.callback = callback;
         this.httpClientFactory = httpClientFactory;
     }
 
-    public async Task<SmsResult> SendAsync(SmsRequest request,
-        CancellationToken ct = default)
+    public async Task<SmsResult> SendAsync(SmsMessage message,
+        CancellationToken ct)
     {
-        var (to, message, callbackUrl) = request;
+        var (_, to, text, _) = message;
         try
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -45,8 +47,8 @@ public sealed class TelekomSmsSender : ISmsSender
             {
                 [RequestKeys.From] = ConvertPhoneNumber(phoneNumber),
                 [RequestKeys.To] = ConvertPhoneNumber(to),
-                [RequestKeys.Body] = message,
-                [RequestKeys.StatusCallback] = callbackUrl,
+                [RequestKeys.Body] = text,
+                [RequestKeys.StatusCallback] = BuildCallbackUrl(message),
             });
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developer-api.telekom.com/vms/Messages.json")
@@ -77,6 +79,11 @@ public sealed class TelekomSmsSender : ISmsSender
         }
     }
 
+    private static string BuildCallbackUrl(SmsMessage message)
+    {
+        return message.CallbackUrl.AppendQueries(RequestKeys.ReferenceValue, message.NotificationId, RequestKeys.ReferenceNumber, message.To);
+    }
+
     private static string ConvertPhoneNumber(string number)
     {
         number = number.TrimStart('0');
@@ -89,11 +96,27 @@ public sealed class TelekomSmsSender : ISmsSender
         return number;
     }
 
-    public ValueTask<SmsCallbackResponse> HandleCallbackAsync(HttpContext httpContext)
+    public Task HandleRequestAsync(AppContext app, HttpContext httpContext)
     {
         var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
-        return new ValueTask<SmsCallbackResponse>(new SmsCallbackResponse(ParseStatus(status)));
+        var referenceString = httpContext.Request.Query[RequestKeys.ReferenceValue].ToString();
+        var referenceNumber = httpContext.Request.Query[RequestKeys.ReferenceNumber].ToString();
+
+        // If the reference is not a valid guid (notification-id), something just went wrong.
+        if (!Guid.TryParse(referenceString, out var notificationId))
+        {
+            return Task.CompletedTask;
+        }
+
+        var result = ParseStatus(status);
+
+        if (result == default)
+        {
+            return Task.CompletedTask;
+        }
+
+        return callback.HandleCallbackAsync(this, notificationId, referenceNumber, result);
 
         static SmsResult ParseStatus(string status)
         {

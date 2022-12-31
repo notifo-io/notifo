@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain.Integrations;
 
 namespace Notifo.Domain.Channels.MobilePush;
 
@@ -15,7 +16,7 @@ public sealed record MobilePushToken
 
     public string? DeviceIdentifier { get; init; }
 
-    public MobileDeviceType DeviceType { get; init; }
-
     public Instant LastWakeup { get; init; }
+
+    public MobileDeviceType DeviceType { get; init; }
 }

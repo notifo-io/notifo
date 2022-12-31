@@ -6,10 +6,6 @@
 // ==========================================================================
 
 using System.Net;
-using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Messaging;
-using Notifo.Domain.Users;
 
 namespace Notifo.Domain.Integrations.Threema;
 
@@ -23,49 +19,45 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
 
     public string Name => "Threema";
 
-    public ThreemaSimpleMessagingSender(IHttpClientFactory httpClientFactory, string apiIdentity, string apiSecret)
+    public ThreemaSimpleMessagingSender(
+        IHttpClientFactory httpClientFactory,
+        string apiIdentity,
+        string apiSecret)
     {
         this.httpClientFactory = httpClientFactory;
         this.apiIdentity = apiIdentity;
         this.apiSecret = apiSecret;
     }
 
-    public bool HasTarget(User user)
-    {
-        return !string.IsNullOrWhiteSpace(user.EmailAddress) || !string.IsNullOrWhiteSpace(user.PhoneNumber);
-    }
-
-    public Task AddTargetsAsync(MessagingJob job, User user)
+    public void AddTargets(MessagingTargets targets, UserContext user)
     {
         var phoneNumber = user.PhoneNumber;
 
         if (!string.IsNullOrWhiteSpace(phoneNumber))
         {
-            job.Targets[ThreemaPhoneNumber] = phoneNumber;
+            targets[ThreemaPhoneNumber] = phoneNumber;
         }
 
         var email = user.EmailAddress;
 
         if (!string.IsNullOrWhiteSpace(email))
         {
-            job.Targets[ThreemaEmail] = email;
+            targets[ThreemaEmail] = email;
         }
-
-        return Task.CompletedTask;
     }
 
-    public async Task<MessagingResult> SendAsync(MessagingJob job, string text,
+    public async Task<MessagingResult> SendAsync(MessagingMessage message,
         CancellationToken ct)
     {
         using (var httpClient = httpClientFactory.CreateClient())
         {
             Exception? exception = null;
 
-            if (job.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
+            if (message.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
             {
                 try
                 {
-                    if (await SendAsync(httpClient, "phone", phoneNumber, text, ct))
+                    if (await SendAsync(httpClient, "phone", phoneNumber, message.Text, ct))
                     {
                         return MessagingResult.Delivered;
                     }
@@ -76,11 +68,11 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
                 }
             }
 
-            if (job.Targets.TryGetValue(ThreemaEmail, out var email))
+            if (message.Targets.TryGetValue(ThreemaEmail, out var email))
             {
                 try
                 {
-                    if (await SendAsync(httpClient, "email", email, text, ct))
+                    if (await SendAsync(httpClient, "email", email, message.Text, ct))
                     {
                         return MessagingResult.Delivered;
                     }
@@ -127,10 +119,5 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         response.EnsureSuccessStatusCode();
 
         return true;
-    }
-
-    public Task HandleCallbackAsync(App app, HttpContext httpContext)
-    {
-        return Task.CompletedTask;
     }
 }

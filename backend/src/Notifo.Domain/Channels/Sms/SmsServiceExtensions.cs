@@ -8,6 +8,7 @@
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection;

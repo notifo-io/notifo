@@ -7,8 +7,8 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain;
-using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Topics;
 using Notifo.Domain.Users;

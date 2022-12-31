@@ -6,7 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain;
-using Notifo.Domain.Channels;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Reflection;
 

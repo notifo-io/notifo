@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.WebPush;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection;

@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Fluid;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Resources;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
@@ -86,7 +86,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
         return new ValueTask<FormattedEmail>(new FormattedEmail(message, context.Errors));
     }
 
-    private static EmailRequest Format(EmailTemplate template, EmailContext context, bool noCache, bool strict)
+    private static EmailMessage Format(EmailTemplate template, EmailContext context, bool noCache, bool strict)
     {
         var subject = string.Empty;
 
@@ -111,7 +111,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
 
         var firstJob = context.Jobs[0];
 
-        var message = new EmailRequest
+        var message = new EmailMessage
         {
             BodyHtml = bodyHtml,
             BodyText = bodyText,

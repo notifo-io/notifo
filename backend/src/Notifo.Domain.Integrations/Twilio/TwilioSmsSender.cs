@@ -7,39 +7,40 @@
 
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
-using Twilio.Clients;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
+using ISmsClient = Twilio.Clients.ITwilioRestClient;
 
 namespace Notifo.Domain.Integrations.Twilio;
 
-public sealed class TwilioSmsSender : ISmsSender
+public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
 {
-    private readonly ITwilioRestClient twilioClient;
+    private readonly ISmsCallback callback;
+    private readonly ISmsClient client;
     private readonly string phoneNumber;
 
     public string Name => "Twilio SMS";
 
-    public TwilioSmsSender(ITwilioRestClient twilioClient, string phoneNumber)
+    public TwilioSmsSender(ISmsCallback callback, ISmsClient client, string phoneNumber)
     {
-        this.twilioClient = twilioClient;
+        this.callback = callback;
+        this.client = client;
         this.phoneNumber = phoneNumber;
     }
 
-    public async Task<SmsResult> SendAsync(SmsRequest request,
-        CancellationToken ct = default)
+    public async Task<SmsResult> SendAsync(SmsMessage message,
+        CancellationToken ct)
     {
-        var (to, message, callbackUrl) = request;
+        var (_, to, text, _) = message;
         try
         {
             var result = await MessageResource.CreateAsync(
                 ConvertPhoneNumber(to), null,
                 ConvertPhoneNumber(phoneNumber), null,
-                message,
-                statusCallback: new Uri(callbackUrl!), client: twilioClient);
+                text,
+                statusCallback: new Uri(BuildCallbackUrl(message)), client: client);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {
@@ -58,6 +59,11 @@ public sealed class TwilioSmsSender : ISmsSender
         }
     }
 
+    private static string BuildCallbackUrl(SmsMessage request)
+    {
+        return request.CallbackUrl.AppendQueries(RequestKeys.ReferenceValue, request.NotificationId, RequestKeys.ReferenceNumber, request.To);
+    }
+
     private static PhoneNumber ConvertPhoneNumber(string number)
     {
         number = number.TrimStart('0');
@@ -70,11 +76,27 @@ public sealed class TwilioSmsSender : ISmsSender
         return new PhoneNumber(number);
     }
 
-    public ValueTask<SmsCallbackResponse> HandleCallbackAsync(HttpContext httpContext)
+    public Task HandleRequestAsync(AppContext app, HttpContext httpContext)
     {
         var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
-        return new ValueTask<SmsCallbackResponse>(new SmsCallbackResponse(ParseStatus(status)));
+        var referenceString = httpContext.Request.Query[RequestKeys.ReferenceValue].ToString();
+        var referenceNumber = httpContext.Request.Query[RequestKeys.ReferenceNumber].ToString();
+
+        // If the reference is not a valid guid (notification-id), something just went wrong.
+        if (!Guid.TryParse(referenceString, out var notificationId))
+        {
+            return Task.CompletedTask;
+        }
+
+        var result = ParseStatus(status);
+
+        if (result == default)
+        {
+            return Task.CompletedTask;
+        }
+
+        return callback.HandleCallbackAsync(this, notificationId, referenceNumber, result);
 
         static SmsResult ParseStatus(string status)
         {

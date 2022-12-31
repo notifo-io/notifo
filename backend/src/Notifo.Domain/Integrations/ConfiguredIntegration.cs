@@ -11,7 +11,7 @@ using Notifo.Infrastructure.Collections;
 
 namespace Notifo.Domain.Integrations;
 
-public sealed record ConfiguredIntegration(string Type, ReadonlyDictionary<string, string> Properties)
+public sealed record ConfiguredIntegration(string Type, ReadonlyDictionary<string, string> Properties) : IntegrationConfiguration(Type, Properties)
 {
     public bool Enabled { get; init; }
 
@@ -21,5 +21,5 @@ public sealed record ConfiguredIntegration(string Type, ReadonlyDictionary<strin
 
     public string? Condition { get; init; }
 
-    public IntegrationStatus Status { get; set; }
+    public IntegrationStatus Status { get; init; }
 }

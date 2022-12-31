@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using NodaTime;
-using Notifo.Domain.Subscriptions;
 
 namespace Notifo.Domain;
 

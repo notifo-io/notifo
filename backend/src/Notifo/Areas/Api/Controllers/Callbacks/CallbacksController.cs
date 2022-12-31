@@ -7,8 +7,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Messaging;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations;
 using Notifo.Pipeline;
 
@@ -28,28 +26,16 @@ public sealed class CallbacksController : BaseController
     [HttpGet]
     [HttpPost]
     [Route("api/callback/sms")]
-    public async Task<IActionResult> SmsCallback(
-        [FromServices] ISmsCallback callback,
-        [FromQuery] string appId,
-        [FromQuery] string integrationId,
-        [FromQuery] string phoneNumber,
-        [FromQuery] Guid notificationId)
+    public async Task<IActionResult> SmsCallback([FromQuery] string appId, [FromQuery] string integrationId)
     {
         var (app, sender) = await GetIntegrationAsync<ISmsSender>(appId, integrationId);
 
-        if (app == null || sender == null)
+        if (app == null || sender is not IIntegrationHook hook)
         {
             return NotFound();
         }
 
-        var response = await sender.HandleCallbackAsync(HttpContext);
-
-        if (response.Result == SmsResult.Unknown)
-        {
-            return Ok();
-        }
-
-        await callback.HandleCallbackAsync(integrationId, sender.Name, notificationId, phoneNumber, response, default);
+        await hook.HandleRequestAsync(app.ToContext(), HttpContext);
 
         return Ok();
     }
@@ -62,12 +48,12 @@ public sealed class CallbacksController : BaseController
     {
         var (app, sender) = await GetIntegrationAsync<IMessagingSender>(appId, integrationId);
 
-        if (app == null || sender == null)
+        if (app == null || sender is not IIntegrationHook hook)
         {
             return NotFound();
         }
 
-        await sender.HandleCallbackAsync(app, HttpContext);
+        await hook.HandleRequestAsync(app.ToContext(), HttpContext);
 
         return Ok();
     }

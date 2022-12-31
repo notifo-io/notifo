@@ -8,8 +8,8 @@
 using Microsoft.AspNetCore.SignalR;
 using Notifo.Areas.Api.Controllers.Notifications.Dtos;
 using Notifo.Domain;
-using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Security;
 using Notifo.Pipeline;

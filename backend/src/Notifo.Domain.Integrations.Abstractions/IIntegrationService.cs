@@ -5,13 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Messaging;
+namespace Notifo.Domain.Integrations;
 
-public enum MessagingResult
+public interface IIntegrationService
 {
-    Unknown,
-    Skipped,
-    Sent,
-    Delivered,
-    Failed
+    string Name { get; }
 }

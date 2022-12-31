@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Integrations;
+
 namespace Notifo.Domain.Channels.MobilePush;
 
 public readonly struct MobilePushOptions

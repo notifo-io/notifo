@@ -5,10 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Text;
 using Notifo.Domain.Channels.Email;
-using Notifo.Domain.Channels.Messaging;
-using Notifo.Domain.Channels.Sms;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Squidex.Hosting;
 
@@ -43,33 +41,13 @@ public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotific
         return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
     }
 
-    public string SmsWebhookUrl(string appId, string integrationId, Guid notificationId, string phoneNumber)
+    public string SmsWebhookUrl(string appId, string integrationId)
     {
-        return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}&notificationId={notificationId}&phoneNumber={Uri.EscapeDataString(phoneNumber)}");
+        return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}");
     }
 
-    public string MessagingWebhookUrl(string appId, string integrationId, Dictionary<string, string>? query = null)
+    public string MessagingWebhookUrl(string appId, string integrationId)
     {
-        return urlGenerator.BuildCallbackUrl($"api/callback/messaging?appId={appId}&integrationId={integrationId}{Query(query)}");
-    }
-
-    private static string Query(Dictionary<string, string>? query = null)
-    {
-        if (query == null || query.Count == 0)
-        {
-            return string.Empty;
-        }
-
-        var sb = new StringBuilder(10);
-
-        foreach (var (key, value) in query)
-        {
-            sb.Append('&');
-            sb.Append(key);
-            sb.Append('=');
-            sb.Append(Uri.EscapeDataString(value));
-        }
-
-        return sb.ToString();
+        return urlGenerator.BuildCallbackUrl($"api/callback/messaging?appId={appId}&integrationId={integrationId}");
     }
 }
