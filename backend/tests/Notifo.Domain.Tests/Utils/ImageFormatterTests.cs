@@ -57,7 +57,7 @@ public class ImageFormatterTests
 
         var result = sut.AddProxy(url);
 
-        Assert.Equal($"{url}?emptyOnFailure=true", result);
+        Assert.Equal($"{url}?emptyOnFailure=True", result);
     }
 
     [Theory]
