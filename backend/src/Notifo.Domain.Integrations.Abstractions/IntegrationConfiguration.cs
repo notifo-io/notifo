@@ -5,11 +5,10 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure.Collections;
 
-namespace Notifo.Domain.Channels.Sms;
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
-public interface ISmsUrl
-{
-    string SmsWebhookUrl(string appId, string integrationId, Guid notificationId, string phoneNumber);
-}
+namespace Notifo.Domain.Integrations;
+
+public record IntegrationConfiguration(string Type, ReadonlyDictionary<string, string> Properties);

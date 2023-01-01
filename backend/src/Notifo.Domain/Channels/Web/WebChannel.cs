@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Logging;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 

@@ -6,12 +6,8 @@
 // ==========================================================================
 
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Apps;
-using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
-using Notifo.Domain.Users;
-using Notifo.Infrastructure.Mediator;
 using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;
@@ -68,12 +64,12 @@ public sealed class TelegramIntegration : IIntegration
         this.messagingUrl = messagingUrl;
     }
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(IMessagingSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {
@@ -85,15 +81,15 @@ public sealed class TelegramIntegration : IIntegration
             }
 
             return new TelegramMessagingSender(
-                () => botClientPool.GetBotClient(accessToken),
-                serviceProvider.GetRequiredService<IMediator>(),
-                serviceProvider.GetRequiredService<IUserStore>());
+                serviceProvider.GetRequiredService<IIntegrationAdapter>(),
+                serviceProvider.GetRequiredService<IMessagingCallback>(),
+                () => botClientPool.GetBotClient(accessToken));
         }
 
         return null;
     }
 
-    public async Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    public async Task OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
         var client = GetBotClient(configured);
@@ -103,7 +99,7 @@ public sealed class TelegramIntegration : IIntegration
         await client.SetWebhookAsync(url, cancellationToken: ct);
     }
 
-    public async Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
+    public async Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
         CancellationToken ct)
     {
         var client = GetBotClient(configured);
@@ -111,7 +107,7 @@ public sealed class TelegramIntegration : IIntegration
         await client.DeleteWebhookAsync(cancellationToken: ct);
     }
 
-    private ITelegramBotClient GetBotClient(ConfiguredIntegration configured)
+    private ITelegramBotClient GetBotClient(IntegrationConfiguration configured)
     {
         var accessToken = AccessToken.GetString(configured);
 

@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Channels.Email;
-
 namespace Notifo.Domain.Integrations.Mailjet;
 
 public sealed class MailjetEmailSender : IEmailSender
@@ -28,7 +26,7 @@ public sealed class MailjetEmailSender : IEmailSender
         this.fromName = fromName;
     }
 
-    public async Task SendAsync(EmailRequest request,
+    public async Task SendAsync(EmailMessage request,
         CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(request.FromEmail))

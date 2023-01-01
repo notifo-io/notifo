@@ -7,43 +7,40 @@
 
 using System.Globalization;
 using FirebaseAdmin.Messaging;
-using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
 [UsesVerify]
 public class UserNotificationExtensionsTests
 {
-    private static readonly Guid Id = Guid.Parse("d9e3afe8-06a2-493e-b7a7-03a4aba61544");
+    private readonly Guid id = Guid.Parse("d9e3afe8-06a2-493e-b7a7-03a4aba61544");
+    private readonly DateTimeOffset now = new DateTimeOffset(2022, 12, 11, 10, 9, 8, default);
     private readonly string token = "token1";
 
     [Fact]
     public Task Should_generate_firebase_message()
     {
-        var notification = new UserNotification
+        var source = new MobilePushMessage
         {
-            Id = Id,
+            Body = "My Body",
+            ConfirmText = "My Confirm",
             ConfirmUrl = "https://confirm.notifo.com",
-            FirstConfirmed = new HandledInfo(default, null),
-            FirstDelivered = new HandledInfo(default, null),
-            Formatting = new NotificationFormatting<string>
-            {
-                Body = "My Body",
-                ConfirmMode = ConfirmMode.Explicit,
-                ConfirmText = "My Confirm",
-                ImageLarge = "https://via.placeholder.com/600",
-                ImageSmall = "https://via.placeholder.com/100",
-                LinkText = "My Link",
-                LinkUrl = "https://app.notifo.io",
-                Subject = "My Subject"
-            },
+            DeviceToken = token,
+            DeviceType = MobileDeviceType.Android,
+            Data = "data1",
+            ImageLarge = "https://via.placeholder.com/600",
+            ImageSmall = "https://via.placeholder.com/100",
+            IsConfirmed = true,
+            LinkText = "My Link",
+            LinkUrl = "https://app.notifo.io",
+            NotificationId = id,
             Silent = false,
+            Subject = "My Subject",
             TrackDeliveredUrl = "https://track-delivered.notifo.com",
             TrackSeenUrl = "https://track-seen.notifo.com",
-            Data = "data1"
         };
 
-        var message = notification.ToFirebaseMessage(token, Id, false, true);
+        var message = source.ToFirebaseMessage(now);
 
         return Verify(message);
     }
@@ -54,24 +51,22 @@ public class UserNotificationExtensionsTests
     [InlineData(" ")]
     public void Should_not_include_empty_fields_in_firebase_message(string? emptyText)
     {
-        var notification = new UserNotification
+        var source = new MobilePushMessage
         {
-            Id = Id,
+            Body = emptyText,
+            ConfirmText = emptyText,
             ConfirmUrl = "https://confirm.notifo.com",
-            Formatting = new NotificationFormatting<string>
-            {
-                Body = emptyText,
-                ConfirmMode = ConfirmMode.None,
-                ConfirmText = emptyText,
-                ImageLarge = emptyText,
-                ImageSmall = emptyText,
-                Subject = "My Subject",
-            },
+            DeviceToken = token,
+            DeviceType = MobileDeviceType.Android,
+            ImageLarge = emptyText,
+            ImageSmall = emptyText,
+            NotificationId = id,
+            Subject = "My Subject",
             TrackDeliveredUrl = emptyText,
             TrackSeenUrl = emptyText
         };
 
-        var message = notification.ToFirebaseMessage(token, Id, false, false);
+        var message = source.ToFirebaseMessage(now);
 
         Assert.False(message.Apns.Aps.ContentAvailable);
         Assert.DoesNotContain("body", message.Data);
@@ -84,12 +79,15 @@ public class UserNotificationExtensionsTests
     [Fact]
     public Task Should_create_silent_notification_when_flag_is_true()
     {
-        var notification = new UserNotification
+        var source = new MobilePushMessage
         {
-            Id = Id
+            DeviceToken = token,
+            DeviceType = MobileDeviceType.Android,
+            NotificationId = id,
+            Wakeup = true
         };
 
-        var message = notification.ToFirebaseMessage(token, Id, true, false);
+        var message = source.ToFirebaseMessage(now);
 
         return Verify(message);
     }
@@ -99,22 +97,22 @@ public class UserNotificationExtensionsTests
     {
         var timeToLive = 1000;
 
-        var notification = new UserNotification
+        var source = new MobilePushMessage
         {
-            Formatting = new NotificationFormatting<string>(),
-            TrackDeliveredUrl = null,
-            TrackSeenUrl = null,
+            DeviceToken = token,
+            DeviceType = MobileDeviceType.Android,
+            NotificationId = id,
             TimeToLiveInSeconds = timeToLive
         };
 
-        var message = notification.ToFirebaseMessage(token, Id, false, false);
+        var message = source.ToFirebaseMessage(now);
 
-        var timeToLiveSec = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds();
+        var timeToLiveSec = now.AddSeconds(1000).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
 
-        Assert.Equal(timeToLiveSec, int.Parse(message.Apns.Headers["apns-expiration"], NumberStyles.Integer, CultureInfo.InvariantCulture));
+        Assert.Equal(timeToLiveSec, message.Apns.Headers["apns-expiration"]);
         Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
 
-        return Verify(message).IgnoreMember("apns-expiration");
+        return Verify(message);
     }
 
     [Fact]
@@ -122,50 +120,39 @@ public class UserNotificationExtensionsTests
     {
         var timeToLive = 0;
 
-        var notification = new UserNotification
+        var source = new MobilePushMessage
         {
-            Formatting = new NotificationFormatting<string>(),
-            TrackDeliveredUrl = null,
-            TrackSeenUrl = null,
-            TimeToLiveInSeconds = timeToLive
+            DeviceToken = token,
+            DeviceType = MobileDeviceType.Android,
+            NotificationId = id,
+            TimeToLiveInSeconds = 0
         };
 
-        var message = notification.ToFirebaseMessage(token, Id, false, false);
+        var message = source.ToFirebaseMessage(now);
 
-        Assert.Equal(0, int.Parse(message.Apns.Headers["apns-expiration"], NumberStyles.Integer, CultureInfo.InvariantCulture));
-        Assert.Equal(0, message.Android.TimeToLive?.TotalSeconds);
+        var timeToLiveSec = "0";
 
-        return Verify(message).IgnoreMember("apns-expiration");
+        Assert.Equal(timeToLiveSec, message.Apns.Headers["apns-expiration"]);
+        Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
+
+        return Verify(message);
     }
 
     [Fact]
     public Task Should_not_include_time_to_live_property_if_not_set()
     {
-        var notification = new UserNotification
+        var source = new MobilePushMessage
         {
-            Formatting = new NotificationFormatting<string>()
+            DeviceToken = token,
+            DeviceType = MobileDeviceType.Android,
+            NotificationId = id
         };
 
-        var message = notification.ToFirebaseMessage(token, Id, false, false);
+        var message = source.ToFirebaseMessage(now);
 
-        AssertTTL(message, -1);
+        Assert.DoesNotContain("apns-expiration", message.Apns.Headers);
+        Assert.Null(message.Android.TimeToLive);
 
-        return Verify(message).IgnoreMember("apns-expiration");
-    }
-
-    private static void AssertTTL(Message message, int timeToLive)
-    {
-        if (timeToLive >= 0)
-        {
-            var timeToLiveSec = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
-
-            Assert.Equal(timeToLiveSec, message.Apns.Headers["apns-expiration"]);
-            Assert.Equal(timeToLive, message.Android.TimeToLive?.TotalSeconds);
-        }
-        else
-        {
-            Assert.DoesNotContain("apns-expiration", message.Apns.Headers);
-            Assert.Null(message.Android.TimeToLive);
-        }
+        return Verify(message);
     }
 }

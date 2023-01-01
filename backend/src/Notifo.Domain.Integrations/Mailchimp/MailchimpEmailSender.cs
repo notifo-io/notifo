@@ -8,7 +8,6 @@
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 
@@ -55,7 +54,7 @@ public sealed class MailchimpEmailSender : IEmailSender
         this.fromName = fromName;
     }
 
-    public async Task SendAsync(EmailRequest request,
+    public async Task SendAsync(EmailMessage message,
         CancellationToken ct = default)
     {
         using (var httpClient = httpClientFactory.CreateClient("Mailchimp"))
@@ -65,16 +64,16 @@ public sealed class MailchimpEmailSender : IEmailSender
                 key = apiKey,
                 message = new
                 {
-                    subject = request.Subject,
-                    html = request.BodyHtml,
-                    text = request.BodyText,
+                    subject = message.Subject,
+                    html = message.BodyHtml,
+                    text = message.BodyText,
                     from_email = fromEmail,
                     from_name = fromName,
                     to = new[]
                     {
                         new
                         {
-                            email = request.ToEmail, name = request.ToName
+                            email = message.ToEmail, name = message.ToName
                         }
                     }
                 }
@@ -88,7 +87,7 @@ public sealed class MailchimpEmailSender : IEmailSender
 
             if (responses is not { Length: 1 })
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error, request.FromEmail);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error, message.FromEmail);
 
                 throw new DomainException(errorMessage);
             }
@@ -100,7 +99,7 @@ public sealed class MailchimpEmailSender : IEmailSender
             {
                 var errorMessage =
                     string.Format(CultureInfo.CurrentCulture, Texts.Mailchimp_Error,
-                        request.FromEmail,
+                        message.FromEmail,
                         responseType,
                         response.Reason);
 

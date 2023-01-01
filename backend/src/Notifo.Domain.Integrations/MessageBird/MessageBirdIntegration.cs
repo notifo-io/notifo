@@ -7,11 +7,8 @@
 
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Messaging;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
-using Notifo.Domain.Users;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
@@ -119,24 +116,24 @@ public sealed class MessageBirdIntegration : IIntegration
         this.clientPool = clientPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(ISmsSender) || serviceType == typeof(IMessagingSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
-        var sms = CreateSms(serviceType, id, configured, serviceProvider);
+        var sms = CreateSms(serviceType, configured, serviceProvider);
 
         if (sms != null)
         {
             return sms;
         }
 
-        return CreateMessaging(serviceType, id, configured, serviceProvider);
+        return CreateMessaging(serviceType, configured, serviceProvider);
     }
 
-    private ISmsSender? CreateSms(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    private ISmsSender? CreateSms(Type serviceType, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (serviceType != typeof(ISmsSender) || !SendSmsProperty.GetBoolean(configured))
         {
@@ -165,13 +162,14 @@ public sealed class MessageBirdIntegration : IIntegration
         var client = clientPool.GetClient(accessKey);
 
         return new MessageBirdSmsSender(
+            serviceProvider.GetRequiredService<ISmsCallback>(),
             client,
             originatorName,
             phoneNumber.ToString(CultureInfo.InvariantCulture),
             phoneNumbersMap);
     }
 
-    private IMessagingSender? CreateMessaging(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    private IMessagingSender? CreateMessaging(Type serviceType, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (serviceType != typeof(IMessagingSender) || !SendWhatsAppProperty.GetBoolean(configured))
         {
@@ -209,11 +207,8 @@ public sealed class MessageBirdIntegration : IIntegration
         var client = clientPool.GetClient(accessKey);
 
         return new MessageBirdWhatsAppSender(
-            client,
             serviceProvider.GetRequiredService<IMessagingCallback>(),
-            serviceProvider.GetRequiredService<IMessagingUrl>(),
-            serviceProvider.GetRequiredService<IUserStore>(),
-            id,
+            client,
             channelId,
             templateNamespace,
             templateName);

@@ -15,5 +15,8 @@ public static class IntegrationsServiceExtensions
     {
         services.AddSingletonAs<IntegrationManager>()
             .As<IIntegrationManager>();
+
+        services.AddSingletonAs<IntegrationAdapter>()
+            .As<IIntegrationAdapter>();
     }
 }

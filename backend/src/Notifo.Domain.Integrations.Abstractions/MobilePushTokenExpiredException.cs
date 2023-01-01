@@ -7,7 +7,7 @@
 
 using System.Runtime.Serialization;
 
-namespace Notifo.Domain.Channels.MobilePush;
+namespace Notifo.Domain.Integrations;
 
 [Serializable]
 public class MobilePushTokenExpiredException : Exception

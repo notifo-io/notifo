@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Messaging;
@@ -15,7 +16,9 @@ public sealed class MessagingJob : ChannelJob
 
     public string? NotificationTemplate { get; init; }
 
-    public Dictionary<string, string> Targets { get; init; } = new Dictionary<string, string>();
+    public string UserLanguage { get; init; }
+
+    public MessagingTargets Targets { get; init; } = new MessagingTargets();
 
     public string ScheduleKey
     {
@@ -26,11 +29,12 @@ public sealed class MessagingJob : ChannelJob
     {
     }
 
-    public MessagingJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId)
+    public MessagingJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId, string userLanguage)
         : base(notification, setting, configurationId, false, Providers.Email)
     {
         Notification = notification;
         NotificationTemplate = setting.Template;
+        UserLanguage = userLanguage;
     }
 
     public static string ComputeScheduleKey(Guid notificationId)

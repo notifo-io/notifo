@@ -5,19 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Email;
+namespace Notifo.Domain.Integrations;
 
-#pragma warning disable MA0048 // File name must match type name
-
-public interface IEmailSender
-{
-    string Name { get; }
-
-    Task SendAsync(EmailRequest request,
-        CancellationToken ct = default);
-}
-
-public sealed record EmailRequest
+public sealed record EmailMessage
 {
     public string FromEmail { get; init; }
 

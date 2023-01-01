@@ -8,7 +8,6 @@
 using System.Globalization;
 using Mailjet.Client;
 using Mailjet.Client.TransactionalEmails;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 
@@ -23,25 +22,25 @@ public sealed class MailjetEmailServer
         this.mailjetClient = mailjetClient;
     }
 
-    public async Task SendAsync(EmailRequest request)
+    public async Task SendAsync(EmailMessage message)
     {
         var email = new TransactionalEmailBuilder()
             .WithFrom(new SendContact(
-                request.FromEmail,
-                request.FromName))
+                message.FromEmail,
+                message.FromName))
             .WithTo(new SendContact(
-                request.ToEmail,
-                request.ToName))
-            .WithSubject(request.Subject)
-            .WithHtmlPart(request.BodyHtml)
-            .WithTextPart(request.BodyText)
+                message.ToEmail,
+                message.ToName))
+            .WithSubject(message.Subject)
+            .WithHtmlPart(message.BodyHtml)
+            .WithTextPart(message.BodyText)
             .Build();
 
         var responses = await mailjetClient.SendTransactionalEmailAsync(email);
 
         if (responses.Messages is not { Length: 1 })
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error, request.FromEmail);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error, message.FromEmail);
 
             throw new DomainException(errorMessage);
         }
@@ -53,7 +52,7 @@ public sealed class MailjetEmailServer
         {
             var errorMessage =
                 string.Format(CultureInfo.CurrentCulture, Texts.Mailjet_Error,
-                    request.FromEmail,
+                    message.FromEmail,
                     responseError.ErrorMessage,
                     responseError.ErrorCode);
 

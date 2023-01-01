@@ -7,7 +7,7 @@
 
 using NodaTime;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;

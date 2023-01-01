@@ -7,9 +7,6 @@
 
 using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Apps;
-using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure.Validation;
 using Twilio.Rest.Lookups.V1;
@@ -68,12 +65,12 @@ public sealed class TwilioIntegration : IIntegration
         this.clientPool = clientPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(ISmsSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {
@@ -100,13 +97,16 @@ public sealed class TwilioIntegration : IIntegration
 
             var client = clientPool.GetServer(accountSid, authToken);
 
-            return new TwilioSmsSender(client, phoneNumber.ToString(CultureInfo.InvariantCulture));
+            return new TwilioSmsSender(
+                serviceProvider.GetRequiredService<ISmsCallback>(),
+                client,
+                phoneNumber.ToString(CultureInfo.InvariantCulture));
         }
 
         return null;
     }
 
-    public async Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    public async Task OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
         var accountSid = AccountSidProperty.GetString(configured);

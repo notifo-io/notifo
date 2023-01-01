@@ -1,10 +1,9 @@
 ﻿{
   Token: token1,
   Data: {
-    id: Guid_Empty,
+    id: Guid_1,
     isConfirmed: False,
-    silent: False,
-    trackingToken: MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAwfG1vYmlsZXB1c2h8ZDllM2FmZTgtMDZhMi00OTNlLWI3YTctMDNhNGFiYTYxNTQ0
+    silent: False
   },
   Android: {
     Priority: High,
@@ -12,7 +11,8 @@
   },
   Apns: {
     Headers: {
-      apns-collapse-id: Guid_Empty,
+      apns-collapse-id: Guid_1,
+      apns-expiration: 0,
       apns-push-type: alert
     },
     Aps: {

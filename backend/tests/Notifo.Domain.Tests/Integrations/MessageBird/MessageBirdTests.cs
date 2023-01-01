@@ -16,7 +16,7 @@ public class MessageBirdTests
 {
     private readonly string phoneNumberFrom = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumberFrom")!;
     private readonly string phoneNumberTo = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumberTo")!;
-    private readonly MessageBirdClient sut;
+    private readonly ISmsSender sut;
 
     public MessageBirdTests()
     {
@@ -25,7 +25,7 @@ public class MessageBirdTests
         A.CallTo(() => clientFactory.CreateClient(A<string>._))
             .ReturnsLazily(() => new HttpClient());
 
-        sut = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
+        var client = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
         {
             PhoneNumber = phoneNumberFrom,
             PhoneNumbers = null,
@@ -36,10 +36,10 @@ public class MessageBirdTests
     [Fact]
     public async Task Should_send_sms()
     {
-        var sms = new SmsMessage(phoneNumberFrom, phoneNumberTo, "Hello MessageBird");
+        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Telekom", null);
 
-        var response = await sut.SendSmsAsync(sms, default);
+        var response = await sut.SendAsync(message, default);
 
-        Assert.Equal(1, response.Recipients.TotalSentCount);
+        Assert.Equal(SmsResult.Sent, response);
     }
 }

@@ -6,8 +6,8 @@
 // ==========================================================================
 
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels;
 using Notifo.Domain.Identity;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Users;
 using Squidex.Hosting;

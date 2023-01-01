@@ -5,10 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Domain.Channels.Sms;
+namespace Notifo.Domain.Integrations;
 
-public interface ISmsCallback
+public sealed class AppContext
 {
-    Task HandleCallbackAsync(string integrationId, string integrationName, Guid notificationId, string phoneNumber, SmsCallbackResponse response,
-        CancellationToken ct);
+    required public string Id { get; init; }
+
+    required public string Name { get; init; }
 }

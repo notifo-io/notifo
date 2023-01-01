@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;

@@ -5,11 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Mjml.Net;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
 using Notifo.Domain.ChannelTemplates;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Scheduling;
 
 namespace Microsoft.Extensions.DependencyInjection;

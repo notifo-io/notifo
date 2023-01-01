@@ -7,193 +7,155 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
-using Notifo.Domain.Users;
+using Notifo.Infrastructure;
 using Notifo.Infrastructure.Tasks;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
-public sealed class MessageBirdWhatsAppSender : IMessagingSender
+public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHook
 {
     private const string WhatsAppPhoneNumber = nameof(WhatsAppPhoneNumber);
+    private readonly IMessagingCallback callback;
     private readonly IMessageBirdClient messageBirdClient;
-    private readonly IMessagingCallback messagingCallback;
-    private readonly IMessagingUrl messagingUrl;
-    private readonly IUserStore userStore;
-    private readonly string integrationId;
     private readonly string channelId;
     private readonly string templateNamespace;
     private readonly string templateName;
 
-    public string Name => "MessageBird WhatsApp";
+    public string Name => "Messagbird Whatsapp";
 
     public MessageBirdWhatsAppSender(
+        IMessagingCallback callback,
         IMessageBirdClient messageBirdClient,
-        IMessagingCallback messagingCallback,
-        IMessagingUrl messagingUrl,
-        IUserStore userStore,
-        string integrationId,
         string channelId,
         string templateNamespace,
         string templateName)
     {
+        this.callback = callback;
         this.messageBirdClient = messageBirdClient;
-        this.messagingCallback = messagingCallback;
-        this.messagingUrl = messagingUrl;
-        this.userStore = userStore;
-        this.integrationId = integrationId;
         this.channelId = channelId;
         this.templateNamespace = templateNamespace;
         this.templateName = templateName;
     }
 
-    public bool HasTarget(User user)
-    {
-        return !string.IsNullOrWhiteSpace(user.PhoneNumber);
-    }
-
-    public Task AddTargetsAsync(MessagingJob job, User user)
+    public void AddTargets(MessagingTargets targets, UserContext user)
     {
         var phoneNumber = user.PhoneNumber;
 
         if (!string.IsNullOrWhiteSpace(phoneNumber))
         {
-            job.Targets[WhatsAppPhoneNumber] = phoneNumber;
+            targets[WhatsAppPhoneNumber] = phoneNumber;
         }
-
-        return Task.CompletedTask;
     }
 
-    public async Task<MessagingResult> SendAsync(MessagingJob job, string text,
+    public async Task<MessagingResult> SendAsync(MessagingMessage message,
         CancellationToken ct)
     {
-        var user = await userStore.GetAsync(job.Notification.AppId, job.Notification.UserId, ct);
-
-        if (user == null)
+        if (!message.Targets.TryGetValue(WhatsAppPhoneNumber, out var to))
         {
             return MessagingResult.Skipped;
         }
-
-        var to = job.Targets[WhatsAppPhoneNumber];
-
-        var queries = new Dictionary<string, string>
-        {
-            ["reference"] = job.Notification.Id.ToString()
-        };
-
-        var reportUrl = messagingUrl.MessagingWebhookUrl(job.Notification.AppId, integrationId, queries);
 
         var textMessage = new WhatsAppTemplateMessage(
             channelId,
             to,
             templateNamespace,
             templateName,
-            user.PreferredLanguage,
-            reportUrl,
-            new[] { text });
+            message.Language,
+            message.ReportUrl.AppendQueries("reference", message.NotificationId),
+            new[] { message.Text });
 
         // Just send the normal text message.
         var response = await messageBirdClient.SendWhatsAppAsync(textMessage, ct);
 
         // Query for the status, otherwise we cannot retrieve errors.
-        QueryAsync(job.Notification.Id, response).Forget();
+        QueryAsync(message, response).Forget();
 
-        // We get the status asynchronously via webhook, therefore we tell the channel not mark the process as completed.
         return MessagingResult.Sent;
     }
 
-    private async Task QueryAsync(Guid id, ConversationResponse response)
+    private async Task QueryAsync(MessagingMessage message, ConversationResponse response)
     {
-        using (var tcs = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+        var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+
+        while (response.Status is MessageBirdStatus.Pending or MessageBirdStatus.Accepted && !cts.IsCancellationRequested)
         {
-            while (response.Status is MessageBirdStatus.Pending or MessageBirdStatus.Accepted && !tcs.IsCancellationRequested)
+            try
             {
-                try
+                response = await messageBirdClient.GetMessageAsync(response.Id, cts.Token);
+
+                if (response.Status == MessageBirdStatus.Pending)
                 {
-                    response = await messageBirdClient.GetMessageAsync(response.Id, tcs.Token);
-
-                    if (response.Status == MessageBirdStatus.Pending)
-                    {
-                        await Task.Delay(200, tcs.Token);
-                        continue;
-                    }
-
-                    var result = default(MessagingResult);
-
-                    switch (response.Status)
-                    {
-                        case MessageBirdStatus.Delivered:
-                            result = MessagingResult.Delivered;
-                            break;
-                        case MessageBirdStatus.Delivery_Failed:
-                        case MessageBirdStatus.Failed:
-                        case MessageBirdStatus.Rejected:
-                            result = MessagingResult.Failed;
-                            break;
-                        case MessageBirdStatus.Sent:
-                            result = MessagingResult.Sent;
-                            break;
-                    }
-
-                    if (result == MessagingResult.Unknown)
-                    {
-                        continue;
-                    }
-
-                    var callback = new MessagingCallbackResponse(id, result, response.Error?.Description);
-
-                    await messagingCallback.HandleCallbackAsync(this, callback, tcs.Token);
+                    await Task.Delay(200, cts.Token);
+                    continue;
                 }
-                catch (HttpRequestException ex)
+
+                var result = default(MessagingResult);
+
+                switch (response.Status)
                 {
-                    if (ex.StatusCode != HttpStatusCode.NotFound)
-                    {
-                        return;
-                    }
+                    case MessageBirdStatus.Delivered:
+                        result = MessagingResult.Delivered;
+                        break;
+                    case MessageBirdStatus.Delivery_Failed:
+                    case MessageBirdStatus.Failed:
+                    case MessageBirdStatus.Rejected:
+                        result = MessagingResult.Failed;
+                        break;
+                    case MessageBirdStatus.Sent:
+                        result = MessagingResult.Sent;
+                        break;
+                }
+
+                if (result != default)
+                {
+                    await callback.HandleCallbackAsync(this, message.NotificationId, result);
+                    return;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                if (ex.StatusCode != HttpStatusCode.NotFound)
+                {
+                    break;
                 }
             }
         }
     }
 
-    public async Task HandleCallbackAsync(App app, HttpContext httpContext)
+    public async Task HandleRequestAsync(AppContext app, HttpContext httpContext)
     {
         var status = await messageBirdClient.ParseWhatsAppWebhookAsync(httpContext);
 
         // If the reference is not a valid guid (notification-id), something just went wrong.
-        if (!status.Query.TryGetValue("reference", out var query) || !Guid.TryParse(query, out var reference) || reference == default)
+        if (!status.Query.TryGetValue("reference", out var query) || !Guid.TryParse(query, out var notificationId))
         {
             return;
         }
 
-        if (status.Message.Status == MessageBirdStatus.Pending)
+        var result = ParseStatus(status);
+
+        if (result == default)
         {
             return;
         }
 
-        var result = default(MessagingResult);
+        await callback.HandleCallbackAsync(this, notificationId, result, status.Error?.Description);
 
-        switch (status.Message.Status)
+        static MessagingResult ParseStatus(WhatsAppWebhookRequest status)
         {
-            case MessageBirdStatus.Delivered:
-                result = MessagingResult.Delivered;
-                break;
-            case MessageBirdStatus.Delivery_Failed:
-                result = MessagingResult.Failed;
-                break;
-            case MessageBirdStatus.Sent:
-                result = MessagingResult.Sent;
-                break;
+            switch (status.Message.Status)
+            {
+                case MessageBirdStatus.Delivered:
+                    return MessagingResult.Delivered;
+                case MessageBirdStatus.Delivery_Failed:
+                    return MessagingResult.Failed;
+                case MessageBirdStatus.Sent:
+                    return MessagingResult.Sent;
+                default:
+                    return default;
+            }
         }
-
-        if (result == MessagingResult.Unknown)
-        {
-            return;
-        }
-
-        var callback = new MessagingCallbackResponse(reference, result, status.Error?.Description);
-
-        await messagingCallback.HandleCallbackAsync(this, callback, httpContext.RequestAborted);
     }
 }

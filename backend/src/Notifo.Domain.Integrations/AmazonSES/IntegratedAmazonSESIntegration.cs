@@ -10,9 +10,6 @@ using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
 using Microsoft.Extensions.Options;
-using Notifo.Domain.Apps;
-using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Integrations.Smtp;
 using Notifo.Infrastructure;
@@ -92,12 +89,12 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         await amazonSES.GetSendQuotaAsync(ct);
     }
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(IEmailSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {
@@ -121,14 +118,14 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return null;
     }
 
-    public async Task OnConfiguredAsync(App app, string id, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    public async Task<IntegrationStatus> OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
         var fromEmails = GetEmailAddresses(configured).ToList();
 
         if (fromEmails.Count == 0)
         {
-            return;
+            return IntegrationStatus.Verified;
         }
 
         // Ensure that the email address is not used by another app.
@@ -138,7 +135,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
 
         if (previousEmails.SetEquals(fromEmails, StringComparer.OrdinalIgnoreCase))
         {
-            return;
+            return IntegrationStatus.Verified;
         }
 
         // Remove unused email addresses to make them available for other apps.
@@ -149,8 +146,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         // If all email addresses are already confirmed, we can use the integration.
         if (unconfirmed.Count == 0)
         {
-            configured.Status = IntegrationStatus.Verified;
-            return;
+            return IntegrationStatus.Verified;
         }
 
         foreach (var email in unconfirmed)
@@ -158,24 +154,24 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             await VerifyAsync(email, default);
         }
 
-        configured.Status = IntegrationStatus.Pending;
+        return IntegrationStatus.Pending;
     }
 
-    public async Task OnRemovedAsync(App app, string id, ConfiguredIntegration configured,
+    public async Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
         CancellationToken ct)
     {
         // Remove unused email addresses to make them available for other apps.
         await CleanEmailsAsync(GetEmailAddresses(configured), ct);
     }
 
-    public async Task CheckStatusAsync(ConfiguredIntegration configured,
+    public async Task<IntegrationStatus> CheckStatusAsync(IntegrationConfiguration configured,
         CancellationToken ct)
     {
         // Check the status every few minutes to update the integration.
-        configured.Status = await GetStatusAsync(GetEmailAddresses(configured).ToList(), ct);
+        return await GetStatusAsync(GetEmailAddresses(configured).ToList(), ct);
     }
 
-    private async Task ValidateEmailAddressesAsync(App app, List<string> fromEmails,
+    private async Task ValidateEmailAddressesAsync(AppContext app, List<string> fromEmails,
         CancellationToken ct)
     {
         if (!options.BindEmailAddresses)
@@ -304,7 +300,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return IntegrationStatus.VerificationFailed;
     }
 
-    private static IEnumerable<string> GetEmailAddresses(ConfiguredIntegration? configured)
+    private static IEnumerable<string> GetEmailAddresses(IntegrationConfiguration? configured)
     {
         if (configured == null)
         {

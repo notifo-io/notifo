@@ -8,11 +8,8 @@
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
-using Notifo.Domain.Users;
-using Notifo.Infrastructure.Mediator;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using TelegramChat = Telegram.Bot.Types.Chat;
@@ -21,112 +18,42 @@ using TelegramUser = Telegram.Bot.Types.User;
 
 namespace Notifo.Domain.Integrations.Telegram;
 
-public sealed class TelegramMessagingSender : IMessagingSender
+public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
 {
     private const int Attempts = 5;
     private const string TelegramChatId = nameof(TelegramChatId);
+    private readonly IIntegrationAdapter adapter;
+    private readonly IMessagingCallback calback;
     private readonly Func<ITelegramBotClient> client;
-    private readonly IMediator mediator;
-    private readonly IUserStore userStore;
 
     public string Name => "Telegram";
 
-    public TelegramMessagingSender(Func<ITelegramBotClient> client, IMediator mediator, IUserStore userStore)
+    public TelegramMessagingSender(IIntegrationAdapter adapter, IMessagingCallback calback, Func<ITelegramBotClient> client)
     {
+        this.adapter = adapter;
+        this.calback = calback;
         this.client = client;
-        this.mediator = mediator;
-        this.userStore = userStore;
     }
 
-    public bool HasTarget(User user)
-    {
-        return !string.IsNullOrWhiteSpace(GetChatId(user));
-    }
-
-    public Task AddTargetsAsync(MessagingJob job, User user)
+    public void AddTargets(MessagingTargets targets, UserContext user)
     {
         var chatId = GetChatId(user);
 
         if (!string.IsNullOrWhiteSpace(chatId))
         {
-            job.Targets[TelegramChatId] = chatId;
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public async Task HandleCallbackAsync(App app, HttpContext httpContext)
-    {
-        var update = await ParseUpdateAsync(httpContext.Request.Body);
-
-        var ct = httpContext.RequestAborted;
-
-        switch (update.Type)
-        {
-            case UpdateType.Message when IsUpdate(update):
-                await UpdateUser(
-                    app,
-                    update.Message?.From!,
-                    update.Message?.Chat!,
-                    ct);
-                break;
-            case UpdateType.MyChatMember:
-                {
-                    var chatId = GetChatId(update.MyChatMember!.Chat);
-
-                    await SendMessageAsync(GetWelcomeMessage(app), chatId, ct);
-
-                    await UpdateUser(
-                        app,
-                        update.MyChatMember.From,
-                        update.MyChatMember.Chat,
-                        ct);
-                    break;
-                }
+            targets[TelegramChatId] = chatId;
         }
     }
 
-    private async Task UpdateUser(App app, TelegramUser from, TelegramChat chat,
+    public async Task<MessagingResult> SendAsync(MessagingMessage message,
         CancellationToken ct)
     {
-        var chatId = GetChatId(chat);
-
-        var username = from.Username;
-
-        if (string.IsNullOrWhiteSpace(username))
-        {
-            await SendMessageAsync(GetUserNotFoundMessage(app), chatId, ct);
-            return;
-        }
-
-        var user = await userStore.GetByPropertyAsync(app.Id, TelegramIntegration.UserUsername.Name, username, ct);
-
-        if (user == null)
-        {
-            await SendMessageAsync(GetUserNotFoundMessage(app), chatId, ct);
-            return;
-        }
-
-        var command = new SetUserSystemProperty
-        {
-            PropertyKey = TelegramIntegration.UserUsername.Name,
-            PropertyValue = chatId
-        }.WithTracking(app.Id, user.Id);
-
-        await mediator.SendAsync(command, ct);
-
-        await SendMessageAsync(GetUserLinkedMessage(app), chatId, ct);
-    }
-
-    public async Task<MessagingResult> SendAsync(MessagingJob job, string text,
-        CancellationToken ct)
-    {
-        if (!job.Targets.TryGetValue(TelegramChatId, out var chatId))
+        if (!message.Targets.TryGetValue(TelegramChatId, out var chatId))
         {
             return MessagingResult.Skipped;
         }
 
-        await SendMessageAsync(text, chatId, ct);
+        await SendMessageAsync(message.Text, chatId, ct);
 
         return MessagingResult.Delivered;
     }
@@ -152,29 +79,75 @@ public sealed class TelegramMessagingSender : IMessagingSender
         }
     }
 
+    public async Task HandleRequestAsync(AppContext app, HttpContext httpContext)
+    {
+        var update = await ParseUpdateAsync(httpContext.Request.Body);
+
+        switch (update.Type)
+        {
+            case UpdateType.Message when IsUpdate(update):
+                await UpdateUser(
+                    app,
+                    update.Message?.From!,
+                    update.Message?.Chat!,
+                    default);
+                break;
+            case UpdateType.MyChatMember:
+                var chatId = GetChatId(update.MyChatMember!.Chat);
+
+                await SendMessageAsync(GetWelcomeMessage(app), chatId, default);
+
+                await UpdateUser(
+                    app,
+                    update.MyChatMember.From,
+                    update.MyChatMember.Chat,
+                    default);
+                break;
+        }
+    }
+
+    private async Task UpdateUser(AppContext app, TelegramUser from, TelegramChat chat,
+        CancellationToken ct)
+    {
+        var chatId = GetChatId(chat);
+
+        var username = from.Username;
+
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            await SendMessageAsync(GetUserNotFoundMessage(app), chatId, ct);
+            return;
+        }
+
+        var user = await adapter.FindUserByPropertyAsync(app.Id, TelegramIntegration.UserUsername.Name, username, default);
+
+        if (user == null)
+        {
+            await SendMessageAsync(GetUserNotFoundMessage(app), chatId, ct);
+            return;
+        }
+
+        await adapter.UpdateUserAsync(app.Id, user.Id, TelegramChatId, chatId, default);
+    }
+
     private static string GetChatId(TelegramChat chat)
     {
         return chat.Id.ToString(CultureInfo.InvariantCulture)!;
     }
 
-    private static string GetWelcomeMessage(App app)
+    private static string GetWelcomeMessage(AppContext app)
     {
         return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_WelcomeMessage, app.Name);
     }
 
-    private static string GetUserLinkedMessage(App app)
-    {
-        return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_UserLinked, app.Name);
-    }
-
-    private static string GetUserNotFoundMessage(App app)
+    private static string GetUserNotFoundMessage(AppContext app)
     {
         return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_UserNotFound, app.Name);
     }
 
-    private static string? GetChatId(User user)
+    private static string? GetChatId(UserContext user)
     {
-        return TelegramIntegration.UserChatId.GetString(user.SystemProperties);
+        return TelegramIntegration.UserChatId.GetString(user.Properties);
     }
 
     private static bool IsUpdate(TelegramUpdate update)

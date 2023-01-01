@@ -8,9 +8,8 @@
 using Notifo.Areas.Api.Controllers.Notifications;
 using Notifo.Areas.Api.Utils;
 using Notifo.Domain.Channels.Email;
-using Notifo.Domain.Channels.Messaging;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.Channels.Web;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Notifo.Pipeline;
 

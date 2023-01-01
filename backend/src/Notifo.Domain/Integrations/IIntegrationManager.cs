@@ -18,10 +18,10 @@ public interface IIntegrationManager
     Task ValidateAsync(ConfiguredIntegration configured,
         CancellationToken ct = default);
 
-    Task HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
         CancellationToken ct = default);
 
-    Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+    Task<IntegrationStatus> HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
         CancellationToken ct = default);
 
     T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class;

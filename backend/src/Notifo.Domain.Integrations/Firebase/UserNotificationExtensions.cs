@@ -7,81 +7,75 @@
 
 using System.Globalization;
 using FirebaseAdmin.Messaging;
-using Notifo.Domain.Channels;
-using Notifo.Domain.UserNotifications;
 using Squidex.Text;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
 public static class UserNotificationExtensions
 {
-    public static Message ToFirebaseMessage(this BaseUserNotification notification, string token, Guid configurationId, bool wakeup, bool isConfirmed)
+    public static Message ToFirebaseMessage(this MobilePushMessage source, DateTimeOffset now)
     {
         var message = new Message
         {
-            Token = token
+            Token = source.DeviceToken
         };
 
-        if (wakeup)
+        if (source.Wakeup)
         {
             message.Data =
                 new Dictionary<string, string>()
-                    .WithNonEmpty("id", notification.Id.ToString());
+                    .WithNonEmpty("id", source.NotificationId.ToString());
 
             return message;
         }
 
-        var formatting = notification.Formatting;
-
         message.Data =
             new Dictionary<string, string>()
-                .WithNonEmpty("id", notification.Id.ToString())
-                .WithNonEmpty("confirmText", formatting.ConfirmText)
-                .WithNonEmpty("confirmUrl", notification.ComputeConfirmUrl(Providers.MobilePush, configurationId))
-                .WithNonEmpty("isConfirmed", isConfirmed.ToString())
-                .WithNonEmpty("imageLarge", formatting.ImageLarge)
-                .WithNonEmpty("imageSmall", formatting.ImageSmall)
-                .WithNonEmpty("linkText", formatting.LinkText)
-                .WithNonEmpty("linkUrl", formatting.LinkUrl)
-                .WithNonEmpty("silent", notification.Silent.ToString())
-                .WithNonEmpty("trackingToken", new TrackingToken(notification.Id, Providers.MobilePush, configurationId).ToParsableString())
-                .WithNonEmpty("trackDeliveredUrl", notification.ComputeTrackDeliveredUrl(Providers.MobilePush, configurationId))
-                .WithNonEmpty("trackSeenUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, configurationId))
-                .WithNonEmpty("trackingUrl", notification.ComputeTrackSeenUrl(Providers.MobilePush, configurationId))
-                .WithNonEmpty("data", notification.Data);
-
-        var androidData =
-            new Dictionary<string, string>()
-                .WithNonEmpty("subject", formatting.Subject)
-                .WithNonEmpty("body", formatting.Body);
+                .WithNonEmpty("id", source.NotificationId.ToString())
+                .WithNonEmpty("confirmText", source.ConfirmText)
+                .WithNonEmpty("confirmUrl", source.ConfirmUrl)
+                .WithNonEmpty("isConfirmed", source.IsConfirmed.ToString())
+                .WithNonEmpty("imageLarge", source.ImageLarge)
+                .WithNonEmpty("imageSmall", source.ImageSmall)
+                .WithNonEmpty("linkText", source.LinkText)
+                .WithNonEmpty("linkUrl", source.LinkUrl)
+                .WithNonEmpty("silent", source.Silent.ToString())
+                .WithNonEmpty("trackingToken", source.TrackingToken)
+                .WithNonEmpty("trackDeliveredUrl", source.TrackDeliveredUrl)
+                .WithNonEmpty("trackSeenUrl", source.TrackSeenUrl)
+                .WithNonEmpty("trackingUrl", source.TrackSeenUrl)
+                .WithNonEmpty("data", source.Data);
 
         var androidConfig = new AndroidConfig
         {
-            Data = androidData,
+            Data =
+                new Dictionary<string, string>()
+                    .WithNonEmpty("subject", source.Subject)
+                    .WithNonEmpty("body", source.Body),
             Priority = Priority.High
         };
 
         var apsAlert = new ApsAlert
         {
-            Title = formatting.Subject
+            Title = source.Subject
         };
 
-        if (!string.IsNullOrWhiteSpace(formatting.Body))
+        if (!string.IsNullOrWhiteSpace(source.Body))
         {
-            apsAlert.Body = formatting.Body;
+            apsAlert.Body = source.Body;
         }
 
         var apnsHeaders = new Dictionary<string, string>
         {
-            ["apns-collapse-id"] = notification.Id.ToString(),
+            ["apns-collapse-id"] = source.NotificationId.ToString()!,
             ["apns-push-type"] = "alert"
         };
 
-        if (notification.TimeToLiveInSeconds is { } timeToLive)
+        if (source.TimeToLiveInSeconds is { } timeToLive)
         {
             androidConfig.TimeToLive = TimeSpan.FromSeconds(timeToLive);
 
-            var unixTimeSeconds = DateTimeOffset.UtcNow.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
+            var unixTimeSeconds = now.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
 
             apnsHeaders["apns-expiration"] = timeToLive == 0 ? "0" : unixTimeSeconds;
         }

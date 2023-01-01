@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Notifo.Domain\Notifo.Domain.csproj" />
+    <ProjectReference Include="..\Notifo.Domain.Integrations.Abstractions\Notifo.Domain.Integrations.Abstractions.csproj" />
     <ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
   </ItemGroup>
 

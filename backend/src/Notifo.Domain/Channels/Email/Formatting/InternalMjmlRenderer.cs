@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Xml;
 using Mjml.Net;
 using Mjml.Net.Validators;
 using Notifo.Domain.Resources;

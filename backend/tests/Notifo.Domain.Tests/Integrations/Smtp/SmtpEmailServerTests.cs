@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Domain.Integrations.Smtp;
 

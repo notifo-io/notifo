@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Channels;
-using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Firebase;
@@ -70,12 +68,12 @@ public sealed class FirebaseIntegration : IIntegration
         this.messagingPool = messagingPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, ConfiguredIntegration configured)
+    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
     {
         return serviceType == typeof(IMobilePushSender);
     }
 
-    public object? Create(Type serviceType, string id, ConfiguredIntegration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
     {
         if (CanCreate(serviceType, id, configured))
         {

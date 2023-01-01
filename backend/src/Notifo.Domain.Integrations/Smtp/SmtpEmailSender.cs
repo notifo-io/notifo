@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Globalization;
-using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 
@@ -31,7 +30,7 @@ public sealed class SmtpEmailSender : IEmailSender
         this.fromName = fromName;
     }
 
-    public async Task SendAsync(EmailRequest request,
+    public async Task SendAsync(EmailMessage request,
         CancellationToken ct = default)
     {
         if (string.IsNullOrWhiteSpace(request.FromEmail))

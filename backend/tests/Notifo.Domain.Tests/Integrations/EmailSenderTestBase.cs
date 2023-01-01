@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Domain.Integrations;
 
@@ -21,7 +20,7 @@ public abstract class EmailSenderTestBase
     {
         var sender = CreateSender();
 
-        await sender.SendAsync(new EmailRequest
+        await sender.SendAsync(new EmailMessage
         {
             ToEmail = Address,
             ToName = Address,
@@ -36,7 +35,7 @@ public abstract class EmailSenderTestBase
     {
         var sender = CreateSender();
 
-        await sender.SendAsync(new EmailRequest
+        await sender.SendAsync(new EmailMessage
         {
             ToEmail = Address,
             ToName = Address,
@@ -51,7 +50,7 @@ public abstract class EmailSenderTestBase
     {
         var sender = CreateSender();
 
-        await sender.SendAsync(new EmailRequest
+        await sender.SendAsync(new EmailMessage
         {
             ToEmail = Address,
             ToName = Address,
