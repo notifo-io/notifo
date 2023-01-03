@@ -7,7 +7,10 @@
 
 namespace Notifo.SDK.Configuration;
 
-internal sealed class DefaultHttpClientProvider : IHttpClientProvider
+/// <summary>
+/// The default http client provider.
+/// </summary>
+public class DefaultHttpClientProvider : IHttpClientProvider
 {
     private readonly INotifoOptions options;
     private StoredHttpClient currentClient;
@@ -18,7 +21,7 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
 
         public HttpClient HttpClient { get; }
 
-        public StoredHttpClient(IHttpClientProvider parent, INotifoOptions options)
+        public StoredHttpClient(DefaultHttpClientProvider parent, INotifoOptions options)
         {
             this.options = new StaticNotifoOptions(options);
 
@@ -28,15 +31,14 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
                     options.ClientId,
                     options.ClientSecret));
 
-            HttpClient = new HttpClient(new AuthenticatingHttpMessageHandler(authenticator))
-            {
-                BaseAddress = new Uri(options.ApiUrl)
-            };
+            HttpClient = parent.BuildHttpClient(new AuthenticatingHttpMessageHandler(authenticator));
 
-            if (options.Timeout > TimeSpan.Zero)
+            if (HttpClient.BaseAddress == null)
             {
-                HttpClient.Timeout = options.Timeout;
+                HttpClient.BaseAddress = new Uri(options.ApiUrl);
             }
+
+            HttpClient.Timeout = options.Timeout;
         }
 
         public bool IsMatch(INotifoOptions options)
@@ -45,11 +47,29 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DefaultHttpClientProvider"/> class with the options.
+    /// </summary>
+    /// <param name="options">The options. Cannot be null.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/>is null.</exception>
     public DefaultHttpClientProvider(INotifoOptions options)
     {
         this.options = options;
     }
 
+    /// <summary>
+    /// Builds the HTTP client from the handler.
+    /// </summary>
+    /// <param name="handler">The client handler.</param>
+    /// <returns>
+    /// The created HTTP client.
+    /// </returns>
+    public virtual HttpClient BuildHttpClient(HttpMessageHandler handler)
+    {
+        return new HttpClient(handler);
+    }
+
+    /// <inheritdoc />
     public HttpClient Get()
     {
         var httpClient = currentClient;
@@ -62,6 +82,7 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
         return httpClient.HttpClient;
     }
 
+    /// <inheritdoc />
     public void Return(HttpClient httpClient)
     {
     }
