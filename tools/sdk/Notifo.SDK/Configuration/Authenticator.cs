@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Security;
-using System.Text;
 using Newtonsoft.Json.Linq;
 
 namespace Notifo.SDK.Configuration;
@@ -18,52 +17,95 @@ namespace Notifo.SDK.Configuration;
 /// <seealso cref="IAuthenticator" />
 public class Authenticator : IAuthenticator
 {
-    private readonly HttpClient httpClient = new HttpClient();
-    private readonly string url;
+    private const string TokenUrl = "connect/token";
+    private readonly IHttpClientProvider httpClientProvider;
+    private readonly string apiKey;
     private readonly string clientId;
     private readonly string clientSecret;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Authenticator"/> class with the URL, the client ID and secret.
+    /// Initializes a new instance of the <see cref="Authenticator"/> class.
     /// </summary>
-    /// <param name="url">The URL to the endpoint.</param>
+    /// <param name="httpClientProvider">The HTTP client provider.</param>
+    /// <param name="apiKey">The API key.</param>
     /// <param name="clientId">The client ID.</param>
-    /// <param name="clientSecret">The client Secret.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="url"/> is null.</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="clientId"/> is null.</exception>
-    /// <exception cref="ArgumentNullException"><paramref name="clientSecret"/> is null.</exception>
-    public Authenticator(string url, string clientId, string clientSecret)
+    /// <param name="clientSecret">The client secret.</param>
+    public Authenticator(IHttpClientProvider httpClientProvider, string apiKey, string clientId, string clientSecret)
     {
-        this.url = url ?? throw new ArgumentNullException(nameof(url));
-        this.clientId = clientId ?? throw new ArgumentNullException(nameof(clientId));
-        this.clientSecret = clientSecret ?? throw new ArgumentNullException(nameof(clientSecret));
+        this.httpClientProvider = httpClientProvider;
+        this.apiKey = apiKey;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
     }
 
     /// <inheritdoc/>
-    public Task RemoveTokenAsync(string token)
+    public bool ShouldIntercept(HttpRequestMessage request)
+    {
+#if NETSTANDARD2_0
+        return !request.RequestUri.PathAndQuery.ToLowerInvariant().Contains(TokenUrl);
+#else
+        return request.RequestUri?.PathAndQuery.Contains(TokenUrl, StringComparison.OrdinalIgnoreCase) != true;
+#endif
+    }
+
+    /// <inheritdoc/>
+    public Task RemoveTokenAsync(AuthToken token,
+        CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public async Task<string> GetBearerTokenAsync()
+    public async Task<AuthToken> GetTokenAsync(
+        CancellationToken ct)
     {
-        var tokenUrl = $"{url}/connect/token";
-
-        var bodyString = $"grant_type=client_credentials&client_id={clientId}&client_secret={clientSecret}&scope=NotifoAPI";
-        var bodyContent = new StringContent(bodyString, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-        using (var response = await httpClient.PostAsync(tokenUrl, bodyContent))
+        if (!string.IsNullOrWhiteSpace(apiKey))
         {
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new SecurityException($"Failed to retrieve access token for client '{clientId}', got HTTP {response.StatusCode}.");
-            }
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            var jsonToken = JToken.Parse(jsonString);
-
-            return jsonToken["access_token"]!.ToString();
+            return new AuthToken("ApiKey", apiKey, Timeout.InfiniteTimeSpan);
         }
+
+        var httpClient = httpClientProvider.Get();
+        try
+        {
+            var httpRequest = BuildRequest();
+
+            using (var response = await httpClient.SendAsync(httpRequest, ct))
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    var exception = new SecurityException($"Failed to retrieve access token for client '{clientId}', got HTTP {response.StatusCode}.");
+
+                    throw exception;
+                }
+#if NET5_0_OR_GREATER
+                var jsonString = await response.Content.ReadAsStringAsync(ct);
+#else
+                var jsonString = await response.Content.ReadAsStringAsync();
+#endif
+                var jsonToken = JToken.Parse(jsonString);
+
+                return new AuthToken("Authorization", $"Bearer {jsonToken["access_token"]}", TimeSpan.FromDays(30));
+            }
+        }
+        finally
+        {
+            httpClientProvider.Return(httpClient);
+        }
+    }
+
+    private HttpRequestMessage BuildRequest()
+    {
+        var parameters = new Dictionary<string, string>
+        {
+            ["grant_type"] = "client_credentials",
+            ["client_id"] = clientId,
+            ["client_secret"] = clientSecret,
+            ["scope"] = "NotifoAPI"
+        };
+
+        return new HttpRequestMessage(HttpMethod.Post, TokenUrl)
+        {
+            Content = new FormUrlEncodedContent(parameters!)
+        };
     }
 }

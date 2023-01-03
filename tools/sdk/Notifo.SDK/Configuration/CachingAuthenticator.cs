@@ -15,7 +15,7 @@ public class CachingAuthenticator : IAuthenticator
 {
     private readonly IAuthenticator authenticator;
     private DateTimeOffset cacheExpires;
-    private string cacheEntry;
+    private AuthToken cacheEntry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingAuthenticator"/> class with the cache key,
@@ -29,26 +29,39 @@ public class CachingAuthenticator : IAuthenticator
     }
 
     /// <inheritdoc/>
-    public async Task<string> GetBearerTokenAsync()
+    public async Task<AuthToken> GetTokenAsync(
+        CancellationToken ct)
     {
         var result = GetFromCache();
 
         if (result == null)
         {
-            result = await authenticator.GetBearerTokenAsync();
+            result = await authenticator.GetTokenAsync(ct);
 
-            SetToCache(result, DateTimeOffset.UtcNow.AddDays(50));
+            if (result.Expires > TimeSpan.Zero && result.Expires < TimeSpan.MaxValue)
+            {
+                SetToCache(result);
+            }
         }
 
         return result;
     }
 
     /// <inheritdoc/>
-    public Task RemoveTokenAsync(string token)
+    public Task RemoveTokenAsync(AuthToken token,
+        CancellationToken ct)
     {
         RemoveFromCache();
 
-        return authenticator.RemoveTokenAsync(token);
+        return authenticator.RemoveTokenAsync(token, ct);
+    }
+
+    /// <inheritdoc/>
+    public bool ShouldIntercept(HttpRequestMessage request)
+    {
+        var shouldIntercept = authenticator.ShouldIntercept(request);
+
+        return shouldIntercept;
     }
 
     /// <summary>
@@ -57,7 +70,7 @@ public class CachingAuthenticator : IAuthenticator
     /// <returns>
     /// The JWT bearer token or null if not found in the cache.
     /// </returns>
-    protected string GetFromCache()
+    protected AuthToken GetFromCache()
     {
         if (cacheExpires < DateTimeOffset.UtcNow)
         {
@@ -77,13 +90,12 @@ public class CachingAuthenticator : IAuthenticator
     }
 
     /// <summary>
-    /// Sets to the current JWT bearer token.
+    /// Sets to the current auth token.
     /// </summary>
-    /// <param name="token">The JWT bearer token.</param>
-    /// <param name="expires">The date and time when the token will expire..</param>
-    protected void SetToCache(string token, DateTimeOffset expires)
+    /// <param name="token">The auth token.</param>
+    protected void SetToCache(AuthToken token)
     {
-        cacheExpires = expires;
+        cacheExpires = DateTime.UtcNow.Add(token.Expires);
         cacheEntry = token;
     }
 }

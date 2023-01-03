@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace Notifo.SDK.Configuration;
 
@@ -22,17 +21,39 @@ internal sealed class AuthenticatingHttpMessageHandler : DelegatingHandler
     }
 
     /// <inheritdoc/>
-    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        CancellationToken cancellationToken)
     {
-        var token = await authenticator.GetBearerTokenAsync();
+        if (request.Headers.Authorization != null)
+        {
+            return base.SendAsync(request, cancellationToken);
+        }
 
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (!authenticator.ShouldIntercept(request))
+        {
+            return base.SendAsync(request, cancellationToken);
+        }
+
+        return InterceptAsync(request, true, cancellationToken);
+    }
+
+    private async Task<HttpResponseMessage> InterceptAsync(HttpRequestMessage request, bool retry,
+        CancellationToken cancellationToken)
+    {
+        var token = await authenticator.GetTokenAsync(cancellationToken);
+
+        request.Headers.TryAddWithoutValidation(token.HeaderName, token.HeaderValue);
 
         var response = await base.SendAsync(request, cancellationToken);
 
         if (response.StatusCode == HttpStatusCode.Unauthorized)
         {
-            await authenticator.RemoveTokenAsync(token);
+            await authenticator.RemoveTokenAsync(token, cancellationToken);
+
+            if (retry)
+            {
+                return await InterceptAsync(request, false, cancellationToken);
+            }
         }
 
         return response;
