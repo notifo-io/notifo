@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.SDK.Configuration;
+
 namespace Notifo.SDK;
 
 /// <summary>
@@ -28,6 +30,7 @@ public sealed class NotifoClient : INotifoClient
     private readonly Lazy<ITopicsClient> topics;
     private readonly Lazy<IUserClient> user;
     private readonly Lazy<IUsersClient> users;
+    private readonly IHttpClientProvider httpClientProvider;
 
     /// <inheritdoc />
     public IAppsClient Apps => apps.Value;
@@ -80,153 +83,150 @@ public sealed class NotifoClient : INotifoClient
     /// <summary>
     /// Initializes a new instance of the <see cref="NotifoClient"/> class with the HTTP client and the base URL.
     /// </summary>
-    /// <param name="httpClient">The HTTP client. Cannot be null.</param>
-    /// <param name="baseUrl">The base URL. Cannot be null.</param>
+    /// <param name="httpClientProvider">The HTTP client. Cannot be null.</param>
     /// <param name="readResponseAsString">True, to read the response as string.</param>
-    public NotifoClient(HttpClient httpClient, string baseUrl, bool readResponseAsString)
+    public NotifoClient(IHttpClientProvider httpClientProvider, bool readResponseAsString)
     {
         apps = new Lazy<IAppsClient>(() =>
         {
-            return new AppsClient(httpClient)
+            return new AppsClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         configs = new Lazy<IConfigsClient>(() =>
         {
-            return new ConfigsClient(httpClient)
+            return new ConfigsClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         emailTemplates = new Lazy<IEmailTemplatesClient>(() =>
         {
-            return new EmailTemplatesClient(httpClient)
+            return new EmailTemplatesClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         events = new Lazy<IEventsClient>(() =>
         {
-            return new EventsClient(httpClient)
+            return new EventsClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         logs = new Lazy<ILogsClient>(() =>
         {
-            return new LogsClient(httpClient)
+            return new LogsClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         media = new Lazy<IMediaClient>(() =>
         {
-            return new MediaClient(httpClient)
+            return new MediaClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         mobilePush = new Lazy<IMobilePushClient>(() =>
         {
-            return new MobilePushClient(httpClient)
+            return new MobilePushClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         messagingTemplates = new Lazy<IMessagingTemplatesClient>(() =>
         {
-            return new MessagingTemplatesClient(httpClient)
+            return new MessagingTemplatesClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         notifications = new Lazy<INotificationsClient>(() =>
         {
-            return new NotificationsClient(httpClient)
+            return new NotificationsClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         ping = new Lazy<IPingClient>(() =>
         {
-            return new PingClient(httpClient)
+            return new PingClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         smsTemplates = new Lazy<ISmsTemplatesClient>(() =>
         {
-            return new SmsTemplatesClient(httpClient)
+            return new SmsTemplatesClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         systemUsers = new Lazy<ISystemUsersClient>(() =>
         {
-            return new SystemUsersClient(httpClient)
+            return new SystemUsersClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         templates = new Lazy<ITemplatesClient>(() =>
         {
-            return new TemplatesClient(httpClient)
+            return new TemplatesClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         topics = new Lazy<ITopicsClient>(() =>
         {
-            return new TopicsClient(httpClient)
+            return new TopicsClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         user = new Lazy<IUserClient>(() =>
         {
-            return new UserClient(httpClient)
+            return new UserClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
 
         users = new Lazy<IUsersClient>(() =>
         {
-            return new UsersClient(httpClient)
+            return new UsersClient(httpClientProvider)
             {
-                BaseUrl = baseUrl,
                 ReadResponseAsString = readResponseAsString
             };
         });
+
+        this.httpClientProvider = httpClientProvider;
+    }
+
+    /// <inheritdoc />
+    public HttpClient CreateHttpClient()
+    {
+        return httpClientProvider.Get();
+    }
+
+    /// <inheritdoc />
+    public void ReturnHttpClient(HttpClient httpClient)
+    {
+        httpClientProvider.Return(httpClient);
     }
 }

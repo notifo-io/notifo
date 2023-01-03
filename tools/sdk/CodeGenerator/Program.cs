@@ -34,7 +34,7 @@ public static class Program
             GenerateClientInterfaces = true,
             GenerateBaseUrlProperty = true,
             OperationNameGenerator = new TagNameGenerator(),
-            UseBaseUrl = true
+            UseBaseUrl = false
         };
 
         generatorSettings.CSharpGeneratorSettings.ExcludedTypeNames = new[] { "JsonInheritanceConverter" };
@@ -46,6 +46,7 @@ public static class Program
         generatorSettings.CSharpGeneratorSettings.DictionaryType = "System.Collections.Generic.Dictionary";
         generatorSettings.CSharpGeneratorSettings.Namespace = "Notifo.SDK";
         generatorSettings.CSharpGeneratorSettings.RequiredPropertiesMustBeDefined = false;
+        generatorSettings.CSharpGeneratorSettings.TemplateDirectory = Directory.GetCurrentDirectory();
 
         var codeGenerator = new CSharpClientGenerator(document, generatorSettings);
 

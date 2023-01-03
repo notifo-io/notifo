@@ -15,12 +15,8 @@ namespace Notifo.SDK;
 public sealed class NotifoClientBuilder
 {
     private bool readResponseAsString;
-    private string apiKey;
-    private string apiUrl = "https://app.notifo.io";
-    private string clientId;
-    private string clientSecret;
-    private TimeSpan timeout = TimeSpan.FromSeconds(10);
-    private HttpClient httpClient;
+    private IHttpClientProvider httpClientProvider;
+    private INotifoOptions options = new StaticNotifoOptions();
 
     private NotifoClientBuilder()
     {
@@ -36,13 +32,40 @@ public sealed class NotifoClientBuilder
     }
 
     /// <summary>
-    /// Sets the api key to use.
+    /// Sets the options.
     /// </summary>
-    /// <param name="apiKey">The api key.</param>
+    /// <param name="options">The options to use.</param>
+    /// <returns>The current instance.</returns>
+    public NotifoClientBuilder SetOptions(INotifoOptions options)
+    {
+        this.options = options;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the HTTP client provider.
+    /// </summary>
+    /// <param name="httpClientProvider">The client provider to use.</param>
+    /// <returns>The current instance.</returns>
+    public NotifoClientBuilder SetHttpClientProvider(IHttpClientProvider httpClientProvider)
+    {
+        this.httpClientProvider = httpClientProvider;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the API key to use.
+    /// </summary>
+    /// <param name="apiKey">The API key.</param>
     /// <returns>The current instance.</returns>
     public NotifoClientBuilder SetApiKey(string apiKey)
     {
-        this.apiKey = apiKey;
+        if (options is StaticNotifoOptions staticOptions)
+        {
+            staticOptions.ApiKey = apiKey;
+        }
 
         return this;
     }
@@ -54,7 +77,10 @@ public sealed class NotifoClientBuilder
     /// <returns>The current instance.</returns>
     public NotifoClientBuilder SetClientId(string clientId)
     {
-        this.clientId = clientId;
+        if (options is StaticNotifoOptions staticOptions)
+        {
+            staticOptions.ClientId = clientId;
+        }
 
         return this;
     }
@@ -66,19 +92,25 @@ public sealed class NotifoClientBuilder
     /// <returns>The current instance.</returns>
     public NotifoClientBuilder SetClientSecret(string clientSecret)
     {
-        this.clientSecret = clientSecret;
+        if (options is StaticNotifoOptions staticOptions)
+        {
+            staticOptions.ClientSecret = clientSecret;
+        }
 
         return this;
     }
 
     /// <summary>
-    /// Sets the api URL to use.
+    /// Sets the API URL to use.
     /// </summary>
-    /// <param name="apiUrl">The api URL. Default: https://app.notifo.io.</param>
+    /// <param name="apiUrl">The API URL.</param>
     /// <returns>The current instance.</returns>
     public NotifoClientBuilder SetApiUrl(string apiUrl)
     {
-        this.apiUrl = apiUrl;
+        if (options is StaticNotifoOptions staticOptions)
+        {
+            staticOptions.ApiUrl = apiUrl;
+        }
 
         return this;
     }
@@ -90,19 +122,10 @@ public sealed class NotifoClientBuilder
     /// <returns>The current instance.</returns>
     public NotifoClientBuilder SetTimeout(TimeSpan timeout)
     {
-        this.timeout = timeout;
-
-        return this;
-    }
-
-    /// <summary>
-    /// Sets a custom HTTP client.
-    /// </summary>
-    /// <param name="httpClient">The HTTP client.</param>
-    /// <returns>The current instance.</returns>
-    public NotifoClientBuilder SetClient(HttpClient httpClient)
-    {
-        this.httpClient = httpClient;
+        if (options is StaticNotifoOptions staticOptions)
+        {
+            staticOptions.Timeout = timeout;
+        }
 
         return this;
     }
@@ -126,34 +149,17 @@ public sealed class NotifoClientBuilder
     /// <exception cref="InvalidOperationException">Configuration is not valid.</exception>
     public INotifoClient Build()
     {
-        if (string.IsNullOrWhiteSpace(apiKey) && string.IsNullOrWhiteSpace(clientId) && string.IsNullOrWhiteSpace(clientSecret))
+        if (httpClientProvider == null)
         {
-            throw new InvalidOperationException("Neiter, API Key, nor Client ID and secret is defined.");
+            if (options == null)
+            {
+                throw new InvalidOperationException("Options are not defined.");
+            }
+
+            httpClientProvider = new DefaultHttpClientProvider(options);
         }
 
-        if (string.IsNullOrWhiteSpace(apiUrl))
-        {
-            throw new InvalidOperationException("API URL not defined.");
-        }
-
-        if (!Uri.IsWellFormedUriString(apiUrl, UriKind.Absolute))
-        {
-            throw new InvalidOperationException("API URL is not a well defined absolute URL.");
-        }
-
-        if (!string.IsNullOrWhiteSpace(apiKey))
-        {
-            httpClient ??= new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("ApiKey", apiKey);
-        }
-        else
-        {
-            httpClient ??= new HttpClient(new AuthenticatingHttpMessageHandler(new CachingAuthenticator(new Authenticator(apiUrl.TrimEnd('/'), clientId, clientSecret))));
-        }
-
-        httpClient.Timeout = timeout;
-
-        var client = new NotifoClient(httpClient, apiUrl, readResponseAsString);
+        var client = new NotifoClient(httpClientProvider, readResponseAsString);
 
         return client;
     }

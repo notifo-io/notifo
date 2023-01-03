@@ -108,13 +108,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class UserClient : IUserClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public UserClient(System.Net.Http.HttpClient httpClient)
+        public UserClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -123,12 +122,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -148,14 +141,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ProfileDto> GetUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me");
+            urlBuilder_.Append("api/me");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -180,7 +173,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ProfileDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -214,8 +207,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -232,14 +224,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me");
+            urlBuilder_.Append("api/me");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -268,7 +260,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ProfileDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -312,8 +304,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -326,14 +317,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<AdminProfileDto> GetAdminUserAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/admin");
+            urlBuilder_.Append("api/me/admin");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -358,7 +349,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AdminProfileDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -392,8 +383,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -407,19 +397,19 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserTopicDto>> GetTopicsAsync(string language = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/topics?");
+            urlBuilder_.Append("api/me/topics?");
             if (language != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("language") + "=").Append(System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -444,7 +434,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<UserTopicDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -478,8 +468,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -496,7 +485,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetMySubscriptionsAsync(string topics = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions?");
+            urlBuilder_.Append("api/me/subscriptions?");
             if (topics != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("Topics") + "=").Append(System.Uri.EscapeDataString(ConvertToString(topics, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -515,12 +504,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -545,7 +535,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfSubscriptionDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -579,8 +569,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -600,14 +589,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions");
+            urlBuilder_.Append("api/me/subscriptions");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -674,8 +663,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -692,15 +680,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<SubscriptionDto> GetMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions/{topic}");
+            urlBuilder_.Append("api/me/subscriptions/{topic}");
             urlBuilder_.Replace("{topic}", System.Uri.EscapeDataString(ConvertToString(topic, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -725,7 +713,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SubscriptionDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -765,8 +753,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -783,15 +770,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteSubscriptionAsync(string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/subscriptions/{prefix}");
+            urlBuilder_.Append("api/me/subscriptions/{prefix}");
             urlBuilder_.Replace("{prefix}", System.Uri.EscapeDataString(ConvertToString(prefix, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("POST");
 
@@ -855,8 +842,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1095,13 +1081,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class UsersClient : IUsersClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public UsersClient(System.Net.Http.HttpClient httpClient)
+        public UsersClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -1110,12 +1095,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -1140,7 +1119,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserDto> GetUsersAsync(string appId, string query = null, int? take = null, int? skip = null, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users?");
+            urlBuilder_.Append("api/apps/{appId}/users?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
             {
@@ -1160,12 +1139,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -1190,7 +1171,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -1230,8 +1211,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1249,15 +1229,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users");
+            urlBuilder_.Append("api/apps/{appId}/users");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -1286,7 +1266,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<UserDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -1336,8 +1316,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1353,7 +1332,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}?");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             if (withDetails != null)
@@ -1362,12 +1341,12 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -1392,7 +1371,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<UserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -1432,8 +1411,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1448,16 +1426,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -1526,8 +1504,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1545,7 +1522,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/subscriptions?");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/subscriptions?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
@@ -1562,12 +1539,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -1592,7 +1571,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfSubscriptionDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -1632,8 +1611,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1652,16 +1630,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/subscriptions");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/subscriptions");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -1734,8 +1712,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1751,17 +1728,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteSubscriptionAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/subscriptions/{prefix}");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/subscriptions/{prefix}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{prefix}", System.Uri.EscapeDataString(ConvertToString(prefix, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -1830,8 +1807,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1850,16 +1826,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/allowed-topics");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/allowed-topics");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -1932,8 +1908,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -1949,17 +1924,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteAllowedTopicAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/allowed-topics/{prefix}");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/allowed-topics/{prefix}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{prefix}", System.Uri.EscapeDataString(ConvertToString(prefix, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -2028,8 +2003,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2045,17 +2019,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteMobilePushTokenAsync(string appId, string id, string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/mobilepush/{token}");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/mobilepush/{token}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{token}", System.Uri.EscapeDataString(ConvertToString(token, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -2124,8 +2098,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2141,17 +2114,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteWebPushSubscriptionAsync(string appId, string id, string endpoint, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/webpush/{endpoint}");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/webpush/{endpoint}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{endpoint}", System.Uri.EscapeDataString(ConvertToString(endpoint, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -2220,8 +2193,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2370,13 +2342,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class TopicsClient : ITopicsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public TopicsClient(System.Net.Http.HttpClient httpClient)
+        public TopicsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -2385,12 +2356,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -2415,7 +2380,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTopicDto> GetTopicsAsync(string appId, TopicQueryScope? scope = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/topics?");
+            urlBuilder_.Append("api/apps/{appId}/topics?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (scope != null)
             {
@@ -2435,12 +2400,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -2465,7 +2432,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfTopicDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -2505,8 +2472,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2524,15 +2490,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/topics");
+            urlBuilder_.Append("api/apps/{appId}/topics");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -2561,7 +2527,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<TopicDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -2605,8 +2571,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2621,16 +2586,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTopicAsync(string appId, string path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/topics/{path}");
+            urlBuilder_.Append("api/apps/{appId}/topics/{path}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{path}", System.Uri.EscapeDataString(ConvertToString(path, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -2693,8 +2658,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2842,13 +2806,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class TemplatesClient : ITemplatesClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public TemplatesClient(System.Net.Http.HttpClient httpClient)
+        public TemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -2857,12 +2820,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -2886,7 +2843,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/templates?");
+            urlBuilder_.Append("api/apps/{appId}/templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
             {
@@ -2902,12 +2859,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -2932,7 +2890,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -2966,8 +2924,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -2985,15 +2942,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/templates");
+            urlBuilder_.Append("api/apps/{appId}/templates");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -3022,7 +2979,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<TemplateDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -3066,8 +3023,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3082,16 +3038,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -3154,8 +3110,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3337,13 +3292,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class SystemUsersClient : ISystemUsersClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public SystemUsersClient(System.Net.Http.HttpClient httpClient)
+        public SystemUsersClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -3352,12 +3306,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -3380,7 +3328,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfSystemUserDto> GetUsersAsync(string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users?");
+            urlBuilder_.Append("api/system-users?");
             if (query != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("query") + "=").Append(System.Uri.EscapeDataString(ConvertToString(query, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -3395,12 +3343,12 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -3425,7 +3373,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfSystemUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -3459,8 +3407,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3477,14 +3424,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users");
+            urlBuilder_.Append("api/system-users");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -3513,7 +3460,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 201)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SystemUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -3557,8 +3504,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3572,15 +3518,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<SystemUserDto> GetUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users/{id}");
+            urlBuilder_.Append("api/system-users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -3605,7 +3551,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SystemUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -3645,8 +3591,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3664,15 +3609,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users/{id}");
+            urlBuilder_.Append("api/system-users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -3701,7 +3646,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SystemUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -3755,8 +3700,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3770,15 +3714,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users/{id}");
+            urlBuilder_.Append("api/system-users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -3851,8 +3795,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3866,15 +3809,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<SystemUserDto> LockUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users/{id}/lock");
+            urlBuilder_.Append("api/system-users/{id}/lock");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -3900,7 +3843,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SystemUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -3954,8 +3897,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -3969,15 +3911,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<SystemUserDto> UnlockUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/system-users/{id}/unlock");
+            urlBuilder_.Append("api/system-users/{id}/unlock");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -4003,7 +3945,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SystemUserDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -4057,8 +3999,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -4207,13 +4148,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class PingClient : IPingClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public PingClient(System.Net.Http.HttpClient httpClient)
+        public PingClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -4222,12 +4162,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -4251,14 +4185,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetOldPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/ping");
+            urlBuilder_.Append("ping");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -4311,8 +4245,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -4328,14 +4261,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetPingAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/ping");
+            urlBuilder_.Append("api/ping");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -4388,8 +4321,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -4404,14 +4336,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<InfoDto> GetInfoAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/info");
+            urlBuilder_.Append("api/info");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -4436,7 +4368,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<InfoDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -4470,8 +4402,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -4662,13 +4593,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class NotificationsClient : INotificationsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public NotificationsClient(System.Net.Http.HttpClient httpClient)
+        public NotificationsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -4677,12 +4607,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -4709,7 +4633,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetAllNotificationsAsync(string appId, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/notifications?");
+            urlBuilder_.Append("api/apps/{appId}/notifications?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (channels != null)
             {
@@ -4737,12 +4661,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -4767,7 +4693,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -4807,8 +4733,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -4829,7 +4754,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/users/{id}/notifications?");
+            urlBuilder_.Append("api/apps/{appId}/users/{id}/notifications?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
             if (channels != null)
@@ -4858,12 +4783,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -4888,7 +4815,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -4928,8 +4855,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -4948,7 +4874,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyNotificationsAsync(System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications?");
+            urlBuilder_.Append("api/me/notifications?");
             if (channels != null)
             {
                 foreach (var item_ in channels) { urlBuilder_.Append(System.Uri.EscapeDataString("Channels") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
@@ -4975,12 +4901,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -5005,7 +4932,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -5039,8 +4966,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5054,19 +4980,19 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyArchiveAsync(string channel = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/archive?");
+            urlBuilder_.Append("api/me/notifications/archive?");
             if (channel != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("channel") + "=").Append(System.Uri.EscapeDataString(ConvertToString(channel, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -5091,7 +5017,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -5125,8 +5051,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5143,7 +5068,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, bool? includeUnseen = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/device?");
+            urlBuilder_.Append("api/me/notifications/device?");
             if (deviceIdentifier != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("DeviceIdentifier") + "=").Append(System.Uri.EscapeDataString(ConvertToString(deviceIdentifier, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -5162,12 +5087,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -5192,7 +5118,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfUserNotificationDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -5226,8 +5152,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5244,14 +5169,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/notifications/handled");
+            urlBuilder_.Append("api/me/notifications/handled");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -5318,8 +5243,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5461,13 +5385,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class MobilePushClient : IMobilePushClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public MobilePushClient(System.Net.Http.HttpClient httpClient)
+        public MobilePushClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -5476,12 +5399,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -5501,14 +5418,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfMobilePushTokenDto> GetMyTokenAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/mobilepush");
+            urlBuilder_.Append("api/me/mobilepush");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -5533,7 +5450,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfMobilePushTokenDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -5567,8 +5484,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5585,14 +5501,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/mobilepush");
+            urlBuilder_.Append("api/me/mobilepush");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -5659,8 +5575,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5674,15 +5589,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteMyTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/mobilepush/{token}");
+            urlBuilder_.Append("api/me/mobilepush/{token}");
             urlBuilder_.Replace("{token}", System.Uri.EscapeDataString(ConvertToString(token, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -5745,8 +5660,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -5980,13 +5894,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class MediaClient : IMediaClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public MediaClient(System.Net.Http.HttpClient httpClient)
+        public MediaClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -5995,12 +5908,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -6024,7 +5931,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfMediaDto> GetMediasAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/media?");
+            urlBuilder_.Append("api/apps/{appId}/media?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
             {
@@ -6040,12 +5947,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -6070,7 +5978,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfMediaDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -6110,8 +6018,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -6125,15 +6032,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task UploadAsync(string appId, FileParameter file = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/media");
+            urlBuilder_.Append("api/apps/{appId}/media");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var boundary_ = System.Guid.NewGuid().ToString();
                     var content_ = new System.Net.Http.MultipartFormDataContent(boundary_);
                     content_.Headers.Remove("Content-Type");
@@ -6170,7 +6077,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 201)
+                        if (status_ == 200 || status_ == 201)
                         {
                             return;
                         }
@@ -6215,8 +6122,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -6243,7 +6149,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/media/{fileName}?");
+            urlBuilder_.Append("api/apps/{appId}/media/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{fileName}", System.Uri.EscapeDataString(ConvertToString(fileName, System.Globalization.CultureInfo.InvariantCulture)));
             if (cache != null)
@@ -6296,12 +6202,16 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 
@@ -6326,11 +6236,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
                             var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
                         else
@@ -6364,8 +6274,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -6380,16 +6289,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteAsync(string appId, string fileName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/media/{fileName}");
+            urlBuilder_.Append("api/apps/{appId}/media/{fileName}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{fileName}", System.Uri.EscapeDataString(ConvertToString(fileName, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -6458,8 +6367,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -6486,7 +6394,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/asset/{appId}/{fileName}?");
+            urlBuilder_.Append("api/asset/{appId}/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{fileName}", System.Uri.EscapeDataString(ConvertToString(fileName, System.Globalization.CultureInfo.InvariantCulture)));
             if (cache != null)
@@ -6539,12 +6447,16 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 
@@ -6569,11 +6481,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
                             var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
                         else
@@ -6607,8 +6519,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -6635,7 +6546,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/{appId}/{fileName}?");
+            urlBuilder_.Append("api/assets/{appId}/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{fileName}", System.Uri.EscapeDataString(ConvertToString(fileName, System.Globalization.CultureInfo.InvariantCulture)));
             if (cache != null)
@@ -6688,12 +6599,16 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 
@@ -6718,11 +6633,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
                             var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
                         else
@@ -6756,8 +6671,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -6783,7 +6697,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<FileResponse> ProxyImageAsync(string url = null, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/assets/proxy?");
+            urlBuilder_.Append("api/assets/proxy?");
             if (url != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("url") + "=").Append(System.Uri.EscapeDataString(ConvertToString(url, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
@@ -6838,12 +6752,16 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 
@@ -6868,11 +6786,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
                             var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
                         else
@@ -6906,8 +6824,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -7038,13 +6955,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class LogsClient : ILogsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public LogsClient(System.Net.Http.HttpClient httpClient)
+        public LogsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -7053,12 +6969,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -7085,7 +6995,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfLogEntryDto> GetLogsAsync(string appId, System.Collections.Generic.IEnumerable<string> systems = null, string userId = null, int? eventCode = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/logs?");
+            urlBuilder_.Append("api/apps/{appId}/logs?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (systems != null)
             {
@@ -7113,12 +7023,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -7143,7 +7055,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfLogEntryDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -7183,8 +7095,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -7332,13 +7243,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class EventsClient : IEventsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public EventsClient(System.Net.Http.HttpClient httpClient)
+        public EventsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -7347,12 +7257,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -7377,7 +7281,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfEventDto> GetEventsAsync(string appId, System.Collections.Generic.IEnumerable<string> channels = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/events?");
+            urlBuilder_.Append("api/apps/{appId}/events?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (channels != null)
             {
@@ -7397,12 +7301,14 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -7427,7 +7333,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfEventDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -7467,8 +7373,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -7486,15 +7391,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/events");
+            urlBuilder_.Append("api/apps/{appId}/events");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -7567,8 +7472,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -7585,14 +7489,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/me/events");
+            urlBuilder_.Append("api/me/events");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -7665,8 +7569,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -7798,13 +7701,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class DiagnosticsClient : IDiagnosticsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public DiagnosticsClient(System.Net.Http.HttpClient httpClient)
+        public DiagnosticsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -7813,12 +7715,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -7838,14 +7734,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/diagnostics/dump");
+            urlBuilder_.Append("api/diagnostics/dump");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -7908,8 +7804,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -7922,14 +7817,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task GetGCDumpAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/diagnostics/gcdump");
+            urlBuilder_.Append("api/diagnostics/gcdump");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -7992,8 +7887,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8125,13 +8019,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class ConfigsClient : IConfigsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public ConfigsClient(System.Net.Http.HttpClient httpClient)
+        public ConfigsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -8140,12 +8033,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -8165,14 +8052,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetTimezonesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/timezones");
+            urlBuilder_.Append("api/timezones");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -8197,7 +8084,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<string>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -8231,8 +8118,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8245,14 +8131,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> GetLanguagesAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/languages");
+            urlBuilder_.Append("api/languages");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -8277,7 +8163,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<string>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -8311,8 +8197,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8535,13 +8420,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class EmailTemplatesClient : IEmailTemplatesClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public EmailTemplatesClient(System.Net.Http.HttpClient httpClient)
+        public EmailTemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -8550,12 +8434,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -8577,16 +8455,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<FileResponse> GetPreviewAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}/preview");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{id}/preview");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/octet-stream"));
 
@@ -8611,11 +8489,11 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200 || status_ == 206)
+                        if (status_ == 200 || status_ == 201 || status_ == 206)
                         {
                             var responseStream_ = response_.Content == null ? System.IO.Stream.Null : await response_.Content.ReadAsStreamAsync().ConfigureAwait(false);
                             var fileResponse_ = new FileResponse(status_, headers_, responseStream_, null, response_);
-                            disposeClient_ = false; disposeResponse_ = false; // response and client are disposed by FileResponse
+                            disposeResponse_ = false; // response and client are disposed by FileResponse
                             return fileResponse_;
                         }
                         else
@@ -8649,8 +8527,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8668,15 +8545,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/render");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/render");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -8705,7 +8582,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<EmailPreviewDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -8755,8 +8632,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8773,7 +8649,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates?");
+            urlBuilder_.Append("api/apps/{appId}/email-templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
             {
@@ -8789,12 +8665,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -8819,7 +8696,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfChannelTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -8859,8 +8736,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8878,15 +8754,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates");
+            urlBuilder_.Append("api/apps/{appId}/email-templates");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -8915,7 +8791,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfEmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -8965,8 +8841,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -8981,16 +8856,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{id}");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -9015,7 +8890,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfEmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -9055,8 +8930,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9075,16 +8949,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -9113,7 +8987,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<EmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -9163,8 +9037,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9183,16 +9056,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -9265,8 +9138,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9281,16 +9153,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -9359,8 +9231,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9380,17 +9251,18 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}/{language}");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -9463,8 +9335,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9480,17 +9351,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/email-templates/{code}/{language}");
+            urlBuilder_.Append("api/apps/{appId}/email-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -9559,8 +9430,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9763,13 +9633,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class MessagingTemplatesClient : IMessagingTemplatesClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public MessagingTemplatesClient(System.Net.Http.HttpClient httpClient)
+        public MessagingTemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -9778,12 +9647,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -9807,7 +9670,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates?");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
             {
@@ -9823,12 +9686,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -9853,7 +9717,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfChannelTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -9893,8 +9757,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -9912,15 +9775,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -9949,7 +9812,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -9999,8 +9862,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10015,16 +9877,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{id}");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -10049,7 +9911,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -10089,8 +9951,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10109,16 +9970,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -10147,7 +10008,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<MessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -10197,8 +10058,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10217,16 +10077,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -10299,8 +10159,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10315,16 +10174,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -10393,8 +10252,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10414,17 +10272,18 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}/{language}");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -10497,8 +10356,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10514,17 +10372,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/messaging-templates/{code}/{language}");
+            urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -10593,8 +10451,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10797,13 +10654,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class SmsTemplatesClient : ISmsTemplatesClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public SmsTemplatesClient(System.Net.Http.HttpClient httpClient)
+        public SmsTemplatesClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -10812,12 +10668,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -10841,7 +10691,7 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates?");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             if (query != null)
             {
@@ -10857,12 +10707,13 @@ namespace Notifo.SDK
             }
             urlBuilder_.Length--;
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -10887,7 +10738,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ListResponseDtoOfChannelTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -10927,8 +10778,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -10946,15 +10796,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -10983,7 +10833,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfSmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -11033,8 +10883,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11049,16 +10898,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{id}");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -11083,7 +10932,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfSmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -11123,8 +10972,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11143,16 +10991,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -11181,7 +11029,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<SmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -11231,8 +11079,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11251,16 +11098,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -11333,8 +11180,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11349,16 +11195,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -11427,8 +11273,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11448,17 +11293,18 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}/{language}");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -11531,8 +11377,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11548,17 +11393,17 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/sms-templates/{code}/{language}");
+            urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{code}", System.Uri.EscapeDataString(ConvertToString(code, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{language}", System.Uri.EscapeDataString(ConvertToString(language, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -11627,8 +11472,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11840,13 +11684,12 @@ namespace Notifo.SDK
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class AppsClient : IAppsClient
     {
-        private string _baseUrl = "https://app.notifo.io";
-        private System.Net.Http.HttpClient _httpClient;
+        private Notifo.SDK.Configuration.IHttpClientProvider _httpClientProvider;
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
 
-        public AppsClient(System.Net.Http.HttpClient httpClient)
+        public AppsClient(Notifo.SDK.Configuration.IHttpClientProvider httpClientProvider)
         {
-            _httpClient = httpClient;
+            _httpClientProvider = httpClientProvider;
             _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings);
         }
 
@@ -11855,12 +11698,6 @@ namespace Notifo.SDK
             var settings = new Newtonsoft.Json.JsonSerializerSettings();
             UpdateJsonSerializerSettings(settings);
             return settings;
-        }
-
-        public string BaseUrl
-        {
-            get { return _baseUrl; }
-            set { _baseUrl = value; }
         }
 
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
@@ -11880,14 +11717,14 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AppDto>> GetAppsAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps");
+            urlBuilder_.Append("api/apps");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -11912,7 +11749,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<AppDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -11946,8 +11783,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -11964,14 +11800,14 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps");
+            urlBuilder_.Append("api/apps");
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -12000,7 +11836,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AppDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12044,8 +11880,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12059,15 +11894,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<AppDetailsDto> GetAppAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}");
+            urlBuilder_.Append("api/apps/{appId}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -12092,7 +11927,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AppDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12132,8 +11967,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12151,15 +11985,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}");
+            urlBuilder_.Append("api/apps/{appId}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -12188,7 +12022,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AppDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12238,8 +12072,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12257,15 +12090,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/contributors");
+            urlBuilder_.Append("api/apps/{appId}/contributors");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -12294,7 +12127,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AppDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12344,8 +12177,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12360,16 +12192,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<AppDetailsDto> DeleteContributorAsync(string appId, string contributorId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/contributors/{contributorId}");
+            urlBuilder_.Append("api/apps/{appId}/contributors/{contributorId}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{contributorId}", System.Uri.EscapeDataString(ConvertToString(contributorId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
                     request_.Method = new System.Net.Http.HttpMethod("POST");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
@@ -12395,7 +12227,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AppDetailsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12445,8 +12277,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12460,15 +12291,15 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task<ConfiguredIntegrationsDto> GetIntegrationsAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/integrations");
+            urlBuilder_.Append("api/apps/{appId}/integrations");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("GET");
                     request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
@@ -12493,7 +12324,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<ConfiguredIntegrationsDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12533,8 +12364,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12552,15 +12382,15 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/integration");
+            urlBuilder_.Append("api/apps/{appId}/integration");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -12589,7 +12419,7 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 200)
+                        if (status_ == 200 || status_ == 201)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<IntegrationCreatedDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -12639,8 +12469,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12659,16 +12488,16 @@ namespace Notifo.SDK
                 throw new System.ArgumentNullException("request");
 
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/integrations/{id}");
+            urlBuilder_.Append("api/apps/{appId}/integrations/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     var json_ = Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value);
                     var content_ = new System.Net.Http.StringContent(json_);
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
@@ -12741,8 +12570,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 
@@ -12757,16 +12585,16 @@ namespace Notifo.SDK
         public virtual async System.Threading.Tasks.Task DeleteIntegrationAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/apps/{appId}/integrations/{id}");
+            urlBuilder_.Append("api/apps/{appId}/integrations/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
 
-            var client_ = _httpClient;
-            var disposeClient_ = false;
+            var client_ = _httpClientProvider.Get();
             try
             {
                 using (var request_ = new System.Net.Http.HttpRequestMessage())
                 {
+
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
 
                     PrepareRequest(client_, request_, urlBuilder_);
@@ -12835,8 +12663,7 @@ namespace Notifo.SDK
             }
             finally
             {
-                if (disposeClient_)
-                    client_.Dispose();
+                _httpClientProvider.Return(client_);
             }
         }
 

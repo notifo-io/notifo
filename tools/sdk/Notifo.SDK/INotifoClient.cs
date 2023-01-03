@@ -91,4 +91,20 @@ public interface INotifoClient
     /// Provides the client to query and manage users.
     /// </summary>
     IUsersClient Users { get; }
+    /// <summary>
+    /// Creates a <see cref="HttpClient"/> to make all kind of authorized requests.
+    /// </summary>
+    /// <returns>
+    /// The created client.
+    /// </returns>
+    /// <remarks>
+    /// Remember to return the client after each request.
+    /// </remarks>
+    HttpClient CreateHttpClient();
+
+    /// <summary>
+    /// Returns the http client.
+    /// </summary>
+    /// <param name="httpClient">The HTTP client to return.</param>
+    void ReturnHttpClient(HttpClient httpClient);
 }
