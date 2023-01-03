@@ -17,8 +17,9 @@ namespace Notifo.SDK.Configuration;
 /// <seealso cref="IAuthenticator" />
 public class Authenticator : IAuthenticator
 {
-    private const string TokenUrl = "identity-server/connect/token";
+    private const string TokenUrl = "connect/token";
     private readonly IHttpClientProvider httpClientProvider;
+    private readonly string apiKey;
     private readonly string clientId;
     private readonly string clientSecret;
 
@@ -26,11 +27,13 @@ public class Authenticator : IAuthenticator
     /// Initializes a new instance of the <see cref="Authenticator"/> class.
     /// </summary>
     /// <param name="httpClientProvider">The HTTP client provider.</param>
+    /// <param name="apiKey">The API key.</param>
     /// <param name="clientId">The client ID.</param>
     /// <param name="clientSecret">The client secret.</param>
-    public Authenticator(IHttpClientProvider httpClientProvider, string clientId, string clientSecret)
+    public Authenticator(IHttpClientProvider httpClientProvider, string apiKey, string clientId, string clientSecret)
     {
         this.httpClientProvider = httpClientProvider;
+        this.apiKey = apiKey;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
@@ -46,16 +49,21 @@ public class Authenticator : IAuthenticator
     }
 
     /// <inheritdoc/>
-    public Task RemoveTokenAsync(string token,
+    public Task RemoveTokenAsync(AuthToken token,
         CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
-    public async Task<string> GetBearerTokenAsync(
+    public async Task<AuthToken> GetTokenAsync(
         CancellationToken ct)
     {
+        if (!string.IsNullOrWhiteSpace(apiKey))
+        {
+            return new AuthToken("ApiKey", apiKey, Timeout.InfiniteTimeSpan);
+        }
+
         var httpClient = httpClientProvider.Get();
         try
         {
@@ -76,7 +84,7 @@ public class Authenticator : IAuthenticator
 #endif
                 var jsonToken = JToken.Parse(jsonString);
 
-                return jsonToken["access_token"]!.ToString();
+                return new AuthToken("Authorization", $"Bearer {jsonToken["access_token"]}", TimeSpan.FromDays(30));
             }
         }
         finally
@@ -92,7 +100,7 @@ public class Authenticator : IAuthenticator
             ["grant_type"] = "client_credentials",
             ["client_id"] = clientId,
             ["client_secret"] = clientSecret,
-            ["scope"] = "notifo-api"
+            ["scope"] = "NotifoAPI"
         };
 
         return new HttpRequestMessage(HttpMethod.Post, TokenUrl)

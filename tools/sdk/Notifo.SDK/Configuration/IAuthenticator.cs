@@ -13,13 +13,13 @@ namespace Notifo.SDK.Configuration;
 public interface IAuthenticator
 {
     /// <summary>
-    /// Gets the JWT bearer token.
+    /// Gets the authentication token.
     /// </summary>
     /// <param name="ct">The cancellation token.</param>
     /// <returns>
-    /// The JWT bearer token.
+    /// The authentication token.
     /// </returns>
-    Task<string> GetBearerTokenAsync(
+    Task<AuthToken> GetTokenAsync(
         CancellationToken ct);
 
     /// <summary>
@@ -30,7 +30,7 @@ public interface IAuthenticator
     /// <returns>
     /// The task for completion.
     /// </returns>
-    Task RemoveTokenAsync(string token,
+    Task RemoveTokenAsync(AuthToken token,
         CancellationToken ct);
 
     /// <summary>

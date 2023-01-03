@@ -22,20 +22,21 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
         {
             this.options = new StaticNotifoOptions(options);
 
-            if (!string.IsNullOrWhiteSpace(options.ApiKey))
-            {
-                HttpClient = new HttpClient();
-                HttpClient.DefaultRequestHeaders.Add("ApiKey", options.ApiKey);
-            }
-            else
-            {
-                var authenticator = new Authenticator(parent, options.ClientId, options.ClientSecret);
+            var authenticator =
+                new CachingAuthenticator(new Authenticator(parent,
+                    options.ApiKey,
+                    options.ClientId,
+                    options.ClientSecret));
 
-                HttpClient = new HttpClient(new AuthenticatingHttpMessageHandler(new CachingAuthenticator(authenticator)));
-            }
+            HttpClient = new HttpClient(new AuthenticatingHttpMessageHandler(authenticator))
+            {
+                BaseAddress = new Uri(options.ApiUrl)
+            };
 
-            HttpClient.BaseAddress = new Uri(options.ApiUrl);
-            HttpClient.Timeout = options.Timeout;
+            if (options.Timeout > TimeSpan.Zero)
+            {
+                HttpClient.Timeout = options.Timeout;
+            }
         }
 
         public bool IsMatch(INotifoOptions options)

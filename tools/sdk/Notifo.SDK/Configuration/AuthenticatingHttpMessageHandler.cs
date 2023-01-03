@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace Notifo.SDK.Configuration;
 
@@ -41,9 +40,9 @@ internal sealed class AuthenticatingHttpMessageHandler : DelegatingHandler
     private async Task<HttpResponseMessage> InterceptAsync(HttpRequestMessage request, bool retry,
         CancellationToken cancellationToken)
     {
-        var token = await authenticator.GetBearerTokenAsync(cancellationToken);
+        var token = await authenticator.GetTokenAsync(cancellationToken);
 
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Headers.TryAddWithoutValidation(token.HeaderName, token.HeaderValue);
 
         var response = await base.SendAsync(request, cancellationToken);
 
