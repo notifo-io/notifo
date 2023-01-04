@@ -35,7 +35,10 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
                 HttpClient.BaseAddress = new Uri(options.ApiUrl);
             }
 
-            HttpClient.Timeout = options.Timeout;
+            if (options.Timeout > TimeSpan.Zero && options.Timeout < TimeSpan.MaxValue)
+            {
+                HttpClient.Timeout = options.Timeout;
+            }
         }
 
         public bool IsMatch(INotifoOptions options)

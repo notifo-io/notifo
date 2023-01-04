@@ -10,7 +10,7 @@ namespace Notifo.SDK;
 /// <summary>
 /// Provides static options.
 /// </summary>
-public sealed class StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOptions>
+public record StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOptions>
 {
     /// <inheritdoc />
     public string ApiUrl { get; set; } = "https://app.notifo.io";
@@ -45,6 +45,12 @@ public sealed class StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOpti
         ClientId = source.ClientId;
         ClientSecret = source.ClientSecret;
         Timeout = source.Timeout;
+    }
+
+    /// <inheritdoc />
+    public virtual HttpClient BuildHttpClient(HttpMessageHandler handler)
+    {
+        return new HttpClient(handler);
     }
 
     /// <inheritdoc />
