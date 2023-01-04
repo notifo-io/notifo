@@ -41,4 +41,16 @@ public interface INotifoOptions
     /// Validates the options.
     /// </summary>
     void Validate();
+
+    /// <summary>
+    /// Builds the HTTP client from the handler.
+    /// </summary>
+    /// <param name="handler">The client handler.</param>
+    /// <returns>
+    /// The created HTTP client.
+    /// </returns>
+    HttpClient BuildHttpClient(HttpMessageHandler handler)
+    {
+        return new HttpClient(handler);
+    }
 }

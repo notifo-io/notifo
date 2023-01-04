@@ -7,10 +7,7 @@
 
 namespace Notifo.SDK.Configuration;
 
-/// <summary>
-/// The default http client provider.
-/// </summary>
-public class DefaultHttpClientProvider : IHttpClientProvider
+internal sealed class DefaultHttpClientProvider : IHttpClientProvider
 {
     private readonly INotifoOptions options;
     private StoredHttpClient currentClient;
@@ -31,7 +28,7 @@ public class DefaultHttpClientProvider : IHttpClientProvider
                     options.ClientId,
                     options.ClientSecret));
 
-            HttpClient = parent.BuildHttpClient(new AuthenticatingHttpMessageHandler(authenticator));
+            HttpClient = options.BuildHttpClient(new AuthenticatingHttpMessageHandler(authenticator));
 
             if (HttpClient.BaseAddress == null)
             {
@@ -47,29 +44,11 @@ public class DefaultHttpClientProvider : IHttpClientProvider
         }
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DefaultHttpClientProvider"/> class with the options.
-    /// </summary>
-    /// <param name="options">The options. Cannot be null.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="options"/>is null.</exception>
     public DefaultHttpClientProvider(INotifoOptions options)
     {
         this.options = options;
     }
 
-    /// <summary>
-    /// Builds the HTTP client from the handler.
-    /// </summary>
-    /// <param name="handler">The client handler.</param>
-    /// <returns>
-    /// The created HTTP client.
-    /// </returns>
-    public virtual HttpClient BuildHttpClient(HttpMessageHandler handler)
-    {
-        return new HttpClient(handler);
-    }
-
-    /// <inheritdoc />
     public HttpClient Get()
     {
         var httpClient = currentClient;
@@ -82,7 +61,6 @@ public class DefaultHttpClientProvider : IHttpClientProvider
         return httpClient.HttpClient;
     }
 
-    /// <inheritdoc />
     public void Return(HttpClient httpClient)
     {
     }

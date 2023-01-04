@@ -156,6 +156,8 @@ public sealed class NotifoClientBuilder
                 throw new InvalidOperationException("Options are not defined.");
             }
 
+            options.Validate();
+
             httpClientProvider = new DefaultHttpClientProvider(options);
         }
 
