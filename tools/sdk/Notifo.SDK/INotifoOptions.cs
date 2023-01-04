@@ -49,7 +49,7 @@ public interface INotifoOptions
     /// <returns>
     /// The created HTTP client.
     /// </returns>
-    HttpClient BuildHttpClient(HttpMessageHandler handler)
+    HttpClient BuildHttpClient(DelegatingHandler handler)
     {
         return new HttpClient(handler);
     }
