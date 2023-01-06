@@ -32,8 +32,8 @@ public sealed class PollingArguments<T>
 
 public static class Extensions
 {
-    public static async Task<LogEntryDto[]> PollAsync(this ILogsClient logsClient, string appId, string userId,
-        PollingArguments<LogEntryDto> args = null)
+    public static async Task<LogEntryDto[]> PollAsync(this ILogsClient logsClient, string appId, string? userId,
+        PollingArguments<LogEntryDto>? args = null)
     {
         var result = Array.Empty<LogEntryDto>();
 
@@ -58,8 +58,8 @@ public static class Extensions
         return result;
     }
 
-    public static async Task<UserNotificationDetailsDto[]> PollAsync(this INotificationsClient notificationsClient, string appId, string userId,
-        PollingArguments<UserNotificationDetailsDto> args = null)
+    public static async Task<UserNotificationDetailsDto[]> PollAsync(this INotificationsClient notificationsClient, string appId, string? userId,
+        PollingArguments<UserNotificationDetailsDto>? args = null)
     {
         var result = Array.Empty<UserNotificationDetailsDto>();
 
@@ -84,8 +84,8 @@ public static class Extensions
         return result;
     }
 
-    public static async Task<UserNotificationDetailsDto[]> PollCorrelatedAsync(this INotificationsClient notificationsClient, string appId, string correlationId,
-        PollingArguments<UserNotificationDetailsDto> args = null)
+    public static async Task<UserNotificationDetailsDto[]> PollCorrelatedAsync(this INotificationsClient notificationsClient, string appId, string? correlationId,
+        PollingArguments<UserNotificationDetailsDto>? args = null)
     {
         var result = Array.Empty<UserNotificationDetailsDto>();
 
@@ -111,7 +111,7 @@ public static class Extensions
     }
 
     public static async Task<UserNotificationDto[]> PollMyAsync(this INotificationsClient notificationsClient,
-        PollingArguments<UserNotificationDto> args = null)
+        PollingArguments<UserNotificationDto>? args = null)
     {
         var result = Array.Empty<UserNotificationDto>();
 

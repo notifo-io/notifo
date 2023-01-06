@@ -52,7 +52,7 @@ public class CreatedAppFixture : ClientFixture
 
             app = await FindAppAsync();
 
-            return app;
+            return app!;
         });
 
         await CreateContributorAsync("sebastian@squidex.io");
@@ -101,7 +101,7 @@ public class CreatedAppFixture : ClientFixture
         await Client.Apps.PostIntegrationAsync(AppId, request);
     }
 
-    private async Task<AppDto> FindAppAsync()
+    private async Task<AppDto?> FindAppAsync()
     {
         var apps = await Client.Apps.GetAppsAsync();
 

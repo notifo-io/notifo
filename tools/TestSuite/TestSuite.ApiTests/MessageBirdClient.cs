@@ -52,6 +52,6 @@ public sealed class MessageBirdClient
 
     public Task<MessageBirdMessages> GetMessagesAsync(int limit)
     {
-        return httpClient.GetFromJsonAsync<MessageBirdMessages>($"/messages?limit={limit}");
+        return httpClient.GetFromJsonAsync<MessageBirdMessages>($"/messages?limit={limit}")!;
     }
 }

@@ -235,9 +235,9 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
-        Assert.NotNull(notification_1.FirstConfirmed);
-        Assert.NotNull(notification_1.FirstSeen);
-        Assert.NotNull(notification_1.FirstDelivered);
+        Assert.NotNull(notification_1?.FirstConfirmed);
+        Assert.NotNull(notification_1?.FirstSeen);
+        Assert.NotNull(notification_1?.FirstDelivered);
     }
 
     [Theory]
@@ -280,8 +280,8 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
-        Assert.NotNull(notification_1.FirstSeen);
-        Assert.NotNull(notification_1.FirstDelivered);
+        Assert.NotNull(notification_1?.FirstSeen);
+        Assert.NotNull(notification_1?.FirstDelivered);
     }
 
     [Theory]
@@ -322,7 +322,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
-        Assert.NotNull(notification_1.FirstDelivered);
+        Assert.NotNull(notification_1?.FirstDelivered);
     }
 
     private async Task MarkAsSeenAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy)
@@ -386,6 +386,14 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
                 break;
 
+            case TrackingStrategy.TrackingUrlWithSDKClient:
+                using (var httpClient = _.Client.CreateHttpClient())
+                {
+                    await httpClient.GetAsync(notification.ConfirmUrl);
+                }
+
+                break;
+
             case TrackingStrategy.TrackingToken:
                 var tokenRequest = new TrackNotificationDto
                 {
@@ -409,12 +417,20 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         }
     }
 
-    private static async Task MarkAsDeliveredAsync(UserNotificationDetailsDto notification, TrackingStrategy strategy)
+    private async Task MarkAsDeliveredAsync(UserNotificationDetailsDto notification, TrackingStrategy strategy)
     {
         switch (strategy)
         {
             case TrackingStrategy.TrackingUrl:
                 using (var httpClient = new HttpClient())
+                {
+                    await httpClient.GetAsync(notification.TrackDeliveredUrl);
+                }
+
+                break;
+
+            case TrackingStrategy.TrackingUrlWithSDKClient:
+                using (var httpClient = _.Client.CreateHttpClient())
                 {
                     await httpClient.GetAsync(notification.TrackDeliveredUrl);
                 }

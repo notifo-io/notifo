@@ -15,6 +15,6 @@ public static class Factories
 
     public static async Task<T> CreateAsync<T>(string key, Func<Task<T>> factory)
     {
-        return (T)await Instances.GetOrAdd(key, async (_, f) => await f(), factory);
+        return (T)await Instances.GetOrAdd(key, async (_, f) => (await f())!, factory);
     }
 }

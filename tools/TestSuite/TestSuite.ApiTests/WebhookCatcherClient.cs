@@ -64,7 +64,7 @@ internal sealed class WebhookCatcherClient
 
         response.EnsureSuccessStatusCode();
 
-        var responseObj = await response.Content.ReadFromJsonAsync<WebhookSession>(cancellationToken: ct);
+        var responseObj = (await response.Content.ReadFromJsonAsync<WebhookSession>(cancellationToken: ct))!;
 
         return ($"http://{EndpointHost}:{EndpointPort}/{responseObj.Uuid}", responseObj.Uuid);
     }
@@ -72,7 +72,7 @@ internal sealed class WebhookCatcherClient
     public async Task<WebhookRequest[]> GetRequestsAsync(string sessionId,
         CancellationToken ct = default)
     {
-        var result = await httpClient.GetFromJsonAsync<WebhookRequest[]>($"/api/session/{sessionId}/requests", ct);
+        var result = (await httpClient.GetFromJsonAsync<WebhookRequest[]>($"/api/session/{sessionId}/requests", ct))!;
 
         foreach (var request in result)
         {

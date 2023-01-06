@@ -51,7 +51,7 @@ internal sealed class MailcatcherClient
     public Task<ReceivedEmail[]> GetMessagesAsync(
         CancellationToken ct = default)
     {
-        return httpClient.GetFromJsonAsync<ReceivedEmail[]>("/messages", ct);
+        return httpClient.GetFromJsonAsync<ReceivedEmail[]>("/messages", ct)!;
     }
 
     public async Task<ReceivedEmailBody> GetBodyAsync(int id,

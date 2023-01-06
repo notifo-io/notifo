@@ -15,7 +15,7 @@ public class CachingAuthenticator : IAuthenticator
 {
     private readonly IAuthenticator authenticator;
     private DateTimeOffset cacheExpires;
-    private AuthToken cacheEntry;
+    private AuthToken? cacheEntry;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CachingAuthenticator"/> class with the cache key,
@@ -70,7 +70,7 @@ public class CachingAuthenticator : IAuthenticator
     /// <returns>
     /// The JWT bearer token or null if not found in the cache.
     /// </returns>
-    protected AuthToken GetFromCache()
+    protected AuthToken? GetFromCache()
     {
         if (cacheExpires < DateTimeOffset.UtcNow)
         {

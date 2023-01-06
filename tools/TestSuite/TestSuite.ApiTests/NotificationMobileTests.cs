@@ -68,9 +68,9 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
         var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
-        Assert.NotNull(notification_1.FirstConfirmed);
-        Assert.NotNull(notification_1.FirstSeen);
-        Assert.NotNull(notification_1.FirstDelivered);
+        Assert.NotNull(notification_1?.FirstConfirmed);
+        Assert.NotNull(notification_1?.FirstSeen);
+        Assert.NotNull(notification_1?.FirstDelivered);
     }
 
     [Theory]
@@ -113,12 +113,12 @@ public class NotificationMobileTests : IClassFixture<CreatedAppFixture>
         var notifications_1 = await _.Client.Notifications.PollAsync(_.AppId, user_0.Id, args1);
         var notification_1 = notifications_1.SingleOrDefault();
 
-        Assert.NotNull(notification_1.FirstSeen);
-        Assert.NotNull(notification_1.FirstDelivered);
-        Assert.NotNull(notification_1.Channels[Providers.MobilePush].FirstSeen);
-        Assert.NotNull(notification_1.Channels[Providers.MobilePush].FirstDelivered);
-        Assert.NotNull(notification_1.Channels[Providers.MobilePush].Status.First().Value.FirstSeen);
-        Assert.NotNull(notification_1.Channels[Providers.MobilePush].Status.First().Value.FirstDelivered);
+        Assert.NotNull(notification_1?.FirstSeen);
+        Assert.NotNull(notification_1?.FirstDelivered);
+        Assert.NotNull(notification_1?.Channels[Providers.MobilePush].FirstSeen);
+        Assert.NotNull(notification_1?.Channels[Providers.MobilePush].FirstDelivered);
+        Assert.NotNull(notification_1?.Channels[Providers.MobilePush].Status.First().Value.FirstSeen);
+        Assert.NotNull(notification_1?.Channels[Providers.MobilePush].Status.First().Value.FirstDelivered);
     }
 
     private async Task MarkAsSeenAsync(UserNotificationDetailsDto notification, UserDto user, TrackingStrategy strategy, bool useDeviceIdentifier)

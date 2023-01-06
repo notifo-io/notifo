@@ -30,12 +30,12 @@ public sealed class DateTimeOffsetConverter : JsonConverter<DateTimeOffset>
     {
         if (reader.TokenType == JsonToken.String)
         {
-            return DateTimeOffset.Parse(reader.Value.ToString()!, CultureInfo.InvariantCulture);
+            return DateTimeOffset.Parse(reader.Value!.ToString()!, CultureInfo.InvariantCulture);
         }
 
         if (reader.TokenType == JsonToken.Date)
         {
-            return (DateTime)reader.Value;
+            return (DateTime)reader.Value!;
         }
 
         throw new JsonException($"Not a valid date time, expected String or Date, but got {reader.TokenType}.");
