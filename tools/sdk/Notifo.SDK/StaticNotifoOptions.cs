@@ -16,13 +16,13 @@ public record StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOptions>
     public string ApiUrl { get; set; } = "https://app.notifo.io";
 
     /// <inheritdoc />
-    public string ApiKey { get; set; }
+    public string? ApiKey { get; set; }
 
     /// <inheritdoc />
-    public string ClientId { get; set; }
+    public string? ClientId { get; set; }
 
     /// <inheritdoc />
-    public string ClientSecret { get; set; }
+    public string? ClientSecret { get; set; }
 
     /// <inheritdoc />
     public TimeSpan Timeout { get; set; }

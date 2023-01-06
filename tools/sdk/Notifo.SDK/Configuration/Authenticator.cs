@@ -19,9 +19,9 @@ public class Authenticator : IAuthenticator
 {
     private const string TokenUrl = "connect/token";
     private readonly IHttpClientProvider httpClientProvider;
-    private readonly string apiKey;
-    private readonly string clientId;
-    private readonly string clientSecret;
+    private readonly string? apiKey;
+    private readonly string? clientId;
+    private readonly string? clientSecret;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Authenticator"/> class.
@@ -30,7 +30,7 @@ public class Authenticator : IAuthenticator
     /// <param name="apiKey">The API key.</param>
     /// <param name="clientId">The client ID.</param>
     /// <param name="clientSecret">The client secret.</param>
-    public Authenticator(IHttpClientProvider httpClientProvider, string apiKey, string clientId, string clientSecret)
+    public Authenticator(IHttpClientProvider httpClientProvider, string? apiKey, string? clientId, string? clientSecret)
     {
         this.httpClientProvider = httpClientProvider;
         this.apiKey = apiKey;
@@ -72,7 +72,7 @@ public class Authenticator : IAuthenticator
         var httpClient = httpClientProvider.Get();
         try
         {
-            var httpRequest = BuildRequest();
+            var httpRequest = BuildRequest(clientId, clientSecret);
 
             using (var response = await httpClient.SendAsync(httpRequest, ct))
             {
@@ -98,13 +98,13 @@ public class Authenticator : IAuthenticator
         }
     }
 
-    private HttpRequestMessage BuildRequest()
+    private HttpRequestMessage BuildRequest(string id, string secret)
     {
         var parameters = new Dictionary<string, string>
         {
             ["grant_type"] = "client_credentials",
-            ["client_id"] = clientId,
-            ["client_secret"] = clientSecret,
+            ["client_id"] = id,
+            ["client_secret"] = secret,
             ["scope"] = "NotifoAPI"
         };
 

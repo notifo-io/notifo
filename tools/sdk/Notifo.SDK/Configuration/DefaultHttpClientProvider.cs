@@ -22,10 +22,11 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
             this.options = new StaticNotifoOptions(options);
 
             var authenticator =
-                new CachingAuthenticator(new Authenticator(parent,
-                    options.ApiKey,
-                    options.ClientId,
-                    options.ClientSecret));
+                new CachingAuthenticator(
+                    new Authenticator(parent,
+                        options.ApiKey,
+                        options.ClientId,
+                        options.ClientSecret));
 
             httpMessageHandler = options.Configure(new AuthenticatingHttpMessageHandler(authenticator));
             httpMessageHandler.InnerHandler ??= new HttpClientHandler();
