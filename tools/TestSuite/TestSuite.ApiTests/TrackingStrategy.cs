@@ -10,6 +10,7 @@ namespace TestSuite.ApiTests;
 public enum TrackingStrategy
 {
     TrackingUrl,
+    TrackingUrlWithSDKClient,
     TrackingToken,
     Id
 }
