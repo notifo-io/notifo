@@ -15,8 +15,7 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
     private sealed class StoredHttpClient
     {
         private readonly StaticNotifoOptions options;
-
-        public HttpClient HttpClient { get; }
+        private readonly DelegatingHandler httpMessageHandler;
 
         public StoredHttpClient(DefaultHttpClientProvider parent, INotifoOptions options)
         {
@@ -28,17 +27,27 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
                     options.ClientId,
                     options.ClientSecret));
 
-            HttpClient = options.BuildHttpClient(new AuthenticatingHttpMessageHandler(authenticator));
+            httpMessageHandler = options.Configure(new AuthenticatingHttpMessageHandler(authenticator));
+            httpMessageHandler.InnerHandler ??= new HttpClientHandler();
+        }
 
-            if (HttpClient.BaseAddress == null)
+        public HttpClient CreateHttpClient()
+        {
+            var httpClient = new HttpClient(httpMessageHandler, false);
+
+            if (httpClient.BaseAddress == null)
             {
-                HttpClient.BaseAddress = new Uri(options.ApiUrl);
+                httpClient.BaseAddress = new Uri(options.ApiUrl);
             }
 
             if (options.Timeout > TimeSpan.Zero && options.Timeout < TimeSpan.MaxValue)
             {
-                HttpClient.Timeout = options.Timeout;
+                httpClient.Timeout = options.Timeout;
             }
+
+            ((INotifoOptions)options).Configure(httpClient);
+
+            return httpClient;
         }
 
         public bool IsMatch(INotifoOptions options)
@@ -54,14 +63,14 @@ internal sealed class DefaultHttpClientProvider : IHttpClientProvider
 
     public HttpClient Get()
     {
-        var httpClient = currentClient;
+        var storedClient = currentClient;
 
-        if (httpClient?.IsMatch(options) != true)
+        if (storedClient?.IsMatch(options) != true)
         {
-            httpClient = currentClient = new StoredHttpClient(this, options);
+            storedClient = currentClient = new StoredHttpClient(this, options);
         }
 
-        return httpClient.HttpClient;
+        return storedClient.CreateHttpClient();
     }
 
     public void Return(HttpClient httpClient)

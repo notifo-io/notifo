@@ -48,12 +48,6 @@ public record StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOptions>
     }
 
     /// <inheritdoc />
-    public virtual HttpClient BuildHttpClient(HttpMessageHandler handler)
-    {
-        return new HttpClient(handler);
-    }
-
-    /// <inheritdoc />
     public void Validate()
     {
         if (string.IsNullOrWhiteSpace(ApiKey) && string.IsNullOrWhiteSpace(ClientId) && string.IsNullOrWhiteSpace(ClientSecret))

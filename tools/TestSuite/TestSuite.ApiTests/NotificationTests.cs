@@ -198,6 +198,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     [Theory]
     [InlineData(TrackingStrategy.TrackingToken)]
     [InlineData(TrackingStrategy.TrackingUrl)]
+    [InlineData(TrackingStrategy.TrackingUrlWithSDKClient)]
     [InlineData(TrackingStrategy.Id)]
     public async Task Should_mark_notification_as_confirmed(TrackingStrategy strategy)
     {
@@ -242,6 +243,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
     [Theory]
     [InlineData(TrackingStrategy.TrackingToken)]
     [InlineData(TrackingStrategy.TrackingUrl)]
+    [InlineData(TrackingStrategy.TrackingUrlWithSDKClient)]
     [InlineData(TrackingStrategy.Id)]
     public async Task Should_mark_notification_as_seen(TrackingStrategy strategy)
     {
@@ -284,6 +286,7 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
 
     [Theory]
     [InlineData(TrackingStrategy.TrackingUrl)]
+    [InlineData(TrackingStrategy.TrackingUrlWithSDKClient)]
     public async Task Should_mark_notification_as_delivered(TrackingStrategy strategy)
     {
         // STEP 0: Create user.
@@ -328,6 +331,14 @@ public partial class NotificationTests : IClassFixture<CreatedAppFixture>
         {
             case TrackingStrategy.TrackingUrl:
                 using (var httpClient = new HttpClient())
+                {
+                    await httpClient.GetAsync(notification.TrackSeenUrl);
+                }
+
+                break;
+
+            case TrackingStrategy.TrackingUrlWithSDKClient:
+                using (var httpClient = _.Client.CreateHttpClient())
                 {
                     await httpClient.GetAsync(notification.TrackSeenUrl);
                 }

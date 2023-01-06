@@ -43,14 +43,22 @@ public interface INotifoOptions
     void Validate();
 
     /// <summary>
-    /// Builds the HTTP client from the handler.
+    /// Configures the HTTP handler from the inner handler.
     /// </summary>
-    /// <param name="handler">The client handler.</param>
+    /// <param name="inner">The inner client handler.</param>
     /// <returns>
-    /// The created HTTP client.
+    /// The created HTTP client handler.
     /// </returns>
-    HttpClient BuildHttpClient(DelegatingHandler handler)
+    DelegatingHandler Configure(DelegatingHandler inner)
     {
-        return new HttpClient(handler);
+        return inner;
+    }
+
+    /// <summary>
+    /// Configures the HTTP client.
+    /// </summary>
+    /// <param name="client">The client.</param>
+    void Configure(HttpClient client)
+    {
     }
 }
