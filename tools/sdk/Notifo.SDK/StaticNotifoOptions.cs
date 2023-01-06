@@ -48,9 +48,9 @@ public record StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOptions>
     }
 
     /// <inheritdoc />
-    public void Validate()
+    public virtual void Validate()
     {
-        if (string.IsNullOrWhiteSpace(ApiKey) && string.IsNullOrWhiteSpace(ClientId) && string.IsNullOrWhiteSpace(ClientSecret))
+        if (string.IsNullOrWhiteSpace(ApiKey) && (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(ClientSecret)))
         {
             throw new InvalidOperationException("Neiter, API Key, nor Client ID and secret is defined.");
         }
