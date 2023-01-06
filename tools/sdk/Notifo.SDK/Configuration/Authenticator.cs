@@ -56,12 +56,17 @@ public class Authenticator : IAuthenticator
     }
 
     /// <inheritdoc/>
-    public async Task<AuthToken> GetTokenAsync(
+    public async Task<AuthToken?> GetTokenAsync(
         CancellationToken ct)
     {
         if (!string.IsNullOrWhiteSpace(apiKey))
         {
             return new AuthToken("ApiKey", apiKey, Timeout.InfiniteTimeSpan);
+        }
+
+        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+        {
+            return null;
         }
 
         var httpClient = httpClientProvider.Get();

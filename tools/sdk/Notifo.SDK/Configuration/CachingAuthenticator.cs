@@ -29,7 +29,7 @@ public class CachingAuthenticator : IAuthenticator
     }
 
     /// <inheritdoc/>
-    public async Task<AuthToken> GetTokenAsync(
+    public async Task<AuthToken?> GetTokenAsync(
         CancellationToken ct)
     {
         var result = GetFromCache();
@@ -37,6 +37,11 @@ public class CachingAuthenticator : IAuthenticator
         if (result == null)
         {
             result = await authenticator.GetTokenAsync(ct);
+
+            if (result == null)
+            {
+                return result;
+            }
 
             if (result.Expires > TimeSpan.Zero && result.Expires < TimeSpan.MaxValue)
             {

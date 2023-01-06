@@ -19,7 +19,7 @@ public interface IAuthenticator
     /// <returns>
     /// The authentication token.
     /// </returns>
-    Task<AuthToken> GetTokenAsync(
+    Task<AuthToken?> GetTokenAsync(
         CancellationToken ct);
 
     /// <summary>

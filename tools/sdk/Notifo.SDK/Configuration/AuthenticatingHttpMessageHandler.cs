@@ -42,11 +42,14 @@ internal sealed class AuthenticatingHttpMessageHandler : DelegatingHandler
     {
         var token = await authenticator.GetTokenAsync(cancellationToken);
 
-        request.Headers.TryAddWithoutValidation(token.HeaderName, token.HeaderValue);
+        if (token != null)
+        {
+            request.Headers.TryAddWithoutValidation(token.HeaderName, token.HeaderValue);
+        }
 
         var response = await base.SendAsync(request, cancellationToken);
 
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        if (response.StatusCode == HttpStatusCode.Unauthorized && token != null)
         {
             await authenticator.RemoveTokenAsync(token, cancellationToken);
 
