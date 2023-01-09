@@ -8,28 +8,48 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Notifo.Domain.Identity;
-
-#pragma warning disable RECS0082 // Parameter has the same name as a member and hides it
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Identity;
 
-internal sealed record UserWithClaims(IdentityUser Identity, IReadOnlyList<Claim> Claims, IReadOnlySet<string> Roles) : IUser
+internal sealed class UserWithClaims : IUser
 {
+    private readonly IdentityUser snapshot;
+
+    public IdentityUser Identity { get; }
+
     public string Id
     {
-        get => Identity.Id;
+        get => snapshot.Id;
     }
 
     public string Email
     {
-        get => Identity.Email!;
+        get => snapshot.Email!;
     }
 
     public bool IsLocked
     {
-        get => Identity.LockoutEnd > DateTime.UtcNow;
+        get => snapshot.LockoutEnd > DateTime.UtcNow;
     }
 
+    public IReadOnlyList<Claim> Claims { get; }
+
+    public IReadOnlySet<string> Roles { get; }
+
     object IUser.Identity => Identity;
+
+    public UserWithClaims(IdentityUser user, IReadOnlyList<Claim> claims, IReadOnlySet<string> roles)
+    {
+        Identity = user;
+
+        // Clone the user so that we capture the previous values, even when the user is updated.
+        snapshot = SimpleMapper.Map(user, new IdentityUser());
+
+        // Claims are immutable so we do not need a copy of them.
+        Claims = claims;
+
+        // Roles are immutable so we do not need a copy of them.
+        Roles = roles;
+    }
 }
