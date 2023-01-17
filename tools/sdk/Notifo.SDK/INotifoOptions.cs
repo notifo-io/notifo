@@ -49,16 +49,11 @@ public interface INotifoOptions
     /// <returns>
     /// The created HTTP client handler.
     /// </returns>
-    DelegatingHandler Configure(DelegatingHandler inner)
-    {
-        return inner;
-    }
+    DelegatingHandler Configure(DelegatingHandler inner);
 
     /// <summary>
     /// Configures the HTTP client.
     /// </summary>
     /// <param name="client">The client.</param>
-    void Configure(HttpClient client)
-    {
-    }
+    void Configure(HttpClient client);
 }

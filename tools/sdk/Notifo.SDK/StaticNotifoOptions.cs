@@ -86,4 +86,16 @@ public record StaticNotifoOptions : INotifoOptions, IEquatable<INotifoOptions>
             ClientSecret == other.ClientSecret &&
             Timeout == other.Timeout;
     }
+
+    /// <inheritdoc />
+    public DelegatingHandler Configure(DelegatingHandler inner)
+    {
+        return inner;
+    }
+
+    /// <inheritdoc />
+    public void Configure(HttpClient client)
+    {
+        return;
+    }
 }
