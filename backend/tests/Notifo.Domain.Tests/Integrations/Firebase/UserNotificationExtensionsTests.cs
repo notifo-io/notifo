@@ -82,7 +82,7 @@ public class UserNotificationExtensionsTests
         var source = new MobilePushMessage
         {
             DeviceToken = token,
-            DeviceType = MobileDeviceType.Android,
+            DeviceType = MobileDeviceType.iOS,
             NotificationId = id,
             Wakeup = true
         };

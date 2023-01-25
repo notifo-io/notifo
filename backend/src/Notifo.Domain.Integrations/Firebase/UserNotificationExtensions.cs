@@ -26,6 +26,19 @@ public static class UserNotificationExtensions
                 new Dictionary<string, string>()
                     .WithNonEmpty("id", source.NotificationId.ToString());
 
+            message.Apns = new ApnsConfig
+            {
+                Headers =  new Dictionary<string, string>
+                {
+                    ["apns-push-type"] = "background",
+                    ["apns-priority"] = "5"
+                },
+                Aps = new Aps
+                {
+                    ContentAvailable = true
+                }
+            };
+
             return message;
         }
 
