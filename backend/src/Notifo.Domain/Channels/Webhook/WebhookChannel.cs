@@ -146,15 +146,14 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
     {
         using (Telemetry.Activities.StartActivity("Send"))
         {
-            using (var client = httpClientFactory.CreateClient())
-            {
-                var request = new HttpRequestMessage(new HttpMethod(job.Webhook.HttpMethod), job.Webhook.HttpUrl)
-                {
-                    Content = JsonContent.Create(job.Notification)
-                };
+            var client = httpClientFactory.CreateClient();
 
-                await client.SendAsync(request, ct);
-            }
+            var request = new HttpRequestMessage(new HttpMethod(job.Webhook.HttpMethod), job.Webhook.HttpUrl)
+            {
+                Content = JsonContent.Create(job.Notification)
+            };
+
+            await client.SendAsync(request, ct);
         }
     }
 

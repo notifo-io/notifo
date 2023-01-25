@@ -49,44 +49,43 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
     public async Task<MessagingResult> SendAsync(MessagingMessage message,
         CancellationToken ct)
     {
-        using (var httpClient = httpClientFactory.CreateClient())
+        var httpClient = httpClientFactory.CreateClient();
+
+        Exception? exception = null;
+
+        if (message.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
         {
-            Exception? exception = null;
-
-            if (message.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
+            try
             {
-                try
+                if (await SendAsync(httpClient, "phone", phoneNumber, message.Text, ct))
                 {
-                    if (await SendAsync(httpClient, "phone", phoneNumber, message.Text, ct))
-                    {
-                        return MessagingResult.Delivered;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
+                    return MessagingResult.Delivered;
                 }
             }
-
-            if (message.Targets.TryGetValue(ThreemaEmail, out var email))
+            catch (Exception ex)
             {
-                try
+                exception = ex;
+            }
+        }
+
+        if (message.Targets.TryGetValue(ThreemaEmail, out var email))
+        {
+            try
+            {
+                if (await SendAsync(httpClient, "email", email, message.Text, ct))
                 {
-                    if (await SendAsync(httpClient, "email", email, message.Text, ct))
-                    {
-                        return MessagingResult.Delivered;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    exception = ex;
+                    return MessagingResult.Delivered;
                 }
             }
-
-            if (exception != null)
+            catch (Exception ex)
             {
-                throw exception;
+                exception = ex;
             }
+        }
+
+        if (exception != null)
+        {
+            throw exception;
         }
 
         return MessagingResult.Skipped;

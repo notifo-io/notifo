@@ -88,9 +88,17 @@ public static class UserNotificationExtensions
         {
             androidConfig.TimeToLive = TimeSpan.FromSeconds(timeToLive);
 
-            var unixTimeSeconds = now.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
+            if (timeToLive == 0)
+            {
+                apnsHeaders["apns-expiration"] = "0";
+            }
+            else
+            {
+                var unixTimeSeconds = now.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
 
-            apnsHeaders["apns-expiration"] = timeToLive == 0 ? "0" : unixTimeSeconds;
+                apnsHeaders["apns-expiration"] = unixTimeSeconds;
+
+            }
         }
 
         var apnsConfig = new ApnsConfig

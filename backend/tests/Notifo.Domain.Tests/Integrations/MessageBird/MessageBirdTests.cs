@@ -31,6 +31,8 @@ public class MessageBirdTests
             PhoneNumbers = null,
             AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")!
         }));
+
+        sut = new MessageBirdSmsSender(A.Fake<ISmsCallback>(), client, null, null, null);
     }
 
     [Fact]

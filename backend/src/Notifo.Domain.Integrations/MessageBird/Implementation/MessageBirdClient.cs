@@ -24,11 +24,11 @@ public sealed class MessageBirdClient : IMessageBirdClient
     {
         this.httpClientFactory = () =>
         {
-            var client = httpClientFactory.CreateClient();
+            var httpClient = httpClientFactory.CreateClient();
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.Value.AccessKey);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("AccessKey", options.Value.AccessKey);
 
-            return client;
+            return httpClient;
         };
     }
 
