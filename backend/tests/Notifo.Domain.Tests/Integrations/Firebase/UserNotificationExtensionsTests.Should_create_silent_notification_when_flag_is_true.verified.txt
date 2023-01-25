@@ -2,5 +2,15 @@
   Token: token1,
   Data: {
     id: Guid_1
+  },
+  Apns: {
+    Headers: {
+      apns-priority: 5,
+      apns-push-type: background
+    },
+    Aps: {
+      ContentAvailable: true,
+      MutableContent: false
+    }
   }
 }
