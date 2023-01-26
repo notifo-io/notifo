@@ -107,11 +107,11 @@ jobs:
       - name: Publish - Rename Tags
         if: github.event_name != 'pull_request'
         run: |
-          docker tag notifo-local squidex/notifo:dev
-          docker tag notifo-local squidex/notifo:dev-${{ env.BUILD_NUMBER }}
+          docker tag notifo-local squidex/notifo-dev
+          docker tag notifo-local squidex/notifo-dev:${{ env.BUILD_NUMBER }}
     
       - name: Publish - Push Tags
         if: github.event_name != 'pull_request'
         run: |
-          docker push squidex/notifo:dev
-          docker push squidex/notifo:dev-${{ env.BUILD_NUMBER }}
+          docker push squidex/notifo-dev
+          docker push squidex/notifo-dev:${{ env.BUILD_NUMBER }}
