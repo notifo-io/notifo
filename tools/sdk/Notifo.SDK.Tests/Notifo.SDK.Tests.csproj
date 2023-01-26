@@ -2,9 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <RootNamespace>Notifo.SDK</RootNamespace>
   </PropertyGroup>
 
