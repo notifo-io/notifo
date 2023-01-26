@@ -6,8 +6,6 @@
 *.received.txt
 *.verified.txt.bak
 
-.awCache
-
 .vscode
 .awcache
 
@@ -22,8 +20,6 @@ _test-output/
 
 # NodeJS 
 node_modules/
-
-/backend/src/Squidex/Assets
 
 appsettings.Development.json
 appsettings.Production.json
