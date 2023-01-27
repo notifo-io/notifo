@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.Resources;
@@ -116,47 +117,46 @@ public sealed class MessageBirdIntegration : IIntegration
         this.clientPool = clientPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(ISmsSender) || serviceType == typeof(IMessagingSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        var sms = CreateSms(serviceType, configured, serviceProvider);
+        var sms = CreateSms(serviceType, context, serviceProvider);
 
         if (sms != null)
         {
             return sms;
         }
 
-        return CreateMessaging(serviceType, configured, serviceProvider);
+        return CreateMessaging(serviceType, context, serviceProvider);
     }
 
-    private ISmsSender? CreateSms(Type serviceType, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    private ISmsSender? CreateSms(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (serviceType != typeof(ISmsSender) || !SendSmsProperty.GetBoolean(configured))
+        if (serviceType != typeof(ISmsSender) || !SendSmsProperty.GetBoolean(context.Properties))
         {
             return null;
         }
 
-        var accessKey = AccessKeyProperty.GetString(configured);
+        var accessKey = AccessKeyProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(accessKey))
         {
             return null;
         }
 
-        var originatorName = OriginatorProperty.GetString(configured);
+        var originatorName = OriginatorProperty.GetString(context.Properties);
+        var originatorNumber = PhoneNumberProperty.GetNumber(context.Properties);
 
-        var phoneNumber = PhoneNumberProperty.GetNumber(configured);
-
-        if (phoneNumber == 0 && string.IsNullOrWhiteSpace(originatorName))
+        if (originatorNumber == 0 && string.IsNullOrWhiteSpace(originatorName))
         {
             return null;
         }
 
-        var phoneNumbersString = PhoneNumbersProperty.GetString(configured);
+        var phoneNumbersString = PhoneNumbersProperty.GetString(context.Properties);
         var phoneNumbersMap = ParsePhoneNumbers(phoneNumbersString);
 
         var client = clientPool.GetClient(accessKey);
@@ -164,40 +164,41 @@ public sealed class MessageBirdIntegration : IIntegration
         return new MessageBirdSmsSender(
             serviceProvider.GetRequiredService<ISmsCallback>(),
             client,
+            context.WebhookUrl,
             originatorName,
-            phoneNumber.ToString(CultureInfo.InvariantCulture),
+            originatorNumber.ToString(CultureInfo.InvariantCulture),
             phoneNumbersMap);
     }
 
-    private IMessagingSender? CreateMessaging(Type serviceType, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    private IMessagingSender? CreateMessaging(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (serviceType != typeof(IMessagingSender) || !SendWhatsAppProperty.GetBoolean(configured))
+        if (serviceType != typeof(IMessagingSender) || !SendWhatsAppProperty.GetBoolean(context.Properties))
         {
             return null;
         }
 
-        var accessKey = AccessKeyProperty.GetString(configured);
+        var accessKey = AccessKeyProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(accessKey))
         {
             return null;
         }
 
-        var channelId = WhatsAppChannelIdProperty.GetString(configured);
+        var channelId = WhatsAppChannelIdProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(channelId))
         {
             return null;
         }
 
-        var templateNamespace = WhatsAppTemplateNamespaceProperty.GetString(configured);
+        var templateNamespace = WhatsAppTemplateNamespaceProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(templateNamespace))
         {
             return null;
         }
 
-        var templateName = WhatsAppTemplateNameProperty.GetString(configured);
+        var templateName = WhatsAppTemplateNameProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(templateName))
         {
@@ -211,7 +212,23 @@ public sealed class MessageBirdIntegration : IIntegration
             client,
             channelId,
             templateNamespace,
-            templateName);
+            templateName,
+            context.WebhookUrl);
+    }
+
+    public async Task HandleWebhookAsync(Type serviceType, IntegrationContext context, HttpContext httpContext, IServiceProvider serviceProvider,
+        CancellationToken ct)
+    {
+        var sender = Create(serviceType, context, serviceProvider);
+
+        if (sender is MessageBirdSmsSender sms)
+        {
+            await sms.HandleRequestAsync(context, httpContext);
+        }
+        else if (sender is MessageBirdWhatsAppSender whatsapp)
+        {
+            await whatsapp.HandleRequestAsync(context, httpContext);
+        }
     }
 
     private static Dictionary<string, string>? ParsePhoneNumbers(string? source)

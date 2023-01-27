@@ -74,31 +74,31 @@ public sealed class WebhookIntegration : IIntegration
             Description = Texts.Webhook_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(WebhookDefinition);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var url = HttpUrlProperty.GetString(configured);
+            var url = HttpUrlProperty.GetString(context);
 
             if (url == null)
             {
                 return null;
             }
 
-            var httpMethod = HttpMethodProperty.GetString(configured);
+            var httpMethod = HttpMethodProperty.GetString(context);
 
             return new WebhookDefinition
             {
-                Name = NameProperty.GetString(configured),
+                Name = NameProperty.GetString(context),
                 HttpUrl = url,
                 HttpMethod = httpMethod ?? "POST",
-                SendAlways = SendAlwaysProperty.GetBoolean(configured),
-                SendConfirm = SendConfirmProperty.GetBoolean(configured)
+                SendAlways = SendAlwaysProperty.GetBoolean(context),
+                SendConfirm = SendConfirmProperty.GetBoolean(context)
             };
         }
 

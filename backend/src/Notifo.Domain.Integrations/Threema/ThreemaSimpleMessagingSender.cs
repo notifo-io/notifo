@@ -29,7 +29,7 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         this.apiSecret = apiSecret;
     }
 
-    public void AddTargets(MessagingTargets targets, UserContext user)
+    public void AddTargets(IDictionary<string, string> targets, UserContext user)
     {
         var phoneNumber = user.PhoneNumber;
 
@@ -46,20 +46,20 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         }
     }
 
-    public async Task<MessagingResult> SendAsync(MessagingMessage message,
+    public async Task<DeliveryResult> SendAsync(MessagingMessage message, IReadOnlyDictionary<string, string> targets,
         CancellationToken ct)
     {
         var httpClient = httpClientFactory.CreateClient();
 
         Exception? exception = null;
 
-        if (message.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
+        if (targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
         {
             try
             {
                 if (await SendAsync(httpClient, "phone", phoneNumber, message.Text, ct))
                 {
-                    return MessagingResult.Delivered;
+                    return DeliveryResult.Delivered;
                 }
             }
             catch (Exception ex)
@@ -68,13 +68,13 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
             }
         }
 
-        if (message.Targets.TryGetValue(ThreemaEmail, out var email))
+        if (targets.TryGetValue(ThreemaEmail, out var email))
         {
             try
             {
                 if (await SendAsync(httpClient, "email", email, message.Text, ct))
                 {
-                    return MessagingResult.Delivered;
+                    return DeliveryResult.Delivered;
                 }
             }
             catch (Exception ex)
@@ -88,7 +88,7 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
             throw exception;
         }
 
-        return MessagingResult.Skipped;
+        return DeliveryResult.Skipped;
     }
 
     private async Task<bool> SendAsync(HttpClient httpClient, string toKey, string toValue, string text,

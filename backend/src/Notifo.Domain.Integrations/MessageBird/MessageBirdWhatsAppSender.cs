@@ -22,6 +22,7 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
     private readonly string channelId;
     private readonly string templateNamespace;
     private readonly string templateName;
+    private readonly string webhookUrl;
 
     public string Name => "Messagbird Whatsapp";
 
@@ -30,16 +31,18 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         IMessageBirdClient messageBirdClient,
         string channelId,
         string templateNamespace,
-        string templateName)
+        string templateName,
+        string webhookUrl)
     {
         this.callback = callback;
         this.messageBirdClient = messageBirdClient;
         this.channelId = channelId;
         this.templateNamespace = templateNamespace;
         this.templateName = templateName;
+        this.webhookUrl = webhookUrl;
     }
 
-    public void AddTargets(MessagingTargets targets, UserContext user)
+    public void AddTargets(IDictionary<string, string> targets, UserContext user)
     {
         var phoneNumber = user.PhoneNumber;
 
@@ -49,12 +52,12 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         }
     }
 
-    public async Task<MessagingResult> SendAsync(MessagingMessage message,
+    public async Task<DeliveryResult> SendAsync(MessagingMessage message, IReadOnlyDictionary<string, string> targets,
         CancellationToken ct)
     {
-        if (!message.Targets.TryGetValue(WhatsAppPhoneNumber, out var to))
+        if (!targets.TryGetValue(WhatsAppPhoneNumber, out var to))
         {
-            return MessagingResult.Skipped;
+            return DeliveryResult.Skipped;
         }
 
         var textMessage = new WhatsAppTemplateMessage(
@@ -62,8 +65,8 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
             to,
             templateNamespace,
             templateName,
-            message.Language,
-            message.ReportUrl.AppendQueries("reference", message.NotificationId),
+            message.UserLanguage,
+            webhookUrl.AppendQueries("reference", message.NotificationId),
             new[] { message.Text });
 
         // Just send the normal text message.
@@ -72,7 +75,7 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         // Query for the status, otherwise we cannot retrieve errors.
         QueryAsync(message, response).Forget();
 
-        return MessagingResult.Sent;
+        return DeliveryResult.Sent;
     }
 
     private async Task QueryAsync(MessagingMessage message, ConversationResponse response)
@@ -91,20 +94,20 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
                     continue;
                 }
 
-                var result = default(MessagingResult);
+                var result = default(DeliveryResult);
 
                 switch (response.Status)
                 {
                     case MessageBirdStatus.Delivered:
-                        result = MessagingResult.Delivered;
+                        result = DeliveryResult.Delivered;
                         break;
                     case MessageBirdStatus.Delivery_Failed:
                     case MessageBirdStatus.Failed:
                     case MessageBirdStatus.Rejected:
-                        result = MessagingResult.Failed;
+                        result = DeliveryResult.Failed;
                         break;
                     case MessageBirdStatus.Sent:
-                        result = MessagingResult.Sent;
+                        result = DeliveryResult.Sent;
                         break;
                 }
 
@@ -124,7 +127,7 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         }
     }
 
-    public async Task HandleRequestAsync(AppContext app, HttpContext httpContext)
+    public async Task HandleRequestAsync(IntegrationContext app, HttpContext httpContext)
     {
         var status = await messageBirdClient.ParseWhatsAppWebhookAsync(httpContext);
 
@@ -143,16 +146,16 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
 
         await callback.HandleCallbackAsync(this, notificationId, result, status.Error?.Description);
 
-        static MessagingResult ParseStatus(WhatsAppWebhookRequest status)
+        static DeliveryResult ParseStatus(WhatsAppWebhookRequest status)
         {
             switch (status.Message.Status)
             {
                 case MessageBirdStatus.Delivered:
-                    return MessagingResult.Delivered;
+                    return DeliveryResult.Delivered;
                 case MessageBirdStatus.Delivery_Failed:
-                    return MessagingResult.Failed;
+                    return DeliveryResult.Failed;
                 case MessageBirdStatus.Sent:
-                    return MessagingResult.Sent;
+                    return DeliveryResult.Sent;
                 default:
                     return default;
             }

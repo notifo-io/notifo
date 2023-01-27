@@ -127,9 +127,9 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     {
         Guard.NotNull(job);
 
-        var notificationId = job.Tracking.UserNotificationId;
+        var notificationId = job.Notification.Id;
 
-        if (job.IsUpdate || job.Delay <= Duration.Zero || notificationId == default)
+        if (job.IsUpdate || job.Delay <= Duration.Zero)
         {
             return Task.FromResult(false);
         }

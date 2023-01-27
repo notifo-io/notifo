@@ -56,14 +56,14 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         this.userStore = userStore;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
-        if (!integrationManager.IsConfigured<IEmailSender>(context.App, notification))
+        if (notification.Silent || string.IsNullOrEmpty(context.User.EmailAddress))
         {
             yield break;
         }
 
-        if (notification.Silent || string.IsNullOrEmpty(context.User.EmailAddress))
+        if (!integrationManager.HasIntegration<IEmailSender>(context.App))
         {
             yield break;
         }
@@ -74,7 +74,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         };
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration configuration, SendContext context,
+    public async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         if (context.IsUpdate)
@@ -82,7 +82,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             return;
         }
 
-        if (!configuration.TryGetValue(EmailAddress, out var email))
+        if (!context.Configuration.TryGetValue(EmailAddress, out var email))
         {
             // Old configuration without a email address.
             return;
@@ -90,7 +90,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
         using (Telemetry.Activities.StartActivity("EmailChannel/SendAsync"))
         {
-            var job = new EmailJob(notification, setting, configurationId, email);
+            var job = new EmailJob(notification, context, email);
 
             await userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
@@ -175,7 +175,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     return;
                 }
 
-                var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification).Select(x => x.Target).ToList();
+                var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification).Select(x => x.Integration).ToList();
 
                 if (senders.Count == 0)
                 {
@@ -266,7 +266,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
     private Task UpdateAsync(EmailJob notification, ProcessStatus status, string? reason = null)
     {
-        return userNotificationStore.TrackAsync(notification.Tracking, status, reason);
+        return userNotificationStore.TrackAsync(notification.AsTrackingKey(Name), status, reason);
     }
 
     private async Task SkipAsync(List<EmailJob> jobs, LogMessage message)

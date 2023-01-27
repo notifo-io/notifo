@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Utils;
@@ -86,5 +87,34 @@ public static class ChannelExtensions
         }
 
         return body;
+    }
+
+    public static T Enrich<T>(this T message, ChannelJob job) where T : BaseMessage
+    {
+        message.NotificationId = job.Notification.Id;
+        message.TrackDeliveredUrl = job.Notification.TrackDeliveredUrl;
+        message.TrackSeenUrl = job.Notification.TrackSeenUrl;
+        message.UserId = job.Notification.UserId;
+        message.UserLanguage = job.Notification.UserLanguage;
+
+        return message;
+    }
+
+    public static IEnumerable<ActivityLink> Links(this ChannelJob job)
+    {
+        if (job.Notification.UserEventActivity != default)
+        {
+            yield return new ActivityLink(job.Notification.UserEventActivity);
+        }
+
+        if (job.Notification.EventActivity != default)
+        {
+            yield return new ActivityLink(job.Notification.EventActivity);
+        }
+
+        if (job.Notification.UserNotificationActivity != default)
+        {
+            yield return new ActivityLink(job.Notification.UserNotificationActivity);
+        }
     }
 }

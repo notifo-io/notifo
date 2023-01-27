@@ -28,7 +28,6 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
     private readonly ILogStore logStore;
     private readonly ISmsFormatter smsFormatter;
     private readonly ISmsTemplateStore smsTemplateStore;
-    private readonly ISmsUrl smsUrl;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
 
@@ -39,7 +38,6 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         IIntegrationManager integrationManager,
         ISmsFormatter smsFormatter,
         ISmsTemplateStore smsTemplateStore,
-        ISmsUrl smsUrl,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore)
     {
@@ -49,32 +47,33 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         this.logStore = logStore;
         this.smsFormatter = smsFormatter;
         this.smsTemplateStore = smsTemplateStore;
-        this.smsUrl = smsUrl;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
-        if (!integrationManager.IsConfigured<ISmsSender>(context.App, notification))
+        if (notification.Silent || string.IsNullOrWhiteSpace(context.User.PhoneNumber))
         {
             yield break;
         }
 
-        if (!string.IsNullOrWhiteSpace(context.User.PhoneNumber))
+        if (!integrationManager.HasIntegration<ISmsCallback>(context.App))
         {
-            yield return new SendConfiguration
-            {
-                [PhoneNumber] = context.User.PhoneNumber
-            };
+            yield break;
         }
+
+        yield return new SendConfiguration
+        {
+            [PhoneNumber] = context.User.PhoneNumber
+        };
     }
 
-    public async Task HandleCallbackAsync(ISmsSender source, Guid notificationId, string phoneNumber, SmsResult result, string? details = null)
+    public async Task HandleCallbackAsync(ISmsSender source, Guid notificationId, string phoneNumber, DeliveryResult result, string? details = null)
     {
         using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
         {
-            if (result == SmsResult.Unknown)
+            if (result == DeliveryResult.Unknown)
             {
                 return;
             }
@@ -90,7 +89,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         }
     }
 
-    private async Task UpdateAsync(UserNotification notification, SmsResult result, string integrationName, string? details)
+    private async Task UpdateAsync(UserNotification notification, DeliveryResult result, string integrationName, string? details)
     {
         if (!notification.Channels.TryGetValue(Name, out var channel))
         {
@@ -105,11 +104,11 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         {
             var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
 
-            if (result == SmsResult.Delivered)
+            if (result == DeliveryResult.Delivered)
             {
                 await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
             }
-            else if (result == SmsResult.Failed)
+            else if (result == DeliveryResult.Failed)
             {
                 var message = LogMessage.Sms_CallbackError(integrationName, details);
 
@@ -121,7 +120,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         }
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
+    public async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         if (context.IsUpdate)
@@ -129,7 +128,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             return;
         }
 
-        if (!properties.TryGetValue(PhoneNumber, out var phoneNumber))
+        if (!context.Configuration.TryGetValue(PhoneNumber, out var phoneNumber))
         {
             // Old configuration without a phone number.
             return;
@@ -137,7 +136,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
 
         using (Telemetry.Activities.StartActivity("SmsChannel/SendAsync"))
         {
-            var job = new SmsJob(notification, setting, configurationId, phoneNumber);
+            var job = new SmsJob(notification, context, phoneNumber);
 
             await userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
@@ -178,7 +177,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
     {
         using (Telemetry.Activities.StartActivity("Send"))
         {
-            var app = await appStore.GetCachedAsync(job.Tracking.AppId!, ct);
+            var app = await appStore.GetCachedAsync(job.Notification.AppId, ct);
 
             if (app == null)
             {
@@ -192,7 +191,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             {
                 await UpdateAsync(job, ProcessStatus.Attempt);
 
-                var senders = integrationManager.Resolve<ISmsSender>(app, job).ToList();
+                var senders = integrationManager.Resolve<ISmsSender>(app, job.Notification).Select(x => x.Integration).ToList();
 
                 if (senders.Count == 0)
                 {
@@ -200,27 +199,25 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                     return;
                 }
 
-                await SendCoreAsync(app, job, senders, ct);
+                await SendCoreAsync(job, senders, ct);
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Tracking.AppId!, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
     }
 
-    private async Task SendCoreAsync(App app, SmsJob job, List<(string Id, ISmsSender Sender)> senders,
+    private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders,
         CancellationToken ct)
     {
-        var lastSender = senders[^1].Sender;
-
-        foreach (var (integrationId, sender) in senders)
+        foreach (var sender in senders)
         {
             try
             {
                 var (skip, template) = await GetTemplateAsync(
-                    job.Tracking.AppId!,
+                    job.Notification.AppId,
                     job.TemplateLanguage,
                     job.TemplateName,
                     ct);
@@ -230,40 +227,45 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                     await SkipAsync(job, skip.Value);
                 }
 
-                var smsRequest = new SmsMessage(
-                    job.Tracking.UserNotificationId,
-                    job.PhoneNumber,
-                    smsFormatter.Format(template, job.Text),
-                    smsUrl.SmsWebhookUrl(app.Id, integrationId));
+                var smsRequest = new SmsMessage
+                {
+                    Text = smsFormatter.Format(template, job.SmsText),
+                    To = job.SmsNumber
+                };
+
+                // Set some default properties for the message.
+                smsRequest.Enrich(job);
 
                 var result = await sender.SendAsync(smsRequest, ct);
 
                 // Some integrations provide the actual result via webhook at a later point.
-                if (result == SmsResult.Delivered)
+                if (result == DeliveryResult.Delivered)
                 {
                     await UpdateAsync(job, ProcessStatus.Handled);
                     return;
                 }
 
                 // If the message has been sent, but not delivered yet, we also do not try other integrations.
-                if (result == SmsResult.Sent)
+                if (result == DeliveryResult.Sent)
                 {
                     return;
                 }
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Tracking.AppId!, LogMessage.General_Exception(sender.Name, ex));
+                await logStore.LogAsync(job.Notification.AppId!, LogMessage.General_Exception(sender.Name, ex));
 
-                if (sender == lastSender)
+                if (sender == senders[^1])
                 {
+                    // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
                 }
             }
             catch (Exception)
             {
-                if (sender == lastSender)
+                if (sender == senders[^1])
                 {
+                    // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
                 }
             }
@@ -272,12 +274,14 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
 
     private Task UpdateAsync(SmsJob job, ProcessStatus status, string? reason = null)
     {
-        return userNotificationStore.TrackAsync(job.Tracking, status, reason);
+        var tracking = TrackingKey.ForNotification(job.Notification);
+
+        return userNotificationStore.TrackAsync(tracking, status, reason);
     }
 
     private async Task SkipAsync(SmsJob job, LogMessage message)
     {
-        await logStore.LogAsync(job.Tracking.AppId!, message);
+        await logStore.LogAsync(job.Notification.AppId!, message);
 
         await UpdateAsync(job, ProcessStatus.Skipped, message.Reason);
     }

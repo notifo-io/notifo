@@ -69,37 +69,37 @@ public sealed class MailjetIntegration : IIntegration
         this.serverPool = serverPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IEmailSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var publicKey = ApiKeyProperty.GetString(configured);
+            var publicKey = ApiKeyProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(publicKey))
             {
                 return null;
             }
 
-            var privateKey = ApiSecretProperty.GetString(configured);
+            var privateKey = ApiSecretProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(privateKey))
             {
                 return null;
             }
 
-            var fromEmail = FromEmailProperty.GetString(configured);
+            var fromEmail = FromEmailProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromEmail))
             {
                 return null;
             }
 
-            var fromName = FromNameProperty.GetString(configured);
+            var fromName = FromNameProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromName))
             {

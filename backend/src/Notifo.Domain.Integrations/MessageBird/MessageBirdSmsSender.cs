@@ -19,6 +19,7 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
     private readonly IMessageBirdClient messageBirdClient;
     private readonly string? originatorName;
     private readonly string? originatorNumber;
+    private readonly string webhookUrl;
     private readonly Dictionary<string, string>? phoneNumbers;
 
     public string Name => "MessageBird SMS";
@@ -26,6 +27,7 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
     public MessageBirdSmsSender(
         ISmsCallback callback,
         IMessageBirdClient messageBirdClient,
+        string webhookUrl,
         string? originatorName,
         string? originatorNumber,
         Dictionary<string, string>? phoneNumbers)
@@ -34,17 +36,22 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
         this.messageBirdClient = messageBirdClient;
         this.originatorName = originatorName;
         this.originatorNumber = originatorNumber;
+        this.webhookUrl = webhookUrl;
         this.phoneNumbers = phoneNumbers;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message,
+    public async Task<DeliveryResult> SendAsync(SmsMessage message,
         CancellationToken ct)
     {
-        var (notificationId, to, text, callbackUrl) = message;
         try
         {
             // Call the phone number and use a local phone number for the user.
-            var sms = new Implementation.SmsMessage(GetOriginator(to), to, text, notificationId.ToString(), callbackUrl);
+            var sms = new Implementation.SmsMessage(
+                GetOriginator(message.To),
+                message.To,
+                message.Text,
+                message.NotificationId.ToString(),
+                webhookUrl);
 
             var response = await messageBirdClient.SendSmsAsync(sms, ct);
 
@@ -57,11 +64,11 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
             }
 
             // We get the status asynchronously via webhook, therefore we tell the channel not mark the process as completed.
-            return SmsResult.Sent;
+            return DeliveryResult.Sent;
         }
         catch (ArgumentException ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_Error, to, ex.Message);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_Error, message.To, ex.Message);
 
             throw new DomainException(errorMessage);
         }
@@ -88,7 +95,7 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
         return originatorNumber!;
     }
 
-    public async Task HandleRequestAsync(AppContext app, HttpContext httpContext)
+    public async Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
     {
         var status = await messageBirdClient.ParseSmsWebhookAsync(httpContext);
 
@@ -107,16 +114,16 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
 
         await callback.HandleCallbackAsync(this, notificationId, status.Recipient, result);
 
-        static SmsResult ParseStatus(SmsWebhookRequest status)
+        static DeliveryResult ParseStatus(SmsWebhookRequest status)
         {
             switch (status.Status)
             {
                 case MessageBirdStatus.Delivered:
-                    return SmsResult.Delivered;
+                    return DeliveryResult.Delivered;
                 case MessageBirdStatus.Delivery_Failed:
-                    return SmsResult.Failed;
+                    return DeliveryResult.Failed;
                 case MessageBirdStatus.Sent:
-                    return SmsResult.Sent;
+                    return DeliveryResult.Sent;
                 default:
                     return default;
             }

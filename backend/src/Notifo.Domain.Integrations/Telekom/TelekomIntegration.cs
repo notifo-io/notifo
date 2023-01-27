@@ -47,23 +47,23 @@ public sealed class TelekomIntegration : IIntegration
             Description = Texts.Telekom_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(ISmsSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var apikey = ApiKeyProperty.GetString(configured);
+            var apikey = ApiKeyProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(apikey))
             {
                 return null;
             }
 
-            var phoneNumber = PhoneNumberProperty.GetNumber(configured);
+            var phoneNumber = PhoneNumberProperty.GetNumber(context.Properties);
 
             if (phoneNumber == 0)
             {

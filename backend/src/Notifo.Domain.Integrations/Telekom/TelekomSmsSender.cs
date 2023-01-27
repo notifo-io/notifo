@@ -20,6 +20,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
     private readonly IHttpClientFactory httpClientFactory;
     private readonly string apikey;
     private readonly string phoneNumber;
+    private readonly string webhookUrl;
 
     public string Name => "Telekom SMS";
 
@@ -27,18 +28,19 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
         ISmsCallback callback,
         IHttpClientFactory httpClientFactory,
         string apikey,
-        string phoneNumber)
+        string phoneNumber,
+        string webhookUrl)
     {
         this.apikey = apikey;
         this.phoneNumber = phoneNumber;
+        this.webhookUrl = webhookUrl;
         this.callback = callback;
         this.httpClientFactory = httpClientFactory;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message,
+    public async Task<DeliveryResult> SendAsync(SmsMessage message,
         CancellationToken ct)
     {
-        var (_, to, text, _) = message;
         try
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -46,8 +48,8 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
             var content = new FormUrlEncodedContent(new Dictionary<string, string?>
             {
                 [RequestKeys.From] = ConvertPhoneNumber(phoneNumber),
-                [RequestKeys.To] = ConvertPhoneNumber(to),
-                [RequestKeys.Body] = text,
+                [RequestKeys.To] = ConvertPhoneNumber(message.To),
+                [RequestKeys.Body] = message.Text,
                 [RequestKeys.StatusCallback] = BuildCallbackUrl(message),
             });
 
@@ -64,24 +66,24 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
 
             if (!string.IsNullOrWhiteSpace(result?.ErrorMessage))
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, to, result.ErrorMessage);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, message.To, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
 
-            return SmsResult.Sent;
+            return DeliveryResult.Sent;
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, to);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, message.To);
 
             throw new DomainException(errorMessage, ex);
         }
     }
 
-    private static string BuildCallbackUrl(SmsMessage message)
+    private string BuildCallbackUrl(SmsMessage message)
     {
-        return message.CallbackUrl.AppendQueries(RequestKeys.ReferenceValue, message.NotificationId, RequestKeys.ReferenceNumber, message.To);
+        return webhookUrl.AppendQueries(RequestKeys.ReferenceValue, message.NotificationId, RequestKeys.ReferenceNumber, message.To);
     }
 
     private static string ConvertPhoneNumber(string number)
@@ -96,7 +98,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
         return number;
     }
 
-    public Task HandleRequestAsync(AppContext app, HttpContext httpContext)
+    public Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
     {
         var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
@@ -118,17 +120,17 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
 
         return callback.HandleCallbackAsync(this, notificationId, referenceNumber, result);
 
-        static SmsResult ParseStatus(string status)
+        static DeliveryResult ParseStatus(string status)
         {
             switch (status)
             {
                 case "sent":
-                    return SmsResult.Sent;
+                    return DeliveryResult.Sent;
                 case "delivered":
-                    return SmsResult.Delivered;
+                    return DeliveryResult.Delivered;
                 case "failed":
                 case "undelivered":
-                    return SmsResult.Failed;
+                    return DeliveryResult.Failed;
                 default:
                     return default;
             }

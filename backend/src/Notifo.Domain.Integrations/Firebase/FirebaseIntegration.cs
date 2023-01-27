@@ -68,31 +68,31 @@ public sealed class FirebaseIntegration : IIntegration
         this.messagingPool = messagingPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IMobilePushSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var projectId = ProjectIdProperty.GetString(configured);
+            var projectId = ProjectIdProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(projectId))
             {
                 return null;
             }
 
-            var credentials = CredentialsProperty.GetString(configured);
+            var credentials = CredentialsProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(credentials))
             {
                 return null;
             }
 
-            var sendSilentIOS = SilentISOProperty.GetBoolean(configured);
-            var sendSilentAndroid = SilentAndroidProperty.GetBoolean(configured);
+            var sendSilentIOS = SilentISOProperty.GetBoolean(context.Properties);
+            var sendSilentAndroid = SilentAndroidProperty.GetBoolean(context.Properties);
 
             return new FirebaseMobilePushSender(
                 () => messagingPool.GetMessaging(projectId, credentials),

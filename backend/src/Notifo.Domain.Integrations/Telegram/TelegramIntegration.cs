@@ -15,7 +15,6 @@ namespace Notifo.Domain.Integrations.Telegram;
 public sealed class TelegramIntegration : IIntegration
 {
     private readonly TelegramBotClientPool botClientPool;
-    private readonly IMessagingUrl messagingUrl;
 
     public static readonly UserProperty UserUsername = new UserProperty("telegramUserId", PropertyType.Text)
     {
@@ -58,22 +57,21 @@ public sealed class TelegramIntegration : IIntegration
             Description = Texts.Telegram_Description
         };
 
-    public TelegramIntegration(TelegramBotClientPool botClientPool, IMessagingUrl messagingUrl)
+    public TelegramIntegration(TelegramBotClientPool botClientPool)
     {
         this.botClientPool = botClientPool;
-        this.messagingUrl = messagingUrl;
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IMessagingSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var accessToken = AccessToken.GetString(configured);
+            var accessToken = AccessToken.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(accessToken))
             {
@@ -89,27 +87,23 @@ public sealed class TelegramIntegration : IIntegration
         return null;
     }
 
-    public async Task OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
+    public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
-        var client = GetBotClient(configured);
+        await GetBotClient(context).SetWebhookAsync(context.WebhookUrl, cancellationToken: ct);
 
-        var url = messagingUrl.MessagingWebhookUrl(app.Id, id);
-
-        await client.SetWebhookAsync(url, cancellationToken: ct);
+        return IntegrationStatus.Verified;
     }
 
-    public async Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
+    public async Task OnRemovedAsync(IntegrationContext context,
         CancellationToken ct)
     {
-        var client = GetBotClient(configured);
-
-        await client.DeleteWebhookAsync(cancellationToken: ct);
+        await GetBotClient(context).DeleteWebhookAsync(cancellationToken: ct);
     }
 
-    private ITelegramBotClient GetBotClient(IntegrationConfiguration configured)
+    private ITelegramBotClient GetBotClient(IntegrationContext context)
     {
-        var accessToken = AccessToken.GetString(configured);
+        var accessToken = AccessToken.GetString(context.Properties);
 
         return botClientPool.GetBotClient(accessToken!);
     }

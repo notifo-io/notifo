@@ -5,29 +5,37 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.AspNetCore.Http;
+
 namespace Notifo.Domain.Integrations;
 
 public interface IIntegration
 {
     IntegrationDefinition Definition { get; }
 
-    object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider);
+    bool CanCreate(Type serviceType, IntegrationContext context);
 
-    bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured);
+    object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider);
 
-    Task<IntegrationStatus> OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
-        CancellationToken ct)
-    {
-        return Task.FromResult(IntegrationStatus.Verified);
-    }
-
-    Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
+    Task HandleWebhookAsync(Type serviceType, IntegrationContext context, HttpContext httpContext, IServiceProvider serviceProvider,
         CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
-    Task<IntegrationStatus> CheckStatusAsync(AppContext app, string id, IntegrationConfiguration configured,
+    Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
+        CancellationToken ct)
+    {
+        return Task.FromResult(IntegrationStatus.Verified);
+    }
+
+    Task OnRemovedAsync(IntegrationContext context,
+        CancellationToken ct)
+    {
+        return Task.CompletedTask;
+    }
+
+    Task<IntegrationStatus> CheckStatusAsync(IntegrationContext context,
         CancellationToken ct)
     {
         return Task.FromResult(IntegrationStatus.Verified);

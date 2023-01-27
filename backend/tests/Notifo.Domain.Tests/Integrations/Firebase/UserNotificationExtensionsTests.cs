@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Globalization;
-using FirebaseAdmin.Messaging;
 
 namespace Notifo.Domain.Integrations.Firebase;
 

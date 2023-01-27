@@ -9,6 +9,7 @@ using System.Globalization;
 using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
+using Google.Api;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Integrations.Smtp;
@@ -89,23 +90,23 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         await amazonSES.GetSendQuotaAsync(ct);
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IEmailSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var fromEmail = FromEmailProperty.GetString(configured);
+            var fromEmail = FromEmailProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromEmail))
             {
                 return null;
             }
 
-            var fromName = FromNameProperty.GetString(configured);
+            var fromName = FromNameProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromName))
             {
@@ -118,10 +119,10 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return null;
     }
 
-    public async Task<IntegrationStatus> OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
+    public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
-        var fromEmails = GetEmailAddresses(configured).ToList();
+        var fromEmails = GetEmailAddresses(context.Properties).ToList();
 
         if (fromEmails.Count == 0)
         {
@@ -129,9 +130,9 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         }
 
         // Ensure that the email address is not used by another app.
-        await ValidateEmailAddressesAsync(app, fromEmails, ct);
+        await ValidateEmailAddressesAsync(context, fromEmails, ct);
 
-        var previousEmails = GetEmailAddresses(previous).ToList();
+        var previousEmails = GetEmailAddresses(previous?.Properties).ToList();
 
         if (previousEmails.SetEquals(fromEmails, StringComparer.OrdinalIgnoreCase))
         {
@@ -157,21 +158,21 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return IntegrationStatus.Pending;
     }
 
-    public async Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
+    public async Task OnRemovedAsync(IntegrationContext context,
         CancellationToken ct)
     {
         // Remove unused email addresses to make them available for other apps.
-        await CleanEmailsAsync(GetEmailAddresses(configured), ct);
+        await CleanEmailsAsync(GetEmailAddresses(context.Properties), ct);
     }
 
     public async Task<IntegrationStatus> CheckStatusAsync(IntegrationConfiguration configured,
         CancellationToken ct)
     {
         // Check the status every few minutes to update the integration.
-        return await GetStatusAsync(GetEmailAddresses(configured).ToList(), ct);
+        return await GetStatusAsync(GetEmailAddresses(configured.Properties).ToList(), ct);
     }
 
-    private async Task ValidateEmailAddressesAsync(AppContext app, List<string> fromEmails,
+    private async Task ValidateEmailAddressesAsync(IntegrationContext context, List<string> fromEmails,
         CancellationToken ct)
     {
         if (!options.BindEmailAddresses)
@@ -183,7 +184,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         {
             var key = StoreKey(email);
 
-            if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), app.Id, ct) != app.Id)
+            if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), context.AppId, ct) != context.AppId)
             {
                 var error = string.Format(CultureInfo.InvariantCulture, Texts.AmazonSES_ReservedEmailAddress, email);
 
@@ -300,16 +301,16 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return IntegrationStatus.VerificationFailed;
     }
 
-    private static IEnumerable<string> GetEmailAddresses(IntegrationConfiguration? configured)
+    private static IEnumerable<string> GetEmailAddresses(IReadOnlyDictionary<string, string>? properties)
     {
-        if (configured == null)
+        if (properties == null)
         {
             yield break;
         }
 
         var hasAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        var fromEmail = FromEmailProperty.GetString(configured);
+        var fromEmail = FromEmailProperty.GetString(properties);
 
         if (!string.IsNullOrWhiteSpace(fromEmail))
         {
@@ -319,7 +320,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             }
         }
 
-        var additionalEmails = AdditionalFromEmails.GetString(configured);
+        var additionalEmails = AdditionalFromEmails.GetString(properties);
 
         if (string.IsNullOrWhiteSpace(additionalEmails))
         {

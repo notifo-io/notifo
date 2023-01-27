@@ -46,23 +46,23 @@ public sealed class ThreemaSimpleIntegration : IIntegration
             Description = Texts.ThreemaSimple_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IMessagingSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var apiIdentity = ApiIdentity.GetString(configured);
+            var apiIdentity = ApiIdentity.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(apiIdentity))
             {
                 return null;
             }
 
-            var apiSecret = ApiSecret.GetString(configured);
+            var apiSecret = ApiSecret.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(apiSecret))
             {

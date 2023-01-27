@@ -9,6 +9,6 @@ namespace Notifo.Domain.Integrations;
 
 public interface ISmsSender : IIntegrationService
 {
-    Task<SmsResult> SendAsync(SmsMessage message,
+    Task<DeliveryResult> SendAsync(SmsMessage message,
         CancellationToken ct);
 }

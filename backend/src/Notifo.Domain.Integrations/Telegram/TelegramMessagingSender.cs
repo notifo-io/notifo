@@ -23,19 +23,19 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
     private const int Attempts = 5;
     private const string TelegramChatId = nameof(TelegramChatId);
     private readonly IIntegrationAdapter adapter;
-    private readonly IMessagingCallback calback;
+    private readonly IMessagingCallback callback;
     private readonly Func<ITelegramBotClient> client;
 
     public string Name => "Telegram";
 
-    public TelegramMessagingSender(IIntegrationAdapter adapter, IMessagingCallback calback, Func<ITelegramBotClient> client)
+    public TelegramMessagingSender(IIntegrationAdapter adapter, IMessagingCallback callback, Func<ITelegramBotClient> client)
     {
         this.adapter = adapter;
-        this.calback = calback;
+        this.callback = callback;
         this.client = client;
     }
 
-    public void AddTargets(MessagingTargets targets, UserContext user)
+    public void AddTargets(IDictionary<string, string> targets, UserContext user)
     {
         var chatId = GetChatId(user);
 
@@ -45,17 +45,17 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
         }
     }
 
-    public async Task<MessagingResult> SendAsync(MessagingMessage message,
+    public async Task<DeliveryResult> SendAsync(MessagingMessage message, IReadOnlyDictionary<string, string> targets,
         CancellationToken ct)
     {
-        if (!message.Targets.TryGetValue(TelegramChatId, out var chatId))
+        if (!targets.TryGetValue(TelegramChatId, out var chatId))
         {
-            return MessagingResult.Skipped;
+            return DeliveryResult.Skipped;
         }
 
         await SendMessageAsync(message.Text, chatId, ct);
 
-        return MessagingResult.Delivered;
+        return DeliveryResult.Delivered;
     }
 
     private async Task SendMessageAsync(string text, string chatId,
@@ -79,7 +79,7 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
         }
     }
 
-    public async Task HandleRequestAsync(AppContext app, HttpContext httpContext)
+    public async Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
     {
         var update = await ParseUpdateAsync(httpContext.Request.Body);
 
@@ -87,7 +87,7 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
         {
             case UpdateType.Message when IsUpdate(update):
                 await UpdateUser(
-                    app,
+                    context,
                     update.Message?.From!,
                     update.Message?.Chat!,
                     default);
@@ -95,10 +95,10 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
             case UpdateType.MyChatMember:
                 var chatId = GetChatId(update.MyChatMember!.Chat);
 
-                await SendMessageAsync(GetWelcomeMessage(app), chatId, default);
+                await SendMessageAsync(GetWelcomeMessage(context), chatId, default);
 
                 await UpdateUser(
-                    app,
+                    context,
                     update.MyChatMember.From,
                     update.MyChatMember.Chat,
                     default);
@@ -106,7 +106,7 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
         }
     }
 
-    private async Task UpdateUser(AppContext app, TelegramUser from, TelegramChat chat,
+    private async Task UpdateUser(IntegrationContext context, TelegramUser from, TelegramChat chat,
         CancellationToken ct)
     {
         var chatId = GetChatId(chat);
@@ -115,19 +115,19 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
 
         if (string.IsNullOrWhiteSpace(username))
         {
-            await SendMessageAsync(GetUserNotFoundMessage(app), chatId, ct);
+            await SendMessageAsync(GetUserNotFoundMessage(context), chatId, ct);
             return;
         }
 
-        var user = await adapter.FindUserByPropertyAsync(app.Id, TelegramIntegration.UserUsername.Name, username, default);
+        var user = await adapter.FindUserByPropertyAsync(context.AppId, TelegramIntegration.UserUsername.Name, username, default);
 
         if (user == null)
         {
-            await SendMessageAsync(GetUserNotFoundMessage(app), chatId, ct);
+            await SendMessageAsync(GetUserNotFoundMessage(context), chatId, ct);
             return;
         }
 
-        await adapter.UpdateUserAsync(app.Id, user.Id, TelegramChatId, chatId, default);
+        await adapter.UpdateUserAsync(context.AppId, user.Id, TelegramChatId, chatId, default);
     }
 
     private static string GetChatId(TelegramChat chat)
@@ -135,14 +135,14 @@ public sealed class TelegramMessagingSender : IMessagingSender, IIntegrationHook
         return chat.Id.ToString(CultureInfo.InvariantCulture)!;
     }
 
-    private static string GetWelcomeMessage(AppContext app)
+    private static string GetWelcomeMessage(IntegrationContext context)
     {
-        return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_WelcomeMessage, app.Name);
+        return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_WelcomeMessage, context.AppName);
     }
 
-    private static string GetUserNotFoundMessage(AppContext app)
+    private static string GetUserNotFoundMessage(IntegrationContext context)
     {
-        return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_UserNotFound, app.Name);
+        return string.Format(CultureInfo.InvariantCulture, Texts.Telegram_UserNotFound, context.AppName);
     }
 
     private static string? GetChatId(UserContext user)

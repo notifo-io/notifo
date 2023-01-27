@@ -84,37 +84,37 @@ public sealed class SmtpIntegration : IIntegration
         this.serverPool = serverPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IEmailSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var host = HostProperty.GetString(configured);
+            var host = HostProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(host))
             {
                 return null;
             }
 
-            var port = HostPortProperty.GetNumber(configured);
+            var port = HostPortProperty.GetNumber(context.Properties);
 
             if (port == 0)
             {
                 return null;
             }
 
-            var fromEmail = FromEmailProperty.GetString(configured);
+            var fromEmail = FromEmailProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromEmail))
             {
                 return null;
             }
 
-            var fromName = FromNameProperty.GetString(configured);
+            var fromName = FromNameProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromName))
             {
@@ -123,10 +123,10 @@ public sealed class SmtpIntegration : IIntegration
 
             var options = new SmtpOptions
             {
-                Username = UsernameProperty.GetString(configured),
+                Username = UsernameProperty.GetString(context.Properties),
                 Host = host,
                 HostPort = (int)port,
-                Password = PasswordProperty.GetString(configured)
+                Password = PasswordProperty.GetString(context.Properties)
             };
 
             return new SmtpEmailSender(

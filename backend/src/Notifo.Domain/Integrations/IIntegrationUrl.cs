@@ -7,11 +7,9 @@
 
 namespace Notifo.Domain.Integrations;
 
-public enum MessagingResult
+public interface IIntegrationUrl
 {
-    Unknown,
-    Skipped,
-    Sent,
-    Delivered,
-    Failed
+    string WebhookUrl(string appId, string integration);
+
+    string CallbackUrl();
 }

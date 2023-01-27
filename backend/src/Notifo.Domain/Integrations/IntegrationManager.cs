@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Resources;
@@ -14,12 +15,14 @@ using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Timers;
 using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
+using IIntegrationRegistries = System.Collections.Generic.IEnumerable<Notifo.Domain.Integrations.IIntegrationRegistry>;
 
 namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 {
-    private readonly IEnumerable<IIntegration> integrations;
+    private readonly IIntegrationRegistries integrationRegistries;
+    private readonly IIntegrationUrl integrationUrl;
     private readonly IAppStore appStore;
     private readonly IMediator mediator;
     private readonly IServiceProvider serviceProvider;
@@ -29,15 +32,21 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
     public IEnumerable<IntegrationDefinition> Definitions
     {
-        get => integrations.Select(x => x.Definition);
+        get => integrationRegistries.SelectMany(x => x.Integrations).Select(x => x.Definition);
     }
 
-    public IntegrationManager(IEnumerable<IIntegration> integrations, IAppStore appStore, IMediator mediator,
-        IServiceProvider serviceProvider, ILogger<IntegrationManager> log)
+    public IntegrationManager(
+        IAppStore appStore,
+        IIntegrationRegistries integrationRegistries,
+        IIntegrationUrl integrationUrl,
+        IMediator mediator,
+        IServiceProvider serviceProvider,
+        ILogger<IntegrationManager> log)
     {
-        this.integrations = integrations;
         this.appStore = appStore;
         this.mediator = mediator;
+        this.integrationRegistries = integrationRegistries;
+        this.integrationUrl = integrationUrl;
         this.serviceProvider = serviceProvider;
         this.log = log;
 
@@ -58,19 +67,14 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         return timer.StopAsync();
     }
 
-    public Task ValidateAsync(ConfiguredIntegration configured,
+    public Task<IntegrationStatus> OnInstallAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
         CancellationToken ct = default)
     {
+        Guard.NotNullOrEmpty(id);
+        Guard.NotNull(app);
         Guard.NotNull(configured);
 
-        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
-
-        if (integration == null)
-        {
-            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
-
-            throw new ValidationException(error);
-        }
+        var integration = GetIntegrationOrThrow(configured.Type);
 
         var errors = new List<ValidationError>();
 
@@ -89,136 +93,59 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
             throw new ValidationException(errors);
         }
 
-        return Task.CompletedTask;
+        return integration.OnConfiguredAsync(BuildContext(app, id, configured), previous, ct);
     }
 
-    public Task<IntegrationStatus> HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    public Task OnCallbackAsync(string id, App app, HttpContext httpContext,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
-        Guard.NotNull(configured);
 
-        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
-
-        if (integration == null)
+        if (!app.Integrations.TryGetValue(id, out var configured))
         {
-            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
-
-            throw new ValidationException(error);
+            return Task.CompletedTask;
         }
 
-        return integration.OnConfiguredAsync(app.ToContext(), id, configured, previous, ct);
+        var integration = GetIntegrationOrThrow(configured.Type);
+
+        return integration.HandleWebhookAsync(BuildContext(app, id, configured), httpContext, ct);
     }
 
-    public Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+    public Task OnRemoveAsync(string id, App app, ConfiguredIntegration configured,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
-        Guard.NotNull(configured);
 
-        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
-
-        if (integration == null)
+        if (!app.Integrations.TryGetValue(id, out var _))
         {
-            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
-
-            throw new ValidationException(error);
+            return Task.CompletedTask;
         }
 
-        return integration.OnRemovedAsync(app.ToContext(), id, configured, ct);
+        var integration = GetIntegrationOrThrow(configured.Type);
+
+        return integration.OnRemovedAsync(BuildContext(app, id, configured), ct);
     }
 
-    public bool IsConfigured<T>(App app, IIntegrationTarget? target = null)
-    {
-        Guard.NotNull(app);
-
-        foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
-        {
-            if (integration.CanCreate(typeof(T), actualId, configured))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class
+    public T? Resolve<T>(string id, App app) where T : class
     {
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
 
-        foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
+        if (!app.Integrations.TryGetValue(id, out var configured))
         {
-            if (IsMatch(id, actualId) && integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
-            {
-                return created;
-            }
+            return null;
         }
 
-        return default;
-    }
+        var integration = GetIntegration(configured.Type);
 
-    public IEnumerable<(string, T)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class
-    {
-        Guard.NotNull(app);
-
-        foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
+        if (integration == null)
         {
-            if (integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
-            {
-                yield return (actualId, created);
-            }
+            return null;
         }
 
-        yield break;
-    }
-
-    private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, IIntegrationTarget? target)
-    {
-        var configureds = app.Integrations;
-
-        foreach (var (actualId, configured) in configureds)
-        {
-            if (!IsReady(configured))
-            {
-                continue;
-            }
-
-            if (target != null && (!IsMatchingTest(configured, target) || !IsMatchingCondition(configured, target)))
-            {
-                continue;
-            }
-
-            var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
-
-            if (integration != null)
-            {
-                yield return (actualId, configured, integration);
-            }
-        }
-    }
-
-    private static bool IsReady(ConfiguredIntegration configured)
-    {
-        return configured.Enabled && configured.Status == IntegrationStatus.Verified;
-    }
-
-    private static bool IsMatchingTest(ConfiguredIntegration configured, IIntegrationTarget target)
-    {
-        return configured.Test == null || configured.Test.Value == target.Test;
-    }
-
-    private bool IsMatchingCondition(ConfiguredIntegration configured, IIntegrationTarget target)
-    {
-        return conditionEvaluator.Evaluate(configured.Condition, target);
-    }
-
-    private static bool IsMatch(string id, string actualId)
-    {
-        return actualId == id;
+        return integration.Create(typeof(T), BuildContext(app, id, configured), serviceProvider) as T;
     }
 
     public async Task CheckAsync(
@@ -246,7 +173,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                         continue;
                     }
 
-                    var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+                    var integration = GetIntegration(configured.Type);
 
                     if (integration == null)
                     {
@@ -257,7 +184,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                     IntegrationStatus newStatus = configured.Status;
                     try
                     {
-                        await integration.CheckStatusAsync(app.ToContext(), id, configured, ct);
+                        await integration.CheckStatusAsync(BuildContext(app, id, configured), ct);
                     }
                     catch (Exception ex)
                     {
@@ -282,5 +209,103 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         {
             log.LogError(ex, "Check integrations failed.");
         }
+    }
+
+    private IIntegration GetIntegrationOrThrow(string type)
+    {
+        var integration = GetIntegration(type);
+
+        if (integration == null)
+        {
+            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, type);
+
+            throw new ValidationException(error);
+        }
+
+        return integration;
+    }
+
+    private IIntegration? GetIntegration(string type)
+    {
+        foreach (var registry in integrationRegistries)
+        {
+            if (registry.TryGetIntegration(type, out var integration))
+            {
+                return integration;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsReady(ConfiguredIntegration configured)
+    {
+        return configured.Enabled && configured.Status == IntegrationStatus.Verified;
+    }
+
+    private static bool IsMatchingTest(ConfiguredIntegration configured, IIntegrationTarget target)
+    {
+        return configured.Test == null || configured.Test.Value == target.Test;
+    }
+
+    private bool IsMatchingCondition(ConfiguredIntegration configured, IIntegrationTarget target)
+    {
+        return conditionEvaluator.Evaluate(configured.Condition, target);
+    }
+
+    private IntegrationContext BuildContext(App app, string id, ConfiguredIntegration configured)
+    {
+        return new IntegrationContext
+        {
+            AppId = app.Id,
+            AppName = app.Name,
+            CallbackToken = string.Empty,
+            CallbackUrl = integrationUrl.CallbackUrl(),
+            IntegrationId = id,
+            Properties = configured.Properties,
+            WebhookUrl = integrationUrl.WebhookUrl(app.Id, id)
+        };
+    }
+
+    public IEnumerable<(T Integration, string Id)> GetMatchingIntegrations<T>(App app, IIntegrationTarget target)
+    {
+        var configureds = app.Integrations;
+
+        foreach (var (id, configured) in configureds)
+        {
+            if (!IsReady(configured))
+            {
+                continue;
+            }
+
+            if (!IsMatchingTest(configured, target) || !IsMatchingCondition(configured, target))
+            {
+                continue;
+            }
+
+            var integration = GetIntegration(configured.Type);
+
+            if (integration == null)
+            {
+                continue;
+            }
+
+            yield break;
+        }
+    }
+
+    public IEnumerable<string> GetMatchingIntegrationIds<T>(App app, IIntegrationTarget target)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<(string Id, T Integration)> Resolve<T>(App app, IIntegrationTarget? target)
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool HasIntegration<T>(App app)
+    {
+        throw new NotImplementedException();
     }
 }

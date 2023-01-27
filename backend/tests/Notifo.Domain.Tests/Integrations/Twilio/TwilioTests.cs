@@ -37,6 +37,6 @@ public sealed class TwilioTests
 
         var response = await sut.SendAsync(message, default);
 
-        Assert.Equal(SmsResult.Sent, response);
+        Assert.Equal(DeliveryResult.Sent, response);
     }
 }

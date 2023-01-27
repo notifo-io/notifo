@@ -55,30 +55,30 @@ public sealed class MailchimpIntegration : IIntegration
             Description = Texts.Mailchimp_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(IEmailSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var apiKey = ApiKeyProperty.GetString(configured);
+            var apiKey = ApiKeyProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 return null;
             }
 
-            var fromEmail = FromEmailProperty.GetString(configured);
+            var fromEmail = FromEmailProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromEmail))
             {
                 return null;
             }
 
-            var fromName = FromNameProperty.GetString(configured);
+            var fromName = FromNameProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(fromName))
             {

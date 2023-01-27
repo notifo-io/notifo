@@ -20,48 +20,49 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
     private readonly ISmsCallback callback;
     private readonly ISmsClient client;
     private readonly string phoneNumber;
+    private readonly string webhookUrl;
 
     public string Name => "Twilio SMS";
 
-    public TwilioSmsSender(ISmsCallback callback, ISmsClient client, string phoneNumber)
+    public TwilioSmsSender(ISmsCallback callback, ISmsClient client, string phoneNumber, string webhookUrl)
     {
         this.callback = callback;
         this.client = client;
         this.phoneNumber = phoneNumber;
+        this.webhookUrl = webhookUrl;
     }
 
-    public async Task<SmsResult> SendAsync(SmsMessage message,
+    public async Task<DeliveryResult> SendAsync(SmsMessage message,
         CancellationToken ct)
     {
-        var (_, to, text, _) = message;
         try
         {
             var result = await MessageResource.CreateAsync(
-                ConvertPhoneNumber(to), null,
+                ConvertPhoneNumber(message.To), null,
                 ConvertPhoneNumber(phoneNumber), null,
-                text,
+                message.Text,
                 statusCallback: new Uri(BuildCallbackUrl(message)), client: client);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, to, result.ErrorMessage);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, message.To, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
 
-            return SmsResult.Sent;
+            return DeliveryResult.Sent;
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, to);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, message.To);
 
             throw new DomainException(errorMessage, ex);
         }
     }
 
-    private static string BuildCallbackUrl(SmsMessage request)
+    private string BuildCallbackUrl(SmsMessage request)
     {
-        return request.CallbackUrl.AppendQueries(RequestKeys.ReferenceValue, request.NotificationId, RequestKeys.ReferenceNumber, request.To);
+        return webhookUrl.AppendQueries(RequestKeys.ReferenceValue, request.NotificationId, RequestKeys.ReferenceNumber, request.To);
     }
 
     private static PhoneNumber ConvertPhoneNumber(string number)
@@ -76,7 +77,7 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
         return new PhoneNumber(number);
     }
 
-    public Task HandleRequestAsync(AppContext app, HttpContext httpContext)
+    public Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
     {
         var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
@@ -98,17 +99,17 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
 
         return callback.HandleCallbackAsync(this, notificationId, referenceNumber, result);
 
-        static SmsResult ParseStatus(string status)
+        static DeliveryResult ParseStatus(string status)
         {
             switch (status)
             {
                 case "sent":
-                    return SmsResult.Sent;
+                    return DeliveryResult.Sent;
                 case "delivered":
-                    return SmsResult.Delivered;
+                    return DeliveryResult.Delivered;
                 case "failed":
                 case "undelivered":
-                    return SmsResult.Failed;
+                    return DeliveryResult.Failed;
                 default:
                     return default;
             }

@@ -7,11 +7,8 @@
 
 namespace Notifo.Domain.Integrations;
 
-public enum SmsResult
+public interface IWebhookSender
 {
-    Unknown,
-    Skipped,
-    Sent,
-    Delivered,
-    Failed
+    Task SendAsync(WebhookMessage message,
+        CancellationToken ct = default);
 }

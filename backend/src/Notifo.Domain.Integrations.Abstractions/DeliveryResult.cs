@@ -7,9 +7,11 @@
 
 namespace Notifo.Domain.Integrations;
 
-public sealed class AppContext
+public enum DeliveryResult
 {
-    required public string Id { get; init; }
-
-    required public string Name { get; init; }
+    Unknown,
+    Skipped,
+    Sent,
+    Delivered,
+    Failed
 }

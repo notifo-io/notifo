@@ -90,9 +90,7 @@ public sealed class UpsertAppIntegration : AppCommand
             configured = configured with { Condition = Condition };
         }
 
-        await integrationManager.ValidateAsync(configured, ct);
-
-        var newStatus = await integrationManager.HandleConfiguredAsync(Id, target, configured, previousIntegration, ct);
+        var newStatus = await integrationManager.OnInstallAsync(Id, target, configured, previousIntegration, ct);
 
         if (newStatus != configured.Status)
         {

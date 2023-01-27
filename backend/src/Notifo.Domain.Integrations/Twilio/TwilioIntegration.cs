@@ -65,30 +65,30 @@ public sealed class TwilioIntegration : IIntegration
         this.clientPool = clientPool;
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(ISmsSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
-            var accountSid = AccountSidProperty.GetString(configured);
+            var accountSid = AccountSidProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(accountSid))
             {
                 return null;
             }
 
-            var authToken = AuthTokenProperty.GetString(configured);
+            var authToken = AuthTokenProperty.GetString(context.Properties);
 
             if (string.IsNullOrWhiteSpace(authToken))
             {
                 return null;
             }
 
-            var phoneNumber = PhoneNumberProperty.GetNumber(configured);
+            var phoneNumber = PhoneNumberProperty.GetNumber(context.Properties);
 
             if (phoneNumber == 0)
             {
@@ -100,34 +100,35 @@ public sealed class TwilioIntegration : IIntegration
             return new TwilioSmsSender(
                 serviceProvider.GetRequiredService<ISmsCallback>(),
                 client,
-                phoneNumber.ToString(CultureInfo.InvariantCulture));
+                phoneNumber.ToString(CultureInfo.InvariantCulture),
+                context.WebhookUrl);
         }
 
         return null;
     }
 
-    public async Task OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
+    public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
-        var accountSid = AccountSidProperty.GetString(configured);
+        var accountSid = AccountSidProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(accountSid))
         {
-            return;
+            return IntegrationStatus.Verified;
         }
 
-        var authToken = AuthTokenProperty.GetString(configured);
+        var authToken = AuthTokenProperty.GetString(context.Properties);
 
         if (string.IsNullOrWhiteSpace(authToken))
         {
-            return;
+            return IntegrationStatus.Verified;
         }
 
-        var phoneNumber = PhoneNumberProperty.GetNumber(configured);
+        var phoneNumber = PhoneNumberProperty.GetNumber(context.Properties);
 
         if (phoneNumber == 0)
         {
-            return;
+            return IntegrationStatus.Verified;
         }
 
         try
@@ -140,6 +141,8 @@ public sealed class TwilioIntegration : IIntegration
         {
             throw new ValidationException(Texts.Twilio_ErrorInvalidConfig);
         }
+
+        return IntegrationStatus.Verified;
     }
 
     private static PhoneNumber ConvertPhoneNumber(long number)

@@ -29,20 +29,21 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration
             Description = Texts.MessageBirdIntegrated_Description
         };
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
+    public bool CanCreate(Type serviceType, IntegrationContext context)
     {
         return serviceType == typeof(ISmsSender);
     }
 
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
+    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (CanCreate(serviceType, id, configured))
+        if (CanCreate(serviceType, context))
         {
             var options = serviceProvider.GetRequiredService<IOptions<MessageBirdOptions>>();
 
             return new MessageBirdSmsSender(
                 serviceProvider.GetRequiredService<ISmsCallback>(),
                 serviceProvider.GetRequiredService<IMessageBirdClient>(),
+                context.WebhookUrl,
                 null,
                 options.Value.PhoneNumber,
                 options.Value.PhoneNumbers);

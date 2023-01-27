@@ -5,9 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace Notifo.Domain.Integrations;
 
-public interface ISmsUrl
+public interface IIntegrationRegistry
 {
-    string SmsWebhookUrl(string appId, string integrationId);
+    IEnumerable<IIntegration> Integrations { get; }
+
+    bool TryGetIntegration(string type, [MaybeNullWhen(false)] out IIntegration integration);
 }

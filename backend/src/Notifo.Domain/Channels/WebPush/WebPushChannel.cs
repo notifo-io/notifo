@@ -56,7 +56,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         PublicKey = options.Value.VapidPublicKey;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
         if (notification.Silent)
         {
@@ -77,10 +77,10 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
+    public async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
-        if (!properties.TryGetValue(Endpoint, out var endpoint))
+        if (!context.Configuration.TryGetValue(Endpoint, out var endpoint))
         {
             // Old configuration without a mobile push token.
             return;
@@ -96,7 +96,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
                 return;
             }
 
-            var job = new WebPushJob(notification, setting, configurationId, subscription, serializer, context.IsUpdate);
+            var job = new WebPushJob(notification, context, subscription, serializer);
 
             // Do not use scheduling when the notification is an update.
             if (context.IsUpdate)
@@ -159,7 +159,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Tracking.AppId!, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -181,12 +181,12 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
         catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
         {
-            await logStore.LogAsync(job.Tracking.AppId!, LogMessage.WebPush_TokenInvalid(Name, job.Tracking.UserId!, job.Subscription.Endpoint));
+            await logStore.LogAsync(job.Notification.AppId, LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint));
 
             var command = new RemoveUserWebPushSubscription
             {
                 Endpoint = job.Subscription.Endpoint
-            }.WithTracking(job.Tracking);
+            }.WithBaseProperties(job.Notification.AppId, job.Notification.UserId);
 
             await mediator.SendAsync(command, ct);
         }
@@ -201,7 +201,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         // We only track the initial publication.
         if (!job.IsUpdate)
         {
-            await userNotificationStore.TrackAsync(job.Tracking, status, reason);
+            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), status, reason);
         }
     }
 }

@@ -97,7 +97,6 @@ public static class UserNotificationExtensions
                 var unixTimeSeconds = now.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
 
                 apnsHeaders["apns-expiration"] = unixTimeSeconds;
-
             }
         }
 

@@ -96,29 +96,12 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
             try
             {
-                var user = await userStore.GetCachedAsync(userEvent.AppId, userEvent.UserId);
+                var context = await BuildContextAsync(userEvent.AppId, userEvent.UserId, false, default);
 
-                if (user == null)
-                {
-                    await MarkFailedAsync(userEvent, LogMessage.User_Deleted("System", userEvent.UserId));
-                    return;
-                }
-
-                var app = await appStore.GetCachedAsync(userEvent.AppId);
-
-                if (app == null)
+                if (context == null)
                 {
                     return;
                 }
-
-                var context = new SendContext
-                {
-                    App = app,
-                    AppId = app.Id,
-                    User = user,
-                    UserId = user.Id,
-                    IsUpdate = false
-                };
 
                 var notification = await CreateUserNotificationAsync(userEvent, context);
 
@@ -147,9 +130,14 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                         continue;
                     }
 
+                    context.Setting = notificationChannel.Setting;
+
                     foreach (var (id, status) in notificationChannel.Status)
                     {
-                        await channel.SendAsync(notification, notificationChannel.Setting, id, status.Configuration, context, default);
+                        context.ConfigurationId = id;
+                        context.Configuration = status.Configuration;
+
+                        await channel.SendAsync(notification, context, default);
                     }
                 }
 
@@ -174,7 +162,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         }
     }
 
-    private async Task<UserNotification?> CreateUserNotificationAsync(UserEventMessage userEvent, SendContext context)
+    private async Task<UserNotification?> CreateUserNotificationAsync(UserEventMessage userEvent, ChannelContext context)
     {
         using (Telemetry.Activities.StartActivity("CreateUserNotification"))
         {
@@ -206,7 +194,11 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
                 if (notification.Channels.TryGetValue(channel.Name, out var channelConfig) && channelConfig.Setting.Send == ChannelSend.Send)
                 {
-                    var configurations = channel.GetConfigurations(notification, channelConfig.Setting, context);
+                    context.Configuration = null!;
+                    context.ConfigurationId = default;
+                    context.Setting = channelConfig.Setting;
+
+                    var configurations = channel.GetConfigurations(notification, context);
                     var configurationSet = false;
 
                     foreach (var configuration in configurations.NotNull())
@@ -252,29 +244,12 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
         try
         {
-            var app = await appStore.GetCachedAsync(notification.AppId, ct);
+            var context = await BuildContextAsync(notification.AppId, notification.UserId, true, ct);
 
-            if (app == null)
+            if (context == null)
             {
                 return;
             }
-
-            var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId, ct);
-
-            if (user == null)
-            {
-                await logStore.LogAsync(notification.AppId, LogMessage.User_Deleted("System", notification.UserId));
-                return;
-            }
-
-            var context = new SendContext
-            {
-                App = app,
-                AppId = app.Id,
-                User = user,
-                UserId = user.Id,
-                IsUpdate = true
-            };
 
             foreach (var channel in channels.Values)
             {
@@ -283,9 +258,14 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                     continue;
                 }
 
+                context.Setting = channelInfo.Setting;
+
                 foreach (var (id, status) in channelInfo.Status)
                 {
-                    await channel.SendAsync(notification, channelInfo.Setting, id, status.Configuration, context, ct);
+                    context.ConfigurationId = id;
+                    context.Configuration = status.Configuration;
+
+                    await channel.SendAsync(notification, context, ct);
                 }
             }
         }
@@ -323,8 +303,15 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
         foreach (var (notification, updated) in notifications)
         {
-            // If the notification has not been updated this tracking has happened before.
             if (!updated)
+            {
+                // If the notification has not been updated this tracking has happened before and we can just skip it.
+                continue;
+            }
+
+            var context = await BuildContextAsync(notification.AppId, notification.UserId, true, default);
+
+            if (context == null)
             {
                 continue;
             }
@@ -337,10 +324,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                     continue;
                 }
 
-                var numConfiguration = notification.Channels.GetOrAddDefault(token.Channel)?.Status.Count ?? 0;
-
-                // There is no configuration for this channel, so the notification has never been sent over.
-                if (numConfiguration == 0)
+                if (!notification.Channels.TryGetValue(token.Channel, out var channelInfo))
                 {
                     continue;
                 }
@@ -350,7 +334,13 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                     continue;
                 }
 
-                await channel.HandleSeenAsync(notification, token.ConfigurationId);
+                channelInfo.Status.TryGetValue(token.ConfigurationId, out var status);
+
+                context.ConfigurationId = token.ConfigurationId;
+                context.Configuration = status?.Configuration!;
+                context.Setting = channelInfo.Setting;
+
+                await channel.HandleSeenAsync(notification, context);
             }
         }
     }
@@ -360,6 +350,40 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         await logStore.LogAsync(userEvent.AppId!, message);
 
         await userNotificationsStore.TrackAsync(TrackingKey.ForUserEvent(userEvent), ProcessStatus.Failed, message.Reason);
+    }
+
+    private async Task<ChannelContext?> BuildContextAsync(string appId, string userId, bool isUpdate,
+        CancellationToken ct)
+    {
+        var app = await appStore.GetCachedAsync(appId, ct);
+
+        if (app == null)
+        {
+            // Make no sense to log, because nobody would actually see it.
+            return null;
+        }
+
+        var user = await userStore.GetCachedAsync(appId, userId, ct);
+
+        if (user == null)
+        {
+            await logStore.LogAsync(appId, LogMessage.User_Deleted("System", userId));
+            return null;
+        }
+
+        var context = new ChannelContext
+        {
+            App = app,
+            AppId = appId,
+            Configuration = default!,
+            ConfigurationId = default,
+            IsUpdate = isUpdate,
+            Setting = default!,
+            User = user,
+            UserId = userId,
+        };
+
+        return context;
     }
 
     private static string ScheduleKey(UserEventMessage userEvent)

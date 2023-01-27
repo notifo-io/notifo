@@ -9,5 +9,5 @@ namespace Notifo.Domain.Integrations;
 
 public interface ISmsCallback
 {
-    Task HandleCallbackAsync(ISmsSender source, Guid notificationId, string phoneNumber, SmsResult result, string? details = null);
+    Task HandleCallbackAsync(ISmsSender source, Guid notificationId, string phoneNumber, DeliveryResult result, string? details = null);
 }

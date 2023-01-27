@@ -12,13 +12,9 @@ namespace Notifo.Domain.Channels.Messaging;
 
 public sealed class MessagingJob : ChannelJob
 {
-    public BaseUserNotification Notification { get; init; }
+    public string? Template { get; init; }
 
-    public string? NotificationTemplate { get; init; }
-
-    public string UserLanguage { get; init; }
-
-    public MessagingTargets Targets { get; init; } = new MessagingTargets();
+    public SendConfiguration Configuration { get; init; }
 
     public string ScheduleKey
     {
@@ -29,16 +25,16 @@ public sealed class MessagingJob : ChannelJob
     {
     }
 
-    public MessagingJob(BaseUserNotification notification, ChannelSetting setting, Guid configurationId, string userLanguage)
-        : base(notification, setting, configurationId, false, Providers.Email)
+    public MessagingJob(UserNotification notification, ChannelContext context)
+        : base(notification, context)
     {
-        Notification = notification;
-        NotificationTemplate = setting.Template;
-        UserLanguage = userLanguage;
+        Template = context.Setting.Template;
+
+        Configuration = context.Configuration;
     }
 
     public static string ComputeScheduleKey(Guid notificationId)
     {
-        return $"{notificationId}";
+        return notificationId.ToString();
     }
 }

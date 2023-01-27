@@ -12,15 +12,11 @@ namespace Notifo.Domain.Channels.MobilePush;
 
 public sealed class MobilePushJob : ChannelJob
 {
-    public BaseUserNotification Notification { get; init; }
-
     public string Token { get; init; }
 
     public string? DeviceIdentifier { get; init; }
 
     public MobileDeviceType DeviceType { get; init; }
-
-    public bool IsConfirmed { get; init; }
 
     public string ScheduleKey
     {
@@ -31,13 +27,12 @@ public sealed class MobilePushJob : ChannelJob
     {
     }
 
-    public MobilePushJob(UserNotification notification, ChannelSetting? setting, Guid configurationId, MobilePushToken token, bool isUpdate)
-        : base(notification, setting, configurationId, isUpdate, Providers.MobilePush)
+    public MobilePushJob(UserNotification notification, ChannelContext context, MobilePushToken token)
+        : base(notification, context)
     {
         Token = token.Token;
         DeviceIdentifier = token.DeviceIdentifier;
         DeviceType = token.DeviceType;
-        IsConfirmed = notification.FirstConfirmed != null;
         Notification = notification;
     }
 }

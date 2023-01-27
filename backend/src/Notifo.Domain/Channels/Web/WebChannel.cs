@@ -31,17 +31,17 @@ public sealed class WebChannel : ICommunicationChannel
         this.log = log;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
         yield return new SendConfiguration();
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelSetting settings, Guid configurationId, SendConfiguration properties, SendContext context,
+    public async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))
         {
-            var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
+            var identifier = TrackingKey.ForNotification(notification, Name, context.ConfigurationId);
             try
             {
                 await streamClient.SendAsync(notification);

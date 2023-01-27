@@ -7,10 +7,8 @@
 
 namespace Notifo.Domain.Integrations;
 
-public sealed class MobilePushMessage
+public sealed class MobilePushMessage : BaseMessage
 {
-    public Guid NotificationId { get; init; }
-
     public bool IsConfirmed { get; init; }
 
     public bool Silent { get; init; }
@@ -41,9 +39,5 @@ public sealed class MobilePushMessage
 
     public string? Subject { get; init; }
 
-    public string? TrackDeliveredUrl { get; init; }
-
     public string? TrackingToken { get; init; }
-
-    public string? TrackSeenUrl { get; init; }
 }

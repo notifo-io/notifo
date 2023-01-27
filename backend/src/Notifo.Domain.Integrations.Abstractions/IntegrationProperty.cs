@@ -109,21 +109,6 @@ public sealed record IntegrationProperty(string Name, PropertyType Type) : Prope
         }
     }
 
-    public string? GetString(IntegrationConfiguration configured)
-    {
-        return GetString(configured.Properties);
-    }
-
-    public long GetNumber(IntegrationConfiguration configured)
-    {
-        return GetNumber(configured.Properties);
-    }
-
-    public bool GetBoolean(IntegrationConfiguration configured)
-    {
-        return GetBoolean(configured.Properties);
-    }
-
     private static bool TryParseLong(string? value, out long result)
     {
         if (string.IsNullOrWhiteSpace(value))
