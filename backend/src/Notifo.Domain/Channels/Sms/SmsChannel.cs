@@ -90,7 +90,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
 
             if (notification != null)
             {
-                await UpdateAsync(notification, result, source.Name, details);
+                await UpdateAsync(notification, result, source.Definition.Type, details);
             }
 
             userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(token.UserNotificationId));
@@ -199,7 +199,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             {
                 await UpdateAsync(job, ProcessStatus.Attempt);
 
-                var senders = integrationManager.Resolve<ISmsSender>(app, job.Notification).Select(x => x.Integration).ToList();
+                var senders = integrationManager.Resolve<ISmsSender>(app, job.Notification).ToList();
 
                 if (senders.Count == 0)
                 {
@@ -217,10 +217,12 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         }
     }
 
-    private async Task SendCoreAsync(SmsJob job, List<ISmsSender> senders,
+    private async Task SendCoreAsync(SmsJob job, List<ResolvedIntegration<ISmsSender>> integrations,
         CancellationToken ct)
     {
-        foreach (var sender in senders)
+        var lastSender = integrations[^1].System;
+
+        foreach (var (_, context, sender) in integrations)
         {
             try
             {
@@ -244,7 +246,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                 // Set some default properties for the message.
                 smsRequest.Enrich(job);
 
-                var result = await sender.SendAsync(smsRequest, ct);
+                var result = await sender.SendAsync(context, smsRequest, ct);
 
                 // Some integrations provide the actual result via webhook at a later point.
                 if (result == DeliveryResult.Delivered)
@@ -261,9 +263,9 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId!, LogMessage.General_Exception(sender.Name, ex));
+                await logStore.LogAsync(job.Notification.AppId!, LogMessage.General_Exception(sender.Definition.Type, ex));
 
-                if (sender == senders[^1])
+                if (sender == lastSender)
                 {
                     // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
@@ -271,7 +273,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             }
             catch (Exception)
             {
-                if (sender == senders[^1])
+                if (sender == lastSender)
                 {
                     // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;

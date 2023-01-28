@@ -14,10 +14,7 @@ public static class TwilioServiceExtensions
 {
     public static void IntegrateTwilio(this IServiceCollection services)
     {
-        services.AddSingletonAs<TwilioIntegration>()
+        services.AddSingletonAs<TwilioSmsIntegration>()
             .As<IIntegration>();
-
-        services.AddSingletonAs<TwilioClientPool>()
-            .AsSelf();
     }
 }

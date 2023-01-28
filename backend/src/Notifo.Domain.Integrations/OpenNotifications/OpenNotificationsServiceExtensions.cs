@@ -6,15 +6,15 @@
 // ==========================================================================
 
 using Notifo.Domain.Integrations;
-using Notifo.Domain.Integrations.Telekom;
+using Notifo.Domain.Integrations.OpenNotifications;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class TelekomServiceExtensions
+public static class OpenNotificationsServiceExtensions
 {
-    public static void IntegrateTelekom(this IServiceCollection services)
+    public static void IntegrateOpenNotifications(this IServiceCollection services)
     {
-        services.AddSingletonAs<TelekomSmsIntegration>()
-            .As<IIntegration>();
+        services.AddSingletonAs<OpenNotificationsRegistry>()
+            .As<IIntegrationRegistry>();
     }
 }

@@ -232,15 +232,15 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 await UpdateAsync(job, ProcessStatus.Attempt);
 
-                var senders = integrationManager.Resolve<IMobilePushSender>(app, notification).Select(x => x.Integration).ToList();
+                var integrations = integrationManager.Resolve<IMobilePushSender>(app, notification).ToList();
 
-                if (senders.Count == 0)
+                if (integrations.Count == 0)
                 {
                     await SkipAsync(job, LogMessage.Integration_Removed(Name));
                     return;
                 }
 
-                await SendCoreAsync(job, app, senders, ct);
+                await SendCoreAsync(job, app, integrations, ct);
 
                 await UpdateAsync(job, ProcessStatus.Handled);
             }
@@ -252,12 +252,14 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    private async Task SendCoreAsync(MobilePushJob job, App app, List<IMobilePushSender> senders,
+    private async Task SendCoreAsync(MobilePushJob job, App app, List<ResolvedIntegration<IMobilePushSender>> integrations,
         CancellationToken ct)
     {
         var notification = job.Notification;
 
-        foreach (var sender in senders)
+        var lastSender = integrations[^1].System;
+
+        foreach (var (_, context, sender) in integrations)
         {
             try
             {
@@ -284,7 +286,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                     Wakeup = notification.Formatting == null
                 };
 
-                await sender.SendAsync(message.Enrich(job), ct);
+                await sender.SendAsync(context, message.Enrich(job), ct);
                 return;
             }
             catch (MobilePushTokenExpiredException)
@@ -303,7 +305,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
 
-                if (sender == senders[^1])
+                if (sender == lastSender)
                 {
                     // Some integrations provide the actual result via webhook at a later point.
                     throw;
@@ -311,7 +313,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (Exception)
             {
-                if (sender == senders[^1])
+                if (sender == lastSender)
                 {
                     // Some integrations provide the actual result via webhook at a later point.
                     throw;

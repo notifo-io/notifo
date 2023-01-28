@@ -11,37 +11,26 @@ using Notifo.Domain.Integrations.Resources;
 using Notifo.Infrastructure;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
-using ISmsClient = Twilio.Clients.ITwilioRestClient;
 
 namespace Notifo.Domain.Integrations.Twilio;
 
-public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
+public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
 {
-    private readonly IntegrationContext context;
-    private readonly ISmsCallback callback;
-    private readonly ISmsClient client;
-    private readonly string phoneNumber;
-
-    public string Name => "Twilio SMS";
-
-    public TwilioSmsSender(IntegrationContext context, ISmsCallback callback, ISmsClient client, string phoneNumber)
-    {
-        this.context = context;
-        this.callback = callback;
-        this.client = client;
-        this.phoneNumber = phoneNumber;
-    }
-
-    public async Task<DeliveryResult> SendAsync(SmsMessage message,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message,
         CancellationToken ct)
     {
+        var accountSid = AccountSidProperty.GetString(context.Properties);
+        var accountToken = AuthTokenProperty.GetString(context.Properties);
+        var phoneNumber = PhoneNumberProperty.GetNumber(context.Properties);
+
+        var client = clientPool.GetServer(accountSid, accountToken);
         try
         {
             var result = await MessageResource.CreateAsync(
                 ConvertPhoneNumber(message.To), null,
                 ConvertPhoneNumber(phoneNumber), null,
                 message.Text,
-                statusCallback: new Uri(BuildCallbackUrl(message)), client: client);
+                statusCallback: new Uri(BuildCallbackUrl(context, message)), client: client);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {
@@ -60,7 +49,7 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
         }
     }
 
-    private string BuildCallbackUrl(SmsMessage request)
+    private static string BuildCallbackUrl(IntegrationContext context, SmsMessage request)
     {
         return context.WebhookUrl.AppendQueries(RequestKeys.Reference, request.TrackingToken);
     }
@@ -77,9 +66,14 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
         return new PhoneNumber(number);
     }
 
-    public Task HandleRequestAsync(HttpContext httpContext)
+    public Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext,
+        CancellationToken ct)
     {
-        if (!httpContext.Request.Query.TryGetValue(RequestKeys.Reference, out var reference))
+        httpContext.Request.Query.TryGetValue(RequestKeys.Reference, out var referenceQuery);
+
+        string? reference = referenceQuery;
+
+        if (string.IsNullOrWhiteSpace(reference))
         {
             return Task.CompletedTask;
         }

@@ -9,27 +9,12 @@ using System.Net;
 
 namespace Notifo.Domain.Integrations.Threema;
 
-public sealed class ThreemaSimpleMessagingSender : IMessagingSender
+public sealed partial class ThreemaSimpleIntegration : IMessagingSender
 {
     private const string ThreemaPhoneNumber = nameof(ThreemaPhoneNumber);
     private const string ThreemaEmail = nameof(ThreemaEmail);
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly string apiIdentity;
-    private readonly string apiSecret;
 
-    public string Name => "Threema";
-
-    public ThreemaSimpleMessagingSender(
-        IHttpClientFactory httpClientFactory,
-        string apiIdentity,
-        string apiSecret)
-    {
-        this.httpClientFactory = httpClientFactory;
-        this.apiIdentity = apiIdentity;
-        this.apiSecret = apiSecret;
-    }
-
-    public void AddTargets(IDictionary<string, string> targets, UserContext user)
+    public void AddTargets(IDictionary<string, string> targets, UserInfo user)
     {
         var phoneNumber = user.PhoneNumber;
 
@@ -46,9 +31,12 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         }
     }
 
-    public async Task<DeliveryResult> SendAsync(MessagingMessage message, IReadOnlyDictionary<string, string> targets,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message, IReadOnlyDictionary<string, string> targets,
         CancellationToken ct)
     {
+        var apiIdentity = ApiIdentity.GetString(context.Properties);
+        var apiSecret = ApiSecret.GetString(context.Properties);
+
         var httpClient = httpClientFactory.CreateClient();
 
         Exception? exception = null;
@@ -57,7 +45,7 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         {
             try
             {
-                if (await SendAsync(httpClient, "phone", phoneNumber, message.Text, ct))
+                if (await SendAsync(httpClient, apiSecret, apiIdentity, "phone", phoneNumber, message.Text, ct))
                 {
                     return DeliveryResult.Delivered;
                 }
@@ -72,7 +60,7 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         {
             try
             {
-                if (await SendAsync(httpClient, "email", email, message.Text, ct))
+                if (await SendAsync(httpClient, apiSecret, apiIdentity, "email", email, message.Text, ct))
                 {
                     return DeliveryResult.Delivered;
                 }
@@ -91,7 +79,7 @@ public sealed class ThreemaSimpleMessagingSender : IMessagingSender
         return DeliveryResult.Skipped;
     }
 
-    private async Task<bool> SendAsync(HttpClient httpClient, string toKey, string toValue, string text,
+    private static async Task<bool> SendAsync(HttpClient httpClient, string apiSecret, string apiIdentity, string toKey, string toValue, string text,
         CancellationToken ct)
     {
         // Read the API documentation: https://gateway.threema.ch/de/developer/api

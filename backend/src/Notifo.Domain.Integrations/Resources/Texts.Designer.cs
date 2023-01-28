@@ -358,7 +358,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Messagebird.
+        ///   Looks up a localized string similar to Messagebird SMS.
         /// </summary>
         internal static string MessageBird_Name {
             get {
@@ -498,6 +498,15 @@ namespace Notifo.Domain.Integrations.Resources {
         internal static string MessageBirdIntegrated_Name {
             get {
                 return ResourceManager.GetString("MessageBirdIntegrated_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Messagebird WhatsApp.
+        /// </summary>
+        internal static string MessageBirdWhatsApp_Name {
+            get {
+                return ResourceManager.GetString("MessageBirdWhatsApp_Name", resourceCulture);
             }
         }
         

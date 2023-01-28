@@ -7,10 +7,10 @@
 
 namespace Notifo.Domain.Integrations;
 
-public interface IMessagingSender : IIntegrationService
+public interface IMessagingSender : IIntegration
 {
-    void AddTargets(IDictionary<string, string> targets, UserContext user);
+    void AddTargets(IDictionary<string, string> targets, UserInfo user);
 
-    Task<DeliveryResult> SendAsync(MessagingMessage request, IReadOnlyDictionary<string, string> targets,
+    Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message, IReadOnlyDictionary<string, string> targets,
         CancellationToken ct);
 }

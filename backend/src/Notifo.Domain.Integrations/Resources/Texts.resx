@@ -210,6 +210,9 @@
   <data name="MessageBirdIntegrated_Name" xml:space="preserve">
     <value>MessageBird (Integrated)</value>
   </data>
+  <data name="MessageBirdWhatsApp_Name" xml:space="preserve">
+    <value>Messagebird WhatsApp</value>
+  </data>
   <data name="MessageBird_AccessKeyLabel" xml:space="preserve">
     <value>Access Key</value>
   </data>
@@ -223,7 +226,7 @@
     <value>Failed to send sms to '{0}'.</value>
   </data>
   <data name="MessageBird_Name" xml:space="preserve">
-    <value>Messagebird</value>
+    <value>Messagebird SMS</value>
   </data>
   <data name="MessageBird_OriginatorNameDescription" xml:space="preserve">
     <value>Company Name as alternative to Phone Number</value>

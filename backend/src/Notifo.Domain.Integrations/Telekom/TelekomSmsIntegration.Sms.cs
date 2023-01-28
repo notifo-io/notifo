@@ -14,33 +14,15 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Telekom;
 
-public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
+public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
 {
-    private readonly IntegrationContext context;
-    private readonly ISmsCallback callback;
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly string apikey;
-    private readonly string phoneNumber;
-
-    public string Name => "Telekom SMS";
-
-    public TelekomSmsSender(
-        IntegrationContext context,
-        ISmsCallback callback,
-        IHttpClientFactory httpClientFactory,
-        string apikey,
-        string phoneNumber)
-    {
-        this.apikey = apikey;
-        this.phoneNumber = phoneNumber;
-        this.context = context;
-        this.callback = callback;
-        this.httpClientFactory = httpClientFactory;
-    }
-
-    public async Task<DeliveryResult> SendAsync(SmsMessage message,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message,
         CancellationToken ct)
     {
+        var phoneNumber = PhoneNumberProperty.GetString(context.Properties);
+
+        var apiKey = ApiKeyProperty.GetString(context.Properties);
+
         try
         {
             var httpClient = httpClientFactory.CreateClient();
@@ -50,7 +32,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
                 [RequestKeys.From] = ConvertPhoneNumber(phoneNumber),
                 [RequestKeys.To] = ConvertPhoneNumber(message.To),
                 [RequestKeys.Body] = message.Text,
-                [RequestKeys.StatusCallback] = BuildCallbackUrl(message),
+                [RequestKeys.StatusCallback] = BuildCallbackUrl(context, message),
             });
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "https://developer-api.telekom.com/vms/Messages.json")
@@ -58,7 +40,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
                 Content = content
             };
 
-            httpRequest.Headers.TryAddWithoutValidation("Authorization", apikey);
+            httpRequest.Headers.TryAddWithoutValidation("Authorization", apiKey);
 
             var response = await httpClient.SendAsync(httpRequest, ct);
 
@@ -81,7 +63,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
         }
     }
 
-    private string BuildCallbackUrl(SmsMessage message)
+    private static string BuildCallbackUrl(IntegrationContext context, SmsMessage message)
     {
         return context.WebhookUrl.AppendQueries(RequestKeys.Reference, message.TrackingToken);
     }
@@ -98,9 +80,14 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
         return number;
     }
 
-    public Task HandleRequestAsync(HttpContext httpContext)
+    public Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext,
+        CancellationToken ct)
     {
-        if (!httpContext.Request.Query.TryGetValue(RequestKeys.Reference, out var reference))
+        httpContext.Request.Query.TryGetValue(RequestKeys.Reference, out var referenceQuery);
+
+        string? reference = referenceQuery;
+
+        if (string.IsNullOrWhiteSpace(reference))
         {
             return Task.CompletedTask;
         }

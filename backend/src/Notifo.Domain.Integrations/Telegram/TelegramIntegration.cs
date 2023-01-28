@@ -5,30 +5,29 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.Channels.Messaging;
+using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Integrations.Resources;
 using Telegram.Bot;
 
 namespace Notifo.Domain.Integrations.Telegram;
 
-public sealed class TelegramIntegration : IIntegration
+public sealed partial class TelegramIntegration : IIntegration
 {
-    private readonly TelegramBotClientPool botClientPool;
+    private readonly TelegramBotClientPool clientPool;
 
-    public static readonly UserProperty UserUsername = new UserProperty("telegramUserId", PropertyType.Text)
+    public static readonly IntegrationProperty UserUsername = new IntegrationProperty("telegramUserId", PropertyType.Text)
     {
         EditorLabel = Texts.Telegram_UsernameLabel,
         EditorDescription = Texts.Telegram_UsernameDescription
     };
 
-    public static readonly UserProperty UserChatId = new UserProperty("telegramChatId", PropertyType.Text)
+    public static readonly IntegrationProperty UserChatId = new IntegrationProperty("telegramChatId", PropertyType.Text)
     {
         EditorLabel = Texts.Telegram_ChatIdLabel,
         EditorDescription = Texts.Telegram_ChatIdDescription
     };
 
-    private static readonly IntegrationProperty AccessToken = new IntegrationProperty("accessToken", PropertyType.Text)
+    public static readonly IntegrationProperty AccessToken = new IntegrationProperty("accessToken", PropertyType.Text)
     {
         EditorLabel = Texts.Telegram_AccessKeyLabel,
         EditorDescription = null,
@@ -44,7 +43,7 @@ public sealed class TelegramIntegration : IIntegration
             {
                 AccessToken
             },
-            new List<UserProperty>
+            new List<IntegrationProperty>
             {
                 UserUsername,
                 UserChatId
@@ -57,33 +56,9 @@ public sealed class TelegramIntegration : IIntegration
             Description = Texts.Telegram_Description
         };
 
-    public TelegramIntegration(TelegramBotClientPool botClientPool)
+    public TelegramIntegration(TelegramBotClientPool clientPool)
     {
-        this.botClientPool = botClientPool;
-    }
-
-    public bool CanCreate(Type serviceType, IntegrationContext context)
-    {
-        return serviceType == typeof(IMessagingSender);
-    }
-
-    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
-    {
-        if (CanCreate(serviceType, context))
-        {
-            var accessToken = AccessToken.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(accessToken))
-            {
-                return null;
-            }
-
-            return new TelegramMessagingSender(
-                context,
-                () => botClientPool.GetBotClient(accessToken));
-        }
-
-        return null;
+        this.clientPool = clientPool;
     }
 
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
@@ -104,6 +79,6 @@ public sealed class TelegramIntegration : IIntegration
     {
         var accessToken = AccessToken.GetString(context.Properties);
 
-        return botClientPool.GetBotClient(accessToken!);
+        return clientPool.GetBotClient(accessToken!);
     }
 }

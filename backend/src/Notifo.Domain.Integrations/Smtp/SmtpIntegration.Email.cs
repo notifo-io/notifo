@@ -11,28 +11,16 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Smtp;
 
-public sealed class SmtpEmailSender : IEmailSender
+public sealed partial class SmtpIntegration : IEmailSender
 {
     private const int Attempts = 5;
-    private readonly Func<SmtpEmailServer> server;
-    private readonly string fromEmail;
-    private readonly string fromName;
 
-    public string Name => "SMTP";
-
-    public SmtpEmailSender(Func<SmtpEmailServer> server,
-        string fromEmail,
-        string fromName)
+    public async Task SendAsync(IntegrationContext context, EmailMessage request,
+        CancellationToken ct)
     {
-        this.server = server;
+        var fromEmail = FromEmailProperty.GetString(context.Properties);
+        var fromName = FromNameProperty.GetString(context.Properties);
 
-        this.fromEmail = fromEmail;
-        this.fromName = fromName;
-    }
-
-    public async Task SendAsync(EmailMessage request,
-        CancellationToken ct = default)
-    {
         if (string.IsNullOrWhiteSpace(request.FromEmail))
         {
             request = request with { FromEmail = fromEmail };
@@ -43,12 +31,22 @@ public sealed class SmtpEmailSender : IEmailSender
             request = request with { FromName = fromName };
         }
 
+        var options = new SmtpOptions
+        {
+            Username = UsernameProperty.GetString(context.Properties),
+            Host = HostProperty.GetString(context.Properties),
+            HostPort = (int)HostPortProperty.GetNumber(context.Properties),
+            Password = PasswordProperty.GetString(context.Properties)
+        };
+
         // Try a few attempts to get a non-disposed server instance.
         for (var i = 1; i <= Attempts; i++)
         {
             try
             {
-                await server().SendAsync(request, ct);
+                var server = serverPool.GetServer(options);
+
+                await server.SendAsync(request, ct);
                 break;
             }
             catch (ObjectDisposedException)

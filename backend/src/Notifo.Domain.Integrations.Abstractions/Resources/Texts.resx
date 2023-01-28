@@ -132,6 +132,15 @@
   <data name="IntegrationPropertyMinValue" xml:space="preserve">
     <value>Value must be higher than {0}.</value>
   </data>
+  <data name="IntegrationPropertyNotBoolean" xml:space="preserve">
+    <value>Field is not a boolean.</value>
+  </data>
+  <data name="IntegrationPropertyNotNumber" xml:space="preserve">
+    <value>Field is not a number.</value>
+  </data>
+  <data name="IntegrationPropertyNotString" xml:space="preserve">
+    <value>Field is not a string type.</value>
+  </data>
   <data name="IntegrationPropertyPattern" xml:space="preserve">
     <value>Field format not valid.</value>
   </data>

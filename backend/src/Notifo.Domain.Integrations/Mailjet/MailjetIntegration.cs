@@ -9,25 +9,25 @@ using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Mailjet;
 
-public sealed class MailjetIntegration : IIntegration
+public sealed partial class MailjetIntegration : IIntegration
 {
     private readonly MailjetEmailServerPool serverPool;
 
-    private static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
+    public static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
     {
         EditorLabel = Texts.Mailjet_ApiKeyLabel,
         EditorDescription = null,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty ApiSecretProperty = new IntegrationProperty("apiSecret", PropertyType.Password)
+    public static readonly IntegrationProperty ApiSecretProperty = new IntegrationProperty("apiSecret", PropertyType.Password)
     {
         EditorLabel = Texts.Mailjet_ApiSecretLabel,
         EditorDescription = null,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
+    public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
     {
         Pattern = Patterns.Email,
         EditorLabel = Texts.Email_FromEmailLabel,
@@ -36,7 +36,7 @@ public sealed class MailjetIntegration : IIntegration
         Summary = true
     };
 
-    private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
+    public static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
     {
         EditorLabel = Texts.Email_FromNameLabel,
         EditorDescription = Texts.Email_FromNameDescription,
@@ -55,7 +55,7 @@ public sealed class MailjetIntegration : IIntegration
                 FromEmailProperty,
                 FromNameProperty
             },
-            new List<UserProperty>(),
+            new List<IntegrationProperty>(),
             new HashSet<string>
             {
                 Providers.Email
@@ -67,51 +67,5 @@ public sealed class MailjetIntegration : IIntegration
     public MailjetIntegration(MailjetEmailServerPool serverPool)
     {
         this.serverPool = serverPool;
-    }
-
-    public bool CanCreate(Type serviceType, IntegrationContext context)
-    {
-        return serviceType == typeof(IEmailSender);
-    }
-
-    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
-    {
-        if (CanCreate(serviceType, context))
-        {
-            var publicKey = ApiKeyProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(publicKey))
-            {
-                return null;
-            }
-
-            var privateKey = ApiSecretProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(privateKey))
-            {
-                return null;
-            }
-
-            var fromEmail = FromEmailProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(fromEmail))
-            {
-                return null;
-            }
-
-            var fromName = FromNameProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(fromName))
-            {
-                return null;
-            }
-
-            return new MailjetEmailSender(
-                () => serverPool.GetServer(publicKey, privateKey),
-                fromEmail,
-                fromName);
-        }
-
-        return null;
     }
 }

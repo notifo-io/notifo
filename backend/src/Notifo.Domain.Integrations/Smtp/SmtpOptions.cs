@@ -13,9 +13,9 @@ public class SmtpOptions : IValidatableOptions
 {
     public string Host { get; set; }
 
-    public string? Username { get; set; }
+    public string Username { get; set; }
 
-    public string? Password { get; set; }
+    public string Password { get; set; }
 
     public int HostPort { get; set; } = 587;
 

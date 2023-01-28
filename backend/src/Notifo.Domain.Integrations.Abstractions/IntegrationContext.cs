@@ -25,5 +25,5 @@ public sealed class IntegrationContext
 
     required public string WebhookUrl { get; init; }
 
-    required public ReadonlyDictionary<string, string> Properties { get; init; }
+    required public Dictionary<string, string> Properties { get; init; }
 }

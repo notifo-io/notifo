@@ -5,15 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
-public sealed class FirebaseIntegration : IIntegration
+public sealed partial class FirebaseIntegration : IIntegration
 {
     private readonly FirebaseMessagingPool messagingPool;
 
-    private static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", PropertyType.Text)
+    public static readonly IntegrationProperty ProjectIdProperty = new IntegrationProperty("projectId", PropertyType.Text)
     {
         EditorLabel = Texts.Firebase_ProjectIdLabel,
         EditorDescription = null,
@@ -21,21 +22,21 @@ public sealed class FirebaseIntegration : IIntegration
         Summary = true
     };
 
-    private static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", PropertyType.MultilineText)
+    public static readonly IntegrationProperty CredentialsProperty = new IntegrationProperty("credentials", PropertyType.MultilineText)
     {
         EditorLabel = Texts.Firebase_CredentialsLabel,
         EditorDescription = Texts.Firebase_CredentialsHints,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", PropertyType.Boolean)
+    public static readonly IntegrationProperty SilentAndroidProperty = new IntegrationProperty("silentAndroid", PropertyType.Boolean)
     {
         EditorLabel = Texts.Firebase_SilentAndroidLabel,
         EditorDescription = Texts.Firebase_SilentAndroidDescription,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
+    public static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
     {
         EditorLabel = Texts.Firebase_SilentIOSLabel,
         EditorDescription = Texts.Firebase_SilentIOSDescription,
@@ -54,7 +55,7 @@ public sealed class FirebaseIntegration : IIntegration
                 SilentISOProperty,
                 CredentialsProperty
             },
-            new List<UserProperty>(),
+            new List<IntegrationProperty>(),
             new HashSet<string>
             {
                 Providers.MobilePush
@@ -66,40 +67,5 @@ public sealed class FirebaseIntegration : IIntegration
     public FirebaseIntegration(FirebaseMessagingPool messagingPool)
     {
         this.messagingPool = messagingPool;
-    }
-
-    public bool CanCreate(Type serviceType, IntegrationContext context)
-    {
-        return serviceType == typeof(IMobilePushSender);
-    }
-
-    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
-    {
-        if (CanCreate(serviceType, context))
-        {
-            var projectId = ProjectIdProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(projectId))
-            {
-                return null;
-            }
-
-            var credentials = CredentialsProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(credentials))
-            {
-                return null;
-            }
-
-            var sendSilentIOS = SilentISOProperty.GetBoolean(context.Properties);
-            var sendSilentAndroid = SilentAndroidProperty.GetBoolean(context.Properties);
-
-            return new FirebaseMobilePushSender(
-                () => messagingPool.GetMessaging(projectId, credentials),
-                sendSilentIOS,
-                sendSilentAndroid);
-        }
-
-        return null;
     }
 }

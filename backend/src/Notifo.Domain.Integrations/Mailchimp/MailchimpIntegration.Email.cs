@@ -13,15 +13,8 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Integrations.Mailchimp;
 
-public sealed class MailchimpEmailSender : IEmailSender
+public sealed partial class MailchimpIntegration : IEmailSender
 {
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly string apiKey;
-    private readonly string fromEmail;
-    private readonly string fromName;
-
-    public string Name => "Mailchimp";
-
     private sealed class ResponseMessage
     {
         [JsonPropertyName("email")]
@@ -43,20 +36,13 @@ public sealed class MailchimpEmailSender : IEmailSender
         Invalid
     }
 
-    public MailchimpEmailSender(IHttpClientFactory httpClientFactory,
-        string apiKey,
-        string fromEmail,
-        string fromName)
+    public async Task SendAsync(IntegrationContext context, EmailMessage message,
+        CancellationToken ct)
     {
-        this.httpClientFactory = httpClientFactory;
-        this.apiKey = apiKey;
-        this.fromEmail = fromEmail;
-        this.fromName = fromName;
-    }
+        var apiKey = ApiKeyProperty.GetString(context.Properties);
+        var fromEmail = FromEmailProperty.GetString(context.Properties);
+        var fromName = FromNameProperty.GetString(context.Properties);
 
-    public async Task SendAsync(EmailMessage message,
-        CancellationToken ct = default)
-    {
         using (var httpClient = httpClientFactory.CreateClient("Mailchimp"))
         {
             var body = new

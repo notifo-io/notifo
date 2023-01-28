@@ -9,34 +9,22 @@ using FirebaseAdmin.Messaging;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
-public sealed class FirebaseMobilePushSender : IMobilePushSender
+public sealed partial class FirebaseIntegration : IMobilePushSender
 {
     private const int Attempts = 5;
-    private readonly Func<FirebaseMessagingWrapper> wrapper;
-    private readonly bool sendSilentAndroid;
-    private readonly bool sendSilentIOS;
 
-    public string Name => "Firebase";
-
-    public FirebaseMobilePushSender(Func<FirebaseMessagingWrapper> wrapper,
-        bool sendSilentIOS,
-        bool sendSilentAndroid)
-    {
-        this.wrapper = wrapper;
-        this.sendSilentAndroid = sendSilentAndroid;
-        this.sendSilentIOS = sendSilentIOS;
-    }
-
-    public async Task SendAsync(MobilePushMessage message,
+    public async Task SendAsync(IntegrationContext context, MobilePushMessage message,
         CancellationToken ct)
     {
-        if (!ShouldSend(message.Silent, message.DeviceType))
+        if (!ShouldSend(context, message.Silent, message.DeviceType))
         {
             return;
         }
 
         try
         {
+            var firebaseProject = ProjectIdProperty.GetString(context.Properties);
+            var firebaseCredentials = CredentialsProperty.GetString(context.Properties);
             var firebaseMessage = message.ToFirebaseMessage(DateTimeOffset.UtcNow);
 
             // Try a few attempts to get a non-disposed messaging service.
@@ -44,7 +32,9 @@ public sealed class FirebaseMobilePushSender : IMobilePushSender
             {
                 try
                 {
-                    await wrapper().Messaging.SendAsync(firebaseMessage, ct);
+                    var wrapper = messagingPool.GetMessaging(firebaseProject, firebaseCredentials);
+
+                    await wrapper.Messaging.SendAsync(firebaseMessage, ct);
                     break;
                 }
                 catch (ObjectDisposedException)
@@ -62,12 +52,15 @@ public sealed class FirebaseMobilePushSender : IMobilePushSender
         }
     }
 
-    private bool ShouldSend(bool isSilent, MobileDeviceType deviceType)
+    private static bool ShouldSend(IntegrationContext context, bool isSilent, MobileDeviceType deviceType)
     {
         if (!isSilent)
         {
             return true;
         }
+
+        var sendSilentIOS = SilentISOProperty.GetBoolean(context.Properties);
+        var sendSilentAndroid = SilentAndroidProperty.GetBoolean(context.Properties);
 
         switch (deviceType)
         {

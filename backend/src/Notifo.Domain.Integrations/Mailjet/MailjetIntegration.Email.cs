@@ -7,28 +7,18 @@
 
 namespace Notifo.Domain.Integrations.Mailjet;
 
-public sealed class MailjetEmailSender : IEmailSender
+public sealed partial class MailjetIntegration : IEmailSender
 {
     private const int Attempts = 5;
-    private readonly Func<MailjetEmailServer> server;
-    private readonly string fromEmail;
-    private readonly string fromName;
 
-    public string Name => "Mailjet";
-
-    public MailjetEmailSender(Func<MailjetEmailServer> server,
-        string fromEmail,
-        string fromName)
+    public async Task SendAsync(IntegrationContext context, EmailMessage request,
+        CancellationToken ct)
     {
-        this.server = server;
+        var apiKey = ApiKeyProperty.GetString(context.Properties);
+        var apiSecret = ApiSecretProperty.GetString(context.Properties);
+        var fromEmail = FromEmailProperty.GetString(context.Properties);
+        var fromName = FromNameProperty.GetString(context.Properties);
 
-        this.fromEmail = fromEmail;
-        this.fromName = fromName;
-    }
-
-    public async Task SendAsync(EmailMessage request,
-        CancellationToken ct = default)
-    {
         if (string.IsNullOrWhiteSpace(request.FromEmail))
         {
             request = request with { FromEmail = fromEmail };
@@ -44,7 +34,9 @@ public sealed class MailjetEmailSender : IEmailSender
         {
             try
             {
-                await server().SendAsync(request);
+                var server = serverPool.GetServer(apiKey, apiSecret);
+
+                await server.SendAsync(request);
                 break;
             }
             catch (ObjectDisposedException)

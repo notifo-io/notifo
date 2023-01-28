@@ -175,9 +175,9 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     return;
                 }
 
-                var senders = integrationManager.Resolve<IEmailSender>(app, first.Notification).Select(x => x.Integration).ToList();
+                var integrations = integrationManager.Resolve<IEmailSender>(app, first.Notification).ToList();
 
-                if (senders.Count == 0)
+                if (integrations.Count == 0)
                 {
                     await SkipAsync(jobs, LogMessage.Integration_Removed(Name));
                     return;
@@ -221,7 +221,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     message = result;
                 }
 
-                await SendCoreAsync(message, app.Id, senders, ct);
+                await SendCoreAsync(message, app.Id, integrations, ct);
 
                 await UpdateAsync(jobs, ProcessStatus.Handled);
             }
@@ -233,16 +233,16 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         }
     }
 
-    private async Task SendCoreAsync(EmailMessage message, string appId, List<IEmailSender> senders,
+    private async Task SendCoreAsync(EmailMessage message, string appId, List<ResolvedIntegration<IEmailSender>> integrations,
         CancellationToken ct)
     {
-        var lastSender = senders[^1];
+        var lastSender = integrations[^1].System;
 
-        foreach (var sender in senders)
+        foreach (var (_, context, sender) in integrations)
         {
             try
             {
-                await sender.SendAsync(message, ct);
+                await sender.SendAsync(context, message, ct);
                 return;
             }
             catch (DomainException ex)
@@ -251,6 +251,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
                 if (sender == lastSender)
                 {
+                    // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
                 }
             }
@@ -258,6 +259,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             {
                 if (sender == lastSender)
                 {
+                    // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
                 }
             }

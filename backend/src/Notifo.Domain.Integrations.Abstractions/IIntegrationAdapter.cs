@@ -9,10 +9,10 @@ namespace Notifo.Domain.Integrations;
 
 public interface IIntegrationAdapter
 {
-    Task<UserContext?> FindUserAsync(string appId, string id,
+    Task<UserInfo?> FindUserAsync(string appId, string id,
         CancellationToken ct);
 
-    Task<UserContext?> FindUserByPropertyAsync(string appId, string key, string value,
+    Task<UserInfo?> FindUserByPropertyAsync(string appId, string key, string value,
         CancellationToken ct);
 
     Task UpdateUserAsync(string appId, string id, string key, string value,

@@ -5,21 +5,22 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Integrations.Resources;
 
 namespace Notifo.Domain.Integrations.Mailchimp;
 
-public sealed class MailchimpIntegration : IIntegration
+public sealed partial class MailchimpIntegration : IIntegration
 {
-    private static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
+    private readonly IHttpClientFactory httpClientFactory;
+
+    public static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Password)
     {
         EditorLabel = Texts.Mailchimp_ApiKeyLabel,
         EditorDescription = null,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
+    public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
     {
         Pattern = Patterns.Email,
         EditorLabel = Texts.Email_FromEmailLabel,
@@ -28,7 +29,7 @@ public sealed class MailchimpIntegration : IIntegration
         Summary = true
     };
 
-    private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
+    public static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
     {
         EditorLabel = Texts.Email_FromNameLabel,
         EditorDescription = Texts.Email_FromNameDescription,
@@ -46,7 +47,7 @@ public sealed class MailchimpIntegration : IIntegration
                 FromEmailProperty,
                 FromNameProperty
             },
-            new List<UserProperty>(),
+            new List<IntegrationProperty>(),
             new HashSet<string>
             {
                 Providers.Email
@@ -55,43 +56,8 @@ public sealed class MailchimpIntegration : IIntegration
             Description = Texts.Mailchimp_Description
         };
 
-    public bool CanCreate(Type serviceType, IntegrationContext context)
+    public MailchimpIntegration(IHttpClientFactory httpClientFactory)
     {
-        return serviceType == typeof(IEmailSender);
-    }
-
-    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
-    {
-        if (CanCreate(serviceType, context))
-        {
-            var apiKey = ApiKeyProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(apiKey))
-            {
-                return null;
-            }
-
-            var fromEmail = FromEmailProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(fromEmail))
-            {
-                return null;
-            }
-
-            var fromName = FromNameProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(fromName))
-            {
-                return null;
-            }
-
-            return new MailchimpEmailSender(
-                serviceProvider.GetRequiredService<IHttpClientFactory>(),
-                apiKey,
-                fromEmail,
-                fromName);
-        }
-
-        return null;
+        this.httpClientFactory = httpClientFactory;
     }
 }

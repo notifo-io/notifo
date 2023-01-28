@@ -9,18 +9,18 @@ using OpenNotifications;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
 
-public sealed class OpenNotificationsIntegration : IIntegration
+public abstract class OpenNotificationsIntegrationBase : IIntegration
 {
-    private readonly string providerName;
-    private readonly ProviderInfoDto providerInfo;
-    private readonly IOpenNotificationsClient client;
+    protected string ProviderName { get; }
+
+    protected ProviderInfoDto ProviderInfo { get; }
+
+    protected IOpenNotificationsClient Client { get; }
 
     public IntegrationDefinition Definition { get; }
 
-    public OpenNotificationsIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
+    protected OpenNotificationsIntegrationBase(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
     {
-        this.client = client;
-
         var capabilities = new HashSet<string>();
 
         if (providerInfo.Type == ProviderInfoDtoType.Sms)
@@ -75,36 +75,12 @@ public sealed class OpenNotificationsIntegration : IIntegration
                     AllowedValues = property.AllowedValues?.ToArray()
                 };
             }).ToList(),
-            new List<UserProperty>(),
+            new List<IntegrationProperty>(),
             capabilities);
 
-        this.providerName = providerName;
-        this.providerInfo = providerInfo;
-    }
-
-    public bool CanCreate(Type serviceType, IntegrationContext context)
-    {
-        if (serviceType == typeof(IEmailSender) && providerInfo.Type == ProviderInfoDtoType.Email)
-        {
-            return true;
-        }
-
-        if (serviceType == typeof(ISmsSender) && providerInfo.Type == ProviderInfoDtoType.Sms)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
-    {
-        if (CanCreate(serviceType, context))
-        {
-            return new OpenNotificationsSender(providerInfo.Type, context, Definition, providerName, client, serviceProvider);
-        }
-
-        return null;
+        Client = client;
+        ProviderName = providerName;
+        ProviderInfo = providerInfo;
     }
 
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
@@ -114,10 +90,10 @@ public sealed class OpenNotificationsIntegration : IIntegration
         {
             Context = context.ToContext(),
             Properties = context.Properties.ToProperties(Definition),
-            Provider = providerName,
+            Provider = ProviderName,
         };
 
-        await client.Providers.InstallAsync(dto, ct);
+        await Client.Providers.InstallAsync(dto, ct);
 
         return IntegrationStatus.Verified;
     }
@@ -129,9 +105,9 @@ public sealed class OpenNotificationsIntegration : IIntegration
         {
             Context = context.ToContext(),
             Properties = context.Properties.ToProperties(Definition),
-            Provider = providerName,
+            Provider = ProviderName,
         };
 
-        await client.Providers.UninstallAsync(dto, ct);
+        await Client.Providers.UninstallAsync(dto, ct);
     }
 }

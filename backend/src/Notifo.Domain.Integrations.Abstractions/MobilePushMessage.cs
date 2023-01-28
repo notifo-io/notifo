@@ -38,6 +38,4 @@ public sealed class MobilePushMessage : BaseMessage
     public string? LinkUrl { get; init; }
 
     public string? Subject { get; init; }
-
-    public string? TrackingToken { get; init; }
 }

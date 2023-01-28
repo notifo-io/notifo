@@ -48,9 +48,9 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
 
     public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
-        var senders = integrationManager.Resolve<IWebhookSender>(context.App, notification);
+        var integrations = integrationManager.Resolve<IWebhookSender>(context.App, notification);
 
-        foreach (var (id, _) in senders)
+        foreach (var (id, _, _) in integrations)
         {
             yield return new SendConfiguration
             {
@@ -133,9 +133,9 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
                 return;
             }
 
-            var sender = integrationManager.Resolve<IWebhookSender>(job.IntegrationId, app);
+            var integration = integrationManager.Resolve<IWebhookSender>(job.IntegrationId, app);
 
-            if (sender == null)
+            if (integration == default)
             {
                 await SkipAsync(job, LogMessage.Integration_Removed(Name));
                 return;
@@ -145,7 +145,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
             {
                 await UpdateAsync(job, ProcessStatus.Attempt);
 
-                await SendCoreAsync(job, sender, ct);
+                await SendCoreAsync(job, integration, ct);
 
                 await UpdateAsync(job, ProcessStatus.Handled);
             }
@@ -157,12 +157,12 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    private static Task SendCoreAsync(WebhookJob job, IWebhookSender sender,
+    private static Task SendCoreAsync(WebhookJob job, ResolvedIntegration<IWebhookSender> integration,
         CancellationToken ct)
     {
         var message = new WebhookMessage { Payload = job.Notification };
 
-        return sender.SendAsync(message.Enrich(job), ct);
+        return integration.System.SendAsync(integration.Context, message.Enrich(job), ct);
     }
 
     private async Task UpdateAsync(WebhookJob job, ProcessStatus status, string? reason = null)

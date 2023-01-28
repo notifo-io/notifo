@@ -9,7 +9,6 @@ using System.Globalization;
 using Amazon;
 using Amazon.SimpleEmail;
 using Amazon.SimpleEmail.Model;
-using Google.Api;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.Resources;
 using Notifo.Domain.Integrations.Smtp;
@@ -20,14 +19,14 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.AmazonSES;
 
-public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable
+public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable, IEmailSender
 {
     private readonly IKeyValueStore keyValueStore;
-    private readonly AmazonSESOptions options;
-    private readonly SmtpEmailServer smtpEmailServer;
+    private readonly SmtpIntegration emailSender;
+    private readonly AmazonSESOptions emailOptions;
     private AmazonSimpleEmailServiceClient amazonSES;
 
-    private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
+    public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
     {
         Pattern = Patterns.Email,
         EditorLabel = Texts.Email_FromEmailLabel,
@@ -36,14 +35,14 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         Summary = true
     };
 
-    private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
+    public static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
     {
         EditorLabel = Texts.Email_FromNameLabel,
         EditorDescription = Texts.Email_FromNameDescription,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", PropertyType.MultilineText)
+    public static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", PropertyType.MultilineText)
     {
         EditorLabel = Texts.Email_AdditionalFromEmailsLabel,
         EditorDescription = Texts.Email_AdditionalFromEmailsDescription,
@@ -61,7 +60,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
                 FromNameProperty,
                 AdditionalFromEmails
             },
-            new List<UserProperty>(),
+            new List<IntegrationProperty>(),
             new HashSet<string>
             {
                 Providers.Email
@@ -70,12 +69,10 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             Description = Texts.AmazonSES_Description
         };
 
-    public IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> options)
+    public IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> emailOptions, SmtpIntegration emailSender)
     {
-        this.options = options.Value;
-
-        smtpEmailServer = new SmtpEmailServer(options.Value);
-
+        this.emailOptions = emailOptions.Value;
+        this.emailSender = emailSender;
         this.keyValueStore = keyValueStore;
     }
 
@@ -83,40 +80,27 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         CancellationToken ct)
     {
         amazonSES = new AmazonSimpleEmailServiceClient(
-            options.AwsAccessKeyId,
-            options.AwsSecretAccessKey,
-            RegionEndpoint.GetBySystemName(options.Region));
+            emailOptions.AwsAccessKeyId,
+            emailOptions.AwsSecretAccessKey,
+            RegionEndpoint.GetBySystemName(emailOptions.Region));
 
         await amazonSES.GetSendQuotaAsync(ct);
     }
 
-    public bool CanCreate(Type serviceType, IntegrationContext context)
+    public Task SendAsync(IntegrationContext context, EmailMessage request,
+        CancellationToken ct)
     {
-        return serviceType == typeof(IEmailSender);
+        FillContext(context);
+
+        return emailSender.SendAsync(context, request, ct);
     }
 
-    public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
+    private void FillContext(IntegrationContext context)
     {
-        if (CanCreate(serviceType, context))
-        {
-            var fromEmail = FromEmailProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(fromEmail))
-            {
-                return null;
-            }
-
-            var fromName = FromNameProperty.GetString(context.Properties);
-
-            if (string.IsNullOrWhiteSpace(fromName))
-            {
-                return null;
-            }
-
-            return new SmtpEmailSender(() => smtpEmailServer, fromEmail, fromName);
-        }
-
-        return null;
+        context.Properties[SmtpIntegration.HostProperty.Name] = emailOptions.Host;
+        context.Properties[SmtpIntegration.HostPortProperty.Name] = emailOptions.HostPort.ToString(CultureInfo.InvariantCulture);
+        context.Properties[SmtpIntegration.UsernameProperty.Name] = emailOptions.Username;
+        context.Properties[SmtpIntegration.PasswordProperty.Name] = emailOptions.Password;
     }
 
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
@@ -175,7 +159,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
     private async Task ValidateEmailAddressesAsync(IntegrationContext context, List<string> fromEmails,
         CancellationToken ct)
     {
-        if (!options.BindEmailAddresses)
+        if (!emailOptions.BindEmailAddresses)
         {
             return;
         }

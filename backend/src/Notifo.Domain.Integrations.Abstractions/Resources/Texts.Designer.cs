@@ -106,6 +106,33 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field is not a boolean..
+        /// </summary>
+        internal static string IntegrationPropertyNotBoolean {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyNotBoolean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not a number..
+        /// </summary>
+        internal static string IntegrationPropertyNotNumber {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyNotNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not a string type..
+        /// </summary>
+        internal static string IntegrationPropertyNotString {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyNotString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field format not valid..
         /// </summary>
         internal static string IntegrationPropertyPattern {

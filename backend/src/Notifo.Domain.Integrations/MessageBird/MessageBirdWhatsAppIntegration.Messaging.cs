@@ -7,42 +7,17 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Http;
-using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Tasks;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
-public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHook
+public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, IIntegrationHook
 {
     private const string WhatsAppPhoneNumber = nameof(WhatsAppPhoneNumber);
-    private readonly IntegrationContext context;
-    private readonly IMessagingCallback callback;
-    private readonly IMessageBirdClient messageBirdClient;
-    private readonly string channelId;
-    private readonly string templateNamespace;
-    private readonly string templateName;
 
-    public string Name => "Messagbird Whatsapp";
-
-    public MessageBirdWhatsAppSender(
-        IntegrationContext context,
-        IMessagingCallback callback,
-        IMessageBirdClient messageBirdClient,
-        string channelId,
-        string templateNamespace,
-        string templateName)
-    {
-        this.context = context;
-        this.callback = callback;
-        this.messageBirdClient = messageBirdClient;
-        this.channelId = channelId;
-        this.templateNamespace = templateNamespace;
-        this.templateName = templateName;
-    }
-
-    public void AddTargets(IDictionary<string, string> targets, UserContext user)
+    public void AddTargets(IDictionary<string, string> targets, UserInfo user)
     {
         var phoneNumber = user.PhoneNumber;
 
@@ -52,13 +27,17 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         }
     }
 
-    public async Task<DeliveryResult> SendAsync(MessagingMessage message, IReadOnlyDictionary<string, string> targets,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message, IReadOnlyDictionary<string, string> targets,
         CancellationToken ct)
     {
         if (!targets.TryGetValue(WhatsAppPhoneNumber, out var to))
         {
             return DeliveryResult.Skipped;
         }
+
+        var channelId = WhatsAppChannelIdProperty.GetString(context.Properties);
+        var templateNamespace = WhatsAppTemplateNamespaceProperty.GetString(context.Properties);
+        var templateName = WhatsAppTemplateNameProperty.GetString(context.Properties);
 
         var textMessage = new WhatsAppTemplateMessage(
             channelId,
@@ -69,16 +48,18 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
             context.WebhookUrl.AppendQueries("reference", message.TrackingToken),
             new[] { message.Text });
 
+        var client = GetClient(context);
+
         // Just send the normal text message.
-        var response = await messageBirdClient.SendWhatsAppAsync(textMessage, ct);
+        var response = await GetClient(context).SendWhatsAppAsync(textMessage, ct);
 
         // Query for the status, otherwise we cannot retrieve errors.
-        QueryAsync(message, response).Forget();
+        QueryAsync(client, message, response).Forget();
 
         return DeliveryResult.Sent;
     }
 
-    private async Task QueryAsync(MessagingMessage message, ConversationResponse response)
+    private async Task QueryAsync(IMessageBirdClient client, MessagingMessage message, ConversationResponse response)
     {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
@@ -86,7 +67,7 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         {
             try
             {
-                response = await messageBirdClient.GetMessageAsync(response.Id, cts.Token);
+                response = await client.GetMessageAsync(response.Id, cts.Token);
 
                 if (response.Status == MessageBirdStatus.Pending)
                 {
@@ -127,9 +108,10 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         }
     }
 
-    public async Task HandleRequestAsync(HttpContext httpContext)
+    public async Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext,
+        CancellationToken ct)
     {
-        var status = await messageBirdClient.ParseWhatsAppWebhookAsync(httpContext);
+        var status = await GetClient(context).ParseWhatsAppWebhookAsync(httpContext);
 
         if (!status.Query.TryGetValue("reference", out var reference))
         {
@@ -159,5 +141,12 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
                     return default;
             }
         }
+    }
+
+    private IMessageBirdClient GetClient(IntegrationContext context)
+    {
+        var accessKey = AccessKeyProperty.GetString(context.Properties);
+
+        return clientPool.GetClient(accessKey);
     }
 }

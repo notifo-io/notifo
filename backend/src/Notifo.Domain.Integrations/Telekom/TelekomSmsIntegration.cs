@@ -7,36 +7,37 @@
 
 using Notifo.Domain.Integrations.Resources;
 
-namespace Notifo.Domain.Integrations.Threema;
+namespace Notifo.Domain.Integrations.Telekom;
 
-public sealed partial class ThreemaSimpleIntegration : IIntegration
+public sealed partial class TelekomSmsIntegration : IIntegration
 {
     private readonly IHttpClientFactory httpClientFactory;
+    private readonly ISmsCallback callback;
 
-    public static readonly IntegrationProperty ApiIdentity = new IntegrationProperty("apiIdentity", PropertyType.Text)
+    public static readonly IntegrationProperty ApiKeyProperty = new IntegrationProperty("apiKey", PropertyType.Text)
     {
-        EditorLabel = Texts.ThreemaSimple_ApiIdentityLabel,
+        EditorLabel = Texts.Telekom_ApiKeyLabel,
+        EditorDescription = null,
+        IsRequired = true
+    };
+
+    public static readonly IntegrationProperty PhoneNumberProperty = new IntegrationProperty("phoneNumber", PropertyType.Number)
+    {
+        EditorLabel = Texts.Telekom_PhoneNumberLabel,
         EditorDescription = null,
         IsRequired = true,
         Summary = true
     };
 
-    public static readonly IntegrationProperty ApiSecret = new IntegrationProperty("apiSecret", PropertyType.Password)
-    {
-        EditorLabel = Texts.ThreemaSimple_ApiSecretLabel,
-        EditorDescription = null,
-        IsRequired = true
-    };
-
     public IntegrationDefinition Definition { get; } =
         new IntegrationDefinition(
-            "ThreemaSimple",
-            Texts.ThreemaSimple_Name,
-            "./integrations/threema.svg",
+            "Telekom",
+            Texts.Telekom_Name,
+            "./integrations/telekom.svg",
             new List<IntegrationProperty>
             {
-                ApiIdentity,
-                ApiSecret
+                ApiKeyProperty,
+                PhoneNumberProperty
             },
             new List<IntegrationProperty>(),
             new HashSet<string>
@@ -44,11 +45,13 @@ public sealed partial class ThreemaSimpleIntegration : IIntegration
                 Providers.Messaging
             })
         {
-            Description = Texts.ThreemaSimple_Description
+            Description = Texts.Telekom_Description
         };
 
-    public ThreemaSimpleIntegration(IHttpClientFactory httpClientFactory)
+    public TelekomSmsIntegration(IHttpClientFactory httpClientFactory, ISmsCallback callback)
     {
         this.httpClientFactory = httpClientFactory;
+
+        this.callback = callback;
     }
 }

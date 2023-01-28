@@ -11,10 +11,6 @@ public interface IIntegration
 {
     IntegrationDefinition Definition { get; }
 
-    bool CanCreate(Type serviceType, IntegrationContext context);
-
-    object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider);
-
     Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {

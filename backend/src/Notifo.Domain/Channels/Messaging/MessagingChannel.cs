@@ -60,9 +60,9 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         }
 
         // Do not pass in the user notification so what we enable all integrations.
-        var senders = integrationManager.Resolve<IMessagingSender>(context.App, null).ToList();
+        var integrations = integrationManager.Resolve<IMessagingSender>(context.App, null).ToList();
 
-        if (senders.Count == 0)
+        if (integrations.Count == 0)
         {
             yield break;
         }
@@ -72,7 +72,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         // Create a context to not expose the user details to the provider.
         var userContext = context.User.ToContext();
 
-        foreach (var (_, sender) in senders)
+        foreach (var (_, _, sender) in integrations)
         {
             sender.AddTargets(configuration, userContext);
         }
@@ -105,7 +105,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
             if (notification != null)
             {
-                await UpdateAsync(notification, result, source.Name, details);
+                await UpdateAsync(notification, result, source.Definition.Type, details);
             }
 
             userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(token.UserNotificationId));
@@ -213,9 +213,9 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             {
                 await UpdateAsync(job, ProcessStatus.Attempt);
 
-                var senders = integrationManager.Resolve<IMessagingSender>(app, job.Notification).Select(x => x.Integration).ToList();
+                var integrations = integrationManager.Resolve<IMessagingSender>(app, job.Notification).ToList();
 
-                if (senders.Count == 0)
+                if (integrations.Count == 0)
                 {
                     await SkipAsync(job, LogMessage.Integration_Removed(Name));
                     return;
@@ -235,7 +235,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
                 var text = messagingFormatter.Format(template, job.Notification);
 
-                await SendCoreAsync(job, text, senders, ct);
+                await SendCoreAsync(job, text, integrations, ct);
             }
             catch (DomainException ex)
             {
@@ -245,10 +245,12 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         }
     }
 
-    private async Task SendCoreAsync(MessagingJob job, string text, List<IMessagingSender> senders,
+    private async Task SendCoreAsync(MessagingJob job, string text, List<ResolvedIntegration<IMessagingSender>> integrations,
         CancellationToken ct)
     {
-        foreach (var sender in senders)
+        var lastSender = integrations[^1].System;
+
+        foreach (var (_, context, sender) in integrations)
         {
             try
             {
@@ -257,7 +259,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
                     Text = text,
                 };
 
-                var result = await sender.SendAsync(message.Enrich(job), job.Configuration, ct);
+                var result = await sender.SendAsync(context, message.Enrich(job), job.Configuration, ct);
 
                 // Some integrations provide the actual result via webhook at a later point.
                 if (result == DeliveryResult.Delivered)
@@ -276,7 +278,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             {
                 await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
 
-                if (sender == senders[^1])
+                if (sender == lastSender)
                 {
                     // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
@@ -284,7 +286,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             }
             catch (Exception)
             {
-                if (sender == senders[^1])
+                if (sender == lastSender)
                 {
                     // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;

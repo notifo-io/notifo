@@ -14,7 +14,7 @@ public sealed record IntegrationDefinition(
     string Title,
     string LogoUrl,
     IReadOnlyList<IntegrationProperty> Properties,
-    IReadOnlyList<UserProperty> UserProperties,
+    IReadOnlyList<IntegrationProperty> UserProperties,
     IReadOnlySet<string> Capabilities)
 {
     public string? Description { get; init; }
