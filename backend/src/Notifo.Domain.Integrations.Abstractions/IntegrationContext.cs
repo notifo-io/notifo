@@ -11,6 +11,8 @@ namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationContext
 {
+    required public IIntegrationAdapter Adapter { get; init; }
+
     required public string IntegrationId { get; init; }
 
     required public string AppId { get; init; }

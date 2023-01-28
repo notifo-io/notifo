@@ -17,29 +17,29 @@ namespace Notifo.Domain.Integrations.MessageBird;
 public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHook
 {
     private const string WhatsAppPhoneNumber = nameof(WhatsAppPhoneNumber);
+    private readonly IntegrationContext context;
     private readonly IMessagingCallback callback;
     private readonly IMessageBirdClient messageBirdClient;
     private readonly string channelId;
     private readonly string templateNamespace;
     private readonly string templateName;
-    private readonly string webhookUrl;
 
     public string Name => "Messagbird Whatsapp";
 
     public MessageBirdWhatsAppSender(
+        IntegrationContext context,
         IMessagingCallback callback,
         IMessageBirdClient messageBirdClient,
         string channelId,
         string templateNamespace,
-        string templateName,
-        string webhookUrl)
+        string templateName)
     {
+        this.context = context;
         this.callback = callback;
         this.messageBirdClient = messageBirdClient;
         this.channelId = channelId;
         this.templateNamespace = templateNamespace;
         this.templateName = templateName;
-        this.webhookUrl = webhookUrl;
     }
 
     public void AddTargets(IDictionary<string, string> targets, UserContext user)
@@ -66,7 +66,7 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
             templateNamespace,
             templateName,
             message.UserLanguage,
-            webhookUrl.AppendQueries("reference", message.NotificationId),
+            context.WebhookUrl.AppendQueries("reference", message.TrackingToken),
             new[] { message.Text });
 
         // Just send the normal text message.
@@ -113,7 +113,7 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
 
                 if (result != default)
                 {
-                    await callback.HandleCallbackAsync(this, message.NotificationId, result);
+                    await callback.HandleCallbackAsync(this, message.TrackingToken, result);
                     return;
                 }
             }
@@ -127,24 +127,23 @@ public sealed class MessageBirdWhatsAppSender : IMessagingSender, IIntegrationHo
         }
     }
 
-    public async Task HandleRequestAsync(IntegrationContext app, HttpContext httpContext)
+    public async Task HandleRequestAsync(HttpContext httpContext)
     {
         var status = await messageBirdClient.ParseWhatsAppWebhookAsync(httpContext);
 
-        // If the reference is not a valid guid (notification-id), something just went wrong.
-        if (!status.Query.TryGetValue("reference", out var query) || !Guid.TryParse(query, out var notificationId))
+        if (!status.Query.TryGetValue("reference", out var reference))
         {
             return;
         }
 
-        var result = ParseStatus(status);
+        var deliveryStatus = ParseStatus(status);
 
-        if (result == default)
+        if (deliveryStatus == default)
         {
             return;
         }
 
-        await callback.HandleCallbackAsync(this, notificationId, result, status.Error?.Description);
+        await callback.HandleCallbackAsync(this, reference, deliveryStatus, status.Error?.Description);
 
         static DeliveryResult ParseStatus(WhatsAppWebhookRequest status)
         {

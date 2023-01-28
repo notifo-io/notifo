@@ -11,12 +11,13 @@ namespace Notifo.Domain.Integrations.OpenNotifications;
 
 public sealed class OpenNotificationsIntegration : IIntegration
 {
+    private readonly string providerName;
     private readonly ProviderInfoDto providerInfo;
     private readonly IOpenNotificationsClient client;
 
     public IntegrationDefinition Definition { get; }
 
-    public OpenNotificationsIntegration(string name, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
+    public OpenNotificationsIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
     {
         this.client = client;
 
@@ -33,7 +34,7 @@ public sealed class OpenNotificationsIntegration : IIntegration
         }
 
         Definition = new IntegrationDefinition(
-            name,
+            fullName,
             providerInfo.DisplayName,
             providerInfo.LogoSvg!,
             providerInfo.Properties.Select(x =>
@@ -77,6 +78,7 @@ public sealed class OpenNotificationsIntegration : IIntegration
             new List<UserProperty>(),
             capabilities);
 
+        this.providerName = providerName;
         this.providerInfo = providerInfo;
     }
 
@@ -97,11 +99,39 @@ public sealed class OpenNotificationsIntegration : IIntegration
 
     public object? Create(Type serviceType, IntegrationContext context, IServiceProvider serviceProvider)
     {
-        if (serviceType == typeof(IEmailSender) && providerInfo.Type == ProviderInfoDtoType.Email)
+        if (CanCreate(serviceType, context))
         {
-            return new OpenNotificationsEmailSender(context, Definition, client);
+            return new OpenNotificationsSender(providerInfo.Type, context, Definition, providerName, client, serviceProvider);
         }
 
         return null;
+    }
+
+    public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
+        CancellationToken ct)
+    {
+        var dto = new InstallationRequestDto
+        {
+            Context = context.ToContext(),
+            Properties = context.Properties.ToProperties(Definition),
+            Provider = providerName,
+        };
+
+        await client.Providers.InstallAsync(dto, ct);
+
+        return IntegrationStatus.Verified;
+    }
+
+    public async Task OnRemovedAsync(IntegrationContext context,
+        CancellationToken ct)
+    {
+        var dto = new InstallationRequestDto
+        {
+            Context = context.ToContext(),
+            Properties = context.Properties.ToProperties(Definition),
+            Provider = providerName,
+        };
+
+        await client.Providers.UninstallAsync(dto, ct);
     }
 }

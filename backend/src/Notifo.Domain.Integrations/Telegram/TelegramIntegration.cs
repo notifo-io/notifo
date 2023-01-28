@@ -79,8 +79,7 @@ public sealed class TelegramIntegration : IIntegration
             }
 
             return new TelegramMessagingSender(
-                serviceProvider.GetRequiredService<IIntegrationAdapter>(),
-                serviceProvider.GetRequiredService<IMessagingCallback>(),
+                context,
                 () => botClientPool.GetBotClient(accessToken));
         }
 

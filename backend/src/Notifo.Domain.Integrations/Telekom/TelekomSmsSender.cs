@@ -16,24 +16,24 @@ namespace Notifo.Domain.Integrations.Telekom;
 
 public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
 {
+    private readonly IntegrationContext context;
     private readonly ISmsCallback callback;
     private readonly IHttpClientFactory httpClientFactory;
     private readonly string apikey;
     private readonly string phoneNumber;
-    private readonly string webhookUrl;
 
     public string Name => "Telekom SMS";
 
     public TelekomSmsSender(
+        IntegrationContext context,
         ISmsCallback callback,
         IHttpClientFactory httpClientFactory,
         string apikey,
-        string phoneNumber,
-        string webhookUrl)
+        string phoneNumber)
     {
         this.apikey = apikey;
         this.phoneNumber = phoneNumber;
-        this.webhookUrl = webhookUrl;
+        this.context = context;
         this.callback = callback;
         this.httpClientFactory = httpClientFactory;
     }
@@ -83,7 +83,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
 
     private string BuildCallbackUrl(SmsMessage message)
     {
-        return webhookUrl.AppendQueries(RequestKeys.ReferenceValue, message.NotificationId, RequestKeys.ReferenceNumber, message.To);
+        return context.WebhookUrl.AppendQueries(RequestKeys.Reference, message.TrackingToken);
     }
 
     private static string ConvertPhoneNumber(string number)
@@ -98,18 +98,14 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
         return number;
     }
 
-    public Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
+    public Task HandleRequestAsync(HttpContext httpContext)
     {
-        var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
-
-        var referenceString = httpContext.Request.Query[RequestKeys.ReferenceValue].ToString();
-        var referenceNumber = httpContext.Request.Query[RequestKeys.ReferenceNumber].ToString();
-
-        // If the reference is not a valid guid (notification-id), something just went wrong.
-        if (!Guid.TryParse(referenceString, out var notificationId))
+        if (!httpContext.Request.Query.TryGetValue(RequestKeys.Reference, out var reference))
         {
             return Task.CompletedTask;
         }
+
+        var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
         var result = ParseStatus(status);
 
@@ -118,7 +114,7 @@ public sealed class TelekomSmsSender : ISmsSender, IIntegrationHook
             return Task.CompletedTask;
         }
 
-        return callback.HandleCallbackAsync(this, notificationId, referenceNumber, result);
+        return callback.HandleCallbackAsync(this, reference, result);
 
         static DeliveryResult ParseStatus(string status)
         {

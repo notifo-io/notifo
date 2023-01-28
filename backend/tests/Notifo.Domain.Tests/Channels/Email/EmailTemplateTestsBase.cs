@@ -320,6 +320,18 @@ public abstract class EmailTemplateTestsBase
 
     private static List<EmailJob> ToJobs(params UserNotification[] notifications)
     {
-        return notifications.Select(x => new EmailJob(x, new ChannelSetting(), Guid.NewGuid(), PreviewData.User.EmailAddress!)).ToList();
+        var context = new ChannelContext
+        {
+            App = null!,
+            AppId = null!,
+            Configuration = new SendConfiguration(),
+            ConfigurationId = Guid.NewGuid(),
+            IsUpdate = false,
+            Setting = new ChannelSetting(),
+            User = null!,
+            UserId = null!,
+        };
+
+        return notifications.Select(x => new EmailJob(x, context, PreviewData.User.EmailAddress!)).ToList();
     }
 }

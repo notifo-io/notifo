@@ -19,6 +19,8 @@ public abstract class BaseMessage
 
     public string? TrackSeenUrl { get; set; }
 
+    public string TrackingToken { get; set; }
+
     public string UserId { get; set; }
 
     public string UserLanguage { get; set; }

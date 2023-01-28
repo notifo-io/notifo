@@ -71,8 +71,10 @@ public sealed class TelekomIntegration : IIntegration
             }
 
             return new TelekomSmsSender(
+                context,
                 serviceProvider.GetRequiredService<ISmsCallback>(),
-                serviceProvider.GetRequiredService<IHttpClientFactory>(), apikey,
+                serviceProvider.GetRequiredService<IHttpClientFactory>(),
+                apikey,
                 phoneNumber.ToString(CultureInfo.InvariantCulture));
         }
 

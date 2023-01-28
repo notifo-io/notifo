@@ -14,6 +14,7 @@ using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
+using Notifo.Infrastructure.Validation;
 using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Sms.SmsTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Sms.SmsJob>;
 
@@ -69,23 +70,30 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         };
     }
 
-    public async Task HandleCallbackAsync(ISmsSender source, Guid notificationId, string phoneNumber, DeliveryResult result, string? details = null)
+    public async Task HandleCallbackAsync(ISmsSender source, string trackingToken, DeliveryResult result, string? details = null)
     {
         using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
         {
-            if (result == DeliveryResult.Unknown)
+            if (result == DeliveryResult.Unknown || !result.IsEnumValue())
             {
                 return;
             }
 
-            var notification = await userNotificationStore.FindAsync(notificationId, default);
+            var token = TrackingToken.Parse(trackingToken);
+
+            if (token.UserNotificationId == default)
+            {
+                return;
+            }
+
+            var notification = await userNotificationStore.FindAsync(token.UserNotificationId, default);
 
             if (notification != null)
             {
                 await UpdateAsync(notification, result, source.Name, details);
             }
 
-            userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(notificationId, phoneNumber));
+            userNotificationQueue.Complete(SmsJob.ComputeScheduleKey(token.UserNotificationId));
         }
     }
 
@@ -229,8 +237,8 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
 
                 var smsRequest = new SmsMessage
                 {
-                    Text = smsFormatter.Format(template, job.SmsText),
-                    To = job.SmsNumber
+                    Text = smsFormatter.Format(template, job.Notification.Formatting.Subject),
+                    To = job.PhoneNumber
                 };
 
                 // Set some default properties for the message.

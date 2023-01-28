@@ -14,6 +14,7 @@ using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
+using Notifo.Infrastructure.Validation;
 using IMessagingTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Messaging.MessagingTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Messaging.MessagingJob>;
 
@@ -84,18 +85,30 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         yield return configuration;
     }
 
-    public async Task HandleCallbackAsync(IMessagingSender source, Guid notificationId, DeliveryResult result, string? details = null)
+    public async Task HandleCallbackAsync(IMessagingSender source, string trackingToken, DeliveryResult result, string? details = null)
     {
         using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
         {
-            var notification = await userNotificationStore.FindAsync(notificationId);
+            if (result == DeliveryResult.Unknown || !result.IsEnumValue())
+            {
+                return;
+            }
+
+            var token = TrackingToken.Parse(trackingToken);
+
+            if (token.UserNotificationId == default)
+            {
+                return;
+            }
+
+            var notification = await userNotificationStore.FindAsync(token.UserNotificationId);
 
             if (notification != null)
             {
                 await UpdateAsync(notification, result, source.Name, details);
             }
 
-            userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
+            userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(token.UserNotificationId));
         }
     }
 

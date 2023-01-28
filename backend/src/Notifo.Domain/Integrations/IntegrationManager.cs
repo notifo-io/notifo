@@ -24,6 +24,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     private readonly IIntegrationRegistries integrationRegistries;
     private readonly IIntegrationUrl integrationUrl;
     private readonly IAppStore appStore;
+    private readonly IIntegrationAdapter integrationAdapter;
     private readonly IMediator mediator;
     private readonly IServiceProvider serviceProvider;
     private readonly ILogger<IntegrationManager> log;
@@ -37,6 +38,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
     public IntegrationManager(
         IAppStore appStore,
+        IIntegrationAdapter integrationAdapter,
         IIntegrationRegistries integrationRegistries,
         IIntegrationUrl integrationUrl,
         IMediator mediator,
@@ -44,6 +46,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         ILogger<IntegrationManager> log)
     {
         this.appStore = appStore;
+        this.integrationAdapter = integrationAdapter;
         this.mediator = mediator;
         this.integrationRegistries = integrationRegistries;
         this.integrationUrl = integrationUrl;
@@ -96,20 +99,20 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         return integration.OnConfiguredAsync(BuildContext(app, id, configured), previous, ct);
     }
 
-    public Task OnCallbackAsync(string id, App app, HttpContext httpContext,
-        CancellationToken ct = default)
+    public Task OnCallbackAsync<T>(string id, App app, HttpContext httpContext,
+        CancellationToken ct = default) where T : class
     {
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
 
-        if (!app.Integrations.TryGetValue(id, out var configured))
+        var typed = Resolve<T>(id, app);
+
+        if (typed is not IIntegrationHook hook)
         {
             return Task.CompletedTask;
         }
 
-        var integration = GetIntegrationOrThrow(configured.Type);
-
-        return integration.HandleWebhookAsync(BuildContext(app, id, configured), httpContext, ct);
+        return hook.HandleRequestAsync(httpContext);
     }
 
     public Task OnRemoveAsync(string id, App app, ConfiguredIntegration configured,
@@ -257,6 +260,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     {
         return new IntegrationContext
         {
+            Adapter = integrationAdapter,
             AppId = app.Id,
             AppName = app.Name,
             CallbackToken = string.Empty,

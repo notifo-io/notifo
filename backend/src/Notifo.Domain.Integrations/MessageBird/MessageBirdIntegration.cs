@@ -162,9 +162,9 @@ public sealed class MessageBirdIntegration : IIntegration
         var client = clientPool.GetClient(accessKey);
 
         return new MessageBirdSmsSender(
+            context,
             serviceProvider.GetRequiredService<ISmsCallback>(),
             client,
-            context.WebhookUrl,
             originatorName,
             originatorNumber.ToString(CultureInfo.InvariantCulture),
             phoneNumbersMap);
@@ -208,27 +208,12 @@ public sealed class MessageBirdIntegration : IIntegration
         var client = clientPool.GetClient(accessKey);
 
         return new MessageBirdWhatsAppSender(
+            context,
             serviceProvider.GetRequiredService<IMessagingCallback>(),
             client,
             channelId,
             templateNamespace,
-            templateName,
-            context.WebhookUrl);
-    }
-
-    public async Task HandleWebhookAsync(Type serviceType, IntegrationContext context, HttpContext httpContext, IServiceProvider serviceProvider,
-        CancellationToken ct)
-    {
-        var sender = Create(serviceType, context, serviceProvider);
-
-        if (sender is MessageBirdSmsSender sms)
-        {
-            await sms.HandleRequestAsync(context, httpContext);
-        }
-        else if (sender is MessageBirdWhatsAppSender whatsapp)
-        {
-            await whatsapp.HandleRequestAsync(context, httpContext);
-        }
+            templateName);
     }
 
     private static Dictionary<string, string>? ParsePhoneNumbers(string? source)

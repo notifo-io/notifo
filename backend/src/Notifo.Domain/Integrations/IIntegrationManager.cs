@@ -18,8 +18,8 @@ public interface IIntegrationManager
 
     bool HasIntegration<T>(App app);
 
-    Task OnCallbackAsync(string id, App app, HttpContext httpContext,
-        CancellationToken ct = default);
+    Task OnCallbackAsync<T>(string id, App app, HttpContext httpContext,
+        CancellationToken ct = default) where T : class;
 
     Task OnRemoveAsync(string id, App app, ConfiguredIntegration configured,
         CancellationToken ct = default);

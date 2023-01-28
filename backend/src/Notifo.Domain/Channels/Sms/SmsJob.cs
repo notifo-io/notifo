@@ -11,9 +11,7 @@ namespace Notifo.Domain.Channels.Sms;
 
 public sealed class SmsJob : ChannelJob
 {
-    public string SmsNumber { get; init; }
-
-    public string SmsText { get; init; }
+    public string PhoneNumber { get; init; }
 
     public string TemplateLanguage { get; init; }
 
@@ -21,7 +19,7 @@ public sealed class SmsJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => ComputeScheduleKey(Notification.Id, SmsNumber);
+        get => ComputeScheduleKey(Notification.Id);
     }
 
     public SmsJob()
@@ -31,14 +29,13 @@ public sealed class SmsJob : ChannelJob
     public SmsJob(UserNotification notification, ChannelContext context, string phoneNumber)
         : base(notification, context)
     {
-        SmsNumber = phoneNumber;
-        SmsText = notification.Formatting.Subject;
+        PhoneNumber = phoneNumber;
         TemplateLanguage = notification.UserLanguage;
         TemplateName = context.Setting.Template;
     }
 
-    public static string ComputeScheduleKey(Guid notificationId, string phoneNumber)
+    public static string ComputeScheduleKey(Guid notificationId)
     {
-        return $"{notificationId}_{phoneNumber}";
+        return notificationId.ToString();
     }
 }

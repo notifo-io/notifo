@@ -25,6 +25,7 @@ public sealed class TelekomTests
             .ReturnsLazily(() => new HttpClient());
 
         sut = new TelekomSmsSender(
+            null!,
             A.Fake<ISmsCallback>(),
             clientFactory,
             apiKey,
@@ -34,7 +35,7 @@ public sealed class TelekomTests
     [Fact]
     public async Task Should_send_sms()
     {
-        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Telekom", null);
+        var message = new SmsMessage { To = phoneNumberTo, Text = "Hello Telekom" };
 
         var response = await sut.SendAsync(message, default);
 

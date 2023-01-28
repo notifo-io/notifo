@@ -20,9 +20,6 @@ public static class WebhookServiceExtensions
         services.AddSingletonAs<WebhookChannel>()
             .As<ICommunicationChannel>().As<IScheduleHandler<WebhookJob>>();
 
-        services.AddSingletonAs<WebhookIntegration>()
-            .As<IIntegration>();
-
         services.AddScheduler<WebhookJob>(Providers.Webhook);
     }
 }

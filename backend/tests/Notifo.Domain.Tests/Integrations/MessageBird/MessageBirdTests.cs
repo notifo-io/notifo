@@ -32,13 +32,13 @@ public class MessageBirdTests
             AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")!
         }));
 
-        sut = new MessageBirdSmsSender(A.Fake<ISmsCallback>(), client, null, null, null);
+        sut = new MessageBirdSmsSender(null!, A.Fake<ISmsCallback>(), client, null, null, null);
     }
 
     [Fact]
     public async Task Should_send_sms()
     {
-        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Telekom", null);
+        var message = new SmsMessage { To = phoneNumberTo, Text = "Hello MessageBird" };
 
         var response = await sut.SendAsync(message, default);
 

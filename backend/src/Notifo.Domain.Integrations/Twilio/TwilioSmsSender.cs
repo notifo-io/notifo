@@ -17,19 +17,19 @@ namespace Notifo.Domain.Integrations.Twilio;
 
 public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
 {
+    private readonly IntegrationContext context;
     private readonly ISmsCallback callback;
     private readonly ISmsClient client;
     private readonly string phoneNumber;
-    private readonly string webhookUrl;
 
     public string Name => "Twilio SMS";
 
-    public TwilioSmsSender(ISmsCallback callback, ISmsClient client, string phoneNumber, string webhookUrl)
+    public TwilioSmsSender(IntegrationContext context, ISmsCallback callback, ISmsClient client, string phoneNumber)
     {
+        this.context = context;
         this.callback = callback;
         this.client = client;
         this.phoneNumber = phoneNumber;
-        this.webhookUrl = webhookUrl;
     }
 
     public async Task<DeliveryResult> SendAsync(SmsMessage message,
@@ -62,7 +62,7 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
 
     private string BuildCallbackUrl(SmsMessage request)
     {
-        return webhookUrl.AppendQueries(RequestKeys.ReferenceValue, request.NotificationId, RequestKeys.ReferenceNumber, request.To);
+        return context.WebhookUrl.AppendQueries(RequestKeys.Reference, request.TrackingToken);
     }
 
     private static PhoneNumber ConvertPhoneNumber(string number)
@@ -77,18 +77,14 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
         return new PhoneNumber(number);
     }
 
-    public Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
+    public Task HandleRequestAsync(HttpContext httpContext)
     {
-        var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
-
-        var referenceString = httpContext.Request.Query[RequestKeys.ReferenceValue].ToString();
-        var referenceNumber = httpContext.Request.Query[RequestKeys.ReferenceNumber].ToString();
-
-        // If the reference is not a valid guid (notification-id), something just went wrong.
-        if (!Guid.TryParse(referenceString, out var notificationId))
+        if (!httpContext.Request.Query.TryGetValue(RequestKeys.Reference, out var reference))
         {
             return Task.CompletedTask;
         }
+
+        var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
         var result = ParseStatus(status);
 
@@ -97,7 +93,7 @@ public sealed class TwilioSmsSender : ISmsSender, IIntegrationHook
             return Task.CompletedTask;
         }
 
-        return callback.HandleCallbackAsync(this, notificationId, referenceNumber, result);
+        return callback.HandleCallbackAsync(this, reference, result);
 
         static DeliveryResult ParseStatus(string status)
         {

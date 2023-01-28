@@ -25,6 +25,7 @@ public sealed class TwilioTests
         var client = new TwilioRestClient(apiUsername, apiPassword);
 
         sut = new TwilioSmsSender(
+            null,
             A.Fake<ISmsCallback>(),
             client,
             phoneNumberFrom);
@@ -33,7 +34,7 @@ public sealed class TwilioTests
     [Fact]
     public async Task Should_send_sms()
     {
-        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Twilio", null);
+        var message = new SmsMessage { To = phoneNumberTo, Text = "Hello Twilio" };
 
         var response = await sut.SendAsync(message, default);
 

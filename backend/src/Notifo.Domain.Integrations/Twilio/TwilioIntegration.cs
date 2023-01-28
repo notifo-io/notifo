@@ -98,10 +98,10 @@ public sealed class TwilioIntegration : IIntegration
             var client = clientPool.GetServer(accountSid, authToken);
 
             return new TwilioSmsSender(
+                context,
                 serviceProvider.GetRequiredService<ISmsCallback>(),
                 client,
-                phoneNumber.ToString(CultureInfo.InvariantCulture),
-                context.WebhookUrl);
+                phoneNumber.ToString(CultureInfo.InvariantCulture));
         }
 
         return null;

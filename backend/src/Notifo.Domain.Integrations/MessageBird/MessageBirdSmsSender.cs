@@ -15,28 +15,28 @@ namespace Notifo.Domain.Integrations.MessageBird;
 
 public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
 {
+    private readonly IntegrationContext context;
     private readonly ISmsCallback callback;
     private readonly IMessageBirdClient messageBirdClient;
     private readonly string? originatorName;
     private readonly string? originatorNumber;
-    private readonly string webhookUrl;
     private readonly Dictionary<string, string>? phoneNumbers;
 
     public string Name => "MessageBird SMS";
 
     public MessageBirdSmsSender(
+        IntegrationContext context,
         ISmsCallback callback,
         IMessageBirdClient messageBirdClient,
-        string webhookUrl,
         string? originatorName,
         string? originatorNumber,
         Dictionary<string, string>? phoneNumbers)
     {
+        this.context = context;
         this.callback = callback;
         this.messageBirdClient = messageBirdClient;
         this.originatorName = originatorName;
         this.originatorNumber = originatorNumber;
-        this.webhookUrl = webhookUrl;
         this.phoneNumbers = phoneNumbers;
     }
 
@@ -50,8 +50,8 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
                 GetOriginator(message.To),
                 message.To,
                 message.Text,
-                message.NotificationId.ToString(),
-                webhookUrl);
+                message.TrackingToken,
+                context.WebhookUrl);
 
             var response = await messageBirdClient.SendSmsAsync(sms, ct);
 
@@ -95,15 +95,9 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
         return originatorNumber!;
     }
 
-    public async Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext)
+    public async Task HandleRequestAsync(HttpContext httpContext)
     {
         var status = await messageBirdClient.ParseSmsWebhookAsync(httpContext);
-
-        // If the reference is not a valid guid (notification-id), something just went wrong.
-        if (!Guid.TryParse(status.Reference, out var notificationId))
-        {
-            return;
-        }
 
         var result = ParseStatus(status);
 
@@ -112,7 +106,7 @@ public sealed class MessageBirdSmsSender : ISmsSender, IIntegrationHook
             return;
         }
 
-        await callback.HandleCallbackAsync(this, notificationId, status.Recipient, result);
+        await callback.HandleCallbackAsync(this, status.Reference, result);
 
         static DeliveryResult ParseStatus(SmsWebhookRequest status)
         {

@@ -41,9 +41,9 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration
             var options = serviceProvider.GetRequiredService<IOptions<MessageBirdOptions>>();
 
             return new MessageBirdSmsSender(
+                context,
                 serviceProvider.GetRequiredService<ISmsCallback>(),
                 serviceProvider.GetRequiredService<IMessageBirdClient>(),
-                context.WebhookUrl,
                 null,
                 options.Value.PhoneNumber,
                 options.Value.PhoneNumbers);
