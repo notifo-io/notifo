@@ -67,12 +67,15 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
 
                 return new IntegrationProperty(name, type)
                 {
+                    AllowedValues = property.AllowedValues?.ToArray()
+                    DefaultValue = property.DefaultValue?.ToString(),
+                    EditorDescription = property.Description.Values.FirstOrDefault(),
+                    EditorLabel = property.DisplayName.Values.FirstOrDefault(),
                     IsRequired = property.Required,
                     MaxLength = property.MaxLength,
-                    MinLength = property.MaxLength,
                     MaxValue = property.MaxValue,
+                    MinLength = property.MaxLength,
                     MinValue = property.MinValue,
-                    AllowedValues = property.AllowedValues?.ToArray()
                 };
             }).ToList(),
             new List<IntegrationProperty>(),
