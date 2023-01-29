@@ -91,7 +91,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
-                    job.Delay,
+                    job.SendDelay,
                     false, ct);
             }
         }
@@ -157,12 +157,18 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    private static Task SendCoreAsync(WebhookJob job, ResolvedIntegration<IWebhookSender> integration,
+    private Task SendCoreAsync(WebhookJob job, ResolvedIntegration<IWebhookSender> integration,
         CancellationToken ct)
     {
-        var message = new WebhookMessage { Payload = job.Notification };
+        var message = new WebhookMessage
+        {
+            Payload = job.Notification
+        };
 
-        return integration.System.SendAsync(integration.Context, message.Enrich(job), ct);
+        // Enriches the message with all base information that are inherited.
+        message.Enrich(job, Name);
+
+        return integration.System.SendAsync(integration.Context, message, ct);
     }
 
     private async Task UpdateAsync(WebhookJob job, ProcessStatus status, string? reason = null)

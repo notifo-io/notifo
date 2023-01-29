@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class AmazonSESServiceExtensions
 {
-    public static void IntegrateAmazonSES(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddIntegrationAmazonSES(this IServiceCollection services, IConfiguration config)
     {
         const string key = "email:amazonSES";
 
@@ -26,5 +26,7 @@ public static class AmazonSESServiceExtensions
             services.AddSingletonAs<IntegratedAmazonSESIntegration>()
                 .As<IIntegration>();
         }
+
+        return services;
     }
 }

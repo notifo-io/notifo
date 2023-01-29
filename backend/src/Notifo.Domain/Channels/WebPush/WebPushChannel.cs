@@ -112,7 +112,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
-                    job.Delay,
+                    job.SendDelay,
                     false, ct);
             }
         }

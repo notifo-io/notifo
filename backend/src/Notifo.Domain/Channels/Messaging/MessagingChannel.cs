@@ -163,7 +163,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             await userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
                 job,
-                job.Delay,
+                job.SendDelay,
                 false, ct);
         }
     }
@@ -259,7 +259,10 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
                     Text = text,
                 };
 
-                var result = await sender.SendAsync(context, message.Enrich(job), job.Configuration, ct);
+                // Enriches the message with all base information that are inherited.
+                message.Enrich(job, Name);
+
+                var result = await sender.SendAsync(context, message, job.Configuration, ct);
 
                 // Some integrations provide the actual result via webhook at a later point.
                 if (result == DeliveryResult.Delivered)

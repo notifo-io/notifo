@@ -89,11 +89,17 @@ public static class ChannelExtensions
         return body;
     }
 
-    public static T Enrich<T>(this T message, ChannelJob job) where T : BaseMessage
+    public static T Enrich<T>(this T message, ChannelJob job, string channelName) where T : BaseMessage
     {
+        var notification = job.Notification;
+
+        message.IsConfirmed = job.IsConfirmed;
+        message.IsUpdate = job.IsUpdate;
         message.NotificationId = job.Notification.Id;
-        message.TrackDeliveredUrl = job.Notification.TrackDeliveredUrl;
-        message.TrackSeenUrl = job.Notification.TrackSeenUrl;
+        message.Silent = notification.Silent;
+        message.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(channelName, job.ConfigurationId);
+        message.TrackSeenUrl = notification.ComputeTrackSeenUrl(channelName, job.ConfigurationId);
+        message.TrackingToken = new TrackingToken(job.Notification.Id, channelName, job.ConfigurationId).ToParsableString();
         message.UserId = job.Notification.UserId;
         message.UserLanguage = job.Notification.UserLanguage;
 

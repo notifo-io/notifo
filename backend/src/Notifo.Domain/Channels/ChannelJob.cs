@@ -14,9 +14,9 @@ public abstract class ChannelJob
 {
     public Guid ConfigurationId { get; init; }
 
-    public Duration Delay { get; init; }
+    public Duration SendDelay { get; init; }
 
-    public ChannelCondition Condition { get; init; }
+    public ChannelCondition SendCondition { get; init; }
 
     public bool IsUpdate { get; init; }
 
@@ -30,8 +30,8 @@ public abstract class ChannelJob
 
     protected ChannelJob(UserNotification notification, ChannelContext context)
     {
-        Condition = context.Setting.Condition;
-        Delay = Duration.FromSeconds(context.Setting.DelayInSeconds ?? 0);
+        SendCondition = context.Setting.Condition;
+        SendDelay = Duration.FromSeconds(context.Setting.DelayInSeconds ?? 0);
         IsConfirmed = notification.FirstConfirmed != null;
         IsUpdate = context.IsUpdate;
         Notification = notification;

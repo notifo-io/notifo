@@ -11,9 +11,11 @@ public abstract class BaseMessage
 {
     public Guid NotificationId { get; set; }
 
-    public bool IsConfirm { get; set; }
+    public bool IsConfirmed { get; set; }
 
     public bool IsUpdate { get; set; }
+
+    public bool Silent { get; set; }
 
     public string? TrackDeliveredUrl { get; set; }
 

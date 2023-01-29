@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MailchimpServiceExtensions
 {
-    public static void IntegrateMailchimp(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationMailchimp(this IServiceCollection services)
     {
         services.AddHttpClient("Mailchimp", options =>
         {
@@ -21,5 +21,7 @@ public static class MailchimpServiceExtensions
 
         services.AddSingletonAs<MailchimpIntegration>()
             .As<IIntegration>();
+
+        return services;
     }
 }

@@ -12,9 +12,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class TwilioServiceExtensions
 {
-    public static void IntegrateTwilio(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationTwilio(this IServiceCollection services)
     {
         services.AddSingletonAs<TwilioSmsIntegration>()
             .As<IIntegration>();
+
+        return services;
     }
 }

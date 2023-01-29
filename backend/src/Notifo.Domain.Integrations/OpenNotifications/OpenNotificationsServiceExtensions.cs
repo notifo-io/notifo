@@ -12,9 +12,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class OpenNotificationsServiceExtensions
 {
-    public static void IntegrateOpenNotifications(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationOpenNotifications(this IServiceCollection services)
     {
         services.AddSingletonAs<OpenNotificationsRegistry>()
             .As<IIntegrationRegistry>();
+
+        return services;
     }
 }

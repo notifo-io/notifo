@@ -33,7 +33,6 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     private readonly ILogStore logStore;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
-    private readonly IUserStore userStore;
 
     public string Name => Providers.MobilePush;
 
@@ -43,7 +42,6 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         IMediator mediator,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
-        IUserStore userStore,
         IClock clock)
     {
         this.appStore = appStore;
@@ -53,7 +51,6 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         this.mediator = mediator;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
-        this.userStore = userStore;
         this.clock = clock;
     }
 
@@ -139,7 +136,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
-                    job.Delay,
+                    job.SendDelay,
                     false, ct);
             }
         }
@@ -265,6 +262,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 var message = new MobilePushMessage
                 {
+                    Subject = notification.Formatting.Subject,
                     Body = notification.Formatting.Body,
                     ConfirmText = notification.Formatting.ConfirmText,
                     ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
@@ -273,20 +271,16 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                     DeviceType = job.DeviceType,
                     ImageLarge = notification.Formatting.ImageLarge,
                     ImageSmall = notification.Formatting.ImageSmall,
-                    IsConfirmed = job.IsConfirmed,
                     LinkText = notification.Formatting.LinkText,
                     LinkUrl = notification.Formatting.LinkUrl,
-                    NotificationId = job.Notification.Id,
-                    Silent = notification.Silent,
-                    Subject = notification.Formatting.Subject,
                     TimeToLiveInSeconds = notification.TimeToLiveInSeconds,
-                    TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.MobilePush, job.ConfigurationId),
-                    TrackingToken = new TrackingToken(job.Notification.Id, Providers.MobilePush, job.ConfigurationId).ToParsableString(),
-                    TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.MobilePush, job.ConfigurationId),
                     Wakeup = notification.Formatting == null
                 };
 
-                await sender.SendAsync(context, message.Enrich(job), ct);
+                // Enriches the message with all base information that are inherited.
+                message.Enrich(job, Name);
+
+                await sender.SendAsync(context, message, ct);
                 return;
             }
             catch (MobilePushTokenExpiredException)

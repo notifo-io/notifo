@@ -149,7 +149,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             await userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
                 job,
-                job.Delay,
+                job.SendDelay,
                 false, ct);
         }
     }
@@ -237,16 +237,16 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                     await SkipAsync(job, skip.Value);
                 }
 
-                var smsRequest = new SmsMessage
+                var message = new SmsMessage
                 {
                     Text = smsFormatter.Format(template, job.Notification.Formatting.Subject),
                     To = job.PhoneNumber
                 };
 
-                // Set some default properties for the message.
-                smsRequest.Enrich(job);
+                // Enriches the message with all base information that are inherited.
+                message.Enrich(job, Name);
 
-                var result = await sender.SendAsync(context, smsRequest, ct);
+                var result = await sender.SendAsync(context, message, ct);
 
                 // Some integrations provide the actual result via webhook at a later point.
                 if (result == DeliveryResult.Delivered)

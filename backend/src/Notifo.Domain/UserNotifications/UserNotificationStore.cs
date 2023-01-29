@@ -129,12 +129,12 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
         var notificationId = job.Notification.Id;
 
-        if (job.IsUpdate || job.Delay <= Duration.Zero)
+        if (job.IsUpdate || job.SendDelay <= Duration.Zero)
         {
             return Task.FromResult(false);
         }
 
-        switch (job.Condition)
+        switch (job.SendCondition)
         {
             case ChannelCondition.IfNotConfirmed:
                 return repository.IsHandledOrConfirmedAsync(notificationId, channel.Name, job.ConfigurationId, ct);

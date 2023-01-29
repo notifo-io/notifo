@@ -95,7 +95,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             await userNotificationQueue.ScheduleGroupedAsync(
                 job.ScheduleKey,
                 job,
-                job.Delay,
+                job.SendDelay,
                 false, ct);
         }
     }
