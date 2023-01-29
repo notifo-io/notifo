@@ -147,16 +147,17 @@ public class Startup
         services.AddMyWebPipeline(config);
         services.AddMyWebPushChannel(config);
 
-        services.IntegrateAmazonSES(config);
-        services.IntegrateFirebase();
-        services.IntegrateMailchimp();
-        services.IntegrateMailjet();
-        services.IntegrateMessageBird(config);
-        services.IntegrateSmtp();
-        services.IntegrateTelegram();
-        // services.IntegrateTelekom();
-        services.IntegrateThreema();
-        services.IntegrateTwilio();
+        services.AddIntegrationAmazonSES(config);
+        services.AddIntegrationFirebase();
+        services.AddIntegrationHttp();
+        services.AddIntegrationMailchimp();
+        services.AddIntegrationMailjet();
+        services.AddIntegrationMessageBird(config);
+        services.AddIntegrationOpenNotifications(config);
+        services.AddIntegrationSmtp();
+        services.AddIntegrationTelegram();
+        services.AddIntegrationThreema();
+        services.AddIntegrationTwilio();
 
         services.AddInitializer();
         services.AddBackgroundProcesses();

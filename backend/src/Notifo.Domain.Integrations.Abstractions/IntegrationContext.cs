@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.Collections;
-
 namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationContext

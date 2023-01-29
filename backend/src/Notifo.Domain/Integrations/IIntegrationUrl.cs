@@ -9,7 +9,7 @@ namespace Notifo.Domain.Integrations;
 
 public interface IIntegrationUrl
 {
-    string WebhookUrl(string appId, string integration);
+    string WebhookUrl(string appId, string integrationId);
 
     string CallbackUrl();
 }

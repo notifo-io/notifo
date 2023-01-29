@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Webhook;
-using Notifo.Domain.Channels.Webhook.Integrations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Scheduling;
 

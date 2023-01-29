@@ -6,19 +6,17 @@
 // ==========================================================================
 
 using Notifo.Domain.Integrations;
+using Notifo.Domain.Integrations.Http;
 using Notifo.Domain.Integrations.Smtp;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-public static class SmtpServiceExtensions
+public static class HttpServiceExtensions
 {
-    public static IServiceCollection AddIntegrationSmtp(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationHttp(this IServiceCollection services)
     {
-        services.AddSingletonAs<SmtpIntegration>()
+        services.AddSingletonAs<HttpIntegration>()
             .As<IIntegration>();
-
-        services.AddSingletonAs<SmtpEmailServerPool>()
-            .AsSelf();
 
         return services;
     }

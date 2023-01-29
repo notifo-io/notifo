@@ -117,9 +117,9 @@ namespace Notifo.Domain.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email template generates unknown error..
         /// </summary>
-        internal static string Email_UnknownErrror {
+        internal static string EmailUnknownErrror {
             get {
-                return ResourceManager.GetString("Email_UnknownErrror", resourceCulture);
+                return ResourceManager.GetString("EmailUnknownErrror", resourceCulture);
             }
         }
         
@@ -327,123 +327,6 @@ namespace Notifo.Domain.Resources {
         internal static string ValidationUrl {
             get {
                 return ResourceManager.GetString("ValidationUrl", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Make a HTTP request to your server when a notification is confirmed by a User..
-        /// </summary>
-        internal static string Webhook_Description {
-            get {
-                return ResourceManager.GetString("Webhook_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The HTTP method.
-        /// </summary>
-        internal static string Webhook_MethodHints {
-            get {
-                return ResourceManager.GetString("Webhook_MethodHints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Method.
-        /// </summary>
-        internal static string Webhook_MethodLabel {
-            get {
-                return ResourceManager.GetString("Webhook_MethodLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The optional name when defining a template..
-        /// </summary>
-        internal static string Webhook_NameHints {
-            get {
-                return ResourceManager.GetString("Webhook_NameHints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Name.
-        /// </summary>
-        internal static string Webhook_NameLabel {
-            get {
-                return ResourceManager.GetString("Webhook_NameLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use this webhook for all notifications..
-        /// </summary>
-        internal static string Webhook_SendAlwaysHints {
-            get {
-                return ResourceManager.GetString("Webhook_SendAlwaysHints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Send always.
-        /// </summary>
-        internal static string Webhook_SendAlwaysLabel {
-            get {
-                return ResourceManager.GetString("Webhook_SendAlwaysLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Send confirmed notifications to this webhook..
-        /// </summary>
-        internal static string Webhook_SendConfirmHints {
-            get {
-                return ResourceManager.GetString("Webhook_SendConfirmHints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Send Confirm.
-        /// </summary>
-        internal static string Webhook_SendConfirmLabel {
-            get {
-                return ResourceManager.GetString("Webhook_SendConfirmLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Send all notification to this webhook..
-        /// </summary>
-        internal static string Webhook_SendNotificationsHints {
-            get {
-                return ResourceManager.GetString("Webhook_SendNotificationsHints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Send Always.
-        /// </summary>
-        internal static string Webhook_SendNotificationsLabel {
-            get {
-                return ResourceManager.GetString("Webhook_SendNotificationsLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The URL to your server endpoint..
-        /// </summary>
-        internal static string Webhook_URLHints {
-            get {
-                return ResourceManager.GetString("Webhook_URLHints", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to URL.
-        /// </summary>
-        internal static string Webhook_URLLabel {
-            get {
-                return ResourceManager.GetString("Webhook_URLLabel", resourceCulture);
             }
         }
     }

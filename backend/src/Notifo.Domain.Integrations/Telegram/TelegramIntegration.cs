@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Microsoft.Extensions.Caching.Memory;
 using Notifo.Domain.Integrations.Resources;
 using Telegram.Bot;
 

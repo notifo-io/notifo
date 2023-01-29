@@ -29,7 +29,7 @@ public sealed class UserPropertyDto
     /// </summary>
     public string? EditorLabel { get; set; }
 
-    public static UserPropertyDto FromDomainObject(UserProperty property)
+    public static UserPropertyDto FromDomainObject(IntegrationProperty property)
     {
         var result = SimpleMapper.Map(property, new UserPropertyDto());
 

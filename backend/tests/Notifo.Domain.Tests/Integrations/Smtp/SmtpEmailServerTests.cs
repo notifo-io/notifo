@@ -28,7 +28,7 @@ public class SmtpEmailServerTests : EmailSenderTestBase
 
         var integration =
             new ServiceCollection()
-                .AddSmtpIntegration()
+                .AddIntegrationSmtp()
                 .AddMemoryCache()
                 .BuildServiceProvider()
                 .GetRequiredService<SmtpIntegration>();

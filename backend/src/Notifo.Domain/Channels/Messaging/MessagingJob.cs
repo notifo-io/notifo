@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Messaging;

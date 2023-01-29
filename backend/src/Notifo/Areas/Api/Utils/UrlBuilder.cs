@@ -12,7 +12,7 @@ using Squidex.Hosting;
 
 namespace Notifo.Areas.Api.Utils;
 
-public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotificationUrl
+public sealed class UrlBuilder : IEmailUrl, IIntegrationUrl, IUserNotificationUrl
 {
     private readonly IUrlGenerator urlGenerator;
 
@@ -41,13 +41,13 @@ public sealed class UrlBuilder : IEmailUrl, IMessagingUrl, ISmsUrl, IUserNotific
         return urlGenerator.BuildUrl($"api/tracking/notifications/{notificationId}/seen?culture={language}");
     }
 
-    public string SmsWebhookUrl(string appId, string integrationId)
+    public string WebhookUrl(string appId, string integrationId)
     {
-        return urlGenerator.BuildCallbackUrl($"api/callback/sms?appId={appId}&integrationId={integrationId}");
+        return urlGenerator.BuildCallbackUrl($"api/callback?appId={appId}&integrationId={integrationId}");
     }
 
-    public string MessagingWebhookUrl(string appId, string integrationId)
+    public string CallbackUrl()
     {
-        return urlGenerator.BuildCallbackUrl($"api/callback/messaging?appId={appId}&integrationId={integrationId}");
+        return urlGenerator.BuildUrl("api");
     }
 }

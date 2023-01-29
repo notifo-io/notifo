@@ -67,7 +67,7 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
 
                 return new IntegrationProperty(name, type)
                 {
-                    AllowedValues = property.AllowedValues?.ToArray()
+                    AllowedValues = property.AllowedValues?.ToArray(),
                     DefaultValue = property.DefaultValue?.ToString(),
                     EditorDescription = property.Description.Values.FirstOrDefault(),
                     EditorLabel = property.DisplayName.Values.FirstOrDefault(),
