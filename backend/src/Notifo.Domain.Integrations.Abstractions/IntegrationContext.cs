@@ -5,11 +5,17 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Channels.Messaging;
+
 namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationContext
 {
-    required public IIntegrationAdapter Adapter { get; init; }
+    required public IIntegrationAdapter IntegrationAdapter { get; init; }
+
+    required public IMessagingCallback MessagingCallback { get; init; }
+
+    required public ISmsCallback SmsCallback { get; init; }
 
     required public string IntegrationId { get; init; }
 

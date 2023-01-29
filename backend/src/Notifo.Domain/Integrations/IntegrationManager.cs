@@ -7,8 +7,10 @@
 
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Mediator;
@@ -21,12 +23,13 @@ namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 {
-    private readonly IIntegrationRegistries integrationRegistries;
-    private readonly IIntegrationUrl integrationUrl;
     private readonly IAppStore appStore;
     private readonly IIntegrationAdapter integrationAdapter;
-    private readonly IMediator mediator;
+    private readonly IIntegrationRegistries integrationRegistries;
+    private readonly IIntegrationUrl integrationUrl;
     private readonly ILogger<IntegrationManager> log;
+    private readonly IMediator mediator;
+    private readonly IServiceProvider serviceProvider;
     private readonly ConditionEvaluator conditionEvaluator;
     private CompletionTimer timer;
 
@@ -40,6 +43,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         IIntegrationAdapter integrationAdapter,
         IIntegrationRegistries integrationRegistries,
         IIntegrationUrl integrationUrl,
+        IServiceProvider serviceProvider,
         IMediator mediator,
         ILogger<IntegrationManager> log)
     {
@@ -48,6 +52,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         this.mediator = mediator;
         this.integrationRegistries = integrationRegistries;
         this.integrationUrl = integrationUrl;
+        this.serviceProvider = serviceProvider;
         this.log = log;
 
         conditionEvaluator = new ConditionEvaluator(log);
@@ -311,13 +316,15 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     {
         return new IntegrationContext
         {
-            Adapter = integrationAdapter,
             AppId = app.Id,
             AppName = app.Name,
             CallbackToken = string.Empty,
             CallbackUrl = integrationUrl.CallbackUrl(),
+            MessagingCallback = serviceProvider.GetRequiredService<IMessagingCallback>(),
+            IntegrationAdapter = integrationAdapter,
             IntegrationId = id,
             Properties = new Dictionary<string, string>(configured.Properties),
+            SmsCallback = serviceProvider.GetRequiredService<ISmsCallback>(),
             WebhookUrl = integrationUrl.WebhookUrl(app.Id, id)
         };
     }

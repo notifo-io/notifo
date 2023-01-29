@@ -30,7 +30,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
             var content = new FormUrlEncodedContent(new Dictionary<string, string?>
             {
                 [RequestKeys.From] = ConvertPhoneNumber(phoneNumber),
-                [RequestKeys.To] = ConvertPhoneNumber(message.To),
+                [RequestKeys.To] = ConvertPhoneNumber(message.Target),
                 [RequestKeys.Body] = message.Text,
                 [RequestKeys.StatusCallback] = BuildCallbackUrl(context, message),
             });
@@ -48,7 +48,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
 
             if (!string.IsNullOrWhiteSpace(result?.ErrorMessage))
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, message.To, result.ErrorMessage);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, message.Target, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
@@ -57,7 +57,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, message.To);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, message.Target);
 
             throw new DomainException(errorMessage, ex);
         }
@@ -101,19 +101,19 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
             return Task.CompletedTask;
         }
 
-        return callback.HandleCallbackAsync(this, reference, result);
+        return context.SmsCallback.HandleCallbackAsync(this, reference, new DeliveryResult(result));
 
-        static DeliveryResult ParseStatus(string status)
+        static DeliveryStatus ParseStatus(string status)
         {
             switch (status)
             {
                 case "sent":
-                    return DeliveryResult.Sent;
+                    return DeliveryStatus.Sent;
                 case "delivered":
-                    return DeliveryResult.Delivered;
+                    return DeliveryStatus.Handled;
                 case "failed":
                 case "undelivered":
-                    return DeliveryResult.Failed;
+                    return DeliveryStatus.Failed;
                 default:
                     return default;
             }

@@ -32,17 +32,17 @@ public sealed partial class TelegramIntegration : IMessagingSender, IIntegration
         }
     }
 
-    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message, IReadOnlyDictionary<string, string> targets,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message,
         CancellationToken ct)
     {
-        if (!targets.TryGetValue(TelegramChatId, out var chatId))
+        if (!message.Targets.TryGetValue(TelegramChatId, out var chatId))
         {
-            return DeliveryResult.Skipped;
+            return DeliveryResult.Skipped();
         }
 
         await SendMessageAsync(context, message.Text, chatId, ct);
 
-        return DeliveryResult.Delivered;
+        return DeliveryResult.Handled;
     }
 
     private async Task SendMessageAsync(IntegrationContext context, string text, string chatId,
@@ -111,7 +111,7 @@ public sealed partial class TelegramIntegration : IMessagingSender, IIntegration
             return;
         }
 
-        var user = await context.Adapter.FindUserByPropertyAsync(context.AppId, UserUsername.Name, username, default);
+        var user = await context.IntegrationAdapter.FindUserByPropertyAsync(context.AppId, UserUsername.Name, username, default);
 
         if (user == null)
         {
@@ -119,7 +119,7 @@ public sealed partial class TelegramIntegration : IMessagingSender, IIntegration
             return;
         }
 
-        await context.Adapter.UpdateUserAsync(context.AppId, user.Id, TelegramChatId, chatId, default);
+        await context.IntegrationAdapter.UpdateUserAsync(context.AppId, user.Id, TelegramChatId, chatId, default);
     }
 
     private static string GetChatId(TelegramChat chat)

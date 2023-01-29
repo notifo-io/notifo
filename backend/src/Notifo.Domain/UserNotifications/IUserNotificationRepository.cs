@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications;
@@ -48,6 +49,6 @@ public interface IUserNotificationRepository
     Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens, Instant now,
         CancellationToken ct = default);
 
-    Task BatchWriteAsync((TrackingToken Token, ProcessStatus Status, string? Detail)[] updates, Instant now,
+    Task BatchWriteAsync((TrackingToken Token, DeliveryResult Result)[] updates, Instant now,
         CancellationToken ct = default);
 }

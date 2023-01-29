@@ -9,9 +9,9 @@ using System.Net.Http.Json;
 
 namespace Notifo.Domain.Integrations.Http;
 
-public sealed partial class HttpWebhookIntegration : IWebhookSender
+public sealed partial class HttpIntegration : IWebhookSender
 {
-    public async Task SendAsync(IntegrationContext context, WebhookMessage message,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, WebhookMessage message,
         CancellationToken ct)
     {
         var sendAlways = SendAlwaysProperty.GetBoolean(context.Properties);
@@ -21,7 +21,7 @@ public sealed partial class HttpWebhookIntegration : IWebhookSender
 
         if (!send)
         {
-            return;
+            return DeliveryResult.Skipped();
         }
 
         var httpUrl = HttpUrlProperty.GetString(context.Properties);
@@ -35,5 +35,7 @@ public sealed partial class HttpWebhookIntegration : IWebhookSender
         };
 
         await client.SendAsync(request, ct);
+
+        return DeliveryResult.Handled;
     }
 }

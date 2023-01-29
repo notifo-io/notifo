@@ -11,5 +11,5 @@ namespace Notifo.Domain.Channels.Messaging;
 
 public interface IMessagingCallback
 {
-    Task HandleCallbackAsync(IMessagingSender source, string trackingToken, DeliveryResult result, string? details = null);
+    Task HandleCallbackAsync(IMessagingSender source, string trackingToken, DeliveryResult result);
 }

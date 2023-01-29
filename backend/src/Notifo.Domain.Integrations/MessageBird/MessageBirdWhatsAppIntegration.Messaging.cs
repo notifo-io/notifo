@@ -27,12 +27,12 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
         }
     }
 
-    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message, IReadOnlyDictionary<string, string> targets,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message,
         CancellationToken ct)
     {
-        if (!targets.TryGetValue(WhatsAppPhoneNumber, out var to))
+        if (!message.Targets.TryGetValue(WhatsAppPhoneNumber, out var to))
         {
-            return DeliveryResult.Skipped;
+            return DeliveryResult.Skipped();
         }
 
         var channelId = WhatsAppChannelIdProperty.GetString(context.Properties);
@@ -54,12 +54,12 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
         var response = await GetClient(context).SendWhatsAppAsync(textMessage, ct);
 
         // Query for the status, otherwise we cannot retrieve errors.
-        QueryAsync(client, message, response).Forget();
+        QueryAsync(client, context, message, response).Forget();
 
         return DeliveryResult.Sent;
     }
 
-    private async Task QueryAsync(IMessageBirdClient client, MessagingMessage message, ConversationResponse response)
+    private async Task QueryAsync(IMessageBirdClient client, IntegrationContext context, MessagingMessage message, ConversationResponse response)
     {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
@@ -80,12 +80,12 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
                 switch (response.Status)
                 {
                     case MessageBirdStatus.Delivered:
-                        result = DeliveryResult.Delivered;
+                        result = DeliveryResult.Handled;
                         break;
                     case MessageBirdStatus.Delivery_Failed:
                     case MessageBirdStatus.Failed:
                     case MessageBirdStatus.Rejected:
-                        result = DeliveryResult.Failed;
+                        result = DeliveryResult.Failed();
                         break;
                     case MessageBirdStatus.Sent:
                         result = DeliveryResult.Sent;
@@ -94,7 +94,7 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
 
                 if (result != default)
                 {
-                    await callback.HandleCallbackAsync(this, message.TrackingToken, result);
+                    await context.MessagingCallback.HandleCallbackAsync(this, message.TrackingToken, result);
                     return;
                 }
             }
@@ -125,18 +125,18 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
             return;
         }
 
-        await callback.HandleCallbackAsync(this, reference, deliveryStatus, status.Error?.Description);
+        await context.MessagingCallback.HandleCallbackAsync(this, reference, new DeliveryResult(deliveryStatus, status.Error?.Description));
 
-        static DeliveryResult ParseStatus(WhatsAppWebhookRequest status)
+        static DeliveryStatus ParseStatus(WhatsAppWebhookRequest status)
         {
             switch (status.Message.Status)
             {
                 case MessageBirdStatus.Delivered:
-                    return DeliveryResult.Delivered;
+                    return DeliveryStatus.Handled;
                 case MessageBirdStatus.Delivery_Failed:
-                    return DeliveryResult.Failed;
+                    return DeliveryStatus.Failed;
                 case MessageBirdStatus.Sent:
-                    return DeliveryResult.Sent;
+                    return DeliveryStatus.Sent;
                 default:
                     return default;
             }

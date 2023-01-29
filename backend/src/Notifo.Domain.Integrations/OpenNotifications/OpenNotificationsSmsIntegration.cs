@@ -13,13 +13,9 @@ namespace Notifo.Domain.Integrations.OpenNotifications;
 
 public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrationBase, ISmsSender, IIntegrationHook
 {
-    private readonly ISmsCallback smsCallback;
-
-    public OpenNotificationsSmsIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client,
-        ISmsCallback smsCallback)
+    public OpenNotificationsSmsIntegration(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
         : base(fullName, providerName, providerInfo, client)
     {
-        this.smsCallback = smsCallback;
     }
 
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message, CancellationToken ct)
@@ -31,14 +27,14 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
             Provider = ProviderName,
             Payload = new SmsPayloadDto
             {
-                To = message.To,
+                To = message.Target,
                 Body = message.Text,
             }
         };
 
         var status = await Client.Providers.SendSmsAsync(requestDto, ct);
 
-        return status.Status.ToDeliveryStatus();
+        return status.ToDeliveryResult();
     }
 
     public async Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext,
@@ -91,10 +87,7 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
 
         if (status != null)
         {
-            await smsCallback.HandleCallbackAsync(this,
-                status.NotificationId,
-                status.Status.ToDeliveryStatus(),
-                status.Errors?.FirstOrDefault()?.Message);
+            await context.SmsCallback.HandleCallbackAsync(this, status.NotificationId, status.ToDeliveryResult());
         }
     }
 }

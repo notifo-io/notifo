@@ -9,6 +9,6 @@ namespace Notifo.Domain.Integrations;
 
 public interface IWebhookSender
 {
-    Task SendAsync(IntegrationContext context, WebhookMessage message,
+    Task<DeliveryResult> SendAsync(IntegrationContext context, WebhookMessage message,
         CancellationToken ct);
 }

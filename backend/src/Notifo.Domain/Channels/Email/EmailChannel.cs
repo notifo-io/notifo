@@ -8,7 +8,9 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.ChannelTemplates;
+using Notifo.Domain.Identity;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;
@@ -36,11 +38,13 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
     public string Name => Providers.Email;
 
-    public EmailChannel(ILogger<EmailChannel> log, ILogStore logStore,
+    public EmailChannel(
         IAppStore appStore,
-        IIntegrationManager integrationManager,
         IEmailFormatter emailFormatter,
         IEmailTemplateStore emailTemplateStore,
+        IIntegrationManager integrationManager,
+        ILogger<EmailChannel> log,
+        ILogStore logStore,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
         IUserStore userStore)
@@ -114,7 +118,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             {
                 if (await userNotificationStore.IsHandledAsync(job, this, ct))
                 {
-                    await UpdateAsync(job, ProcessStatus.Skipped);
+                    await UpdateAsync(job, DeliveryResult.Skipped());
                 }
                 else
                 {
@@ -133,7 +137,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
     public Task HandleExceptionAsync(List<EmailJob> jobs, Exception ex)
     {
-        return UpdateAsync(jobs, ProcessStatus.Failed);
+        return UpdateAsync(jobs, DeliveryResult.Failed());
     }
 
     public async Task SendJobsAsync(List<EmailJob> jobs,
@@ -147,7 +151,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             var commonApp = first.Notification.AppId;
             var commonUser = first.Notification.UserId;
 
-            await UpdateAsync(jobs, ProcessStatus.Attempt);
+            await UpdateAsync(jobs, DeliveryResult.Attempt);
 
             var app = await appStore.GetCachedAsync(first.Notification.AppId, ct);
 
@@ -155,7 +159,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             {
                 log.LogWarning("Cannot send email: App not found.");
 
-                await UpdateAsync(jobs, ProcessStatus.Handled);
+                await UpdateAsync(jobs, DeliveryResult.Handled);
                 return;
             }
 
@@ -183,47 +187,20 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     return;
                 }
 
-                EmailMessage? message;
+                var (skip, message) = await BuildMessageAsync(jobs, app, user, ct);
 
-                using (Telemetry.Activities.StartActivity("Format"))
+                if (skip != null)
                 {
-                    var (skip, template) = await GetTemplateAsync(
-                        first.Notification.AppId,
-                        first.Notification.UserLanguage,
-                        first.EmailTemplate,
-                        ct);
-
-                    if (skip != null)
-                    {
-                        await SkipAsync(jobs, skip.Value);
-                        return;
-                    }
-
-                    if (template == null)
-                    {
-                        return;
-                    }
-
-                    var (result, errors) = await emailFormatter.FormatAsync(template, jobs, app, user, false, ct);
-
-                    if (errors?.Count > 0 || result == null)
-                    {
-                        errors ??= new List<EmailFormattingError>();
-
-                        if (errors.Count == 0)
-                        {
-                            errors.Add(new EmailFormattingError(EmailTemplateType.General, Texts.Email_UnknownErrror));
-                        }
-
-                        throw new EmailFormattingException(errors);
-                    }
-
-                    message = result;
+                    await SkipAsync(jobs, skip.Value);
+                    return;
                 }
 
-                await SendCoreAsync(message, app.Id, integrations, ct);
+                var result = await SendCoreAsync(message!, first.Notification.AppId, integrations, ct);
 
-                await UpdateAsync(jobs, ProcessStatus.Handled);
+                if (result.Status > DeliveryStatus.Attempt)
+                {
+                    await UpdateAsync(jobs, result);
+                }
             }
             catch (DomainException ex)
             {
@@ -233,57 +210,97 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         }
     }
 
-    private async Task SendCoreAsync(EmailMessage message, string appId, List<ResolvedIntegration<IEmailSender>> integrations,
+    private async Task<DeliveryResult> SendCoreAsync(EmailMessage message, string appId, List<ResolvedIntegration<IEmailSender>> integrations,
         CancellationToken ct)
     {
-        var lastSender = integrations[^1].System;
+        var lastResult = default(DeliveryResult);
 
         foreach (var (_, context, sender) in integrations)
         {
             try
             {
-                await sender.SendAsync(context, message, ct);
-                return;
+                lastResult = await sender.SendAsync(context, message, ct);
+
+                // We only sent notifications over the first successful integration.
+                if (lastResult.Status >= DeliveryStatus.Sent)
+                {
+                    break;
+                }
             }
             catch (DomainException ex)
             {
                 await logStore.LogAsync(appId, LogMessage.General_Exception(Name, ex));
 
-                if (sender == lastSender)
-                {
-                    // Only throw exception for the last sender, so that we can continue with the next sender.
-                    throw;
-                }
+                // We only expose details of domain exceptions.
+                lastResult = DeliveryResult.Failed(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (sender == lastSender)
+                await logStore.LogAsync(appId, LogMessage.General_InternalException(sender.Definition.Type, ex));
+
+                if (sender == integrations[^1].System)
                 {
-                    // Only throw exception for the last sender, so that we can continue with the next sender.
                     throw;
                 }
+
+                lastResult = DeliveryResult.Failed();
             }
         }
+
+        return lastResult;
     }
 
-    private Task UpdateAsync(EmailJob notification, ProcessStatus status, string? reason = null)
+    private Task UpdateAsync(EmailJob notification, DeliveryResult result)
     {
-        return userNotificationStore.TrackAsync(notification.AsTrackingKey(Name), status, reason);
+        return userNotificationStore.TrackAsync(notification.AsTrackingKey(Name), result);
     }
 
     private async Task SkipAsync(List<EmailJob> jobs, LogMessage message)
     {
         await logStore.LogAsync(jobs[0].Notification.AppId, message);
 
-        await UpdateAsync(jobs, ProcessStatus.Skipped, message.Reason);
+        await UpdateAsync(jobs, DeliveryResult.Skipped(message.Reason));
     }
 
-    private async Task UpdateAsync(List<EmailJob> jobs, ProcessStatus status, string? reason = null)
+    private async Task UpdateAsync(List<EmailJob> jobs, DeliveryResult result)
     {
         foreach (var job in jobs)
         {
-            await UpdateAsync(job, status, reason);
+            await UpdateAsync(job, result);
         }
+    }
+
+    private async Task<(LogMessage? Skip, EmailMessage?)> BuildMessageAsync(List<EmailJob> jobs, App app, User user,
+        CancellationToken ct)
+    {
+        var firstJob = jobs[0];
+
+        var (skip, template) = await GetTemplateAsync(
+            firstJob.Notification.AppId,
+            firstJob.Notification.UserLanguage,
+            firstJob.EmailTemplate,
+            ct);
+
+        if (skip != default)
+        {
+            return (skip, null);
+        }
+
+        var (message, errors) = await emailFormatter.FormatAsync(template!, jobs, app, user, false, ct);
+
+        if (errors?.Count > 0 || message == null)
+        {
+            errors ??= new List<EmailFormattingError>();
+
+            if (errors.Count == 0)
+            {
+                errors.Add(new EmailFormattingError(EmailTemplateType.General, Texts.Email_UnknownErrror));
+            }
+
+            throw new EmailFormattingException(errors);
+        }
+
+        return (default, message);
     }
 
     private async Task<(LogMessage? Skip, EmailTemplate?)> GetTemplateAsync(

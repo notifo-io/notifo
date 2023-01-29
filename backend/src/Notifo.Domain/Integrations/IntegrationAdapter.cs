@@ -44,8 +44,8 @@ internal class IntegrationAdapter : IIntegrationAdapter
         {
             PropertyKey = key,
             PropertyValue = value
-        }.WithBaseProperties(appId, id);
+        };
 
-        await mediator.SendAsync(command, ct);
+        await mediator.SendAsync(command.With(appId, id), ct);
     }
 }

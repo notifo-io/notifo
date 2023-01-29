@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Channels;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserEvents;
 using Notifo.Domain.Users;
@@ -92,7 +93,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
         using (var activity = Telemetry.Activities.StartActivity("DistributeUserEventScheduled", ActivityKind.Internal, activityContext, links: activityLinks))
         {
-            await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Attempt);
+            await userNotificationsStore.TrackAsync(userEvent, DeliveryResult.Attempt);
 
             try
             {
@@ -150,7 +151,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             {
                 if (isLastAttempt)
                 {
-                    await userNotificationsStore.TrackAsync(userEvent, ProcessStatus.Failed);
+                    await userNotificationsStore.TrackAsync(userEvent, DeliveryResult.Failed());
                 }
 
                 log.LogError(ex, "Failed to process user event for app {appId} with ID {id} to topic {topic}.",
@@ -349,7 +350,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     {
         await logStore.LogAsync(userEvent.AppId!, message);
 
-        await userNotificationsStore.TrackAsync(TrackingKey.ForUserEvent(userEvent), ProcessStatus.Failed, message.Reason);
+        await userNotificationsStore.TrackAsync(TrackingKey.ForUserEvent(userEvent), DeliveryResult.Failed(message.Reason));
     }
 
     private async Task<ChannelContext?> BuildContextAsync(string appId, string userId, bool isUpdate,

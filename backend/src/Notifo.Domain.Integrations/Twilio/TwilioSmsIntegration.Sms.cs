@@ -27,14 +27,14 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
         try
         {
             var result = await MessageResource.CreateAsync(
-                ConvertPhoneNumber(message.To), null,
+                ConvertPhoneNumber(message.Target), null,
                 ConvertPhoneNumber(phoneNumber), null,
                 message.Text,
                 statusCallback: new Uri(BuildCallbackUrl(context, message)), client: client);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, message.To, result.ErrorMessage);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, message.Target, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
@@ -43,7 +43,7 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, message.To);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, message.Target);
 
             throw new DomainException(errorMessage, ex);
         }
@@ -87,7 +87,7 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
             return Task.CompletedTask;
         }
 
-        return callback.HandleCallbackAsync(this, reference, result);
+        return context.SmsCallback.HandleCallbackAsync(this, reference, result);
 
         static DeliveryResult ParseStatus(string status)
         {
@@ -96,10 +96,10 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
                 case "sent":
                     return DeliveryResult.Sent;
                 case "delivered":
-                    return DeliveryResult.Delivered;
+                    return DeliveryResult.Handled;
                 case "failed":
                 case "undelivered":
-                    return DeliveryResult.Failed;
+                    return DeliveryResult.Failed();
                 default:
                     return default;
             }

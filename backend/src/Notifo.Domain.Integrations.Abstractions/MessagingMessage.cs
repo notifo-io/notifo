@@ -10,4 +10,6 @@ namespace Notifo.Domain.Integrations;
 public sealed class MessagingMessage : BaseMessage
 {
     public string Text { get; set; }
+
+    public IReadOnlyDictionary<string, string> Targets { get; set; }
 }

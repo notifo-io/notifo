@@ -11,7 +11,7 @@ public sealed partial class MailjetIntegration : IEmailSender
 {
     private const int Attempts = 5;
 
-    public async Task SendAsync(IntegrationContext context, EmailMessage request,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
         CancellationToken ct)
     {
         var apiKey = ApiKeyProperty.GetString(context.Properties);
@@ -47,5 +47,7 @@ public sealed partial class MailjetIntegration : IEmailSender
                 }
             }
         }
+
+        return DeliveryResult.Sent;
     }
 }

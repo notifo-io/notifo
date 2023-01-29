@@ -46,11 +46,11 @@ public sealed class WebChannel : ICommunicationChannel
             {
                 await streamClient.SendAsync(notification);
 
-                await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled, ct: default);
+                await userNotificationStore.TrackAsync(identifier, DeliveryResult.Sent, default);
             }
             catch (Exception ex)
             {
-                await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed, ct: ct);
+                await userNotificationStore.TrackAsync(identifier, DeliveryResult.Failed(), ct: ct);
 
                 log.LogError(ex, "Failed to send web message.");
             }

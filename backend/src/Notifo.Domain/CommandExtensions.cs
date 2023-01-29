@@ -18,7 +18,7 @@ public static class CommandExtensions
         return command;
     }
 
-    public static T WithBaseProperties<T>(this T command, string? appId, string? userId) where T : CommandBase
+    public static T With<T>(this T command, string? appId, string? userId) where T : CommandBase
     {
         if (appId != null && command is AppCommandBase appCommand)
         {

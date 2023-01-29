@@ -16,14 +16,12 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IInitializ
 {
     private readonly ConcurrentDictionary<string, IIntegration> integrations = new ConcurrentDictionary<string, IIntegration>();
     private readonly IEnumerable<IOpenNotificationsClient> clients;
-    private readonly ISmsCallback callback;
 
     public IEnumerable<IIntegration> Integrations => integrations.Values;
 
-    public OpenNotificationsRegistry(IEnumerable<IOpenNotificationsClient> clients, ISmsCallback callback)
+    public OpenNotificationsRegistry(IEnumerable<IOpenNotificationsClient> clients)
     {
         this.clients = clients;
-        this.callback = callback;
     }
 
     public bool TryGetIntegration(string type, [MaybeNullWhen(false)] out IIntegration integration)
@@ -49,7 +47,7 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IInitializ
 
                 if (providerInfo.Type == ProviderInfoDtoType.Sms)
                 {
-                    integrations.TryAdd(fullName, new OpenNotificationsSmsIntegration(fullName, name, providerInfo, client, callback));
+                    integrations.TryAdd(fullName, new OpenNotificationsSmsIntegration(fullName, name, providerInfo, client));
                 }
                 else if (providerInfo.Type == ProviderInfoDtoType.Email)
                 {

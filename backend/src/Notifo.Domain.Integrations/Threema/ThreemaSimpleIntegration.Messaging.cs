@@ -31,7 +31,7 @@ public sealed partial class ThreemaSimpleIntegration : IMessagingSender
         }
     }
 
-    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message, IReadOnlyDictionary<string, string> targets,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MessagingMessage message,
         CancellationToken ct)
     {
         var apiIdentity = ApiIdentity.GetString(context.Properties);
@@ -41,13 +41,13 @@ public sealed partial class ThreemaSimpleIntegration : IMessagingSender
 
         Exception? exception = null;
 
-        if (targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
+        if (message.Targets.TryGetValue(ThreemaPhoneNumber, out var phoneNumber))
         {
             try
             {
                 if (await SendAsync(httpClient, apiSecret, apiIdentity, "phone", phoneNumber, message.Text, ct))
                 {
-                    return DeliveryResult.Delivered;
+                    return DeliveryResult.Handled;
                 }
             }
             catch (Exception ex)
@@ -56,13 +56,13 @@ public sealed partial class ThreemaSimpleIntegration : IMessagingSender
             }
         }
 
-        if (targets.TryGetValue(ThreemaEmail, out var email))
+        if (message.Targets.TryGetValue(ThreemaEmail, out var email))
         {
             try
             {
                 if (await SendAsync(httpClient, apiSecret, apiIdentity, "email", email, message.Text, ct))
                 {
-                    return DeliveryResult.Delivered;
+                    return DeliveryResult.Handled;
                 }
             }
             catch (Exception ex)
@@ -76,7 +76,7 @@ public sealed partial class ThreemaSimpleIntegration : IMessagingSender
             throw exception;
         }
 
-        return DeliveryResult.Skipped;
+        return DeliveryResult.Skipped();
     }
 
     private static async Task<bool> SendAsync(HttpClient httpClient, string apiSecret, string apiIdentity, string toKey, string toValue, string text,

@@ -7,6 +7,7 @@
 
 using NodaTime;
 using Notifo.Domain.Channels;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.UserEvents;
 using Notifo.Infrastructure;
 
@@ -47,9 +48,9 @@ public interface IUserNotificationStore
     Task<IReadOnlyList<(UserNotification, bool Updated)>> TrackDeliveredAsync(TrackingToken[] tokens,
         CancellationToken ct = default);
 
-    Task TrackAsync(UserEventMessage userEvent, ProcessStatus status,
+    Task TrackAsync(UserEventMessage userEvent, DeliveryResult result,
         CancellationToken ct = default);
 
-    Task TrackAsync(TrackingKey identifier, ProcessStatus status, string? detail = null,
+    Task TrackAsync(TrackingKey identifier, DeliveryResult result,
         CancellationToken ct = default);
 }

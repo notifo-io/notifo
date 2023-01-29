@@ -117,9 +117,9 @@ namespace Notifo.Domain.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Email template generates unknown error..
         /// </summary>
-        internal static string EmailUnknownErrror {
+        internal static string Email_UnknownErrror {
             get {
-                return ResourceManager.GetString("EmailUnknownErrror", resourceCulture);
+                return ResourceManager.GetString("Email_UnknownErrror", resourceCulture);
             }
         }
         

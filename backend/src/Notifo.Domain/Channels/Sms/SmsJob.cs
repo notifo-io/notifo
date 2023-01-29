@@ -13,9 +13,7 @@ public sealed class SmsJob : ChannelJob
 {
     public string PhoneNumber { get; init; }
 
-    public string TemplateLanguage { get; init; }
-
-    public string? TemplateName { get; init; }
+    public string? Template { get; init; }
 
     public string ScheduleKey
     {
@@ -29,9 +27,9 @@ public sealed class SmsJob : ChannelJob
     public SmsJob(UserNotification notification, ChannelContext context, string phoneNumber)
         : base(notification, context)
     {
+        Template = context.Setting.Template;
+
         PhoneNumber = phoneNumber;
-        TemplateLanguage = notification.UserLanguage;
-        TemplateName = context.Setting.Template;
     }
 
     public static string ComputeScheduleKey(Guid notificationId)

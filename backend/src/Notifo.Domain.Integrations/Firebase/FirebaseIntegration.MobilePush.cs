@@ -13,12 +13,12 @@ public sealed partial class FirebaseIntegration : IMobilePushSender
 {
     private const int Attempts = 5;
 
-    public async Task SendAsync(IntegrationContext context, MobilePushMessage message,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, MobilePushMessage message,
         CancellationToken ct)
     {
         if (!ShouldSend(context, message.Silent, message.DeviceType))
         {
-            return;
+            return DeliveryResult.Skipped();
         }
 
         try
@@ -50,6 +50,8 @@ public sealed partial class FirebaseIntegration : IMobilePushSender
         {
             throw new MobilePushTokenExpiredException();
         }
+
+        return DeliveryResult.Sent;
     }
 
     private static bool ShouldSend(IntegrationContext context, bool isSilent, MobileDeviceType deviceType)

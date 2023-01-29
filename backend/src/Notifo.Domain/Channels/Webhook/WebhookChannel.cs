@@ -32,9 +32,11 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
 
     public bool IsSystem => true;
 
-    public WebhookChannel(ILogger<WebhookChannel> log, LogStore logStore,
+    public WebhookChannel(
         IAppStore appStore,
         IIntegrationManager integrationManager,
+        ILogger<WebhookChannel> log,
+        ILogStore logStore,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore)
     {
@@ -61,7 +63,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
 
     public Task HandleExceptionAsync(WebhookJob job, Exception ex)
     {
-        return UpdateAsync(job, ProcessStatus.Failed);
+        return UpdateAsync(job, DeliveryResult.Failed());
     }
 
     public async Task SendAsync(UserNotification notification, ChannelContext context,
@@ -107,7 +109,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {
-                await UpdateAsync(job, ProcessStatus.Skipped);
+                await UpdateAsync(job, DeliveryResult.Skipped());
             }
             else
             {
@@ -129,7 +131,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
             {
                 log.LogWarning("Cannot send webhook: App not found.");
 
-                await UpdateAsync(job, ProcessStatus.Handled);
+                await UpdateAsync(job, DeliveryResult.Handled);
                 return;
             }
 
@@ -143,11 +145,14 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
 
             try
             {
-                await UpdateAsync(job, ProcessStatus.Attempt);
+                await UpdateAsync(job, DeliveryResult.Attempt);
 
-                await SendCoreAsync(job, integration, ct);
+                var result = await SendCoreAsync(job, integration, ct);
 
-                await UpdateAsync(job, ProcessStatus.Handled);
+                if (result.Status > DeliveryStatus.Attempt)
+                {
+                    await UpdateAsync(job, result);
+                }
             }
             catch (Exception ex)
             {
@@ -157,7 +162,7 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    private Task SendCoreAsync(WebhookJob job, ResolvedIntegration<IWebhookSender> integration,
+    private Task<DeliveryResult> SendCoreAsync(WebhookJob job, ResolvedIntegration<IWebhookSender> integration,
         CancellationToken ct)
     {
         var message = new WebhookMessage
@@ -165,25 +170,22 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
             Payload = job.Notification
         };
 
-        // Enriches the message with all base information that are inherited.
-        message.Enrich(job, Name);
-
-        return integration.System.SendAsync(integration.Context, message, ct);
-    }
-
-    private async Task UpdateAsync(WebhookJob job, ProcessStatus status, string? reason = null)
-    {
-        // We only track the initial publication.
-        if (!job.IsUpdate)
-        {
-            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), status, reason);
-        }
+        return integration.System.SendAsync(integration.Context, message.Enrich(job, Name), ct);
     }
 
     private async Task SkipAsync(WebhookJob job, LogMessage message)
     {
         await logStore.LogAsync(job.Notification.AppId, message);
 
-        await UpdateAsync(job, ProcessStatus.Skipped, message.Reason);
+        await UpdateAsync(job, DeliveryResult.Skipped(message.Reason));
+    }
+
+    private async Task UpdateAsync(WebhookJob job, DeliveryResult result)
+    {
+        // We only track the initial publication.
+        if (!job.IsUpdate)
+        {
+            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
+        }
     }
 }

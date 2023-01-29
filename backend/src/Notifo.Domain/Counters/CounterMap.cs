@@ -8,6 +8,8 @@
 #pragma warning disable CS0162
 #pragma warning disable RECS0065 // Expression is always 'true' or always 'false'
 
+using Notifo.Domain.Integrations;
+
 namespace Notifo.Domain.Counters;
 
 public sealed class CounterMap : Dictionary<string, long>
@@ -61,19 +63,22 @@ public sealed class CounterMap : Dictionary<string, long>
         }
     }
 
-    public static CounterMap ForNotification(ProcessStatus status, int count = 1)
+    public static CounterMap ForNotification(DeliveryStatus status, int count = 1)
     {
         var result = new CounterMap();
 
         switch (status)
         {
-            case ProcessStatus.Attempt when SupportPending:
+            case DeliveryStatus.Attempt when SupportPending:
                 result.Increment(NotificationsAttempt, count);
                 break;
-            case ProcessStatus.Handled:
+            case DeliveryStatus.Sent:
                 result.Increment(NotificationsHandled, count);
                 break;
-            case ProcessStatus.Failed:
+            case DeliveryStatus.Handled:
+                result.Increment(NotificationsHandled, count);
+                break;
+            case DeliveryStatus.Failed:
                 result.Increment(NotificationsFailed, count);
                 break;
         }
@@ -81,22 +86,25 @@ public sealed class CounterMap : Dictionary<string, long>
         return result;
     }
 
-    public static CounterMap ForChannel(string channel, ProcessStatus status, int count = 1)
+    public static CounterMap ForChannel(string channel, DeliveryStatus status, int count = 1)
     {
         var result = new CounterMap();
 
         switch (status)
         {
-            case ProcessStatus.Attempt when SupportPending:
+            case DeliveryStatus.Attempt when SupportPending:
                 result.Increment(ChannelAttmept(channel), count);
                 break;
-            case ProcessStatus.Skipped:
+            case DeliveryStatus.Skipped:
                 result.Increment(ChannelSkipped(channel), count);
                 break;
-            case ProcessStatus.Handled:
+            case DeliveryStatus.Sent:
                 result.Increment(ChannelHandled(channel), count);
                 break;
-            case ProcessStatus.Failed:
+            case DeliveryStatus.Handled:
+                result.Increment(ChannelHandled(channel), count);
+                break;
+            case DeliveryStatus.Failed:
                 result.Increment(ChannelFailed(channel), count);
                 break;
         }

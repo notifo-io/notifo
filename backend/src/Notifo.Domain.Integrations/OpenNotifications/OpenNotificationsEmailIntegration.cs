@@ -16,7 +16,7 @@ public sealed class OpenNotificationsEmailIntegration : OpenNotificationsIntegra
     {
     }
 
-    public async Task SendAsync(IntegrationContext context, EmailMessage request,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
         CancellationToken ct)
     {
         var requestDto = new SendEmailRequestDto
@@ -35,6 +35,8 @@ public sealed class OpenNotificationsEmailIntegration : OpenNotificationsIntegra
             Context = context.ToContext(),
         };
 
-        await Client.Providers.SendEmailAsync(requestDto, ct);
+        var status = await Client.Providers.SendEmailAsync(requestDto, ct);
+
+        return status.ToDeliveryResult();
     }
 }

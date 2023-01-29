@@ -54,18 +54,18 @@ public static class OpenNotificationsExtensions
         return result;
     }
 
-    public static DeliveryResult ToDeliveryStatus(this NotificationStatusDtoStatus status)
+    public static DeliveryResult ToDeliveryResult(this NotificationStatusDto status)
     {
-        switch (status)
+        switch (status.Status)
         {
             case NotificationStatusDtoStatus.Delivered:
-                return DeliveryResult.Delivered;
+                return DeliveryResult.Handled;
             case NotificationStatusDtoStatus.Failed:
-                return DeliveryResult.Failed;
+                return DeliveryResult.Failed(status.Errors?.FirstOrDefault()?.Message);
             case NotificationStatusDtoStatus.Sent:
                 return DeliveryResult.Sent;
             default:
-                return DeliveryResult.Unknown;
+                return default;
         }
     }
 }

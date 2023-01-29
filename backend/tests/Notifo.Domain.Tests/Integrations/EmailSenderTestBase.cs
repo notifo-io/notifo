@@ -64,7 +64,7 @@ public abstract class EmailSenderTestBase
     {
         return new IntegrationContext
         {
-            Adapter = null!,
+            IntegrationAdapter = null!,
             AppId = string.Empty,
             AppName = string.Empty,
             CallbackToken = string.Empty,

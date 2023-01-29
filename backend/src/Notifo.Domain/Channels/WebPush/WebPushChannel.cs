@@ -120,7 +120,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
 
     public Task HandleExceptionAsync(WebPushJob job, Exception ex)
     {
-        return UpdateAsync(job, ProcessStatus.Failed);
+        return UpdateAsync(job, DeliveryResult.Failed());
     }
 
     public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
@@ -133,7 +133,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {
-                await UpdateAsync(job, ProcessStatus.Skipped);
+                await UpdateAsync(job, DeliveryResult.Skipped());
             }
             else
             {
@@ -151,11 +151,11 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         {
             try
             {
-                await UpdateAsync(job, ProcessStatus.Attempt);
+                await UpdateAsync(job, DeliveryResult.Attempt);
 
                 await SendCoreAsync(job, ct);
 
-                await UpdateAsync(job, ProcessStatus.Handled);
+                await UpdateAsync(job, DeliveryResult.Sent);
             }
             catch (DomainException ex)
             {
@@ -186,9 +186,9 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
             var command = new RemoveUserWebPushSubscription
             {
                 Endpoint = job.Subscription.Endpoint
-            }.WithBaseProperties(job.Notification.AppId, job.Notification.UserId);
+            };
 
-            await mediator.SendAsync(command, ct);
+            await mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
         }
         catch (WebPushException ex)
         {
@@ -196,12 +196,12 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    private async Task UpdateAsync(WebPushJob job, ProcessStatus status, string? reason = null)
+    private async Task UpdateAsync(WebPushJob job, DeliveryResult status)
     {
         // We only track the initial publication.
         if (!job.IsUpdate)
         {
-            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), status, reason);
+            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), status);
         }
     }
 }

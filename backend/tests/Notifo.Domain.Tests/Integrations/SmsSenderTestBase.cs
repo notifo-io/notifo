@@ -22,7 +22,7 @@ public abstract class SmsSenderTestBase
 
         await sender.SendAsync(context, new SmsMessage
         {
-            To = PhoneNumber,
+            Target = PhoneNumber,
             Text = "Notifo sample SMS",
         }, default);
     }
@@ -34,7 +34,7 @@ public abstract class SmsSenderTestBase
 
         await sender.SendAsync(context, new SmsMessage
         {
-            To = PhoneNumber,
+            Target = PhoneNumber,
             Text = "Notifo sample SMS with very long text that is over 140 characters to test longer SMS messages. The limit is not the biggest deal anymore, so it should just sned fine..",
         }, default);
     }
@@ -43,7 +43,7 @@ public abstract class SmsSenderTestBase
     {
         return new IntegrationContext
         {
-            Adapter = null!,
+            IntegrationAdapter = null!,
             AppId = string.Empty,
             AppName = string.Empty,
             CallbackToken = string.Empty,

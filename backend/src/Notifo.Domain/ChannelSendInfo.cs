@@ -7,6 +7,7 @@
 
 using NodaTime;
 using Notifo.Domain.Channels;
+using Notifo.Domain.Integrations;
 
 namespace Notifo.Domain;
 
@@ -14,7 +15,7 @@ public sealed class ChannelSendInfo
 {
     public SendConfiguration Configuration { get; set; }
 
-    public ProcessStatus Status { get; set; }
+    public DeliveryStatus Status { get; set; }
 
     public Instant LastUpdate { get; set; }
 

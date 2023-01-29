@@ -36,7 +36,7 @@ public sealed partial class MailchimpIntegration : IEmailSender
         Invalid
     }
 
-    public async Task SendAsync(IntegrationContext context, EmailMessage message,
+    public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage message,
         CancellationToken ct)
     {
         var apiKey = ApiKeyProperty.GetString(context.Properties);
@@ -92,5 +92,7 @@ public sealed partial class MailchimpIntegration : IEmailSender
                 throw new DomainException(errorMessage);
             }
         }
+
+        return DeliveryResult.Sent;
     }
 }

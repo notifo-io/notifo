@@ -129,14 +129,14 @@
   <data name="App_CannotUpdateYourself" xml:space="preserve">
     <value>You cannot update yourself.</value>
   </data>
-  <data name="EmailUnknownErrror" xml:space="preserve">
-    <value>Email template generates unknown error.</value>
-  </data>
   <data name="Email_TemplateInvalid" xml:space="preserve">
     <value>Email template does not render notification subject, loop over notification and use '{{ notification.subject }}'.</value>
   </data>
   <data name="Email_TemplateUndefined" xml:space="preserve">
     <value>Either template for text or html body must be defined.</value>
+  </data>
+  <data name="Email_UnknownErrror" xml:space="preserve">
+    <value>Email template generates unknown error.</value>
   </data>
   <data name="IntegrationNotFound" xml:space="preserve">
     <value>Integration of type {0} does not exist.</value>
