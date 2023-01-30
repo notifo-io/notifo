@@ -6,18 +6,14 @@
 // ==========================================================================
 
 using System.Diagnostics;
-using Google.Apis.Util;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
-using Notifo.Infrastructure.Validation;
-using SixLabors.ImageSharp;
 using IMessagingTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Messaging.MessagingTemplate>;
 using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.Messaging.MessagingJob>;
 

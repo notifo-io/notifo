@@ -6360,7 +6360,7 @@ export interface UserNotificationChannelDto {
 
 export interface ChannelSendInfoDto {
     /** The send status. */
-    status?: ProcessStatus;
+    status?: DeliveryStatus;
     /** The configuration for the device. */
     configuration?: SendConfiguration;
     /** The last update. */
@@ -6375,7 +6375,7 @@ export interface ChannelSendInfoDto {
     firstConfirmed?: string | undefined;
 }
 
-export type ProcessStatus = "None" | "Attempt" | "Handled" | "Failed" | "Skipped";
+export type DeliveryStatus = "Unknown" | "Skipped" | "Attempt" | "Failed" | "Sent" | "Handled";
 
 export interface SendConfiguration {
 
@@ -6823,13 +6823,13 @@ export interface ConfiguredIntegrationDto {
     status: IntegrationStatus;
 }
 
-export type IntegrationStatus = "Verified" | "VerificationFailed" | "Pending";
+export type IntegrationStatus = "Verified" | "VerificationFailed" | "Pending" | "Removed";
 
 export interface IntegrationDefinitionDto {
     /** The title of the integration. */
     title: string;
-    /** The logo URL for the integration. */
-    logoUrl: string;
+    /** The logo for the integration. */
+    logo: string;
     /** The optional description of the integration. */
     description?: string | undefined;
     /** The properties to configure. */

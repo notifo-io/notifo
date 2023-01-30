@@ -49,7 +49,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
             <CardBody>
                 <Row noGutters>
                     <Col className='col-image'>
-                        <img src={definition.logoUrl} alt={definition.title} />
+                        <div dangerouslySetInnerHTML={{ __html: definition.logo }}></div>
                     </Col>
 
                     <Col className='no-overflow'>

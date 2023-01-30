@@ -87,7 +87,7 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
 
         if (status != null)
         {
-            await context.SmsCallback.HandleCallbackAsync(this, status.NotificationId, status.ToDeliveryResult());
+            await context.SmsCallback.HandleCallbackAsync(this, status.TrackingToken, status.ToDeliveryResult());
         }
     }
 }

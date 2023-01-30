@@ -21,7 +21,10 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
 
     protected OpenNotificationsIntegrationBase(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
     {
-        var capabilities = new HashSet<string>();
+        var capabilities = new HashSet<string>
+        {
+            "Open Notifications"
+        };
 
         if (providerInfo.Type == ProviderInfoDtoType.Sms)
         {
@@ -76,10 +79,14 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
                     MaxValue = property.MaxValue,
                     MinLength = property.MaxLength,
                     MinValue = property.MinValue,
+                    Summary = property.Summary
                 };
             }).ToList(),
             new List<IntegrationProperty>(),
-            capabilities);
+            capabilities)
+        {
+            Description = providerInfo.Description.Values.FirstOrDefault(),
+        };
 
         Client = client;
         ProviderName = providerName;
@@ -94,6 +101,7 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
             Context = context.ToContext(),
             Properties = context.Properties.ToProperties(Definition),
             Provider = ProviderName,
+            WebhookUrl = context.WebhookUrl,
         };
 
         await Client.Providers.InstallAsync(dto, ct);
@@ -109,6 +117,7 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
             Context = context.ToContext(),
             Properties = context.Properties.ToProperties(Definition),
             Provider = ProviderName,
+            WebhookUrl = context.WebhookUrl
         };
 
         await Client.Providers.UninstallAsync(dto, ct);

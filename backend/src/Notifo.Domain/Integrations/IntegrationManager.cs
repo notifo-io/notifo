@@ -31,7 +31,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     private readonly IMediator mediator;
     private readonly IServiceProvider serviceProvider;
     private readonly ConditionEvaluator conditionEvaluator;
-    private CompletionTimer timer;
+    private CompletionTimer? timer;
 
     public IEnumerable<IntegrationDefinition> Definitions
     {
@@ -69,7 +69,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     public Task StopAsync(
         CancellationToken ct)
     {
-        return timer.StopAsync();
+        return timer?.StopAsync() ?? Task.CompletedTask;
     }
 
     public Task<IntegrationStatus> OnInstallAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,

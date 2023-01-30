@@ -168,13 +168,13 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                     <ModalHeader toggle={onClose}>
                         <Row noGutters>
                             <Col xs='auto' className='col-image'>
-                                <img src={definition.logoUrl} alt={definition.title} />
+                                <div dangerouslySetInnerHTML={{ __html: definition.logo }}></div>
                             </Col>
 
                             <Col>
                                 <h4>{definition.title}</h4>
 
-                                <div>
+                                <div className='badges'>
                                     {definition.capabilities.map(capability => (
                                         <Badge key={capability} className='mr-1' color='secondary' pill>{capability}</Badge>
                                     ))}

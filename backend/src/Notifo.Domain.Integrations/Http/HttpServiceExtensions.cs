@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Integrations.Http;
-using Notifo.Domain.Integrations.Smtp;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

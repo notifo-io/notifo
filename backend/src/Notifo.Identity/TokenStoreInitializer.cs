@@ -35,21 +35,13 @@ public sealed class TokenStoreInitializer : IInitializable
     {
         await SetupIndexAsync(ct);
 
-        await PruneAsync(ct);
-
-        timer = new CompletionTimer((int)TimeSpan.FromHours(6).TotalMilliseconds, async ct =>
-        {
-            await PruneAsync(ct);
-        });
+        timer = new CompletionTimer((int)TimeSpan.FromHours(6).TotalMilliseconds, PruneAsync);
     }
 
-    public async Task ReleaseAsync(
+    public Task ReleaseAsync(
         CancellationToken ct)
     {
-        if (timer != null)
-        {
-            await timer.StopAsync();
-        }
+        return timer?.StopAsync() ?? Task.CompletedTask;
     }
 
     private async Task PruneAsync(

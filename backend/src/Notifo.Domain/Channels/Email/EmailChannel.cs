@@ -8,9 +8,7 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.ChannelTemplates;
-using Notifo.Domain.Identity;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Resources;

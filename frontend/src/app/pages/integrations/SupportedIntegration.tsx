@@ -32,13 +32,13 @@ export const SupportedIntegration = React.memo((props: SupportedIntegrationProps
             <CardBody>
                 <Row noGutters>
                     <Col className='col-image'>
-                        <img src={definition.logoUrl} alt={definition.title} />
+                        <div dangerouslySetInnerHTML={{ __html: definition.logo }}></div>
                     </Col>
 
                     <Col>
                         <h4>{definition.title}</h4>
 
-                        <div>
+                        <div className='badges'>
                             {definition.capabilities.map(capability => (
                                 <Badge key={capability} color='secondary' className='mr-1' pill>{capability}</Badge>
                             ))}

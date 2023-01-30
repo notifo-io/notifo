@@ -7,15 +7,17 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using Notifo.Infrastructure.Timers;
 using OpenNotifications;
 using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
 
-public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IInitializable
+public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroundProcess
 {
     private readonly ConcurrentDictionary<string, IIntegration> integrations = new ConcurrentDictionary<string, IIntegration>();
     private readonly IEnumerable<IOpenNotificationsClient> clients;
+    private CompletionTimer timer;
 
     public IEnumerable<IIntegration> Integrations => integrations.Values;
 
@@ -24,12 +26,21 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IInitializ
         this.clients = clients;
     }
 
-    public bool TryGetIntegration(string type, [MaybeNullWhen(false)] out IIntegration integration)
+    public Task StartAsync(
+        CancellationToken ct)
     {
-        return integrations.TryGetValue(type, out integration);
+        timer = new CompletionTimer(5 * 60 * 1000, QueryAsync);
+
+        return Task.CompletedTask;
     }
 
-    public async Task InitializeAsync(
+    public Task StopAsync(
+        CancellationToken ct)
+    {
+        return timer?.StopAsync() ?? Task.CompletedTask;
+    }
+
+    public async Task QueryAsync(
         CancellationToken ct)
     {
         foreach (var client in clients)
@@ -55,5 +66,10 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IInitializ
                 }
             }
         }
+    }
+
+    public bool TryGetIntegration(string type, [MaybeNullWhen(false)] out IIntegration integration)
+    {
+        return integrations.TryGetValue(type, out integration);
     }
 }
