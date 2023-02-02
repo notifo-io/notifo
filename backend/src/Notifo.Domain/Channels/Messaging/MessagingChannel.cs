@@ -287,8 +287,9 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
         var message = new MessagingMessage
         {
-            Text = messagingFormatter.Format(template, job.Notification),
             Targets = job.Configuration,
+            // We might also format the text without the template if no primary template is defined.
+            Text = messagingFormatter.Format(template, job.Notification),
         };
 
         return (default, message.Enrich(job, Name));
@@ -308,11 +309,21 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
                 {
                     var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
 
+                    // We just log a warning here, but use the fallback template.
                     await logStore.LogAsync(appId, message);
                     break;
                 }
 
-            case TemplateResolveStatus.NotFound:
+            case TemplateResolveStatus.NotFound when string.IsNullOrWhiteSpace(name):
+                {
+                    var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
+
+                    // If no name was specified we just accept that the template does not exist.
+                    await logStore.LogAsync(appId, message);
+                    break;
+                }
+
+            case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
                 {
                     var message = LogMessage.ChannelTemplate_NotFound(Name, name);
 

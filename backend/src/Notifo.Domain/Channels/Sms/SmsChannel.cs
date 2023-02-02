@@ -222,8 +222,6 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         {
             try
             {
-                message.Target = job.PhoneNumber;
-
                 lastResult = await sender.SendAsync(context, message, ct);
 
                 // We only sent notifications over the first successful integration.
@@ -283,8 +281,9 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
 
         var message = new SmsMessage
         {
-            Text = smsFormatter.Format(template, job.Notification.Formatting.Subject),
-            Target = job.PhoneNumber
+            To = job.PhoneNumber,
+            // We might also format the text without the template if no primary template is defined.
+            Text = smsFormatter.Format(template, job.Notification.Formatting.Subject)
         };
 
         return (default, message.Enrich(job, Name));
@@ -304,11 +303,21 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
                 {
                     var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
 
+                    // We just log a warning here, but use the fallback template.
                     await logStore.LogAsync(appId, message);
                     break;
                 }
 
-            case TemplateResolveStatus.NotFound:
+            case TemplateResolveStatus.NotFound when string.IsNullOrWhiteSpace(name):
+                {
+                    var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
+
+                    // If no name was specified we just accept that the template does not exist.
+                    await logStore.LogAsync(appId, message);
+                    break;
+                }
+
+            case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
                 {
                     var message = LogMessage.ChannelTemplate_NotFound(Name, name);
 

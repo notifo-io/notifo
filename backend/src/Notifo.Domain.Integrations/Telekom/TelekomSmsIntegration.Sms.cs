@@ -19,18 +19,19 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message,
         CancellationToken ct)
     {
-        var phoneNumber = PhoneNumberProperty.GetString(context.Properties);
+        var phoneNumberFrom = PhoneNumberProperty.GetString(context.Properties);
+        var phoneNumberTo = message.To;
 
         var apiKey = ApiKeyProperty.GetString(context.Properties);
-
         try
         {
+
             var httpClient = httpClientFactory.CreateClient();
 
             var content = new FormUrlEncodedContent(new Dictionary<string, string?>
             {
-                [RequestKeys.From] = ConvertPhoneNumber(phoneNumber),
-                [RequestKeys.To] = ConvertPhoneNumber(message.Target),
+                [RequestKeys.From] = ConvertPhoneNumber(phoneNumberFrom),
+                [RequestKeys.To] = ConvertPhoneNumber(phoneNumberTo),
                 [RequestKeys.Body] = message.Text,
                 [RequestKeys.StatusCallback] = BuildCallbackUrl(context, message),
             });
@@ -48,7 +49,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
 
             if (!string.IsNullOrWhiteSpace(result?.ErrorMessage))
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, message.Target, result.ErrorMessage);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_Error, phoneNumberTo, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
@@ -57,7 +58,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, message.Target);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Telekom_ErrorUnknown, phoneNumberTo);
 
             throw new DomainException(errorMessage, ex);
         }

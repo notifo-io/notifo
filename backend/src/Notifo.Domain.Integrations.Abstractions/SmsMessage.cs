@@ -9,7 +9,7 @@ namespace Notifo.Domain.Integrations;
 
 public sealed class SmsMessage : BaseMessage
 {
-    public string Target { get; set; }
+    public string To { get; set; }
 
     public string Text { get; set; }
 }

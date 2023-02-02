@@ -49,7 +49,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
     // Event Code 1100: Channel Templates
     public static LogMessage ChannelTemplate_NotFound(string system, string? templateName)
     {
-        templateName ??= "Unnamed";
+        templateName ??= "<PRIMARY>";
 
         return new LogMessage(1100, $"Cannot find channel template '{templateName}'.", system)
         {
@@ -61,7 +61,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage ChannelTemplate_LanguageNotFound(string system, string language, string? templateName)
     {
-        templateName ??= "Unnamed";
+        templateName ??= "<PRIMARY>";
 
         return new LogMessage(1101, "Cannot find language {language} in channel template '{templateName}'.", system)
         {
@@ -73,7 +73,7 @@ public record struct LogMessage(int EventCode, string Message, string System)
 
     public static LogMessage ChannelTemplate_ResolvedWithFallback(string system, string? templateName)
     {
-        templateName ??= "Unnamed";
+        templateName ??= "<PRIMARY>";
 
         return new LogMessage(1102, $"Cannot find named channel template '{templateName}', falling back to primary.", system)
         {

@@ -18,12 +18,13 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message,
         CancellationToken ct)
     {
+        var to = message.To;
         try
         {
             // Call the phone number and use a local phone number for the user.
             var sms = new Implementation.SmsMessage(
-                GetOriginator(context, message.Target),
-                message.Target,
+                GetOriginator(context, to),
+                to,
                 message.Text,
                 message.TrackingToken,
                 context.WebhookUrl);
@@ -33,7 +34,7 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
             // Usually an error is received by the error response in the client, but in some cases it was not working properly.
             if (response.Recipients.TotalSentCount != 1)
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_ErrorUnknown, message.Target);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_ErrorUnknown, to);
 
                 throw new DomainException(errorMessage);
             }
@@ -43,7 +44,7 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
         }
         catch (ArgumentException ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_Error, message.Target, ex.Message);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.MessageBird_Error, to, ex.Message);
 
             throw new DomainException(errorMessage);
         }

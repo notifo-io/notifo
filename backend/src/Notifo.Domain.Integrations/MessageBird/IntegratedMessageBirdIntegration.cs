@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Notifo.Domain.Integrations.MessageBird.Implementation;
@@ -16,6 +17,7 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration, ISmsSender,
 {
     private readonly MessageBirdOptions smsOptions;
     private readonly MessageBirdSmsIntegration smsSender;
+    private readonly string phoneNumbers;
 
     public IntegrationDefinition Definition { get; } =
         new IntegrationDefinition(
@@ -36,6 +38,21 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration, ISmsSender,
     {
         this.smsOptions = smsOptions.Value;
         this.smsSender = smsSender;
+
+        if (smsOptions.Value.PhoneNumbers?.Count  > 0)
+        {
+            var sb = new StringBuilder();
+
+            foreach (var (key, value) in smsOptions.Value.PhoneNumbers)
+            {
+                sb.Append(key);
+                sb.Append(':');
+                sb.Append(value);
+                sb.AppendLine();
+            }
+
+            phoneNumbers = sb.ToString();
+        }
     }
 
     public Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message,
@@ -58,6 +75,6 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration, ISmsSender,
     {
         context.Properties[MessageBirdSmsIntegration.AccessKeyProperty.Name] = smsOptions.AccessKey;
         context.Properties[MessageBirdSmsIntegration.PhoneNumberProperty.Name] = smsOptions.PhoneNumber;
-        // context.Properties[MessageBirdSmsIntegration.PhoneNumbersProperty.Name] = smsOptions.PhoneNumbers;
+        context.Properties[MessageBirdSmsIntegration.PhoneNumbersProperty.Name] = phoneNumbers;
     }
 }

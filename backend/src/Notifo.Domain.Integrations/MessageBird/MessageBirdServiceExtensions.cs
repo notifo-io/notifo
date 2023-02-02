@@ -29,10 +29,13 @@ public static class MessageBirdServiceExtensions
 
             services.AddSingletonAs<IntegratedMessageBirdIntegration>()
                 .As<IIntegration>();
-
-            services.AddSingletonAs<MessageBirdSmsIntegration>()
-                .AsSelf();
         }
+
+        services.AddSingletonAs<MessageBirdSmsIntegration>()
+            .As<IIntegration>();
+
+        services.AddSingletonAs<MessageBirdWhatsAppIntegration>()
+            .As<IIntegration>();
 
         services.AddSingletonAs<MessageBirdClientPool>()
             .AsSelf();

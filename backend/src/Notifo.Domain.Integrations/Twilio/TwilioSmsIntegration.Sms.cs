@@ -26,15 +26,17 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
         var client = clientPool.GetServer(accountSid, accountToken);
         try
         {
+            var to = message.To;
+
             var result = await MessageResource.CreateAsync(
-                ConvertPhoneNumber(message.Target), null,
+                ConvertPhoneNumber(to), null,
                 ConvertPhoneNumber(phoneNumber), null,
                 message.Text,
                 statusCallback: new Uri(BuildCallbackUrl(context, message)), client: client);
 
             if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
             {
-                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, message.Target, result.ErrorMessage);
+                var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_Error, to, result.ErrorMessage);
 
                 throw new DomainException(errorMessage);
             }
@@ -43,7 +45,7 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
         }
         catch (Exception ex)
         {
-            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, message.Target);
+            var errorMessage = string.Format(CultureInfo.CurrentCulture, Texts.Twilio_ErrorUnknown, message.To);
 
             throw new DomainException(errorMessage, ex);
         }

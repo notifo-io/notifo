@@ -27,8 +27,9 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
                 Context = context.ToContext(),
                 Payload = new SmsPayloadDto
                 {
-                    To = message.Target,
                     Body = message.Text,
+                    // We only support one phone number at the moment.
+                    To = message.To,
                 },
                 Properties = context.Properties.ToProperties(Definition),
                 Provider = ProviderName,

@@ -20,7 +20,7 @@ public sealed partial class MessageBirdSmsIntegration : IIntegration
         IsRequired = true
     };
 
-    public static readonly IntegrationProperty OriginatorProperty = new IntegrationProperty("phoneNumber", PropertyType.Number)
+    public static readonly IntegrationProperty OriginatorProperty = new IntegrationProperty("phoneNumber", PropertyType.Text)
     {
         EditorLabel = Texts.MessageBird_OriginatorNameLabel,
         EditorDescription = Texts.MessageBird_OriginatorNameDescription,

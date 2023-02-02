@@ -30,6 +30,7 @@ public abstract class ChannelJob
 
     protected ChannelJob(UserNotification notification, ChannelContext context)
     {
+        ConfigurationId = context.ConfigurationId;
         SendCondition = context.Setting.Condition;
         SendDelay = Duration.FromSeconds(context.Setting.DelayInSeconds ?? 0);
         IsConfirmed = notification.FirstConfirmed != null;
