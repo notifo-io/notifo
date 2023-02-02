@@ -92,7 +92,7 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
 
     public bool GetBoolean(IReadOnlyDictionary<string, string>? properties)
     {
-        if (Type is PropertyType.Number)
+        if (Type is PropertyType.Boolean)
         {
             string? input = null;
 
@@ -107,6 +107,65 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
         }
 
         throw new ValidationException(Texts.IntegrationPropertyNotBoolean);
+    }
+
+    private bool TryGetString(string? input, [MaybeNullWhen(true)] out string error, out string result)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            input = DefaultValue;
+        }
+
+        result = input ?? string.Empty;
+
+        error = null!;
+
+        if (string.IsNullOrWhiteSpace(input) && IsRequired)
+        {
+            error = Texts.IntegrationPropertyRequired;
+            return false;
+        }
+
+        var length = input?.Length ?? 0;
+
+        if (length < MinLength)
+        {
+            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinLength, MinLength);
+            return false;
+        }
+
+        if (length > MaxLength)
+        {
+            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxLength, MaxLength);
+            return false;
+        }
+
+        if (AllowedValues?.Contains(input) == false)
+        {
+            error = Texts.IntegrationPropertyAllowedValue;
+            return false;
+        }
+
+        if (input != null && Pattern != null)
+        {
+            bool isValid;
+            try
+            {
+                isValid = Regex.IsMatch(input, Pattern);
+            }
+            catch (ArgumentException)
+            {
+                isValid = false;
+            }
+
+            if (!isValid)
+            {
+                error = Texts.IntegrationPropertyPattern;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private bool TryGetNumber(string? input, out string error, out long result)
@@ -147,57 +206,6 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
         return true;
     }
 
-    private bool TryGetString(string? input, [MaybeNullWhen(true)] out string error, out string result)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            input = DefaultValue;
-        }
-
-        result = input ?? string.Empty;
-
-        error = null!;
-
-        if (string.IsNullOrWhiteSpace(input) && IsRequired)
-        {
-            error = Texts.IntegrationPropertyRequired;
-            return false;
-        }
-
-        if (input != null && input.Length < MinLength)
-        {
-            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinLength, MinLength);
-            return false;
-        }
-
-        if (input != null && input.Length > MaxLength)
-        {
-            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxLength, MaxLength);
-            return false;
-        }
-
-        if (input != null && Pattern != null)
-        {
-            bool isValid;
-            try
-            {
-                isValid = Regex.IsMatch(input, Pattern);
-            }
-            catch (ArgumentException)
-            {
-                isValid = false;
-            }
-
-            if (!isValid)
-            {
-                error = Texts.IntegrationPropertyPattern;
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     private bool TryGetBoolean(string? input, [MaybeNullWhen(true)] out string error, out bool result)
     {
         if (string.IsNullOrWhiteSpace(input))
@@ -215,27 +223,52 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
             return false;
         }
 
-        if (bool.TryParse(input, out result))
+        if (!TryParseBoolean(input, out result))
+        {
+            error = Texts.IntegrationPropertyInvalidBoolean;
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryParseLong(string? value, out long result)
+    {
+        result = 0;
+
+        if (string.IsNullOrWhiteSpace(value))
         {
             return true;
         }
 
-        if (int.TryParse(input, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedNumber))
+        if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
         {
-            result = parsedNumber == 1;
+            return true;
         }
 
         return false;
     }
 
-    private static bool TryParseLong(string? value, out long result)
+    private static bool TryParseBoolean(string? value, out bool result)
     {
+        result = false;
+
         if (string.IsNullOrWhiteSpace(value))
         {
-            result = 0;
             return true;
         }
 
-        return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+        if (bool.TryParse(value, out result))
+        {
+            return true;
+        }
+
+        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedNumber))
+        {
+            result = parsedNumber == 1;
+            return true;
+        }
+
+        return false;
     }
 }

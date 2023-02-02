@@ -87,7 +87,7 @@ public sealed partial class TwilioSmsIntegration : ISmsSender, IIntegrationHook
             return Task.CompletedTask;
         }
 
-        return context.SmsCallback.HandleCallbackAsync(this, reference, result);
+        return context.UpdateStatusAsync(reference, result);
 
         static DeliveryResult ParseStatus(string status)
         {

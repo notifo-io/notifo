@@ -110,7 +110,7 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
             return;
         }
 
-        await context.SmsCallback.HandleCallbackAsync(this, status.Reference, result);
+        await context.UpdateStatusAsync(status.Reference, result);
 
         static DeliveryResult ParseStatus(SmsWebhookRequest status)
         {
@@ -126,41 +126,6 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
                     return default;
             }
         }
-    }
-
-    private static Dictionary<string, string>? ParsePhoneNumbers(string? source)
-    {
-        if (string.IsNullOrWhiteSpace(source))
-        {
-            return null;
-        }
-
-        var result = new Dictionary<string, string>();
-
-        foreach (var line in source.Split('\n'))
-        {
-            var number = PhoneNumberHelper.Trim(line);
-
-            if (number.Length > 5)
-            {
-                var parts = number.Split(':');
-
-                if (parts.Length == 2)
-                {
-                    var countryCode = parts[0].Trim();
-
-                    result[countryCode] = parts[1].Trim();
-                }
-                else
-                {
-                    var countryCode = number[..2].Trim();
-
-                    result[countryCode] = number;
-                }
-            }
-        }
-
-        return result;
     }
 
     private IMessageBirdClient GetClient(IntegrationContext context)

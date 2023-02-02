@@ -59,7 +59,7 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
         return DeliveryResult.Sent;
     }
 
-    private async Task QueryAsync(IMessageBirdClient client, IntegrationContext context, MessagingMessage message, ConversationResponse response)
+    private static async Task QueryAsync(IMessageBirdClient client, IntegrationContext context, MessagingMessage message, ConversationResponse response)
     {
         var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
 
@@ -94,7 +94,7 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
 
                 if (result != default)
                 {
-                    await context.MessagingCallback.HandleCallbackAsync(this, message.TrackingToken, result);
+                    await context.UpdateStatusAsync(message.TrackingToken, result);
                     return;
                 }
             }
@@ -125,7 +125,7 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
             return;
         }
 
-        await context.MessagingCallback.HandleCallbackAsync(this, reference, new DeliveryResult(deliveryStatus, status.Error?.Description));
+        await context.UpdateStatusAsync(reference, new DeliveryResult(deliveryStatus, status.Error?.Description));
 
         static DeliveryStatus ParseStatus(WhatsAppWebhookRequest status)
         {

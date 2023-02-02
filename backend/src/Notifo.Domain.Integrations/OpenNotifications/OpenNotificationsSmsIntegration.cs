@@ -20,21 +20,30 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
 
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, SmsMessage message, CancellationToken ct)
     {
-        var requestDto = new SendSmsRequestDto
+        try
         {
-            Context = context.ToContext(),
-            Properties = context.Properties.ToProperties(Definition),
-            Provider = ProviderName,
-            Payload = new SmsPayloadDto
+            var requestDto = new SendSmsRequestDto
             {
-                To = message.Target,
-                Body = message.Text,
-            }
-        };
+                Context = context.ToContext(),
+                Payload = new SmsPayloadDto
+                {
+                    To = message.Target,
+                    Body = message.Text,
+                },
+                Properties = context.Properties.ToProperties(Definition),
+                Provider = ProviderName,
+                TrackingToken = message.TrackingToken,
+                TrackingWebhookUrl = message.TrackSeenUrl ?? "none",
+            };
 
-        var status = await Client.Providers.SendSmsAsync(requestDto, ct);
+            var status = await Client.Providers.SendSmsAsync(requestDto, ct);
 
-        return status.ToDeliveryResult();
+            return status.ToDeliveryResult();
+        }
+        catch (OpenNotificationsException ex)
+        {
+            throw ex.ToDomainException();
+        }
     }
 
     public async Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext,
@@ -87,7 +96,7 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
 
         if (status != null)
         {
-            await context.SmsCallback.HandleCallbackAsync(this, status.TrackingToken, status.ToDeliveryResult());
+            await context.UpdateStatusAsync(status.TrackingToken, status.ToDeliveryResult());
         }
     }
 }

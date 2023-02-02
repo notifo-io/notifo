@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Infrastructure;
+using Notifo.Infrastructure.Validation;
 using OpenNotifications;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
@@ -66,6 +68,28 @@ public static class OpenNotificationsExtensions
                 return DeliveryResult.Sent;
             default:
                 return default;
+        }
+    }
+
+    public static DomainException ToDomainException(this OpenNotificationsException exception)
+    {
+        if (exception is OpenNotificationsException<ApiErrorDto> typed && exception.StatusCode == 400)
+        {
+            var errors =
+                typed.Result?.Details?.Select(x => new ValidationError(x.Message, GetPropertyNames(x)))?.ToArray() ??
+                new[]
+                {
+                    new ValidationError(typed.Message)
+                };
+
+            return new ValidationException(errors);
+        }
+
+        return new DomainException(exception.Message);
+
+        static string[] GetPropertyNames(ErrorDto x)
+        {
+            return x.Field != null ? new[] { x.Field } : Array.Empty<string>();
         }
     }
 }

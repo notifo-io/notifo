@@ -19,7 +19,7 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.Messaging;
 
-public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, IMessagingCallback
+public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, ICallback<IMessagingSender>
 {
     private const string IntegrationIds = nameof(IntegrationIds);
     private readonly IAppStore appStore;
@@ -84,7 +84,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         yield return configuration;
     }
 
-    public async Task HandleCallbackAsync(IMessagingSender source, string trackingToken, DeliveryResult result)
+    public async Task UpdateStatusAsync(IMessagingSender source, string trackingToken, DeliveryResult result)
     {
         using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
         {

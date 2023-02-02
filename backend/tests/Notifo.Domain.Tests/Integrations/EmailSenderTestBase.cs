@@ -64,11 +64,12 @@ public abstract class EmailSenderTestBase
     {
         return new IntegrationContext
         {
-            IntegrationAdapter = null!,
+            UpdateStatusAsync = null!,
             AppId = string.Empty,
             AppName = string.Empty,
             CallbackToken = string.Empty,
             CallbackUrl = string.Empty,
+            IntegrationAdapter = null!,
             IntegrationId = string.Empty,
             Properties = properties,
             WebhookUrl = string.Empty,

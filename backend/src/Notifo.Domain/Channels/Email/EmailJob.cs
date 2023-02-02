@@ -42,7 +42,7 @@ public sealed class EmailJob : ChannelJob
     {
         EmailAddress = emailAddress;
         EmailTemplate = context.Setting.Template;
-        FromEmail = context.Configuration.GetOrDefault(nameof(FromEmail));
-        FromName = context.Configuration.GetOrDefault(nameof(FromName));
+        FromEmail = context.Setting.Properties?.GetOrDefault(nameof(FromEmail));
+        FromName = context.Setting.Properties?.GetOrDefault(nameof(FromName));
     }
 }

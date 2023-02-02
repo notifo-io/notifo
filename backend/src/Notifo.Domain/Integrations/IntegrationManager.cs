@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Globalization;
+using Google.Api;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,8 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     private readonly IIntegrationUrl integrationUrl;
     private readonly ILogger<IntegrationManager> log;
     private readonly IMediator mediator;
-    private readonly IServiceProvider serviceProvider;
+    private readonly Lazy<ICallback<ISmsSender>> callbackSms;
+    private readonly Lazy<ICallback<IMessagingSender>> callbackMessaging;
     private readonly ConditionEvaluator conditionEvaluator;
     private CompletionTimer? timer;
 
@@ -52,8 +54,17 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         this.mediator = mediator;
         this.integrationRegistries = integrationRegistries;
         this.integrationUrl = integrationUrl;
-        this.serviceProvider = serviceProvider;
         this.log = log;
+
+        callbackSms = new Lazy<ICallback<ISmsSender>>(() =>
+        {
+            return serviceProvider.GetRequiredService<ICallback<ISmsSender>>();
+        });
+
+        callbackMessaging = new Lazy<ICallback<IMessagingSender>>(() =>
+        {
+            return serviceProvider.GetRequiredService<ICallback<IMessagingSender>>();
+        });
 
         conditionEvaluator = new ConditionEvaluator(log);
     }
@@ -81,6 +92,11 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
         var integration = GetIntegrationOrThrow(configured.Type);
 
+        if (configured.Properties.EqualsDictionary(previous?.Properties))
+        {
+            return Task.FromResult(IntegrationStatus.Verified);
+        }
+
         List<ValidationError>? errors = null;
 
         foreach (var property in integration.Definition.Properties)
@@ -99,7 +115,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
             throw new ValidationException(errors);
         }
 
-        return integration.OnConfiguredAsync(BuildContext(app, id, configured), previous, ct);
+        return integration.OnConfiguredAsync(BuildContext(app, id, integration, configured), previous, ct);
     }
 
     public Task OnCallbackAsync(string id, App app, HttpContext httpContext,
@@ -131,7 +147,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
         var integration = GetIntegrationOrThrow(configured.Type);
 
-        return integration.OnRemovedAsync(BuildContext(app, id, configured), ct);
+        return integration.OnRemovedAsync(BuildContext(app, id, integration, configured), ct);
     }
 
     public bool HasIntegration<T>(App app)
@@ -183,7 +199,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                 continue;
             }
 
-            yield return new ResolvedIntegration<T>(id, BuildContext(app, id, configured), typed);
+            yield return new ResolvedIntegration<T>(id, BuildContext(app, id, integration, configured), typed);
         }
     }
 
@@ -204,7 +220,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
             return default;
         }
 
-        return new ResolvedIntegration<T>(id, BuildContext(app, id, configured), typed);
+        return new ResolvedIntegration<T>(id, BuildContext(app, id, integration, configured), typed);
     }
 
     public async Task CheckAsync(
@@ -243,7 +259,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                     IntegrationStatus newStatus = configured.Status;
                     try
                     {
-                        await integration.CheckStatusAsync(BuildContext(app, id, configured), ct);
+                        await integration.CheckStatusAsync(BuildContext(app, id, integration, configured), ct);
                     }
                     catch (Exception ex)
                     {
@@ -312,19 +328,31 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         return conditionEvaluator.Evaluate(configured.Condition, target);
     }
 
-    private IntegrationContext BuildContext(App app, string id, ConfiguredIntegration configured)
+    private IntegrationContext BuildContext(App app, string id,  IIntegration integration, ConfiguredIntegration configured)
     {
+        var updateStatus = new UpdateStatus((trackingToken, result) =>
+        {
+            switch (integration)
+            {
+                case ISmsSender sms:
+                    return callbackSms.Value.UpdateStatusAsync(sms, trackingToken, result);
+                case IMessagingSender messaging:
+                    return callbackMessaging.Value.UpdateStatusAsync(messaging, trackingToken, result);
+                default:
+                    return Task.CompletedTask;
+            }
+        });
+
         return new IntegrationContext
         {
+            UpdateStatusAsync = updateStatus,
             AppId = app.Id,
             AppName = app.Name,
             CallbackToken = string.Empty,
             CallbackUrl = integrationUrl.CallbackUrl(),
-            MessagingCallback = serviceProvider.GetRequiredService<IMessagingCallback>(),
             IntegrationAdapter = integrationAdapter,
             IntegrationId = id,
             Properties = new Dictionary<string, string>(configured.Properties),
-            SmsCallback = serviceProvider.GetRequiredService<ISmsCallback>(),
             WebhookUrl = integrationUrl.WebhookUrl(app.Id, id)
         };
     }

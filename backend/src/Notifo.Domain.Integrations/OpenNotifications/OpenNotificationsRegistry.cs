@@ -7,6 +7,7 @@
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Logging;
 using Notifo.Infrastructure.Timers;
 using OpenNotifications;
 using Squidex.Hosting;
@@ -17,13 +18,15 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroun
 {
     private readonly ConcurrentDictionary<string, IIntegration> integrations = new ConcurrentDictionary<string, IIntegration>();
     private readonly IEnumerable<IOpenNotificationsClient> clients;
+    private readonly ILogger<OpenNotificationsRegistry> log;
     private CompletionTimer timer;
 
     public IEnumerable<IIntegration> Integrations => integrations.Values;
 
-    public OpenNotificationsRegistry(IEnumerable<IOpenNotificationsClient> clients)
+    public OpenNotificationsRegistry(IEnumerable<IOpenNotificationsClient> clients, ILogger<OpenNotificationsRegistry> log)
     {
         this.clients = clients;
+        this.log = log;
     }
 
     public Task StartAsync(
@@ -45,6 +48,14 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroun
     {
         foreach (var client in clients)
         {
+            await QueryClientAsync(client, ct);
+        }
+    }
+
+    private async Task QueryClientAsync(IOpenNotificationsClient client, CancellationToken ct)
+    {
+        try
+        {
             var request = new GetProvidersRequestDto
             {
                 Context = new RequestContextDto()
@@ -65,6 +76,10 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroun
                     integrations.TryAdd(fullName, new OpenNotificationsEmailIntegration(fullName, name, providerInfo, client));
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            log.LogWarning(ex, "Failed to query providers from {name}", client.Name);
         }
     }
 

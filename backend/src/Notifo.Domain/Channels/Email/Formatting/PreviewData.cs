@@ -39,10 +39,10 @@ public static class PreviewData
         {
             App = App,
             AppId = App.Id,
-            Configuration = null!,
+            Configuration = new SendConfiguration(),
             ConfigurationId = default,
             IsUpdate = false,
-            Setting = null!,
+            Setting = new ChannelSetting(),
             User = User,
             UserId = User.Id,
         };

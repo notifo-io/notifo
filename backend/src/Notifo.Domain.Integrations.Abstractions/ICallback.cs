@@ -7,7 +7,7 @@
 
 namespace Notifo.Domain.Integrations;
 
-public interface ISmsCallback
+public interface ICallback<T> where T : IIntegration
 {
-    Task HandleCallbackAsync(ISmsSender source, string trackingToken, DeliveryResult result, string? details = null);
+    Task UpdateStatusAsync(T source, string trackingToken, DeliveryResult result);
 }

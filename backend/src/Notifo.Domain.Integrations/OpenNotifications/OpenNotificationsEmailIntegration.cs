@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Infrastructure;
 using OpenNotifications;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
@@ -19,24 +20,33 @@ public sealed class OpenNotificationsEmailIntegration : OpenNotificationsIntegra
     public async Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
         CancellationToken ct)
     {
-        var requestDto = new SendEmailRequestDto
+        try
         {
-            Properties = context.Properties.ToProperties(Definition),
-            Provider = ProviderName,
-            Payload = new EmailPayloadDto
+            var requestDto = new SendEmailRequestDto
             {
-                BodyHtml = request.BodyHtml,
-                BodyText = request.BodyText,
-                FromEmail = request.FromEmail,
-                FromName = request.FromName!,
-                Subject = request.Subject,
-                To = request.ToEmail
-            },
-            Context = context.ToContext(),
-        };
+                Context = context.ToContext(),
+                Payload = new EmailPayloadDto
+                {
+                    BodyHtml = request.BodyHtml,
+                    BodyText = request.BodyText,
+                    FromEmail = request.FromEmail,
+                    FromName = request.FromName!,
+                    Subject = request.Subject,
+                    To = request.ToEmail
+                },
+                Properties = context.Properties.ToProperties(Definition),
+                Provider = ProviderName,
+                TrackingToken = "none",
+                TrackingWebhookUrl = "none",
+            };
 
-        var status = await Client.Providers.SendEmailAsync(requestDto, ct);
+            var status = await Client.Providers.SendEmailAsync(requestDto, ct);
 
-        return status.ToDeliveryResult();
+            return status.ToDeliveryResult();
+        }
+        catch (OpenNotificationsException ex)
+        {
+            throw ex.ToDomainException();
+        }
     }
 }

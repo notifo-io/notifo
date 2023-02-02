@@ -101,7 +101,7 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
             return Task.CompletedTask;
         }
 
-        return context.SmsCallback.HandleCallbackAsync(this, reference, new DeliveryResult(result));
+        return context.UpdateStatusAsync(reference, new DeliveryResult(result));
 
         static DeliveryStatus ParseStatus(string status)
         {

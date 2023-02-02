@@ -61,6 +61,24 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field is not an allowed value..
+        /// </summary>
+        internal static string IntegrationPropertyAllowedValue {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyAllowedValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid boolean value..
+        /// </summary>
+        internal static string IntegrationPropertyInvalidBoolean {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyInvalidBoolean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a valid number..
         /// </summary>
         internal static string IntegrationPropertyInvalidNumber {

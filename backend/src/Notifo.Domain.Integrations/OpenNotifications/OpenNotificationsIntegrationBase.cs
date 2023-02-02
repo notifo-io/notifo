@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Infrastructure;
 using OpenNotifications;
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
@@ -34,6 +35,24 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
         if (providerInfo.Type == ProviderInfoDtoType.Email)
         {
             capabilities.Add(Providers.Email);
+        }
+
+        var hasSummaryProperty = providerInfo.Properties.Any(x => x.Value.Summary);
+
+        bool MakeSummary(PropertyInfoDto property)
+        {
+            if (property.Summary)
+            {
+                return true;
+            }
+
+            if (!hasSummaryProperty && property.Type == PropertyInfoDtoType.String)
+            {
+                hasSummaryProperty = true;
+                return true;
+            }
+
+            return false;
         }
 
         Definition = new IntegrationDefinition(
@@ -79,7 +98,7 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
                     MaxValue = property.MaxValue,
                     MinLength = property.MaxLength,
                     MinValue = property.MinValue,
-                    Summary = property.Summary
+                    Summary = MakeSummary(property)
                 };
             }).ToList(),
             new List<IntegrationProperty>(),
@@ -96,30 +115,44 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
     public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
-        var dto = new InstallationRequestDto
+        try
         {
-            Context = context.ToContext(),
-            Properties = context.Properties.ToProperties(Definition),
-            Provider = ProviderName,
-            WebhookUrl = context.WebhookUrl,
-        };
+            var dto = new InstallationRequestDto
+            {
+                Context = context.ToContext(),
+                Properties = context.Properties.ToProperties(Definition),
+                Provider = ProviderName,
+                WebhookUrl = context.WebhookUrl,
+            };
 
-        await Client.Providers.InstallAsync(dto, ct);
+            await Client.Providers.InstallAsync(dto, ct);
 
-        return IntegrationStatus.Verified;
+            return IntegrationStatus.Verified;
+        }
+        catch (OpenNotificationsException ex)
+        {
+            throw ex.ToDomainException();
+        }
     }
 
     public async Task OnRemovedAsync(IntegrationContext context,
         CancellationToken ct)
     {
-        var dto = new InstallationRequestDto
+        try
         {
-            Context = context.ToContext(),
-            Properties = context.Properties.ToProperties(Definition),
-            Provider = ProviderName,
-            WebhookUrl = context.WebhookUrl
-        };
+            var dto = new InstallationRequestDto
+            {
+                Context = context.ToContext(),
+                Properties = context.Properties.ToProperties(Definition),
+                Provider = ProviderName,
+                WebhookUrl = context.WebhookUrl
+            };
 
-        await Client.Providers.UninstallAsync(dto, ct);
+            await Client.Providers.UninstallAsync(dto, ct);
+        }
+        catch (OpenNotificationsException ex)
+        {
+            throw ex.ToDomainException();
+        }
     }
 }

@@ -20,7 +20,7 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.Sms;
 
-public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ISmsCallback
+public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>, ICallback<ISmsSender>
 {
     private const string PhoneNumber = nameof(PhoneNumber);
     private readonly IAppStore appStore;
@@ -61,7 +61,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             yield break;
         }
 
-        if (!integrationManager.HasIntegration<ISmsCallback>(context.App))
+        if (!integrationManager.HasIntegration<ISmsSender>(context.App))
         {
             yield break;
         }
@@ -72,7 +72,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         };
     }
 
-    public async Task HandleCallbackAsync(ISmsSender source, string trackingToken, DeliveryResult result, string? details = null)
+    public async Task UpdateStatusAsync(ISmsSender source, string trackingToken, DeliveryResult result)
     {
         using (Telemetry.Activities.StartActivity("SmsChannel/HandleCallbackAsync"))
         {

@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Channels.Messaging;
+#pragma warning disable MA0048 // File name must match type name
 
 namespace Notifo.Domain.Integrations;
 
@@ -13,9 +13,7 @@ public sealed class IntegrationContext
 {
     required public IIntegrationAdapter IntegrationAdapter { get; init; }
 
-    required public IMessagingCallback MessagingCallback { get; init; }
-
-    required public ISmsCallback SmsCallback { get; init; }
+    required public UpdateStatus UpdateStatusAsync { get; init; }
 
     required public string IntegrationId { get; init; }
 
@@ -31,3 +29,5 @@ public sealed class IntegrationContext
 
     required public Dictionary<string, string> Properties { get; init; }
 }
+
+public delegate Task UpdateStatus(string trackingToken, DeliveryResult result);
