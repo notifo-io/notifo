@@ -116,6 +116,11 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
             input = DefaultValue;
         }
 
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            input = AllowedValues?.FirstOrDefault();
+        }
+
         result = input ?? string.Empty;
 
         error = null!;
@@ -140,13 +145,13 @@ public sealed record IntegrationProperty(string Name, PropertyType Type)
             return false;
         }
 
-        if (AllowedValues?.Contains(input) == false)
+        if (!string.IsNullOrWhiteSpace(input) && AllowedValues?.Contains(input) == false)
         {
             error = Texts.IntegrationPropertyAllowedValue;
             return false;
         }
 
-        if (input != null && Pattern != null)
+        if (!string.IsNullOrWhiteSpace(input) && Pattern != null)
         {
             bool isValid;
             try

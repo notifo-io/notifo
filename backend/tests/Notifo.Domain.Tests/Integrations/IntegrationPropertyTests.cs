@@ -104,6 +104,25 @@ public class IntegrationPropertyTests
             Assert.Throws<ValidationException>(() => property.GetString(source));
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void Should_not_fail_if_undefined_value_does_not_follow_pattern(string input)
+        {
+            var source = new Dictionary<string, string>
+            {
+                ["key"] = input
+            };
+
+            var property = new IntegrationProperty("key", PropertyType.Text)
+            {
+                Pattern = "^[0-9]$"
+            };
+
+            Assert.Equal(string.Empty, property.GetString(source));
+        }
+
         [Fact]
         public void Should_fail_if_value_has_not_allowed_value()
         {
@@ -118,6 +137,25 @@ public class IntegrationPropertyTests
             };
 
             Assert.Throws<ValidationException>(() => property.GetString(source));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void Should_not_fail_if_undefined_value_is_not_an_allowed_value(string input)
+        {
+            var source = new Dictionary<string, string>
+            {
+                ["key"] = input
+            };
+
+            var property = new IntegrationProperty("key", PropertyType.Text)
+            {
+                AllowedValues = new[] { "allowed" }
+            };
+
+            Assert.Equal("allowed", property.GetString(source));
         }
 
         [Fact]

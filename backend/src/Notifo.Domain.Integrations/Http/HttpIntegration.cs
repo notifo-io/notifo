@@ -27,7 +27,8 @@ public sealed partial class HttpIntegration : IIntegration
         EditorDescription = Texts.Webhook_MethodHints,
         AllowedValues = new[] { "GET", "PATCH", "POST", "PUT", "DELETE" },
         IsRequired = false,
-        Summary = false
+        Summary = false,
+        DefaultValue = "GET",
     };
 
     private static readonly IntegrationProperty SendAlwaysProperty = new IntegrationProperty("SendAlways", PropertyType.Boolean)
