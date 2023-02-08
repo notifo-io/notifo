@@ -16,7 +16,6 @@ import { EmailTemplateInput } from './EmailTemplateInput';
 import { Forms } from './Forms';
 import { MessagingTemplateInput } from './MessagingTemplateInput';
 import { SmsTemplateInput } from './SmsTemplateInput';
-import { WebhookInput } from './WebhookInput';
 
 const PICK_MEDIA = {
     pickMedia: true,
@@ -244,15 +243,6 @@ export module NotificationsForm {
 
                                 <SmsTemplateInput name={`${field}.${channel}.template`} vertical={vertical}
                                     label={texts.common.template} hints={texts.notificationSettings.templateHints} />
-                            </>
-                        }
-
-                        {channel === 'webhook' &&
-                            <>
-                                <hr />
-
-                                <WebhookInput name={`${field}.${channel}.template`} vertical={vertical}
-                                    label={texts.common.template} hints={texts.notificationSettings.webhookHints} />
                             </>
                         }
                     </CardBody>

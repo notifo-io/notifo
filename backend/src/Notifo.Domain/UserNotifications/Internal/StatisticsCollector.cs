@@ -7,6 +7,7 @@
 
 using System.Collections.Concurrent;
 using NodaTime;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Timers;
 
 namespace Notifo.Domain.UserNotifications.Internal;
@@ -18,26 +19,26 @@ public sealed class StatisticsCollector
     private readonly IClock clock;
     private readonly int updatesCapacity;
     private readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
-    private readonly ConcurrentQueue<(TrackingToken Token, ProcessStatus Status, string? Detail)> updateQueue;
+    private readonly ConcurrentQueue<(TrackingToken Token, DeliveryResult Result)> updateQueue;
 
     public StatisticsCollector(IUserNotificationRepository repository, IClock clock, int updateInterval, int capacity = 2000)
     {
         this.repository = repository;
 
         updatesCapacity = capacity;
-        updateQueue = new ConcurrentQueue<(TrackingToken Token, ProcessStatus Status, string? Details)>();
+        updateQueue = new ConcurrentQueue<(TrackingToken Token, DeliveryResult Result)>();
 
         timer = new CompletionTimer(updateInterval, StoreAsync, updateInterval);
 
         this.clock = clock;
     }
 
-    public async Task AddAsync(TrackingToken token, ProcessStatus status, string? detail)
+    public async Task AddAsync(TrackingToken token, DeliveryResult result)
     {
         readerWriterLock.EnterReadLock();
         try
         {
-            updateQueue.Enqueue((token, status, detail));
+            updateQueue.Enqueue((token, result));
         }
         finally
         {
@@ -63,7 +64,7 @@ public sealed class StatisticsCollector
             return;
         }
 
-        var commands = new List<(TrackingToken Token, ProcessStatus Status, string? Detail)>();
+        var commands = new List<(TrackingToken Token, DeliveryResult Result)>();
 
         readerWriterLock.EnterWriteLock();
         try

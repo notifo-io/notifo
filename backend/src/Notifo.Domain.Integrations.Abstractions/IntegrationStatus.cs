@@ -11,5 +11,6 @@ public enum IntegrationStatus
 {
     Verified,
     VerificationFailed,
-    Pending
+    Pending,
+    Removed
 }

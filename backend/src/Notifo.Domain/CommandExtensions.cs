@@ -18,12 +18,7 @@ public static class CommandExtensions
         return command;
     }
 
-    public static T WithTracking<T>(this T command, TrackingKey tracking) where T : CommandBase
-    {
-        return WithTracking(command, tracking.AppId, tracking.UserId);
-    }
-
-    public static T WithTracking<T>(this T command, string? appId, string? userId) where T : CommandBase
+    public static T With<T>(this T command, string? appId, string? userId) where T : CommandBase
     {
         if (appId != null && command is AppCommandBase appCommand)
         {

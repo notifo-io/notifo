@@ -6,40 +6,65 @@
 // ==========================================================================
 
 using System.Globalization;
+using Google.Api;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Mediator;
 using Notifo.Infrastructure.Timers;
 using Notifo.Infrastructure.Validation;
 using Squidex.Hosting;
+using IIntegrationRegistries = System.Collections.Generic.IEnumerable<Notifo.Domain.Integrations.IIntegrationRegistry>;
 
 namespace Notifo.Domain.Integrations;
 
 public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 {
-    private readonly IEnumerable<IIntegration> integrations;
     private readonly IAppStore appStore;
-    private readonly IMediator mediator;
-    private readonly IServiceProvider serviceProvider;
+    private readonly IIntegrationAdapter integrationAdapter;
+    private readonly IIntegrationRegistries integrationRegistries;
+    private readonly IIntegrationUrl integrationUrl;
     private readonly ILogger<IntegrationManager> log;
+    private readonly IMediator mediator;
+    private readonly Lazy<ICallback<ISmsSender>> callbackSms;
+    private readonly Lazy<ICallback<IMessagingSender>> callbackMessaging;
     private readonly ConditionEvaluator conditionEvaluator;
-    private CompletionTimer timer;
+    private CompletionTimer? timer;
 
     public IEnumerable<IntegrationDefinition> Definitions
     {
-        get => integrations.Select(x => x.Definition);
+        get => integrationRegistries.SelectMany(x => x.Integrations).Select(x => x.Definition);
     }
 
-    public IntegrationManager(IEnumerable<IIntegration> integrations, IAppStore appStore, IMediator mediator,
-        IServiceProvider serviceProvider, ILogger<IntegrationManager> log)
+    public IntegrationManager(
+        IAppStore appStore,
+        IIntegrationAdapter integrationAdapter,
+        IIntegrationRegistries integrationRegistries,
+        IIntegrationUrl integrationUrl,
+        IServiceProvider serviceProvider,
+        IMediator mediator,
+        ILogger<IntegrationManager> log)
     {
-        this.integrations = integrations;
         this.appStore = appStore;
+        this.integrationAdapter = integrationAdapter;
         this.mediator = mediator;
-        this.serviceProvider = serviceProvider;
+        this.integrationRegistries = integrationRegistries;
+        this.integrationUrl = integrationUrl;
         this.log = log;
+
+        callbackSms = new Lazy<ICallback<ISmsSender>>(() =>
+        {
+            return serviceProvider.GetRequiredService<ICallback<ISmsSender>>();
+        });
+
+        callbackMessaging = new Lazy<ICallback<IMessagingSender>>(() =>
+        {
+            return serviceProvider.GetRequiredService<ICallback<IMessagingSender>>();
+        });
 
         conditionEvaluator = new ConditionEvaluator(log);
     }
@@ -55,88 +80,92 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
     public Task StopAsync(
         CancellationToken ct)
     {
-        return timer.StopAsync();
+        return timer?.StopAsync() ?? Task.CompletedTask;
     }
 
-    public Task ValidateAsync(ConfiguredIntegration configured,
+    public Task<IntegrationStatus> OnInstallAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
         CancellationToken ct = default)
     {
+        Guard.NotNullOrEmpty(id);
+        Guard.NotNull(app);
         Guard.NotNull(configured);
 
-        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+        var integration = GetIntegrationOrThrow(configured.Type);
 
-        if (integration == null)
+        if (configured.Properties.EqualsDictionary(previous?.Properties))
         {
-            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
-
-            throw new ValidationException(error);
+            return Task.FromResult(IntegrationStatus.Verified);
         }
 
-        var errors = new List<ValidationError>();
+        List<ValidationError>? errors = null;
 
         foreach (var property in integration.Definition.Properties)
         {
-            var value = configured.Properties.GetValueOrDefault(property.Name);
+            var input = configured.Properties.GetValueOrDefault(property.Name);
 
-            foreach (var error in property.Validate(value))
+            if (!property.IsValid(input, out var error))
             {
+                errors ??= new List<ValidationError>();
                 errors.Add(new ValidationError(error, property.Name));
             }
         }
 
-        if (errors.Count > 0)
+        if (errors != null)
         {
             throw new ValidationException(errors);
         }
 
-        return Task.CompletedTask;
+        return integration.OnConfiguredAsync(BuildContext(app, id, integration, configured), previous, ct);
     }
 
-    public Task<IntegrationStatus> HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    public Task OnCallbackAsync(string id, App app, HttpContext httpContext,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
-        Guard.NotNull(configured);
 
-        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+        var (_, context, hook) = Resolve<IIntegrationHook>(id, app);
 
-        if (integration == null)
+        if (hook == null)
         {
-            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
-
-            throw new ValidationException(error);
+            return Task.CompletedTask;
         }
 
-        return integration.OnConfiguredAsync(app.ToContext(), id, configured, previous, ct);
+        return hook.HandleRequestAsync(context, httpContext, ct);
     }
 
-    public Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+    public Task OnRemoveAsync(string id, App app, ConfiguredIntegration configured,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(id);
         Guard.NotNull(app);
-        Guard.NotNull(configured);
 
-        var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
-
-        if (integration == null)
+        if (!app.Integrations.TryGetValue(id, out var _))
         {
-            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, configured.Type);
-
-            throw new ValidationException(error);
+            return Task.CompletedTask;
         }
 
-        return integration.OnRemovedAsync(app.ToContext(), id, configured, ct);
+        var integration = GetIntegrationOrThrow(configured.Type);
+
+        return integration.OnRemovedAsync(BuildContext(app, id, integration, configured), ct);
     }
 
-    public bool IsConfigured<T>(App app, IIntegrationTarget? target = null)
+    public bool HasIntegration<T>(App app)
     {
         Guard.NotNull(app);
 
-        foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
+        var configureds = app.Integrations;
+
+        foreach (var (_, configured) in configureds)
         {
-            if (integration.CanCreate(typeof(T), actualId, configured))
+            if (!IsReady(configured))
+            {
+                continue;
+            }
+
+            var integration = GetIntegration(configured.Type);
+
+            if (integration is T)
             {
                 return true;
             }
@@ -145,42 +174,13 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         return false;
     }
 
-    public T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class
-    {
-        Guard.NotNullOrEmpty(id);
-        Guard.NotNull(app);
-
-        foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
-        {
-            if (IsMatch(id, actualId) && integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
-            {
-                return created;
-            }
-        }
-
-        return default;
-    }
-
-    public IEnumerable<(string, T)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class
+    public IEnumerable<ResolvedIntegration<T>> Resolve<T>(App app, IIntegrationTarget? target)
     {
         Guard.NotNull(app);
 
-        foreach (var (actualId, configured, integration) in GetIntegrations(app, target))
-        {
-            if (integration.Create(typeof(T), actualId, configured, serviceProvider) is T created)
-            {
-                yield return (actualId, created);
-            }
-        }
-
-        yield break;
-    }
-
-    private IEnumerable<(string, ConfiguredIntegration, IIntegration)> GetIntegrations(App app, IIntegrationTarget? target)
-    {
         var configureds = app.Integrations;
 
-        foreach (var (actualId, configured) in configureds)
+        foreach (var (id, configured) in configureds)
         {
             if (!IsReady(configured))
             {
@@ -192,33 +192,35 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                 continue;
             }
 
-            var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+            var integration = GetIntegration(configured.Type);
 
-            if (integration != null)
+            if (integration is not T typed)
             {
-                yield return (actualId, configured, integration);
+                continue;
             }
+
+            yield return new ResolvedIntegration<T>(id, BuildContext(app, id, integration, configured), typed);
         }
     }
 
-    private static bool IsReady(ConfiguredIntegration configured)
+    public ResolvedIntegration<T> Resolve<T>(string id, App app) where T : class
     {
-        return configured.Enabled && configured.Status == IntegrationStatus.Verified;
-    }
+        Guard.NotNullOrEmpty(id);
+        Guard.NotNull(app);
 
-    private static bool IsMatchingTest(ConfiguredIntegration configured, IIntegrationTarget target)
-    {
-        return configured.Test == null || configured.Test.Value == target.Test;
-    }
+        if (!app.Integrations.TryGetValue(id, out var configured))
+        {
+            return default;
+        }
 
-    private bool IsMatchingCondition(ConfiguredIntegration configured, IIntegrationTarget target)
-    {
-        return conditionEvaluator.Evaluate(configured.Condition, target);
-    }
+        var integration = GetIntegration(configured.Type);
 
-    private static bool IsMatch(string id, string actualId)
-    {
-        return actualId == id;
+        if (integration is not T typed)
+        {
+            return default;
+        }
+
+        return new ResolvedIntegration<T>(id, BuildContext(app, id, integration, configured), typed);
     }
 
     public async Task CheckAsync(
@@ -246,7 +248,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                         continue;
                     }
 
-                    var integration = integrations.FirstOrDefault(x => x.Definition.Type == configured.Type);
+                    var integration = GetIntegration(configured.Type);
 
                     if (integration == null)
                     {
@@ -257,7 +259,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
                     IntegrationStatus newStatus = configured.Status;
                     try
                     {
-                        await integration.CheckStatusAsync(app.ToContext(), id, configured, ct);
+                        await integration.CheckStatusAsync(BuildContext(app, id, integration, configured), ct);
                     }
                     catch (Exception ex)
                     {
@@ -282,5 +284,76 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         {
             log.LogError(ex, "Check integrations failed.");
         }
+    }
+
+    private IIntegration GetIntegrationOrThrow(string type)
+    {
+        var integration = GetIntegration(type);
+
+        if (integration == null)
+        {
+            var error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationNotFound, type);
+
+            throw new ValidationException(error);
+        }
+
+        return integration;
+    }
+
+    private IIntegration? GetIntegration(string type)
+    {
+        foreach (var registry in integrationRegistries)
+        {
+            if (registry.TryGetIntegration(type, out var integration))
+            {
+                return integration;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool IsReady(ConfiguredIntegration configured)
+    {
+        return configured.Enabled && configured.Status == IntegrationStatus.Verified;
+    }
+
+    private static bool IsMatchingTest(ConfiguredIntegration configured, IIntegrationTarget target)
+    {
+        return configured.Test == null || configured.Test.Value == target.Test;
+    }
+
+    private bool IsMatchingCondition(ConfiguredIntegration configured, IIntegrationTarget target)
+    {
+        return conditionEvaluator.Evaluate(configured.Condition, target);
+    }
+
+    private IntegrationContext BuildContext(App app, string id,  IIntegration integration, ConfiguredIntegration configured)
+    {
+        var updateStatus = new UpdateStatus((trackingToken, result) =>
+        {
+            switch (integration)
+            {
+                case ISmsSender sms:
+                    return callbackSms.Value.UpdateStatusAsync(sms, trackingToken, result);
+                case IMessagingSender messaging:
+                    return callbackMessaging.Value.UpdateStatusAsync(messaging, trackingToken, result);
+                default:
+                    return Task.CompletedTask;
+            }
+        });
+
+        return new IntegrationContext
+        {
+            UpdateStatusAsync = updateStatus,
+            AppId = app.Id,
+            AppName = app.Name,
+            CallbackToken = string.Empty,
+            CallbackUrl = integrationUrl.CallbackUrl(),
+            IntegrationAdapter = integrationAdapter,
+            IntegrationId = id,
+            Properties = new Dictionary<string, string>(configured.Properties),
+            WebhookUrl = integrationUrl.WebhookUrl(app.Id, id)
+        };
     }
 }

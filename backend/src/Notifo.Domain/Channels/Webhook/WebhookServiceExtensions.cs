@@ -7,7 +7,6 @@
 
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Webhook;
-using Notifo.Domain.Channels.Webhook.Integrations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Scheduling;
 
@@ -19,9 +18,6 @@ public static class WebhookServiceExtensions
     {
         services.AddSingletonAs<WebhookChannel>()
             .As<ICommunicationChannel>().As<IScheduleHandler<WebhookJob>>();
-
-        services.AddSingletonAs<WebhookIntegration>()
-            .As<IIntegration>();
 
         services.AddScheduler<WebhookJob>(Providers.Webhook);
     }

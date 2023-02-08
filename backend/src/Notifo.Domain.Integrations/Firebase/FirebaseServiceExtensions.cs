@@ -12,12 +12,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class FirebaseServiceExtensions
 {
-    public static void IntegrateFirebase(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationFirebase(this IServiceCollection services)
     {
         services.AddSingletonAs<FirebaseIntegration>()
             .As<IIntegration>();
 
         services.AddSingletonAs<FirebaseMessagingPool>()
             .AsSelf();
+
+        return services;
     }
 }

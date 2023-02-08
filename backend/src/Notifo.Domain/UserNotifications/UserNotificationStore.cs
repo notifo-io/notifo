@@ -70,7 +70,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
                     continue;
                 }
 
-                if (status.Status == ProcessStatus.Handled && (query.IncludeUnseen || status.FirstSeen == null))
+                if (status.Status >= DeliveryStatus.Sent && (query.IncludeUnseen || status.FirstSeen == null))
                 {
                     return true;
                 }
@@ -127,14 +127,14 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     {
         Guard.NotNull(job);
 
-        var notificationId = job.Tracking.UserNotificationId;
+        var notificationId = job.Notification.Id;
 
-        if (job.IsUpdate || job.Delay <= Duration.Zero || notificationId == default)
+        if (job.IsUpdate || job.SendDelay <= Duration.Zero)
         {
             return Task.FromResult(false);
         }
 
-        switch (job.Condition)
+        switch (job.SendCondition)
         {
             case ChannelCondition.IfNotConfirmed:
                 return repository.IsHandledOrConfirmedAsync(notificationId, channel.Name, job.ConfigurationId, ct);
@@ -175,12 +175,12 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.TrackDeliveredAsync(tokens, clock.GetCurrentInstant(), ct);
     }
 
-    public Task TrackAsync(UserEventMessage userEvent, ProcessStatus status,
+    public Task TrackAsync(UserEventMessage userEvent, DeliveryResult result,
         CancellationToken ct = default)
     {
         Guard.NotNull(userEvent);
 
-        var counterMap = CounterMap.ForNotification(status);
+        var counterMap = CounterMap.ForNotification(result.Status);
         var counterKey = TrackingKey.ForUserEvent(userEvent);
 
         return StoreCountersAsync(counterKey, counterMap, ct);
@@ -191,7 +191,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
     {
         Guard.NotNull(notification);
 
-        var counterMap = CounterMap.ForNotification(ProcessStatus.Handled);
+        var counterMap = CounterMap.ForNotification(DeliveryStatus.Attempt);
         var counterKey = TrackingKey.ForNotification(notification);
 
         return Task.WhenAll(
@@ -199,12 +199,12 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
             StoreInternalAsync(notification, ct));
     }
 
-    public Task TrackAsync(TrackingKey identifier, ProcessStatus status, string? detail = null,
+    public Task TrackAsync(TrackingKey identifier, DeliveryResult result,
         CancellationToken ct = default)
     {
         Guard.NotNullOrEmpty(identifier.Channel);
 
-        var counterMap = CounterMap.ForChannel(identifier.Channel!, status);
+        var counterMap = CounterMap.ForChannel(identifier.Channel!, result.Status);
         var counterKey = identifier;
 
         if (identifier.ConfigurationId == default)
@@ -214,7 +214,7 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
         return Task.WhenAll(
             StoreCountersAsync(counterKey, counterMap, ct),
-            StoreInternalAsync(identifier.ToToken(), status, detail));
+            StoreInternalAsync(identifier.ToToken(), result));
     }
 
     private Task StoreCountersAsync(TrackingKey key, CounterMap counterValues,
@@ -229,8 +229,8 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
         return repository.InsertAsync(notification, ct);
     }
 
-    private async Task StoreInternalAsync(TrackingToken token, ProcessStatus status, string? details)
+    private async Task StoreInternalAsync(TrackingToken token, DeliveryResult result)
     {
-        await collector.AddAsync(token, status, details);
+        await collector.AddAsync(token, result);
     }
 }

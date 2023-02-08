@@ -33,7 +33,6 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     private readonly ILogStore logStore;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
-    private readonly IUserStore userStore;
 
     public string Name => Providers.MobilePush;
 
@@ -43,7 +42,6 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         IMediator mediator,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
-        IUserStore userStore,
         IClock clock)
     {
         this.appStore = appStore;
@@ -53,13 +51,12 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         this.mediator = mediator;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
-        this.userStore = userStore;
         this.clock = clock;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
-        if (!integrationManager.IsConfigured<IMobilePushSender>(context.App, notification))
+        if (!integrationManager.HasIntegration<IMobilePushSender>(context.App))
         {
             yield break;
         }
@@ -78,43 +75,17 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    public async Task HandleSeenAsync(UserNotification notification, Guid configurationId)
+    public async Task HandleSeenAsync(UserNotification notification, ChannelContext context)
     {
         using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
         {
-            if (configurationId == default)
-            {
-                // Old tracking code.
-                return;
-            }
-
-            if (!notification.Channels.TryGetValue(Name, out var channel))
-            {
-                // There is no activity on this channel.
-                return;
-            }
-
-            if (!channel.Status.TryGetValue(configurationId, out var status))
-            {
-                // The configuration ID does not match.
-                return;
-            }
-
-            if (status.Configuration.TryGetValue(Token, out var mobileToken))
+            if (context.Configuration == null || context.Configuration.TryGetValue(Token, out var mobileToken))
             {
                 // The configuration has no token.
                 return;
             }
 
-            var user = await userStore.GetCachedAsync(notification.AppId, notification.UserId);
-
-            if (user == null)
-            {
-                // The user or app does not exist anymore.
-                return;
-            }
-
-            var userToken = user.MobilePushTokens.FirstOrDefault(x => x.Token == mobileToken && x.DeviceType == MobileDeviceType.iOS);
+            var userToken = context.User.MobilePushTokens.FirstOrDefault(x => x.Token == mobileToken && x.DeviceType == MobileDeviceType.iOS);
 
             if (userToken == null)
             {
@@ -122,14 +93,14 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 return;
             }
 
-            await TryWakeupAsync(notification, configurationId, userToken, default);
+            await TryWakeupAsync(notification, context, userToken, default);
         }
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration properties, SendContext context,
+    public async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
-        if (!properties.TryGetValue(Token, out var tokenString))
+        if (!context.Configuration.TryGetValue(Token, out var tokenString))
         {
             // Old configuration without a mobile push token.
             return;
@@ -147,10 +118,10 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
             if (token.DeviceType == MobileDeviceType.iOS)
             {
-                await TryWakeupAsync(notification, configurationId, token, ct);
+                await TryWakeupAsync(notification, context, token, ct);
             }
 
-            var job = new MobilePushJob(notification, setting, configurationId, token, context.IsUpdate);
+            var job = new MobilePushJob(notification, context, token);
 
             if (context.IsUpdate)
             {
@@ -165,18 +136,18 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 await userNotificationQueue.ScheduleAsync(
                     job.ScheduleKey,
                     job,
-                    job.Delay,
+                    job.SendDelay,
                     false, ct);
             }
         }
     }
 
-    private async Task TryWakeupAsync(UserNotification notification, Guid configurationId, MobilePushToken token,
+    private async Task TryWakeupAsync(UserNotification notification, ChannelContext context, MobilePushToken token,
         CancellationToken ct)
     {
-        var nextWakeup = token.GetNextWakeupTime(clock);
+        var wakeupTime = token.GetNextWakeupTime(clock);
 
-        if (nextWakeup == null)
+        if (wakeupTime == null)
         {
             return;
         }
@@ -188,12 +159,12 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             UserLanguage = notification.UserLanguage
         };
 
-        var wakeupJob = new MobilePushJob(dummyNotification, null, configurationId, token, false);
+        var wakeupJob = new MobilePushJob(dummyNotification, context, token);
 
         await userNotificationQueue.ScheduleAsync(
             wakeupJob.ScheduleKey,
             wakeupJob,
-            nextWakeup.Value,
+            wakeupTime.Value,
             false, ct);
 
         try
@@ -201,9 +172,9 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             var command = new UpdateMobileWakeupTime
             {
                 Token = token.Token
-            }.WithTracking(notification.AppId, notification.UserId).WithTimestamp(nextWakeup.Value);
+            };
 
-            await mediator.SendAsync(command, ct);
+            await mediator.SendAsync(command.With(notification.AppId, notification.UserId), ct);
         }
         catch (Exception ex)
         {
@@ -221,7 +192,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {
-                await UpdateAsync(job, ProcessStatus.Skipped);
+                await UpdateAsync(job, DeliveryResult.Skipped());
             }
             else
             {
@@ -234,7 +205,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
     public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
     {
-        return UpdateAsync(job, ProcessStatus.Failed);
+        return UpdateAsync(job, DeliveryResult.Failed());
     }
 
     private async Task SendJobAsync(MobilePushJob job,
@@ -250,115 +221,127 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             {
                 log.LogWarning("Cannot send mobile push: App not found.");
 
-                await UpdateAsync(job, ProcessStatus.Handled);
+                await UpdateAsync(job, DeliveryResult.Handled);
                 return;
             }
 
             try
             {
-                await UpdateAsync(job, ProcessStatus.Attempt);
+                await UpdateAsync(job, DeliveryResult.Attempt);
 
-                var senders = integrationManager.Resolve<IMobilePushSender>(app, notification).Select(x => x.Target).ToList();
+                var integrations = integrationManager.Resolve<IMobilePushSender>(app, notification).ToList();
 
-                if (senders.Count == 0)
+                if (integrations.Count == 0)
                 {
                     await SkipAsync(job, LogMessage.Integration_Removed(Name));
                     return;
                 }
 
-                await SendCoreAsync(job, app, senders, ct);
+                var message = BuildMessage(job);
 
-                await UpdateAsync(job, ProcessStatus.Handled);
+                var result = await SendCoreAsync(job, message, integrations, ct);
+
+                if (result.Status > DeliveryStatus.Attempt)
+                {
+                    await UpdateAsync(job, result);
+                }
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
     }
 
-    private async Task SendCoreAsync(MobilePushJob job, App app, List<IMobilePushSender> senders,
+    private async Task<DeliveryResult> SendCoreAsync(MobilePushJob job, MobilePushMessage message, List<ResolvedIntegration<IMobilePushSender>> integrations,
         CancellationToken ct)
     {
-        var lastSender = senders[^1];
+        var lastResult = default(DeliveryResult);
 
-        var notification = job.Notification;
-
-        foreach (var sender in senders)
+        foreach (var (_, context, sender) in integrations)
         {
             try
             {
-                var message = new MobilePushMessage
-                {
-                    Body = notification.Formatting.Body,
-                    ConfirmText = notification.Formatting.ConfirmText,
-                    ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
-                    Data = notification.Data,
-                    DeviceToken = job.Token,
-                    DeviceType = job.DeviceType,
-                    ImageLarge = notification.Formatting.ImageLarge,
-                    ImageSmall = notification.Formatting.ImageSmall,
-                    IsConfirmed = job.IsConfirmed,
-                    LinkText = notification.Formatting.LinkText,
-                    LinkUrl = notification.Formatting.LinkUrl,
-                    NotificationId = job.Notification.Id,
-                    Silent = notification.Silent,
-                    Subject = notification.Formatting.Subject,
-                    TimeToLiveInSeconds = notification.TimeToLiveInSeconds,
-                    TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.MobilePush, job.ConfigurationId),
-                    TrackingToken = new TrackingToken(job.Notification.Id, Providers.MobilePush, job.ConfigurationId).ToParsableString(),
-                    TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.MobilePush, job.ConfigurationId),
-                    Wakeup = notification.Formatting == null
-                };
+                lastResult = await sender.SendAsync(context, message, ct);
 
-                await sender.SendAsync(message, ct);
-                return;
+                if (lastResult.Status >= DeliveryStatus.Sent)
+                {
+                    return lastResult;
+                }
             }
             catch (MobilePushTokenExpiredException)
             {
-                await logStore.LogAsync(app.Id, LogMessage.MobilePush_TokenInvalid(Name, job.Tracking.UserId!, job.Token));
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.MobilePush_TokenInvalid(Name, job.Notification.UserId, job.Token));
 
                 var command = new RemoveUserMobileToken
                 {
                     Token = job.Token
-                }.WithTracking(notification.AppId, notification.UserId);
+                };
 
-                await mediator.SendAsync(command, ct);
+                await mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
                 break;
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
 
-                if (sender == lastSender)
-                {
-                    throw;
-                }
+                // We only expose details of domain exceptions.
+                lastResult = DeliveryResult.Failed(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (sender == lastSender)
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_InternalException(Name, ex));
+
+                if (sender == integrations[^1].System)
                 {
                     throw;
                 }
+
+                lastResult = DeliveryResult.Failed();
             }
         }
-    }
 
-    private async Task UpdateAsync(MobilePushJob job, ProcessStatus status, string? reason = null)
-    {
-        // We only track the initial publication.
-        if (!job.IsUpdate)
-        {
-            await userNotificationStore.TrackAsync(job.Tracking, status, reason);
-        }
+        return lastResult;
     }
 
     private async Task SkipAsync(MobilePushJob job, LogMessage message)
     {
         await logStore.LogAsync(job.Notification.AppId, message);
 
-        await UpdateAsync(job, ProcessStatus.Skipped, message.Reason);
+        await UpdateAsync(job, DeliveryResult.Skipped(message.Reason));
+    }
+
+    private async Task UpdateAsync(MobilePushJob job, DeliveryResult result)
+    {
+        // We only track the initial publication.
+        if (!job.IsUpdate)
+        {
+            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
+        }
+    }
+
+    private MobilePushMessage BuildMessage(MobilePushJob job)
+    {
+        var notification = job.Notification;
+
+        var message = new MobilePushMessage
+        {
+            Subject = notification.Formatting.Subject,
+            Body = notification.Formatting.Body,
+            ConfirmText = notification.Formatting.ConfirmText,
+            ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
+            Data = notification.Data,
+            DeviceToken = job.Token,
+            DeviceType = job.DeviceType,
+            ImageLarge = notification.Formatting.ImageLarge,
+            ImageSmall = notification.Formatting.ImageSmall,
+            LinkText = notification.Formatting.LinkText,
+            LinkUrl = notification.Formatting.LinkUrl,
+            TimeToLiveInSeconds = notification.TimeToLiveInSeconds,
+            Wakeup = notification.Formatting == null
+        };
+
+        return message.Enrich(job, Name);
     }
 }

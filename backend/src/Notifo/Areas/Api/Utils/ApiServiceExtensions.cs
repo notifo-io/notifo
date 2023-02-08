@@ -31,6 +31,6 @@ public static class ApiServiceExtensions
         }
 
         services.AddSingletonAs<UrlBuilder>()
-            .As<IEmailUrl>().As<IMessagingUrl>().As<ISmsUrl>().As<IUserNotificationUrl>();
+            .As<IEmailUrl>().As<IIntegrationUrl>().As<IUserNotificationUrl>();
     }
 }

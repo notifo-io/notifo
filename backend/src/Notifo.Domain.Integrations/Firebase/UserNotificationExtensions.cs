@@ -28,7 +28,7 @@ public static class UserNotificationExtensions
 
             message.Apns = new ApnsConfig
             {
-                Headers =  new Dictionary<string, string>
+                Headers = new Dictionary<string, string>
                 {
                     ["apns-push-type"] = "background",
                     ["apns-priority"] = "5"
@@ -97,7 +97,6 @@ public static class UserNotificationExtensions
                 var unixTimeSeconds = now.AddSeconds(timeToLive).ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
 
                 apnsHeaders["apns-expiration"] = unixTimeSeconds;
-
             }
         }
 

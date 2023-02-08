@@ -5,7 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.AspNetCore.Http;
 using Notifo.Domain.Apps;
+
+#pragma warning disable MA0048 // File name must match type name
+#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
 namespace Notifo.Domain.Integrations;
 
@@ -13,18 +17,20 @@ public interface IIntegrationManager
 {
     IEnumerable<IntegrationDefinition> Definitions { get; }
 
-    bool IsConfigured<T>(App app, IIntegrationTarget? target = null);
+    IEnumerable<ResolvedIntegration<T>> Resolve<T>(App app, IIntegrationTarget? target);
 
-    Task ValidateAsync(ConfiguredIntegration configured,
+    bool HasIntegration<T>(App app);
+
+    Task OnCallbackAsync(string id, App app, HttpContext httpContext,
         CancellationToken ct = default);
 
-    Task HandleRemovedAsync(string id, App app, ConfiguredIntegration configured,
+    Task OnRemoveAsync(string id, App app, ConfiguredIntegration configured,
         CancellationToken ct = default);
 
-    Task<IntegrationStatus> HandleConfiguredAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
+    Task<IntegrationStatus> OnInstallAsync(string id, App app, ConfiguredIntegration configured, ConfiguredIntegration? previous,
         CancellationToken ct = default);
 
-    T? Resolve<T>(string id, App app, IIntegrationTarget? target = null) where T : class;
-
-    IEnumerable<(string Id, T Target)> Resolve<T>(App app, IIntegrationTarget? target = null) where T : class;
+    ResolvedIntegration<T> Resolve<T>(string id, App app) where T : class;
 }
+
+public record struct ResolvedIntegration<T>(string Id, IntegrationContext Context, T System);

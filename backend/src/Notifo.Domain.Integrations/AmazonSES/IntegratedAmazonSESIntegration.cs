@@ -19,14 +19,14 @@ using Squidex.Hosting;
 
 namespace Notifo.Domain.Integrations.AmazonSES;
 
-public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable
+public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable, IEmailSender
 {
     private readonly IKeyValueStore keyValueStore;
-    private readonly AmazonSESOptions options;
-    private readonly SmtpEmailServer smtpEmailServer;
+    private readonly SmtpIntegration emailSender;
+    private readonly AmazonSESOptions emailOptions;
     private AmazonSimpleEmailServiceClient amazonSES;
 
-    private static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
+    public static readonly IntegrationProperty FromEmailProperty = new IntegrationProperty("fromEmail", PropertyType.Text)
     {
         Pattern = Patterns.Email,
         EditorLabel = Texts.Email_FromEmailLabel,
@@ -35,14 +35,14 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         Summary = true
     };
 
-    private static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
+    public static readonly IntegrationProperty FromNameProperty = new IntegrationProperty("fromName", PropertyType.Text)
     {
         EditorLabel = Texts.Email_FromNameLabel,
         EditorDescription = Texts.Email_FromNameDescription,
         IsRequired = true
     };
 
-    private static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", PropertyType.MultilineText)
+    public static readonly IntegrationProperty AdditionalFromEmails = new IntegrationProperty("additionalFromEmails", PropertyType.MultilineText)
     {
         EditorLabel = Texts.Email_AdditionalFromEmailsLabel,
         EditorDescription = Texts.Email_AdditionalFromEmailsDescription,
@@ -53,14 +53,14 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         new IntegrationDefinition(
             "AmazonSES",
             Texts.AmazonSES_Name,
-            "./integrations/amazon-ses.svg",
+            "<svg xmlns='http://www.w3.org/2000/svg' viewBox='14.7 23 39.515 24.641' xml:space='preserve' width='39.515' height='24.641'><path style='fill:#f7981f' transform='translate(-1.602 -.429)' d='m28.182 40.34-1.067-4.576h-.025l-1.106 4.576z'/><path d='M14.7 40.315v.666c0 3.311 3.579 6.66 7.991 6.66h23.533c4.412 0 7.991-3.35 7.991-6.66v-.666c0-3.078-3.098-6.943-7.081-7.283a5.118 5.118 0 0 0-8.011-4.055C37.543 25.457 34.016 23 29.907 23c-5.579 0-10.101 4.521-10.101 10.102 0 .1.012.195.015.293-2.993.867-5.121 4.371-5.121 6.92zm12.699 3.055-.572-2.275H24.11l-.599 2.275h-1.547l2.639-9.283h1.898l2.444 9.283zm9.012 0h-1.716l-1.196-6.994h-.026L32.29 43.37h-1.716l-1.795-9.283h1.496l1.221 7.215h.027l1.221-7.215h1.561l1.248 7.254h.026l1.209-7.254h1.469zm5.433.181c-2.301 0-2.821-1.533-2.821-2.834v-.221h1.482v.234c0 1.131.494 1.703 1.521 1.703.936 0 1.403-.664 1.403-1.354 0-.975-.493-1.404-1.325-1.65l-1.015-.352c-1.353-.52-1.937-1.221-1.937-2.547 0-1.691 1.144-2.627 2.886-2.627 2.379 0 2.626 1.482 2.626 2.443v.209h-1.482v-.195c0-.846-.377-1.34-1.3-1.34-.637 0-1.248.352-1.248 1.34 0 .793.403 1.195 1.392 1.572l1 .365c1.313.467 1.886 1.184 1.886 2.457.001 1.979-1.196 2.797-3.068 2.797z' style='fill:#f7981f'/><path d='m24.603 34.087-2.639 9.283h1.547l.599-2.275h2.717l.572 2.275h1.547l-2.444-9.283zm-.221 5.824 1.105-4.576h.025l1.066 4.576z' style='fill:#fff'/><path style='fill:#fff' transform='translate(-1.602 -.429)' d='M35.906 34.516h-1.56l-1.221 7.214h-.027l-1.221-7.214h-1.496l1.795 9.283h1.716l1.182-6.994h.027l1.196 6.994h1.716l1.845-9.283H38.39l-1.209 7.254h-.027z'/><path d='m43.027 38.3-1-.365c-.988-.377-1.392-.779-1.392-1.572 0-.988.611-1.34 1.248-1.34.923 0 1.3.494 1.3 1.34v.195h1.482v-.209c0-.961-.247-2.443-2.626-2.443-1.742 0-2.886.936-2.886 2.627 0 1.326.584 2.027 1.937 2.547l1.015.352c.832.246 1.325.676 1.325 1.65 0 .689-.468 1.354-1.403 1.354-1.027 0-1.521-.572-1.521-1.703v-.234h-1.482v.221c0 1.301.521 2.834 2.821 2.834 1.872 0 3.068-.818 3.068-2.795 0-1.276-.573-1.993-1.886-2.459z' style='fill:#fff'/></svg>",
             new List<IntegrationProperty>
             {
                 FromEmailProperty,
                 FromNameProperty,
                 AdditionalFromEmails
             },
-            new List<UserProperty>(),
+            new List<IntegrationProperty>(),
             new HashSet<string>
             {
                 Providers.Email
@@ -69,12 +69,10 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             Description = Texts.AmazonSES_Description
         };
 
-    public IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> options)
+    public IntegratedAmazonSESIntegration(IKeyValueStore keyValueStore, IOptions<AmazonSESOptions> emailOptions, SmtpIntegration emailSender)
     {
-        this.options = options.Value;
-
-        smtpEmailServer = new SmtpEmailServer(options.Value);
-
+        this.emailOptions = emailOptions.Value;
+        this.emailSender = emailSender;
         this.keyValueStore = keyValueStore;
     }
 
@@ -82,46 +80,33 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         CancellationToken ct)
     {
         amazonSES = new AmazonSimpleEmailServiceClient(
-            options.AwsAccessKeyId,
-            options.AwsSecretAccessKey,
-            RegionEndpoint.GetBySystemName(options.Region));
+            emailOptions.AwsAccessKeyId,
+            emailOptions.AwsSecretAccessKey,
+            RegionEndpoint.GetBySystemName(emailOptions.Region));
 
         await amazonSES.GetSendQuotaAsync(ct);
     }
 
-    public bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured)
-    {
-        return serviceType == typeof(IEmailSender);
-    }
-
-    public object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider)
-    {
-        if (CanCreate(serviceType, id, configured))
-        {
-            var fromEmail = FromEmailProperty.GetString(configured);
-
-            if (string.IsNullOrWhiteSpace(fromEmail))
-            {
-                return null;
-            }
-
-            var fromName = FromNameProperty.GetString(configured);
-
-            if (string.IsNullOrWhiteSpace(fromName))
-            {
-                return null;
-            }
-
-            return new SmtpEmailSender(() => smtpEmailServer, fromEmail, fromName);
-        }
-
-        return null;
-    }
-
-    public async Task<IntegrationStatus> OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
+    public Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage request,
         CancellationToken ct)
     {
-        var fromEmails = GetEmailAddresses(configured).ToList();
+        FillContext(context);
+
+        return emailSender.SendAsync(context, request, ct);
+    }
+
+    private void FillContext(IntegrationContext context)
+    {
+        context.Properties[SmtpIntegration.HostProperty.Name] = emailOptions.Host;
+        context.Properties[SmtpIntegration.HostPortProperty.Name] = emailOptions.HostPort.ToString(CultureInfo.InvariantCulture);
+        context.Properties[SmtpIntegration.UsernameProperty.Name] = emailOptions.Username;
+        context.Properties[SmtpIntegration.PasswordProperty.Name] = emailOptions.Password;
+    }
+
+    public async Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
+        CancellationToken ct)
+    {
+        var fromEmails = GetEmailAddresses(context.Properties).ToList();
 
         if (fromEmails.Count == 0)
         {
@@ -129,9 +114,9 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         }
 
         // Ensure that the email address is not used by another app.
-        await ValidateEmailAddressesAsync(app, fromEmails, ct);
+        await ValidateEmailAddressesAsync(context, fromEmails, ct);
 
-        var previousEmails = GetEmailAddresses(previous).ToList();
+        var previousEmails = GetEmailAddresses(previous?.Properties).ToList();
 
         if (previousEmails.SetEquals(fromEmails, StringComparer.OrdinalIgnoreCase))
         {
@@ -157,24 +142,24 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return IntegrationStatus.Pending;
     }
 
-    public async Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
+    public async Task OnRemovedAsync(IntegrationContext context,
         CancellationToken ct)
     {
         // Remove unused email addresses to make them available for other apps.
-        await CleanEmailsAsync(GetEmailAddresses(configured), ct);
+        await CleanEmailsAsync(GetEmailAddresses(context.Properties), ct);
     }
 
     public async Task<IntegrationStatus> CheckStatusAsync(IntegrationConfiguration configured,
         CancellationToken ct)
     {
         // Check the status every few minutes to update the integration.
-        return await GetStatusAsync(GetEmailAddresses(configured).ToList(), ct);
+        return await GetStatusAsync(GetEmailAddresses(configured.Properties).ToList(), ct);
     }
 
-    private async Task ValidateEmailAddressesAsync(AppContext app, List<string> fromEmails,
+    private async Task ValidateEmailAddressesAsync(IntegrationContext context, List<string> fromEmails,
         CancellationToken ct)
     {
-        if (!options.BindEmailAddresses)
+        if (!emailOptions.BindEmailAddresses)
         {
             return;
         }
@@ -183,7 +168,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         {
             var key = StoreKey(email);
 
-            if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), app.Id, ct) != app.Id)
+            if (await keyValueStore.SetIfNotExistsAsync(StoreKey(email), context.AppId, ct) != context.AppId)
             {
                 var error = string.Format(CultureInfo.InvariantCulture, Texts.AmazonSES_ReservedEmailAddress, email);
 
@@ -300,16 +285,16 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
         return IntegrationStatus.VerificationFailed;
     }
 
-    private static IEnumerable<string> GetEmailAddresses(IntegrationConfiguration? configured)
+    private static IEnumerable<string> GetEmailAddresses(IReadOnlyDictionary<string, string>? properties)
     {
-        if (configured == null)
+        if (properties == null)
         {
             yield break;
         }
 
         var hasAdded = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        var fromEmail = FromEmailProperty.GetString(configured);
+        var fromEmail = FromEmailProperty.GetString(properties);
 
         if (!string.IsNullOrWhiteSpace(fromEmail))
         {
@@ -319,7 +304,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             }
         }
 
-        var additionalEmails = AdditionalFromEmails.GetString(configured);
+        var additionalEmails = AdditionalFromEmails.GetString(properties);
 
         if (string.IsNullOrWhiteSpace(additionalEmails))
         {

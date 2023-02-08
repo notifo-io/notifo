@@ -12,9 +12,9 @@ namespace Notifo.Domain.Integrations;
 public sealed record IntegrationDefinition(
     string Type,
     string Title,
-    string LogoUrl,
+    string Logo,
     IReadOnlyList<IntegrationProperty> Properties,
-    IReadOnlyList<UserProperty> UserProperties,
+    IReadOnlyList<IntegrationProperty> UserProperties,
     IReadOnlySet<string> Capabilities)
 {
     public string? Description { get; init; }

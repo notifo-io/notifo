@@ -363,9 +363,9 @@ public sealed class UsersController : BaseController
         return queryObject;
     }
 
-    private List<UserProperty> GetUserProperties()
+    private List<IntegrationProperty> GetUserProperties()
     {
-        var properties = new Dictionary<string, UserProperty>();
+        var properties = new Dictionary<string, IntegrationProperty>();
 
         foreach (var (_, configured) in App.Integrations)
         {

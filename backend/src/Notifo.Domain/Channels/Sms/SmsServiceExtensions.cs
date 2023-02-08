@@ -18,7 +18,7 @@ public static class SmsServiceExtensions
     public static void AddMySmsChannel(this IServiceCollection services)
     {
         services.AddSingletonAs<SmsChannel>()
-            .As<ICommunicationChannel>().As<IScheduleHandler<SmsJob>>().As<ISmsCallback>();
+            .As<ICommunicationChannel>().As<IScheduleHandler<SmsJob>>().As<ICallback<ISmsSender>>();
 
         services.AddSingletonAs<SmsFormatter>()
             .As<ISmsFormatter>().As<IChannelTemplateFactory<SmsTemplate>>();

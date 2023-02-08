@@ -19,15 +19,15 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.Messaging;
 
-public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, IMessagingCallback
+public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<MessagingJob>, ICallback<IMessagingSender>
 {
+    private const string IntegrationIds = nameof(IntegrationIds);
     private readonly IAppStore appStore;
     private readonly IIntegrationManager integrationManager;
     private readonly ILogger<MessagingChannel> log;
     private readonly ILogStore logStore;
     private readonly IMessagingFormatter messagingFormatter;
     private readonly IMessagingTemplateStore messagingTemplateStore;
-    private readonly IMessagingUrl messagingUrl;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
 
@@ -38,7 +38,6 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         IIntegrationManager integrationManager,
         IMessagingFormatter messagingFormatter,
         IMessagingTemplateStore messagingTemplateStore,
-        IMessagingUrl messagingUrl,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore)
     {
@@ -48,90 +47,83 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         this.integrationManager = integrationManager;
         this.messagingFormatter = messagingFormatter;
         this.messagingTemplateStore = messagingTemplateStore;
-        this.messagingUrl = messagingUrl;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelSetting settings, SendContext context)
+    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
-        // Faster check because it does not allocate integrations.
-        if (!integrationManager.IsConfigured<IMessagingSender>(context.App, notification))
+        if (notification.Silent)
         {
             yield break;
         }
 
-        var targets = new MessagingTargets();
+        // Do not pass in the user notification so what we enable all integrations.
+        var integrations = integrationManager.Resolve<IMessagingSender>(context.App, null).ToList();
 
-        var senders = integrationManager.Resolve<IMessagingSender>(context.App, notification);
+        if (integrations.Count == 0)
+        {
+            yield break;
+        }
+
+        var configuration = new SendConfiguration();
 
         // Create a context to not expose the user details to the provider.
         var userContext = context.User.ToContext();
 
-        foreach (var (_, sender) in senders)
+        foreach (var (_, _, sender) in integrations)
         {
-            sender.AddTargets(targets, userContext);
-
-            if (targets.Count > 0)
-            {
-                yield return new SendConfiguration();
-                yield break;
-            }
+            sender.AddTargets(configuration, userContext);
         }
+
+        if (configuration.Count == 0)
+        {
+            yield break;
+        }
+
+        yield return configuration;
     }
 
-    public async Task HandleCallbackAsync(IMessagingSender source, Guid notificationId, MessagingResult result, string? details = null)
+    public async Task UpdateStatusAsync(IMessagingSender source, string trackingToken, DeliveryResult result)
     {
         using (Telemetry.Activities.StartActivity("MessagingChannel/HandleCallbackAsync"))
         {
-            var notification = await userNotificationStore.FindAsync(notificationId);
-
-            if (notification != null)
+            if (result == default)
             {
-                await UpdateAsync(notification, result, source.Name, details);
+                return;
             }
 
-            userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(notificationId));
-        }
-    }
+            var token = TrackingToken.Parse(trackingToken);
 
-    private async Task UpdateAsync(UserNotification notification, MessagingResult result, string integrationName, string? details)
-    {
-        if (!notification.Channels.TryGetValue(Name, out var channel))
-        {
-            // There is no activity on this channel.
-            return;
-        }
-
-        if (channel.Status.Count == 0)
-        {
-            return;
-        }
-
-        // We create only one configuration for this channel. Therefore it must be the first.
-        var (configurationId, status) = channel.Status.First();
-
-        if (status.Status == ProcessStatus.Attempt)
-        {
-            var identifier = TrackingKey.ForNotification(notification, Name, configurationId);
-
-            if (result == MessagingResult.Delivered)
+            if (token.UserNotificationId == default)
             {
-                await userNotificationStore.TrackAsync(identifier, ProcessStatus.Handled);
+                return;
             }
-            else if (result == MessagingResult.Failed)
+
+            userNotificationQueue.Complete(MessagingJob.ComputeScheduleKey(token.UserNotificationId));
+
+            var notification = await userNotificationStore.FindAsync(token.UserNotificationId);
+
+            if (notification == null)
             {
-                var message = LogMessage.Sms_CallbackError(integrationName, details);
+                return;
+            }
+
+            var trackingKey = TrackingKey.ForNotification(notification, Name, token.ConfigurationId);
+
+            await userNotificationStore.TrackAsync(trackingKey, result);
+
+            if (!string.IsNullOrWhiteSpace(result.Detail))
+            {
+                var message = LogMessage.Sms_CallbackError(source.Definition.Type, result.Detail);
 
                 // Also log the error to the app log.
                 await logStore.LogAsync(notification.AppId, message);
-
-                await userNotificationStore.TrackAsync(identifier, ProcessStatus.Failed);
             }
         }
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelSetting setting, Guid configurationId, SendConfiguration configuration, SendContext context,
+    public async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         if (context.IsUpdate)
@@ -141,36 +133,19 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
         using (Telemetry.Activities.StartActivity("MessagingChannel/SendAsync"))
         {
-            var job = new MessagingJob(notification, setting, configurationId, context.User.PreferredLanguage);
-
-            // Create a context to not expose the user details to the provider.
-            var userContext = context.User.ToContext();
-
-            var integrations = integrationManager.Resolve<IMessagingSender>(context.App, notification);
-
-            // We try all integrations, ordered by priority.
-            foreach (var (_, sender) in integrations)
-            {
-                sender.AddTargets(job.Targets, userContext);
-            }
-
-            // Should not happen because we check before if there is at least one target.
-            if (job.Targets.Count == 0)
-            {
-                await UpdateAsync(job, ProcessStatus.Skipped);
-            }
+            var job = new MessagingJob(notification, context);
 
             await userNotificationQueue.ScheduleAsync(
                 job.ScheduleKey,
                 job,
-                job.Delay,
+                job.SendDelay,
                 false, ct);
         }
     }
 
     public Task HandleExceptionAsync(MessagingJob job, Exception ex)
     {
-        return UpdateAsync(job, ProcessStatus.Failed);
+        return UpdateAsync(job, DeliveryResult.Failed());
     }
 
     public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt,
@@ -183,7 +158,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         {
             if (await userNotificationStore.IsHandledAsync(job, this, ct))
             {
-                await UpdateAsync(job, ProcessStatus.Skipped);
+                await UpdateAsync(job, DeliveryResult.Skipped());
             }
             else
             {
@@ -205,27 +180,23 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             {
                 log.LogWarning("Cannot send message: App not found.");
 
-                await UpdateAsync(job, ProcessStatus.Handled);
+                await UpdateAsync(job, DeliveryResult.Handled);
                 return;
             }
 
             try
             {
-                await UpdateAsync(job, ProcessStatus.Attempt);
+                await UpdateAsync(job, DeliveryResult.Attempt);
 
-                var senders = integrationManager.Resolve<IMessagingSender>(app, job.Notification).ToList();
+                var integrations = integrationManager.Resolve<IMessagingSender>(app, job.Notification).ToList();
 
-                if (senders.Count == 0)
+                if (integrations.Count == 0)
                 {
                     await SkipAsync(job, LogMessage.Integration_Removed(Name));
                     return;
                 }
 
-                var (skip, template) = await GetTemplateAsync(
-                    job.Notification.AppId,
-                    job.Notification.UserLanguage,
-                    job.NotificationTemplate,
-                    ct);
+                var (skip, message) = await BuildMessageAsync(job, ct);
 
                 if (skip != null)
                 {
@@ -233,9 +204,12 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
                     return;
                 }
 
-                var text = messagingFormatter.Format(template, job.Notification);
+                var result = await SendCoreAsync(job, message!, integrations, ct);
 
-                await SendCoreAsync(job, text, senders, ct);
+                if (result.Status > DeliveryStatus.Attempt)
+                {
+                    await UpdateAsync(job, result);
+                }
             }
             catch (DomainException ex)
             {
@@ -245,67 +219,80 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         }
     }
 
-    private async Task SendCoreAsync(MessagingJob job, string text, List<(string Id, IMessagingSender Sender)> senders,
+    private async Task<DeliveryResult> SendCoreAsync(MessagingJob job, MessagingMessage message, List<ResolvedIntegration<IMessagingSender>> integrations,
         CancellationToken ct)
     {
-        var lastSender = senders[^1].Sender;
+        var lastResult = default(DeliveryResult);
 
-        foreach (var (integrationId, sender) in senders)
+        foreach (var (_, context, sender) in integrations)
         {
             try
             {
-                // The report URL depends on the integration id, therefore we cannot compute the value once.
-                var message = new MessagingMessage(
-                    job.Notification.Id,
-                    text,
-                    messagingUrl.MessagingWebhookUrl(job.Notification.AppId, integrationId),
-                    job.Targets,
-                    job.UserLanguage);
+                var result = await sender.SendAsync(context, message, ct);
 
-                var result = await sender.SendAsync(message, ct);
-
-                // Some integrations provide the actual result via webhook at a later point.
-                if (result == MessagingResult.Delivered)
+                // We only sent notifications over the first successful integration.
+                if (result.Status >= DeliveryStatus.Sent)
                 {
-                    await UpdateAsync(job, ProcessStatus.Handled);
-                    return;
-                }
-
-                // If the message has been sent, but not delivered yet, we also do not try other integrations.
-                if (result == MessagingResult.Sent)
-                {
-                    return;
+                    break;
                 }
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(sender.Definition.Type, ex));
 
-                if (sender == lastSender)
-                {
-                    throw;
-                }
+                // We only expose details of domain exceptions.
+                lastResult = DeliveryResult.Failed(ex.Message);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                if (sender == lastSender)
+                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_InternalException(sender.Definition.Type, ex));
+
+                if (sender == integrations[^1].System)
                 {
                     throw;
                 }
+
+                lastResult = DeliveryResult.Failed();
             }
         }
-    }
 
-    private Task UpdateAsync(MessagingJob job, ProcessStatus status, string? reason = null)
-    {
-        return userNotificationStore.TrackAsync(job.Tracking, status, reason);
+        return lastResult;
     }
 
     private async Task SkipAsync(MessagingJob job, LogMessage message)
     {
         await logStore.LogAsync(job.Notification.AppId, message);
 
-        await UpdateAsync(job, ProcessStatus.Skipped, message.Reason);
+        await UpdateAsync(job, DeliveryResult.Skipped(message.Reason));
+    }
+
+    private Task UpdateAsync(MessagingJob job, DeliveryResult result)
+    {
+        return userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
+    }
+
+    private async Task<(LogMessage? Skip, MessagingMessage?)> BuildMessageAsync(MessagingJob job,
+        CancellationToken ct)
+    {
+        var (skip, template) = await GetTemplateAsync(
+            job.Notification.AppId,
+            job.Notification.UserLanguage,
+            job.Template,
+            ct);
+
+        if (skip != default)
+        {
+            return (skip, null);
+        }
+
+        var message = new MessagingMessage
+        {
+            Targets = job.Configuration,
+            // We might also format the text without the template if no primary template is defined.
+            Text = messagingFormatter.Format(template, job.Notification),
+        };
+
+        return (default, message.Enrich(job, Name));
     }
 
     private async Task<(LogMessage? Skip, MessagingTemplate?)> GetTemplateAsync(
@@ -322,11 +309,21 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
                 {
                     var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
 
+                    // We just log a warning here, but use the fallback template.
                     await logStore.LogAsync(appId, message);
                     break;
                 }
 
-            case TemplateResolveStatus.NotFound:
+            case TemplateResolveStatus.NotFound when string.IsNullOrWhiteSpace(name):
+                {
+                    var message = LogMessage.ChannelTemplate_ResolvedWithFallback(Name, name);
+
+                    // If no name was specified we just accept that the template does not exist.
+                    await logStore.LogAsync(appId, message);
+                    break;
+                }
+
+            case TemplateResolveStatus.NotFound when !string.IsNullOrWhiteSpace(name):
                 {
                     var message = LogMessage.ChannelTemplate_NotFound(Name, name);
 

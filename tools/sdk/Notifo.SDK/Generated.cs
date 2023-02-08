@@ -14089,7 +14089,7 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public ProcessStatus Status { get; set; }
+        public DeliveryStatus Status { get; set; }
 
         /// <summary>
         /// The configuration for the device.
@@ -14130,23 +14130,26 @@ namespace Notifo.SDK
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
-    public enum ProcessStatus
+    public enum DeliveryStatus
     {
 
-        [System.Runtime.Serialization.EnumMember(Value = @"None")]
-        None = 0,
+        [System.Runtime.Serialization.EnumMember(Value = @"Unknown")]
+        Unknown = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Skipped")]
+        Skipped = 1,
 
         [System.Runtime.Serialization.EnumMember(Value = @"Attempt")]
-        Attempt = 1,
-
-        [System.Runtime.Serialization.EnumMember(Value = @"Handled")]
-        Handled = 2,
+        Attempt = 2,
 
         [System.Runtime.Serialization.EnumMember(Value = @"Failed")]
         Failed = 3,
 
-        [System.Runtime.Serialization.EnumMember(Value = @"Skipped")]
-        Skipped = 4,
+        [System.Runtime.Serialization.EnumMember(Value = @"Sent")]
+        Sent = 4,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Handled")]
+        Handled = 5,
 
     }
 
@@ -15570,6 +15573,9 @@ namespace Notifo.SDK
         [System.Runtime.Serialization.EnumMember(Value = @"Pending")]
         Pending = 2,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"Removed")]
+        Removed = 3,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
@@ -15583,11 +15589,11 @@ namespace Notifo.SDK
         public string Title { get; set; }
 
         /// <summary>
-        /// The logo URL for the integration.
+        /// The logo for the integration.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("logoUrl", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("logo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [System.ComponentModel.DataAnnotations.Required]
-        public string LogoUrl { get; set; }
+        public string Logo { get; set; }
 
         /// <summary>
         /// The optional description of the integration.

@@ -6,42 +6,34 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Notifo.Domain.Integrations.MessageBird.Implementation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
 [Trait("Category", "Dependencies")]
-public class MessageBirdTests
+public class MessageBirdTests : SmsSenderTestBase
 {
-    private readonly string phoneNumberFrom = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumberFrom")!;
-    private readonly string phoneNumberTo = TestHelpers.Configuration.GetValue<string>("messageBird:phoneNumberTo")!;
-    private readonly ISmsSender sut;
-
-    public MessageBirdTests()
+    protected override ResolvedIntegration<ISmsSender> CreateSender()
     {
-        var clientFactory = A.Fake<IHttpClientFactory>();
+        var accessKey = TestHelpers.Configuration.GetValue<string>("sms:messageBird:accessKey")!;
+        var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:messageBird:phoneNumber")!;
+        var phoneNumbers = TestHelpers.Configuration.GetValue<string>("sms:messageBird:phoneNumbers")!;
 
-        A.CallTo(() => clientFactory.CreateClient(A<string>._))
-            .ReturnsLazily(() => new HttpClient());
-
-        var client = new MessageBirdClient(clientFactory, Options.Create(new MessageBirdOptions
+        var context = BuildContext(new Dictionary<string, string>
         {
-            PhoneNumber = phoneNumberFrom,
-            PhoneNumbers = null,
-            AccessKey = TestHelpers.Configuration.GetValue<string>("messageBird:accessKey")!
-        }));
+            [MessageBirdSmsIntegration.AccessKeyProperty.Name] = accessKey,
+            [MessageBirdSmsIntegration.PhoneNumberProperty.Name] = phoneNumber,
+            [MessageBirdSmsIntegration.PhoneNumbersProperty.Name] = phoneNumbers,
+        });
 
-        sut = new MessageBirdSmsSender(A.Fake<ISmsCallback>(), client, null, null, null);
-    }
+        var integration =
+            new ServiceCollection()
+                .AddIntegrationMessageBird(A.Fake<IConfiguration>())
+                .AddMemoryCache()
+                .AddHttpClient()
+                .BuildServiceProvider()
+                .GetRequiredService<MessageBirdSmsIntegration>();
 
-    [Fact]
-    public async Task Should_send_sms()
-    {
-        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Telekom", null);
-
-        var response = await sut.SendAsync(message, default);
-
-        Assert.Equal(SmsResult.Sent, response);
+        return new ResolvedIntegration<ISmsSender>(Guid.NewGuid().ToString(), context, integration);
     }
 }

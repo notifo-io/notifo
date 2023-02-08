@@ -12,12 +12,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MailjetServiceExtensions
 {
-    public static void IntegrateMailjet(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationMailjet(this IServiceCollection services)
     {
         services.AddSingletonAs<MailjetIntegration>()
             .As<IIntegration>();
 
         services.AddSingletonAs<MailjetEmailServerPool>()
             .AsSelf();
+
+        return services;
     }
 }

@@ -61,6 +61,24 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field is not an allowed value..
+        /// </summary>
+        internal static string IntegrationPropertyAllowedValue {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyAllowedValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not a valid boolean value..
+        /// </summary>
+        internal static string IntegrationPropertyInvalidBoolean {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyInvalidBoolean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Not a valid number..
         /// </summary>
         internal static string IntegrationPropertyInvalidNumber {
@@ -102,6 +120,33 @@ namespace Notifo.Domain.Integrations.Resources {
         internal static string IntegrationPropertyMinValue {
             get {
                 return ResourceManager.GetString("IntegrationPropertyMinValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not a boolean..
+        /// </summary>
+        internal static string IntegrationPropertyNotBoolean {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyNotBoolean", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not a number..
+        /// </summary>
+        internal static string IntegrationPropertyNotNumber {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyNotNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field is not a string type..
+        /// </summary>
+        internal static string IntegrationPropertyNotString {
+            get {
+                return ResourceManager.GetString("IntegrationPropertyNotString", resourceCulture);
             }
         }
         

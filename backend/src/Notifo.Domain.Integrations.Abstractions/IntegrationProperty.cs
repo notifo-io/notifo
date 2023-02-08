@@ -5,16 +5,20 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Notifo.Domain.Integrations.Resources;
+using Notifo.Infrastructure.Validation;
 
 #pragma warning disable SA1313 // Parameter names should begin with lower-case letter
 
 namespace Notifo.Domain.Integrations;
 
-public sealed record IntegrationProperty(string Name, PropertyType Type) : PropertyBase(Name, Type)
+public sealed record IntegrationProperty(string Name, PropertyType Type)
 {
+    public string? DefaultValue { get; init; }
+
     public string? EditorDescription { get; init; }
 
     public string? EditorLabel { get; init; }
@@ -35,67 +39,124 @@ public sealed record IntegrationProperty(string Name, PropertyType Type) : Prope
 
     public string? Pattern { get; init; }
 
-    public IEnumerable<string> Validate(string? value)
+    public bool IsValid(string? input, [MaybeNullWhen(true)] out string error)
     {
         switch (Type)
         {
             case PropertyType.Boolean:
-                return Enumerable.Empty<string>();
+                return TryGetBoolean(input, out error, out _);
             case PropertyType.Number:
-                return ValidateNumber(value);
+                return TryGetNumber(input, out error, out _);
             default:
-                return ValidateString(value);
+                return TryGetString(input, out error, out _);
         }
     }
 
-    private IEnumerable<string> ValidateNumber(string? value)
+    public string GetString(IReadOnlyDictionary<string, string>? properties)
     {
-        if (string.IsNullOrWhiteSpace(value) && IsRequired)
+        if (Type is PropertyType.Text or PropertyType.MultilineText or PropertyType.Password)
         {
-            yield return Texts.IntegrationPropertyRequired;
+            string? input = null;
+
+            properties?.TryGetValue(Name, out input);
+
+            if (!TryGetString(input, out var error, out var result))
+            {
+                throw new ValidationException(new ValidationError(error, Name));
+            }
+
+            return result;
         }
 
-        if (!TryParseLong(value, out var number))
-        {
-            yield return Texts.IntegrationPropertyInvalidNumber;
-        }
-
-        if (number < MinValue)
-        {
-            yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinValue, MinValue);
-        }
-
-        if (number > MaxValue)
-        {
-            yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxValue, MaxValue);
-        }
+        throw new ValidationException(Texts.IntegrationPropertyNotString);
     }
 
-    private IEnumerable<string> ValidateString(string? value)
+    public long GetNumber(IReadOnlyDictionary<string, string>? properties)
     {
-        if (string.IsNullOrWhiteSpace(value) && IsRequired)
+        if (Type is PropertyType.Number)
         {
-            yield return Texts.IntegrationPropertyRequired;
+            string? input = null;
+
+            properties?.TryGetValue(Name, out input);
+
+            if (!TryGetNumber(input, out var error, out var result))
+            {
+                throw new ValidationException(new ValidationError(error, Name));
+            }
+
+            return result;
         }
 
-        var length = value?.Length ?? 0;
+        throw new ValidationException(Texts.IntegrationPropertyNotNumber);
+    }
+
+    public bool GetBoolean(IReadOnlyDictionary<string, string>? properties)
+    {
+        if (Type is PropertyType.Boolean)
+        {
+            string? input = null;
+
+            properties?.TryGetValue(Name, out input);
+
+            if (!TryGetBoolean(input, out var error, out var result))
+            {
+                throw new ValidationException(new ValidationError(error, Name));
+            }
+
+            return result;
+        }
+
+        throw new ValidationException(Texts.IntegrationPropertyNotBoolean);
+    }
+
+    private bool TryGetString(string? input, [MaybeNullWhen(true)] out string error, out string result)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            input = DefaultValue;
+        }
+
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            input = AllowedValues?.FirstOrDefault();
+        }
+
+        result = input ?? string.Empty;
+
+        error = null!;
+
+        if (string.IsNullOrWhiteSpace(input) && IsRequired)
+        {
+            error = Texts.IntegrationPropertyRequired;
+            return false;
+        }
+
+        var length = input?.Length ?? 0;
 
         if (length < MinLength)
         {
-            yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinLength, MinLength);
+            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinLength, MinLength);
+            return false;
         }
 
         if (length > MaxLength)
         {
-            yield return string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxLength, MaxLength);
+            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxLength, MaxLength);
+            return false;
         }
 
-        if (value != null && Pattern != null)
+        if (!string.IsNullOrWhiteSpace(input) && AllowedValues?.Contains(input) == false)
+        {
+            error = Texts.IntegrationPropertyAllowedValue;
+            return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(input) && Pattern != null)
         {
             bool isValid;
             try
             {
-                isValid = Regex.IsMatch(value, Pattern);
+                isValid = Regex.IsMatch(input, Pattern);
             }
             catch (ArgumentException)
             {
@@ -104,34 +165,115 @@ public sealed record IntegrationProperty(string Name, PropertyType Type) : Prope
 
             if (!isValid)
             {
-                yield return Texts.IntegrationPropertyPattern;
+                error = Texts.IntegrationPropertyPattern;
+                return false;
             }
         }
+
+        return true;
     }
 
-    public string? GetString(IntegrationConfiguration configured)
+    private bool TryGetNumber(string? input, out string error, out long result)
     {
-        return GetString(configured.Properties);
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            input = DefaultValue;
+        }
+
+        result = 0;
+
+        error = null!;
+
+        if (string.IsNullOrWhiteSpace(input) && IsRequired)
+        {
+            error = Texts.IntegrationPropertyRequired;
+            return false;
+        }
+
+        if (!TryParseLong(input, out result))
+        {
+            error = Texts.IntegrationPropertyInvalidNumber;
+            return false;
+        }
+
+        if (result < MinValue)
+        {
+            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMinValue, MinValue);
+            return false;
+        }
+
+        if (result > MaxValue)
+        {
+            error = string.Format(CultureInfo.InvariantCulture, Texts.IntegrationPropertyMaxValue, MaxValue);
+            return false;
+        }
+
+        return true;
     }
 
-    public long GetNumber(IntegrationConfiguration configured)
+    private bool TryGetBoolean(string? input, [MaybeNullWhen(true)] out string error, out bool result)
     {
-        return GetNumber(configured.Properties);
-    }
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            input = DefaultValue;
+        }
 
-    public bool GetBoolean(IntegrationConfiguration configured)
-    {
-        return GetBoolean(configured.Properties);
+        result = false;
+
+        error = null!;
+
+        if (string.IsNullOrWhiteSpace(input) && IsRequired)
+        {
+            error = Texts.IntegrationPropertyRequired;
+            return false;
+        }
+
+        if (!TryParseBoolean(input, out result))
+        {
+            error = Texts.IntegrationPropertyInvalidBoolean;
+            return false;
+        }
+
+        return true;
     }
 
     private static bool TryParseLong(string? value, out long result)
     {
+        result = 0;
+
         if (string.IsNullOrWhiteSpace(value))
         {
-            result = 0;
             return true;
         }
 
-        return long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
+        if (long.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryParseBoolean(string? value, out bool result)
+    {
+        result = false;
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+
+        if (bool.TryParse(value, out result))
+        {
+            return true;
+        }
+
+        if (int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedNumber))
+        {
+            result = parsedNumber == 1;
+            return true;
+        }
+
+        return false;
     }
 }

@@ -24,4 +24,3 @@ export * from './StatisticsLabel';
 export * from './TableFooter';
 export * from './TemplateInput';
 export * from './TemplateVariantsInput';
-export * from './WebhookInput';

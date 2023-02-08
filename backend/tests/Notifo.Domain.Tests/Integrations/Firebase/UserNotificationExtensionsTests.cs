@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using System.Globalization;
-using FirebaseAdmin.Messaging;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
@@ -23,6 +22,7 @@ public class UserNotificationExtensionsTests
         var source = new MobilePushMessage
         {
             Body = "My Body",
+            Subject = "My Subject",
             ConfirmText = "My Confirm",
             ConfirmUrl = "https://confirm.notifo.com",
             DeviceToken = token,
@@ -31,11 +31,10 @@ public class UserNotificationExtensionsTests
             ImageLarge = "https://via.placeholder.com/600",
             ImageSmall = "https://via.placeholder.com/100",
             IsConfirmed = true,
+            Silent = false,
             LinkText = "My Link",
             LinkUrl = "https://app.notifo.io",
             NotificationId = id,
-            Silent = false,
-            Subject = "My Subject",
             TrackDeliveredUrl = "https://track-delivered.notifo.com",
             TrackSeenUrl = "https://track-seen.notifo.com",
         };
@@ -54,6 +53,7 @@ public class UserNotificationExtensionsTests
         var source = new MobilePushMessage
         {
             Body = emptyText,
+            Subject = "My Subject",
             ConfirmText = emptyText,
             ConfirmUrl = "https://confirm.notifo.com",
             DeviceToken = token,
@@ -61,7 +61,6 @@ public class UserNotificationExtensionsTests
             ImageLarge = emptyText,
             ImageSmall = emptyText,
             NotificationId = id,
-            Subject = "My Subject",
             TrackDeliveredUrl = emptyText,
             TrackSeenUrl = emptyText
         };

@@ -12,9 +12,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class ThreemaServiceExtensions
 {
-    public static void IntegrateThreema(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationThreema(this IServiceCollection services)
     {
         services.AddSingletonAs<ThreemaSimpleIntegration>()
             .As<IIntegration>();
+
+        return services;
     }
 }

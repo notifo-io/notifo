@@ -18,7 +18,7 @@ public static class MessagingServiceExtensions
     public static void AddMyMessagingChannel(this IServiceCollection services)
     {
         services.AddSingletonAs<MessagingChannel>()
-            .As<ICommunicationChannel>().As<IScheduleHandler<MessagingJob>>().As<IMessagingCallback>();
+            .As<ICommunicationChannel>().As<IScheduleHandler<MessagingJob>>().As<ICallback<IMessagingSender>>();
 
         services.AddSingletonAs<MessagingFormatter>()
             .As<IMessagingFormatter>().As<IChannelTemplateFactory<MessagingTemplate>>();

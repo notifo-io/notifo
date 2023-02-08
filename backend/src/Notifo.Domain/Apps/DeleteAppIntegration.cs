@@ -38,7 +38,7 @@ public sealed class DeleteAppIntegration : AppCommand
 
         var integrationManager = serviceProvider.GetRequiredService<IIntegrationManager>();
 
-        await integrationManager.HandleRemovedAsync(IntegrationId, target, removed, ct);
+        await integrationManager.OnRemoveAsync(IntegrationId, target, removed, ct);
 
         var newApp = target with
         {

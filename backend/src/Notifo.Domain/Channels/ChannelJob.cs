@@ -14,24 +14,32 @@ public abstract class ChannelJob
 {
     public Guid ConfigurationId { get; init; }
 
-    public Duration Delay { get; init; }
+    public Duration SendDelay { get; init; }
 
-    public ChannelCondition Condition { get; init; }
+    public ChannelCondition SendCondition { get; init; }
 
     public bool IsUpdate { get; init; }
 
-    public TrackingKey Tracking { get; init; }
+    public bool IsConfirmed { get; init; }
+
+    public BaseUserNotification Notification { get; init; }
 
     protected ChannelJob()
     {
     }
 
-    protected ChannelJob(BaseUserNotification notification, ChannelSetting? setting, Guid configurationId, bool isUpdate, string channel)
+    protected ChannelJob(UserNotification notification, ChannelContext context)
     {
-        Delay = Duration.FromSeconds(setting?.DelayInSeconds ?? 0);
-        Condition = setting?.Condition ?? ChannelCondition.Always;
-        ConfigurationId = configurationId;
-        IsUpdate = isUpdate;
-        Tracking = TrackingKey.ForNotification(notification, channel, configurationId);
+        ConfigurationId = context.ConfigurationId;
+        SendCondition = context.Setting.Condition;
+        SendDelay = Duration.FromSeconds(context.Setting.DelayInSeconds ?? 0);
+        IsConfirmed = notification.FirstConfirmed != null;
+        IsUpdate = context.IsUpdate;
+        Notification = notification;
+    }
+
+    public TrackingKey AsTrackingKey(string channel)
+    {
+        return TrackingKey.ForNotification(Notification, channel, ConfigurationId);
     }
 }

@@ -12,9 +12,11 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class TelekomServiceExtensions
 {
-    public static void IntegrateTelekom(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationTelekom(this IServiceCollection services)
     {
-        services.AddSingletonAs<TelekomIntegration>()
+        services.AddSingletonAs<TelekomSmsIntegration>()
             .As<IIntegration>();
+
+        return services;
     }
 }

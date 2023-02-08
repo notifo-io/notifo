@@ -21,7 +21,7 @@ internal class IntegrationAdapter : IIntegrationAdapter
         this.mediator = mediator;
     }
 
-    public async Task<UserContext?> FindUserAsync(string appId, string id,
+    public async Task<UserInfo?> FindUserAsync(string appId, string id,
         CancellationToken ct)
     {
         var user = await userStore.GetAsync(appId, id, ct);
@@ -29,7 +29,7 @@ internal class IntegrationAdapter : IIntegrationAdapter
         return user?.ToContext();
     }
 
-    public async Task<UserContext?> FindUserByPropertyAsync(string appId, string key, string value,
+    public async Task<UserInfo?> FindUserByPropertyAsync(string appId, string key, string value,
         CancellationToken ct)
     {
         var user = await userStore.GetByPropertyAsync(appId, key, value, ct);
@@ -44,8 +44,8 @@ internal class IntegrationAdapter : IIntegrationAdapter
         {
             PropertyKey = key,
             PropertyValue = value
-        }.WithTracking(appId, id);
+        };
 
-        await mediator.SendAsync(command, ct);
+        await mediator.SendAsync(command.With(appId, id), ct);
     }
 }

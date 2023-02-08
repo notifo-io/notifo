@@ -6,38 +6,32 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Notifo.Domain.Integrations.Telekom;
 
 [Trait("Category", "Dependencies")]
-public sealed class TelekomTests
+public sealed class TelekomTests : SmsSenderTestBase
 {
-    private readonly string apiKey = TestHelpers.Configuration.GetValue<string>("telekom:apiKey")!;
-    private readonly string phoneNumberFrom = TestHelpers.Configuration.GetValue<string>("telekom:phoneNumberFrom")!;
-    private readonly string phoneNumberTo = TestHelpers.Configuration.GetValue<string>("telekom:phoneNumberTo")!;
-    private readonly ISmsSender sut;
-
-    public TelekomTests()
+    protected override ResolvedIntegration<ISmsSender> CreateSender()
     {
-        var clientFactory = A.Fake<IHttpClientFactory>();
+        var apiKey = TestHelpers.Configuration.GetValue<string>("sms:telekom:apiKey")!;
+        var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:telekom:phoneNumber")!;
 
-        A.CallTo(() => clientFactory.CreateClient(A<string>._))
-            .ReturnsLazily(() => new HttpClient());
+        var context = BuildContext(new Dictionary<string, string>
+        {
+            [TelekomSmsIntegration.ApiKeyProperty.Name] = apiKey,
+            [TelekomSmsIntegration.PhoneNumberProperty.Name] = phoneNumber,
+        });
 
-        sut = new TelekomSmsSender(
-            A.Fake<ISmsCallback>(),
-            clientFactory,
-            apiKey,
-            phoneNumberFrom);
-    }
+        var integration =
+            new ServiceCollection()
+                .AddIntegrationTelekom()
+                .AddMemoryCache()
+                .AddHttpClient()
+                .BuildServiceProvider()
+                .GetRequiredService<TelekomSmsIntegration>();
 
-    [Fact]
-    public async Task Should_send_sms()
-    {
-        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Telekom", null);
-
-        var response = await sut.SendAsync(message, default);
-
-        Assert.Equal(SmsResult.Sent, response);
+        return new ResolvedIntegration<ISmsSender>(Guid.NewGuid().ToString(), context, integration);
     }
 }

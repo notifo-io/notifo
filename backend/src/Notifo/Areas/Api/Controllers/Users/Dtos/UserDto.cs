@@ -118,7 +118,7 @@ public sealed class UserDto
     /// </summary>
     public List<UserPropertyDto>? UserProperties { get; set; }
 
-    public static UserDto FromDomainObject(User source, List<UserProperty>? userProperties, IReadOnlyDictionary<string, Instant>? lastNotifications)
+    public static UserDto FromDomainObject(User source, List<IntegrationProperty>? userProperties, IReadOnlyDictionary<string, Instant>? lastNotifications)
     {
         var result = SimpleMapper.Map(source, new UserDto());
 

@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Counters;
 using Notifo.Domain.Events;
+using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.Subscriptions;
 using Notifo.Domain.Templates;
@@ -181,7 +182,7 @@ public sealed class UserEventPublisher : IUserEventPublisher
 
             if (count > 0)
             {
-                var counterMap = CounterMap.ForNotification(ProcessStatus.Attempt, count);
+                var counterMap = CounterMap.ForNotification(DeliveryStatus.Attempt, count);
                 var counterKey = TrackingKey.ForEvent(@event);
 
                 await counters.CollectAsync(counterKey, counterMap, ct);

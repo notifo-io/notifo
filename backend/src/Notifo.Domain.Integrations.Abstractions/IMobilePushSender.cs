@@ -7,8 +7,8 @@
 
 namespace Notifo.Domain.Integrations;
 
-public interface IMobilePushSender : IIntegrationService
+public interface IMobilePushSender : IIntegration
 {
-    Task SendAsync(MobilePushMessage message,
+    Task<DeliveryResult> SendAsync(IntegrationContext context, MobilePushMessage message,
         CancellationToken ct);
 }

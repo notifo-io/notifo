@@ -13,6 +13,7 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using NodaTime;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
 
@@ -137,7 +138,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
                     Filter.Eq(x => x.Id, id),
                     Filter.Or(
                         Filter.Exists(x => x.FirstConfirmed),
-                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", ProcessStatus.Handled)));
+                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", DeliveryStatus.Handled)));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -157,7 +158,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
                     Filter.Eq(x => x.Id, id),
                     Filter.Or(
                         Filter.Exists(x => x.FirstSeen),
-                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", ProcessStatus.Handled)));
+                        Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", DeliveryStatus.Handled)));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -175,7 +176,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
             var filter =
                 Filter.And(
                     Filter.Eq(x => x.Id, id),
-                    Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", ProcessStatus.Handled));
+                    Filter.Eq($"Channels.{channel}.Status.{configurationId}.Status", DeliveryStatus.Handled));
 
             var count =
                 await Collection.Find(filter).Limit(1)
@@ -272,7 +273,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
         }
     }
 
-    public async Task BatchWriteAsync((TrackingToken Token, ProcessStatus Status, string? Detail)[] updates, Instant now,
+    public async Task BatchWriteAsync((TrackingToken Token, DeliveryResult Result)[] updates, Instant now,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbUserNotificationRepository/BatchWriteAsync"))

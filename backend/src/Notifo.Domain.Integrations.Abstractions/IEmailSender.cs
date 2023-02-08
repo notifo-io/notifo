@@ -7,8 +7,8 @@
 
 namespace Notifo.Domain.Integrations;
 
-public interface IEmailSender : IIntegrationService
+public interface IEmailSender : IIntegration
 {
-    Task SendAsync(EmailMessage request,
-        CancellationToken ct = default);
+    Task<DeliveryResult> SendAsync(IntegrationContext context, EmailMessage message,
+        CancellationToken ct);
 }

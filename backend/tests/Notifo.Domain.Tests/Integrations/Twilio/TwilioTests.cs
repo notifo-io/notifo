@@ -6,37 +6,34 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
-using Twilio.Clients;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Notifo.Domain.Integrations.Twilio;
 
 [Trait("Category", "Dependencies")]
-public sealed class TwilioTests
+public sealed class TwilioTests : SmsSenderTestBase
 {
-    private readonly string phoneNumberTo = TestHelpers.Configuration.GetValue<string>("twilio:phoneNumberTo")!;
-    private readonly ISmsSender sut;
-
-    public TwilioTests()
+    protected override ResolvedIntegration<ISmsSender> CreateSender()
     {
-        var apiUsername = TestHelpers.Configuration.GetValue<string>("twilio:apiUsername")!;
-        var apiPassword = TestHelpers.Configuration.GetValue<string>("twilio:apiPassword")!;
-        var phoneNumberFrom = TestHelpers.Configuration.GetValue<string>("twilio:phoneNumberFrom")!;
+        var authToken = TestHelpers.Configuration.GetValue<string>("sms:twilio:authToken")!;
+        var accountSid = TestHelpers.Configuration.GetValue<string>("sms:twilio:accountSid")!;
+        var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:twilio:phoneNumber")!;
 
-        var client = new TwilioRestClient(apiUsername, apiPassword);
+        var context = BuildContext(new Dictionary<string, string>
+        {
+            [TwilioSmsIntegration.AuthTokenProperty.Name] = authToken,
+            [TwilioSmsIntegration.AccountSidProperty.Name] = accountSid,
+            [TwilioSmsIntegration.PhoneNumberProperty.Name] = phoneNumber,
+        });
 
-        sut = new TwilioSmsSender(
-            A.Fake<ISmsCallback>(),
-            client,
-            phoneNumberFrom);
-    }
+        var integration =
+            new ServiceCollection()
+                .AddIntegrationTwilio()
+                .AddMemoryCache()
+                .AddHttpClient()
+                .BuildServiceProvider()
+                .GetRequiredService<TwilioSmsIntegration>();
 
-    [Fact]
-    public async Task Should_send_sms()
-    {
-        var message = new SmsMessage(Guid.NewGuid(), phoneNumberTo, "Hello Twilio", null);
-
-        var response = await sut.SendAsync(message, default);
-
-        Assert.Equal(SmsResult.Sent, response);
+        return new ResolvedIntegration<ISmsSender>(Guid.NewGuid().ToString(), context, integration);
     }
 }

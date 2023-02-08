@@ -210,6 +210,9 @@
   <data name="MessageBirdIntegrated_Name" xml:space="preserve">
     <value>MessageBird (Integrated)</value>
   </data>
+  <data name="MessageBirdWhatsApp_Name" xml:space="preserve">
+    <value>Messagebird WhatsApp</value>
+  </data>
   <data name="MessageBird_AccessKeyLabel" xml:space="preserve">
     <value>Access Key</value>
   </data>
@@ -223,7 +226,7 @@
     <value>Failed to send sms to '{0}'.</value>
   </data>
   <data name="MessageBird_Name" xml:space="preserve">
-    <value>Messagebird</value>
+    <value>Messagebird SMS</value>
   </data>
   <data name="MessageBird_OriginatorNameDescription" xml:space="preserve">
     <value>Company Name as alternative to Phone Number</value>
@@ -376,5 +379,44 @@ When you have done this send me an /update command.</value>
   </data>
   <data name="Twilio_PhoneNumberLabel" xml:space="preserve">
     <value>Phone Number</value>
+  </data>
+  <data name="Webhook_Description" xml:space="preserve">
+    <value>Make a HTTP request to your server when a notification is confirmed by a User.</value>
+  </data>
+  <data name="Webhook_MethodHints" xml:space="preserve">
+    <value>The HTTP method</value>
+  </data>
+  <data name="Webhook_MethodLabel" xml:space="preserve">
+    <value>Method</value>
+  </data>
+  <data name="Webhook_NameHints" xml:space="preserve">
+    <value>The optional name when defining a template.</value>
+  </data>
+  <data name="Webhook_NameLabel" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Webhook_SendAlwaysHints" xml:space="preserve">
+    <value>Use this webhook for all notifications.</value>
+  </data>
+  <data name="Webhook_SendAlwaysLabel" xml:space="preserve">
+    <value>Send always</value>
+  </data>
+  <data name="Webhook_SendConfirmHints" xml:space="preserve">
+    <value>Send confirmed notifications to this webhook.</value>
+  </data>
+  <data name="Webhook_SendConfirmLabel" xml:space="preserve">
+    <value>Send Confirm</value>
+  </data>
+  <data name="Webhook_SendNotificationsHints" xml:space="preserve">
+    <value>Send all notification to this webhook.</value>
+  </data>
+  <data name="Webhook_SendNotificationsLabel" xml:space="preserve">
+    <value>Send Always</value>
+  </data>
+  <data name="Webhook_URLHints" xml:space="preserve">
+    <value>The URL to your server endpoint.</value>
+  </data>
+  <data name="Webhook_URLLabel" xml:space="preserve">
+    <value>URL</value>
   </data>
 </root>

@@ -20,10 +20,10 @@ public sealed class IntegrationDefinitionDto
     public string Title { get; set; }
 
     /// <summary>
-    /// The logo URL for the integration.
+    /// The logo for the integration.
     /// </summary>
     [Required]
-    public string LogoUrl { get; set; }
+    public string Logo { get; set; }
 
     /// <summary>
     /// The optional description of the integration.

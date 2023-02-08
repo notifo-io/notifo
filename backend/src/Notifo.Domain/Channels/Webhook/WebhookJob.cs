@@ -5,35 +5,31 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Channels.Webhook.Integrations;
-using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
 
 namespace Notifo.Domain.Channels.Webhook;
 
 public sealed class WebhookJob : ChannelJob
 {
-    public UserNotification Notification { get; init; }
-
-    public WebhookDefinition Webhook { get; init; }
-
-    public bool IsConfirmed { get; init; }
+    public string IntegrationId { get; set; }
 
     public string ScheduleKey
     {
-        get => Notification.Id.ToString();
+        get => ComputeScheduleKey(Notification.Id);
     }
 
     public WebhookJob()
     {
     }
 
-    public WebhookJob(UserNotification notification, ChannelSetting setting, Guid configurationId, WebhookDefinition webhook, bool isUpdate)
-        : base(notification, setting, configurationId, isUpdate, Providers.Webhook)
+    public WebhookJob(UserNotification notification, ChannelContext context, string integrationId)
+        : base(notification, context)
     {
-        Notification = notification;
-        IsConfirmed = notification.FirstConfirmed != null;
-        IsUpdate = isUpdate;
-        Webhook = webhook;
+        IntegrationId = integrationId;
+    }
+
+    public static string ComputeScheduleKey(Guid notificationId)
+    {
+        return notificationId.ToString();
     }
 }

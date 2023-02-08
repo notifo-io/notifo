@@ -11,23 +11,19 @@ public interface IIntegration
 {
     IntegrationDefinition Definition { get; }
 
-    object? Create(Type serviceType, string id, IntegrationConfiguration configured, IServiceProvider serviceProvider);
-
-    bool CanCreate(Type serviceType, string id, IntegrationConfiguration configured);
-
-    Task<IntegrationStatus> OnConfiguredAsync(AppContext app, string id, IntegrationConfiguration configured, IntegrationConfiguration? previous,
+    Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
         return Task.FromResult(IntegrationStatus.Verified);
     }
 
-    Task OnRemovedAsync(AppContext app, string id, IntegrationConfiguration configured,
+    Task OnRemovedAsync(IntegrationContext context,
         CancellationToken ct)
     {
         return Task.CompletedTask;
     }
 
-    Task<IntegrationStatus> CheckStatusAsync(AppContext app, string id, IntegrationConfiguration configured,
+    Task<IntegrationStatus> CheckStatusAsync(IntegrationContext context,
         CancellationToken ct)
     {
         return Task.FromResult(IntegrationStatus.Verified);

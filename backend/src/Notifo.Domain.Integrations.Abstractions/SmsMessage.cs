@@ -5,8 +5,11 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-#pragma warning disable SA1313 // Parameter names should begin with lower-case letter
-
 namespace Notifo.Domain.Integrations;
 
-public record struct SmsMessage(Guid NotificationId, string To, string Text, string? CallbackUrl = null);
+public sealed class SmsMessage : BaseMessage
+{
+    public string To { get; set; }
+
+    public string Text { get; set; }
+}

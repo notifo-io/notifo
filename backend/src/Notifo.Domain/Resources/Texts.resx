@@ -129,14 +129,14 @@
   <data name="App_CannotUpdateYourself" xml:space="preserve">
     <value>You cannot update yourself.</value>
   </data>
-  <data name="EmailUnknownErrror" xml:space="preserve">
-    <value>Email template generates unknown error.</value>
-  </data>
   <data name="Email_TemplateInvalid" xml:space="preserve">
     <value>Email template does not render notification subject, loop over notification and use '{{ notification.subject }}'.</value>
   </data>
   <data name="Email_TemplateUndefined" xml:space="preserve">
     <value>Either template for text or html body must be defined.</value>
+  </data>
+  <data name="Email_UnknownErrror" xml:space="preserve">
+    <value>Email template generates unknown error.</value>
   </data>
   <data name="IntegrationNotFound" xml:space="preserve">
     <value>Integration of type {0} does not exist.</value>
@@ -206,44 +206,5 @@
   </data>
   <data name="ValidationUrl" xml:space="preserve">
     <value>{PropertyName} must be a valid URL.</value>
-  </data>
-  <data name="Webhook_Description" xml:space="preserve">
-    <value>Make a HTTP request to your server when a notification is confirmed by a User.</value>
-  </data>
-  <data name="Webhook_MethodHints" xml:space="preserve">
-    <value>The HTTP method</value>
-  </data>
-  <data name="Webhook_MethodLabel" xml:space="preserve">
-    <value>Method</value>
-  </data>
-  <data name="Webhook_NameHints" xml:space="preserve">
-    <value>The optional name when defining a template.</value>
-  </data>
-  <data name="Webhook_NameLabel" xml:space="preserve">
-    <value>Name</value>
-  </data>
-  <data name="Webhook_SendAlwaysHints" xml:space="preserve">
-    <value>Use this webhook for all notifications.</value>
-  </data>
-  <data name="Webhook_SendAlwaysLabel" xml:space="preserve">
-    <value>Send always</value>
-  </data>
-  <data name="Webhook_SendConfirmHints" xml:space="preserve">
-    <value>Send confirmed notifications to this webhook.</value>
-  </data>
-  <data name="Webhook_SendConfirmLabel" xml:space="preserve">
-    <value>Send Confirm</value>
-  </data>
-  <data name="Webhook_SendNotificationsHints" xml:space="preserve">
-    <value>Send all notification to this webhook.</value>
-  </data>
-  <data name="Webhook_SendNotificationsLabel" xml:space="preserve">
-    <value>Send Always</value>
-  </data>
-  <data name="Webhook_URLHints" xml:space="preserve">
-    <value>The URL to your server endpoint.</value>
-  </data>
-  <data name="Webhook_URLLabel" xml:space="preserve">
-    <value>URL</value>
   </data>
 </root>

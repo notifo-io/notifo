@@ -12,12 +12,14 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SmtpServiceExtensions
 {
-    public static void IntegrateSmtp(this IServiceCollection services)
+    public static IServiceCollection AddIntegrationSmtp(this IServiceCollection services)
     {
         services.AddSingletonAs<SmtpIntegration>()
             .As<IIntegration>();
 
         services.AddSingletonAs<SmtpEmailServerPool>()
             .AsSelf();
+
+        return services;
     }
 }

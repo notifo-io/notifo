@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class MessageBirdServiceExtensions
 {
-    public static void IntegrateMessageBird(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddIntegrationMessageBird(this IServiceCollection services, IConfiguration config)
     {
         const string key = "sms:messageBird";
 
@@ -31,10 +31,15 @@ public static class MessageBirdServiceExtensions
                 .As<IIntegration>();
         }
 
-        services.AddSingletonAs<MessageBirdIntegration>()
+        services.AddSingletonAs<MessageBirdSmsIntegration>()
+            .As<IIntegration>();
+
+        services.AddSingletonAs<MessageBirdWhatsAppIntegration>()
             .As<IIntegration>();
 
         services.AddSingletonAs<MessageBirdClientPool>()
             .AsSelf();
+
+        return services;
     }
 }

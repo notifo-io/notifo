@@ -11,5 +11,6 @@ namespace Notifo.Domain.Integrations;
 
 public interface IIntegrationHook
 {
-    Task HandleRequestAsync(AppContext app, HttpContext httpContext);
+    Task HandleRequestAsync(IntegrationContext context, HttpContext httpContext,
+        CancellationToken ct);
 }

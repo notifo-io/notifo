@@ -7,6 +7,7 @@
 
 using MongoDB.Driver;
 using NodaTime;
+using Notifo.Domain.Integrations;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
@@ -69,9 +70,9 @@ public sealed class TrackingBatch
         await collection.BulkWriteAsync(writes, null, ct);
     }
 
-    public void UpdateStatus((TrackingToken Token, ProcessStatus Status, string? Detail)[] updates, Instant now)
+    public void UpdateStatus((TrackingToken Token, DeliveryResult Result)[] updates, Instant now)
     {
-        foreach (var (token, status, detail) in updates)
+        foreach (var (token, result) in updates)
         {
             var (id, channel, _, _) = token;
 
@@ -91,11 +92,11 @@ public sealed class TrackingBatch
             {
                 if (TryGetConfiguration(channelInfo, token, out var configuration, out var configurationId))
                 {
-                    configuration.Status = status;
-                    configuration.Detail = detail;
+                    configuration.Status = result.Status;
+                    configuration.Detail = result.Detail;
 
-                    changes.Set($"Channels.{channel}.Status.{configurationId}.Status", status);
-                    changes.Set($"Channels.{channel}.Status.{configurationId}.Detail", detail);
+                    changes.Set($"Channels.{channel}.Status.{configurationId}.Status", result.Status);
+                    changes.Set($"Channels.{channel}.Status.{configurationId}.Detail", result.Detail);
                     changes.Max($"Channels.{channel}.Status.{configurationId}.LastUpdate", now);
                 }
             }

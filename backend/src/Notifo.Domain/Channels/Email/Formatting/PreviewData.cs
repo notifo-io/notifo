@@ -35,6 +35,18 @@ public static class PreviewData
             FullName = "John Does",
         };
 
+        var context = new ChannelContext
+        {
+            App = App,
+            AppId = App.Id,
+            Configuration = new SendConfiguration(),
+            ConfigurationId = default,
+            IsUpdate = false,
+            Setting = new ChannelSetting(),
+            User = User,
+            UserId = User.Id,
+        };
+
         Jobs = new[]
         {
             new UserNotification
@@ -89,6 +101,6 @@ public static class PreviewData
                     LinkUrl = "/url/to/link"
                 }
             }
-        }.Select(x => new EmailJob(x, new ChannelSetting(), Guid.NewGuid(), User.EmailAddress)).ToList();
+        }.Select(x => new EmailJob(x, context, User.EmailAddress)).ToList();
     }
 }
