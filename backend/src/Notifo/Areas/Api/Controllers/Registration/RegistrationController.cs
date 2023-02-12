@@ -33,7 +33,7 @@ public sealed class RegistrationController : BaseController
     public async Task<IActionResult> Register([FromBody] RegisterUserDto request)
     {
         string? userId = null;
-        string? userToken = null;
+        string? userKey = null;
 
         if (request.CreateUser)
         {
@@ -70,7 +70,7 @@ public sealed class RegistrationController : BaseController
                 }
             }
 
-            userToken = user!.ApiKey;
+            userKey = user!.ApiKey;
             userId = user!.Id;
         }
 
@@ -78,7 +78,7 @@ public sealed class RegistrationController : BaseController
         {
             PublicKey = webPushService.PublicKey,
             UserId = userId,
-            UserToken = userToken
+            UserToken = userKey
         };
 
         return Ok(response);

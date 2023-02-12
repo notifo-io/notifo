@@ -101,6 +101,7 @@ export const EN = {
         fromEmail: 'From Email Address',
         fromName: 'From Name',
         handled: 'Handled',
+        history: 'History',
         html: 'HTML',
         id: 'Id',
         imageLarge: 'Large Image',

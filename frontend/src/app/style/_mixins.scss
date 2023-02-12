@@ -65,14 +65,6 @@
     }
 }
 
-@mixin clearfix {
-    &::after {
-        clear: both;
-        content: '';
-        display: table;
-    }
-}
-
 @mixin hidden {
     opacity: 0;
     overflow-x: hidden;

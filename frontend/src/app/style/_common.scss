@@ -493,6 +493,34 @@ $small-gutters: 4px;
     }
 }
 
+.timeline {
+    position: relative;
+
+    &-v {
+        @include absolute(.375rem, null, 3rem);
+        border-left: 2px dashed darken($color-border, 10%);
+    }
+
+    &-item {
+        position: relative;
+        padding-left: 1.5em;
+        padding-bottom: 1rem;
+
+        &::before {
+            @include absolute(.375rem, null, null, -3px);
+            @include circle(8px);
+            content: '';
+            border: 2px solid darken($color-border, 10%);
+            background-position: 0%;
+            background-color: $color-white;
+        }
+    }
+
+    &-date {
+        font-size: $font-size-sm;
+    }
+}
+
 .empty-button {
     padding-top: 10rem;
     text-align: center;
