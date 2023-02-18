@@ -12,14 +12,14 @@
   <ItemGroup>
     <PackageReference Include="EphemeralMongo6" Version="0.1.3" />
     <PackageReference Include="FakeItEasy" Version="7.3.1" />
-    <PackageReference Include="FluentAssertions" Version="6.8.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.746">
+    <PackageReference Include="FluentAssertions" Version="6.10.0" />
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.15">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
     <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
-    <PackageReference Include="Verify.Xunit" Version="19.1.0" />
+    <PackageReference Include="Verify.Xunit" Version="19.9.3" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>

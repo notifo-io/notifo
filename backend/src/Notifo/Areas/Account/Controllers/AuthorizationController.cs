@@ -191,9 +191,7 @@ public class AuthorizationController : ControllerBase<AuthorizationController>
 
         if (request.ClientId != null)
         {
-            identity.AddClaim(Claims.Subject, request.ClientId,
-                Destinations.AccessToken,
-                Destinations.IdentityToken);
+            identity.AddClaim(Claims.Subject, request.ClientId);
         }
 
         var properties = await applicationManager.GetPropertiesAsync(application, HttpContext.RequestAborted);
@@ -227,6 +225,11 @@ public class AuthorizationController : ControllerBase<AuthorizationController>
     {
         switch (claim.Type)
         {
+            case Claims.Subject:
+                yield return Destinations.AccessToken;
+                yield return Destinations.IdentityToken;
+                yield break;
+
             case Claims.Name:
                 yield return Destinations.AccessToken;
 
@@ -257,6 +260,7 @@ public class AuthorizationController : ControllerBase<AuthorizationController>
 
                 yield break;
 
+            // Never include the security stamp in the access and identity tokens, as it's a secret value.
             case "AspNet.Identity.SecurityStamp":
                 yield break;
 
