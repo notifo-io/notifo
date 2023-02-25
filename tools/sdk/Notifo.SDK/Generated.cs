@@ -14931,7 +14931,7 @@ namespace Notifo.SDK
     public partial class MjmlSchema
     {
         [Newtonsoft.Json.JsonProperty("!top", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<string> !top { get; set; }
+        public System.Collections.Generic.List<string> Top { get; set; }
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 

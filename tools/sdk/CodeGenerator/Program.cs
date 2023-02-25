@@ -52,7 +52,11 @@ public static class Program
 
         var code = codeGenerator.GenerateFile();
 
+        // Do not expose internal API.
         code = code.Replace("https://localhost:5002", "https://app.notifo.io", StringComparison.OrdinalIgnoreCase);
+
+        // Code generator generates invalid property name.
+        code = code.Replace("!top { get; set; }", "Top { get; set; }", StringComparison.OrdinalIgnoreCase);
 
         File.WriteAllText(@"..\..\..\..\Notifo.SDK\Generated.cs", code);
     }
@@ -73,8 +77,10 @@ public static class Program
 
         var code = codeGenerator.GenerateFile();
 
-        code = code.Replace("file?: FileParameter", "file?: File", StringComparison.OrdinalIgnoreCase);
         code = code.Replace("file.data, file.fileName ? file.fileName : \"file\"", "file", StringComparison.OrdinalIgnoreCase);
+
+        // Just use file paramater everywhere.
+        code = code.Replace("file?: FileParameter", "file?: File", StringComparison.OrdinalIgnoreCase);
 
         File.WriteAllText(@"..\..\..\..\..\..\frontend\src\app\service\service.ts", code);
     }
