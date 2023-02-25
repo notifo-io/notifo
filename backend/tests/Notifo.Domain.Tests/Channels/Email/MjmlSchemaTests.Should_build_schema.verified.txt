@@ -1,0 +1,1571 @@
+﻿{
+  Top: [
+    mjml
+  ],
+  Elements: {
+    mj-accordion: {
+      Attributes: {
+        border: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        icon-align: [
+          top,
+          middle,
+          bottom
+        ],
+        icon-height: null,
+        icon-position: [
+          left,
+          right
+        ],
+        icon-unwrapped-alt: null,
+        icon-unwrapped-url: null,
+        icon-width: null,
+        icon-wrapped-alt: null,
+        icon-wrapped-url: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      },
+      Children: [
+        mj-accordion-element,
+        mj-raw
+      ]
+    },
+    mj-accordion-element: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        css-class: null,
+        font-family: null,
+        icon-align: [
+          top,
+          middle,
+          bottom
+        ],
+        icon-height: null,
+        icon-position: [
+          left,
+          right
+        ],
+        icon-unwrapped-alt: null,
+        icon-unwrapped-url: null,
+        icon-width: null,
+        icon-wrapped-alt: null,
+        icon-wrapped-url: null
+      },
+      Children: [
+        mj-accordion-text,
+        mj-accordion-title,
+        mj-raw
+      ]
+    },
+    mj-accordion-text: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-weight: null,
+        letter-spacing: null,
+        line-height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      }
+    },
+    mj-accordion-title: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        icon-align: null,
+        icon-height: null,
+        icon-position: null,
+        icon-unwrapped-alt: null,
+        icon-unwrapped-url: null,
+        icon-width: null,
+        icon-wrapped-alt: null,
+        icon-wrapped-url: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      }
+    },
+    mj-attributes: {},
+    mj-body: {
+      Attributes: {
+        background-color: null,
+        css-class: null,
+        width: null
+      },
+      Children: [
+        mj-hero,
+        mj-raw,
+        mj-section,
+        mj-wrapper
+      ]
+    },
+    mj-breakpoint: {
+      Attributes: {
+        width: null
+      }
+    },
+    mj-button: {
+      Attributes: {
+        align: null,
+        background-color: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        height: null,
+        href: null,
+        inner-padding: null,
+        inner-padding-bottom: null,
+        inner-padding-left: null,
+        inner-padding-right: null,
+        inner-padding-top: null,
+        letter-spacing: null,
+        line-height: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        target: null,
+        text-align: null,
+        text-decoration: null,
+        text-transform: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      }
+    },
+    mj-carousel: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border-radius: null,
+        container-background-color: null,
+        css-class: null,
+        icon-width: null,
+        left-icon: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        right-icon: null,
+        tb-border: null,
+        tb-border-radius: null,
+        tb-hover-border-color: null,
+        tb-selected-border-color: null,
+        tb-width: null,
+        thumbnails: null
+      },
+      Children: [
+        mj-carousel-image
+      ]
+    },
+    mj-carousel-image: {
+      Attributes: {
+        alt: null,
+        border-radius: null,
+        css-class: null,
+        href: null,
+        rel: null,
+        src: null,
+        target: null,
+        tb-border: null,
+        tb-border-radius: null,
+        tb-width: null,
+        thumbnails-src: null,
+        title: null
+      }
+    },
+    mj-column: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        css-class: null,
+        direction: [
+          ltr,
+          rtl
+        ],
+        inner-background-color: null,
+        inner-border: null,
+        inner-border-bottom: null,
+        inner-border-left: null,
+        inner-border-radius: null,
+        inner-border-right: null,
+        inner-border-top: null,
+        mobile-width: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      },
+      Children: [
+        mj-accordion,
+        mj-button,
+        mj-carousel,
+        mj-divider,
+        mj-image,
+        mj-msobutton,
+        mj-navbar,
+        mj-raw,
+        mj-social,
+        mj-spacer,
+        mj-table,
+        mj-text
+      ]
+    },
+    mj-divider: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border-color: null,
+        border-style: null,
+        border-width: null,
+        container-background-color: null,
+        css-class: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        width: null
+      }
+    },
+    mj-font: {
+      Attributes: {
+        href: null,
+        name: null
+      }
+    },
+    mj-group: {
+      Attributes: {
+        background-color: null,
+        css-class: null,
+        direction: [
+          ltr,
+          rtl
+        ],
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      },
+      Children: [
+        mj-column,
+        mj-raw
+      ]
+    },
+    mj-head: {
+      Children: [
+        mj-attributes,
+        mj-breakpoint,
+        mj-font,
+        mj-preview,
+        mj-raw,
+        mj-style,
+        mj-title
+      ]
+    },
+    mj-hero: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        background-color: null,
+        background-height: null,
+        background-position: null,
+        background-url: null,
+        background-width: null,
+        border-radius: null,
+        container-background-color: null,
+        css-class: null,
+        height: null,
+        inner-background-color: null,
+        inner-padding: null,
+        inner-padding-bottom: null,
+        inner-padding-left: null,
+        inner-padding-right: null,
+        inner-padding-top: null,
+        mode: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      },
+      Children: [
+        mj-accordion,
+        mj-button,
+        mj-carousel,
+        mj-divider,
+        mj-image,
+        mj-msobutton,
+        mj-navbar,
+        mj-raw,
+        mj-social,
+        mj-spacer,
+        mj-table,
+        mj-text
+      ]
+    },
+    mj-image: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        alt: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        container-background-color: null,
+        css-class: null,
+        fluid-on-mobile: null,
+        font-size: null,
+        full-width: [
+          true,
+          false
+        ],
+        height: null,
+        href: null,
+        max-height: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        sizes: null,
+        src: null,
+        srcset: null,
+        target: null,
+        title: null,
+        usemap: null,
+        width: null
+      }
+    },
+    mj-msobutton: {
+      Attributes: {
+        align: null,
+        background-color: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        height: null,
+        href: null,
+        inner-padding: null,
+        inner-padding-bottom: null,
+        inner-padding-left: null,
+        inner-padding-right: null,
+        inner-padding-top: null,
+        letter-spacing: null,
+        line-height: null,
+        mso-height: null,
+        mso-proof: [
+          true,
+          false
+        ],
+        mso-width: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        target: null,
+        text-align: null,
+        text-decoration: null,
+        text-transform: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      }
+    },
+    mj-navbar: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        base-url: null,
+        css-class: null,
+        hamburger: null,
+        ico-align: [
+          left,
+          center,
+          right
+        ],
+        ico-close: null,
+        ico-color: null,
+        ico-font-family: null,
+        ico-font-size: null,
+        ico-line-height: null,
+        ico-open: null,
+        ico-padding: null,
+        ico-padding-bottom: null,
+        ico-padding-left: null,
+        ico-padding-right: null,
+        ico-padding-top: null,
+        ico-text-decoration: null,
+        ico-text-transform: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      },
+      Children: [
+        mj-navbar-link,
+        mj-raw
+      ]
+    },
+    mj-navbar-link: {
+      Attributes: {
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        href: null,
+        letter-spacing: null,
+        line-height: null,
+        name: null,
+        navbar-base-url: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        target: null,
+        text-decoration: null,
+        text-transform: null
+      }
+    },
+    mj-preview: {},
+    mj-raw: {
+      Attributes: {
+        css-class: null
+      }
+    },
+    mj-section: {
+      Attributes: {
+        background-color: null,
+        background-position: null,
+        background-position-x: null,
+        background-position-y: null,
+        background-repeat: null,
+        background-size: null,
+        background-url: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        css-class: null,
+        direction: null,
+        full-width: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        text-align: [
+          left,
+          center,
+          right
+        ],
+        text-padding: null
+      },
+      Children: [
+        mj-column,
+        mj-group,
+        mj-raw
+      ]
+    },
+    mj-social: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border-radius: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        icon-height: null,
+        icon-padding: null,
+        icon-size: null,
+        inner-padding: null,
+        line-height: null,
+        mode: [
+          vertical,
+          horizontal
+        ],
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        table-layout: [
+          auto,
+          fixed
+        ],
+        text-decoration: null,
+        text-padding: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ]
+      },
+      Children: [
+        mj-raw,
+        mj-social-element
+      ]
+    },
+    mj-social-element: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        alt: null,
+        background-color: null,
+        border-radius: null,
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        href: null,
+        icon-height: null,
+        icon-padding: null,
+        icon-size: null,
+        line-height: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        sizes: null,
+        src: null,
+        srcset: null,
+        target: null,
+        text-decoration: null,
+        text-padding: null,
+        title: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ]
+      }
+    },
+    mj-spacer: {
+      Attributes: {
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-right: null,
+        border-top: null,
+        container-background-color: null,
+        css-class: null,
+        height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      }
+    },
+    mj-style: {
+      Attributes: {
+        inline: null
+      }
+    },
+    mj-table: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border: null,
+        cellpadding: null,
+        cellspacing: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-weight: null,
+        line-height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        role: null,
+        table-layout: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      }
+    },
+    mj-text: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right,
+          justify
+        ],
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        height: null,
+        letter-spacing: null,
+        line-height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        text-decoration: null,
+        text-transform: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ]
+      }
+    },
+    mj-title: {},
+    mj-wrapper: {
+      Attributes: {
+        background-color: null,
+        background-position: null,
+        background-position-x: null,
+        background-position-y: null,
+        background-repeat: null,
+        background-size: null,
+        background-url: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        css-class: null,
+        direction: null,
+        full-width: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        text-align: [
+          left,
+          center,
+          right
+        ],
+        text-padding: null
+      },
+      Children: [
+        mj-hero,
+        mj-raw,
+        mj-section
+      ]
+    },
+    mjml: {
+      Children: [
+        mj-body,
+        mj-head,
+        mj-raw
+      ]
+    }
+  },
+  ExtraData: {
+    mj-accordion: {
+      Attributes: {
+        border: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        icon-align: [
+          top,
+          middle,
+          bottom
+        ],
+        icon-height: null,
+        icon-position: [
+          left,
+          right
+        ],
+        icon-unwrapped-alt: null,
+        icon-unwrapped-url: null,
+        icon-width: null,
+        icon-wrapped-alt: null,
+        icon-wrapped-url: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      },
+      Children: [
+        mj-accordion-element,
+        mj-raw
+      ]
+    },
+    mj-accordion-element: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        css-class: null,
+        font-family: null,
+        icon-align: [
+          top,
+          middle,
+          bottom
+        ],
+        icon-height: null,
+        icon-position: [
+          left,
+          right
+        ],
+        icon-unwrapped-alt: null,
+        icon-unwrapped-url: null,
+        icon-width: null,
+        icon-wrapped-alt: null,
+        icon-wrapped-url: null
+      },
+      Children: [
+        mj-accordion-text,
+        mj-accordion-title,
+        mj-raw
+      ]
+    },
+    mj-accordion-text: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-weight: null,
+        letter-spacing: null,
+        line-height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      }
+    },
+    mj-accordion-title: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        icon-align: null,
+        icon-height: null,
+        icon-position: null,
+        icon-unwrapped-alt: null,
+        icon-unwrapped-url: null,
+        icon-width: null,
+        icon-wrapped-alt: null,
+        icon-wrapped-url: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      }
+    },
+    mj-attributes: {},
+    mj-body: {
+      Attributes: {
+        background-color: null,
+        css-class: null,
+        width: null
+      },
+      Children: [
+        mj-hero,
+        mj-raw,
+        mj-section,
+        mj-wrapper
+      ]
+    },
+    mj-breakpoint: {
+      Attributes: {
+        width: null
+      }
+    },
+    mj-button: {
+      Attributes: {
+        align: null,
+        background-color: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        height: null,
+        href: null,
+        inner-padding: null,
+        inner-padding-bottom: null,
+        inner-padding-left: null,
+        inner-padding-right: null,
+        inner-padding-top: null,
+        letter-spacing: null,
+        line-height: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        target: null,
+        text-align: null,
+        text-decoration: null,
+        text-transform: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      }
+    },
+    mj-carousel: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border-radius: null,
+        container-background-color: null,
+        css-class: null,
+        icon-width: null,
+        left-icon: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        right-icon: null,
+        tb-border: null,
+        tb-border-radius: null,
+        tb-hover-border-color: null,
+        tb-selected-border-color: null,
+        tb-width: null,
+        thumbnails: null
+      },
+      Children: [
+        mj-carousel-image
+      ]
+    },
+    mj-carousel-image: {
+      Attributes: {
+        alt: null,
+        border-radius: null,
+        css-class: null,
+        href: null,
+        rel: null,
+        src: null,
+        target: null,
+        tb-border: null,
+        tb-border-radius: null,
+        tb-width: null,
+        thumbnails-src: null,
+        title: null
+      }
+    },
+    mj-column: {
+      Attributes: {
+        background-color: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        css-class: null,
+        direction: [
+          ltr,
+          rtl
+        ],
+        inner-background-color: null,
+        inner-border: null,
+        inner-border-bottom: null,
+        inner-border-left: null,
+        inner-border-radius: null,
+        inner-border-right: null,
+        inner-border-top: null,
+        mobile-width: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      },
+      Children: [
+        mj-accordion,
+        mj-button,
+        mj-carousel,
+        mj-divider,
+        mj-image,
+        mj-msobutton,
+        mj-navbar,
+        mj-raw,
+        mj-social,
+        mj-spacer,
+        mj-table,
+        mj-text
+      ]
+    },
+    mj-divider: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border-color: null,
+        border-style: null,
+        border-width: null,
+        container-background-color: null,
+        css-class: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        width: null
+      }
+    },
+    mj-font: {
+      Attributes: {
+        href: null,
+        name: null
+      }
+    },
+    mj-group: {
+      Attributes: {
+        background-color: null,
+        css-class: null,
+        direction: [
+          ltr,
+          rtl
+        ],
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      },
+      Children: [
+        mj-column,
+        mj-raw
+      ]
+    },
+    mj-head: {
+      Children: [
+        mj-attributes,
+        mj-breakpoint,
+        mj-font,
+        mj-preview,
+        mj-raw,
+        mj-style,
+        mj-title
+      ]
+    },
+    mj-hero: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        background-color: null,
+        background-height: null,
+        background-position: null,
+        background-url: null,
+        background-width: null,
+        border-radius: null,
+        container-background-color: null,
+        css-class: null,
+        height: null,
+        inner-background-color: null,
+        inner-padding: null,
+        inner-padding-bottom: null,
+        inner-padding-left: null,
+        inner-padding-right: null,
+        inner-padding-top: null,
+        mode: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      },
+      Children: [
+        mj-accordion,
+        mj-button,
+        mj-carousel,
+        mj-divider,
+        mj-image,
+        mj-msobutton,
+        mj-navbar,
+        mj-raw,
+        mj-social,
+        mj-spacer,
+        mj-table,
+        mj-text
+      ]
+    },
+    mj-image: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        alt: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        container-background-color: null,
+        css-class: null,
+        fluid-on-mobile: null,
+        font-size: null,
+        full-width: [
+          true,
+          false
+        ],
+        height: null,
+        href: null,
+        max-height: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        sizes: null,
+        src: null,
+        srcset: null,
+        target: null,
+        title: null,
+        usemap: null,
+        width: null
+      }
+    },
+    mj-msobutton: {
+      Attributes: {
+        align: null,
+        background-color: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        height: null,
+        href: null,
+        inner-padding: null,
+        inner-padding-bottom: null,
+        inner-padding-left: null,
+        inner-padding-right: null,
+        inner-padding-top: null,
+        letter-spacing: null,
+        line-height: null,
+        mso-height: null,
+        mso-proof: [
+          true,
+          false
+        ],
+        mso-width: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        target: null,
+        text-align: null,
+        text-decoration: null,
+        text-transform: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      }
+    },
+    mj-navbar: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        base-url: null,
+        css-class: null,
+        hamburger: null,
+        ico-align: [
+          left,
+          center,
+          right
+        ],
+        ico-close: null,
+        ico-color: null,
+        ico-font-family: null,
+        ico-font-size: null,
+        ico-line-height: null,
+        ico-open: null,
+        ico-padding: null,
+        ico-padding-bottom: null,
+        ico-padding-left: null,
+        ico-padding-right: null,
+        ico-padding-top: null,
+        ico-text-decoration: null,
+        ico-text-transform: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      },
+      Children: [
+        mj-navbar-link,
+        mj-raw
+      ]
+    },
+    mj-navbar-link: {
+      Attributes: {
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        href: null,
+        letter-spacing: null,
+        line-height: null,
+        name: null,
+        navbar-base-url: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        target: null,
+        text-decoration: null,
+        text-transform: null
+      }
+    },
+    mj-preview: {},
+    mj-raw: {
+      Attributes: {
+        css-class: null
+      }
+    },
+    mj-section: {
+      Attributes: {
+        background-color: null,
+        background-position: null,
+        background-position-x: null,
+        background-position-y: null,
+        background-repeat: null,
+        background-size: null,
+        background-url: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        css-class: null,
+        direction: null,
+        full-width: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        text-align: [
+          left,
+          center,
+          right
+        ],
+        text-padding: null
+      },
+      Children: [
+        mj-column,
+        mj-group,
+        mj-raw
+      ]
+    },
+    mj-social: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border-radius: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        icon-height: null,
+        icon-padding: null,
+        icon-size: null,
+        inner-padding: null,
+        line-height: null,
+        mode: [
+          vertical,
+          horizontal
+        ],
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        table-layout: [
+          auto,
+          fixed
+        ],
+        text-decoration: null,
+        text-padding: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ]
+      },
+      Children: [
+        mj-raw,
+        mj-social-element
+      ]
+    },
+    mj-social-element: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        alt: null,
+        background-color: null,
+        border-radius: null,
+        color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        href: null,
+        icon-height: null,
+        icon-padding: null,
+        icon-size: null,
+        line-height: null,
+        name: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        rel: null,
+        sizes: null,
+        src: null,
+        srcset: null,
+        target: null,
+        text-decoration: null,
+        text-padding: null,
+        title: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ]
+      }
+    },
+    mj-spacer: {
+      Attributes: {
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-right: null,
+        border-top: null,
+        container-background-color: null,
+        css-class: null,
+        height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null
+      }
+    },
+    mj-style: {
+      Attributes: {
+        inline: null
+      }
+    },
+    mj-table: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right
+        ],
+        border: null,
+        cellpadding: null,
+        cellspacing: null,
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-weight: null,
+        line-height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        role: null,
+        table-layout: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ],
+        width: null
+      }
+    },
+    mj-text: {
+      Attributes: {
+        align: [
+          left,
+          center,
+          right,
+          justify
+        ],
+        color: null,
+        container-background-color: null,
+        css-class: null,
+        font-family: null,
+        font-size: null,
+        font-style: null,
+        font-weight: null,
+        height: null,
+        letter-spacing: null,
+        line-height: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        text-decoration: null,
+        text-transform: null,
+        vertical-align: [
+          top,
+          middle,
+          bottom
+        ]
+      }
+    },
+    mj-title: {},
+    mj-wrapper: {
+      Attributes: {
+        background-color: null,
+        background-position: null,
+        background-position-x: null,
+        background-position-y: null,
+        background-repeat: null,
+        background-size: null,
+        background-url: null,
+        border: null,
+        border-bottom: null,
+        border-left: null,
+        border-radius: null,
+        border-right: null,
+        border-top: null,
+        css-class: null,
+        direction: null,
+        full-width: null,
+        padding: null,
+        padding-bottom: null,
+        padding-left: null,
+        padding-right: null,
+        padding-top: null,
+        text-align: [
+          left,
+          center,
+          right
+        ],
+        text-padding: null
+      },
+      Children: [
+        mj-hero,
+        mj-raw,
+        mj-section
+      ]
+    },
+    mjml: {
+      Children: [
+        mj-body,
+        mj-head,
+        mj-raw
+      ]
+    }
+  }
+}

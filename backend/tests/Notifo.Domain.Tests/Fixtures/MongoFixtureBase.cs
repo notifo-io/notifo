@@ -7,6 +7,8 @@
 
 using System.Diagnostics;
 using EphemeralMongo;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Notifo.Infrastructure.MongoDb;
 
@@ -25,8 +27,8 @@ public abstract class MongoFixtureBase : IDisposable
         ActivityContextSerializer.Register();
         ActivitySpanIdSerializer.Register();
         ActivityTraceIdSerializer.Register();
-
         InstantSerializer.Register();
+        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
 
         if (Debugger.IsAttached)
         {

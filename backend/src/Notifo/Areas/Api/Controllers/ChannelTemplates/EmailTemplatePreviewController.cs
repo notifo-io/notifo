@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using Mjml.Net;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
@@ -22,15 +23,28 @@ public class EmailTemplatePreviewController : BaseController
 {
     private readonly IEmailFormatter emailFormatter;
     private readonly IEmailTemplateStore emailTemplateStore;
+    private readonly MjmlSchema mjmlSchema;
 
     public object PreviewType { get; private set; }
 
     public EmailTemplatePreviewController(
         IEmailFormatter emailFormatter,
-        IEmailTemplateStore emailTemplateStore)
+        IEmailTemplateStore emailTemplateStore,
+        MjmlSchema mjmlSchema)
     {
         this.emailFormatter = emailFormatter;
         this.emailTemplateStore = emailTemplateStore;
+        this.mjmlSchema = mjmlSchema;
+    }
+
+    /// <summary>
+    /// Gets the mjml schema.
+    /// </summary>
+    [HttpGet("api/mjml/schema")]
+    [Produces(typeof(MjmlSchema))]
+    public IActionResult GetSchema()
+    {
+        return Ok(mjmlSchema);
     }
 
     /// <summary>

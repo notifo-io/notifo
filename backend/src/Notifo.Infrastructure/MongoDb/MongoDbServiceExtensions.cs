@@ -8,9 +8,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Extensions.DiagnosticSources;
+using MongoDB.Driver.Linq;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,9 @@ public static class MongoDbServiceExtensions
         InstantSerializer.Register();
         LocalDateSerializer.Register();
         LocalTimeSerializer.Register();
+
+        // Allow all types, independent from the actual assembly.
+        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
 
         ConventionRegistry.Register("EnumStringConvention", new ConventionPack
         {
@@ -45,6 +51,7 @@ public static class MongoDbServiceExtensions
 
                 var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
 
+                clientSettings.LinqProvider = LinqProvider.V2;
                 clientSettings.ClusterConfigurator = builder =>
                 {
                     builder.Subscribe(new DiagnosticsActivityEventSubscriber());

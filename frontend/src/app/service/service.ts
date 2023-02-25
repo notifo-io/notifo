@@ -3669,6 +3669,48 @@ export class EmailTemplatesClient {
     }
 
     /**
+     * Gets the mjml schema.
+     */
+    getSchema(): Promise<MjmlSchema> {
+        let url_ = this.baseUrl + "/api/mjml/schema";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetSchema(_response);
+        });
+    }
+
+    protected processGetSchema(response: Response): Promise<MjmlSchema> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MjmlSchema;
+            return result200;
+            });
+        } else if (status === 500) {
+            return response.text().then((_responseText) => {
+            let result500: any = null;
+            result500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ErrorDto;
+            return throwException("Operation failed.", status, _responseText, _headers, result500);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<MjmlSchema>(null as any);
+    }
+
+    /**
      * Get the HTML preview for a channel template.
      * @param appId The id of the app where the templates belong to.
      * @param id The template ID.
@@ -6570,6 +6612,12 @@ export interface PublishDto {
     test?: boolean;
     /** The time to live in seconds. */
     timeToLiveInSeconds?: number | undefined;
+}
+
+export interface MjmlSchema {
+    "!top"?: string[];
+
+    [key: string]: any;
 }
 
 export interface EmailPreviewDto {
