@@ -1,7 +1,5 @@
 ﻿{
   Top: [
-    mj-carousel-image,
-    mj-include,
     mjml
   ],
   Elements: {
@@ -194,7 +192,10 @@
         tb-selected-border-color: null,
         tb-width: null,
         thumbnails: null
-      }
+      },
+      Children: [
+        mj-carousel-image
+      ]
     },
     mj-carousel-image: {
       Attributes: {
@@ -407,16 +408,6 @@
         title: null,
         usemap: null,
         width: null
-      }
-    },
-    mj-include: {
-      Attributes: {
-        path: null,
-        type: [
-          mjml,
-          html,
-          css
-        ]
       }
     },
     mj-msobutton: {
@@ -984,7 +975,10 @@
         tb-selected-border-color: null,
         tb-width: null,
         thumbnails: null
-      }
+      },
+      Children: [
+        mj-carousel-image
+      ]
     },
     mj-carousel-image: {
       Attributes: {
@@ -1197,16 +1191,6 @@
         title: null,
         usemap: null,
         width: null
-      }
-    },
-    mj-include: {
-      Attributes: {
-        path: null,
-        type: [
-          mjml,
-          html,
-          css
-        ]
       }
     },
     mj-msobutton: {
