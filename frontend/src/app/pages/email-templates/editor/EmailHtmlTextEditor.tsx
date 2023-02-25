@@ -25,8 +25,8 @@ import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
 import * as React from 'react';
-import { EmailPreviewErrorDto } from '@app/service';
-import { completeAfter, completeIfAfterLt, completeIfInTag, tags } from './helpers';
+import { EmailPreviewErrorDto, MjmlSchema } from '@app/service';
+import { completeAfter, completeIfAfterLt, completeIfInTag } from './helpers';
 
 export interface EmailHtmlTextEditorProps {
     // The value.
@@ -34,6 +34,9 @@ export interface EmailHtmlTextEditorProps {
 
     // The template errors.
     errors?: EmailPreviewErrorDto[];
+
+    // The email schema.
+    schema?: MjmlSchema;
 
     // When the html has changed.
     onChange?: (value: string) => void;
@@ -59,7 +62,7 @@ export class EmailHtmlTextEditor extends React.Component<EmailHtmlTextEditorProp
 
     public componentDidMount() {
         const hintOptions: any = {
-            schemaInfo: tags,
+            schemaInfo: this.props.schema,
         };
 
         if (!this.editorRef.current) {

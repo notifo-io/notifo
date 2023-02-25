@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 import { Button, ButtonGroup, Col, Form, Label, Row } from 'reactstrap';
 import * as Yup from 'yup';
 import { Icon, Loader, useBooleanObj, useEventCallback } from '@app/framework';
-import { EmailTemplateDto } from '@app/service';
+import { EmailTemplateDto, MjmlSchema } from '@app/service';
 import { Forms } from '@app/shared/components';
 import { createEmailTemplateLanguage, deleteEmailTemplateLanguage, updateEmailTemplateLanguage, useEmailTemplates } from '@app/state';
 import { texts } from '@app/texts';
@@ -66,6 +66,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
     const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
     const deletingLanguageError = useEmailTemplates(x => x.deletingLanguageError);
+    const schema = useEmailTemplates(x => x.schema);
     const showHtml = useBooleanObj(true);
     const updateDialog = useBooleanObj();
     const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
@@ -156,7 +157,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                             <Forms.Text name='subject' label={texts.common.subject} vertical />
                         </div>
 
-                        <BodyHtml appId={appId} visible={showHtml.value} />
+                        <BodyHtml appId={appId} visible={showHtml.value} schema={schema} />
                         <BodyText appId={appId} visible={!showHtml.value} />
                     </div>
                 </Form>
@@ -191,7 +192,7 @@ const BodyText = ({ visible, ...other }: { appId: string; visible: boolean }) =>
     );
 };
 
-const BodyHtml = ({ visible, ...other }: { appId: string; visible: boolean }) => {
+const BodyHtml = ({ visible, ...other }: { appId: string; visible: boolean; schema?: MjmlSchema }) => {
     const { field } = useController({ name: 'bodyHtml' });
 
     return (

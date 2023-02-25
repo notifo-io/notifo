@@ -6,13 +6,16 @@
  */
 
 import { ErrorInfo, ListState } from '@app/framework';
-import { ChannelTemplateDetailsDtoOfEmailTemplateDto, ChannelTemplateDto } from '@app/service';
+import { ChannelTemplateDetailsDtoOfEmailTemplateDto, ChannelTemplateDto, MjmlSchema } from '@app/service';
 
 export interface EmailTemplatesStateInStore {
     emailTemplates: EmailTemplatesState;
 }
 
 export interface EmailTemplatesState {
+    // The schema.
+    schema?: MjmlSchema;
+
     // All templates.
     templates: ListState<ChannelTemplateDto>;
 

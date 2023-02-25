@@ -11,6 +11,7 @@ import * as React from 'react';
 import Split from 'react-split';
 import { Alert } from 'reactstrap';
 import { IFrame } from '@app/framework';
+import { MjmlSchema } from '@app/service';
 import { EmailHtmlTextEditor } from './EmailHtmlTextEditor';
 import { usePreview } from './helpers';
 
@@ -21,6 +22,9 @@ export interface EmailHtmlEditorProps {
     // The app name.
     appId: string;
 
+    // The schema.
+    schema?: MjmlSchema;
+
     // When the html has changed.
     onChange?: (value: string) => void;
 
@@ -29,7 +33,13 @@ export interface EmailHtmlEditorProps {
 }
 
 export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
-    const { appId, onChange, initialValue } = props;
+    const {
+        appId, 
+        initialValue,
+        onBlur,
+        onChange,
+        schema,
+    } = props;
 
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
 
@@ -47,7 +57,13 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
         <div className='email-editor'>
             <Split direction='horizontal'>
                 <div className='left'>
-                    <EmailHtmlTextEditor value={markup} errors={emailPreview.rendering?.errors} onChange={setMarkup} />
+                    <EmailHtmlTextEditor
+                        value={markup}
+                        errors={emailPreview.rendering?.errors}
+                        onBlur={onBlur}
+                        onChange={setMarkup}
+                        schema={schema}
+                    />
                 </div>
 
                 <div className='right'>

@@ -22,6 +22,11 @@ export const loadEmailTemplates = (appId: string, query?: Partial<Query>, reset 
     return list.action({ appId, query, reset });
 };
 
+export const loadMjmlSchema = createApiThunk('emailTemplates/schema',
+    () => {
+        return Clients.EmailTemplates.getSchema();
+    });
+
 export const loadEmailTemplate = createApiThunk('emailTemplates/load',
     (arg: { appId: string; id: string }) => {
         return Clients.EmailTemplates.getTemplate(arg.appId, arg.id);
@@ -80,6 +85,9 @@ const initialState: EmailTemplatesState = {
 export const emailTemplatesReducer = createReducer(initialState, builder => list.initialize(builder)
     .addCase(selectApp, () => {
         return initialState;
+    })
+    .addCase(loadMjmlSchema.fulfilled, (state, action) => {
+        state.schema = action.payload;
     })
     .addCase(loadEmailTemplate.pending, (state) => {
         state.loadingTemplate = true;
