@@ -5,6 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using Notifo.Infrastructure.Scheduling;
 using Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
@@ -18,6 +20,9 @@ public sealed class MongoDbSchedulerStoreFixture : IDisposable
     public MongoDbSchedulerStoreFixture()
     {
         InstantSerializer.Register();
+
+        // Allow all types, independent from the actual assembly.
+        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
 
         var mongoClient = new MongoClient("mongodb://localhost");
         var mongoDatabase = mongoClient.GetDatabase("Testing");

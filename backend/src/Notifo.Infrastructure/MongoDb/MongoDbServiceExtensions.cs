@@ -8,7 +8,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
+using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Extensions.DiagnosticSources;
 using MongoDB.Driver.Linq;
@@ -27,6 +29,9 @@ public static class MongoDbServiceExtensions
         InstantSerializer.Register();
         LocalDateSerializer.Register();
         LocalTimeSerializer.Register();
+
+        // Allow all types, independent from the actual assembly.
+        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
 
         ConventionRegistry.Register("EnumStringConvention", new ConventionPack
         {
