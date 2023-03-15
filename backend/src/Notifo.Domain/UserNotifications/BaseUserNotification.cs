@@ -51,6 +51,8 @@ public class BaseUserNotification : IIntegrationTarget
 
     public NotificationFormatting<string> Formatting { get; set; }
 
+    public List<ChildNotification>? ChildNotifications { get; set; }
+
     IEnumerable<KeyValuePair<string, object>> IIntegrationTarget.Properties
     {
         get

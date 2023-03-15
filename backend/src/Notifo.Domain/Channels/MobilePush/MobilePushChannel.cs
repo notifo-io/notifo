@@ -225,18 +225,17 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
                 return;
             }
 
+            var integrations = integrationManager.Resolve<IMobilePushSender>(app, notification).ToList();
+
+            if (integrations.Count == 0)
+            {
+                await SkipAsync(job, LogMessage.Integration_Removed(Name));
+                return;
+            }
+
+            await UpdateAsync(job, DeliveryResult.Attempt);
             try
             {
-                await UpdateAsync(job, DeliveryResult.Attempt);
-
-                var integrations = integrationManager.Resolve<IMobilePushSender>(app, notification).ToList();
-
-                if (integrations.Count == 0)
-                {
-                    await SkipAsync(job, LogMessage.Integration_Removed(Name));
-                    return;
-                }
-
                 var message = BuildMessage(job);
 
                 var result = await SendCoreAsync(job, message, integrations, ct);

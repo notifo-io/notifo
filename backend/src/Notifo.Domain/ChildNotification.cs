@@ -5,13 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Apps;
-using Notifo.Domain.UserEvents;
-using Notifo.Domain.Users;
+namespace Notifo.Domain;
 
-namespace Notifo.Domain.UserNotifications;
-
-public interface IUserNotificationFactory
+public sealed class ChildNotification
 {
-    UserNotification? Create(App app, User user, UserEventMessage userEvent, IEnumerable<UserEventMessage> childUserEvents);
+    public Guid Id { get; set; }
+
+    public string EventId { get; set; }
+
+    public NotificationProperties? Properties { get; set; }
+
+    public NotificationFormatting<string> Formatting { get; set; }
 }

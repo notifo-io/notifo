@@ -9,6 +9,7 @@ using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
+using TagLib.IFD.Tags;
 
 namespace Notifo.Domain.Channels.Email.Formatting;
 
@@ -54,6 +55,30 @@ public static class PreviewData
                 Formatting = new NotificationFormatting<string>
                 {
                     Subject = "A notification"
+                }
+            },
+            new UserNotification
+            {
+                Formatting = new NotificationFormatting<string>
+                {
+                    Subject = "A notification with children"
+                },
+                ChildNotifications = new List<ChildNotification>
+                {
+                    new ChildNotification
+                    {
+                        Formatting = new NotificationFormatting<string>
+                        {
+                            Subject = "Child Notification 1"
+                        }
+                    },
+                    new ChildNotification
+                    {
+                        Formatting = new NotificationFormatting<string>
+                        {
+                            Subject = "Child Notification 2"
+                        }
+                    }
                 }
             },
             new UserNotification

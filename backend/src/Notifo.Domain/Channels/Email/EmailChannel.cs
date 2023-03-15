@@ -149,8 +149,6 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             var commonApp = first.Notification.AppId;
             var commonUser = first.Notification.UserId;
 
-            await UpdateAsync(jobs, DeliveryResult.Attempt);
-
             var app = await appStore.GetCachedAsync(first.Notification.AppId, ct);
 
             if (app == null)
@@ -161,30 +159,31 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                 return;
             }
 
+            var user = await userStore.GetCachedAsync(commonApp, commonUser, ct);
+
+            if (user == null)
+            {
+                await SkipAsync(jobs, LogMessage.User_Deleted(Name, commonUser));
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.EmailAddress))
+            {
+                await SkipAsync(jobs, LogMessage.User_EmailRemoved(Name, commonUser));
+                return;
+            }
+
+            var integrations = integrationManager.Resolve<IEmailSender>(app, first.Notification).ToList();
+
+            if (integrations.Count == 0)
+            {
+                await SkipAsync(jobs, LogMessage.Integration_Removed(Name));
+                return;
+            }
+
+            await UpdateAsync(jobs, DeliveryResult.Attempt);
             try
             {
-                var user = await userStore.GetCachedAsync(commonApp, commonUser, ct);
-
-                if (user == null)
-                {
-                    await SkipAsync(jobs, LogMessage.User_Deleted(Name, commonUser));
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(user.EmailAddress))
-                {
-                    await SkipAsync(jobs, LogMessage.User_EmailRemoved(Name, commonUser));
-                    return;
-                }
-
-                var integrations = integrationManager.Resolve<IEmailSender>(app, first.Notification).ToList();
-
-                if (integrations.Count == 0)
-                {
-                    await SkipAsync(jobs, LogMessage.Integration_Removed(Name));
-                    return;
-                }
-
                 var (skip, message) = await BuildMessageAsync(jobs, app, user, ct);
 
                 if (skip != null)

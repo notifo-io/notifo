@@ -26,6 +26,8 @@ public sealed class EventMessage
 
     public string? TemplateCode { get; set; }
 
+    public string? GroupKey { get; set; }
+
     public string? CorrelationId { get; set; }
 
     public string? Data { get; set; }

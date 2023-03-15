@@ -6046,6 +6046,8 @@ export interface SchedulingDto {
     date?: string | undefined;
     /** The scheduling time. */
     time?: string;
+    /** The delay relative to the server time. */
+    delay?: string | undefined;
 }
 
 export type SchedulingType = "UTC" | "UserTime";
@@ -6592,6 +6594,8 @@ export interface PublishDto {
     templateCode?: string | undefined;
     /** The correlation ID, that can be used to query notifications. */
     correlationId?: string | undefined;
+    /** The grouping key to combine notifications. */
+    groupKey?: string | undefined;
     /** The template variants with propability. */
     templateVariants?: { [key: string]: number; } | undefined;
     /** Additional user defined data. */

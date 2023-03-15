@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Log;
@@ -80,6 +81,16 @@ public record struct LogMessage(int EventCode, string Message, string System)
             FormatText = "Cannot find named template '{templateName}', falling back to primary.",
             FormatArgs = new[] { templateName },
             Reason = $"Cannot find named channel template '{templateName}', falling back to primary."
+        };
+    }
+
+    public static LogMessage ChannelTemplate_TemplateError(string system, List<TemplateError> errors)
+    {
+        return new LogMessage(1103, "Formatting error in template.", system)
+        {
+            FormatText = "Cannot find named template with errors {errors}.",
+            FormatArgs = new[] { string.Join(Environment.NewLine, errors) },
+            Reason = "Formatting error in template."
         };
     }
 

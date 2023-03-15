@@ -61,7 +61,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.AppId = null!;
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.UserId = null!;
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.Topic = null!;
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.EventId = null!;
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.Formatting = null!;
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.Formatting.Subject = null!;
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -121,7 +121,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.Formatting.Subject.Clear();
 
-        Assert.Null(sut.Create(app, user, userEvent));
+        Assert.Null(sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>()));
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public sealed class UserNotificationFactoryTests
     {
         var userEvent = CreateMinimumUserEvent();
 
-        var notification = sut.Create(app, user, userEvent)!;
+        var notification = sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Equal(userEvent.AppId, notification.AppId);
         Assert.Equal(userEvent.Created, notification.Created);
@@ -150,7 +150,7 @@ public sealed class UserNotificationFactoryTests
             PreferredLanguage = "de"
         };
 
-        var notification = sut.Create(app, germanUser, userEvent)!;
+        var notification = sut.Create(app, germanUser, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Equal("deText", notification.Formatting.Subject);
         Assert.Equal("de", notification.UserLanguage);
@@ -169,7 +169,7 @@ public sealed class UserNotificationFactoryTests
             PreferredLanguage = "it"
         };
 
-        var notification = sut.Create(app, danishUser, userEvent)!;
+        var notification = sut.Create(app, danishUser, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Equal("enText", notification.Formatting.Subject);
         Assert.Equal("en", notification.UserLanguage);
@@ -185,7 +185,7 @@ public sealed class UserNotificationFactoryTests
 
         userEvent.Formatting.ConfirmMode = ConfirmMode.Explicit;
 
-        var notification = sut.Create(app, user, userEvent)!;
+        var notification = sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Equal($"confirm/{notification.Id}/?lang=en", notification.ConfirmUrl);
         Assert.Equal($"Confirm", notification.Formatting.ConfirmText);
@@ -202,7 +202,7 @@ public sealed class UserNotificationFactoryTests
             ["en"] = "Confirmed"
         };
 
-        var notification = sut.Create(app, user, userEvent)!;
+        var notification = sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Equal($"confirm/{notification.Id}/?lang=en", notification.ConfirmUrl);
         Assert.Equal($"Confirmed", notification.Formatting.ConfirmText);
@@ -213,7 +213,7 @@ public sealed class UserNotificationFactoryTests
     {
         var userEvent = CreateMinimumUserEvent();
 
-        var notification = sut.Create(app, user, userEvent)!;
+        var notification = sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Null(notification.Formatting.ConfirmText);
     }
@@ -233,7 +233,7 @@ public sealed class UserNotificationFactoryTests
             ["en"] = "image/small"
         };
 
-        var notification = sut.Create(app, user, userEvent)!;
+        var notification = sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         Assert.Equal("proxy/image/large", notification.Formatting.ImageLarge);
         Assert.Equal("proxy/image/small", notification.Formatting.ImageSmall);
@@ -264,7 +264,7 @@ public sealed class UserNotificationFactoryTests
             }
         };
 
-        var notification = sut.Create(app, user, userEvent)!;
+        var notification = sut.Create(app, user, userEvent, Enumerable.Empty<UserEventMessage>())!;
 
         notification.Channels.Should().BeEquivalentTo(
             new Dictionary<string, UserNotificationChannel>

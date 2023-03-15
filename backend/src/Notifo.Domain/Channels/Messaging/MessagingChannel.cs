@@ -12,6 +12,7 @@ using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
+using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using IMessagingTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Messaging.MessagingTemplate>;
@@ -30,6 +31,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
     private readonly IMessagingTemplateStore messagingTemplateStore;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
+    private readonly IUserStore userStore;
 
     public string Name => Providers.Messaging;
 
@@ -39,7 +41,8 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         IMessagingFormatter messagingFormatter,
         IMessagingTemplateStore messagingTemplateStore,
         IUserNotificationQueue userNotificationQueue,
-        IUserNotificationStore userNotificationStore)
+        IUserNotificationStore userNotificationStore,
+        IUserStore userStore)
     {
         this.appStore = appStore;
         this.log = log;
@@ -49,6 +52,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         this.messagingTemplateStore = messagingTemplateStore;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
+        this.userStore = userStore;
     }
 
     public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
@@ -184,19 +188,26 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
                 return;
             }
 
+            var user = await userStore.GetCachedAsync(app.Id, job.Notification.UserId, ct);
+
+            if (user == null)
+            {
+                await SkipAsync(job, LogMessage.User_Deleted(Name, job.Notification.UserId));
+                return;
+            }
+
+            var integrations = integrationManager.Resolve<IMessagingSender>(app, job.Notification).ToList();
+
+            if (integrations.Count == 0)
+            {
+                await SkipAsync(job, LogMessage.Integration_Removed(Name));
+                return;
+            }
+
+            await UpdateAsync(job, DeliveryResult.Attempt);
             try
             {
-                await UpdateAsync(job, DeliveryResult.Attempt);
-
-                var integrations = integrationManager.Resolve<IMessagingSender>(app, job.Notification).ToList();
-
-                if (integrations.Count == 0)
-                {
-                    await SkipAsync(job, LogMessage.Integration_Removed(Name));
-                    return;
-                }
-
-                var (skip, message) = await BuildMessageAsync(job, ct);
+                var (skip, message) = await BuildMessageAsync(job, app, user, ct);
 
                 if (skip != null)
                 {
@@ -271,7 +282,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         return userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
     }
 
-    private async Task<(LogMessage? Skip, MessagingMessage?)> BuildMessageAsync(MessagingJob job,
+    private async Task<(LogMessage? Skip, MessagingMessage?)> BuildMessageAsync(MessagingJob job, App app, User user,
         CancellationToken ct)
     {
         var (skip, template) = await GetTemplateAsync(
@@ -285,11 +296,19 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             return (skip, null);
         }
 
+        var (text, errors) = messagingFormatter.Format(template, job, app, user);
+
+        // The text can never be null, because we use the subject as default.
+        if (errors != null)
+        {
+            await logStore.LogAsync(app.Id, LogMessage.ChannelTemplate_TemplateError(Name, errors));
+        }
+
         var message = new MessagingMessage
         {
             Targets = job.Configuration,
             // We might also format the text without the template if no primary template is defined.
-            Text = messagingFormatter.Format(template, job.Notification),
+            Text = text,
         };
 
         return (default, message.Enrich(job, Name));

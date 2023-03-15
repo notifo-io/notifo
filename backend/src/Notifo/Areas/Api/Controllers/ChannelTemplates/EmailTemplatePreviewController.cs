@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
-using Mjml.Net;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
@@ -118,7 +117,8 @@ public class EmailTemplatePreviewController : BaseController
         await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
 
         return await emailFormatter.FormatAsync(emailTemplate,
-            PreviewData.Jobs, App,
+            PreviewData.Jobs,
+            App,
             PreviewData.User,
             true,
             HttpContext.RequestAborted);

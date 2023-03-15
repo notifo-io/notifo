@@ -13,6 +13,7 @@ using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
+using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Scheduling;
 using ISmsTemplateStore = Notifo.Domain.ChannelTemplates.IChannelTemplateStore<Notifo.Domain.Channels.Sms.SmsTemplate>;
@@ -31,6 +32,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
     private readonly ISmsTemplateStore smsTemplateStore;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
+    private readonly IUserStore userStore;
 
     public string Name => Providers.Sms;
 
@@ -42,7 +44,8 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         ISmsFormatter smsFormatter,
         ISmsTemplateStore smsTemplateStore,
         IUserNotificationQueue userNotificationQueue,
-        IUserNotificationStore userNotificationStore)
+        IUserNotificationStore userNotificationStore,
+        IUserStore userStore)
     {
         this.appStore = appStore;
         this.integrationManager = integrationManager;
@@ -52,6 +55,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         this.smsTemplateStore = smsTemplateStore;
         this.userNotificationQueue = userNotificationQueue;
         this.userNotificationStore = userNotificationStore;
+        this.userStore = userStore;
     }
 
     public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
@@ -173,24 +177,29 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             if (app == null)
             {
                 log.LogWarning("Cannot send email: App not found.");
-
-                await UpdateAsync(job, DeliveryResult.Handled);
                 return;
             }
 
+            var user = await userStore.GetCachedAsync(app.Id, job.Notification.UserId, ct);
+
+            if (user == null)
+            {
+                await SkipAsync(job, LogMessage.User_Deleted(Name, job.Notification.UserId));
+                return;
+            }
+
+            var integrations = integrationManager.Resolve<ISmsSender>(app, job.Notification).ToList();
+
+            if (integrations.Count == 0)
+            {
+                await SkipAsync(job, LogMessage.Integration_Removed(Name));
+                return;
+            }
+
+            await UpdateAsync(job, DeliveryResult.Attempt);
             try
             {
-                await UpdateAsync(job, DeliveryResult.Attempt);
-
-                var integrations = integrationManager.Resolve<ISmsSender>(app, job.Notification).ToList();
-
-                if (integrations.Count == 0)
-                {
-                    await SkipAsync(job, LogMessage.Integration_Removed(Name));
-                    return;
-                }
-
-                var (skip, message) = await BuildMessageAsync(job, ct);
+                var (skip, message) = await BuildMessageAsync(job, app, user, ct);
 
                 if (skip != null)
                 {
@@ -265,7 +274,7 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
         return userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
     }
 
-    private async Task<(LogMessage? Skip, SmsMessage?)> BuildMessageAsync(SmsJob job,
+    private async Task<(LogMessage? Skip, SmsMessage?)> BuildMessageAsync(SmsJob job, App app, User user,
         CancellationToken ct)
     {
         var (skip, template) = await GetTemplateAsync(
@@ -279,11 +288,19 @@ public sealed class SmsChannel : ICommunicationChannel, IScheduleHandler<SmsJob>
             return (skip, null);
         }
 
+        var (text, errors) = smsFormatter.Format(template, job, app, user);
+
+        // The text can never be null, because we use the subject as default.
+        if (errors != null)
+        {
+            await logStore.LogAsync(app.Id, LogMessage.ChannelTemplate_TemplateError(Name, errors));
+        }
+
         var message = new SmsMessage
         {
             To = job.PhoneNumber,
             // We might also format the text without the template if no primary template is defined.
-            Text = smsFormatter.Format(template, job.Notification.Formatting.Subject)
+            Text = text
         };
 
         return (default, message.Enrich(job, Name));

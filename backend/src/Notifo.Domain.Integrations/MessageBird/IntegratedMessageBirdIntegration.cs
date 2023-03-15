@@ -39,7 +39,7 @@ public sealed class IntegratedMessageBirdIntegration : IIntegration, ISmsSender,
         this.smsOptions = smsOptions.Value;
         this.smsSender = smsSender;
 
-        if (smsOptions.Value.PhoneNumbers?.Count  > 0)
+        if (smsOptions.Value.PhoneNumbers?.Count > 0)
         {
             var sb = new StringBuilder();
 

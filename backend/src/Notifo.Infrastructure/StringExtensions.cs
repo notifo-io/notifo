@@ -51,6 +51,16 @@ public static class StringExtensions
         return value;
     }
 
+    public static string? OrNull(this string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return value;
+    }
+
     public static string Truncate(this string source, int length)
     {
         if (source.Length < length)

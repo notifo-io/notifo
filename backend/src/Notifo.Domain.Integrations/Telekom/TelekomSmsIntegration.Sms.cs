@@ -25,7 +25,6 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
         var apiKey = ApiKeyProperty.GetString(context.Properties);
         try
         {
-
             var httpClient = httpClientFactory.CreateClient();
 
             var content = new FormUrlEncodedContent(new Dictionary<string, string?>
