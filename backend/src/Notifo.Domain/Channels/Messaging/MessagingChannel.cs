@@ -6,8 +6,10 @@
 // ==========================================================================
 
 using System.Diagnostics;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Channels.Sms;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
@@ -35,9 +37,11 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
     public string Name => Providers.Messaging;
 
-    public MessagingChannel(ILogger<MessagingChannel> log, ILogStore logStore,
+    public MessagingChannel(
         IAppStore appStore,
         IIntegrationManager integrationManager,
+        ILogger<MessagingChannel> log,
+        ILogStore logStore,
         IMessagingFormatter messagingFormatter,
         IMessagingTemplateStore messagingTemplateStore,
         IUserNotificationQueue userNotificationQueue,
@@ -147,90 +151,106 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         }
     }
 
-    public Task HandleExceptionAsync(MessagingJob job, Exception ex)
+    public Task HandleExceptionAsync(List<MessagingJob> jobs, Exception exception)
     {
-        return UpdateAsync(job, DeliveryResult.Failed());
+        return UpdateAsync(jobs, DeliveryResult.Failed());
     }
 
-    public async Task<bool> HandleAsync(MessagingJob job, bool isLastAttempt,
+    public async Task<bool> HandleAsync(List<MessagingJob> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
-        var activityLinks = job.Notification.Links();
+        var activityLinks = jobs.SelectMany(x => x.Notification.Links());
         var activityContext = Activity.Current?.Context ?? default;
 
         using (Telemetry.Activities.StartActivity("MessagingChannel/HandleAsync", ActivityKind.Internal, activityContext, links: activityLinks))
         {
-            if (await userNotificationStore.IsHandledAsync(job, this, ct))
+            List<MessagingJob>? unhandledJobs = null;
+
+            foreach (var job in jobs)
             {
-                await UpdateAsync(job, DeliveryResult.Skipped());
+                if (await userNotificationStore.IsHandledAsync(job, this, ct))
+                {
+                    await UpdateAsync(job, DeliveryResult.Skipped());
+                }
+                else
+                {
+                    unhandledJobs ??= new List<MessagingJob>();
+                    unhandledJobs.Add(job);
+                }
             }
-            else
+
+            if (unhandledJobs != null)
             {
-                await SendJobAsync(job, ct);
+                await SendJobsAsync(unhandledJobs, ct);
             }
 
             return true;
         }
     }
 
-    private async Task SendJobAsync(MessagingJob job,
+    private async Task SendJobsAsync(List<MessagingJob> jobs,
         CancellationToken ct)
     {
         using (Telemetry.Activities.StartActivity("Send"))
         {
-            var app = await appStore.GetCachedAsync(job.Notification.AppId, ct);
+            var lastJob = jobs[^1];
+
+            var commonApp = lastJob.Notification.AppId;
+            var commonUser = lastJob.Notification.UserId;
+
+            var app = await appStore.GetCachedAsync(commonApp, ct);
 
             if (app == null)
             {
                 log.LogWarning("Cannot send message: App not found.");
 
-                await UpdateAsync(job, DeliveryResult.Handled);
+                await UpdateAsync(jobs, DeliveryResult.Handled);
                 return;
             }
 
-            var user = await userStore.GetCachedAsync(app.Id, job.Notification.UserId, ct);
+            var user = await userStore.GetCachedAsync(app.Id, commonUser, ct);
 
             if (user == null)
             {
-                await SkipAsync(job, LogMessage.User_Deleted(Name, job.Notification.UserId));
+                await SkipAsync(jobs, LogMessage.User_Deleted(Name, commonUser));
                 return;
             }
 
-            var integrations = integrationManager.Resolve<IMessagingSender>(app, job.Notification).ToList();
+            var integrations = integrationManager.Resolve<IMessagingSender>(app, lastJob.Notification).ToList();
 
             if (integrations.Count == 0)
             {
-                await SkipAsync(job, LogMessage.Integration_Removed(Name));
+                await SkipAsync(jobs, LogMessage.Integration_Removed(Name));
                 return;
             }
 
-            await UpdateAsync(job, DeliveryResult.Attempt);
+            await UpdateAsync(jobs, DeliveryResult.Attempt);
             try
             {
-                var (skip, message) = await BuildMessageAsync(job, app, user, ct);
+                var (skip, message) = await BuildMessageAsync(jobs, app, user, ct);
 
                 if (skip != null)
                 {
-                    await SkipAsync(job, skip.Value);
+                    await SkipAsync(jobs, skip.Value);
                     return;
                 }
 
-                var result = await SendCoreAsync(job, message!, integrations, ct);
+                var result = await SendCoreAsync(commonApp, message!, integrations, ct);
 
                 if (result.Status > DeliveryStatus.Attempt)
                 {
-                    await UpdateAsync(job, result);
+                    await UpdateAsync(jobs, result);
                 }
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(commonApp, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
     }
 
-    private async Task<DeliveryResult> SendCoreAsync(MessagingJob job, MessagingMessage message, List<ResolvedIntegration<IMessagingSender>> integrations,
+    private async Task<DeliveryResult> SendCoreAsync(string appId, MessagingMessage message, List<ResolvedIntegration<IMessagingSender>> integrations,
         CancellationToken ct)
     {
         var lastResult = default(DeliveryResult);
@@ -249,14 +269,14 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(sender.Definition.Type, ex));
+                await logStore.LogAsync(appId, LogMessage.General_Exception(sender.Definition.Type, ex));
 
                 // We only expose details of domain exceptions.
                 lastResult = DeliveryResult.Failed(ex.Message);
             }
             catch (Exception ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_InternalException(sender.Definition.Type, ex));
+                await logStore.LogAsync(appId, LogMessage.General_InternalException(sender.Definition.Type, ex));
 
                 if (sender == integrations[^1].System)
                 {
@@ -270,11 +290,19 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         return lastResult;
     }
 
-    private async Task SkipAsync(MessagingJob job, LogMessage message)
+    private async Task SkipAsync(List<MessagingJob> jobs, LogMessage message)
     {
-        await logStore.LogAsync(job.Notification.AppId, message);
+        await logStore.LogAsync(jobs[0].Notification.AppId, message);
 
-        await UpdateAsync(job, DeliveryResult.Skipped(message.Reason));
+        await UpdateAsync(jobs, DeliveryResult.Skipped(message.Reason));
+    }
+
+    private async Task UpdateAsync(List<MessagingJob> jobs, DeliveryResult result)
+    {
+        foreach (var job in jobs)
+        {
+            await UpdateAsync(job, result);
+        }
     }
 
     private Task UpdateAsync(MessagingJob job, DeliveryResult result)
@@ -282,13 +310,21 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
         return userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
     }
 
-    private async Task<(LogMessage? Skip, MessagingMessage?)> BuildMessageAsync(MessagingJob job, App app, User user,
+    private async Task<(LogMessage? Skip, MessagingMessage?)> BuildMessageAsync(List<MessagingJob> jobs, App app, User user,
         CancellationToken ct)
     {
+        var lastJob = jobs[^1];
+
+        foreach (var job in jobs.SkipLast(1))
+        {
+            lastJob.Notification.ChildNotifications ??= new List<SimpleNotification>();
+            lastJob.Notification.ChildNotifications.Add(job.Notification);
+        }
+
         var (skip, template) = await GetTemplateAsync(
-            job.Notification.AppId,
-            job.Notification.UserLanguage,
-            job.Template,
+            lastJob.Notification.AppId,
+            lastJob.Notification.UserLanguage,
+            lastJob.Template,
             ct);
 
         if (skip != default)
@@ -296,7 +332,7 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
             return (skip, null);
         }
 
-        var (text, errors) = messagingFormatter.Format(template, job, app, user);
+        var (text, errors) = messagingFormatter.Format(template, lastJob, app, user);
 
         // The text can never be null, because we use the subject as default.
         if (errors != null)
@@ -306,12 +342,12 @@ public sealed class MessagingChannel : ICommunicationChannel, IScheduleHandler<M
 
         var message = new MessagingMessage
         {
-            Targets = job.Configuration,
+            Targets = lastJob.Configuration,
             // We might also format the text without the template if no primary template is defined.
             Text = text,
         };
 
-        return (default, message.Enrich(job, Name));
+        return (default, message.Enrich(lastJob, Name));
     }
 
     private async Task<(LogMessage? Skip, MessagingTemplate?)> GetTemplateAsync(

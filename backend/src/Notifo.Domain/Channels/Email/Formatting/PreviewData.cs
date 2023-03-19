@@ -63,16 +63,16 @@ public static class PreviewData
                 {
                     Subject = "A notification with children"
                 },
-                ChildNotifications = new List<ChildNotification>
+                ChildNotifications = new List<SimpleNotification>
                 {
-                    new ChildNotification
+                    new SimpleNotification
                     {
                         Formatting = new NotificationFormatting<string>
                         {
                             Subject = "Child Notification 1"
                         }
                     },
-                    new ChildNotification
+                    new SimpleNotification
                     {
                         Formatting = new NotificationFormatting<string>
                         {

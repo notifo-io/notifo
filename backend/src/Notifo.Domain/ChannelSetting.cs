@@ -11,6 +11,8 @@ public sealed record ChannelSetting
 {
     public string? Template { get; set; }
 
+    public string? GroupKey { get; set; }
+
     public ChannelSend Send { get; set; }
 
     public ChannelRequired Required { get; set; }

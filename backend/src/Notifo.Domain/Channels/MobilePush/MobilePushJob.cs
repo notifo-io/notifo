@@ -7,6 +7,7 @@
 
 using Notifo.Domain.Integrations;
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.MobilePush;
 
@@ -20,7 +21,11 @@ public sealed class MobilePushJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => $"{Notification.Id}_{Token}";
+        get => string.Join("_",
+            Notification.AppId,
+            Notification.UserId,
+            GroupKey.OrDefault(Notification.Id),
+            Token);
     }
 
     public MobilePushJob()

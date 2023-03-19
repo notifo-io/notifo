@@ -5,19 +5,23 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Domain.Apps;
+using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Liquid;
 
-public sealed class LiquidApp
+public sealed class LiquidUser
 {
-    private readonly App app;
+    private readonly User user;
 
-    public string? Name => app.Name.OrNull();
+    public string? FullName => user.FullName.OrNull();
 
-    public LiquidApp(App app)
+    public string? EmailAddress => user.EmailAddress.OrNull();
+
+    public string? PhoneNumber => user.PhoneNumber.OrNull();
+
+    public LiquidUser(User user)
     {
-        this.app = app;
+        this.user = user;
     }
 }

@@ -22,6 +22,8 @@ public abstract class ChannelJob
 
     public bool IsConfirmed { get; init; }
 
+    public string? GroupKey { get; init; }
+
     public BaseUserNotification Notification { get; init; }
 
     protected ChannelJob()
@@ -33,6 +35,7 @@ public abstract class ChannelJob
         ConfigurationId = context.ConfigurationId;
         SendCondition = context.Setting.Condition;
         SendDelay = Duration.FromSeconds(context.Setting.DelayInSeconds ?? 0);
+        GroupKey = context.Setting.GroupKey;
         IsConfirmed = notification.FirstConfirmed != null;
         IsUpdate = context.IsUpdate;
         Notification = notification;

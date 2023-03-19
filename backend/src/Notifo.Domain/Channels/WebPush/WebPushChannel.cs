@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using Notifo.Domain.Channels.Webhook;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
@@ -36,11 +37,13 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
 
     public string PublicKey { get; }
 
-    public WebPushChannel(ILogStore logStore, IOptions<WebPushOptions> options,
+    public WebPushChannel(
+        IJsonSerializer serializer,
+        ILogStore logStore,
         IMediator mediator,
+        IOptions<WebPushOptions> options,
         IUserNotificationQueue userNotificationQueue,
-        IUserNotificationStore userNotificationStore,
-        IJsonSerializer serializer)
+        IUserNotificationStore userNotificationStore)
     {
         this.serializer = serializer;
         this.userNotificationQueue = userNotificationQueue;
@@ -118,14 +121,20 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    public Task HandleExceptionAsync(WebPushJob job, Exception ex)
+    public Task HandleExceptionAsync(List<WebPushJob> jobs, Exception ex)
     {
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
+
         return UpdateAsync(job, DeliveryResult.Failed());
     }
 
-    public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
+    public async Task<bool> HandleAsync(List<WebPushJob> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
+
         var activityLinks = job.Links();
         var activityContext = Activity.Current?.Context ?? default;
 

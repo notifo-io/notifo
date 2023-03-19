@@ -23,9 +23,8 @@ namespace Notifo.Domain.UserNotifications;
 
 public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
 {
-    private readonly IAppStore appStore;
-    private readonly IClock clock;
     private readonly Dictionary<string, ICommunicationChannel> channels;
+    private readonly IAppStore appStore;
     private readonly ILogger<UserNotificationService> log;
     private readonly ILogStore logStore;
     private readonly IMessageBus messageBus;
@@ -33,16 +32,18 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     private readonly IUserNotificationFactory userNotificationFactory;
     private readonly IUserNotificationStore userNotificationsStore;
     private readonly IUserStore userStore;
+    private readonly IClock clock;
 
-    public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
+    public UserNotificationService(
+        IEnumerable<ICommunicationChannel> channels,
         IAppStore appStore,
+        ILogger<UserNotificationService> log,
+        ILogStore logStore,
         IMessageBus messageBus,
         IUserEventQueue userEventQueue,
         IUserNotificationFactory userNotificationFactory,
         IUserNotificationStore userNotificationsStore,
         IUserStore userStore,
-        ILogStore logStore,
-        ILogger<UserNotificationService> log,
         IClock clock)
     {
         this.appStore = appStore;
@@ -55,6 +56,11 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         this.userNotificationsStore = userNotificationsStore;
         this.userStore = userStore;
         this.clock = clock;
+    }
+
+    public Task HandleExceptionAsync(List<UserEventMessage> jobs, Exception exception)
+    {
+        return Task.CompletedTask;
     }
 
     public async Task<bool> HandleAsync(List<UserEventMessage> jobs, bool isLastAttempt,

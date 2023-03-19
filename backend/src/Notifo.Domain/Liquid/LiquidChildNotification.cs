@@ -12,7 +12,7 @@ namespace Notifo.Domain.Liquid;
 public sealed class LiquidChildNotification : LiquidNotificationBase
 {
     public LiquidChildNotification(
-        ChildNotification childNotification,
+        SimpleNotification childNotification,
         string imagePresetSmall,
         string imagePresetLarge,
         IImageFormatter imageFormatter)

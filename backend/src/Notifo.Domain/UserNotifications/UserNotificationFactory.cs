@@ -79,7 +79,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
 
             if (child != null)
             {
-                notification.ChildNotifications ??= new List<ChildNotification>();
+                notification.ChildNotifications ??= new List<SimpleNotification>();
                 notification.ChildNotifications.Add(child);
             }
         }
@@ -87,7 +87,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
         return notification;
     }
 
-    private ChildNotification? CreateChild(UserEventMessage userEvent, string language)
+    private SimpleNotification? CreateChild(UserEventMessage userEvent, string language)
     {
         if (IsInvalid(userEvent))
         {
@@ -101,7 +101,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
             return null;
         }
 
-        var notification = SimpleMapper.Map(userEvent, new ChildNotification
+        var notification = SimpleMapper.Map(userEvent, new SimpleNotification
         {
             Id = Guid.NewGuid()
         });

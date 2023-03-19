@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NodaTime;
 using Notifo.Domain.Apps;
+using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
@@ -21,12 +22,12 @@ namespace Notifo.Domain.Channels.Webhook;
 public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<WebhookJob>
 {
     private const string IntegrationId = nameof(IntegrationId);
-    private readonly IUserNotificationStore userNotificationStore;
-    private readonly IUserNotificationQueue userNotificationQueue;
-    private readonly ILogger<WebhookChannel> log;
-    private readonly ILogStore logStore;
     private readonly IAppStore appStore;
     private readonly IIntegrationManager integrationManager;
+    private readonly ILogger<WebhookChannel> log;
+    private readonly ILogStore logStore;
+    private readonly IUserNotificationQueue userNotificationQueue;
+    private readonly IUserNotificationStore userNotificationStore;
 
     public string Name => Providers.Webhook;
 
@@ -59,11 +60,6 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
                 [IntegrationId] = id
             };
         }
-    }
-
-    public Task HandleExceptionAsync(WebhookJob job, Exception ex)
-    {
-        return UpdateAsync(job, DeliveryResult.Failed());
     }
 
     public async Task SendAsync(UserNotification notification, ChannelContext context,
@@ -99,9 +95,20 @@ public sealed class WebhookChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    public async Task<bool> HandleAsync(WebhookJob job, bool isLastAttempt,
+    public Task HandleExceptionAsync(List<WebhookJob> jobs, Exception exception)
+    {
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
+
+        return UpdateAsync(job, DeliveryResult.Failed());
+    }
+
+    public async Task<bool> HandleAsync(List<WebhookJob> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
+
         var activityLinks = job.Notification.Links();
         var activityContext = Activity.Current?.Context ?? default;
 

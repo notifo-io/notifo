@@ -26,19 +26,21 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     private const string DeviceType = nameof(DeviceType);
     private const string DeviceIdentifier = nameof(DeviceIdentifier);
     private readonly IAppStore appStore;
-    private readonly IClock clock;
     private readonly IIntegrationManager integrationManager;
-    private readonly IMediator mediator;
     private readonly ILogger<MobilePushChannel> log;
     private readonly ILogStore logStore;
+    private readonly IMediator mediator;
     private readonly IUserNotificationQueue userNotificationQueue;
     private readonly IUserNotificationStore userNotificationStore;
+    private readonly IClock clock;
 
     public string Name => Providers.MobilePush;
 
-    public MobilePushChannel(ILogger<MobilePushChannel> log, ILogStore logStore,
+    public MobilePushChannel(
         IAppStore appStore,
         IIntegrationManager integrationManager,
+        ILogger<MobilePushChannel> log,
+        ILogStore logStore,
         IMediator mediator,
         IUserNotificationQueue userNotificationQueue,
         IUserNotificationStore userNotificationStore,
@@ -182,9 +184,12 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
+    public async Task<bool> HandleAsync(List<MobilePushJob> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
+
         var activityLinks = job.Notification.Links();
         var activityContext = Activity.Current?.Context ?? default;
 
@@ -203,8 +208,11 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
+    public Task HandleExceptionAsync(List<MobilePushJob> jobs, Exception exception)
     {
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
+
         return UpdateAsync(job, DeliveryResult.Failed());
     }
 

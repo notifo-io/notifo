@@ -102,6 +102,11 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         }
     }
 
+    public Task HandleExceptionAsync(List<EmailJob> jobs, Exception ex)
+    {
+        return UpdateAsync(jobs, DeliveryResult.Failed());
+    }
+
     public async Task<bool> HandleAsync(List<EmailJob> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
@@ -110,7 +115,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
 
         using (Telemetry.Activities.StartActivity("EmailChannel/Handle", ActivityKind.Internal, activityContext, links: activityLinks))
         {
-            var unhandledJobs = new List<EmailJob>();
+            List<EmailJob>? unhandledJobs = null;
 
             foreach (var job in jobs)
             {
@@ -120,11 +125,12 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                 }
                 else
                 {
+                    unhandledJobs ??= new List<EmailJob>();
                     unhandledJobs.Add(job);
                 }
             }
 
-            if (unhandledJobs.Any())
+            if (unhandledJobs != null)
             {
                 await SendJobsAsync(unhandledJobs, ct);
             }
@@ -133,23 +139,18 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         }
     }
 
-    public Task HandleExceptionAsync(List<EmailJob> jobs, Exception ex)
-    {
-        return UpdateAsync(jobs, DeliveryResult.Failed());
-    }
-
     public async Task SendJobsAsync(List<EmailJob> jobs,
         CancellationToken ct)
     {
         using (Telemetry.Activities.StartActivity("Send"))
         {
-            var first = jobs[0];
+            var lastJob = jobs[^1];
 
-            var commonEmail = first.EmailAddress;
-            var commonApp = first.Notification.AppId;
-            var commonUser = first.Notification.UserId;
+            var commonEmail = lastJob.EmailAddress;
+            var commonApp = lastJob.Notification.AppId;
+            var commonUser = lastJob.Notification.UserId;
 
-            var app = await appStore.GetCachedAsync(first.Notification.AppId, ct);
+            var app = await appStore.GetCachedAsync(lastJob.Notification.AppId, ct);
 
             if (app == null)
             {
@@ -173,7 +174,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                 return;
             }
 
-            var integrations = integrationManager.Resolve<IEmailSender>(app, first.Notification).ToList();
+            var integrations = integrationManager.Resolve<IEmailSender>(app, lastJob.Notification).ToList();
 
             if (integrations.Count == 0)
             {
@@ -192,7 +193,7 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
                     return;
                 }
 
-                var result = await SendCoreAsync(message!, first.Notification.AppId, integrations, ct);
+                var result = await SendCoreAsync(lastJob.Notification.AppId, message!, integrations, ct);
 
                 if (result.Status > DeliveryStatus.Attempt)
                 {
@@ -201,13 +202,13 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(app.Id, LogMessage.General_Exception(Name, ex));
+                await logStore.LogAsync(commonApp, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
     }
 
-    private async Task<DeliveryResult> SendCoreAsync(EmailMessage message, string appId, List<ResolvedIntegration<IEmailSender>> integrations,
+    private async Task<DeliveryResult> SendCoreAsync(string appId, EmailMessage message, List<ResolvedIntegration<IEmailSender>> integrations,
         CancellationToken ct)
     {
         var lastResult = default(DeliveryResult);
@@ -247,11 +248,6 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         return lastResult;
     }
 
-    private Task UpdateAsync(EmailJob notification, DeliveryResult result)
-    {
-        return userNotificationStore.TrackAsync(notification.AsTrackingKey(Name), result);
-    }
-
     private async Task SkipAsync(List<EmailJob> jobs, LogMessage message)
     {
         await logStore.LogAsync(jobs[0].Notification.AppId, message);
@@ -265,6 +261,11 @@ public sealed class EmailChannel : ICommunicationChannel, IScheduleHandler<Email
         {
             await UpdateAsync(job, result);
         }
+    }
+
+    private Task UpdateAsync(EmailJob notification, DeliveryResult result)
+    {
+        return userNotificationStore.TrackAsync(notification.AsTrackingKey(Name), result);
     }
 
     private async Task<(LogMessage? Skip, EmailMessage?)> BuildMessageAsync(List<EmailJob> jobs, App app, User user,
