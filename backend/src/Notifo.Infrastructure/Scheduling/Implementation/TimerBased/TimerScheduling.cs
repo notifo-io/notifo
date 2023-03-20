@@ -70,7 +70,7 @@ public sealed class TimerScheduling<T> : IScheduling<T>
     {
         var now = clock.GetCurrentInstant();
 
-        return ScheduleAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
+        return ScheduleGroupedAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
     }
 
     public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,

@@ -32,7 +32,7 @@ public sealed class SmsFormatter : ISmsFormatter
 
     public SmsFormatter(IImageFormatter imageFormatter)
     {
-        defaultText = GetType().Assembly.GetManifestResourceString($"Notifo.Domain.Channels.Sms.DefaultTemplate.liquid.mjml");
+        defaultText = GetType().Assembly.GetManifestResourceString($"Notifo.Domain.Channels.Sms.DefaultTemplate.liquid.text");
 
         this.imageFormatter = imageFormatter;
     }
@@ -69,9 +69,9 @@ public sealed class SmsFormatter : ISmsFormatter
 
         var context = LiquidContext.Create(
             Enumerable.Repeat((job.Notification, job.ConfigurationId), 1), app, user,
-            Providers.Messaging,
-            "MessagingSmall",
-            "MessagingLarge",
+            Providers.Sms,
+            "SmsSmall",
+            "SmsLarge",
             imageFormatter);
 
         var (result, errors) = context.Render(template.Text, false);

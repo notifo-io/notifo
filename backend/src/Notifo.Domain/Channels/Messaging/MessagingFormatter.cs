@@ -32,7 +32,7 @@ public sealed class MessagingFormatter : IMessagingFormatter
 
     public MessagingFormatter(IImageFormatter imageFormatter)
     {
-        defaultText = GetType().Assembly.GetManifestResourceString($"Notifo.Domain.Channels.Messaging.DefaultTemplate.liquid.mjml");
+        defaultText = GetType().Assembly.GetManifestResourceString($"Notifo.Domain.Channels.Messaging.DefaultTemplate.liquid.text");
 
         this.imageFormatter = imageFormatter;
     }

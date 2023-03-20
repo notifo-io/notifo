@@ -19,7 +19,7 @@ public sealed class Scheduling
 
     public LocalTime Time { get; init; }
 
-    public Duration? Delay { get; init; }
+    public int? DelayInSeconds { get; init; }
 
     public static Scheduling? Merged(Scheduling? target, Scheduling? source)
     {
@@ -35,9 +35,9 @@ public sealed class Scheduling
     {
         var now = clock.GetCurrentInstant();
 
-        if (scheduling?.Delay != null)
+        if (scheduling?.DelayInSeconds != null)
         {
-            return now + scheduling.Delay.Value;
+            return now + Duration.FromSeconds(scheduling.DelayInSeconds.Value);
         }
 
         if (scheduling?.Date != null)

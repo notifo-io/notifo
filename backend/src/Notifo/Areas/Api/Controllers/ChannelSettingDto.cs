@@ -42,6 +42,11 @@ public sealed class ChannelSettingDto
     public string? Template { get; set; }
 
     /// <summary>
+    /// The grouping key to combine notifications per channel.
+    /// </summary>
+    public string? GroupKey { get; set; }
+
+    /// <summary>
     /// Additional properties.
     /// </summary>
     public NotificationProperties? Properties { get; set; }

@@ -55,6 +55,11 @@ public sealed record ChannelSetting
             Template = source.Template;
         }
 
+        if (!string.IsNullOrWhiteSpace(source.GroupKey))
+        {
+            GroupKey = source.GroupKey;
+        }
+
         if (source.Properties?.Count > 0)
         {
             Properties ??= new NotificationProperties();

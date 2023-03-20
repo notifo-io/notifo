@@ -12,31 +12,27 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Web;
 
-public sealed class WebChannel : ICommunicationChannel
+public sealed class WebChannel : ChannelBase<WebChannel>
 {
     private readonly IStreamClient streamClient;
-    private readonly IUserNotificationStore userNotificationStore;
-    private readonly ILogger<WebChannel> log;
 
-    public string Name => Providers.Web;
+    public override string Name => Providers.Web;
 
-    public bool IsSystem => true;
+    public override bool IsSystem => true;
 
-    public WebChannel(IUserNotificationStore userNotificationStore, IStreamClient streamClient,
-        ILogger<WebChannel> log)
+    public WebChannel(IServiceProvider serviceProvider,
+        IStreamClient streamClient)
+        : base(serviceProvider)
     {
         this.streamClient = streamClient;
-        this.userNotificationStore = userNotificationStore;
-
-        this.log = log;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
+    public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
         yield return new SendConfiguration();
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelContext context,
+    public override async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         using (Telemetry.Activities.StartActivity("WebChannel/SendAsync"))
@@ -46,13 +42,13 @@ public sealed class WebChannel : ICommunicationChannel
             {
                 await streamClient.SendAsync(notification);
 
-                await userNotificationStore.TrackAsync(identifier, DeliveryResult.Sent, default);
+                await UserNotificationStore.TrackAsync(identifier, DeliveryResult.Sent, default);
             }
             catch (Exception ex)
             {
-                await userNotificationStore.TrackAsync(identifier, DeliveryResult.Failed(), ct: ct);
+                await UserNotificationStore.TrackAsync(identifier, DeliveryResult.Failed(), ct: ct);
 
-                log.LogError(ex, "Failed to send web message.");
+                Log.LogError(ex, "Failed to send web message.");
             }
         }
     }

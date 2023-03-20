@@ -14,8 +14,6 @@ public sealed class EmailJob : ChannelJob
 {
     public string EmailAddress { get; init; }
 
-    public string? EmailTemplate { get; init; }
-
     public string? FromEmail { get; init; }
 
     public string? FromName { get; init; }
@@ -28,7 +26,7 @@ public sealed class EmailJob : ChannelJob
             Notification.UserLanguage,
             Notification.Test,
             EmailAddress,
-            EmailTemplate,
+            Template,
             FromEmail,
             FromName);
     }
@@ -41,7 +39,7 @@ public sealed class EmailJob : ChannelJob
         : base(notification, context)
     {
         EmailAddress = emailAddress;
-        EmailTemplate = context.Setting.Template;
+        Template = context.Setting.Template;
         FromEmail = context.Setting.Properties?.GetOrDefault(nameof(FromEmail));
         FromName = context.Setting.Properties?.GetOrDefault(nameof(FromName));
     }

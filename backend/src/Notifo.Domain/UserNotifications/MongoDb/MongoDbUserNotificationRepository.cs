@@ -26,7 +26,7 @@ public sealed class MongoDbUserNotificationRepository : MongoDbRepository<UserNo
 
     static MongoDbUserNotificationRepository()
     {
-        BsonClassMap.RegisterClassMap<BaseUserNotification>(cm =>
+        BsonClassMap.RegisterClassMap<SimpleNotification>(cm =>
         {
             cm.AutoMap();
 

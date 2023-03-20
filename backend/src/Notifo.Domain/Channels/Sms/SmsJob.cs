@@ -12,28 +12,21 @@ namespace Notifo.Domain.Channels.Sms;
 
 public sealed class SmsJob : ChannelJob
 {
-    public string PhoneNumber { get; init; }
-
-    public string? Template { get; init; }
-
     public string ScheduleKey
     {
         get => string.Join("_",
             Notification.AppId,
             Notification.UserId,
-            GroupKey.OrDefault(Notification.Id),
-            PhoneNumber);
+            Template,
+            GroupKey.OrDefault(Notification.Id));
     }
 
     public SmsJob()
     {
     }
 
-    public SmsJob(UserNotification notification, ChannelContext context, string phoneNumber)
+    public SmsJob(UserNotification notification, ChannelContext context)
         : base(notification, context)
     {
-        Template = context.Setting.Template;
-
-        PhoneNumber = phoneNumber;
     }
 }

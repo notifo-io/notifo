@@ -1,4 +1,4 @@
-﻿{{{{ notification.subject }}}}
-{{% if notification.children.size > 0 %}}
- + {{{{ notification.children.size }}}} more
-{{% endif %}}
+﻿{{ notification.subject }}
+{% if notification.children.size > 0 %}
+ + {{ notification.children.size }} more
+{% endif %}

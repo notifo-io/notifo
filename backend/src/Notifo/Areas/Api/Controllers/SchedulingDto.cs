@@ -36,7 +36,7 @@ public sealed class SchedulingDto
     /// <summary>
     /// The delay relative to the server time.
     /// </summary>
-    public Duration? Delay { get; init; }
+    public int? DelayInSeconds { get; init; }
 
     public static SchedulingDto FromDomainObject(Scheduling source)
     {

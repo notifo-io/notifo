@@ -31,7 +31,7 @@ public sealed class MongoDbLogEntry : MongoDbEntity
 
             if (indexOfDot > 0)
             {
-                entry.System = entry.Message.Substring(0, indexOfDot);
+                entry.System = entry.Message[..indexOfDot];
             }
         }
 
