@@ -5,9 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using System.Text.Json;
 using Mjml.Net;
 using Notifo.Domain.Channels.Email.Formatting;
-using System.Text.Json;
 
 namespace Notifo.Domain.Channels.Email;
 

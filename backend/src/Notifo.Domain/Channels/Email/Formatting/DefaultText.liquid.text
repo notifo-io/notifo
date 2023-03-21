@@ -19,7 +19,7 @@ Click this link to confirm this notification: {{ notification.confirmUrl }}
 {% endif -%}
 {% if notification.children.size > 0 %}
     + { notification.children.size } more
-{% endif }
+{% endif %}
 --
 {% endfor -%}
 
