@@ -49,7 +49,7 @@ public sealed class SchedulingTests
 
         var sut = new Scheduling
         {
-            Delay = delay
+            DelayInSeconds = (int)delay.TotalSeconds
         };
 
         var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
