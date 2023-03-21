@@ -63,7 +63,7 @@ public sealed class LogStore : ILogStore, IDisposable
         {
             var args = new object[] { appId, message.System };
 
-            LogInternal(message, $"User log for app {{appId}} from system {{system}}: {text}.", args);
+            LogInternal(message, $"User log for app {{appId}} from system {{system}}: {message.FormatText}.", args);
         }
 
         return collector.AddAsync(new LogWrite(appId, null, eventCode, text, system));
@@ -82,7 +82,7 @@ public sealed class LogStore : ILogStore, IDisposable
         {
             var args = new object[] { appId, userId, message.System };
 
-            LogInternal(message, $"User log for app {{appId}} and user {{userId}} from system {{system}}: {text}.", args);
+            LogInternal(message, $"User log for app {{appId}} and user {{userId}} from system {{system}}: {message.FormatText}.", args);
         }
 
         return collector.AddAsync(new LogWrite(appId, userId, eventCode, text, system));

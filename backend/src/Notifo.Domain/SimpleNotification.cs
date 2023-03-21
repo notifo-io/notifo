@@ -5,12 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Infrastructure.Scheduling;
+namespace Notifo.Domain;
 
-public interface IScheduleHandler<T>
+public class SimpleNotification
 {
-    Task<bool> HandleAsync(List<T> jobs, bool isLastAttempt,
-        CancellationToken ct);
+    public Guid Id { get; set; }
 
-    Task HandleExceptionAsync(List<T> jobs, Exception exception);
+    public string EventId { get; set; }
+
+    public NotificationProperties? Properties { get; set; }
+
+    public NotificationFormatting<string> Formatting { get; set; }
 }

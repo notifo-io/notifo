@@ -2656,7 +2656,7 @@ export class MediaClient {
      * @param file (optional) 
      * @return Media uploaded.
      */
-    upload(appId: string | null, file?: File | null | undefined): Promise<void> {
+    upload(appId: string | null, file?: FileParameter | null | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2665,7 +2665,7 @@ export class MediaClient {
 
         const content_ = new FormData();
         if (file !== null && file !== undefined)
-            content_.append("file", file);
+            content_.append("file", file.data, file.fileName ? file.fileName : "file");
 
         let options_: RequestInit = {
             body: content_,
@@ -5956,6 +5956,8 @@ export interface ChannelSettingDto {
     delayInSeconds?: number | undefined;
     /** The template if the channel supports it. */
     template?: string | undefined;
+    /** The grouping key to combine notifications per channel. */
+    groupKey?: string | undefined;
     /** Additional properties. */
     properties?: NotificationProperties | undefined;
 }
@@ -6046,6 +6048,8 @@ export interface SchedulingDto {
     date?: string | undefined;
     /** The scheduling time. */
     time?: string;
+    /** The delay relative to the server time. */
+    delayInSeconds?: number | undefined;
 }
 
 export type SchedulingType = "UTC" | "UserTime";
@@ -6592,6 +6596,8 @@ export interface PublishDto {
     templateCode?: string | undefined;
     /** The correlation ID, that can be used to query notifications. */
     correlationId?: string | undefined;
+    /** The grouping key to combine notifications. */
+    groupKey?: string | undefined;
     /** The template variants with propability. */
     templateVariants?: { [key: string]: number; } | undefined;
     /** Additional user defined data. */

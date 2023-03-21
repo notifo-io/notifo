@@ -313,9 +313,9 @@ public abstract class EmailTemplateTestsBase
 
     private async Task<(string?, string?)> FormatAsync(List<EmailJob> jobs)
     {
-        var formatted = await emailFormatter.FormatAsync(emailTemplate, jobs, PreviewData.App, PreviewData.User);
+        var (message, _) = await emailFormatter.FormatAsync(emailTemplate, jobs, PreviewData.App, PreviewData.User);
 
-        return (formatted.Message?.BodyHtml, formatted.Message?.BodyText);
+        return (message?.BodyHtml, message?.BodyText);
     }
 
     private static List<EmailJob> ToJobs(params UserNotification[] notifications)

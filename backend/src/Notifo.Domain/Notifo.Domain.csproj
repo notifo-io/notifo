@@ -14,6 +14,8 @@
     <None Remove="Channels\Email\DefaultText.text" />
     <None Remove="Channels\Email\Formatting\DefaultHtml.liquid.mjml" />
     <None Remove="Channels\Email\Formatting\DefaultText.liquid.text" />
+    <None Remove="Channels\Messaging\DefaultTemplate.liquid.text" />
+    <None Remove="Channels\Sms\DefaultTemplate.liquid.text" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +54,8 @@
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultHtml.liquid.mjml" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultSubject.text" />
     <EmbeddedResource Include="Channels\Email\Formatting\DefaultText.liquid.text" />
+    <EmbeddedResource Include="Channels\Messaging\DefaultTemplate.liquid.text" />
+    <EmbeddedResource Include="Channels\Sms\DefaultTemplate.liquid.text" />
   </ItemGroup>
 
   <ItemGroup>

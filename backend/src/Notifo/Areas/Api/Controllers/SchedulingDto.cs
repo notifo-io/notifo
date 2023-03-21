@@ -33,6 +33,11 @@ public sealed class SchedulingDto
     /// </summary>
     public LocalTime Time { get; set; }
 
+    /// <summary>
+    /// The delay relative to the server time.
+    /// </summary>
+    public int? DelayInSeconds { get; init; }
+
     public static SchedulingDto FromDomainObject(Scheduling source)
     {
         var result = SimpleMapper.Map(source, new SchedulingDto());

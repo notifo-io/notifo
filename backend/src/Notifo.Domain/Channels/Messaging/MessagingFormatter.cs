@@ -6,15 +6,20 @@
 // ==========================================================================
 
 using FluentValidation;
-using Notifo.Domain.UserNotifications;
+using Notifo.Domain.Apps;
+using Notifo.Domain.Integrations;
+using Notifo.Domain.Liquid;
+using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Reflection.Internal;
 using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Channels.Messaging;
 
 public sealed class MessagingFormatter : IMessagingFormatter
 {
+    private readonly string defaultText;
     private readonly IImageFormatter imageFormatter;
 
     private sealed class Validator : AbstractValidator<MessagingTemplate>
@@ -27,6 +32,8 @@ public sealed class MessagingFormatter : IMessagingFormatter
 
     public MessagingFormatter(IImageFormatter imageFormatter)
     {
+        defaultText = GetType().Assembly.GetManifestResourceString($"Notifo.Domain.Channels.Messaging.DefaultTemplate.liquid.text");
+
         this.imageFormatter = imageFormatter;
     }
 
@@ -35,7 +42,7 @@ public sealed class MessagingFormatter : IMessagingFormatter
     {
         var template = new MessagingTemplate
         {
-            Text = "{{notification.subject}}"
+            Text = defaultText
         };
 
         return new ValueTask<MessagingTemplate>(template);
@@ -49,35 +56,31 @@ public sealed class MessagingFormatter : IMessagingFormatter
         return default;
     }
 
-    public string Format(MessagingTemplate? template, BaseUserNotification notification)
+    public (string Result, List<TemplateError>? Errors) Format(MessagingTemplate? template, MessagingJob job, App app, User user)
     {
-        Guard.NotNull(notification);
+        Guard.NotNull(job);
+        Guard.NotNull(app);
+        Guard.NotNull(user);
 
         if (template == null)
         {
-            return notification.Formatting.Subject;
+            return (job.Notification.Formatting.Subject, null);
         }
 
-        var formattingProperties = new Dictionary<string, string?>
-        {
-            ["notification.body"] = notification.BodyWithLink(),
-            ["notification.confirmText"] = notification.ConfirmText(),
-            ["notification.confirmUrl"] = notification.ConfirmUrl(),
-            ["notification.imageLarge"] = notification.ImageLarge(imageFormatter, "MessagingLarge"),
-            ["notification.imageSmall"] = notification.ImageSmall(imageFormatter, "MessagingSmall"),
-            ["notification.subject"] = notification.Subject()
-        };
+        var context = LiquidContext.Create(
+            Enumerable.Repeat((job.Notification, job.ConfigurationId), 1), app, user,
+            Providers.Messaging,
+            "MessagingSmall",
+            "MessagingLarge",
+            imageFormatter);
 
-        var properties = notification.Properties;
+        var (result, errors) = context.Render(template.Text, false);
 
-        if (properties != null)
+        if (string.IsNullOrWhiteSpace(result))
         {
-            foreach (var (key, value) in properties)
-            {
-                formattingProperties[$"notification.custom.{key}"] = value;
-            }
+            result = job.Notification.Formatting.Subject;
         }
 
-        return template.Text.Format(formattingProperties);
+        return (result, errors);
     }
 }

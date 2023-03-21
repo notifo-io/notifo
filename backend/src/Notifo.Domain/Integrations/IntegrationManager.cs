@@ -6,12 +6,10 @@
 // ==========================================================================
 
 using System.Globalization;
-using Google.Api;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Notifo.Domain.Apps;
-using Notifo.Domain.Channels.Messaging;
 using Notifo.Domain.Resources;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Mediator;

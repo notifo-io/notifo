@@ -11,41 +11,32 @@ using Notifo.Domain.Resources;
 using Notifo.Domain.Users;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
+using Notifo.Infrastructure.Reflection.Internal;
 
 namespace Notifo.Domain.Channels.Email.Formatting;
 
 public sealed class EmailFormatterLiquid : IEmailFormatter
 {
-    private static readonly string DefaultBodyHtml;
-    private static readonly string DefaultBodyText;
-    private static readonly string DefaultSubject;
+    private readonly string defaultBodyHtml;
+    private readonly string defaultBodyText;
+    private readonly string defaultSubject;
     private readonly IImageFormatter imageFormatter;
     private readonly IEmailUrl emailUrl;
 
-    static EmailFormatterLiquid()
-    {
-        static string ReadResource(string name)
-        {
-            var stream = typeof(EmailFormatterLiquid).Assembly.GetManifestResourceStream($"Notifo.Domain.Channels.Email.Formatting.{name}")!;
-
-            using (stream)
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
-        }
-
-        DefaultBodyHtml = ReadResource("DefaultHtml.liquid.mjml");
-        DefaultBodyText = ReadResource("DefaultText.liquid.text");
-        DefaultSubject = ReadResource("DefaultSubject.text");
-    }
-
     public EmailFormatterLiquid(IImageFormatter imageFormatter, IEmailUrl emailUrl)
     {
-        this.imageFormatter = imageFormatter;
         this.emailUrl = emailUrl;
+
+        string ReadResource(string name)
+        {
+            return GetType().Assembly.GetManifestResourceString($"Notifo.Domain.Channels.Email.Formatting.{name}")!;
+        }
+
+        defaultBodyHtml = ReadResource("DefaultHtml.liquid.mjml");
+        defaultBodyText = ReadResource("DefaultText.liquid.text");
+        defaultSubject = ReadResource("DefaultSubject.text");
+
+        this.imageFormatter = imageFormatter;
     }
 
     public ValueTask<EmailTemplate> CreateInitialAsync(
@@ -53,9 +44,9 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
     {
         var template = new EmailTemplate
         {
-            BodyHtml = DefaultBodyHtml,
-            BodyText = DefaultBodyText,
-            Subject = DefaultSubject
+            BodyHtml = defaultBodyHtml,
+            BodyText = defaultBodyText,
+            Subject = defaultSubject
         };
 
         return new ValueTask<EmailTemplate>(template);
@@ -150,7 +141,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
 
         context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 
-        var (rendered, errors) = InternalMjmlRenderer.Render(result, strict, true);
+        var (rendered, errors) = MjmlRenderer.Render(result, strict, true);
 
         foreach (var error in errors.OrEmpty())
         {
@@ -162,7 +153,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
 
     private static string? RenderTemplate(string template, EmailContext context, EmailTemplateType type, bool noCache)
     {
-        var (rendered, errors) = InternalLiquidRenderer.RenderLiquid(template, context, noCache);
+        var (rendered, errors) = context.Liquid.Render(template, noCache);
 
         foreach (var error in errors.OrEmpty())
         {

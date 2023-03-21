@@ -7,6 +7,8 @@
 
 using System;
 using System.IO;
+using NJsonSchema;
+using NJsonSchema.CodeGeneration.CSharp;
 using NJsonSchema.CodeGeneration.TypeScript;
 using NSwag;
 using NSwag.CodeGeneration.CSharp;
@@ -47,16 +49,9 @@ public static class Program
         generatorSettings.CSharpGeneratorSettings.Namespace = "Notifo.SDK";
         generatorSettings.CSharpGeneratorSettings.RequiredPropertiesMustBeDefined = false;
         generatorSettings.CSharpGeneratorSettings.TemplateDirectory = Directory.GetCurrentDirectory();
+        generatorSettings.CSharpGeneratorSettings.PropertyNameGenerator = new PropertyNameGenerator();
 
-        var codeGenerator = new CSharpClientGenerator(document, generatorSettings);
-
-        var code = codeGenerator.GenerateFile();
-
-        // Do not expose internal API.
-        code = code.Replace("https://localhost:5002", "https://app.notifo.io", StringComparison.OrdinalIgnoreCase);
-
-        // Code generator generates invalid property name.
-        code = code.Replace("!top { get; set; }", "Top { get; set; }", StringComparison.OrdinalIgnoreCase);
+        var code = new CSharpClientGenerator(document, generatorSettings).GenerateFile();
 
         File.WriteAllText(@"..\..\..\..\Notifo.SDK\Generated.cs", code);
     }
@@ -73,16 +68,21 @@ public static class Program
         generatorSettings.TypeScriptGeneratorSettings.EnumStyle = TypeScriptEnumStyle.StringLiteral;
         generatorSettings.TypeScriptGeneratorSettings.DateTimeType = TypeScriptDateTimeType.String;
 
-        var codeGenerator = new TypeScriptClientGenerator(document, generatorSettings);
-
-        var code = codeGenerator.GenerateFile();
-
-        code = code.Replace("file.data, file.fileName ? file.fileName : \"file\"", "file", StringComparison.OrdinalIgnoreCase);
-
-        // Just use file paramater everywhere.
-        code = code.Replace("file?: FileParameter", "file?: File", StringComparison.OrdinalIgnoreCase);
+        var code = new TypeScriptClientGenerator(document, generatorSettings).GenerateFile();
 
         File.WriteAllText(@"..\..\..\..\..\..\frontend\src\app\service\service.ts", code);
+    }
+
+    public sealed class PropertyNameGenerator : CSharpPropertyNameGenerator
+    {
+        public override string Generate(JsonSchemaProperty property)
+        {
+            var result = base.Generate(property);
+
+            result = result.Replace("!", string.Empty, StringComparison.Ordinal);
+
+            return ConversionUtilities.ConvertToUpperCamelCase(result, false);
+        }
     }
 
     public sealed class TagNameGenerator : MultipleClientsFromOperationIdOperationNameGenerator

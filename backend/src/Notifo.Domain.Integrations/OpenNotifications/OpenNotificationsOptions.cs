@@ -7,7 +7,7 @@
 
 namespace Notifo.Domain.Integrations.OpenNotifications;
 
-internal class OpenNotificationsOptions
+public sealed class OpenNotificationsOptions
 {
     public Service[]? Services { get; set; }
 

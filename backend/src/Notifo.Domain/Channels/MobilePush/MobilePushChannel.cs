@@ -5,58 +5,38 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using NodaTime;
-using Notifo.Domain.Apps;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Mediator;
-using Notifo.Infrastructure.Scheduling;
-using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.MobilePush.MobilePushJob>;
 
 namespace Notifo.Domain.Channels.MobilePush;
 
-public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<MobilePushJob>
+public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, MobilePushChannel>
 {
     private const string Token = nameof(Token);
     private const string DeviceType = nameof(DeviceType);
     private const string DeviceIdentifier = nameof(DeviceIdentifier);
-    private readonly IAppStore appStore;
-    private readonly IClock clock;
-    private readonly IIntegrationManager integrationManager;
     private readonly IMediator mediator;
-    private readonly ILogger<MobilePushChannel> log;
-    private readonly ILogStore logStore;
-    private readonly IUserNotificationQueue userNotificationQueue;
-    private readonly IUserNotificationStore userNotificationStore;
 
-    public string Name => Providers.MobilePush;
+    public IClock Clock { get; } = SystemClock.Instance;
 
-    public MobilePushChannel(ILogger<MobilePushChannel> log, ILogStore logStore,
-        IAppStore appStore,
-        IIntegrationManager integrationManager,
-        IMediator mediator,
-        IUserNotificationQueue userNotificationQueue,
-        IUserNotificationStore userNotificationStore,
-        IClock clock)
+    public override string Name => Providers.MobilePush;
+
+    public MobilePushChannel(IServiceProvider serviceProvider,
+        IMediator mediator)
+        : base(serviceProvider)
     {
-        this.appStore = appStore;
-        this.log = log;
-        this.logStore = logStore;
-        this.integrationManager = integrationManager;
         this.mediator = mediator;
-        this.userNotificationQueue = userNotificationQueue;
-        this.userNotificationStore = userNotificationStore;
-        this.clock = clock;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
+    public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
-        if (!integrationManager.HasIntegration<IMobilePushSender>(context.App))
+        if (!IntegrationManager.HasIntegration<IMobilePushSender>(context.App))
         {
             yield break;
         }
@@ -75,7 +55,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    public async Task HandleSeenAsync(UserNotification notification, ChannelContext context)
+    public override async Task HandleSeenAsync(UserNotification notification, ChannelContext context)
     {
         using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleSeenAsync"))
         {
@@ -97,7 +77,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelContext context,
+    public override async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         if (!context.Configuration.TryGetValue(Token, out var tokenString))
@@ -125,7 +105,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
             if (context.IsUpdate)
             {
-                await userNotificationQueue.ScheduleAsync(
+                await Scheduler.ScheduleAsync(
                     job.ScheduleKey,
                     job,
                     default(Instant),
@@ -133,7 +113,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             else
             {
-                await userNotificationQueue.ScheduleAsync(
+                await Scheduler.ScheduleAsync(
                     job.ScheduleKey,
                     job,
                     job.SendDelay,
@@ -145,7 +125,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
     private async Task TryWakeupAsync(UserNotification notification, ChannelContext context, MobilePushToken token,
         CancellationToken ct)
     {
-        var wakeupTime = token.GetNextWakeupTime(clock);
+        var wakeupTime = token.GetNextWakeupTime(Clock);
 
         if (wakeupTime == null)
         {
@@ -161,7 +141,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
 
         var wakeupJob = new MobilePushJob(dummyNotification, context, token);
 
-        await userNotificationQueue.ScheduleAsync(
+        await Scheduler.ScheduleAsync(
             wakeupJob.ScheduleKey,
             wakeupJob,
             wakeupTime.Value,
@@ -178,65 +158,41 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         }
         catch (Exception ex)
         {
-            log.LogWarning(ex, "Failed to wakeup device.");
+            Log.LogWarning(ex, "Failed to wakeup device.");
         }
     }
 
-    public async Task<bool> HandleAsync(MobilePushJob job, bool isLastAttempt,
+    protected override async Task SendJobsAsync(List<MobilePushJob> jobs,
         CancellationToken ct)
     {
-        var activityLinks = job.Notification.Links();
-        var activityContext = Activity.Current?.Context ?? default;
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
 
-        using (Telemetry.Activities.StartActivity("MobilePushChannel/HandleAsync", ActivityKind.Internal, activityContext, links: activityLinks))
-        {
-            if (await userNotificationStore.IsHandledAsync(job, this, ct))
-            {
-                await UpdateAsync(job, DeliveryResult.Skipped());
-            }
-            else
-            {
-                await SendJobAsync(job, ct);
-            }
-
-            return true;
-        }
-    }
-
-    public Task HandleExceptionAsync(MobilePushJob job, Exception ex)
-    {
-        return UpdateAsync(job, DeliveryResult.Failed());
-    }
-
-    private async Task SendJobAsync(MobilePushJob job,
-        CancellationToken ct)
-    {
         using (Telemetry.Activities.StartActivity("SendMobilePush"))
         {
             var notification = job.Notification;
 
-            var app = await appStore.GetCachedAsync(notification.AppId, ct);
+            var app = await AppStore.GetCachedAsync(notification.AppId, ct);
 
             if (app == null)
             {
-                log.LogWarning("Cannot send mobile push: App not found.");
+                Log.LogWarning("Cannot send mobile push: App not found.");
 
                 await UpdateAsync(job, DeliveryResult.Handled);
                 return;
             }
 
+            var integrations = IntegrationManager.Resolve<IMobilePushSender>(app, notification).ToList();
+
+            if (integrations.Count == 0)
+            {
+                await SkipAsync(job, LogMessage.Integration_Removed(Name));
+                return;
+            }
+
+            await UpdateAsync(job, DeliveryResult.Attempt);
             try
             {
-                await UpdateAsync(job, DeliveryResult.Attempt);
-
-                var integrations = integrationManager.Resolve<IMobilePushSender>(app, notification).ToList();
-
-                if (integrations.Count == 0)
-                {
-                    await SkipAsync(job, LogMessage.Integration_Removed(Name));
-                    return;
-                }
-
                 var message = BuildMessage(job);
 
                 var result = await SendCoreAsync(job, message, integrations, ct);
@@ -248,7 +204,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
+                await LogStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -272,11 +228,11 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (MobilePushTokenExpiredException)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.MobilePush_TokenInvalid(Name, job.Notification.UserId, job.Token));
+                await LogStore.LogAsync(job.Notification.AppId, LogMessage.MobilePush_TokenInvalid(Name, job.Notification.UserId, job.DeviceToken));
 
                 var command = new RemoveUserMobileToken
                 {
-                    Token = job.Token
+                    Token = job.DeviceToken
                 };
 
                 await mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
@@ -284,14 +240,14 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
+                await LogStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
 
                 // We only expose details of domain exceptions.
                 lastResult = DeliveryResult.Failed(ex.Message);
             }
             catch (Exception ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_InternalException(Name, ex));
+                await LogStore.LogAsync(job.Notification.AppId, LogMessage.General_InternalException(Name, ex));
 
                 if (sender == integrations[^1].System)
                 {
@@ -305,22 +261,6 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
         return lastResult;
     }
 
-    private async Task SkipAsync(MobilePushJob job, LogMessage message)
-    {
-        await logStore.LogAsync(job.Notification.AppId, message);
-
-        await UpdateAsync(job, DeliveryResult.Skipped(message.Reason));
-    }
-
-    private async Task UpdateAsync(MobilePushJob job, DeliveryResult result)
-    {
-        // We only track the initial publication.
-        if (!job.IsUpdate)
-        {
-            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), result);
-        }
-    }
-
     private MobilePushMessage BuildMessage(MobilePushJob job)
     {
         var notification = job.Notification;
@@ -332,7 +272,7 @@ public sealed class MobilePushChannel : ICommunicationChannel, IScheduleHandler<
             ConfirmText = notification.Formatting.ConfirmText,
             ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
             Data = notification.Data,
-            DeviceToken = job.Token,
+            DeviceToken = job.DeviceToken,
             DeviceType = job.DeviceType,
             ImageLarge = notification.Formatting.ImageLarge,
             ImageSmall = notification.Formatting.ImageSmall,

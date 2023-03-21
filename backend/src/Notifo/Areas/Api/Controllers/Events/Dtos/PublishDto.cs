@@ -37,6 +37,11 @@ public sealed class PublishDto
     public string? CorrelationId { get; set; }
 
     /// <summary>
+    /// The grouping key to combine notifications.
+    /// </summary>
+    public string? GroupKey { get; set; }
+
+    /// <summary>
     /// The template variants with propability.
     /// </summary>
     public Dictionary<string, double>? TemplateVariants { get; set; }

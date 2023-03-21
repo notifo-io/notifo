@@ -11,6 +11,8 @@ public sealed record ChannelSetting
 {
     public string? Template { get; set; }
 
+    public string? GroupKey { get; set; }
+
     public ChannelSend Send { get; set; }
 
     public ChannelRequired Required { get; set; }
@@ -51,6 +53,11 @@ public sealed record ChannelSetting
         if (!string.IsNullOrWhiteSpace(source.Template))
         {
             Template = source.Template;
+        }
+
+        if (!string.IsNullOrWhiteSpace(source.GroupKey))
+        {
+            GroupKey = source.GroupKey;
         }
 
         if (source.Properties?.Count > 0)

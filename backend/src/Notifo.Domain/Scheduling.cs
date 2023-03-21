@@ -19,6 +19,8 @@ public sealed class Scheduling
 
     public LocalTime Time { get; init; }
 
+    public int? DelayInSeconds { get; init; }
+
     public static Scheduling? Merged(Scheduling? target, Scheduling? source)
     {
         if (target == null)
@@ -32,6 +34,11 @@ public sealed class Scheduling
     public static Instant CalculateScheduleTime(Scheduling? scheduling, IClock clock, string userTimeZone)
     {
         var now = clock.GetCurrentInstant();
+
+        if (scheduling?.DelayInSeconds != null)
+        {
+            return now + Duration.FromSeconds(scheduling.DelayInSeconds.Value);
+        }
 
         if (scheduling?.Date != null)
         {

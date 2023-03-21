@@ -51,6 +51,26 @@ public static class StringExtensions
         return value;
     }
 
+    public static string OrDefault<T>(this string? value, T fallback)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return fallback?.ToString() ?? string.Empty;
+        }
+
+        return value;
+    }
+
+    public static string? OrNull(this string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        return value;
+    }
+
     public static string Truncate(this string source, int length)
     {
         if (source.Length < length)

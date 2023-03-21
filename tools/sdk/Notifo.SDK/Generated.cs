@@ -12959,6 +12959,12 @@ namespace Notifo.SDK
         public string Template { get; set; }
 
         /// <summary>
+        /// The grouping key to combine notifications per channel.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("groupKey", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string GroupKey { get; set; }
+
+        /// <summary>
         /// Additional properties.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -13238,6 +13244,12 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.TimeSpan Time { get; set; }
+
+        /// <summary>
+        /// The delay relative to the server time.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("delayInSeconds", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? DelayInSeconds { get; set; }
 
     }
 
@@ -14864,6 +14876,12 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("correlationId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string CorrelationId { get; set; }
+
+        /// <summary>
+        /// The grouping key to combine notifications.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("groupKey", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string GroupKey { get; set; }
 
         /// <summary>
         /// The template variants with propability.

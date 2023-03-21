@@ -17,6 +17,9 @@ Click this link to confirm this notification: {{ notification.confirmUrl }}
 ...
 {{ notification.linkUrl }} | {{ notification.linkText }}
 {% endif -%}
+{% if notification.children.size > 0 %}
+    + { notification.children.size } more
+{% endif %}
 --
 {% endfor -%}
 

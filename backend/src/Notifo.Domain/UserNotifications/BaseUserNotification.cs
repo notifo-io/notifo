@@ -11,12 +11,8 @@ using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications;
 
-public class BaseUserNotification : IIntegrationTarget
+public class BaseUserNotification : SimpleNotification, IIntegrationTarget
 {
-    public Guid Id { get; set; }
-
-    public string EventId { get; set; }
-
     public string UserId { get; set; }
 
     public string UserLanguage { get; set; }
@@ -47,9 +43,7 @@ public class BaseUserNotification : IIntegrationTarget
 
     public ActivityContext UserNotificationActivity { get; set; }
 
-    public NotificationProperties? Properties { get; set; }
-
-    public NotificationFormatting<string> Formatting { get; set; }
+    public List<SimpleNotification>? ChildNotifications { get; set; }
 
     IEnumerable<KeyValuePair<string, object>> IIntegrationTarget.Properties
     {

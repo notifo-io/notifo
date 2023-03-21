@@ -6,34 +6,27 @@
 // ==========================================================================
 
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain.Channels.Sms;
 
 public sealed class SmsJob : ChannelJob
 {
-    public string PhoneNumber { get; init; }
-
-    public string? Template { get; init; }
-
     public string ScheduleKey
     {
-        get => ComputeScheduleKey(Notification.Id);
+        get => string.Join("_",
+            Notification.AppId,
+            Notification.UserId,
+            Template,
+            GroupKey.OrDefault(Notification.Id));
     }
 
     public SmsJob()
     {
     }
 
-    public SmsJob(UserNotification notification, ChannelContext context, string phoneNumber)
+    public SmsJob(UserNotification notification, ChannelContext context)
         : base(notification, context)
     {
-        Template = context.Setting.Template;
-
-        PhoneNumber = phoneNumber;
-    }
-
-    public static string ComputeScheduleKey(Guid notificationId)
-    {
-        return notificationId.ToString();
     }
 }

@@ -15,7 +15,7 @@ public sealed class WebhookJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => ComputeScheduleKey(Notification.Id);
+        get => Notification.Id.ToString();
     }
 
     public WebhookJob()
@@ -26,10 +26,5 @@ public sealed class WebhookJob : ChannelJob
         : base(notification, context)
     {
         IntegrationId = integrationId;
-    }
-
-    public static string ComputeScheduleKey(Guid notificationId)
-    {
-        return notificationId.ToString();
     }
 }

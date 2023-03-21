@@ -13,15 +13,12 @@ public interface ICommunicationChannel
 {
     string Name { get; }
 
-    bool IsSystem => false;
+    bool IsSystem { get; }
+
+    Task HandleSeenAsync(UserNotification notification, ChannelContext context);
 
     Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct);
 
     IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context);
-
-    Task HandleSeenAsync(UserNotification notification, ChannelContext context)
-    {
-        return Task.CompletedTask;
-    }
 }

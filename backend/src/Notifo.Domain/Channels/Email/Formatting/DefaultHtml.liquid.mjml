@@ -31,6 +31,9 @@
 						{% if notification.body %}
 						<mj-text font-family="Open Sans" font-size="14px" padding="0px 0px 5px 0px">{{ notification.body }}</mj-text>
 						{% endif %}
+						{% if notification.children.size > 0 %}
+						<mj-text font-family="Open Sans" font-size="14px" padding="0px 0px 5px 0px">+ {{ notification.children.size }} more</mj-text>
+						{% endif %}
 						{% if notification.linkUrl and notification.linkText %}
 						<mj-text font-family="Open Sans" font-size="14px" padding="10px 0px 5px 0px">
 							<a href="{{ notification.linkUrl }}">{{ notification.linkText }}</a>

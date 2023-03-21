@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Options;
 using NodaTime;
+using Notifo.Domain.Channels.Webhook;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
@@ -22,31 +23,21 @@ using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notif
 
 namespace Notifo.Domain.Channels.WebPush;
 
-public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<WebPushJob>, IWebPushService
+public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushChannel>, IWebPushService
 {
     private const string Endpoint = nameof(Endpoint);
     private readonly WebPushClient webPushClient = new WebPushClient();
     private readonly IJsonSerializer serializer;
-    private readonly ILogStore logStore;
-    private readonly IMediator mediator;
-    private readonly IUserNotificationStore userNotificationStore;
-    private readonly IUserNotificationQueue userNotificationQueue;
 
-    public string Name => Providers.WebPush;
+    public override string Name => Providers.WebPush;
 
     public string PublicKey { get; }
 
-    public WebPushChannel(ILogStore logStore, IOptions<WebPushOptions> options,
-        IMediator mediator,
-        IUserNotificationQueue userNotificationQueue,
-        IUserNotificationStore userNotificationStore,
-        IJsonSerializer serializer)
+    public WebPushChannel(IServiceProvider serviceProvider,
+        IJsonSerializer serializer, IOptions<WebPushOptions> options)
+        : base(serviceProvider)
     {
         this.serializer = serializer;
-        this.userNotificationQueue = userNotificationQueue;
-        this.userNotificationStore = userNotificationStore;
-        this.logStore = logStore;
-        this.mediator = mediator;
 
         webPushClient.SetVapidDetails(
             options.Value.Subject,
@@ -56,7 +47,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         PublicKey = options.Value.VapidPublicKey;
     }
 
-    public IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
+    public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
     {
         if (notification.Silent)
         {
@@ -77,7 +68,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    public async Task SendAsync(UserNotification notification, ChannelContext context,
+    public override async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
         if (!context.Configuration.TryGetValue(Endpoint, out var endpoint))
@@ -101,7 +92,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
             // Do not use scheduling when the notification is an update.
             if (context.IsUpdate)
             {
-                await userNotificationQueue.ScheduleAsync(
+                await Scheduler.ScheduleAsync(
                     job.ScheduleKey,
                     job,
                     default(Instant),
@@ -109,7 +100,7 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
             }
             else
             {
-                await userNotificationQueue.ScheduleAsync(
+                await Scheduler.ScheduleAsync(
                     job.ScheduleKey,
                     job,
                     job.SendDelay,
@@ -118,48 +109,31 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
     }
 
-    public Task HandleExceptionAsync(WebPushJob job, Exception ex)
-    {
-        return UpdateAsync(job, DeliveryResult.Failed());
-    }
-
-    public async Task<bool> HandleAsync(WebPushJob job, bool isLastAttempt,
+    protected override async Task SendJobsAsync(List<WebPushJob> jobs,
         CancellationToken ct)
     {
-        var activityLinks = job.Links();
-        var activityContext = Activity.Current?.Context ?? default;
+        // The schedule key is computed in a way that does not allow grouping. Therefore we have only one job.
+        var job = jobs[0];
 
-        using (Telemetry.Activities.StartActivity("WebPushChannel/HandleAsync", ActivityKind.Internal, activityContext, links: activityLinks))
-        {
-            if (await userNotificationStore.IsHandledAsync(job, this, ct))
-            {
-                await UpdateAsync(job, DeliveryResult.Skipped());
-            }
-            else
-            {
-                await SendAsync(job, ct);
-            }
-
-            return true;
-        }
-    }
-
-    private async Task SendAsync(WebPushJob job,
-        CancellationToken ct)
-    {
         using (Telemetry.Activities.StartActivity("Send"))
         {
             try
             {
-                await UpdateAsync(job, DeliveryResult.Attempt);
+                if (!job.IsUpdate)
+                {
+                    await UpdateAsync(job, DeliveryResult.Attempt);
+                }
 
                 await SendCoreAsync(job, ct);
 
-                await UpdateAsync(job, DeliveryResult.Sent);
+                if (!job.IsUpdate)
+                {
+                    await UpdateAsync(job, DeliveryResult.Sent);
+                }
             }
             catch (DomainException ex)
             {
-                await logStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
+                await LogStore.LogAsync(job.Notification.AppId, LogMessage.General_Exception(Name, ex));
                 throw;
             }
         }
@@ -181,27 +155,18 @@ public sealed class WebPushChannel : ICommunicationChannel, IScheduleHandler<Web
         }
         catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
         {
-            await logStore.LogAsync(job.Notification.AppId, LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint));
+            await LogStore.LogAsync(job.Notification.AppId, LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint));
 
             var command = new RemoveUserWebPushSubscription
             {
                 Endpoint = job.Subscription.Endpoint
             };
 
-            await mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
+            await Mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
         }
         catch (WebPushException ex)
         {
             throw new DomainException(ex.Message);
-        }
-    }
-
-    private async Task UpdateAsync(WebPushJob job, DeliveryResult status)
-    {
-        // We only track the initial publication.
-        if (!job.IsUpdate)
-        {
-            await userNotificationStore.TrackAsync(job.AsTrackingKey(Name), status);
         }
     }
 }

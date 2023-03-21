@@ -33,16 +33,13 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
         this.clock = clock;
     }
 
-    public UserNotification? Create(App app, User user, UserEventMessage userEvent)
+    public UserNotification? Create(App app, User user, UserEventMessage userEvent, IEnumerable<UserEventMessage> childUserEvents)
     {
+        Guard.NotNull(app);
         Guard.NotNull(user);
         Guard.NotNull(userEvent);
 
-        if (userEvent.Formatting == null ||
-            string.IsNullOrWhiteSpace(userEvent.AppId) ||
-            string.IsNullOrWhiteSpace(userEvent.EventId) ||
-            string.IsNullOrWhiteSpace(userEvent.Topic) ||
-            string.IsNullOrWhiteSpace(userEvent.UserId))
+        if (IsInvalid(userEvent))
         {
             return null;
         }
@@ -57,6 +54,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
 
         var formatting = userEvent.Formatting.SelectText(language);
 
+        // Only store the relevant formatting for the user.
         if (!formatting.HasSubject())
         {
             return null;
@@ -71,17 +69,55 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
         notification.UserLanguage = language;
         notification.Formatting = formatting;
 
-        ConfigureImages(notification);
+        ConfigureImages(notification.Formatting);
         ConfigureTracking(notification, userEvent);
         ConfigureSettings(notification, userEvent, user);
+
+        foreach (var childUserEvent in childUserEvents)
+        {
+            var child = CreateChild(childUserEvent, language);
+
+            if (child != null)
+            {
+                notification.ChildNotifications ??= new List<SimpleNotification>();
+                notification.ChildNotifications.Add(child);
+            }
+        }
 
         return notification;
     }
 
-    private void ConfigureImages(UserNotification notification)
+    private SimpleNotification? CreateChild(UserEventMessage userEvent, string language)
     {
-        notification.Formatting.ImageSmall = imageFormatter.AddProxy(notification.Formatting.ImageSmall);
-        notification.Formatting.ImageLarge = imageFormatter.AddProxy(notification.Formatting.ImageLarge);
+        if (IsInvalid(userEvent))
+        {
+            return null;
+        }
+
+        var formatting = userEvent.Formatting.SelectText(language);
+
+        if (!formatting.HasSubject())
+        {
+            return null;
+        }
+
+        var notification = SimpleMapper.Map(userEvent, new SimpleNotification
+        {
+            Id = Guid.NewGuid()
+        });
+
+        // Only store the relevant formatting for the user.
+        notification.Formatting = formatting;
+
+        ConfigureImages(notification.Formatting);
+
+        return notification;
+    }
+
+    private void ConfigureImages(NotificationFormatting<string> formatting)
+    {
+        formatting.ImageSmall = imageFormatter.AddProxy(formatting.ImageSmall);
+        formatting.ImageLarge = imageFormatter.AddProxy(formatting.ImageLarge);
     }
 
     private void ConfigureTracking(UserNotification notification, UserEventMessage userEvent)
@@ -120,5 +156,14 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
         {
             notification.Channels.GetOrAddNew(channel).Setting.OverrideBy(setting);
         }
+    }
+
+    private static bool IsInvalid(UserEventMessage userEvent)
+    {
+        return userEvent.Formatting == null ||
+            string.IsNullOrWhiteSpace(userEvent.AppId) ||
+            string.IsNullOrWhiteSpace(userEvent.EventId) ||
+            string.IsNullOrWhiteSpace(userEvent.Topic) ||
+            string.IsNullOrWhiteSpace(userEvent.UserId);
     }
 }

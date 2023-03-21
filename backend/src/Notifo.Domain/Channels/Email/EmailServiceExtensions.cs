@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Mjml.Net;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
@@ -26,7 +25,7 @@ public static class EmailServiceExtensions
             .As<IEmailFormatter>().As<IChannelTemplateFactory<EmailTemplate>>();
 
         services.AddSingleton(
-            c => MjmlSchema.Build(new MjmlRenderer()));
+            c => MjmlSchema.Build(new Mjml.Net.MjmlRenderer()));
 
         services.AddChannelTemplates<EmailTemplate>();
 

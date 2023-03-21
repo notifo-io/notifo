@@ -6,13 +6,18 @@
 // ==========================================================================
 
 using Notifo.Domain.Apps;
-using Notifo.Domain.ChannelTemplates;
-using Notifo.Domain.Users;
-using Notifo.Domain.Utils;
+using Notifo.Infrastructure;
 
-namespace Notifo.Domain.Channels.Messaging;
+namespace Notifo.Domain.Liquid;
 
-public interface IMessagingFormatter : IChannelTemplateFactory<MessagingTemplate>
+public sealed class LiquidApp
 {
-    (string Result, List<TemplateError>? Errors) Format(MessagingTemplate? template, MessagingJob job, App app, User user);
+    private readonly App app;
+
+    public string? Name => app.Name.OrNull();
+
+    public LiquidApp(App app)
+    {
+        this.app = app;
+    }
 }

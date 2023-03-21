@@ -18,7 +18,7 @@ public sealed class WebPushJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => ComputeScheduleKey(Notification.Id);
+        get => Notification.Id.ToString();
     }
 
     public WebPushJob()
@@ -30,13 +30,9 @@ public sealed class WebPushJob : ChannelJob
     {
         var payload = WebPushPayload.Create(notification, context.ConfigurationId);
 
+        // Serialize the payload directly, so we do not have it multiple times in case of a retry.
         Payload = serializer.SerializeToString(payload);
 
         Subscription = subscription;
-    }
-
-    public static string ComputeScheduleKey(Guid notificationId)
-    {
-        return notificationId.ToString();
     }
 }

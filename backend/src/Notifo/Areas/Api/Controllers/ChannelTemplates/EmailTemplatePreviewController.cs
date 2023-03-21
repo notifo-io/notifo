@@ -118,7 +118,8 @@ public class EmailTemplatePreviewController : BaseController
         await emailFormatter.ParseAsync(emailTemplate, true, HttpContext.RequestAborted);
 
         return await emailFormatter.FormatAsync(emailTemplate,
-            PreviewData.Jobs, App,
+            PreviewData.Jobs,
+            App,
             PreviewData.User,
             true,
             HttpContext.RequestAborted);

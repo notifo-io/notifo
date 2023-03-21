@@ -23,9 +23,8 @@ namespace Notifo.Domain.UserNotifications;
 
 public sealed class UserNotificationService : IUserNotificationService, IScheduleHandler<UserEventMessage>, IMessageHandler<ConfirmMessage>
 {
-    private readonly IAppStore appStore;
-    private readonly IClock clock;
     private readonly Dictionary<string, ICommunicationChannel> channels;
+    private readonly IAppStore appStore;
     private readonly ILogger<UserNotificationService> log;
     private readonly ILogStore logStore;
     private readonly IMessageBus messageBus;
@@ -33,16 +32,18 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     private readonly IUserNotificationFactory userNotificationFactory;
     private readonly IUserNotificationStore userNotificationsStore;
     private readonly IUserStore userStore;
+    private readonly IClock clock;
 
-    public UserNotificationService(IEnumerable<ICommunicationChannel> channels,
+    public UserNotificationService(
+        IEnumerable<ICommunicationChannel> channels,
         IAppStore appStore,
+        ILogger<UserNotificationService> log,
+        ILogStore logStore,
         IMessageBus messageBus,
         IUserEventQueue userEventQueue,
         IUserNotificationFactory userNotificationFactory,
         IUserNotificationStore userNotificationsStore,
         IUserStore userStore,
-        ILogStore logStore,
-        ILogger<UserNotificationService> log,
         IClock clock)
     {
         this.appStore = appStore;
@@ -57,11 +58,15 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         this.clock = clock;
     }
 
-    public async Task<bool> HandleAsync(UserEventMessage job, bool isLastAttempt,
+    public Task HandleExceptionAsync(List<UserEventMessage> jobs, Exception exception)
+    {
+        return Task.CompletedTask;
+    }
+
+    public async Task<bool> HandleAsync(List<UserEventMessage> jobs, bool isLastAttempt,
         CancellationToken ct)
     {
-        await DistributeScheduledAsync(job, isLastAttempt);
-
+        await DistributeScheduledAsync(jobs[^1], jobs.SkipLast(1), isLastAttempt);
         return true;
     }
 
@@ -80,13 +85,14 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             // The scheduling from the event has preference over the user scheduling.
             userEvent.Scheduling = Scheduling.Merged(user.Scheduling, userEvent.Scheduling);
 
-            var dueTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
+            var scheduleKey = ScheduleKey(userEvent);
+            var scheduleTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
 
-            await userEventQueue.ScheduleAsync(ScheduleKey(userEvent), userEvent, dueTime, true);
+            await userEventQueue.ScheduleGroupedAsync(scheduleKey, userEvent, scheduleTime, true);
         }
     }
 
-    public async Task DistributeScheduledAsync(UserEventMessage userEvent, bool isLastAttempt)
+    public async Task DistributeScheduledAsync(UserEventMessage userEvent, IEnumerable<UserEventMessage> children, bool isLastAttempt)
     {
         var activityLinks = userEvent.Links();
         var activityContext = Activity.Current?.Context ?? default;
@@ -104,7 +110,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
                     return;
                 }
 
-                var notification = await CreateUserNotificationAsync(userEvent, context);
+                var notification = await CreateUserNotificationAsync(userEvent, children, context);
 
                 if (notification == null)
                 {
@@ -163,11 +169,11 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
         }
     }
 
-    private async Task<UserNotification?> CreateUserNotificationAsync(UserEventMessage userEvent, ChannelContext context)
+    private async Task<UserNotification?> CreateUserNotificationAsync(UserEventMessage userEvent, IEnumerable<UserEventMessage> children, ChannelContext context)
     {
         using (Telemetry.Activities.StartActivity("CreateUserNotification"))
         {
-            var notification = userNotificationFactory.Create(context.App, context.User, userEvent);
+            var notification = userNotificationFactory.Create(context.App, context.User, userEvent, children);
 
             if (notification == null)
             {
@@ -389,6 +395,6 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
 
     private static string ScheduleKey(UserEventMessage userEvent)
     {
-        return $"{userEvent.AppId}_{userEvent.UserId}_{userEvent.EventId}";
+        return $"{userEvent.AppId}_{userEvent.UserId}_{userEvent.Test}_{userEvent.GroupKey.OrDefault(userEvent.EventId)}";
     }
 }

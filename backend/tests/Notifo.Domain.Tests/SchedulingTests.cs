@@ -43,6 +43,24 @@ public sealed class SchedulingTests
     }
 
     [Fact]
+    public void Should_return_delay_time()
+    {
+        var delay = Duration.FromMinutes(90);
+
+        var sut = new Scheduling
+        {
+            DelayInSeconds = (int)delay.TotalSeconds
+        };
+
+        var actual = Scheduling.CalculateScheduleTime(sut, clock, "Europe/Berlin");
+
+        // Just use server time plus delay.
+        var expected = now + delay;
+
+        Assert.Equal(expected, actual);
+    }
+
+    [Fact]
     public void Should_return_concrete_utc_datetime()
     {
         var time = new LocalTime(15, 13, 12);

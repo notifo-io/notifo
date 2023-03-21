@@ -13,5 +13,5 @@ namespace Notifo.Domain.UserNotifications;
 
 public interface IUserNotificationFactory
 {
-    UserNotification? Create(App app, User user, UserEventMessage userEvent);
+    UserNotification? Create(App app, User user, UserEventMessage userEvent, IEnumerable<UserEventMessage> childUserEvents);
 }
