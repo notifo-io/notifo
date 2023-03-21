@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using Mjml.Net;
 using Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 using Notifo.Domain.Channels.Email;
 using Notifo.Domain.Channels.Email.Formatting;
