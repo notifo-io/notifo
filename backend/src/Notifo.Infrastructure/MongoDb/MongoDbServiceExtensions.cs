@@ -51,6 +51,7 @@ public static class MongoDbServiceExtensions
 
                 var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
 
+                // The current version of the linq provider has some issues with base classes.
                 clientSettings.LinqProvider = LinqProvider.V2;
                 clientSettings.ClusterConfigurator = builder =>
                 {
