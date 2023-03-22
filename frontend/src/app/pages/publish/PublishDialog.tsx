@@ -190,6 +190,9 @@ const PublishDialogInner = () => {
 
                                             <Forms.Number name='timeToLiveInSeconds'
                                                 label={texts.common.timeToLive} min={0} max={2419200} />
+
+                                            <Forms.Text name='groupKey'
+                                                label={texts.notificationSettings.groupKey} hints={texts.notificationSettings.groupKeyHints} />
                                         </>
                                     ) : (
                                         <>

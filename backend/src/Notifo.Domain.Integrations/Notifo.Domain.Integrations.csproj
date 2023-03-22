@@ -9,16 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.100.78" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.100.96" />
     <PackageReference Include="Confluent.Kafka" Version="2.0.2" />
     <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
     <PackageReference Include="FluentValidation" Version="11.5.1" />
-    <PackageReference Include="Fluid.Core" Version="2.3.1" />
+    <PackageReference Include="Fluid.Core" Version="2.4.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.13.6" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.7" />
     <PackageReference Include="Mailjet.Api" Version="3.0.0" />
-    <PackageReference Include="MailKit" Version="3.5.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.18">
+    <PackageReference Include="MailKit" Version="3.6.0" />
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.22">
     <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -30,10 +30,10 @@
     <PackageReference Include="OpenNotifications" Version="0.1.10" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
     <PackageReference Include="System.Collections" Version="4.3.0" />
-    <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="Telegram.Bot" Version="18.0.0" />
-    <PackageReference Include="Twilio" Version="6.2.4" />
+    <PackageReference Include="Twilio" Version="6.2.5" />
   </ItemGroup>
 
   <ItemGroup>
