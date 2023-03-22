@@ -21,8 +21,6 @@ public sealed class MongoDbSchedulerStoreFixture : IDisposable
 
     public MongoDbSchedulerStoreFixture()
     {
-        InstantSerializer.Register();
-
         var mongoClient = MongoClientFactory.Create("mongodb://localhost");
         var mongoDatabase = mongoClient.GetDatabase("Testing");
 

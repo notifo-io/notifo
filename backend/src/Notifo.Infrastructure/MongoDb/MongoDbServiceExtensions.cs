@@ -28,16 +28,13 @@ public static class MongoDbServiceExtensions
             {
                 var connectionString = c.GetRequiredService<IOptions<MongoDbOptions>>().Value.ConnectionString;
 
-                var clientSettings = MongoClientSettings.FromConnectionString(connectionString);
-
-                // The current version of the linq provider has some issues with base classes.
-                clientSettings.LinqProvider = LinqProvider.V2;
-                clientSettings.ClusterConfigurator = builder =>
+                return MongoClientFactory.Create(connectionString, settings =>
                 {
-                    builder.Subscribe(new DiagnosticsActivityEventSubscriber());
-                };
-
-                return new MongoClient(clientSettings);
+                    settings.ClusterConfigurator = builder =>
+                    {
+                        builder.Subscribe(new DiagnosticsActivityEventSubscriber());
+                    };
+                });
             })
             .As<IMongoClient>();
 

@@ -17,6 +17,7 @@ using Notifo.Identity.ApiKey;
 using Notifo.Identity.InMemory;
 using Notifo.Identity.MongoDb;
 using OpenIddict.Abstractions;
+using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -60,7 +61,7 @@ public static class IdentityServiceExtensions
                         return ApiKeyDefaults.AuthenticationScheme;
                     }
 
-                    return OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+                    return OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
                 };
             })
             .AddGoogle(identityOptions)

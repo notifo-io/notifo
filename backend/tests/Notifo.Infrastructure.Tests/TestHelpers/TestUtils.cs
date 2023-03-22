@@ -29,6 +29,8 @@ public static class TestUtils
         DefaultOptions.Converters.Add(new JsonActivityContextConverter());
         DefaultOptions.Converters.Add(new JsonActivitySpanIdConverter());
         DefaultOptions.Converters.Add(new JsonActivityTraceIdConverter());
+
+        MongoClientFactory.RegisterDefaultSerializers();
     }
 
     public sealed class ObjectHolder<T>
