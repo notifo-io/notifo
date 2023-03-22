@@ -117,6 +117,9 @@ export module NotificationsForm {
         
                             <Forms.Time name={`${field}.time`}
                                 label={texts.common.timeOfDay} />
+        
+                            <Forms.Time name={`${field}.delayInSeconds`}
+                                label={texts.notificationSettings.delayInSeconds} />
                         </div>
                     }
                 </fieldset>
@@ -209,6 +212,9 @@ export module NotificationsForm {
                     <CardBody>
                         <Forms.Number name={`${field}.${channel}.delayInSeconds`} min={0} max={6000} vertical={vertical}
                             label={texts.notificationSettings.delayInSeconds} hints={texts.notificationSettings.delayInSecondsHints} />
+
+                        <Forms.Text name={`${field}.${channel}.groupKey`} vertical={vertical}
+                            label={texts.notificationSettings.channelGroupKey} hints={texts.notificationSettings.channelGroupKeyHints} />
                             
                         <Forms.Select name={`${field}.${channel}.required`} options={REQUIRED_MODES} vertical={vertical}
                             label={texts.notificationSettings.required} hints={texts.notificationSettings.requiredHints} />

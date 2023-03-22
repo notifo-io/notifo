@@ -18,7 +18,7 @@ public static class TelemetryServiceExtensions
 {
     public static void AddMyTelemetry(this IServiceCollection services, IConfiguration config)
     {
-        services.AddOpenTelemetryTracing(builder =>
+        services.AddOpenTelemetry().WithTracing(builder =>
         {
             var serviceName = config.GetValue<string>("logging:name") ?? "Notifo";
             var serviceVersion = VersionProvider.Current;
