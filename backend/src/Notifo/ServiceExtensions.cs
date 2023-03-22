@@ -46,14 +46,6 @@ public static class ServiceExtensions
         {
             ["MongoDB"] = () =>
             {
-                BsonSerializer.RegisterGenericSerializerDefinition(
-                    typeof(ReadonlyList<>),
-                    typeof(ReadonlyListSerializer<>));
-
-                BsonSerializer.RegisterGenericSerializerDefinition(
-                    typeof(ReadonlyDictionary<,>),
-                    typeof(ReadonlyDictionarySerializer<,>));
-
                 SoftEnumSerializer<ConfirmMode>.Register();
 
                 services.AddMyMongoApps();

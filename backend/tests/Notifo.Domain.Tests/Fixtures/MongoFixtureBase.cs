@@ -25,12 +25,6 @@ public abstract class MongoFixtureBase : IDisposable
 
     protected MongoFixtureBase()
     {
-        ActivityContextSerializer.Register();
-        ActivitySpanIdSerializer.Register();
-        ActivityTraceIdSerializer.Register();
-        InstantSerializer.Register();
-        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
-
         var connectionString = "mongodb://localhost";
 
         if (!Debugger.IsAttached)
@@ -45,7 +39,7 @@ public abstract class MongoFixtureBase : IDisposable
         // The current version of the linq provider has some issues with base classes.
         clientSettings.LinqProvider = LinqProvider.V2;
 
-        MongoClient = new MongoClient(clientSettings);
+        MongoClient = MongoClientFactory.Create(connectionString);
         MongoDatabase = MongoClient.GetDatabase("Notifo_Testing");
     }
 

@@ -29,18 +29,6 @@ public static class TestUtils
         DefaultOptions.Converters.Add(new JsonActivityContextConverter());
         DefaultOptions.Converters.Add(new JsonActivitySpanIdConverter());
         DefaultOptions.Converters.Add(new JsonActivityTraceIdConverter());
-
-        ActivityContextSerializer.Register();
-        ActivitySpanIdSerializer.Register();
-        ActivityTraceIdSerializer.Register();
-
-        BsonSerializer.RegisterGenericSerializerDefinition(
-            typeof(ReadonlyList<>),
-            typeof(ReadonlyListSerializer<>));
-
-        BsonSerializer.RegisterGenericSerializerDefinition(
-            typeof(ReadonlyDictionary<,>),
-            typeof(ReadonlyDictionarySerializer<,>));
     }
 
     public sealed class ObjectHolder<T>

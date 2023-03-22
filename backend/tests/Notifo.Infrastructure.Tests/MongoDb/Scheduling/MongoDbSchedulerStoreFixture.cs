@@ -23,15 +23,7 @@ public sealed class MongoDbSchedulerStoreFixture : IDisposable
     {
         InstantSerializer.Register();
 
-        // Allow all types, independent from the actual assembly.
-        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
-
-        var clientSettings = MongoClientSettings.FromConnectionString("mongodb://localhost");
-
-        // The current version of the linq provider has some issues with base classes.
-        clientSettings.LinqProvider = LinqProvider.V2;
-
-        var mongoClient = new MongoClient(clientSettings);
+        var mongoClient = MongoClientFactory.Create("mongodb://localhost");
         var mongoDatabase = mongoClient.GetDatabase("Testing");
 
         Store = new MongoDbSchedulerStore<int>(mongoDatabase, new SchedulerOptions { QueueName = "Numbers" });

@@ -22,27 +22,6 @@ public static class MongoDbServiceExtensions
 {
     public static void AddMyMongoDb(this IServiceCollection services, IConfiguration config)
     {
-        ActivityContextSerializer.Register();
-        ActivitySpanIdSerializer.Register();
-        ActivityTraceIdSerializer.Register();
-        DurationSerializer.Register();
-        InstantSerializer.Register();
-        LocalDateSerializer.Register();
-        LocalTimeSerializer.Register();
-
-        // Allow all types, independent from the actual assembly.
-        BsonSerializer.RegisterSerializer(new ObjectSerializer(type => true));
-
-        ConventionRegistry.Register("EnumStringConvention", new ConventionPack
-        {
-            new EnumRepresentationConvention(BsonType.String)
-        }, t => true);
-
-        ConventionRegistry.Register("IgnoreExtraElements", new ConventionPack
-        {
-            new IgnoreExtraElementsConvention(true)
-        }, t => true);
-
         services.ConfigureAndValidate<MongoDbOptions>(config, "storage:mongoDb");
 
         services.AddSingletonAs(c =>
