@@ -279,7 +279,7 @@ export const EN = {
     },
     notificationSettings: {
         channelGroupKey: 'Group Key',
-        channelGroupKeyHints: 'Define a shared key that is used to group notificationsfor this particular channel only. Only the last notification in a group is kept and other notifications are added as child notifications and can be used for formatting. All notifications are tracked. You have to define a delay to use grouping.',
+        channelGroupKeyHints: 'Define a shared key that is used to group notifications for this particular channel only. Only the last notification in a group is kept and other notifications are added as child notifications and can be used for formatting. All notifications are tracked. You have to define a delay to use grouping.',
         delayInSeconds: 'Delay in seconds',
         delayInSecondsHints: 'All notifications that are created within this time window are send together.',
         email: {
