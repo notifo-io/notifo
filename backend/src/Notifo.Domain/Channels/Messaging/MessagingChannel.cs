@@ -117,6 +117,7 @@ public sealed class MessagingChannel : SchedulingChannelBase<MessagingJob, Messa
             var job = new MessagingJob(notification, context);
 
             await Scheduler.ScheduleGroupedAsync(
+                job.Notification.Id.ToString(),
                 job.ScheduleKey,
                 job,
                 job.SendDelay,

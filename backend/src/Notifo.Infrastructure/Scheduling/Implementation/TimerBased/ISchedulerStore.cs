@@ -20,10 +20,10 @@ public interface ISchedulerStore<T>
     Task<SchedulerBatch<T>?> DequeueAsync(Instant time,
         CancellationToken ct = default);
 
-    Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount = 0,
+    Task EnqueueAsync(string key, T job, Instant dueTime, int retryCount = 0,
         CancellationToken ct = default);
 
-    Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount = 0,
+    Task EnqueueGroupedAsync(string key, string groupKey, T job, Instant dueTime, int retryCount = 0,
         CancellationToken ct = default);
 
     Task ResetDeadAsync(Instant oldTime, Instant next,

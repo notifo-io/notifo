@@ -98,6 +98,7 @@ public sealed class SmsChannel : SchedulingChannelBase<SmsJob, SmsChannel>, ICal
             var job = new SmsJob(notification, context);
 
             await Scheduler.ScheduleGroupedAsync(
+                job.Notification.Id.ToString(),
                 job.ScheduleKey,
                 job,
                 job.SendDelay,

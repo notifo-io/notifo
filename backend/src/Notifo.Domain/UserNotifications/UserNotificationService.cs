@@ -88,7 +88,7 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             var scheduleKey = ScheduleKey(userEvent);
             var scheduleTime = Scheduling.CalculateScheduleTime(userEvent.Scheduling, clock, user.PreferredTimezone);
 
-            await userEventQueue.ScheduleGroupedAsync(scheduleKey, userEvent, scheduleTime, true);
+            await userEventQueue.ScheduleGroupedAsync(userEvent.EventId, scheduleKey, userEvent, scheduleTime, true);
         }
     }
 

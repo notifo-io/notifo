@@ -87,25 +87,25 @@ public sealed class MongoDbSchedulerStore<T> : MongoDbRepository<SchedulerBatch<
         }
     }
 
-    public async Task EnqueueGroupedAsync(string key, T job, Instant delay, int retryCount = 0,
+    public async Task EnqueueGroupedAsync(string key, string groupKey, T job, Instant dueTime, int retryCount = 0,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/EnqueueGroupedAsync"))
         {
-            await Collection.UpdateOneAsync(x => x.Key == key && !x.Progressing && x.DueTime <= delay,
+            await Collection.UpdateOneAsync(x => x.Key == groupKey && !x.Progressing && x.DueTime <= dueTime,
                 Update
-                    .Min(x => x.DueTime, delay)
+                    .SetOnInsert(x => x.DueTime, dueTime)
                     .SetOnInsert(x => x.Id, Guid.NewGuid().ToString())
-                    .SetOnInsert(x => x.Key, key)
+                    .SetOnInsert(x => x.Key, groupKey)
                     .SetOnInsert(x => x.Progressing, false)
                     .SetOnInsert(x => x.ProgressingStarted, null)
                     .SetOnInsert(x => x.RetryCount, retryCount)
-                    .AddToSet(x => x.Jobs, job),
+                    .Set($"JobsV2.{key}", job),
                 Upsert, ct);
         }
     }
 
-    public async Task EnqueueScheduledAsync(string key, T job, Instant dueTime, int retryCount = 0,
+    public async Task EnqueueAsync(string key, T job, Instant dueTime, int retryCount = 0,
         CancellationToken ct = default)
     {
         using (Telemetry.Activities.StartActivity("MongoDbSchedulerStore/EnqueueScheduledAsync"))
@@ -118,7 +118,7 @@ public sealed class MongoDbSchedulerStore<T> : MongoDbRepository<SchedulerBatch<
                     .SetOnInsert(x => x.Progressing, false)
                     .SetOnInsert(x => x.ProgressingStarted, null)
                     .SetOnInsert(x => x.RetryCount, retryCount)
-                    .SetOnInsert(x => x.Jobs, new List<T> { job }),
+                    .Set($"JobsV2.{key}", job),
                 Upsert, ct);
         }
     }
