@@ -61,7 +61,7 @@ public static class IdentityServiceExtensions
                         return ApiKeyDefaults.AuthenticationScheme;
                     }
 
-                    return OpenIddictServerAspNetCoreDefaults.AuthenticationScheme;
+                    return OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
                 };
             })
             .AddGoogle(identityOptions)
