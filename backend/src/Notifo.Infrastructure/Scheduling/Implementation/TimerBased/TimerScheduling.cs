@@ -65,12 +65,12 @@ public sealed class TimerScheduling<T> : IScheduling<T>
         return ScheduleAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
     }
 
-    public Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+    public Task ScheduleGroupedAsync(string key, string groupKey, T job, Duration dueTimeFromNow, bool canInline,
         CancellationToken ct = default)
     {
         var now = clock.GetCurrentInstant();
 
-        return ScheduleGroupedAsync(key, job, now.Plus(dueTimeFromNow), canInline, ct);
+        return ScheduleGroupedAsync(key, groupKey, job, now.Plus(dueTimeFromNow), canInline, ct);
     }
 
     public async Task ScheduleAsync(string key, T job, Instant dueTime, bool canInline,
@@ -87,11 +87,11 @@ public sealed class TimerScheduling<T> : IScheduling<T>
         }
         else
         {
-            await schedulerStore.EnqueueScheduledAsync(key, job, dueTime, 0, ct);
+            await schedulerStore.EnqueueAsync(key, job, dueTime, 0, ct);
         }
     }
 
-    public async Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
+    public async Task ScheduleGroupedAsync(string key, string groupKey, T job, Instant dueTime, bool canInline,
         CancellationToken ct = default)
     {
         var now = clock.GetCurrentInstant();
@@ -105,7 +105,7 @@ public sealed class TimerScheduling<T> : IScheduling<T>
         }
         else
         {
-            await schedulerStore.EnqueueGroupedAsync(key, job, dueTime, 0, ct);
+            await schedulerStore.EnqueueGroupedAsync(key, groupKey, job, dueTime, 0, ct);
         }
     }
 

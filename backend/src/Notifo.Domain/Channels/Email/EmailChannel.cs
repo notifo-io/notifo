@@ -72,6 +72,7 @@ public sealed class EmailChannel : SchedulingChannelBase<EmailJob, EmailChannel>
             var job = new EmailJob(notification, context, email);
 
             await Scheduler.ScheduleGroupedAsync(
+                job.Notification.Id.ToString(),
                 job.ScheduleKey,
                 job,
                 job.SendDelay,

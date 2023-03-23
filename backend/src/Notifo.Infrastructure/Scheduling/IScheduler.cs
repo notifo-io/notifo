@@ -19,9 +19,9 @@ public interface IScheduler<in T>
     Task ScheduleAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
         CancellationToken ct = default);
 
-    Task ScheduleGroupedAsync(string key, T job, Instant dueTime, bool canInline,
+    Task ScheduleGroupedAsync(string key, string groupKey, T job, Instant dueTime, bool canInline,
         CancellationToken ct = default);
 
-    Task ScheduleGroupedAsync(string key, T job, Duration dueTimeFromNow, bool canInline,
+    Task ScheduleGroupedAsync(string key, string groupKey, T job, Duration dueTimeFromNow, bool canInline,
         CancellationToken ct = default);
 }

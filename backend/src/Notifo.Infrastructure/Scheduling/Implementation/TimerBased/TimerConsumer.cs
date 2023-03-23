@@ -92,7 +92,7 @@ public sealed class TimerConsumer<T>
 
             var nextTime = clock.GetCurrentInstant().Plus(Duration.FromMinutes(5));
 
-            await schedulerStore.EnqueueScheduledAsync(key, job, nextTime, 1);
+            await schedulerStore.EnqueueAsync(key, job, nextTime, 1);
         }
     }
 
@@ -112,13 +112,13 @@ public sealed class TimerConsumer<T>
 
             if (Debugger.IsAttached)
             {
-                isConfirmed = await onSuccess(document.Jobs, !canRetry, default);
+                isConfirmed = await onSuccess(document.GetAllJobs(), !canRetry, default);
             }
             else
             {
                 using (var timeout = new CancellationTokenSource(schedulerOptions.Timeout))
                 {
-                    isConfirmed = await onSuccess(document.Jobs, !canRetry, timeout.Token);
+                    isConfirmed = await onSuccess(document.GetAllJobs(), !canRetry, timeout.Token);
                 }
             }
 
@@ -143,7 +143,7 @@ public sealed class TimerConsumer<T>
             {
                 try
                 {
-                    await onError(document.Jobs, ex, default);
+                    await onError(document.GetAllJobs(), ex, default);
                 }
                 catch (Exception ex2)
                 {
