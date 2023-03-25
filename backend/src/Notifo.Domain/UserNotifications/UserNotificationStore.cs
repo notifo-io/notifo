@@ -88,9 +88,9 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
             }
 
             return channel.Status.Values.Any(x => IsMatching(x, query));
-        }).ToList();
+        });
 
-        return ResultList.Create(filteredNotifications.Count, filteredNotifications);
+        return ResultList.Create(filteredNotifications);
     }
 
     public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,

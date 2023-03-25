@@ -33,9 +33,9 @@ public static class ResultList
         return new Impl<T>(items, total);
     }
 
-    public static IResultList<T> Create<T>(long total, IEnumerable<T> items)
+    public static IResultList<T> Create<T>(IEnumerable<T> items)
     {
-        return new Impl<T>(items, total);
+        return new Impl<T>(items);
     }
 
     public static IResultList<T> CreateFrom<T>(long total, params T[] items)
