@@ -6,6 +6,7 @@
  */
 
 import { createAction, createReducer } from '@reduxjs/toolkit';
+import { User as OidcUser } from 'oidc-client-ts';
 import { routerActions } from 'react-router-redux';
 import { Dispatch, Middleware } from 'redux';
 import { Types } from '@app/framework';
@@ -67,7 +68,7 @@ export const loginDone = () => {
         } else if (currentUser) {
             const user = getUser(currentUser);
 
-            dispatch(loginDoneRedirect({ user, redirectPath: currentUser.state?.redirectPath }));
+            dispatch(loginDoneRedirect({ user, redirectPath: (currentUser.state as any)?.['redirectPath'] }));
         }
     };
 };
@@ -146,7 +147,7 @@ export const loginReducer = createReducer(initialState, builder => builder
         state.user = undefined;
     }));
 
-function getUser(user: Oidc.User): User {
+function getUser(user: OidcUser): User {
     const { sub, name, role } = user.profile!;
 
     let roles: string[];

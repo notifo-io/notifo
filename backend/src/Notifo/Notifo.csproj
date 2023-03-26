@@ -58,11 +58,6 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\scripts\oidc-client.min.js" />
-    <None Include="wwwroot\Empty.png" />
-  </ItemGroup>
   
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

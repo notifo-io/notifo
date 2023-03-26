@@ -60,7 +60,7 @@ export const AppDashboardPage = () => {
                 <CardBody>
                     <Label>{texts.common.webPluginHint}</Label>
 
-                    <CodeDetails mode='html' value={buildSampleCode()}></CodeDetails>
+                    <CodeDetails mode='htmlmixed' value={buildSampleCode()}></CodeDetails>
                 </CardBody>
             </Card>
         </div>
@@ -70,7 +70,7 @@ export const AppDashboardPage = () => {
 const buildSampleCode = () => {
     return `
 <script src="${getApiUrl()}/notifo-sdk.js"></script>
-<script<script>
+<script>
    var notifo = window['notifo'] || (window['notifo'] = []);
    // Initialize the plugin.
    notifo.push(['init', {

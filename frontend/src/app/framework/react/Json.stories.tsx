@@ -7,7 +7,7 @@
 
 import { ComponentMeta } from '@storybook/react';
 import * as React from 'react';
-import { JsonDetails } from './Ace';
+import { JsonDetails } from './Code';
 
 export default {
     component: JsonDetails,
