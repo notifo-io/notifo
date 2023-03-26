@@ -27,29 +27,21 @@ public static class Startup
         }
 
         app.UseMiddleware<NotifoMiddleware>();
+        app.UseMiddleware<SetupMiddleware>();
 
-        app.UseWhen(c => c.IsSpaFile(), builder =>
+        app.UseHtmlTransform(new HtmlTransformOptions
         {
-            builder.UseMiddleware<SetupMiddleware>();
-        });
-
-        app.UseWhen(c => c.IsSpaFile() || c.IsHtmlPath(), builder =>
-        {
-            // Adjust the base for all potential html files.
-            builder.UseHtmlTransform(new HtmlTransformOptions
+            Transform = (html, context) =>
             {
-                Transform = (html, context) =>
-                {
-                    return new ValueTask<string>(html.AddOptions(context));
-                }
-            });
+                return new ValueTask<string>(html.AddOptions(context));
+            }
         });
 
         app.UseNotifoStaticFiles(fileProvider);
 
         if (environment.IsProduction())
         {
-            // Try static files again tó serve index.html.
+            // Try static files again to serve index.html.
             app.UsePathOverride("/index.html");
             app.UseNotifoStaticFiles(fileProvider);
         }
@@ -82,15 +74,5 @@ public static class Startup
             },
             FileProvider = fileProvider
         });
-    }
-
-    private static bool IsSpaFile(this HttpContext context)
-    {
-        return (context.IsIndex() || !Path.HasExtension(context.Request.Path)) && !context.IsDevServer();
-    }
-
-    private static bool IsDevServer(this HttpContext context)
-    {
-        return context.Request.Path.StartsWithSegments("/ws", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -7,10 +7,9 @@
 
 /** @jsx h */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { isFunction } from 'lodash';
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { NotificationsOptions, SDKConfig } from '@sdk/shared';
+import { isFunction, NotificationsOptions, SDKConfig } from '@sdk/shared';
 import { buildConnection } from '@sdk/ui/api';
 import { addNotifications, deleteNotification, setConnected, useDispatch } from '@sdk/ui/model';
 import { Modal } from './Modal';

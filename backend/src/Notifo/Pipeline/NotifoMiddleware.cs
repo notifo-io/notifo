@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Net.Http.Headers;
+using Squidex.Hosting;
 
 namespace Notifo.Pipeline;
 
@@ -20,17 +21,19 @@ public class NotifoMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        if (context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase))
-        {
-            context.Response.Headers[HeaderNames.ContentType] = "text/javascript";
-
-            var script = "importScripts('https://app.notifo.io/notifo-sdk-worker.js')";
-
-            await context.Response.WriteAsync(script, context.RequestAborted);
-        }
-        else
+        if (!context.Request.Path.Equals("/notifo-sw.js", StringComparison.OrdinalIgnoreCase))
         {
             await next(context);
+            return;
         }
+
+        context.Response.Headers[HeaderNames.ContentType] = "text/javascript";
+
+        var urlGenerator = context.RequestServices.GetRequiredService<IUrlGenerator>();
+
+        var scriptPath = urlGenerator.BuildUrl("notifo-sdk-worker.js", false);
+        var scriptImport = $"importScripts('{scriptPath}')";
+
+        await context.Response.WriteAsync(scriptImport, context.RequestAborted);
     }
 }

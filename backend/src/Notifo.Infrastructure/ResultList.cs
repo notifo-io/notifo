@@ -20,11 +20,22 @@ public static class ResultList
         {
             Total = total;
         }
+
+        public Impl(IEnumerable<T> items)
+            : base(items)
+        {
+            Total = Count;
+        }
     }
 
     public static IResultList<T> Create<T>(long total, IEnumerable<T> items)
     {
         return new Impl<T>(items, total);
+    }
+
+    public static IResultList<T> Create<T>(IEnumerable<T> items)
+    {
+        return new Impl<T>(items);
     }
 
     public static IResultList<T> CreateFrom<T>(long total, params T[] items)

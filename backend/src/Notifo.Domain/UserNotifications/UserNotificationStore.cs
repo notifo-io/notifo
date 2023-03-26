@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Esprima.Ast;
 using NodaTime;
 using Notifo.Domain.Channels;
 using Notifo.Domain.Counters;
@@ -51,6 +52,29 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
         var notifications = await repository.QueryAsync(appId, userId, query.ToBaseQuery(), ct);
 
+        static bool IsMatching(ChannelSendInfo status, DeviceNotificationsQuery query)
+        {
+            if (!status.Configuration.ContainsValue(query.DeviceIdentifier!))
+            {
+                return false;
+            }
+
+            if (status.Status < DeliveryStatus.Sent)
+            {
+                return false;
+            }
+
+            switch (query.Scope)
+            {
+                case DeviceNotificationsQueryScope.Seen:
+                    return status.FirstSeen != null;
+                case DeviceNotificationsQueryScope.Unseen:
+                    return status.FirstSeen == null;
+                default:
+                    return true;
+            }
+        }
+
         var filteredNotifications = notifications.Where(notification =>
         {
             if (notification.Silent)
@@ -63,23 +87,10 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
                 return false;
             }
 
-            foreach (var (_, status) in channel.Status)
-            {
-                if (!status.Configuration.ContainsValue(query.DeviceIdentifier))
-                {
-                    continue;
-                }
+            return channel.Status.Values.Any(x => IsMatching(x, query));
+        });
 
-                if (status.Status >= DeliveryStatus.Sent && (query.IncludeUnseen || status.FirstSeen == null))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }).ToList();
-
-        return ResultList.Create(filteredNotifications.Count, filteredNotifications);
+        return ResultList.Create(filteredNotifications);
     }
 
     public Task<IResultList<UserNotification>> QueryAsync(string appId, string userId, UserNotificationQuery query,

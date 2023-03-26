@@ -6,8 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
-import { isNumber } from 'lodash';
-import { isObject, isString, isUndefined, logWarn } from './utils';
+import { isNumber, isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     en: enUS,
