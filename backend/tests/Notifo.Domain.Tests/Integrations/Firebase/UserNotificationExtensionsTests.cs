@@ -29,7 +29,7 @@ public class UserNotificationExtensionsTests
             DeviceType = MobileDeviceType.Android,
             Data = "data1",
             ImageSmall = "https://notifo.io/placeholder.png",
-            ImageLarge = "https://notifo.io/placeholder-large.png"
+            ImageLarge = "https://notifo.io/placeholder-large.png",
             IsConfirmed = true,
             Silent = false,
             LinkText = "My Link",

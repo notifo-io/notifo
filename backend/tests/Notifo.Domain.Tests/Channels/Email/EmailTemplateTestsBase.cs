@@ -230,7 +230,7 @@ public abstract class EmailTemplateTestsBase
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     Subject = "subject1",
                     ImageSmall = "https://notifo.io/placeholder.png",
-                    ImageLarge = "https://notifo.io/placeholder-large.png"
+                    ImageLarge = "https://notifo.io/placeholder-large.png",
                     ConfirmText = "Got It!",
                     ConfirmMode = ConfirmMode.Explicit
                 },
