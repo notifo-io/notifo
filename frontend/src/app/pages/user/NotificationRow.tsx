@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
-import { FormatDate, Icon, JsonDetails } from '@app/framework';
+import { Code, FormatDate, Icon } from '@app/framework';
 import { UserNotificationDetailsDto } from '@app/service';
 import { texts } from '@app/texts';
 import { NotificationDetails } from './NotificationDetails';
@@ -87,7 +87,7 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
                             {isOpen === 1 ? (
                                 <NotificationDetails notification={notification} />
                             ) : (
-                                <JsonDetails object={notification} />
+                                <Code value={notification} />
                             )}
                         </td>
                     </tr>

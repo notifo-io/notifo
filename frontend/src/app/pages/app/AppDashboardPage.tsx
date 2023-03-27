@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { Card, CardBody, FormGroup, Label } from 'reactstrap';
-import { ApiValue, CodeDetails } from '@app/framework';
+import { ApiValue, Code } from '@app/framework';
 import { getApiUrl } from '@app/service';
 import { CounterCards } from '@app/shared/components';
 import { useApp } from '@app/state';
@@ -60,7 +60,7 @@ export const AppDashboardPage = () => {
                 <CardBody>
                     <Label>{texts.common.webPluginHint}</Label>
 
-                    <CodeDetails mode='htmlmixed' value={buildSampleCode()}></CodeDetails>
+                    <Code mode='html' value={buildSampleCode()} autoHeight />
                 </CardBody>
             </Card>
         </div>

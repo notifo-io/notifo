@@ -7,19 +7,27 @@
 
 import { ComponentMeta } from '@storybook/react';
 import * as React from 'react';
-import { CodeDetails } from './Code';
+import { Code } from './Code';
 
 export default {
-    component: CodeDetails,
-} as ComponentMeta<typeof CodeDetails>;
+    component: Code,
+} as ComponentMeta<typeof Code>;
 
 const Template = (args: any) => {
     return (
-        <CodeDetails {...args} />
+        <Code {...args} />
     );
 };
+
 export const Default = Template.bind({});
 
 Default['args'] = {
     value: 'Sample Code',
+};
+
+export const AuthHeight = Template.bind({});
+
+AuthHeight['args'] = {
+    value: 'Sample Code',
+    autoHeight: true,
 };

@@ -45,12 +45,6 @@
                 padding-left: 3rem;
                 padding-right: 3rem;
             }
-
-            &:last-child {
-                .json-details {
-                    border-bottom: 1px solid $color-table;
-                }
-            }
         }
     }
 }

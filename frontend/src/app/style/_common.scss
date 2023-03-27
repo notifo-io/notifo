@@ -536,7 +536,15 @@ $small-gutters: 4px;
 }
 
 .code-editor {
+    border: 1px solid $color-border;
+    border-radius: 0;
     font-size: 14px;
+
+    .CodeMirror-foldmarker {
+        color: $color-text;
+        text-decoration: none;
+        text-shadow: none;
+    }
 
     &.auto {
         .CodeMirror {

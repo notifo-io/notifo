@@ -8,52 +8,26 @@
 import classNames from 'classnames';
 import * as CodeMirror from 'codemirror';
 import * as React from 'react';
+import { Types } from './../utils';
+import 'codemirror/addon/fold/brace-fold';
 import 'codemirror/addon/fold/foldcode';
 import 'codemirror/addon/fold/foldgutter';
-import 'codemirror/mode/javascript/javascript';
+import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/mode/htmlmixed/htmlmixed';
+import 'codemirror/mode/javascript/javascript';
 
-export interface JsonDetailsProps {
-    // The object.
-    object: any;
-}
-
-export const JsonDetails = React.memo((props: JsonDetailsProps) => {
-    const { object } = props;
-
-    return (
-        <CodeEditor mode={'javascript'} value={JSON.stringify(object, null, 2)} />
-    );
-});
-
-export interface CodeDetailsProps {
-    // The object.
-    value: string;
-
-    // The actual mode
-    mode?: string;
-}
-
-export const CodeDetails = React.memo((props: CodeDetailsProps) => {
-    const { mode, value } = props;
-
-    return (
-        <CodeEditor mode={mode || 'javascript'} value={value} autoHeight={true} />
-    );
-});
-
-interface CodeEditorProps {
+export interface CodeProps {
     // The code mode.
-    mode: string;
+    mode?: 'html' | 'json';
 
     // True, if the height is calculated automatically.
     autoHeight?: boolean;
 
     // The actual value.
-    value: string;
+    value?: any;
 }
 
-export const CodeEditor = (props: CodeEditorProps) => {
+export const Code = (props: CodeProps) => {
     const { autoHeight, mode, value } = props;
     const [editor, setEditor] = React.useState<CodeMirror.Editor>();
 
@@ -63,7 +37,7 @@ export const CodeEditor = (props: CodeEditorProps) => {
         }
     
         const editor = CodeMirror.fromTextArea(textarea, {
-            autoCloseTags: true,
+            foldGutter: true,
             gutters: [
                 'CodeMirror-linenumbers',
                 'CodeMirror-foldgutter',
@@ -72,11 +46,10 @@ export const CodeEditor = (props: CodeEditorProps) => {
             indentWithTabs: false,
             lineNumbers: true,
             lineSeparator: undefined,
-            matchTags: true,
+            lineWrapping: true,
             readOnly: true,
             tabindex: 0,
             tabSize: 2,
-            theme: 'material',
         });
 
         setEditor(editor);
@@ -87,11 +60,27 @@ export const CodeEditor = (props: CodeEditorProps) => {
     }, [autoHeight, editor]);
 
     React.useEffect(() => {
-        editor?.setOption('mode', mode);
+        let actualMode: any;
+
+        if (mode === 'html') {
+            actualMode = { name: 'htmlmixed' };
+        } else {
+            actualMode = { name: 'javascript', json: true };
+        }
+
+        editor?.setOption('mode', actualMode);
     }, [editor, mode]);
 
     React.useEffect(() => {
-        editor?.setValue(value);
+        let actualText: string;
+
+        if (Types.isString(value)) {
+            actualText = value;
+        } else {
+            actualText = JSON.stringify(value || {}, undefined, 2);
+        }
+
+        editor?.setValue(actualText);
     }, [editor, value]);
 
     return (
