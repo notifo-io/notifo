@@ -53,11 +53,6 @@ public sealed class MediaProxyController : MediaBaseController
             throw new ValidationException("Invalid URL.");
         }
 
-        if (string.Equals(uri.Host, "via.placeholder.com", StringComparison.OrdinalIgnoreCase))
-        {
-            return Redirect(url);
-        }
-
         using (var httpClient = httpClientFactory.CreateClient("Unsafe"))
         {
             var request = new HttpRequestMessage(HttpMethod.Get, url);

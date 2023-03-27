@@ -8,9 +8,9 @@
 import './utils/array-extensions';
 
 export * from './model';
-export * from './react/Ace';
 export * from './react/ApiValue';
 export * from './react/ClickOutside';
+export * from './react/Code';
 export * from './react/Confirm';
 export * from './react/DropZone';
 export * from './react/ErrorBoundary';

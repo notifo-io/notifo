@@ -98,7 +98,7 @@ public static class PreviewData
                     Subject = "A notification with body and image",
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     ImageLarge = string.Empty,
-                    ImageSmall = "https://via.placeholder.com/150"
+                    ImageSmall = "https://notifo.io/placeholder.png"
                 }
             },
             new UserNotification
@@ -108,7 +108,7 @@ public static class PreviewData
                     Subject = "A notification with body and image and button",
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     ImageLarge = string.Empty,
-                    ImageSmall = "https://via.placeholder.com/150",
+                    ImageSmall = "https://notifo.io/placeholder.png",
                     ConfirmText = "Confirm",
                     ConfirmMode = ConfirmMode.Explicit
                 },
@@ -121,7 +121,7 @@ public static class PreviewData
                     Subject = "A notification with body and image and link",
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     ImageLarge = string.Empty,
-                    ImageSmall = "https://via.placeholder.com/150",
+                    ImageSmall = "https://notifo.io/placeholder.png",
                     LinkText = "Follow Link",
                     LinkUrl = "/url/to/link"
                 }

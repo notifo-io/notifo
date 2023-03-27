@@ -124,8 +124,8 @@ public abstract class EmailTemplateTestsBase
                 {
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     Subject = "subject1",
-                    ImageSmall = "https://via.placeholder.com/100",
-                    ImageLarge = "https://via.placeholder.com/600"
+                    ImageSmall = "https://notifo.io/placeholder.png",
+                    ImageLarge = "https://notifo.io/placeholder-large.png"
                 }
             });
 
@@ -229,8 +229,8 @@ public abstract class EmailTemplateTestsBase
                 {
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     Subject = "subject1",
-                    ImageSmall = "https://via.placeholder.com/100",
-                    ImageLarge = "https://via.placeholder.com/600",
+                    ImageSmall = "https://notifo.io/placeholder.png",
+                    ImageLarge = "https://notifo.io/placeholder-large.png",
                     ConfirmText = "Got It!",
                     ConfirmMode = ConfirmMode.Explicit
                 },

@@ -8,7 +8,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 import { Button } from 'reactstrap';
-import { FormatDate, Icon, JsonDetails, useBoolean } from '@app/framework';
+import { Code, FormatDate, Icon, useBoolean } from '@app/framework';
 import { EventDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 
@@ -51,7 +51,7 @@ export const EventRow = React.memo((props: EventRowProps) => {
                     {isOpen &&
                         <tr className='list-item-details event-row-details'>
                             <td className='no-padding' colSpan={4}>
-                                <JsonDetails object={event} />
+                                <Code value={event} />
                             </td>
                         </tr>
                     }

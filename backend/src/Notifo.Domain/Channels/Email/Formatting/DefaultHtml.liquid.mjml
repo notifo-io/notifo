@@ -2,7 +2,7 @@
 	<mj-body>
 		<mj-section>
 			<mj-column width="30%">
-				<mj-image align="left" alt="Logo" src="https://placeholder.com/wp-content/uploads/2018/10/placeholder.com-logo4.png" padding="15px" />
+				<mj-image align="left" alt="Logo" src="https://notifo.io/acme.png" padding="15px" />
 			</mj-column>
 		</mj-section>
 		<mj-section>

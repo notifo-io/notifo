@@ -19,10 +19,10 @@ export interface EmailTextEditorProps {
     appId: string;
 
     // When the text has changed.
-    onChange?: (value: string) => void;
+    onChange: (value: string) => void;
 
     // Called when the focus has been lost.
-    onBlur?: () => void;
+    onBlur: () => void;
 }
 
 export const EmailTextEditor = (props: EmailTextEditorProps) => {
@@ -31,8 +31,8 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Text');
 
     React.useEffect(() => {
-        onChange && emailPreview.emailMarkup && onChange(emailPreview.emailMarkup);
-    }, [emailPreview.emailMarkup, onChange]);
+        onChange(markup);
+    }, [markup, onChange]);
 
     React.useEffect(() => {
         setMarkup(initialValue || '');

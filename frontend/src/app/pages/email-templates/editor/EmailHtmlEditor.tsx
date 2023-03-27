@@ -26,10 +26,10 @@ export interface EmailHtmlEditorProps {
     schema?: MjmlSchema;
 
     // When the html has changed.
-    onChange?: (value: string) => void;
+    onChange: (value: string) => void;
 
     // Called when the focus has been lost.
-    onBlur?: () => void;
+    onBlur: () => void;
 }
 
 export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
@@ -44,8 +44,8 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
     const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
 
     React.useEffect(() => {
-        onChange && emailPreview.emailMarkup && onChange(emailPreview.emailMarkup);
-    }, [emailPreview, onChange]);
+        onChange(markup);
+    }, [markup, onChange]);
 
     React.useEffect(() => {
         setMarkup(initialValue);

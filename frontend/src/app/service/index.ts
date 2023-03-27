@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Log, User, UserManager, WebStorageStateStore } from 'oidc-client';
+import { Log, User, UserManager } from 'oidc-client-ts';
 import { AppsClient, ConfigsClient, EmailTemplatesClient, EventsClient, LogsClient, MediaClient, MessagingTemplatesClient, NotificationsClient, SmsTemplatesClient, SystemUsersClient, TemplatesClient, TopicsClient, UserClient, UsersClient } from './service';
 
 export * from './service';
@@ -48,20 +48,17 @@ export module AuthService {
         if (!userManager) {
             const authority = getApiUrl();
 
-            Log.logger = console;
+            Log.setLogger(console);
 
             userManager = new UserManager({
                 authority,
-                automaticSilentRenew: true,
                 client_id: 'notifo',
                 client_secret: undefined,
                 post_logout_redirect_uri: `${authority}/authentication/logout-callback`,
                 redirect_uri: `${authority}/authentication/login-callback`,
-                response_type: 'code',
                 scope: 'openid profile roles NotifoAPI',
-                silentRequestTimeout: 10000,
+                silentRequestTimeoutInSeconds: 1000,
                 silent_redirect_uri: `${authority}/authentication/login-silent-callback.html`,
-                userStore: new WebStorageStateStore({ store: window.localStorage || window.sessionStorage }),
             });
 
             userManager.getUser().then(user => {
