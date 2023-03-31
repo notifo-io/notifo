@@ -5,11 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.Log;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Logs.Dtos;
 
+[OpenApiRequest]
 public sealed class LogQueryDto : QueryDto
 {
     /// <summary>

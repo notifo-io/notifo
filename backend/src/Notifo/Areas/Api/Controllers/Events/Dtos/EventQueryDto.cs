@@ -5,11 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.Events;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Events.Dtos;
 
+[OpenApiRequest]
 public sealed class EventQueryDto : QueryDto
 {
     /// <summary>

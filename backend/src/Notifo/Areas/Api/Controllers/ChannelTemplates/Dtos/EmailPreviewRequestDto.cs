@@ -6,10 +6,12 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
+[OpenApiRequest]
 public sealed class EmailPreviewRequestDto
 {
     /// <summary>

@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Channels.Email;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
@@ -15,7 +14,6 @@ public sealed class EmailPreviewErrorDto
     /// <summary>
     /// The error message.
     /// </summary>
-    [Required]
     public string Message { get; set; }
 
     /// <summary>

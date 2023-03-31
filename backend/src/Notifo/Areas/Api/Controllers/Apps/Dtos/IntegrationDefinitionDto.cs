@@ -15,14 +15,13 @@ public sealed class IntegrationDefinitionDto
 {
     /// <summary>
     /// The title of the integration.
-    /// </summary>
+    /// </summary
     [Required]
     public string Title { get; set; }
 
     /// <summary>
     /// The logo for the integration.
     /// </summary>
-    [Required]
     public string Logo { get; set; }
 
     /// <summary>
@@ -33,13 +32,11 @@ public sealed class IntegrationDefinitionDto
     /// <summary>
     /// The properties to configure.
     /// </summary>
-    [Required]
     public List<IntegrationPropertyDto> Properties { get; set; }
 
     /// <summary>
     /// The features of the integration.
     /// </summary>
-    [Required]
     public IReadOnlySet<string> Capabilities { get; set; }
 
     public static IntegrationDefinitionDto FromDomainObject(IntegrationDefinition source)

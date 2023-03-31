@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain;
 using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
@@ -13,6 +14,7 @@ using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Areas.Api.Controllers.Templates.Dtos;
 
+[OpenApiRequest]
 public sealed class UpsertTemplateDto
 {
     /// <summary>

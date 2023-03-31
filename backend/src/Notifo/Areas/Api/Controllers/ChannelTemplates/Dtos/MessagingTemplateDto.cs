@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
 public sealed class MessagingTemplateDto
@@ -14,6 +12,5 @@ public sealed class MessagingTemplateDto
     /// <summary>
     /// The template text.
     /// </summary>
-    [Required]
     public string Text { get; set; }
 }

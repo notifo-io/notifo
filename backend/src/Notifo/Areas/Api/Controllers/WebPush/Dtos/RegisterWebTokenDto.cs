@@ -5,13 +5,17 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Microsoft.Build.Framework;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.Users;
 
 namespace Notifo.Areas.Api.Controllers.WebPush.Dtos;
 
+[OpenApiRequest]
 public sealed class RegisterWebTokenDto
 {
-    public WebPushSubscriptionDto Subscription { get; set; }
+    [Required]
+    public RegisterWebTokenSubscriptionDto Subscription { get; set; }
 
     public AddUserWebPushSubscription ToUpdate(string userId)
     {

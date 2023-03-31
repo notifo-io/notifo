@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
@@ -17,7 +16,6 @@ public sealed class UserNotificationDetailsDto : UserNotificationBaseDto
     /// <summary>
     /// The channel details.
     /// </summary>
-    [Required]
     public Dictionary<string, UserNotificationChannelDto> Channels { get; set; }
 
     /// <summary>

@@ -5,11 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
-using MongoDB.Driver;
-using MongoDB.Driver.Core.Configuration;
-using MongoDB.Driver.Linq;
 using Notifo.Infrastructure.Scheduling;
 using Notifo.Infrastructure.Scheduling.Implementation.TimerBased.MongoDb;
 

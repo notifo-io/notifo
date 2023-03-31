@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain;
 
@@ -16,31 +15,26 @@ public abstract class UserNotificationBaseDto
     /// <summary>
     /// The id of the notification.
     /// </summary>
-    [Required]
     public Guid Id { get; set; }
 
     /// <summary>
     /// The subject of the notification in the language of the user.
     /// </summary>
-    [Required]
     public string Subject { get; set; }
 
     /// <summary>
     /// True when the notification is silent.
     /// </summary>
-    [Required]
     public bool Silent { get; set; }
 
     /// <summary>
     /// The timestamp when the notification has been created.
     /// </summary>
-    [Required]
     public Instant Created { get; set; }
 
     /// <summary>
     /// The timestamp when the notification has been updated.
     /// </summary>
-    [Required]
     public Instant Updated { get; set; }
 
     /// <summary>

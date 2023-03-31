@@ -5,13 +5,15 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.Channels.WebPush;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.WebPush.Dtos;
 
-public sealed class WebPushSubscriptionDto
+[OpenApiRequest]
+public sealed class RegisterWebTokenSubscriptionDto
 {
     public string Endpoint { get; set; }
 

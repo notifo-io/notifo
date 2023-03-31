@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Identity;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.SystemUsers.Dtos;
 
+[OpenApiRequest]
 public class CreateSystemUserDto
 {
     /// <summary>

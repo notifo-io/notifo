@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Templates;
 using Notifo.Infrastructure.Reflection;
@@ -17,31 +16,26 @@ public sealed class TemplateDto
     /// <summary>
     /// The code of the template.
     /// </summary>
-    [Required]
     public string Code { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the template has been created.
     /// </summary>
-    [Required]
     public Instant Created { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the template has been updated.
     /// </summary>
-    [Required]
     public Instant LastUpdate { get; set; }
 
     /// <summary>
     /// The formatting.
     /// </summary>
-    [Required]
     public NotificationFormattingDto Formatting { get; set; }
 
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    [Required]
     public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
     public static TemplateDto FromDomainObject(Template source)

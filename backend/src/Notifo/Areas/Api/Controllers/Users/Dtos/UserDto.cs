@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Users;
@@ -22,13 +21,11 @@ public sealed class UserDto
     /// <summary>
     /// The id of the user.
     /// </summary>
-    [Required]
     public string Id { get; set; }
 
     /// <summary>
     /// The unique api key for the user.
     /// </summary>
-    [Required]
     public string ApiKey { get; set; }
 
     /// <summary>
@@ -59,13 +56,11 @@ public sealed class UserDto
     /// <summary>
     /// The date time (ISO 8601) when the user has been created.
     /// </summary>
-    [Required]
     public Instant Created { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the user has been updated.
     /// </summary>
-    [Required]
     public Instant LastUpdate { get; set; }
 
     /// <summary>
@@ -76,7 +71,6 @@ public sealed class UserDto
     /// <summary>
     /// True when only whitelisted topic are allowed.
     /// </summary>
-    [Required]
     public bool RequiresWhitelistedTopics { get; set; }
 
     /// <summary>
@@ -92,25 +86,21 @@ public sealed class UserDto
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    [Required]
     public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
     /// <summary>
     /// The statistics counters.
     /// </summary>
-    [Required]
     public Dictionary<string, long> Counters { get; set; }
 
     /// <summary>
     /// The mobile push tokens.
     /// </summary>
-    [Required]
     public List<MobilePushTokenDto> MobilePushTokens { get; set; } = new List<MobilePushTokenDto>();
 
     /// <summary>
     /// The web push subscriptions.
     /// </summary>
-    [Required]
     public List<WebPushSubscriptionDto> WebPushSubscriptions { get; set; } = new List<WebPushSubscriptionDto>();
 
     /// <summary>

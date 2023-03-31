@@ -5,21 +5,16 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Diagnostics;
 using System.Net;
 using Microsoft.Extensions.Options;
 using NodaTime;
-using Notifo.Domain.Channels.Webhook;
 using Notifo.Domain.Integrations;
 using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Json;
-using Notifo.Infrastructure.Mediator;
-using Notifo.Infrastructure.Scheduling;
 using WebPush;
-using IUserNotificationQueue = Notifo.Infrastructure.Scheduling.IScheduler<Notifo.Domain.Channels.WebPush.WebPushJob>;
 
 namespace Notifo.Domain.Channels.WebPush;
 

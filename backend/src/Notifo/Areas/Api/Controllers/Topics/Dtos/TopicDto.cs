@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Collections;
@@ -21,19 +20,16 @@ public sealed class TopicDto
     /// <summary>
     /// The topic path.
     /// </summary>
-    [Required]
     public string Path { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the topic has been created.
     /// </summary>
-    [Required]
     public Instant Created { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the topic has been updated.
     /// </summary>
-    [Required]
     public Instant LastUpdate { get; set; }
 
     /// <summary>
@@ -64,7 +60,6 @@ public sealed class TopicDto
     /// <summary>
     /// The statistics counters.
     /// </summary>
-    [Required]
     public Dictionary<string, long> Counters { get; set; }
 
     public static TopicDto FromDomainObject(Topic source)
