@@ -47,7 +47,7 @@ export interface Query {
     page: number;
 
     // The search string.
-    search?: string | null;
+    search?: string;
 
     // The current sort order.
     sorting?: Sorting | null;

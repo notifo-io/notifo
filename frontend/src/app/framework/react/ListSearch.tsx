@@ -35,12 +35,12 @@ export const ListSearch = (props: ListSearchProps) => {
         ...other
     } = props;
 
-    const [search, setSearch] = React.useState<string | null>();
+    const [search, setSearch] = React.useState<string>();
 
     React.useEffect(() => {
         const timer = setTimeout(() => {
             if (hasChanged(list.search, search) && onSearch) {
-                onSearch({ search: search });
+                onSearch({ search });
             }
         }, 3000);
 

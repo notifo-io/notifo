@@ -15,7 +15,7 @@ public sealed class RequiredSchemaProcessor : ISchemaProcessor
 {
     public void Process(SchemaProcessorContext context)
     {
-        if (context.Type.GetCustomAttribute<OpenApiRequestAttribute>() != null)
+        if (context.ContextualType.GetAttribute<OpenApiRequestAttribute>() != null)
         {
             return;
         }

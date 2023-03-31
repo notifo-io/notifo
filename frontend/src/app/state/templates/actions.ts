@@ -12,7 +12,7 @@ import { createApiThunk, selectApp } from './../shared';
 import { TemplatesState } from './state';
 
 const list = listThunk<TemplatesState, TemplateDto>('templates', 'templates', async params => {
-    const { items, total } = await Clients.Templates.getTemplates(params.appId, null, 1000, 0);
+    const { items, total } = await Clients.Templates.getTemplates(params.appId, undefined, 1000, 0);
 
     return { items, total };
 });

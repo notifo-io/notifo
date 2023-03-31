@@ -679,6 +679,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<SubscriptionDto> GetMySubscriptionAsync(string topic, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (topic == null)
+                throw new System.ArgumentNullException("topic");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/me/subscriptions/{topic}");
             urlBuilder_.Replace("{topic}", System.Uri.EscapeDataString(ConvertToString(topic, System.Globalization.CultureInfo.InvariantCulture)));
@@ -769,6 +772,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteSubscriptionAsync(string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (prefix == null)
+                throw new System.ArgumentNullException("prefix");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/me/subscriptions/{prefix}");
             urlBuilder_.Replace("{prefix}", System.Uri.EscapeDataString(ConvertToString(prefix, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1118,6 +1124,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserDto> GetUsersAsync(string appId, string query = null, int? take = null, int? skip = null, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1225,6 +1234,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<UserDto>> PostUsersAsync(string appId, UpsertUsersDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -1331,6 +1343,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<UserDto> GetUserAsync(string appId, string id, bool? withDetails = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1425,6 +1443,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteUserAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1521,6 +1545,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfSubscriptionDto> GetSubscriptionsAsync(string appId, string id, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}/subscriptions?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1626,6 +1656,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostSubscriptionsAsync(string appId, string id, SubscribeManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -1727,6 +1763,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteSubscriptionAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            if (prefix == null)
+                throw new System.ArgumentNullException("prefix");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}/subscriptions/{prefix}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -1822,6 +1867,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostAllowedTopicAsync(string appId, string id, AddAllowedTopicDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -1923,6 +1974,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteAllowedTopicAsync(string appId, string id, string prefix, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            if (prefix == null)
+                throw new System.ArgumentNullException("prefix");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}/allowed-topics/{prefix}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2018,6 +2078,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteMobilePushTokenAsync(string appId, string id, string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            if (token == null)
+                throw new System.ArgumentNullException("token");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}/mobilepush/{token}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2113,6 +2182,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteWebPushSubscriptionAsync(string appId, string id, string endpoint, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
+            if (endpoint == null)
+                throw new System.ArgumentNullException("endpoint");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}/webpush/{endpoint}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2379,6 +2457,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTopicDto> GetTopicsAsync(string appId, TopicQueryScope? scope = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/topics?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2486,6 +2567,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<TopicDto>> PostTopicsAsync(string appId, UpsertTopicsDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -2585,6 +2669,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTopicAsync(string appId, string path, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (path == null)
+                throw new System.ArgumentNullException("path");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/topics/{path}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2842,6 +2932,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -2938,6 +3031,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<TemplateDto>> PostTemplatesAsync(string appId, UpsertTemplatesDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -3037,6 +3133,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -3517,6 +3619,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<SystemUserDto> GetUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/system-users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -3605,6 +3710,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<SystemUserDto> PutUserAsync(string id, UpdateSystemUserDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -3713,6 +3821,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/system-users/{id}");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -3808,6 +3919,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<SystemUserDto> LockUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/system-users/{id}/lock");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -3910,6 +4024,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<SystemUserDto> UnlockUserAsync(string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/system-users/{id}/unlock");
             urlBuilder_.Replace("{id}", System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture)));
@@ -4573,11 +4690,11 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="deviceIdentifier">The device identifier (aka mobile push token).</param>
         /// <param name="after">The max age of the notifications.</param>
-        /// <param name="includeUnseen">True to also include unseen notifications.</param>
+        /// <param name="scope">The scope of the query.</param>
         /// <param name="take">The number of notifications to query.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, bool? includeUnseen = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, DeviceNotificationsQueryScope? scope = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -4632,6 +4749,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetAllNotificationsAsync(string appId, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/notifications?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -4753,6 +4873,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDetailsDto> GetNotificationsAsync(string appId, string id, System.Collections.Generic.IEnumerable<string> channels = null, string channel = null, string correlationId = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/users/{id}/notifications?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -5061,11 +5187,11 @@ namespace Notifo.SDK
         /// </summary>
         /// <param name="deviceIdentifier">The device identifier (aka mobile push token).</param>
         /// <param name="after">The max age of the notifications.</param>
-        /// <param name="includeUnseen">True to also include unseen notifications.</param>
+        /// <param name="scope">The scope of the query.</param>
         /// <param name="take">The number of notifications to query.</param>
         /// <returns>Notifications returned.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, bool? includeUnseen = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ListResponseDtoOfUserNotificationDto> GetMyDeviceNotificationsAsync(string deviceIdentifier = null, System.DateTimeOffset? after = null, DeviceNotificationsQueryScope? scope = null, int? take = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/me/notifications/device?");
@@ -5077,9 +5203,9 @@ namespace Notifo.SDK
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("After") + "=").Append(System.Uri.EscapeDataString(after.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
-            if (includeUnseen != null)
+            if (scope != null)
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("IncludeUnseen") + "=").Append(System.Uri.EscapeDataString(ConvertToString(includeUnseen, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("Scope") + "=").Append(System.Uri.EscapeDataString(ConvertToString(scope, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             if (take != null)
             {
@@ -5588,6 +5714,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteMyTokenAsync(string token, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (token == null)
+                throw new System.ArgumentNullException("token");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/me/mobilepush/{token}");
             urlBuilder_.Replace("{token}", System.Uri.EscapeDataString(ConvertToString(token, System.Globalization.CultureInfo.InvariantCulture)));
@@ -5930,6 +6059,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfMediaDto> GetMediasAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/media?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -6031,6 +6163,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task UploadAsync(string appId, FileParameter file = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/media");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -6046,7 +6181,9 @@ namespace Notifo.SDK
                     content_.Headers.Remove("Content-Type");
                     content_.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary_);
 
-                    if (file != null)
+                    if (file == null)
+                        throw new System.ArgumentNullException("file");
+                    else
                     {
                         var content_file_ = new System.Net.Http.StreamContent(file.Data);
                         if (!string.IsNullOrEmpty(file.ContentType))
@@ -6148,6 +6285,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<FileResponse> DownloadAsync(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (fileName == null)
+                throw new System.ArgumentNullException("fileName");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/media/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -6288,6 +6431,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteAsync(string appId, string fileName, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (fileName == null)
+                throw new System.ArgumentNullException("fileName");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/media/{fileName}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -6393,6 +6542,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<FileResponse> Download2Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (fileName == null)
+                throw new System.ArgumentNullException("fileName");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/asset/{appId}/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -6545,6 +6700,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<FileResponse> Download3Async(string appId, string fileName, long? cache = null, int? download = null, string bg = null, int? width = null, int? height = null, int? quality = null, string preset = null, ResizeMode? mode = null, float? focusX = null, float? focusY = null, bool? force = null, bool? emptyOnFailure = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (fileName == null)
+                throw new System.ArgumentNullException("fileName");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/assets/{appId}/{fileName}?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -6994,6 +7155,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfLogEntryDto> GetLogsAsync(string appId, System.Collections.Generic.IEnumerable<string> systems = null, string userId = null, int? eventCode = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/logs?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -7280,6 +7444,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfEventDto> GetEventsAsync(string appId, System.Collections.Generic.IEnumerable<string> channels = null, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/events?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -7387,6 +7554,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PostEventsAsync(string appId, PublishManyDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -8539,6 +8709,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<FileResponse> GetPreviewAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/email-templates/{id}/preview");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -8626,6 +8802,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<EmailPreviewDto> PostPreviewAsync(string appId, EmailPreviewRequestDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -8733,6 +8912,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/email-templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -8835,6 +9017,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PostTemplateAsync(string appId, CreateChannelTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -8940,6 +9125,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/email-templates/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -9030,6 +9221,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -9137,6 +9334,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -9237,6 +9440,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/email-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -9332,6 +9541,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
+            if (language == null)
+                throw new System.ArgumentNullException("language");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -9435,6 +9653,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
+            if (language == null)
+                throw new System.ArgumentNullException("language");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/email-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -9754,6 +9981,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/messaging-templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -9856,6 +10086,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PostTemplateAsync(string appId, CreateChannelTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -9961,6 +10194,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/messaging-templates/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -10051,6 +10290,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -10158,6 +10403,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -10258,6 +10509,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -10353,6 +10610,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
+            if (language == null)
+                throw new System.ArgumentNullException("language");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -10456,6 +10722,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
+            if (language == null)
+                throw new System.ArgumentNullException("language");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/messaging-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -10775,6 +11050,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ListResponseDtoOfChannelTemplateDto> GetTemplatesAsync(string appId, string query = null, int? take = null, int? skip = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/sms-templates?");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -10877,6 +11155,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PostTemplateAsync(string appId, CreateChannelTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -10982,6 +11263,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> GetTemplateAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/sms-templates/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -11072,6 +11359,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -11179,6 +11472,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -11279,6 +11578,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateAsync(string appId, string code, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -11374,6 +11679,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
+            if (language == null)
+                throw new System.ArgumentNullException("language");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -11477,6 +11791,15 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (code == null)
+                throw new System.ArgumentNullException("code");
+
+            if (language == null)
+                throw new System.ArgumentNullException("language");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/sms-templates/{code}/{language}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -11978,6 +12301,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<AppDetailsDto> GetAppAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -12066,6 +12392,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<AppDetailsDto> PutAppAsync(string appId, UpsertAppDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -12171,6 +12500,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<AppDetailsDto> PostContributorAsync(string appId, AddContributorDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -12276,6 +12608,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<AppDetailsDto> DeleteContributorAsync(string appId, string contributorId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (contributorId == null)
+                throw new System.ArgumentNullException("contributorId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/contributors/{contributorId}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -12375,6 +12713,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<ConfiguredIntegrationsDto> GetIntegrationsAsync(string appId, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/integrations");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -12463,6 +12804,9 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task<IntegrationCreatedDto> PostIntegrationAsync(string appId, CreateIntegrationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -12569,6 +12913,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task PutIntegrationAsync(string appId, string id, UpdateIntegrationDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             if (request == null)
                 throw new System.ArgumentNullException("request");
 
@@ -12669,6 +13019,12 @@ namespace Notifo.SDK
         /// <exception cref="NotifoException">A server side error occurred.</exception>
         public virtual async System.Threading.Tasks.Task DeleteIntegrationAsync(string appId, string id, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
+            if (appId == null)
+                throw new System.ArgumentNullException("appId");
+
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append("api/apps/{appId}/integrations/{id}");
             urlBuilder_.Replace("{appId}", System.Uri.EscapeDataString(ConvertToString(appId, System.Globalization.CultureInfo.InvariantCulture)));
@@ -12882,7 +13238,8 @@ namespace Notifo.SDK
         /// The allowed Topics.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("allowedTopics", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<string> AllowedTopics { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.List<string> AllowedTopics { get; set; } = new System.Collections.Generic.List<string>();
 
         /// <summary>
         /// The preferred language of the user.
@@ -13222,6 +13579,7 @@ namespace Notifo.SDK
         /// The scheduling type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SchedulingType Type { get; set; }
 
@@ -13243,6 +13601,7 @@ namespace Notifo.SDK
         /// The scheduling time.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.TimeSpan Time { get; set; }
 
         /// <summary>
@@ -13785,6 +14144,7 @@ namespace Notifo.SDK
         /// The path of the topic.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Path { get; set; }
 
         /// <summary>
@@ -14185,6 +14545,7 @@ namespace Notifo.SDK
         /// The send status.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public DeliveryStatus Status { get; set; }
 
@@ -14192,12 +14553,14 @@ namespace Notifo.SDK
         /// The configuration for the device.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("configuration", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public SendConfiguration Configuration { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public SendConfiguration Configuration { get; set; } = new SendConfiguration();
 
         /// <summary>
         /// The last update.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -14263,6 +14626,7 @@ namespace Notifo.SDK
         /// The timestamp.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Timestamp { get; set; }
 
         /// <summary>
@@ -14426,6 +14790,21 @@ namespace Notifo.SDK
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
+    public enum DeviceNotificationsQueryScope
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Seen")]
+        Seen = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Unseen")]
+        Unseen = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"All")]
+        All = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.17.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v9.0.0.0))")]
     public partial class TrackNotificationDto
     {
         /// <summary>
@@ -14450,6 +14829,7 @@ namespace Notifo.SDK
         /// The configuration ID.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("configurationId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.Guid ConfigurationId { get; set; }
 
         /// <summary>
@@ -14492,6 +14872,7 @@ namespace Notifo.SDK
         /// The device type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("deviceType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MobileDeviceType DeviceType { get; set; }
 
@@ -14517,6 +14898,7 @@ namespace Notifo.SDK
         /// The device type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("deviceType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MobileDeviceType DeviceType { get; set; }
 
@@ -14899,6 +15281,7 @@ namespace Notifo.SDK
         /// A custom timestamp.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Timestamp { get; set; }
 
         /// <summary>
@@ -14949,7 +15332,8 @@ namespace Notifo.SDK
     public partial class MjmlSchema
     {
         [Newtonsoft.Json.JsonProperty("!top", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<string> Top { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public System.Collections.Generic.List<string> Top { get; set; } = new System.Collections.Generic.List<string>();
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
@@ -15017,6 +15401,7 @@ namespace Notifo.SDK
         /// The template type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public EmailPreviewType Type { get; set; }
 
@@ -15508,21 +15893,21 @@ namespace Notifo.SDK
         /// The id of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("userId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string UserId { get; set; }
 
         /// <summary>
         /// The name of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("userName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string UserName { get; set; }
 
         /// <summary>
         /// The role.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Role { get; set; }
 
     }

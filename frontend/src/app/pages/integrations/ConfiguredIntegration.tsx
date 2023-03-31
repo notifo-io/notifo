@@ -72,7 +72,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
                                 <Badge pill>{texts.integrations.modeProduction}</Badge>
                             }
 
-                            {configured.enabled === false &&
+                            {configured.enabled &&
                                 <Badge color='danger' pill>{texts.common.disabled}</Badge>
                             }
 
