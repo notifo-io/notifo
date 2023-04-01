@@ -5,8 +5,8 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Areas.Api.OpenApi;
 using System.ComponentModel.DataAnnotations;
+using Notifo.Areas.Api.OpenApi;
 
 namespace Notifo.Areas.Api.Controllers.Topics.Dtos;
 

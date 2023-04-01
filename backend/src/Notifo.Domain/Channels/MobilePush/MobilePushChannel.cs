@@ -279,17 +279,17 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
 
         var message = new MobilePushMessage
         {
-            Subject = notification.Formatting.Subject,
-            Body = notification.Formatting.Body,
-            ConfirmText = notification.Formatting.ConfirmText,
+            Subject = notification.Formatting?.Subject,
+            Body = notification.Formatting?.Body,
+            ConfirmText = notification.Formatting?.ConfirmText,
             ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
             Data = notification.Data,
             DeviceToken = job.DeviceToken,
             DeviceType = job.DeviceType,
-            ImageLarge = notification.Formatting.ImageLarge,
-            ImageSmall = notification.Formatting.ImageSmall,
-            LinkText = notification.Formatting.LinkText,
-            LinkUrl = notification.Formatting.LinkUrl,
+            ImageLarge = notification.Formatting?.ImageLarge,
+            ImageSmall = notification.Formatting?.ImageSmall,
+            LinkText = notification.Formatting?.LinkText,
+            LinkUrl = notification.Formatting?.LinkUrl,
             TimeToLiveInSeconds = notification.TimeToLiveInSeconds,
             Wakeup = notification.Formatting == null
         };
