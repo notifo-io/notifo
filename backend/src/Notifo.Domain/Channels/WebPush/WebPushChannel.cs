@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using System.Net;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NodaTime;
 using Notifo.Domain.Integrations;
@@ -119,11 +120,11 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
                     await UpdateAsync(job, DeliveryResult.Attempt);
                 }
 
-                await SendCoreAsync(job, ct);
+                var result = await SendCoreAsync(job, ct);
 
                 if (!job.IsUpdate)
                 {
-                    await UpdateAsync(job, DeliveryResult.Sent);
+                    await UpdateAsync(job, result);
                 }
             }
             catch (DomainException ex)
@@ -134,7 +135,7 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
         }
     }
 
-    private async Task SendCoreAsync(WebPushJob job,
+    private async Task<DeliveryResult> SendCoreAsync(WebPushJob job,
         CancellationToken ct)
     {
         try
@@ -147,21 +148,38 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
             var json = job.Payload;
 
             await webPushClient.SendNotificationAsync(pushSubscription, json, cancellationToken: ct);
+            return DeliveryResult.Handled;
         }
         catch (WebPushException ex) when (ex.StatusCode == HttpStatusCode.Gone)
         {
-            await LogStore.LogAsync(job.Notification.AppId, LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint));
+            // Use the same log message for the delivery result later.
+            var logMessage = LogMessage.WebPush_TokenInvalid(Name, job.Notification.UserId, job.Subscription.Endpoint);
 
+            await LogStore.LogAsync(job.Notification.AppId, logMessage);
+            await RemoveTokenAsync(job);
+
+            return DeliveryResult.Failed(logMessage.Reason);
+        }
+        catch (WebPushException ex)
+        {
+            throw new DomainException(ex.Message);
+        }
+    }
+
+    private async Task RemoveTokenAsync(WebPushJob job)
+    {
+        try
+        {
             var command = new RemoveUserWebPushSubscription
             {
                 Endpoint = job.Subscription.Endpoint
             };
 
-            await Mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
+            await Mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId));
         }
-        catch (WebPushException ex)
+        catch (Exception ex)
         {
-            throw new DomainException(ex.Message);
+            Log.LogWarning(ex, "Failed to remove token.");
         }
     }
 }

@@ -97,7 +97,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
 
     private void FillContext(IntegrationContext context)
     {
-        context.Properties[SmtpIntegration.HostProperty.Name] = emailOptions.Host;
+        context.Properties[SmtpIntegration.HostProperty.Name] = emailOptions.HostName;
         context.Properties[SmtpIntegration.HostPortProperty.Name] = emailOptions.HostPort.ToString(CultureInfo.InvariantCulture);
         context.Properties[SmtpIntegration.UsernameProperty.Name] = emailOptions.Username;
         context.Properties[SmtpIntegration.PasswordProperty.Name] = emailOptions.Password;

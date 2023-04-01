@@ -42,7 +42,7 @@ public sealed class WebChannel : ChannelBase<WebChannel>
             {
                 await streamClient.SendAsync(notification);
 
-                await UserNotificationStore.TrackAsync(identifier, DeliveryResult.Sent, default);
+                await UserNotificationStore.TrackAsync(identifier, DeliveryResult.Handled, default);
             }
             catch (Exception ex)
             {

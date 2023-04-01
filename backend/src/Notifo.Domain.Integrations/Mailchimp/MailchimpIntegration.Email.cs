@@ -93,6 +93,6 @@ public sealed partial class MailchimpIntegration : IEmailSender
             }
         }
 
-        return DeliveryResult.Sent;
+        return DeliveryResult.Handled;
     }
 }

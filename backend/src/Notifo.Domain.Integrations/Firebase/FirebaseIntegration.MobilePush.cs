@@ -51,7 +51,7 @@ public sealed partial class FirebaseIntegration : IMobilePushSender
             throw new MobilePushTokenExpiredException();
         }
 
-        return DeliveryResult.Sent;
+        return DeliveryResult.Handled;
     }
 
     private static bool ShouldSend(IntegrationContext context, bool isSilent, MobileDeviceType deviceType)

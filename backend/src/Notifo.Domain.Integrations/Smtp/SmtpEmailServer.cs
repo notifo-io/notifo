@@ -105,7 +105,7 @@ public class SmtpEmailServer : IDisposable
     {
         if (!smtpClient.IsConnected)
         {
-            await smtpClient.ConnectAsync(options.Host, options.HostPort);
+            await smtpClient.ConnectAsync(options.HostName, options.HostPort);
         }
 
         if (string.IsNullOrWhiteSpace(options.Username) ||

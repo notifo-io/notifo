@@ -103,6 +103,9 @@ export const Notifications = (props: NotificationsProps) => {
                                 <col style={{ width: 25 }}  />
                                 <col style={{ width: 25 }}  />
                                 <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
+                                <col style={{ width: 25 }}  />
                                 <col style={{ width: 240 }} />
                             </colgroup>
 
@@ -112,7 +115,7 @@ export const Notifications = (props: NotificationsProps) => {
                                     <th>
                                         <span className='truncate'>{texts.common.subject}</span>
                                     </th>
-                                    <th colSpan={4} data-tip={`${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
+                                    <th colSpan={7} data-tip={`${texts.common.skipped} / ${texts.common.failed} / ${texts.common.sent} / ${texts.common.handled} / ${texts.common.delivered} / ${texts.common.seen} / ${texts.common.confirmed}`}>
                                         <span className='truncate'>{texts.common.status}</span>
                                     </th>
                                     <th className='text-right'>

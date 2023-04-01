@@ -34,7 +34,7 @@ public sealed partial class SmtpIntegration : IEmailSender
         var options = new SmtpOptions
         {
             Username = UsernameProperty.GetString(context.Properties),
-            Host = HostProperty.GetString(context.Properties),
+            HostName = HostProperty.GetString(context.Properties),
             HostPort = (int)HostPortProperty.GetNumber(context.Properties),
             Password = PasswordProperty.GetString(context.Properties)
         };
