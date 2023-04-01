@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Infrastructure.Reflection;
 using Squidex.Assets;
 
 namespace Notifo.Areas.Api.Controllers.Media.Dtos;
 
+[OpenApiRequest]
 public sealed class MediaFileQueryDto
 {
     private static readonly Dictionary<string, ResizeOptions> Presets = new Dictionary<string, ResizeOptions>(StringComparer.OrdinalIgnoreCase)

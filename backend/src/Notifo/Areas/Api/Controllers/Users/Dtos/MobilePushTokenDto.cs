@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Channels.MobilePush;
 using Notifo.Domain.Integrations;
@@ -18,13 +17,11 @@ public sealed class MobilePushTokenDto
     /// <summary>
     /// The token.
     /// </summary>
-    [Required]
     public string Token { get; set; }
 
     /// <summary>
     /// The device type.
     /// </summary>
-    [Required]
     public MobileDeviceType DeviceType { get; set; }
 
     /// <summary>

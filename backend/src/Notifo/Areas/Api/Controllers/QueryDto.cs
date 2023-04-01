@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using Microsoft.AspNetCore.Mvc;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers;
 
+[OpenApiRequest]
 public class QueryDto
 {
     /// <summary>

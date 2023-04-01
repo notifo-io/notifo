@@ -48,6 +48,6 @@ public sealed partial class MailjetIntegration : IEmailSender
             }
         }
 
-        return DeliveryResult.Sent;
+        return DeliveryResult.Handled;
     }
 }

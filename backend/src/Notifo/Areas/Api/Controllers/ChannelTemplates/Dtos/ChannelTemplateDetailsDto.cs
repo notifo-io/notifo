@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Reflection;
@@ -17,7 +16,6 @@ public sealed class ChannelTemplateDetailsDto<T>
     /// <summary>
     /// The id of the template.
     /// </summary>
-    [Required]
     public string Id { get; set; }
 
     /// <summary>
@@ -28,25 +26,21 @@ public sealed class ChannelTemplateDetailsDto<T>
     /// <summary>
     /// True, when the template is the primary template.
     /// </summary>
-    [Required]
     public bool Primary { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the template has been created.
     /// </summary>
-    [Required]
     public Instant Created { get; set; }
 
     /// <summary>
     /// The date time (ISO 8601) when the template has been updated.
     /// </summary>
-    [Required]
     public Instant LastUpdate { get; set; }
 
     /// <summary>
     /// The language specific templates.
     /// </summary>
-    [Required]
     public Dictionary<string, T> Languages { get; set; }
 
     public static ChannelTemplateDetailsDto<T> FromDomainObject<TInput>(ChannelTemplate<TInput> source, Func<TInput, T> factory)

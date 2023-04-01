@@ -37,7 +37,7 @@ export function usePreview(appId: string, type: EmailPreviewType): [MarkupRespon
                     const rendering: EmailPreviewDto = {
                         errors: [{
                             message: ex.message,
-                        }],
+                        } as any],
                     };
 
                     setEmailPreview({ rendering, emailMarkup });

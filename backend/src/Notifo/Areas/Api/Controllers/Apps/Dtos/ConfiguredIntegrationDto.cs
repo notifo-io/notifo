@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
@@ -17,13 +16,11 @@ public sealed class ConfiguredIntegrationDto
     /// <summary>
     /// The integration type.
     /// </summary>
-    [Required]
     public string Type { get; set; }
 
     /// <summary>
     /// The configured properties.
     /// </summary>
-    [Required]
     public ReadonlyDictionary<string, string> Properties { get; set; }
 
     /// <summary>
@@ -49,7 +46,6 @@ public sealed class ConfiguredIntegrationDto
     /// <summary>
     /// The status of the integration.
     /// </summary>
-    [Required]
     public IntegrationStatus Status { get; set; }
 
     public static ConfiguredIntegrationDto FromDomainObject(ConfiguredIntegration source)

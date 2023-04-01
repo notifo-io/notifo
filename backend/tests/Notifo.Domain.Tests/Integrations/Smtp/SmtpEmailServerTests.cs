@@ -21,7 +21,7 @@ public class SmtpEmailServerTests : EmailSenderTestBase
         var context = BuildContext(new Dictionary<string, string>
         {
             [SmtpIntegration.HostPortProperty.Name] = options.HostPort.ToString(CultureInfo.InvariantCulture),
-            [SmtpIntegration.HostProperty.Name] = options.Host,
+            [SmtpIntegration.HostProperty.Name] = options.HostName,
             [SmtpIntegration.PasswordProperty.Name] = options.Password,
             [SmtpIntegration.UsernameProperty.Name] = options.Username,
         });

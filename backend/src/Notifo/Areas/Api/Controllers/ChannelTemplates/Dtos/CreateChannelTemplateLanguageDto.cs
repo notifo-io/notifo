@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using System.ComponentModel.DataAnnotations;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
+[OpenApiRequest]
 public sealed class CreateChannelTemplateLanguageDto
 {
     /// <summary>

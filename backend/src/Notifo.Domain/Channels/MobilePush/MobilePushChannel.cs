@@ -12,7 +12,6 @@ using Notifo.Domain.Log;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure;
-using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Channels.MobilePush;
 
@@ -21,17 +20,14 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
     private const string Token = nameof(Token);
     private const string DeviceType = nameof(DeviceType);
     private const string DeviceIdentifier = nameof(DeviceIdentifier);
-    private readonly IMediator mediator;
 
     public IClock Clock { get; } = SystemClock.Instance;
 
     public override string Name => Providers.MobilePush;
 
-    public MobilePushChannel(IServiceProvider serviceProvider,
-        IMediator mediator)
+    public MobilePushChannel(IServiceProvider serviceProvider)
         : base(serviceProvider)
     {
-        this.mediator = mediator;
     }
 
     public override IEnumerable<SendConfiguration> GetConfigurations(UserNotification notification, ChannelContext context)
@@ -154,7 +150,7 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
                 Token = token.Token
             };
 
-            await mediator.SendAsync(command.With(notification.AppId, notification.UserId), ct);
+            await Mediator.SendAsync(command.With(notification.AppId, notification.UserId), ct);
         }
         catch (Exception ex)
         {
@@ -228,15 +224,14 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
             }
             catch (MobilePushTokenExpiredException)
             {
-                await LogStore.LogAsync(job.Notification.AppId, LogMessage.MobilePush_TokenInvalid(Name, job.Notification.UserId, job.DeviceToken));
+                // Use the same log message for the delivery result later.
+                var logMessage = LogMessage.MobilePush_TokenInvalid(Name, job.Notification.UserId, job.DeviceToken);
 
-                var command = new RemoveUserMobileToken
-                {
-                    Token = job.DeviceToken
-                };
+                await LogStore.LogAsync(job.Notification.AppId, logMessage);
+                await RemoveTokenAsync(job);
 
-                await mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId), ct);
-                break;
+                // If the token is gone, it is gone for all providers, so there is no need to try another provider.
+                return DeliveryResult.Failed(logMessage.Reason);
             }
             catch (DomainException ex)
             {
@@ -259,6 +254,23 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
         }
 
         return lastResult;
+    }
+
+    private async Task RemoveTokenAsync(MobilePushJob job)
+    {
+        try
+        {
+            var command = new RemoveUserMobileToken
+            {
+                Token = job.DeviceToken
+            };
+
+            await Mediator.SendAsync(command.With(job.Notification.AppId, job.Notification.UserId));
+        }
+        catch (Exception ex)
+        {
+            Log.LogWarning(ex, "Failed to remove token.");
+        }
     }
 
     private MobilePushMessage BuildMessage(MobilePushJob job)

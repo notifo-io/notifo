@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Subscriptions;
 
 namespace Notifo.Areas.Api.Controllers.Users.Dtos;
@@ -15,13 +14,11 @@ public sealed class SubscriptionDto
     /// <summary>
     /// The topic to add.
     /// </summary>
-    [Required]
     public string TopicPrefix { get; set; }
 
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    [Required]
     public Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
     /// <summary>

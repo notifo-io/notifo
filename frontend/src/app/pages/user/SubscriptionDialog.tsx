@@ -57,7 +57,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     }, [onClose, upserting, upsertingError, wasUpserting]);
 
     const doSave = useEventCallback((params: SubscriptionDto) => {
-        dispatch(upsertSubscription({ appId, userId, params }));
+        dispatch(upsertSubscription({ appId, userId, params: params as any }));
     });
 
     const defaultValues = React.useMemo(() => {

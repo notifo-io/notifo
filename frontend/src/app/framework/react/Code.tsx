@@ -46,7 +46,7 @@ export const Code = (props: CodeProps) => {
             indentWithTabs: false,
             lineNumbers: true,
             lineSeparator: undefined,
-            lineWrapping: true,
+            lineWrapping: false,
             readOnly: true,
             tabindex: 0,
             tabSize: 2,

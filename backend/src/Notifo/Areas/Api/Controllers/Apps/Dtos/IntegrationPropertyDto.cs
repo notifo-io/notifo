@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Integrations;
 using Notifo.Infrastructure.Reflection;
 
@@ -16,13 +15,11 @@ public sealed class IntegrationPropertyDto
     /// <summary>
     /// The field name for the property.
     /// </summary>
-    [Required]
     public string Name { get; set; }
 
     /// <summary>
     /// The editor type.
     /// </summary>
-    [Required]
     public PropertyType Type { get; set; }
 
     /// <summary>

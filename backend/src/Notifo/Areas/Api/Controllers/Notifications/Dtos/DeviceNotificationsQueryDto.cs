@@ -6,11 +6,13 @@
 // ==========================================================================
 
 using NodaTime;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Notifications.Dtos;
 
+[OpenApiRequest]
 public sealed class DeviceNotificationsQueryDto
 {
     /// <summary>

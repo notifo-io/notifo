@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Collections;
@@ -13,6 +14,7 @@ using Notifo.Infrastructure.Texts;
 
 namespace Notifo.Areas.Api.Controllers.Topics.Dtos;
 
+[OpenApiRequest]
 public sealed class UpsertTopicDto
 {
     /// <summary>

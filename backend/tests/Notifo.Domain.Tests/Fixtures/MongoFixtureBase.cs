@@ -7,8 +7,6 @@
 
 using System.Diagnostics;
 using EphemeralMongo;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using Notifo.Infrastructure.MongoDb;

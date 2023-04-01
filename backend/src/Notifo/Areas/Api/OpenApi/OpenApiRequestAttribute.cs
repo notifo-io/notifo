@@ -5,12 +5,9 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
+namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class SmsTemplateDto
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class OpenApiRequestAttribute : Attribute
 {
-    /// <summary>
-    /// The template text.
-    /// </summary>
-    public string Text { get; set; }
 }

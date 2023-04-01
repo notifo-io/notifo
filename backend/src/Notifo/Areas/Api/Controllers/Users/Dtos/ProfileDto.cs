@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.Users;
@@ -19,13 +18,11 @@ public sealed class ProfileDto
     /// <summary>
     /// The full name of the user.
     /// </summary>
-    [Required]
     public string FullName { get; set; }
 
     /// <summary>
     /// The email of the user.
     /// </summary>
-    [Required]
     public string EmailAddress { get; set; }
 
     /// <summary>
@@ -51,19 +48,16 @@ public sealed class ProfileDto
     /// <summary>
     /// The supported languages.
     /// </summary>
-    [Required]
     public string[] SupportedLanguages { get; set; }
 
     /// <summary>
     /// The supported timezones.
     /// </summary>
-    [Required]
     public string[] SupportedTimezones { get; set; }
 
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    [Required]
     public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
 
     public static ProfileDto FromDomainObject(User source, App app)

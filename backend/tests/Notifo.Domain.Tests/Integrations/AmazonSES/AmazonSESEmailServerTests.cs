@@ -22,7 +22,7 @@ public class AmazonSESEmailServerTests : EmailSenderTestBase
 
         var context = BuildContext(new Dictionary<string, string>
         {
-            [SmtpIntegration.HostProperty.Name] = options.Host,
+            [SmtpIntegration.HostProperty.Name] = options.HostName,
             [SmtpIntegration.HostPortProperty.Name] = options.HostPort.ToString(CultureInfo.InvariantCulture),
             [SmtpIntegration.UsernameProperty.Name] = options.Username,
             [SmtpIntegration.PasswordProperty.Name] = options.Password,

@@ -175,6 +175,7 @@ export const EN = {
         settings: 'Settings',
         showDetails: 'Show details',
         silent: 'Silent',
+        skipped: 'Skipped',
         sms: 'SMS',
         smsTemplate: 'SMS Template',
         statisticsInfo: 'Updated every 5 seconds (needs refresh)',

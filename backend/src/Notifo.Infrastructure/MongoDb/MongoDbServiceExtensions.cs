@@ -7,13 +7,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 using MongoDB.Driver.Core.Extensions.DiagnosticSources;
-using MongoDB.Driver.Linq;
 using Notifo.Infrastructure.MongoDb;
 
 namespace Microsoft.Extensions.DependencyInjection;

@@ -18,7 +18,7 @@ public sealed class SmtpEmailServerPool : CachePool<SmtpEmailServer>
 
     public SmtpEmailServer GetServer(SmtpOptions options)
     {
-        var cacheKey = $"SMTPServer_{options.Host}_{options.Username}_{options.Password}_{options.Host}";
+        var cacheKey = $"SMTPServer_{options.HostName}_{options.Username}_{options.Password}_{options.HostName}";
 
         var found = GetOrCreate(cacheKey, () =>
         {

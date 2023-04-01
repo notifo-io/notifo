@@ -5,11 +5,13 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain.ChannelTemplates;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
+[OpenApiRequest]
 public sealed class CreateChannelTemplateDto
 {
     public CreateChannelTemplate<T> ToUpdate<T>(string language)

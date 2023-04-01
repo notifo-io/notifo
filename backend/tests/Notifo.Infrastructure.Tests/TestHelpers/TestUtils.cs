@@ -10,8 +10,6 @@ using System.Text.Json.Serialization;
 using MongoDB.Bson.IO;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
-using Notifo.Infrastructure.Collections;
-using Notifo.Infrastructure.Collections.Bson;
 using Notifo.Infrastructure.Collections.Json;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.MongoDb;

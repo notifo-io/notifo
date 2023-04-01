@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain;
 using Notifo.Domain.UserNotifications;
 using Notifo.Infrastructure.Reflection;
@@ -17,13 +16,11 @@ public sealed class UserNotificationDto : UserNotificationBaseDto
     /// <summary>
     /// True when the notification has been seen at least once.
     /// </summary>
-    [Required]
     public bool IsSeen { get; set; }
 
     /// <summary>
     /// True when the notification has been confirmed at least once.
     /// </summary>
-    [Required]
     public bool IsConfirmed { get; set; }
 
     public static UserNotificationDto FromDomainObject(UserNotification source, string? channel)

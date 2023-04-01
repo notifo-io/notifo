@@ -7,12 +7,14 @@
 
 using System.ComponentModel.DataAnnotations;
 using NodaTime;
+using Notifo.Areas.Api.OpenApi;
 using Notifo.Domain;
 using Notifo.Domain.Events;
 using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.Events.Dtos;
 
+[OpenApiRequest]
 public sealed class PublishDto
 {
     /// <summary>

@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.ComponentModel.DataAnnotations;
 using Notifo.Domain.Topics;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
@@ -18,13 +17,11 @@ public sealed class UserTopicDto
     /// <summary>
     /// The path.
     /// </summary>
-    [Required]
     public string Path { get; set; }
 
     /// <summary>
     /// The name.
     /// </summary>
-    [Required]
     public string Name { get; set; }
 
     /// <summary>
@@ -40,7 +37,6 @@ public sealed class UserTopicDto
     /// <summary>
     /// The channel options.
     /// </summary>
-    [Required]
     public ReadonlyDictionary<string, TopicChannel> Channels { get; set; }
 
     public static UserTopicDto FromDomainObject(Topic topic, string? language, string masterLanguage)

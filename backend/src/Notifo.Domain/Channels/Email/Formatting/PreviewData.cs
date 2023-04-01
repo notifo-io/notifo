@@ -9,7 +9,6 @@ using NodaTime;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
 using Notifo.Domain.Users;
-using TagLib.IFD.Tags;
 
 namespace Notifo.Domain.Channels.Email.Formatting;
 

@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using NJsonSchema;
+using NJsonSchema.Generation;
 using NJsonSchema.Generation.TypeMappers;
 using NodaTime;
 using Notifo.Areas.Api.OpenApi;
@@ -33,6 +34,9 @@ public static class OpenApiServiceExtensions
         services.AddOpenApiDocument(settings =>
         {
             settings.AllowReferencesWithProperties = true;
+            settings.DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+            settings.DefaultDictionaryValueReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull;
+            settings.SchemaProcessors.Add(new RequiredSchemaProcessor());
 
             settings.TypeMappers = new List<ITypeMapper>
             {
@@ -49,7 +53,6 @@ public static class OpenApiServiceExtensions
         return new PrimitiveTypeMapper(typeof(T), schema =>
         {
             schema.Type = JsonObjectType.String;
-
             schema.Format = format;
         });
     }

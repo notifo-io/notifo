@@ -5,10 +5,12 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Notifo.Areas.Api.OpenApi;
 using System.ComponentModel.DataAnnotations;
 
 namespace Notifo.Areas.Api.Controllers.Topics.Dtos;
 
+[OpenApiRequest]
 public sealed class UpsertTopicsDto
 {
     /// <summary>
