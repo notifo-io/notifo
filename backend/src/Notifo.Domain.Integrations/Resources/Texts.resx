@@ -153,6 +153,9 @@
   <data name="Firebase_Description" xml:space="preserve">
     <value>Send Push notifications to iOS and Android devices using MessageBird.</value>
   </data>
+  <data name="Firebase_InvalidCredentials" xml:space="preserve">
+    <value>Failed to parse credentials.</value>
+  </data>
   <data name="Firebase_Name" xml:space="preserve">
     <value>Firebase</value>
   </data>
