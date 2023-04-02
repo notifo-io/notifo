@@ -19,11 +19,26 @@ public sealed class RequiredSchemaProcessor : ISchemaProcessor
             return;
         }
 
-        foreach (var property in context.Schema.Properties.Values)
+        FixRequired(context.Schema);
+
+        foreach (var schema in context.Schema.AllOf)
         {
-            if (!property.IsNullable(SchemaType.OpenApi3))
+            FixRequired(schema);
+        }
+
+        foreach (var schema in context.Schema.OneOf)
+        {
+            FixRequired(schema);
+        }
+
+        static void FixRequired(JsonSchema schema)
+        {
+            foreach (var property in schema.Properties.Values)
             {
-                property.IsRequired = true;
+                if (!property.IsNullable(SchemaType.OpenApi3))
+                {
+                    property.IsRequired = true;
+                }
             }
         }
     }
