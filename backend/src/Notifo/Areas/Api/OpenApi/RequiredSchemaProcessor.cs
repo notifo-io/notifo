@@ -5,22 +5,33 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Reflection;
 using NJsonSchema;
 using NJsonSchema.Generation;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class RequiredSchemaProcessor : ISchemaProcessor
+public void Process(SchemaProcessorContext context)
 {
-    public void Process(SchemaProcessorContext context)
+    if (context.ContextualType.GetAttribute<OpenApiRequestAttribute>() != null)
     {
-        if (context.ContextualType.GetAttribute<OpenApiRequestAttribute>() != null)
-        {
-            return;
-        }
+        return;
+    }
 
-        foreach (var property in context.Schema.Properties.Values)
+    FixRequired(context.Schema);
+
+    foreach (var schema in context.Schema.AllOf)
+    {
+        FixRequired(schema);
+    }
+
+    foreach (var schema in context.Schema.OneOf)
+    {
+        FixRequired(schema);
+    }
+
+    static void FixRequired(JsonSchema schema)
+    {
+        foreach (var property in schema.Properties.Values)
         {
             if (!property.IsNullable(SchemaType.OpenApi3))
             {
@@ -28,4 +39,5 @@ public sealed class RequiredSchemaProcessor : ISchemaProcessor
             }
         }
     }
+}
 }
