@@ -10,34 +10,36 @@ using NJsonSchema.Generation;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public void Process(SchemaProcessorContext context)
+public class RequiredSchemaProcessor : ISchemaProcessor
 {
-    if (context.ContextualType.GetAttribute<OpenApiRequestAttribute>() != null)
+    public void Process(SchemaProcessorContext context)
     {
-        return;
-    }
-
-    FixRequired(context.Schema);
-
-    foreach (var schema in context.Schema.AllOf)
-    {
-        FixRequired(schema);
-    }
-
-    foreach (var schema in context.Schema.OneOf)
-    {
-        FixRequired(schema);
-    }
-
-    static void FixRequired(JsonSchema schema)
-    {
-        foreach (var property in schema.Properties.Values)
+        if (context.ContextualType.GetAttribute<OpenApiRequestAttribute>() != null)
         {
-            if (!property.IsNullable(SchemaType.OpenApi3))
+            return;
+        }
+
+        FixRequired(context.Schema);
+
+        foreach (var schema in context.Schema.AllOf)
+        {
+            FixRequired(schema);
+        }
+
+        foreach (var schema in context.Schema.OneOf)
+        {
+            FixRequired(schema);
+        }
+
+        static void FixRequired(JsonSchema schema)
+        {
+            foreach (var property in schema.Properties.Values)
             {
-                property.IsRequired = true;
+                if (!property.IsNullable(SchemaType.OpenApi3))
+                {
+                    property.IsRequired = true;
+                }
             }
         }
     }
-}
 }
