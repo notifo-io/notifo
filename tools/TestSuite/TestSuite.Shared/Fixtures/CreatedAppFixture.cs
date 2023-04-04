@@ -56,6 +56,7 @@ public class CreatedAppFixture : ClientFixture
         });
 
         await CreateContributorAsync("sebastian@squidex.io");
+        await CreateFirebaseAsync();
     }
 
     private async Task CreateContributorAsync(string email)
@@ -73,6 +74,32 @@ public class CreatedAppFixture : ClientFixture
         };
 
         await Client.Apps.PostContributorAsync(AppId, request);
+    }
+
+    private async Task CreateFirebaseAsync()
+    {
+        var integrations = await Client.Apps.GetIntegrationsAsync(AppId);
+
+        if (integrations.Configured.Any(x => x.Value.Type == "Firebase"))
+        {
+            return;
+        }
+
+        var request = new CreateIntegrationDto
+        {
+            Type = "Firebase",
+            Properties = new Dictionary<string, string>
+            {
+                ["projectId"] = "PROJECT",
+                ["silentAndroid"] = "false",
+                ["silentIOS"] = "false",
+                ["skipValidation"] = "true",
+                ["credentials"] = "CREDENTIALS",
+            },
+            Enabled = true
+        };
+
+        await Client.Apps.PostIntegrationAsync(AppId, request);
     }
 
     private async Task<AppDto?> FindAppAsync()
