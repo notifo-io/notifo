@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.Integrations.Resources;
+using Notifo.Infrastructure.Validation;
 
 namespace Notifo.Domain.Integrations.Firebase;
 
@@ -42,6 +43,11 @@ public sealed partial class FirebaseIntegration : IIntegration
         IsRequired = true
     };
 
+    public static readonly IntegrationProperty SkipValidation = new IntegrationProperty("skipValidation", PropertyType.Boolean)
+    {
+        IsRequired = false
+    };
+
     public IntegrationDefinition Definition { get; } =
         new IntegrationDefinition(
             "Firebase",
@@ -66,5 +72,28 @@ public sealed partial class FirebaseIntegration : IIntegration
     public FirebaseIntegration(FirebaseMessagingPool messagingPool)
     {
         this.messagingPool = messagingPool;
+    }
+
+    public Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
+        CancellationToken ct)
+    {
+        if (SkipValidation.GetBoolean(context.Properties))
+        {
+            return Task.FromResult(IntegrationStatus.Verified);
+        }
+
+        try
+        {
+            var firebaseProject = ProjectIdProperty.GetString(context.Properties);
+            var firebaseCredentials = CredentialsProperty.GetString(context.Properties);
+
+            messagingPool.GetMessaging(firebaseProject, firebaseCredentials);
+
+            return Task.FromResult(IntegrationStatus.Verified);
+        }
+        catch (Exception)
+        {
+            throw new ValidationException(Texts.Firebase_InvalidCredentials);
+        }
     }
 }

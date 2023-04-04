@@ -213,7 +213,7 @@ public sealed class MongoDbUserStore :
     public async Task<IdentityUser?> FindByLoginAsync(string loginProvider, string providerKey,
         CancellationToken cancellationToken)
     {
-        var result = await Collection.Find(x => x.Logins.Any(y => y.LoginProvider == loginProvider && y.ProviderKey == providerKey)).FirstOrDefaultAsync(cancellationToken);
+        var result = await Collection.Find(Filter.ElemMatch(x => x.Logins, BuildFilter(loginProvider, providerKey))).FirstOrDefaultAsync(cancellationToken);
 
         return result;
     }
@@ -652,5 +652,14 @@ public sealed class MongoDbUserStore :
         }
 
         return Task.FromResult(false);
+    }
+
+    private static FilterDefinition<UserLogin> BuildFilter(string loginProvider, string providerKey)
+    {
+        var filter = Builders<UserLogin>.Filter;
+
+        return filter.And(
+            filter.Eq(x => x.LoginProvider, loginProvider),
+            filter.Eq(x => x.ProviderKey, providerKey));
     }
 }

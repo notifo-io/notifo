@@ -93,7 +93,8 @@ public class CreatedAppFixture : ClientFixture
                 ["projectId"] = "PROJECT",
                 ["silentAndroid"] = "false",
                 ["silentIOS"] = "false",
-                ["credentials"] = "CREDENTIALS"
+                ["skipValidation"] = "true",
+                ["credentials"] = "CREDENTIALS",
             },
             Enabled = true
         };

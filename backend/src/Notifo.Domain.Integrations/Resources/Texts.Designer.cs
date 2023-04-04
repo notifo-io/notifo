@@ -169,6 +169,15 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to parse credentials..
+        /// </summary>
+        internal static string Firebase_InvalidCredentials {
+            get {
+                return ResourceManager.GetString("Firebase_InvalidCredentials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Firebase.
         /// </summary>
         internal static string Firebase_Name {
