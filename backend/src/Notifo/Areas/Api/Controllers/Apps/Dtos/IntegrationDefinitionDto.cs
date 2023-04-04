@@ -15,7 +15,7 @@ public sealed class IntegrationDefinitionDto
 {
     /// <summary>
     /// The title of the integration.
-    /// </summary
+    /// </summary>
     [Required]
     public string Title { get; set; }
 

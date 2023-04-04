@@ -10,7 +10,7 @@ using NJsonSchema.Generation;
 
 namespace Notifo.Areas.Api.OpenApi;
 
-public sealed class RequiredSchemaProcessor : ISchemaProcessor
+public class RequiredSchemaProcessor : ISchemaProcessor
 {
     public void Process(SchemaProcessorContext context)
     {

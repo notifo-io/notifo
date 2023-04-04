@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { Log, User, UserManager } from 'oidc-client-ts';
+import { Log, User, UserManager, WebStorageStateStore } from 'oidc-client-ts';
 import { AppsClient, ConfigsClient, EmailTemplatesClient, EventsClient, LogsClient, MediaClient, MessagingTemplatesClient, NotificationsClient, SmsTemplatesClient, SystemUsersClient, TemplatesClient, TopicsClient, UserClient, UsersClient } from './service';
 
 export * from './service';
@@ -59,6 +59,7 @@ export module AuthService {
                 scope: 'openid profile roles NotifoAPI',
                 silentRequestTimeoutInSeconds: 1000,
                 silent_redirect_uri: `${authority}/authentication/login-silent-callback.html`,
+                userStore: new WebStorageStateStore({ store: window.localStorage || window.sessionStorage }),
             });
 
             userManager.getUser().then(user => {
