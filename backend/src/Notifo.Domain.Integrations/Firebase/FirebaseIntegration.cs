@@ -43,6 +43,11 @@ public sealed partial class FirebaseIntegration : IIntegration
         IsRequired = true
     };
 
+    public static readonly IntegrationProperty SkipValidation = new IntegrationProperty("skipValidation", PropertyType.Boolean)
+    {
+        IsRequired = false
+    };
+
     public IntegrationDefinition Definition { get; } =
         new IntegrationDefinition(
             "Firebase",
@@ -72,6 +77,11 @@ public sealed partial class FirebaseIntegration : IIntegration
     public Task<IntegrationStatus> OnConfiguredAsync(IntegrationContext context, IntegrationConfiguration? previous,
         CancellationToken ct)
     {
+        if (SkipValidation.GetBoolean(context.Properties))
+        {
+            return Task.FromResult(IntegrationStatus.Verified);
+        }
+
         try
         {
             var firebaseProject = ProjectIdProperty.GetString(context.Properties);
@@ -81,7 +91,7 @@ public sealed partial class FirebaseIntegration : IIntegration
 
             return Task.FromResult(IntegrationStatus.Verified);
         }
-        catch (InvalidOperationException)
+        catch (Exception)
         {
             throw new ValidationException(Texts.Firebase_InvalidCredentials);
         }
