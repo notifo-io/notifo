@@ -234,7 +234,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             statuses.Add(status);
         }
 
-        if (statuses.All(x => x == IntegrationStatus.Verified))
+        if (statuses.TrueForAll(x => x == IntegrationStatus.Verified))
         {
             return IntegrationStatus.Verified;
         }
