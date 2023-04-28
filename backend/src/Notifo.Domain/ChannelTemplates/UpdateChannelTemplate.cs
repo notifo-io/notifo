@@ -30,9 +30,9 @@ public sealed class UpdateChannelTemplate<T> : ChannelTemplateCommand<T>
 
             var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-            foreach (var (_, value) in Languages)
+            foreach (var (key, value) in Languages)
             {
-                await factory.ParseAsync(value, false, ct);
+                languages[key] = await factory.ParseAsync(value, false, ct);
             }
 
             newTemplate = newTemplate with

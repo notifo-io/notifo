@@ -32,7 +32,7 @@ public static class PreviewData
             EmailAddress = "john.doe@internet.com",
             PreferredLanguage = "en",
             PreferredTimezone = "UTC",
-            FullName = "John Does",
+            FullName = "John Doe",
         };
 
         var context = new ChannelContext
@@ -97,7 +97,7 @@ public static class PreviewData
                     Subject = "A notification with body and image",
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     ImageLarge = string.Empty,
-                    ImageSmall = "https://notifo.io/placeholder.png"
+                    ImageSmall = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder.png"
                 }
             },
             new UserNotification
@@ -107,7 +107,7 @@ public static class PreviewData
                     Subject = "A notification with body and image and button",
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     ImageLarge = string.Empty,
-                    ImageSmall = "https://notifo.io/placeholder.png",
+                    ImageSmall = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder.png",
                     ConfirmText = "Confirm",
                     ConfirmMode = ConfirmMode.Explicit
                 },
@@ -120,7 +120,7 @@ public static class PreviewData
                     Subject = "A notification with body and image and link",
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     ImageLarge = string.Empty,
-                    ImageSmall = "https://notifo.io/placeholder.png",
+                    ImageSmall = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder.png",
                     LinkText = "Follow Link",
                     LinkUrl = "/url/to/link"
                 }

@@ -12,8 +12,8 @@
     <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.0.0-beta.3" />
     <PackageReference Include="Google.Cloud.Diagnostics.Common" Version="4.0.0" />
     <PackageReference Include="Meziantou.Analyzer" Version="2.0.29">
-    <PrivateAssets>all</PrivateAssets>
-    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="7.0.4" />
@@ -41,10 +41,6 @@
     <ProjectReference Include="..\Notifo.Domain\Notifo.Domain.csproj" />
     <ProjectReference Include="..\Notifo.Identity\Notifo.Identity.csproj" />
     <ProjectReference Include="..\Notifo.Infrastructure\Notifo.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\Empty.png" />
   </ItemGroup>
 
   <ItemGroup>

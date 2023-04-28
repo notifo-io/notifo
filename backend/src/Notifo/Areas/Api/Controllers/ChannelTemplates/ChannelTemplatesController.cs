@@ -96,13 +96,13 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <response code="404">Channel template or app not found.</response>.
     [HttpPost("{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    public async Task<TDto> PostTemplateLanguage(string appId, string code, [FromBody] CreateChannelTemplateLanguageDto request)
+    public async Task<ChannelTemplateDetailsDto<TDto>> PostTemplateLanguage(string appId, string code, [FromBody] CreateChannelTemplateLanguageDto request)
     {
         var command = request.ToUpdate<T>(code);
 
         var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
-        return ToDto(template!.Languages[request.Language]);
+        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template!, ToDto);
     }
 
     /// <summary>
@@ -115,14 +115,13 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <response code="404">Channel template or app not found.</response>.
     [HttpPut("{code:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> PutTemplate(string appId, string code, [FromBody] UpdateChannelTemplateDto<TDto> request)
+    public async Task<ChannelTemplateDetailsDto<TDto>> PutTemplate(string appId, string code, [FromBody] UpdateChannelTemplateDto<TDto> request)
     {
         var command = request.ToUpdate(code, FromDto);
 
         var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
-        return NoContent();
+        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template!, ToDto);
     }
 
     /// <summary>
@@ -136,14 +135,13 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <response code="404">Channel template or app not found.</response>.
     [HttpPut("{code:notEmpty}/{language:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> PutTemplateLanguage(string appId, string code, string language, [FromBody] TDto request)
+    public async Task<ChannelTemplateDetailsDto<TDto>> PutTemplateLanguage(string appId, string code, string language, [FromBody] TDto request)
     {
-        var command = new UpdateChannelTemplateLanguage<T> { TemplateCode = code, Language = language, Template = FromDto(request) };
+        var command = ToUpdate(code, language, request);
 
-        await Mediator.SendAsync(command, HttpContext.RequestAborted);
+        var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
-        return NoContent();
+        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template!, ToDto);
     }
 
     /// <summary>
@@ -156,14 +154,13 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     /// <response code="404">Channel template or app not found.</response>.
     [HttpDelete("{code:notEmpty}/{language:notEmpty}")]
     [AppPermission(NotifoRoles.AppAdmin)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> DeleteTemplateLanguage(string appId, string code, string language)
+    public async Task<ChannelTemplateDetailsDto<TDto>> DeleteTemplateLanguage(string appId, string code, string language)
     {
-        var command = new DeleteChannelTemplateLanguage<T> { TemplateCode = code, Language = language };
+        var command = ToDelete(code, language);
 
-        await Mediator.SendAsync(command, HttpContext.RequestAborted);
+        var template = await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
-        return NoContent();
+        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template!, ToDto);
     }
 
     /// <summary>
@@ -183,6 +180,16 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
         await Mediator.SendAsync(command, HttpContext.RequestAborted);
 
         return NoContent();
+    }
+
+    private UpdateChannelTemplateLanguage<T> ToUpdate(string code, string language, TDto request)
+    {
+        return new UpdateChannelTemplateLanguage<T> { TemplateCode = code, Language = language, Template = FromDto(request) };
+    }
+
+    private static DeleteChannelTemplateLanguage<T> ToDelete(string code, string language)
+    {
+        return new DeleteChannelTemplateLanguage<T> { TemplateCode = code, Language = language };
     }
 
     protected virtual T FromDto(TDto dto)

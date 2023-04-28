@@ -33,13 +33,12 @@ public sealed class UpdateChannelTemplateLanguage<T> : ChannelTemplateCommand<T>
     {
         Validate<Validator>.It(this);
 
-        var channelFactory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
+        var factory = serviceProvider.GetRequiredService<IChannelTemplateFactory<T>>();
 
-        await channelFactory.ParseAsync(Template, true, ct);
-
+        var newLanguage = await factory.ParseAsync(Template, true, ct);
         var newTemplate = target with
         {
-            Languages = target.Languages.Set(Language, Template)
+            Languages = target.Languages.Set(Language, newLanguage)
         };
 
         return newTemplate;

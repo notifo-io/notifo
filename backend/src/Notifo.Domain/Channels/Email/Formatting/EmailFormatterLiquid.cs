@@ -52,7 +52,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
         return new ValueTask<EmailTemplate>(template);
     }
 
-    public ValueTask ParseAsync(EmailTemplate input, bool strict,
+    public ValueTask<EmailTemplate> ParseAsync(EmailTemplate input, bool strict,
         CancellationToken ct = default)
     {
         var context = EmailContext.Create(PreviewData.Jobs, PreviewData.App, PreviewData.User, imageFormatter, emailUrl);
@@ -64,7 +64,15 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
             throw new EmailFormattingException(context.Errors);
         }
 
-        return default;
+        if (!string.IsNullOrWhiteSpace(input.BodyHtml))
+        {
+            input = input with
+            {
+                BodyHtml = MjmlRenderer.FixXML(input.BodyHtml)
+            };
+        }
+
+        return new ValueTask<EmailTemplate>(input);
     }
 
     public ValueTask<FormattedEmail> FormatAsync(EmailTemplate input, IReadOnlyList<EmailJob> jobs, App app, User user, bool noCache = false,

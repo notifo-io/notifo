@@ -48,12 +48,12 @@ public sealed class MessagingFormatter : IMessagingFormatter
         return new ValueTask<MessagingTemplate>(template);
     }
 
-    public ValueTask ParseAsync(MessagingTemplate input, bool strict,
+    public ValueTask<MessagingTemplate> ParseAsync(MessagingTemplate input, bool strict,
         CancellationToken ct = default)
     {
         Validate<Validator>.It(input);
 
-        return default;
+        return new ValueTask<MessagingTemplate>(input);
     }
 
     public (string Result, List<TemplateError>? Errors) Format(MessagingTemplate? template, MessagingJob job, App app, User user)
