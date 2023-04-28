@@ -61,7 +61,7 @@ public sealed partial class FirebaseIntegration : IMobilePushSender
             return true;
         }
 
-        var sendSilentIOS = SilentISOProperty.GetBoolean(context.Properties);
+        var sendSilentIOS = SilentIOSProperty.GetBoolean(context.Properties);
         var sendSilentAndroid = SilentAndroidProperty.GetBoolean(context.Properties);
 
         switch (deviceType)

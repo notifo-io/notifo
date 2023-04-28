@@ -36,7 +36,7 @@ public sealed partial class FirebaseIntegration : IIntegration
         IsRequired = true
     };
 
-    public static readonly IntegrationProperty SilentISOProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
+    public static readonly IntegrationProperty SilentIOSProperty = new IntegrationProperty("silentIOS", PropertyType.Boolean)
     {
         EditorLabel = Texts.Firebase_SilentIOSLabel,
         EditorDescription = Texts.Firebase_SilentIOSDescription,
@@ -57,7 +57,7 @@ public sealed partial class FirebaseIntegration : IIntegration
             {
                 ProjectIdProperty,
                 SilentAndroidProperty,
-                SilentISOProperty,
+                SilentIOSProperty,
                 CredentialsProperty
             },
             new List<IntegrationProperty>(),

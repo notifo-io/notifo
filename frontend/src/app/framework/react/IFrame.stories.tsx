@@ -14,28 +14,35 @@ export default {
     component: IFrame,
 } as ComponentMeta<typeof IFrame>;
 
-const Template = (args: any, { loaded }: { loaded: any }) => {
+const Template = (args: any) => {
+    const [html, setHtml] = React.useState<string>('');
+
+    React.useEffect(() => {
+        function delay(timeout: number) {
+            return new Promise(resolve => {
+                setTimeout(resolve, timeout);
+            });
+        }
+
+        async function load() {
+            while (true) {
+                setHtml('<div>Content1</div>');
+                await delay(2000);
+
+                setHtml('<div>Content2</div>');
+                await delay(2000);
+            }
+        }
+
+        load();
+    }, []);
+
     return (
-        <IFrame style={{ width: '100%', height: 500 }} {...args} html={loaded.html} />
+        <IFrame style={{ width: '100%', height: 500 }} {...args} html={html} />
     );
 };
 
 export const Default = Template.bind({});
-
-async function loadPage() {
-    let text: string = await (await fetch('https://notifo.io')).text();
-
-    text = text.replace(/href="/g, 'href="https://notifo.io/');
-    text = text.replace(/src="/g, 'src="https://notifo.io/');
-
-    return text;
-}
-
-Default['loaders'] = [
-    async () => ({
-        html: await loadPage(),
-    }),
-];
 
 Default['argTypes'] = {
     html: {

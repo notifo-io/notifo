@@ -4084,7 +4084,7 @@ export class EmailTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<EmailTemplateDto> {
+    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4110,13 +4110,13 @@ export class EmailTemplatesClient {
         });
     }
 
-    protected processPostTemplateLanguage(response: Response): Promise<EmailTemplateDto> {
+    protected processPostTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as EmailTemplateDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfEmailTemplateDto;
             return result200;
             });
         } else if (status === 404) {
@@ -4140,7 +4140,7 @@ export class EmailTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<EmailTemplateDto>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfEmailTemplateDto>(null as any);
     }
 
     /**
@@ -4148,9 +4148,8 @@ export class EmailTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
-     * @return Channel template updated.
      */
-    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfEmailTemplateDto): Promise<void> {
+    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfEmailTemplateDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4167,6 +4166,7 @@ export class EmailTemplatesClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -4175,12 +4175,14 @@ export class EmailTemplatesClient {
         });
     }
 
-    protected processPutTemplate(response: Response): Promise<void> {
+    protected processPutTemplate(response: Response): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfEmailTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -4203,7 +4205,7 @@ export class EmailTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfEmailTemplateDto>(null as any);
     }
 
     /**
@@ -4270,9 +4272,8 @@ export class EmailTemplatesClient {
      * @param code The template code.
      * @param language The language.
      * @param request The request object.
-     * @return Channel template updated.
      */
-    putTemplateLanguage(appId: string, code: string, language: string, request: EmailTemplateDto): Promise<void> {
+    putTemplateLanguage(appId: string, code: string, language: string, request: EmailTemplateDto): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4292,6 +4293,7 @@ export class EmailTemplatesClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -4300,12 +4302,14 @@ export class EmailTemplatesClient {
         });
     }
 
-    protected processPutTemplateLanguage(response: Response): Promise<void> {
+    protected processPutTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfEmailTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -4328,7 +4332,7 @@ export class EmailTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfEmailTemplateDto>(null as any);
     }
 
     /**
@@ -4336,9 +4340,8 @@ export class EmailTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param code The template ID.
      * @param language The language.
-     * @return Channel template updated.
      */
-    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<void> {
+    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4354,6 +4357,7 @@ export class EmailTemplatesClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -4362,12 +4366,14 @@ export class EmailTemplatesClient {
         });
     }
 
-    protected processDeleteTemplateLanguage(response: Response): Promise<void> {
+    protected processDeleteTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfEmailTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfEmailTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -4390,7 +4396,7 @@ export class EmailTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfEmailTemplateDto>(null as any);
     }
 }
 
@@ -4594,7 +4600,7 @@ export class MessagingTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<MessagingTemplateDto> {
+    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4620,13 +4626,13 @@ export class MessagingTemplatesClient {
         });
     }
 
-    protected processPostTemplateLanguage(response: Response): Promise<MessagingTemplateDto> {
+    protected processPostTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as MessagingTemplateDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfMessagingTemplateDto;
             return result200;
             });
         } else if (status === 404) {
@@ -4650,7 +4656,7 @@ export class MessagingTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<MessagingTemplateDto>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(null as any);
     }
 
     /**
@@ -4658,9 +4664,8 @@ export class MessagingTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
-     * @return Channel template updated.
      */
-    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfMessagingTemplateDto): Promise<void> {
+    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfMessagingTemplateDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4677,6 +4682,7 @@ export class MessagingTemplatesClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -4685,12 +4691,14 @@ export class MessagingTemplatesClient {
         });
     }
 
-    protected processPutTemplate(response: Response): Promise<void> {
+    protected processPutTemplate(response: Response): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfMessagingTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -4713,7 +4721,7 @@ export class MessagingTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(null as any);
     }
 
     /**
@@ -4780,9 +4788,8 @@ export class MessagingTemplatesClient {
      * @param code The template code.
      * @param language The language.
      * @param request The request object.
-     * @return Channel template updated.
      */
-    putTemplateLanguage(appId: string, code: string, language: string, request: MessagingTemplateDto): Promise<void> {
+    putTemplateLanguage(appId: string, code: string, language: string, request: MessagingTemplateDto): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4802,6 +4809,7 @@ export class MessagingTemplatesClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -4810,12 +4818,14 @@ export class MessagingTemplatesClient {
         });
     }
 
-    protected processPutTemplateLanguage(response: Response): Promise<void> {
+    protected processPutTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfMessagingTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -4838,7 +4848,7 @@ export class MessagingTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(null as any);
     }
 
     /**
@@ -4846,9 +4856,8 @@ export class MessagingTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param code The template ID.
      * @param language The language.
-     * @return Channel template updated.
      */
-    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<void> {
+    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -4864,6 +4873,7 @@ export class MessagingTemplatesClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -4872,12 +4882,14 @@ export class MessagingTemplatesClient {
         });
     }
 
-    protected processDeleteTemplateLanguage(response: Response): Promise<void> {
+    protected processDeleteTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfMessagingTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfMessagingTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -4900,7 +4912,7 @@ export class MessagingTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(null as any);
     }
 }
 
@@ -5104,7 +5116,7 @@ export class SmsTemplatesClient {
      * @param request The request object.
      * @return Channel template created.
      */
-    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<SmsTemplateDto> {
+    postTemplateLanguage(appId: string, code: string, request: CreateChannelTemplateLanguageDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5130,13 +5142,13 @@ export class SmsTemplatesClient {
         });
     }
 
-    protected processPostTemplateLanguage(response: Response): Promise<SmsTemplateDto> {
+    protected processPostTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
             let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as SmsTemplateDto;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfSmsTemplateDto;
             return result200;
             });
         } else if (status === 404) {
@@ -5160,7 +5172,7 @@ export class SmsTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<SmsTemplateDto>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfSmsTemplateDto>(null as any);
     }
 
     /**
@@ -5168,9 +5180,8 @@ export class SmsTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param code The template code.
      * @param request The request object.
-     * @return Channel template updated.
      */
-    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfSmsTemplateDto): Promise<void> {
+    putTemplate(appId: string, code: string, request: UpdateChannelTemplateDtoOfSmsTemplateDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5187,6 +5198,7 @@ export class SmsTemplatesClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -5195,12 +5207,14 @@ export class SmsTemplatesClient {
         });
     }
 
-    protected processPutTemplate(response: Response): Promise<void> {
+    protected processPutTemplate(response: Response): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfSmsTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -5223,7 +5237,7 @@ export class SmsTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfSmsTemplateDto>(null as any);
     }
 
     /**
@@ -5290,9 +5304,8 @@ export class SmsTemplatesClient {
      * @param code The template code.
      * @param language The language.
      * @param request The request object.
-     * @return Channel template updated.
      */
-    putTemplateLanguage(appId: string, code: string, language: string, request: SmsTemplateDto): Promise<void> {
+    putTemplateLanguage(appId: string, code: string, language: string, request: SmsTemplateDto): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5312,6 +5325,7 @@ export class SmsTemplatesClient {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "Accept": "application/json"
             }
         };
 
@@ -5320,12 +5334,14 @@ export class SmsTemplatesClient {
         });
     }
 
-    protected processPutTemplateLanguage(response: Response): Promise<void> {
+    protected processPutTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfSmsTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -5348,7 +5364,7 @@ export class SmsTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfSmsTemplateDto>(null as any);
     }
 
     /**
@@ -5356,9 +5372,8 @@ export class SmsTemplatesClient {
      * @param appId The id of the app where the templates belong to.
      * @param code The template ID.
      * @param language The language.
-     * @return Channel template updated.
      */
-    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<void> {
+    deleteTemplateLanguage(appId: string, code: string, language: string): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates/{code}/{language}";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -5374,6 +5389,7 @@ export class SmsTemplatesClient {
         let options_: RequestInit = {
             method: "DELETE",
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -5382,12 +5398,14 @@ export class SmsTemplatesClient {
         });
     }
 
-    protected processDeleteTemplateLanguage(response: Response): Promise<void> {
+    protected processDeleteTemplateLanguage(response: Response): Promise<ChannelTemplateDetailsDtoOfSmsTemplateDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204) {
+        if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as ChannelTemplateDetailsDtoOfSmsTemplateDto;
+            return result200;
             });
         } else if (status === 404) {
             return response.text().then((_responseText) => {
@@ -5410,7 +5428,7 @@ export class SmsTemplatesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<ChannelTemplateDetailsDtoOfSmsTemplateDto>(null as any);
     }
 }
 
@@ -6140,7 +6158,7 @@ export interface SubscribeDto {
     /** The scheduling settings. */
     scheduling?: SchedulingDto | undefined;
     /** Indicates whether scheduling should be overriden. */
-    hasScheduling: boolean;
+    hasScheduling?: boolean;
 }
 
 export interface ListResponseDtoOfUserDto {
@@ -6243,7 +6261,7 @@ export interface UpsertUserDto {
     /** The scheduling settings. */
     scheduling?: SchedulingDto | undefined;
     /** Indicates whether scheduling should be overriden. */
-    hasScheduling: boolean;
+    hasScheduling?: boolean;
 }
 
 export interface AddAllowedTopicDto {
@@ -6293,7 +6311,7 @@ export interface UpsertTopicsDto {
 
 export interface UpsertTopicDto {
     /** The path of the topic. */
-    path: string;
+    path?: string;
     /** The name. */
     name?: LocalizedText | undefined;
     /** The description. */
@@ -6550,9 +6568,9 @@ export interface MobilePushTokenDto2 {
 
 export interface RegisterMobileTokenDto {
     /** The device token. */
-    token: string;
+    token?: string;
     /** The device type. */
-    deviceType: MobileDeviceType;
+    deviceType?: MobileDeviceType;
     /** A unique identifier for the device. */
     deviceIdentifier?: string | undefined;
 }
@@ -6673,7 +6691,7 @@ export interface PublishDto {
     /** Additional user defined data. */
     data?: string | undefined;
     /** A custom timestamp. */
-    timestamp: string;
+    timestamp?: string;
     /** Preformatting when no template is used. */
     preformatted?: NotificationFormattingDto | undefined;
     /** The notification settings. */
@@ -6683,9 +6701,9 @@ export interface PublishDto {
     /** The scheduling options. */
     scheduling?: SchedulingDto | undefined;
     /** True when silent. */
-    silent: boolean;
+    silent?: boolean;
     /** True when using test integrations. */
-    test: boolean;
+    test?: boolean;
     /** The time to live in seconds. */
     timeToLiveInSeconds?: number | undefined;
 }
@@ -6716,7 +6734,7 @@ export interface EmailPreviewRequestDto {
     /** The preview to render. */
     template: string;
     /** The template type. */
-    type: EmailPreviewType;
+    type?: EmailPreviewType;
 }
 
 export type EmailPreviewType = "Html" | "Text";

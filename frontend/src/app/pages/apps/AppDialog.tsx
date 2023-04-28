@@ -56,6 +56,7 @@ export const AppDialog = (props: AppDialogProps) => {
     });
     
     const form = useForm<CreateAppParams>({ resolver: yupResolver(FormSchema), mode: 'onChange' });
+    
     return (
         <Modal isOpen={true} toggle={onClose}>
             <FormProvider {...form}>

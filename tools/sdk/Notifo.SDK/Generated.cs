@@ -8546,7 +8546,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -8555,9 +8555,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -8577,9 +8576,8 @@ namespace Notifo.SDK
         /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -8588,9 +8586,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -9219,7 +9216,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<EmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -9271,7 +9268,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200 || status_ == 201)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<EmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfEmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -9330,9 +9327,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfEmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -9359,6 +9355,7 @@ namespace Notifo.SDK
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -9381,9 +9378,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfEmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -9537,9 +9539,8 @@ namespace Notifo.SDK
         /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> PutTemplateLanguageAsync(string appId, string code, string language, EmailTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -9571,6 +9572,7 @@ namespace Notifo.SDK
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -9593,9 +9595,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfEmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -9649,9 +9656,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfEmailTemplateDto> DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -9675,6 +9681,7 @@ namespace Notifo.SDK
                 {
 
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -9697,9 +9704,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfEmailTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -9894,7 +9906,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -9903,9 +9915,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -9925,9 +9936,8 @@ namespace Notifo.SDK
         /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -9936,9 +9946,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -10288,7 +10297,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<MessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -10340,7 +10349,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200 || status_ == 201)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<MessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -10399,9 +10408,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfMessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -10428,6 +10436,7 @@ namespace Notifo.SDK
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -10450,9 +10459,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -10606,9 +10620,8 @@ namespace Notifo.SDK
         /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> PutTemplateLanguageAsync(string appId, string code, string language, MessagingTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -10640,6 +10653,7 @@ namespace Notifo.SDK
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -10662,9 +10676,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -10718,9 +10737,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfMessagingTemplateDto> DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -10744,6 +10762,7 @@ namespace Notifo.SDK
                 {
 
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -10766,9 +10785,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfMessagingTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -10963,7 +10987,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -10972,9 +10996,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -10994,9 +11017,8 @@ namespace Notifo.SDK
         /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>
@@ -11005,9 +11027,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
+        System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken));
 
     }
 
@@ -11357,7 +11378,7 @@ namespace Notifo.SDK
         /// <param name="request">The request object.</param>
         /// <returns>Channel template created.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<SmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PostTemplateLanguageAsync(string appId, string code, CreateChannelTemplateLanguageDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -11409,7 +11430,7 @@ namespace Notifo.SDK
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200 || status_ == 201)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<SmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfSmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
@@ -11468,9 +11489,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template code.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PutTemplateAsync(string appId, string code, UpdateChannelTemplateDtoOfSmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -11497,6 +11517,7 @@ namespace Notifo.SDK
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -11519,9 +11540,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfSmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -11675,9 +11701,8 @@ namespace Notifo.SDK
         /// <param name="code">The template code.</param>
         /// <param name="language">The language.</param>
         /// <param name="request">The request object.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> PutTemplateLanguageAsync(string appId, string code, string language, SmsTemplateDto request, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -11709,6 +11734,7 @@ namespace Notifo.SDK
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -11731,9 +11757,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfSmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -11787,9 +11818,8 @@ namespace Notifo.SDK
         /// <param name="appId">The id of the app where the templates belong to.</param>
         /// <param name="code">The template ID.</param>
         /// <param name="language">The language.</param>
-        /// <returns>Channel template updated.</returns>
         /// <exception cref="NotifoException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
+        public virtual async System.Threading.Tasks.Task<ChannelTemplateDetailsDtoOfSmsTemplateDto> DeleteTemplateLanguageAsync(string appId, string code, string language, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken))
         {
             if (appId == null)
                 throw new System.ArgumentNullException("appId");
@@ -11813,6 +11843,7 @@ namespace Notifo.SDK
                 {
 
                     request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -11835,9 +11866,14 @@ namespace Notifo.SDK
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 204)
+                        if (status_ == 200 || status_ == 201)
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<ChannelTemplateDetailsDtoOfSmsTemplateDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            if (objectResponse_.Object == null)
+                            {
+                                throw new NotifoException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
+                            }
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == 404)
@@ -13218,14 +13254,14 @@ namespace Notifo.SDK
         /// The full name of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("fullName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string FullName { get; set; }
 
         /// <summary>
         /// The email of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("emailAddress", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string EmailAddress { get; set; }
 
         /// <summary>
@@ -13486,14 +13522,14 @@ namespace Notifo.SDK
         /// The path.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Path { get; set; }
 
         /// <summary>
         /// The name.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -13554,7 +13590,7 @@ namespace Notifo.SDK
         /// The topic to add.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("topicPrefix", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string TopicPrefix { get; set; }
 
         /// <summary>
@@ -13731,14 +13767,14 @@ namespace Notifo.SDK
         /// The id of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
         /// The unique api key for the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("apiKey", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string ApiKey { get; set; }
 
         /// <summary>
@@ -13775,14 +13811,14 @@ namespace Notifo.SDK
         /// The date time (ISO 8601) when the user has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the user has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -13852,7 +13888,7 @@ namespace Notifo.SDK
         /// The token.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Token { get; set; }
 
         /// <summary>
@@ -13899,7 +13935,7 @@ namespace Notifo.SDK
         /// The endpoint.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("endpoint", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Endpoint { get; set; }
 
     }
@@ -13911,7 +13947,7 @@ namespace Notifo.SDK
         /// The field name for the property.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -14048,21 +14084,21 @@ namespace Notifo.SDK
         /// The topic path.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Path { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the topic has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the topic has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -14144,7 +14180,6 @@ namespace Notifo.SDK
         /// The path of the topic.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("path", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Path { get; set; }
 
         /// <summary>
@@ -14198,21 +14233,21 @@ namespace Notifo.SDK
         /// The code of the template.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("code", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Code { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the template has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the template has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -14360,14 +14395,14 @@ namespace Notifo.SDK
         /// The id of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
         /// The email of the user. Unique value.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Email { get; set; }
 
         /// <summary>
@@ -14448,7 +14483,7 @@ namespace Notifo.SDK
         /// The actual version.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Version { get; set; }
 
     }
@@ -14644,14 +14679,14 @@ namespace Notifo.SDK
         /// The id of the notification.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.Guid Id { get; set; }
 
         /// <summary>
         /// The subject of the notification in the language of the user.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Subject { get; set; }
 
         /// <summary>
@@ -14664,14 +14699,14 @@ namespace Notifo.SDK
         /// The timestamp when the notification has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The timestamp when the notification has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("updated", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Updated { get; set; }
 
         /// <summary>
@@ -14865,7 +14900,7 @@ namespace Notifo.SDK
         /// The device token.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Token { get; set; }
 
         /// <summary>
@@ -14891,14 +14926,12 @@ namespace Notifo.SDK
         /// The device token.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("token", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
         public string Token { get; set; }
 
         /// <summary>
         /// The device type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("deviceType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public MobileDeviceType DeviceType { get; set; }
 
@@ -14935,28 +14968,28 @@ namespace Notifo.SDK
         /// The mime type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("mimeType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string MimeType { get; set; }
 
         /// <summary>
         /// The file name.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("fileName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string FileName { get; set; }
 
         /// <summary>
         /// Generated information about the file.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("fileInfo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string FileInfo { get; set; }
 
         /// <summary>
         /// The url to the media item.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Url { get; set; }
 
         /// <summary>
@@ -14969,14 +15002,14 @@ namespace Notifo.SDK
         /// The date time (ISO 8601) when the media has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the media has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -15072,28 +15105,28 @@ namespace Notifo.SDK
         /// The log message.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Message { get; set; }
 
         /// <summary>
         /// The system.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("system", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string System { get; set; }
 
         /// <summary>
         /// The first time this message has been seen.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("firstSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset FirstSeen { get; set; }
 
         /// <summary>
         /// The last time this message has been seen.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastSeen", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastSeen { get; set; }
 
         /// <summary>
@@ -15135,14 +15168,14 @@ namespace Notifo.SDK
         /// The id of the event.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
         /// The topic path.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("topic", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Topic { get; set; }
 
         /// <summary>
@@ -15155,7 +15188,7 @@ namespace Notifo.SDK
         /// The display name.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("displayName", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -15168,7 +15201,7 @@ namespace Notifo.SDK
         /// The time when the event has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
@@ -15281,7 +15314,6 @@ namespace Notifo.SDK
         /// A custom timestamp.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Timestamp { get; set; }
 
         /// <summary>
@@ -15370,7 +15402,7 @@ namespace Notifo.SDK
         /// The error message.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Message { get; set; }
 
         /// <summary>
@@ -15401,7 +15433,6 @@ namespace Notifo.SDK
         /// The template type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public EmailPreviewType Type { get; set; }
 
@@ -15444,7 +15475,7 @@ namespace Notifo.SDK
         /// The id of the template.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
@@ -15463,7 +15494,7 @@ namespace Notifo.SDK
         /// The last time the template has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
     }
@@ -15475,7 +15506,7 @@ namespace Notifo.SDK
         /// The id of the template.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
@@ -15494,14 +15525,14 @@ namespace Notifo.SDK
         /// The date time (ISO 8601) when the template has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the template has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -15520,14 +15551,14 @@ namespace Notifo.SDK
         /// The subject text.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("subject", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Subject { get; set; }
 
         /// <summary>
         /// The body html template.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("bodyHtml", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string BodyHtml { get; set; }
 
         /// <summary>
@@ -15598,7 +15629,7 @@ namespace Notifo.SDK
         /// The id of the template.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
@@ -15617,14 +15648,14 @@ namespace Notifo.SDK
         /// The date time (ISO 8601) when the template has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the template has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -15643,7 +15674,7 @@ namespace Notifo.SDK
         /// The template text.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("text", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Text { get; set; }
 
     }
@@ -15678,7 +15709,7 @@ namespace Notifo.SDK
         /// The id of the template.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
@@ -15697,14 +15728,14 @@ namespace Notifo.SDK
         /// The date time (ISO 8601) when the template has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the template has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -15723,7 +15754,7 @@ namespace Notifo.SDK
         /// The template text.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("text", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Text { get; set; }
 
     }
@@ -15758,35 +15789,35 @@ namespace Notifo.SDK
         /// The id of the app.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
         /// The app name.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Name { get; set; }
 
         /// <summary>
         /// The current role.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Role { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the app has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the app has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -15819,35 +15850,35 @@ namespace Notifo.SDK
         /// The id of the app.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
         /// The app name.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Name { get; set; }
 
         /// <summary>
         /// The current role.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Role { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the app has been created.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset Created { get; set; }
 
         /// <summary>
         /// The date time (ISO 8601) when the app has been updated.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("lastUpdate", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public System.DateTimeOffset LastUpdate { get; set; }
 
         /// <summary>
@@ -16021,7 +16052,7 @@ namespace Notifo.SDK
         /// The integration type.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Type { get; set; }
 
         /// <summary>
@@ -16097,7 +16128,7 @@ namespace Notifo.SDK
         /// The logo for the integration.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("logo", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Logo { get; set; }
 
         /// <summary>
@@ -16129,7 +16160,7 @@ namespace Notifo.SDK
         /// The field name for the property.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Name { get; set; }
 
         /// <summary>
@@ -16236,7 +16267,7 @@ namespace Notifo.SDK
         /// The id of the integration.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
         public string Id { get; set; }
 
         /// <summary>
