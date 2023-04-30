@@ -41,6 +41,9 @@ public class UserNotificationExtensionsTests
 
         var message = source.ToFirebaseMessage(now);
 
+        VerifierSettings.DontScrubSolutionDirectory();
+        VerifierSettings.DontScrubProjectDirectory();
+
         return Verify(message);
     }
 
