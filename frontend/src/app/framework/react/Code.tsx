@@ -15,6 +15,7 @@ import 'codemirror/addon/fold/foldgutter';
 import 'codemirror/addon/fold/indent-fold';
 import 'codemirror/mode/htmlmixed/htmlmixed';
 import 'codemirror/mode/javascript/javascript';
+import { useEventCallback } from './hooks';
 
 export interface CodeProps {
     // The code mode.
@@ -31,7 +32,7 @@ export const Code = (props: CodeProps) => {
     const { autoHeight, mode, value } = props;
     const [editor, setEditor] = React.useState<CodeMirror.Editor>();
 
-    const doInit = React.useCallback((textarea: HTMLTextAreaElement) => {
+    const doInit = useEventCallback((textarea: HTMLTextAreaElement) => {
         if (!textarea) {
             return;
         }
@@ -53,7 +54,7 @@ export const Code = (props: CodeProps) => {
         });
 
         setEditor(editor);
-    }, []);
+    });
 
     React.useEffect(() => {
         editor?.setOption('viewportMargin', autoHeight ? Infinity : 10);

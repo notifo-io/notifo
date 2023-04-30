@@ -25,9 +25,9 @@ Default['args'] = {
     value: 'Sample Code',
 };
 
-export const AuthHeight = Template.bind({});
+export const AutoHeight = Template.bind({});
 
-AuthHeight['args'] = {
+AutoHeight['args'] = {
     value: 'Sample Code',
     autoHeight: true,
 };

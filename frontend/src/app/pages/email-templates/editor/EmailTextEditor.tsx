@@ -12,8 +12,8 @@ import { useEventCallback } from '@app/framework';
 import { usePreview } from './helpers';
 
 export interface EmailTextEditorProps {
-    // The initial value.
-    initialValue?: string | null;
+    // The value.
+    value?: string | null;
 
     // The app name.
     appId: string;
@@ -26,20 +26,18 @@ export interface EmailTextEditorProps {
 }
 
 export const EmailTextEditor = (props: EmailTextEditorProps) => {
-    const { appId, onBlur, onChange, initialValue } = props;
+    const { 
+        appId,
+        onBlur,
+        onChange,
+        value,
+    } = props;
 
-    const [emailPreview, markup, setMarkup] = usePreview(appId, 'Text');
-
-    React.useEffect(() => {
-        onChange(markup);
-    }, [markup, onChange]);
-
-    React.useEffect(() => {
-        setMarkup(initialValue || '');
-    });
+    const emailMarkup = value || '';
+    const emailPreview = usePreview(appId, emailMarkup, 'Text');
 
     const doChange = useEventCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-        setMarkup(event.target.value);
+        onChange(event.target.value);
     });
 
     const error = emailPreview.rendering.errors?.find(x => !x.line || x.line < 0);
@@ -48,7 +46,7 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
         <div className='email-editor white'>
             <Split direction='horizontal'>
                 <div className='left'>
-                    <Input type='textarea' value={markup} onChange={doChange} onBlur={onBlur} spellCheck={false} />
+                    <Input type='textarea' value={value || ''} onChange={doChange} onBlur={onBlur} spellCheck={false} />
                 </div>
 
                 <div className='right'>

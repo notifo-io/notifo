@@ -25,6 +25,7 @@ import 'codemirror/addon/search/searchcursor';
 import 'codemirror/addon/selection/active-line';
 import 'codemirror/mode/xml/xml';
 import * as React from 'react';
+import { useEventCallback } from '@app/framework';
 import { EmailPreviewErrorDto, MjmlSchema } from '@app/service';
 import { completeAfter, completeIfAfterLt, completeIfInTag } from './helpers';
 
@@ -57,12 +58,12 @@ export const EmailHtmlTextEditor = (props: EmailHtmlTextEditorProps) => {
     const [editor, setEditor] = React.useState<CodeMirror.Editor>();
     const onBlurRef = React.useRef(onBlur);
     const onChangeRef = React.useRef(onChange);
-    const valueRef = React.useRef(value);
+    const valueRef = React.useRef('');
 
     onBlurRef.current = onBlur;
     onChangeRef.current = onChange;
 
-    const doInit = React.useCallback((textarea: HTMLTextAreaElement) => {
+    const doInit = useEventCallback((textarea: HTMLTextAreaElement) => {
         if (!textarea) {
             return;
         }
@@ -129,7 +130,7 @@ export const EmailHtmlTextEditor = (props: EmailHtmlTextEditorProps) => {
         });
 
         setEditor(editor);
-    }, []);
+    });
 
     React.useEffect(() => {
         editor?.setOption('hintOptions', schema ?  { schemaInfo: schema } : undefined);

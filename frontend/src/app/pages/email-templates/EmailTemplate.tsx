@@ -72,7 +72,6 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     const updatingLanguage = useEmailTemplates(x => x.updatingLanguage);
     const updatingLanguageError = useEmailTemplates(x => x.updatingLanguageError);
     const disabled = updatingLanguage || deletingLanguage;
-    const [templateCopy, setTemplateCopy] = React.useState(template);
 
     React.useEffect(() => {
         if (creatingLanguageError) {
@@ -92,14 +91,6 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         }
     }, [deletingLanguageError]);
 
-    React.useEffect(() => {
-        if (template) {
-            setTemplateCopy({ ...template });
-        } else {
-            undefined;
-        }
-    }, [template]);
-
     const doCreate = useEventCallback(() => {
         dispatch(createEmailTemplateLanguage({ appId, id, language }));
     });
@@ -109,18 +100,16 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
     });
 
     const doUpdate = useEventCallback((params: EmailTemplateDto) => {
-        const template = {
-            ...params,
-            fromEmail: templateCopy?.fromEmail,
-            fromName: templateCopy?.fromName,
-        };
-
-        dispatch(updateEmailTemplateLanguage({ appId, id, language, template }));
+        dispatch(updateEmailTemplateLanguage({ appId, id, language, template: params }));
     });
 
-    const form = useForm<EmailTemplateDto>({ resolver: yupResolver(FormSchema), defaultValues: templateCopy, mode: 'onChange' });
+    const form = useForm<EmailTemplateDto>({ resolver: yupResolver(FormSchema), defaultValues: template, mode: 'onChange' });
 
-    return templateCopy ? (
+    React.useEffect(() => {
+        form.reset(template);
+    }, [form, template]);
+
+    return template ? (
         <>
             <FormProvider {...form}>
                 <Form onSubmit={form.handleSubmit(doUpdate)}>
@@ -164,7 +153,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
             </FormProvider>
 
             {updateDialog.value &&
-                <EmailTemplateMoreDialog template={templateCopy} onClose={updateDialog.off} />
+                <EmailTemplateMoreDialog onClose={updateDialog.off} />
             }
         </>
     ) : (
@@ -186,7 +175,7 @@ const BodyText = ({ visible, ...other }: { appId: string; visible: boolean }) =>
             <Forms.Error name='bodyText' />
 
             <div className={classNames('email-body', { hidden: !visible })}>
-                <EmailTextEditor initialValue={field.value} {...other} {...field} />
+                <EmailTextEditor {...other} {...field} />
             </div>
         </>
     );
@@ -200,7 +189,7 @@ const BodyHtml = ({ visible, ...other }: { appId: string; visible: boolean; sche
             <Forms.Error name='bodyHtml' />
 
             <div className={classNames('email-body', { hidden: !visible })}>
-                <EmailHtmlEditor initialValue={field.value} {...other} {...field} />
+                <EmailHtmlEditor {...other} {...field} />
             </div>
         </>
     );

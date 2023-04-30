@@ -54,6 +54,10 @@ export const AppSettings = (props: AppSettingsProps) => {
     
     const form = useForm<UpsertAppDto>({ resolver: yupResolver(FormSchema), defaultValues: appDetails, mode: 'onChange' });
 
+    React.useEffect(() => {
+        form.reset(appDetails);
+    }, [appDetails, form]);
+
     return (
         <>
             <h2 className='mt-5'>{texts.common.settings}</h2>

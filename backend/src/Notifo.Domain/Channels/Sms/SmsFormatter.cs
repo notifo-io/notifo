@@ -48,12 +48,12 @@ public sealed class SmsFormatter : ISmsFormatter
         return new ValueTask<SmsTemplate>(template);
     }
 
-    public ValueTask ParseAsync(SmsTemplate input, bool strict,
+    public ValueTask<SmsTemplate> ParseAsync(SmsTemplate input, bool strict,
         CancellationToken ct = default)
     {
         Validate<Validator>.It(input);
 
-        return default;
+        return new ValueTask<SmsTemplate>(input);
     }
 
     public (string Result, List<TemplateError>? Errors) Format(SmsTemplate? template, SmsJob job, App app, User user)

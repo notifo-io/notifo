@@ -127,7 +127,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
         state.creatingLanguageError = undefined;
 
         if (state.template && state.template.id === action.meta.arg.id) {
-            state.template.languages[action.meta.arg.language] = action.payload;
+            state.template = action.payload;
         }
     })
     .addCase(updateEmailTemplate.pending, (state) => {
@@ -143,7 +143,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
         state.updatingError = undefined;
 
         if (state.template && state.template.id === action.meta.arg.id) {
-            state.template = { ...state.template, ...action.meta.arg.update };
+            state.template = action.payload;
         }
     })
     .addCase(updateEmailTemplateLanguage.pending, (state) => {
@@ -159,7 +159,7 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
         state.updatingLanguageError = undefined;
 
         if (state.template && state.template.id === action.meta.arg.id) {
-            state.template.languages[action.meta.arg.language] = action.meta.arg.template;
+            state.template = action.payload;
         }
     })
     .addCase(deleteEmailTemplate.pending, (state) => {
@@ -187,6 +187,6 @@ export const emailTemplatesReducer = createReducer(initialState, builder => list
         state.deletingLanguageError = undefined;
 
         if (state.template && state.template.id === action.meta.arg.id) {
-            delete state.template.languages[action.meta.arg.language];
+            state.template = action.payload;
         }
     }));

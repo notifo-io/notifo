@@ -48,6 +48,7 @@ export const EN = {
         cancel: 'Cancel',
         channel: 'Channel',
         channels: 'Channels',
+        close: 'Close',
         code: 'Code',
         conditionModes: {
             Always: 'Always',

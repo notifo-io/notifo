@@ -11,46 +11,54 @@ import * as CodeMirror from 'codemirror';
 import * as React from 'react';
 import { Clients, EmailPreviewDto, EmailPreviewType } from '@app/service';
 
-type MarkupRequest = { code: any };
-type MarkupResponse = { rendering: EmailPreviewDto; emailMarkup?: string };
+type MarkupRequest = { requestId?: any };
+type MarkupResponse = { rendering: EmailPreviewDto; template?: string };
 
-export function usePreview(appId: string, type: EmailPreviewType): [MarkupResponse, string, (value: string) => void] {
-    const [emailMarkup, setEmailMarkup] = React.useState<string>('');
+export function usePreview(appId: string, template: string, type: EmailPreviewType): MarkupResponse {
     const [emailPreview, setEmailPreview] = React.useState<MarkupResponse>({ rendering: {} });
 
-    const status = React.useRef<MarkupRequest>({ code: '0' });
+    const status = React.useRef<MarkupRequest>({});
 
     React.useEffect(() => {
-        const timeout = setTimeout(async () => {
-            const code = new Date().getTime();
+        async function render() {
+            const requestId = new Date().getTime();
 
-            status.current.code = code;
+            status.current.requestId = requestId;
 
             try {
-                const rendering = await Clients.EmailTemplates.postPreview(appId, { template: emailMarkup, type });
+                const rendering = await Clients.EmailTemplates.postPreview(appId, { template, type });
 
-                if (status.current.code === code) {
-                    setEmailPreview({ rendering, emailMarkup });
+                if (status.current.requestId === requestId) {
+                    setEmailPreview({ rendering, template });
                 }
             } catch (ex: any) {
-                if (status.current.code === code) {
+                if (status.current.requestId === requestId) {
                     const rendering: EmailPreviewDto = {
                         errors: [{
                             message: ex.message,
                         } as any],
                     };
 
-                    setEmailPreview({ rendering, emailMarkup });
+                    setEmailPreview({ rendering, template });
                 }
             }
-        }, 300);
+        }
+
+        if (!status.current.requestId) {
+            render();
+            return undefined;
+        }
+
+        const timeout = setTimeout(async () => {
+            await render();
+        }, 2000);
 
         return () => {
             clearTimeout(timeout);
         };
-    }, [appId, emailMarkup, type]);
+    }, [appId, template, type]);
 
-    return [emailPreview, emailMarkup, setEmailMarkup];
+    return emailPreview;
 }
 
 export function completeAfter(editor: CodeMirror.Editor, predicate?: (cursor: CodeMirror.Position) => boolean) {

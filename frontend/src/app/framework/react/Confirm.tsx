@@ -36,7 +36,7 @@ export const Confirm = (props: ConfirmProps) => {
         setIsOpen.on();
     });
 
-    const doRender = React.useCallback(() => {
+    const doRender = useEventCallback(() => {
         const onClick = (event: any) => {
             setIsOpen.on();
 
@@ -52,7 +52,7 @@ export const Confirm = (props: ConfirmProps) => {
         };
 
         return children({ onClick });
-    }, [children, setIsOpen]);
+    });
 
     return (
         <>

@@ -12,6 +12,6 @@ public interface IChannelTemplateFactory<T>
     ValueTask<T> CreateInitialAsync(
         CancellationToken ct = default);
 
-    ValueTask ParseAsync(T input, bool strict,
+    ValueTask<T> ParseAsync(T input, bool strict,
         CancellationToken ct = default);
 }

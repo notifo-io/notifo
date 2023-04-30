@@ -28,8 +28,8 @@ public class UserNotificationExtensionsTests
             DeviceToken = token,
             DeviceType = MobileDeviceType.Android,
             Data = "data1",
-            ImageSmall = "https://notifo.io/placeholder.png",
-            ImageLarge = "https://notifo.io/placeholder-large.png",
+            ImageSmall = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder.png",
+            ImageLarge = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder-large.png",
             IsConfirmed = true,
             Silent = false,
             LinkText = "My Link",
@@ -40,6 +40,9 @@ public class UserNotificationExtensionsTests
         };
 
         var message = source.ToFirebaseMessage(now);
+
+        VerifierSettings.DontScrubSolutionDirectory();
+        VerifierSettings.DontScrubProjectDirectory();
 
         return Verify(message);
     }

@@ -124,8 +124,8 @@ public abstract class EmailTemplateTestsBase
                 {
                     Body = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr",
                     Subject = "subject1",
-                    ImageSmall = "https://notifo.io/placeholder.png",
-                    ImageLarge = "https://notifo.io/placeholder-large.png"
+                    ImageSmall = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder.png",
+                    ImageLarge = "https://raw.githubusercontent.com/notifo-io/notifo/main/backend/src/Notifo/wwwroot/placeholder-large.png"
                 }
             });
 

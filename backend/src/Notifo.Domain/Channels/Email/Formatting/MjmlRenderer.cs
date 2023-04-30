@@ -27,6 +27,11 @@ internal static class MjmlRenderer
 
     private static readonly IMjmlRenderer Renderer = new Mjml.Net.MjmlRenderer();
 
+    public static string FixXML(string mjml)
+    {
+        return Renderer.FixXML(mjml, OptionsStrict);
+    }
+
     public static (string? Html, List<TemplateError>? Errors) Render(string? mjml, bool strict, bool fix)
     {
         if (string.IsNullOrWhiteSpace(mjml))

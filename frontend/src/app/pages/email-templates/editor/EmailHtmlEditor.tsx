@@ -17,7 +17,7 @@ import { usePreview } from './helpers';
 
 export interface EmailHtmlEditorProps {
     // The value.
-    initialValue: string;
+    value: string;
 
     // The app name.
     appId: string;
@@ -34,22 +34,15 @@ export interface EmailHtmlEditorProps {
 
 export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
     const {
-        appId, 
-        initialValue,
+        appId,
         onBlur,
         onChange,
-        schema,
+        schema, 
+        value,
     } = props;
 
-    const [emailPreview, markup, setMarkup] = usePreview(appId, 'Html');
-
-    React.useEffect(() => {
-        onChange(markup);
-    }, [markup, onChange]);
-
-    React.useEffect(() => {
-        setMarkup(initialValue);
-    }, [setMarkup, initialValue]);
+    const emailMarkup = value || '';
+    const emailPreview = usePreview(appId, emailMarkup, 'Html');
 
     const error = emailPreview.rendering.errors?.[0];
 
@@ -58,10 +51,10 @@ export const EmailHtmlEditor = (props: EmailHtmlEditorProps) => {
             <Split direction='horizontal'>
                 <div className='left'>
                     <EmailHtmlTextEditor
-                        value={markup}
+                        value={emailMarkup}
                         errors={emailPreview.rendering?.errors}
                         onBlur={onBlur}
-                        onChange={setMarkup}
+                        onChange={onChange}
                         schema={schema}
                     />
                 </div>

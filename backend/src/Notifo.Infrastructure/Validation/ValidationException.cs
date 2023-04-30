@@ -58,6 +58,28 @@ public class ValidationException : DomainException
 
             if (!string.IsNullOrWhiteSpace(error))
             {
+                var properties = errors[i].PropertyNames;
+
+                if (properties.Any())
+                {
+                    var isFirst = true;
+
+                    foreach (var property in properties)
+                    {
+                        if (!isFirst)
+                        {
+                            sb.Append(',');
+                            sb.Append(' ');
+                        }
+
+                        sb.Append(property);
+                        isFirst = false;
+                    }
+
+                    sb.Append(':');
+                    sb.Append(' ');
+                }
+
                 sb.Append(error);
 
                 if (!error.EndsWith(".", StringComparison.OrdinalIgnoreCase))
