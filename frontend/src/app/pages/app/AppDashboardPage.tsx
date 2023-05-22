@@ -75,7 +75,7 @@ const buildSampleCode = () => {
    // Initialize the plugin.
    notifo.push(['init', {
      userToken: 'YOUR_USER_API_KEY'
-   });
+   }]);
 
    // Subscribe to web push.
    notifo.push(['subscribe']);
