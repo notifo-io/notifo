@@ -185,9 +185,9 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
             {
                 if (channel.IsSystem && !string.IsNullOrWhiteSpace(channel.Name))
                 {
-                    if (!notification.Channels.TryGetValue(channel.Name, out var channelInfo))
+                    if (!notification.Channels.TryGetValue(channel.Name, out _))
                     {
-                        channelInfo = new UserNotificationChannel
+                        var channelInfo = new UserNotificationChannel
                         {
                             Setting = new ChannelSetting
                             {
