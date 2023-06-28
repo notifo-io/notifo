@@ -10,7 +10,7 @@ using Notifo.Infrastructure.Mediator;
 
 namespace Notifo.Domain.Integrations;
 
-internal class IntegrationAdapter : IIntegrationAdapter
+internal sealed class IntegrationAdapter : IIntegrationAdapter
 {
     private readonly IUserStore userStore;
     private readonly IMediator mediator;

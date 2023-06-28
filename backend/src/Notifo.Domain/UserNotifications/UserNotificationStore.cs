@@ -34,7 +34,9 @@ public sealed class UserNotificationStore : IUserNotificationStore, IDisposable
 
     public void Dispose()
     {
+#pragma warning disable MA0134 // Observe result of async calls
         collector.StopAsync();
+#pragma warning restore MA0134 // Observe result of async calls
     }
 
     public async Task<IResultList<UserNotification>> QueryForDeviceAsync(string appId, string userId, DeviceNotificationsQuery query,

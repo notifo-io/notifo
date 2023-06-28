@@ -157,7 +157,12 @@
         padding-top: null,
         rel: null,
         target: null,
-        text-align: null,
+        text-align: [
+          left,
+          right,
+          center,
+          justify
+        ],
         text-decoration: null,
         text-transform: null,
         vertical-align: [
@@ -450,7 +455,12 @@
         padding-top: null,
         rel: null,
         target: null,
-        text-align: null,
+        text-align: [
+          left,
+          right,
+          center,
+          justify
+        ],
         text-decoration: null,
         text-transform: null,
         vertical-align: [
@@ -555,8 +565,9 @@
         padding-top: null,
         text-align: [
           left,
+          right,
           center,
-          right
+          justify
         ],
         text-padding: null
       },
@@ -766,8 +777,9 @@
         padding-top: null,
         text-align: [
           left,
+          right,
           center,
-          right
+          justify
         ],
         text-padding: null
       },
@@ -940,7 +952,12 @@
         padding-top: null,
         rel: null,
         target: null,
-        text-align: null,
+        text-align: [
+          left,
+          right,
+          center,
+          justify
+        ],
         text-decoration: null,
         text-transform: null,
         vertical-align: [
@@ -1233,7 +1250,12 @@
         padding-top: null,
         rel: null,
         target: null,
-        text-align: null,
+        text-align: [
+          left,
+          right,
+          center,
+          justify
+        ],
         text-decoration: null,
         text-transform: null,
         vertical-align: [
@@ -1338,8 +1360,9 @@
         padding-top: null,
         text-align: [
           left,
+          right,
           center,
-          right
+          justify
         ],
         text-padding: null
       },
@@ -1549,8 +1572,9 @@
         padding-top: null,
         text-align: [
           left,
+          right,
           center,
-          right
+          justify
         ],
         text-padding: null
       },

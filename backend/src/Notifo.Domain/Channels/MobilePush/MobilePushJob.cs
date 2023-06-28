@@ -21,7 +21,7 @@ public sealed class MobilePushJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => string.Join("_",
+        get => string.Join('_',
             Notification.AppId,
             Notification.UserId,
             GroupKey.OrDefault(Notification.Id),

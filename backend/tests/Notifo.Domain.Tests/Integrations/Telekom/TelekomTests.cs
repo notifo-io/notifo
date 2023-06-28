@@ -17,11 +17,13 @@ public sealed class TelekomTests : SmsSenderTestBase
     {
         var apiKey = TestHelpers.Configuration.GetValue<string>("sms:telekom:apiKey")!;
         var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:telekom:phoneNumber")!;
+        var phoneNumbers = TestHelpers.Configuration.GetValue<string>("sms:telekom:phoneNumbers")!;
 
         var context = BuildContext(new Dictionary<string, string>
         {
             [TelekomSmsIntegration.ApiKeyProperty.Name] = apiKey,
             [TelekomSmsIntegration.PhoneNumberProperty.Name] = phoneNumber,
+            [TelekomSmsIntegration.PhoneNumberProperty.Name] = phoneNumbers,
         });
 
         var integration =

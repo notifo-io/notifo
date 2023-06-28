@@ -51,11 +51,10 @@ public sealed class AddUserWebPushSubscription : UserCommand
         return new ValueTask<User?>(newUser);
     }
 
-    public override ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    public override async ValueTask ExecutedAsync(IServiceProvider serviceProvider)
     {
-        serviceProvider.GetRequiredService<ILogStore>()
-            .LogAsync(AppId, UserId, LogMessage.WebPush_TokenAdded("System", UserId, Subscription.Endpoint));
+        var logStore = serviceProvider.GetRequiredService<ILogStore>();
 
-        return default;
+        await logStore.LogAsync(AppId, UserId, LogMessage.WebPush_TokenAdded("System", UserId, Subscription.Endpoint));
     }
 }

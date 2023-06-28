@@ -14,6 +14,8 @@ using MongoDB.Driver;
 using Notifo.Infrastructure;
 using Notifo.Infrastructure.MongoDb;
 
+#pragma warning disable MA0020 // Use direct methods instead of LINQ methods
+
 namespace Notifo.Identity.MongoDb;
 
 public sealed class MongoDbUserStore :
@@ -631,7 +633,7 @@ public sealed class MongoDbUserStore :
     public Task ReplaceCodesAsync(IdentityUser user, IEnumerable<string> recoveryCodes,
         CancellationToken cancellationToken)
     {
-        ((MongoDbUser)user).ReplaceToken(InternalLoginProvider, RecoveryCodeTokenName, string.Join(";", recoveryCodes));
+        ((MongoDbUser)user).ReplaceToken(InternalLoginProvider, RecoveryCodeTokenName, string.Join(';', recoveryCodes));
 
         return Task.CompletedTask;
     }
@@ -646,7 +648,7 @@ public sealed class MongoDbUserStore :
         {
             var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
 
-            ((MongoDbUser)user).ReplaceToken(InternalLoginProvider, RecoveryCodeTokenName, string.Join(";", updatedCodes));
+            ((MongoDbUser)user).ReplaceToken(InternalLoginProvider, RecoveryCodeTokenName, string.Join(';', updatedCodes));
 
             return Task.FromResult(true);
         }

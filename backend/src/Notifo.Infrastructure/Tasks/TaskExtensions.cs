@@ -23,12 +23,14 @@ public static class TaskExtensions
         }
         else
         {
+#pragma warning disable MA0134 // Observe result of async calls
             task.ContinueWith(
                 IgnoreTaskContinuation,
                 default,
                 TaskContinuationOptions.OnlyOnFaulted |
                 TaskContinuationOptions.ExecuteSynchronously,
                 TaskScheduler.Default);
+#pragma warning restore MA0134 // Observe result of async calls
         }
     }
 
@@ -102,6 +104,7 @@ public static class TaskExtensions
     public static void Batch<TIn, TOut>(this Channel<object> source, Channel<TOut> target, Func<IReadOnlyList<TIn>, TOut> converter, int batchSize, int timeout,
         CancellationToken ct = default)
     {
+#pragma warning disable MA0134 // Observe result of async calls
         Task.Run(async () =>
         {
             var batch = new List<TIn>(batchSize);
@@ -140,5 +143,6 @@ public static class TaskExtensions
 
             await TrySendAsync();
         }, ct).ContinueWith(x => target.Writer.TryComplete(x.Exception));
+#pragma warning restore MA0134 // Observe result of async calls
     }
 }

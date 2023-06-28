@@ -67,7 +67,7 @@ internal sealed class EmailContext
             return;
         }
 
-        if (Jobs.Any(x => !template.Contains(x.Notification.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
+        if (Jobs.Exists(x => !template.Contains(x.Notification.Formatting.Subject, StringComparison.OrdinalIgnoreCase)))
         {
             AddError(type, Texts.Email_TemplateInvalid);
         }

@@ -65,7 +65,7 @@ public static class PipelineServiceExtensions
 
             httpContext.Response.Headers[HeaderNames.ContentType] = "text/json";
 
-            return httpContext.Response.WriteAsync(json);
+            return httpContext.Response.WriteAsync(json, httpContext.RequestAborted);
         });
 
         app.UseHealthChecks("/healthz", new HealthCheckOptions
