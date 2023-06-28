@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
+using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations;
 
@@ -13,7 +14,7 @@ public abstract class SmsSenderTestBase
 {
     protected abstract ResolvedIntegration<ISmsSender> CreateSender();
 
-    public static string PhoneNumber { get; } = TestHelpers.Configuration.GetValue<string>("sms:phoneNumber")!;
+    public static string PhoneNumber { get; } = TestUtils.Configuration.GetValue<string>("sms:phoneNumber")!;
 
     [Fact]
     public async Task Should_send_text_message()

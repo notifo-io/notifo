@@ -347,6 +347,9 @@ When you have done this send me an /update command.</value>
   <data name="Telekom_PhoneNumberLabel" xml:space="preserve">
     <value>Phone Number</value>
   </data>
+  <data name="Telekom_PhoneNumbersLabel" xml:space="preserve">
+    <value>Phone Numbers</value>
+  </data>
   <data name="ThreemaSimple_ApiIdentityLabel" xml:space="preserve">
     <value>API Identity</value>
   </data>

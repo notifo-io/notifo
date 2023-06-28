@@ -36,6 +36,7 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
             }
         }
 
+#pragma warning disable MA0029 // Combine LINQ methods
         var responses =
             context.MethodInfo.GetXmlDocsElement(null)?
                 .Nodes()
@@ -43,6 +44,7 @@ public sealed class ErrorDtoProcessor : IOperationProcessor
                 .Where(x => x.Name == "response")
                 .Where(x => x.Attribute("code") != null)
                 ?? Enumerable.Empty<XElement>();
+#pragma warning restore MA0029 // Combine LINQ methods
 
         foreach (var response in responses)
         {

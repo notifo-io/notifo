@@ -69,6 +69,9 @@ dotnet_diagnostic.MA0028.severity = none
 # MA0031: Optimize Enumerable.Count() usage
 dotnet_diagnostic.MA0031.severity = none 
 
+# MA0038: Make method static
+dotnet_diagnostic.MA0038.severity = none
+
 # MA0039: Do not write your own certificate validation method
 dotnet_diagnostic.MA0039.severity = none
   

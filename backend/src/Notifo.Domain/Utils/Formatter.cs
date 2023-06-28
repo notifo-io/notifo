@@ -14,7 +14,7 @@ public static partial class Formatter
 {
     private static readonly Regex FormatPattern = FormatFactory();
 
-    [GeneratedRegex("\\{\\{[\\s]*(?<Path>[^\\s]+)[\\s]*(\\|[\\s]*(?<Transform>[^\\?}]+))?(\\?[\\s]*(?<Fallback>[^\\}\\s]+))?[\\s]*\\}\\}", RegexOptions.Compiled)]
+    [GeneratedRegex("\\{\\{[\\s]*(?<Path>[^\\s]+)[\\s]*(\\|[\\s]*(?<Transform>[^\\?}]+))?(\\?[\\s]*(?<Fallback>[^\\}\\s]+))?[\\s]*\\}\\}", RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
     private static partial Regex FormatFactory();
 
     public static string Format(this string text, IReadOnlyDictionary<string, string?>? properties)

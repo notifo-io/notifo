@@ -19,9 +19,9 @@ public static class StringExtensions
         var url = $"{baseUrl.TrimEnd('/')}/{path.Trim('/')}";
 
         if (trailingSlash &&
-            url.IndexOf("#", StringComparison.OrdinalIgnoreCase) < 0 &&
-            url.IndexOf("?", StringComparison.OrdinalIgnoreCase) < 0 &&
-            url.IndexOf(";", StringComparison.OrdinalIgnoreCase) < 0)
+            url.IndexOf('#', StringComparison.OrdinalIgnoreCase) < 0 &&
+            url.IndexOf('?', StringComparison.OrdinalIgnoreCase) < 0 &&
+            url.IndexOf(';', StringComparison.OrdinalIgnoreCase) < 0)
         {
             url += "/";
         }

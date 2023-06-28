@@ -284,7 +284,7 @@ public sealed class TrackingBatch
             foreach (var (key, status) in channel.Status)
             {
                 // If at least one of the configurations match to configuration string, we use the configuration ID of this status.
-                if (status.Configuration.ContainsValue(token.Configuration!) == true)
+                if (status.Configuration?.ContainsValue(token.Configuration!) == true)
                 {
                     configuration = status;
                     configurationId = key;

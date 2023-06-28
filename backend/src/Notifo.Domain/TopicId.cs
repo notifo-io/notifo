@@ -14,7 +14,7 @@ public readonly partial record struct TopicId
 {
     private static readonly Regex Regex = RegexFactory();
 
-    [GeneratedRegex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled)]
+    [GeneratedRegex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
     private static partial Regex RegexFactory();
 
     public readonly string Id;

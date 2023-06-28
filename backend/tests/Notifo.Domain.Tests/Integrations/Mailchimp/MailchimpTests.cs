@@ -8,6 +8,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Integrations.Mailjet;
+using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations.Mailchimp;
 
@@ -16,9 +17,9 @@ public class MailchimpTests : EmailSenderTestBase
 {
     protected override ResolvedIntegration<IEmailSender> CreateSender()
     {
-        var apiKey = TestHelpers.Configuration.GetValue<string>("email:mailchimp:apiKey")!;
-        var fromEmail = TestHelpers.Configuration.GetValue<string>("email:mailchimp:fromEmail")!;
-        var fromName = TestHelpers.Configuration.GetValue<string>("email:mailchimp:fromName")!;
+        var apiKey = TestUtils.Configuration.GetValue<string>("email:mailchimp:apiKey")!;
+        var fromEmail = TestUtils.Configuration.GetValue<string>("email:mailchimp:fromEmail")!;
+        var fromName = TestUtils.Configuration.GetValue<string>("email:mailchimp:fromName")!;
 
         var context = BuildContext(new Dictionary<string, string>
         {

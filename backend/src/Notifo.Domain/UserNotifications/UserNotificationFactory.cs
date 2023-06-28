@@ -48,7 +48,9 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
 
         if (!app.Languages.Contains(language))
         {
+#pragma warning disable MA0134 // Observe result of async calls
             logstore.LogAsync(app.Id, LogMessage.User_LanguageNotValid("System", user.Id, language, app.Language));
+#pragma warning restore MA0134 // Observe result of async calls
             language = app.Language;
         }
 

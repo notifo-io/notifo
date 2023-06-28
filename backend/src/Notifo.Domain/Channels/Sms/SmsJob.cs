@@ -14,7 +14,7 @@ public sealed class SmsJob : ChannelJob
 {
     public string ScheduleKey
     {
-        get => string.Join("_",
+        get => string.Join('_',
             Notification.AppId,
             Notification.UserId,
             Template,

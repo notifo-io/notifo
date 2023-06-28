@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations.Twilio;
 
@@ -15,14 +16,14 @@ public sealed class TwilioTests : SmsSenderTestBase
 {
     protected override ResolvedIntegration<ISmsSender> CreateSender()
     {
-        var authToken = TestHelpers.Configuration.GetValue<string>("sms:twilio:authToken")!;
-        var accountSid = TestHelpers.Configuration.GetValue<string>("sms:twilio:accountSid")!;
-        var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:twilio:phoneNumber")!;
+        var authSid = TestUtils.Configuration.GetValue<string>("sms:twilio:accountSid")!;
+        var authToken = TestUtils.Configuration.GetValue<string>("sms:twilio:authToken")!;
+        var phoneNumber = TestUtils.Configuration.GetValue<string>("sms:twilio:phoneNumber")!;
 
         var context = BuildContext(new Dictionary<string, string>
         {
             [TwilioSmsIntegration.AuthTokenProperty.Name] = authToken,
-            [TwilioSmsIntegration.AccountSidProperty.Name] = accountSid,
+            [TwilioSmsIntegration.AccountSidProperty.Name] = authSid,
             [TwilioSmsIntegration.PhoneNumberProperty.Name] = phoneNumber,
         });
 

@@ -55,7 +55,9 @@ public abstract class CachePool<TItem>
                             EvictionCallback = (key, value, reason, state) =>
                             {
 #pragma warning disable CA2012 // Use ValueTasks correctly
+#pragma warning disable MA0134 // Observe result of async calls
                                 asyncDisposable.DisposeAsync();
+#pragma warning restore MA0134 // Observe result of async calls
 #pragma warning restore CA2012 // Use ValueTasks correctly
                             }
                         });

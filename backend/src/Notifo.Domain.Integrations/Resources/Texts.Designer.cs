@@ -747,6 +747,15 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Phone Numbers.
+        /// </summary>
+        internal static string Telekom_PhoneNumbersLabel {
+            get {
+                return ResourceManager.GetString("Telekom_PhoneNumbersLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to API Identity.
         /// </summary>
         internal static string ThreemaSimple_ApiIdentityLabel {

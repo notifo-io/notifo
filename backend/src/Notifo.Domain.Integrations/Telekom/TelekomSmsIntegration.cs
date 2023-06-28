@@ -28,6 +28,14 @@ public sealed partial class TelekomSmsIntegration : IIntegration
         Summary = true
     };
 
+    public static readonly IntegrationProperty PhoneNumbersProperty = new IntegrationProperty("phoneNumbers", PropertyType.MultilineText)
+    {
+        EditorLabel = Texts.Telekom_PhoneNumbersLabel,
+        EditorDescription = null,
+        IsRequired = true,
+        Summary = true
+    };
+
     public IntegrationDefinition Definition { get; } =
         new IntegrationDefinition(
             "Telekom",
@@ -36,7 +44,8 @@ public sealed partial class TelekomSmsIntegration : IIntegration
             new List<IntegrationProperty>
             {
                 ApiKeyProperty,
-                PhoneNumberProperty
+                PhoneNumberProperty,
+                PhoneNumbersProperty
             },
             new List<IntegrationProperty>(),
             new HashSet<string>

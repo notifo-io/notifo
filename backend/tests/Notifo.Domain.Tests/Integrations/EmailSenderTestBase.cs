@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Microsoft.Extensions.Configuration;
+using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations;
 
@@ -13,7 +14,7 @@ public abstract class EmailSenderTestBase
 {
     protected abstract ResolvedIntegration<IEmailSender> CreateSender();
 
-    public static string Address { get; } = TestHelpers.Configuration.GetValue<string>("email:address")!;
+    public static string Address { get; } = TestUtils.Configuration.GetValue<string>("email:address")!;
 
     [Fact]
     public async Task Should_send_text_message()

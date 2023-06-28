@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations.Mailjet;
 
@@ -15,10 +16,10 @@ public class MailjetTests : EmailSenderTestBase
 {
     protected override ResolvedIntegration<IEmailSender> CreateSender()
     {
-        var apiKey = TestHelpers.Configuration.GetValue<string>("email:mailjet:apiKey")!;
-        var apiSecret = TestHelpers.Configuration.GetValue<string>("email:mailjet:apiSecret")!;
-        var fromEmail = TestHelpers.Configuration.GetValue<string>("email:mailjet:fromEmail")!;
-        var fromName = TestHelpers.Configuration.GetValue<string>("email:mailjet:fromName")!;
+        var apiKey = TestUtils.Configuration.GetValue<string>("email:mailjet:apiKey")!;
+        var apiSecret = TestUtils.Configuration.GetValue<string>("email:mailjet:apiSecret")!;
+        var fromEmail = TestUtils.Configuration.GetValue<string>("email:mailjet:fromEmail")!;
+        var fromName = TestUtils.Configuration.GetValue<string>("email:mailjet:fromName")!;
 
         var context = BuildContext(new Dictionary<string, string>
         {

@@ -9,6 +9,7 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notifo.Domain.Integrations.Smtp;
+using Notifo.Domain.TestHelpers;
 using Notifo.Infrastructure.KeyValueStore;
 
 namespace Notifo.Domain.Integrations.AmazonSES;
@@ -18,7 +19,7 @@ public class AmazonSESEmailServerTests : EmailSenderTestBase
 {
     protected override ResolvedIntegration<IEmailSender> CreateSender()
     {
-        var options = TestHelpers.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>() ?? new AmazonSESOptions();
+        var options = TestUtils.Configuration.GetSection("email:amazonSES").Get<AmazonSESOptions>() ?? new AmazonSESOptions();
 
         var context = BuildContext(new Dictionary<string, string>
         {

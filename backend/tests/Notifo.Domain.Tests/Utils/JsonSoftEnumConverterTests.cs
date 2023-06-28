@@ -25,7 +25,7 @@ public class JsonSoftEnumConverterTests
     [InlineData("", MyEnum.A)]
     public void Should_deserialize_from_string(string source, MyEnum expected)
     {
-        var serialized = TestUtils.Deserialize<MyEnum>(source, new JsonSoftEnumConverter<MyEnum>());
+        var serialized = Infrastructure.TestHelpers.TestUtils.Deserialize<MyEnum>(source, new JsonSoftEnumConverter<MyEnum>());
 
         Assert.Equal(expected, serialized);
     }

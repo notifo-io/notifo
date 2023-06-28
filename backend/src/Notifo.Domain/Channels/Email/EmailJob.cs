@@ -20,7 +20,7 @@ public sealed class EmailJob : ChannelJob
 
     public string ScheduleKey
     {
-        get => string.Join("_",
+        get => string.Join('_',
             Notification.AppId,
             Notification.UserId,
             Notification.UserLanguage,

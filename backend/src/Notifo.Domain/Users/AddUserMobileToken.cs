@@ -51,11 +51,10 @@ public sealed class AddUserMobileToken : UserCommand
         return new ValueTask<User?>(newUser);
     }
 
-    public override ValueTask ExecutedAsync(IServiceProvider serviceProvider)
+    public override async ValueTask ExecutedAsync(IServiceProvider serviceProvider)
     {
-        serviceProvider.GetRequiredService<ILogStore>()
-            .LogAsync(AppId, UserId, LogMessage.MobilePush_TokenAdded("System", UserId, Token.Token));
+        var logStore = serviceProvider.GetRequiredService<ILogStore>();
 
-        return default;
+        await logStore.LogAsync(AppId, UserId, LogMessage.MobilePush_TokenAdded("System", UserId, Token.Token));
     }
 }

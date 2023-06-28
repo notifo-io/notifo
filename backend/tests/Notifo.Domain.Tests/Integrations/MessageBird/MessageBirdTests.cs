@@ -7,6 +7,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations.MessageBird;
 
@@ -15,9 +16,9 @@ public class MessageBirdTests : SmsSenderTestBase
 {
     protected override ResolvedIntegration<ISmsSender> CreateSender()
     {
-        var accessKey = TestHelpers.Configuration.GetValue<string>("sms:messageBird:accessKey")!;
-        var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:messageBird:phoneNumber")!;
-        var phoneNumbers = TestHelpers.Configuration.GetValue<string>("sms:messageBird:phoneNumbers")!;
+        var accessKey = TestUtils.Configuration.GetValue<string>("sms:messageBird:accessKey")!;
+        var phoneNumber = TestUtils.Configuration.GetValue<string>("sms:messageBird:phoneNumber")!;
+        var phoneNumbers = TestUtils.Configuration.GetValue<string>("sms:messageBird:phoneNumbers")!;
 
         var context = BuildContext(new Dictionary<string, string>
         {
