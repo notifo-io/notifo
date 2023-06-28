@@ -8,7 +8,6 @@
 using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations.Smtp;
 
@@ -17,7 +16,7 @@ public class SmtpEmailServerTests : EmailSenderTestBase
 {
     protected override ResolvedIntegration<IEmailSender> CreateSender()
     {
-        var options = TestUtils.Configuration.GetSection("email:smtp").Get<SmtpOptions>() ?? new SmtpOptions();
+        var options = TestHelpers.Configuration.GetSection("email:smtp").Get<SmtpOptions>() ?? new SmtpOptions();
 
         var context = BuildContext(new Dictionary<string, string>
         {

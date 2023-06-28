@@ -7,7 +7,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace Notifo.Domain.TestHelpers.TestHelpers;
+namespace Notifo.Domain.Settings;
 
 public static class VerifySettings
 {

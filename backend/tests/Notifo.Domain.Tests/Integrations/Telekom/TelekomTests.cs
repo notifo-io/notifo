@@ -7,7 +7,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Notifo.Domain.TestHelpers;
 
 namespace Notifo.Domain.Integrations.Telekom;
 
@@ -16,9 +15,9 @@ public sealed class TelekomTests : SmsSenderTestBase
 {
     protected override ResolvedIntegration<ISmsSender> CreateSender()
     {
-        var apiKey = TestUtils.Configuration.GetValue<string>("sms:telekom:apiKey")!;
-        var phoneNumber = TestUtils.Configuration.GetValue<string>("sms:telekom:phoneNumber")!;
-        var phoneNumbers = TestUtils.Configuration.GetValue<string>("sms:telekom:phoneNumbers")!;
+        var apiKey = TestHelpers.Configuration.GetValue<string>("sms:telekom:apiKey")!;
+        var phoneNumber = TestHelpers.Configuration.GetValue<string>("sms:telekom:phoneNumber")!;
+        var phoneNumbers = TestHelpers.Configuration.GetValue<string>("sms:telekom:phoneNumbers")!;
 
         var context = BuildContext(new Dictionary<string, string>
         {

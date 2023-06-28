@@ -5,7 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.TestHelpers;
+using Notifo.Infrastructure;
 
 namespace Notifo.Domain;
 
