@@ -12,9 +12,9 @@ namespace Notifo.Domain.Utils;
 
 public static partial class Formatter
 {
-    private static readonly Regex FormatPattern = FormatFactory();
+    private static readonly Regex FormatRegex = FormatFactory();
 
-    [GeneratedRegex("\\{\\{[\\s]*(?<Path>[^\\s]+)[\\s]*(\\|[\\s]*(?<Transform>[^\\?}]+))?(\\?[\\s]*(?<Fallback>[^\\}\\s]+))?[\\s]*\\}\\}", RegexOptions.Compiled)]
+    [GeneratedRegex("\\{\\{[\\s]*(?<Path>[^\\s]+)[\\s]*(\\|[\\s]*(?<Transform>[^\\?}]+))?(\\?[\\s]*(?<Fallback>[^\\}\\s]+))?[\\s]*\\}\\}", RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
     private static partial Regex FormatFactory();
 
     public static string Format(this string text, IReadOnlyDictionary<string, string?>? properties)
@@ -24,7 +24,7 @@ public static partial class Formatter
             return text ?? string.Empty;
         }
 
-        return FormatPattern.Replace(text, match =>
+        return FormatRegex.Replace(text, match =>
         {
             var path = match.Groups["Path"].Value;
 

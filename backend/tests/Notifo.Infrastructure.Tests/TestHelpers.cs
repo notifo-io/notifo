@@ -14,13 +14,13 @@ using Notifo.Infrastructure.Collections.Json;
 using Notifo.Infrastructure.Json;
 using Notifo.Infrastructure.MongoDb;
 
-namespace Notifo.Infrastructure.TestHelpers;
+namespace Notifo.Infrastructure;
 
-public static class TestUtils
+public static class TestHelpers
 {
     private static readonly JsonSerializerOptions DefaultOptions = new JsonSerializerOptions();
 
-    static TestUtils()
+    static TestHelpers()
     {
         DefaultOptions.Converters.Add(new JsonReadonlyListConverterFactory());
         DefaultOptions.Converters.Add(new JsonReadonlyDictionaryConverterFactory());

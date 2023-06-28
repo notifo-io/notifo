@@ -12,10 +12,10 @@ namespace Notifo.Domain;
 
 public readonly partial record struct TopicId
 {
-    private static readonly Regex Regex = RegexFactory();
+    private static readonly Regex FormatRegex = FormatFactory();
 
-    [GeneratedRegex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled)]
-    private static partial Regex RegexFactory();
+    [GeneratedRegex("^[^\\/\\n\\$]+(\\/[^\\/\n\\$]+)*$", RegexOptions.Compiled | RegexOptions.ExplicitCapture)]
+    private static partial Regex FormatFactory();
 
     public readonly string Id;
 
@@ -31,7 +31,7 @@ public readonly partial record struct TopicId
 
     public static bool IsValid(string? id)
     {
-        return !string.IsNullOrWhiteSpace(id) && Regex.IsMatch(id);
+        return !string.IsNullOrWhiteSpace(id) && FormatRegex.IsMatch(id);
     }
 
     public string[] GetParts()

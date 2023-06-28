@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using Notifo.Infrastructure.TestHelpers;
-
 namespace Notifo.Infrastructure.MongoDb;
 
 public class SoftEnumSerializerTests
