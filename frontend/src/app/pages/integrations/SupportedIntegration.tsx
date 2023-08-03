@@ -8,6 +8,7 @@
 import * as React from 'react';
 import { Badge, Card, CardBody, Col, Row } from 'reactstrap';
 import { IntegrationDefinitionDto } from '@app/service';
+import { IntegrationImage } from './IntegrationImage';
 
 export interface SupportedIntegrationProps {
     // The type code ofthe integration.
@@ -32,7 +33,7 @@ export const SupportedIntegration = React.memo((props: SupportedIntegrationProps
             <CardBody>
                 <Row noGutters>
                     <Col className='col-image'>
-                        <div dangerouslySetInnerHTML={{ __html: definition.logo }}></div>
+                        <IntegrationImage  definition={definition} type={type} />
                     </Col>
 
                     <Col>

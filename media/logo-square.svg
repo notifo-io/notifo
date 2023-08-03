@@ -1,15 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0" y="0" xml:space="preserve" viewBox="0 0 403.2 403.2">
-  <style type="text/css" id="style2">
-    .st0{fill:#675de2}
-  </style>
-  <g id="g4537" transform="translate(0 -7.55)">
-    <g transform="translate(63.6 1.5)" id="g12">
-      <g id="g8">
-        <path id="path4" d="M60.2 149.7c-16.8 0-32-5.9-44.3-15.5 0 .5-.1 1.1-.1 1.6v192h53.7v-179c-3.1.4-6.1.9-9.3.9z" fill="#675de2"/>
-        <path id="path6" d="M138.1 13.6c-12.3 0-24.1 1.9-35.3 5.2 15.7 11.5 26.3 29 28.9 49.1 2.1-.2 4.2-.6 6.3-.6 37.7 0 68.5 30.8 68.5 68.5v192h53.7v-192c.1-67.4-54.7-122.2-122.1-122.2z" fill="#675de2"/>
-      </g>
-      <circle id="circle10" r="43.4" cy="77.2" cx="60.2" fill="#ef3f5d"/>
-    </g>
-    <path id="path14" d="M201.65 403.2c27.1 0 49.2-22.1 49.2-49.2h-98.5c0 27 22.2 49.2 49.3 49.2z" fill="#675de2"/>
-  </g>
-</svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0"
+   y="0"
+   xml:space="preserve"
+   viewBox="0 0 403.2 403.2"
+   sodipodi:docname="logo-square.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs1">&#10;    &#10;    &#10;  &#10;      &#10;      &#10;    &#10;        &#10;        &#10;      </defs><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.8819444"
+   inkscape:cx="201.60001"
+   inkscape:cy="201.60001"
+   inkscape:window-width="2560"
+   inkscape:window-height="1351"
+   inkscape:window-x="-9"
+   inkscape:window-y="-2"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_1" />&#10;  <style
+   type="text/css"
+   id="style2">&#10;    .st0{fill:#675de2}&#10;  </style>&#10;  <path
+   id="path4"
+   d="m 123.8,143.65 c -16.8,0 -32,-5.9 -44.3,-15.5 0,0.5 -0.1,1.1 -0.1,1.6 v 192 h 53.7 v -179 c -3.1,0.4 -6.1,0.9 -9.3,0.9 z"
+   fill="#675de2" /><path
+   id="path6"
+   d="m 201.7,7.55 c -12.3,0 -24.1,1.9 -35.3,5.2 15.7,11.5 26.3,29 28.9,49.1 2.1,-0.2 4.2,-0.6 6.3,-0.6 37.7,0 68.5,30.8 68.5,68.5 v 192 h 53.7 v -192 C 323.9,62.35 269.1,7.55 201.7,7.55 Z"
+   fill="#675de2" /><circle
+   id="circle10"
+   r="43.400002"
+   cy="71.149994"
+   cx="123.8"
+   fill="#ef3f5d" /><path
+   id="path14"
+   d="m 201.65,395.65 c 27.1,0 49.2,-22.1 49.2,-49.2 h -98.5 c 0,27 22.2,49.2 49.3,49.2 z"
+   fill="#675de2" />&#10;</svg>

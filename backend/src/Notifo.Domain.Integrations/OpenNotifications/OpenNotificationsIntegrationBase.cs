@@ -5,6 +5,7 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
+using Confluent.Kafka;
 using Notifo.Infrastructure;
 using OpenNotifications;
 
@@ -154,5 +155,26 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
         {
             throw ex.ToDomainException();
         }
+    }
+
+    public async Task<ProviderImage?> GetImageAsync(
+        CancellationToken ct)
+    {
+        ProviderImage? result = null;
+        try
+        {
+            var image = await Client.Providers.DownloadImageAsync(ProviderName, ct);
+
+            if (image != null && image.Headers.TryGetValue("Content-Type", out var headers) && headers.Any())
+            {
+                result = new ProviderImage(image.Stream, headers.First());
+            }
+        }
+        catch
+        {
+            result = null;
+        }
+
+        return result;
     }
 }

@@ -12,7 +12,7 @@ import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar, NavItem } from 'reactstrap';
 import { Marker, useBoolean, useEventCallback } from '@app/framework';
 import { AppsDropdown, Integrated, Logo } from '@app/shared/components';
-import { loadApps, loadLanguages, loadTimezones, logoutStart, useLogin } from '@app/state';
+import { logoutStart, useLogin } from '@app/state';
 import { texts } from '@app/texts';
 
 export const TopNav = () => {
@@ -21,12 +21,6 @@ export const TopNav = () => {
     const user = useLogin(x => x.user)!;
     const userProfile = useLogin(x => x.profile);
     const [isOpen, setIsOpen] = useBoolean();
-
-    React.useEffect(() => {
-        dispatch(loadApps());
-        dispatch(loadLanguages());
-        dispatch(loadTimezones());
-    }, [dispatch]);
 
     const doLogout = useEventCallback(() => {
         dispatch(logoutStart());

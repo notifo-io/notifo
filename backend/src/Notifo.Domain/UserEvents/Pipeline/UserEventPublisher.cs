@@ -26,7 +26,9 @@ public sealed class UserEventPublisher : IUserEventPublisher
     private static readonly HashSet<string> UserAllTopics = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         "users/all",
-        "user/all"
+        "users/*",
+        "user/all",
+        "user/*"
     };
 
     private static readonly string[] UserTopicPrefixex =

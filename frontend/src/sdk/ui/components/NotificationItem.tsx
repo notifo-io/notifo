@@ -10,7 +10,7 @@
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
-import { NotificationsOptions, NotifoNotificationDto, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
+import { getHostName, NotificationsOptions, NotifoNotificationDto, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { Icon } from './Icon';
 import { Image } from './Image';
 import { Loader } from './Loader';
@@ -133,23 +133,16 @@ export const NotificationItem = (props: NotificationItemProps) => {
     }, [config.locale, notification.created]);
 
     const target = useMemo(() => {
-        if (!notification.linkUrl) {
+        if (config.linkTarget) {
+            return config.linkTarget;
+        }
+
+        if (!notification.linkUrl || getHostName(notification.linkUrl) === window.location.host) {
             return '_self';
         }
 
-        try {
-            const linkUrl = new URL(notification.linkUrl);
-
-            if (linkUrl.host === window.location.host) {
-                return '_self';
-            } else {
-                return '_blank';
-            }
-        } catch {
-            // URL is very likely relative.
-            return '_self';
-        }
-    }, [notification.linkUrl]);
+        return '_blank';
+    }, [config.linkTarget, notification.linkUrl]);
 
     return (
         <div class='notifo-notification' ref={setRef} onClick={doSee}>

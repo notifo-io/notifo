@@ -17,6 +17,7 @@ import { ConfiguredIntegrationDto, IntegrationDefinitionDto, IntegrationProperty
 import { Forms } from '@app/shared/components';
 import { createIntegration, deleteIntegration, updateIntegration, useIntegrations } from '@app/state';
 import { texts } from '@app/texts';
+import { IntegrationImage } from './IntegrationImage';
 import { StatusLabel } from './StatusLabel';
 
 export interface IntegrationDialogProps {
@@ -168,7 +169,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                     <ModalHeader toggle={onClose}>
                         <Row noGutters>
                             <Col xs='auto' className='col-image'>
-                                <div dangerouslySetInnerHTML={{ __html: definition.logo }}></div>
+                                <IntegrationImage  definition={definition} type={type} />
                             </Col>
 
                             <Col>

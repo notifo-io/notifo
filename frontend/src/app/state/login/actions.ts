@@ -14,6 +14,8 @@ import { AuthService, Clients } from '@app/service';
 import { createApiThunk } from './../shared';
 import { LoginState, User } from './state';
 
+const userManager = AuthService.getUserManager();
+
 const loginStarted = createAction('login/started');
 
 const loginDoneSilent = createAction<{ user: User }>('login/done/silent');
@@ -34,9 +36,6 @@ export const loadProfile = createApiThunk('login/profile',
 export const loginStart = () => {
     return async (dispatch: Dispatch) => {
         dispatch(loginStarted());
-
-        const userManager = AuthService.getUserManager();
-
         let currentUser = await userManager.getUser();
 
         if (!currentUser) {
@@ -59,8 +58,6 @@ export const loginStart = () => {
 
 export const loginDone = () => {
     return async (dispatch: Dispatch) => {
-        const userManager = AuthService.getUserManager();
-
         const currentUser = await userManager.signinCallback();
 
         if (!currentUser) {
@@ -77,8 +74,6 @@ export const logoutStart = () => {
     return async (dispatch: Dispatch) => {
         dispatch(logoutStarted());
 
-        const userManager = AuthService.getUserManager();
-
         const currentUser = await userManager.getUser();
 
         if (currentUser) {
@@ -89,8 +84,6 @@ export const logoutStart = () => {
 
 export const logoutDone = () => {
     return async (dispatch: Dispatch) => {
-        const userManager = AuthService.getUserManager();
-
         const response = await userManager.signoutRedirectCallback();
 
         if (!response.error) {
@@ -101,8 +94,6 @@ export const logoutDone = () => {
 
 export const loginMiddleware: Middleware = (state) => next => action => {
     if (action.payload?.statusCode === 401 || action.payload?.error?.statusCode === 401) {
-        const userManager = AuthService.getUserManager();
-
         userManager.signoutRedirect();
     }
 

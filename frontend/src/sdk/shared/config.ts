@@ -352,6 +352,9 @@ export interface SDKConfig {
     // The url to the styles.
     styleUrl: string;
 
+    // Allow overriding the link target.
+    linkTarget?: string;
+
     // An object of allowed channels.
     allowedChannels: {};
 

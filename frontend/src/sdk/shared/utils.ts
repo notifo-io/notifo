@@ -106,6 +106,15 @@ export function combineUrl(baseUrl: string, relativeUrl: string) {
     return `${b}/${r}`;
 }
 
+export function getHostName(url: string) {
+    try {
+        return new URL(url).host;
+    } catch {
+        // URL is very likely relative.
+        return undefined;
+    }
+}
+
 export function delayTime(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

@@ -12,6 +12,7 @@ import { useEventCallback } from '@app/framework';
 import { ConfiguredIntegrationDto, IntegrationDefinitionDto } from '@app/service';
 import { getSummaryProperties } from '@app/state';
 import { texts } from '@app/texts';
+import { IntegrationImage } from './IntegrationImage';
 import { StatusLabel } from './StatusLabel';
 
 export interface ConfiguredIntegrationProps {
@@ -49,7 +50,7 @@ export const ConfiguredIntegration = React.memo((props: ConfiguredIntegrationPro
             <CardBody>
                 <Row noGutters>
                     <Col className='col-image'>
-                        <div dangerouslySetInnerHTML={{ __html: definition.logo }}></div>
+                        <IntegrationImage  definition={definition} type={configured.type} />
                     </Col>
 
                     <Col className='no-overflow'>

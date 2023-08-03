@@ -148,6 +148,16 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
         return integration.OnRemovedAsync(BuildContext(app, id, integration, configured), ct);
     }
 
+    public Task<ProviderImage?> GetImageAsync(string type,
+        CancellationToken ct)
+    {
+        Guard.NotNullOrEmpty(type);
+
+        var integration = GetIntegrationOrThrow(type);
+
+        return integration.GetImageAsync(ct);
+    }
+
     public bool HasIntegration<T>(App app)
     {
         Guard.NotNull(app);

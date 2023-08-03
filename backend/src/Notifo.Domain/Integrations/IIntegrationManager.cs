@@ -21,6 +21,9 @@ public interface IIntegrationManager
 
     bool HasIntegration<T>(App app);
 
+    Task<ProviderImage?> GetImageAsync(string type,
+        CancellationToken ct);
+
     Task OnCallbackAsync(string id, App app, HttpContext httpContext,
         CancellationToken ct = default);
 

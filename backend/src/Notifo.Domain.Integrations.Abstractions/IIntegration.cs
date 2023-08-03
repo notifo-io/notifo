@@ -28,4 +28,10 @@ public interface IIntegration
     {
         return Task.FromResult(IntegrationStatus.Verified);
     }
+
+    Task<ProviderImage?> GetImageAsync(
+        CancellationToken ct)
+    {
+        return Task.FromResult<ProviderImage?>(null);
+    }
 }
