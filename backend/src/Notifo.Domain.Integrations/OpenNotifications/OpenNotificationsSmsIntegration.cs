@@ -68,36 +68,35 @@ public sealed class OpenNotificationsSmsIntegration : OpenNotificationsIntegrati
 
         var response = await Client.Providers.HandleWebhookAsync(requestDto, default);
 
-        var http = response.Http;
-
-        if (http != null)
+        if (response.Http != null)
         {
             var httpResponse = httpContext.Response;
 
-            if (http.Headers != null)
+            if (response.Http.Headers != null)
             {
-                foreach (var (key, value) in http.Headers)
+                foreach (var (key, value) in response.Http.Headers)
                 {
                     httpResponse.Headers[key] = value;
                 }
             }
 
-            if (http.StatusCode != null)
+            if (response.Http.StatusCode != null)
             {
-                httpResponse.StatusCode = http.StatusCode.Value;
+                httpResponse.StatusCode = response.Http.StatusCode.Value;
             }
 
-            if (http.Body != null)
+            if (response.Http.Body != null)
             {
-                await httpResponse.WriteAsync(http.Body, default);
+                await httpResponse.WriteAsync(response.Http.Body, default);
             }
         }
 
-        var status = response.Status;
-
-        if (status != null)
+        if (response.Statuses != null)
         {
-            await context.UpdateStatusAsync(status.TrackingToken, status.ToDeliveryResult());
+            foreach (var status in response.Statuses)
+            {
+                await context.UpdateStatusAsync(status.TrackingToken, status.ToDeliveryResult());
+            }
         }
     }
 }

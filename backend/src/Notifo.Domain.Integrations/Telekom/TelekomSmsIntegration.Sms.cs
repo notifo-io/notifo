@@ -95,7 +95,6 @@ public sealed partial class TelekomSmsIntegration : ISmsSender, IIntegrationHook
         var status = httpContext.Request.Form[RequestKeys.MessageStatus].ToString();
 
         var result = ParseStatus(status);
-
         if (result == default)
         {
             return Task.CompletedTask;

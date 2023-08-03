@@ -119,7 +119,6 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
         }
 
         var deliveryStatus = ParseStatus(status);
-
         if (deliveryStatus == default)
         {
             return;

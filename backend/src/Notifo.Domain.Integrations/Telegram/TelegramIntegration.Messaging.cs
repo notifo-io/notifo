@@ -112,7 +112,6 @@ public sealed partial class TelegramIntegration : IMessagingSender, IIntegration
         }
 
         var user = await context.IntegrationAdapter.FindUserByPropertyAsync(context.AppId, UserUsername.Name, username, default);
-
         if (user == null)
         {
             await SendMessageAsync(context, GetUserNotFoundMessage(context), chatId, ct);

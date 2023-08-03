@@ -105,7 +105,6 @@ public sealed partial class MessageBirdSmsIntegration : ISmsSender, IIntegration
         var status = await GetClient(context).ParseSmsWebhookAsync(httpContext);
 
         var result = ParseStatus(status);
-
         if (result == default)
         {
             return;
