@@ -64,14 +64,6 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
             throw new EmailFormattingException(context.Errors);
         }
 
-        if (!string.IsNullOrWhiteSpace(input.BodyHtml))
-        {
-            input = input with
-            {
-                BodyHtml = MjmlRenderer.FixXML(input.BodyHtml)
-            };
-        }
-
         return new ValueTask<EmailTemplate>(input);
     }
 
@@ -149,7 +141,7 @@ public sealed class EmailFormatterLiquid : IEmailFormatter
 
         context.ValidateTemplate(result, EmailTemplateType.BodyHtml);
 
-        var (rendered, errors) = MjmlRenderer.Render(result, strict, true);
+        var (rendered, errors) = MjmlRenderer.Render(result, strict);
 
         foreach (var error in errors.OrEmpty())
         {
