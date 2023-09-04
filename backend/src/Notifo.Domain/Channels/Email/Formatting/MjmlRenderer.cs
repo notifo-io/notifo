@@ -27,12 +27,7 @@ internal static class MjmlRenderer
 
     private static readonly IMjmlRenderer Renderer = new Mjml.Net.MjmlRenderer();
 
-    public static string FixXML(string mjml)
-    {
-        return Renderer.FixXML(mjml, OptionsStrict);
-    }
-
-    public static (string? Html, List<TemplateError>? Errors) Render(string? mjml, bool strict, bool fix)
+    public static (string? Html, List<TemplateError>? Errors) Render(string? mjml, bool strict)
     {
         if (string.IsNullOrWhiteSpace(mjml))
         {
@@ -48,11 +43,6 @@ internal static class MjmlRenderer
             try
             {
                 var options = strict ? OptionsStrict : OptionsOptimized;
-
-                if (fix)
-                {
-                    mjml = Renderer.FixXML(mjml, options);
-                }
 
                 (rendered, var mjmlErrors) = Renderer.Render(mjml, options);
 

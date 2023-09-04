@@ -30,7 +30,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
-    <PackageReference Include="Mjml.Net" Version="1.24.0" />
+    <PackageReference Include="Mjml.Net" Version="2.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
