@@ -150,11 +150,11 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
                         <BodyText appId={appId} visible={!showHtml.value} />
                     </div>
                 </Form>
-            </FormProvider>
 
-            {updateDialog.value &&
-                <EmailTemplateMoreDialog onClose={updateDialog.off} />
-            }
+                {updateDialog.value &&
+                    <EmailTemplateMoreDialog onClose={updateDialog.off} />
+                }
+            </FormProvider>
         </>
     ) : (
         <div className='empty-button'>

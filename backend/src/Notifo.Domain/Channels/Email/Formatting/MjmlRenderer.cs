@@ -22,7 +22,7 @@ internal static class MjmlRenderer
 
     private static readonly MjmlOptions OptionsStrict = new MjmlOptions
     {
-        ValidatorFactory = StrictValidatorFactory.Instance,
+        Validator = StrictValidator.Instance,
     };
 
     private static readonly IMjmlRenderer Renderer = new Mjml.Net.MjmlRenderer();
@@ -42,11 +42,18 @@ internal static class MjmlRenderer
         {
             try
             {
-                var options = strict ? OptionsStrict : OptionsOptimized;
+                var options =
+                    strict ?
+                    OptionsStrict :
+                    OptionsOptimized;
 
                 (rendered, var mjmlErrors) = Renderer.Render(mjml, options);
 
-                errors = mjmlErrors?.Select(x => new TemplateError(x.Error, x.Line ?? -1, x.Column ?? -1)).ToList();
+                errors = mjmlErrors?.Select(x => new TemplateError(
+                    x.Error,
+                    x.Position.LineNumber,
+                    x.Position.LinePosition)
+                ).ToList();
             }
             catch (Exception ex)
             {

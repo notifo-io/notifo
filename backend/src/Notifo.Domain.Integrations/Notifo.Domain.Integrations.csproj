@@ -9,23 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.100.147" />
-    <PackageReference Include="Confluent.Kafka" Version="2.1.1" />
-    <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
-    <PackageReference Include="FluentValidation" Version="11.5.2" />
+    <PackageReference Include="AWSSDK.SimpleEmail" Version="3.7.200.32" />
+    <PackageReference Include="Confluent.Kafka" Version="2.2.0" />
+    <PackageReference Include="FirebaseAdmin" Version="2.4.0" />
+    <PackageReference Include="FluentValidation" Version="11.7.1" />
     <PackageReference Include="Fluid.Core" Version="2.4.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.48" />
-    <PackageReference Include="libphonenumber-csharp" Version="8.13.14" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.52" />
+    <PackageReference Include="libphonenumber-csharp" Version="8.13.19" />
     <PackageReference Include="Mailjet.Api" Version="3.0.0" />
-    <PackageReference Include="MailKit" Version="4.1.0" />
-    <PackageReference Include="Meziantou.Analyzer" Version="2.0.62">
+    <PackageReference Include="MailKit" Version="4.2.0" />
+    <PackageReference Include="Meziantou.Analyzer" Version="2.0.83">
     <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
-    <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
     <PackageReference Include="NodaTime" Version="3.1.9" />
     <PackageReference Include="OpenNotifications" Version="0.3.0" />
     <PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
@@ -33,7 +33,7 @@
     <PackageReference Include="System.Net.Http.Json" Version="7.0.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />
     <PackageReference Include="Telegram.Bot" Version="19.0.0" />
-    <PackageReference Include="Twilio" Version="6.9.0" />
+    <PackageReference Include="Twilio" Version="6.11.0" />
   </ItemGroup>
 
   <ItemGroup>

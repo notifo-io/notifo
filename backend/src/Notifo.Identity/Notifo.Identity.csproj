@@ -9,14 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<PackageReference Include="AspNet.Security.OAuth.GitHub" Version="7.0.2" />
-	<PackageReference Include="Meziantou.Analyzer" Version="2.0.62">
+	<PackageReference Include="AspNet.Security.OAuth.GitHub" Version="7.0.4" />
+	<PackageReference Include="Meziantou.Analyzer" Version="2.0.83">
 	<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
-	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.8" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.10" />
 	<PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
-	<PackageReference Include="OpenIddict.AspNetCore" Version="4.5.0" />
+	<PackageReference Include="OpenIddict.AspNetCore" Version="4.7.0" />
 	<PackageReference Include="Squidex.OpenIddict.MongoDb" Version="4.0.1-dev" />
 	<PackageReference Include="RefactoringEssentials" Version="5.6.0" PrivateAssets="all" />
 	<PackageReference Include="StyleCop.Analyzers" Version="1.1.118" PrivateAssets="all" />

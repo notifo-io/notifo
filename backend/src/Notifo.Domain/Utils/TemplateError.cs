@@ -9,4 +9,4 @@
 
 namespace Notifo.Domain.Utils;
 
-public sealed record TemplateError(string Message, int Line = -1, int Column = -1, Exception? Exception = null);
+public sealed record TemplateError(string Message, int LineNumber = -1, int LinePosition = -1, Exception? Exception = null);

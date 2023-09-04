@@ -15408,14 +15408,14 @@ namespace Notifo.SDK
         /// <summary>
         /// The line number.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("line", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Line { get; set; }
+        [Newtonsoft.Json.JsonProperty("lineNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LineNumber { get; set; }
 
         /// <summary>
         /// The line column.
         /// </summary>
-        [Newtonsoft.Json.JsonProperty("column", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int Column { get; set; }
+        [Newtonsoft.Json.JsonProperty("linePosition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int LinePosition { get; set; }
 
     }
 

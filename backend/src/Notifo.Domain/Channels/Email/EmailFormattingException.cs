@@ -41,8 +41,10 @@ public class EmailFormattingException : Exception
         foreach (var error in errors)
         {
             sb.Append(" * ");
-            sb.Append("Line: ");
-            sb.Append(error.Error.Line);
+            sb.Append("Position: ");
+            sb.Append(error.Error.LineNumber);
+            sb.Append(", ");
+            sb.Append(error.Error.LinePosition);
             sb.Append(", ");
             sb.Append("Template: ");
             sb.Append(error.Template);

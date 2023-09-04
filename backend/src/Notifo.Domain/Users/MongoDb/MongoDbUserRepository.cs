@@ -165,10 +165,7 @@ public sealed class MongoDbUserRepository : MongoDbStore<MongoDbUser>, IUserRepo
                         updates.Add(Update.Inc($"d.Counters.{key}", value));
                     }
 
-                    var model = new UpdateOneModel<MongoDbUser>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates))
-                    {
-                        IsUpsert = true
-                    };
+                    var model = new UpdateOneModel<MongoDbUser>(Filter.Eq(x => x.DocId, docId), Update.Combine(updates));
 
                     writes.Add(model);
                 }

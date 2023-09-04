@@ -51,7 +51,7 @@ public sealed class ImageMediaMetadataSource : IMediaMetadataSource
                 {
                     await using (var tempStream = tempFile.OpenWrite())
                     {
-                        await assetThumbnailGenerator.FixOrientationAsync(uploadStream, mimeType, tempStream);
+                        await assetThumbnailGenerator.FixAsync(uploadStream, mimeType, tempStream);
                     }
                 }
 

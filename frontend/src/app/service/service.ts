@@ -212,15 +212,11 @@ export class UserClient {
      * @param skip (optional) The number of items to skip.
      * @return User subscriptions returned.
      */
-    getMySubscriptions(topics?: string | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
+    getMySubscriptions(topics?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
         let url_ = this.baseUrl + "/api/me/subscriptions?";
-        if (topics === null)
-            throw new Error("The parameter 'topics' cannot be null.");
-        else if (topics !== undefined)
+        if (topics !== undefined && topics !== null)
             url_ += "Topics=" + encodeURIComponent("" + topics) + "&";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -439,14 +435,12 @@ export class UsersClient {
      * @param withDetails (optional) Provide extra details, might be expensive.
      * @return Users returned.
      */
-    getUsers(appId: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined, withDetails?: boolean | undefined): Promise<ListResponseDtoOfUserDto> {
+    getUsers(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined, withDetails?: boolean | undefined): Promise<ListResponseDtoOfUserDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -690,7 +684,7 @@ export class UsersClient {
      * @param skip (optional) The number of items to skip.
      * @return User subscriptions returned.
      */
-    getSubscriptions(appId: string, id: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
+    getSubscriptions(appId: string, id: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSubscriptionDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/subscriptions?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -698,9 +692,7 @@ export class UsersClient {
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -1145,7 +1137,7 @@ export class TopicsClient {
      * @param skip (optional) The number of items to skip.
      * @return Topics returned.
      */
-    getTopics(appId: string, scope?: TopicQueryScope | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTopicDto> {
+    getTopics(appId: string, scope?: TopicQueryScope | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTopicDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/topics?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -1154,9 +1146,7 @@ export class TopicsClient {
             throw new Error("The parameter 'scope' cannot be null.");
         else if (scope !== undefined)
             url_ += "Scope=" + encodeURIComponent("" + scope) + "&";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -1338,14 +1328,12 @@ export class TemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Templates returned.
      */
-    getTemplates(appId: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -1522,11 +1510,9 @@ export class SystemUsersClient {
      * @param skip (optional) The number of items to skip.
      * @return Users returned.
      */
-    getUsers(query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSystemUserDto> {
+    getUsers(query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfSystemUserDto> {
         let url_ = this.baseUrl + "/api/system-users?";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -2072,24 +2058,18 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getAllNotifications(appId: string, channels?: string[] | null | undefined, channel?: string | undefined, correlationId?: string | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+    getAllNotifications(appId: string, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
-        if (channel === null)
-            throw new Error("The parameter 'channel' cannot be null.");
-        else if (channel !== undefined)
+        if (channel !== undefined && channel !== null)
             url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
-        if (correlationId === null)
-            throw new Error("The parameter 'correlationId' cannot be null.");
-        else if (correlationId !== undefined)
+        if (correlationId !== undefined && correlationId !== null)
             url_ += "CorrelationId=" + encodeURIComponent("" + correlationId) + "&";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -2152,7 +2132,7 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return User notifications returned.
      */
-    getNotifications(appId: string, id: string, channels?: string[] | null | undefined, channel?: string | undefined, correlationId?: string | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
+    getNotifications(appId: string, id: string, channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDetailsDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/users/{id}/notifications?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2162,17 +2142,11 @@ export class NotificationsClient {
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
-        if (channel === null)
-            throw new Error("The parameter 'channel' cannot be null.");
-        else if (channel !== undefined)
+        if (channel !== undefined && channel !== null)
             url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
-        if (correlationId === null)
-            throw new Error("The parameter 'correlationId' cannot be null.");
-        else if (correlationId !== undefined)
+        if (correlationId !== undefined && correlationId !== null)
             url_ += "CorrelationId=" + encodeURIComponent("" + correlationId) + "&";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -2233,21 +2207,15 @@ export class NotificationsClient {
      * @param skip (optional) The number of items to skip.
      * @return Notifications returned.
      */
-    getMyNotifications(channels?: string[] | null | undefined, channel?: string | undefined, correlationId?: string | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyNotifications(channels?: string[] | null | undefined, channel?: string | null | undefined, correlationId?: string | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications?";
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
-        if (channel === null)
-            throw new Error("The parameter 'channel' cannot be null.");
-        else if (channel !== undefined)
+        if (channel !== undefined && channel !== null)
             url_ += "Channel=" + encodeURIComponent("" + channel) + "&";
-        if (correlationId === null)
-            throw new Error("The parameter 'correlationId' cannot be null.");
-        else if (correlationId !== undefined)
+        if (correlationId !== undefined && correlationId !== null)
             url_ += "CorrelationId=" + encodeURIComponent("" + correlationId) + "&";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -2348,11 +2316,9 @@ export class NotificationsClient {
      * @param take (optional) The number of notifications to query.
      * @return Notifications returned.
      */
-    getMyDeviceNotifications(deviceIdentifier?: string | undefined, after?: string | undefined, scope?: DeviceNotificationsQueryScope | undefined, take?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
+    getMyDeviceNotifications(deviceIdentifier?: string | null | undefined, after?: string | undefined, scope?: DeviceNotificationsQueryScope | undefined, take?: number | undefined): Promise<ListResponseDtoOfUserNotificationDto> {
         let url_ = this.baseUrl + "/api/me/notifications/device?";
-        if (deviceIdentifier === null)
-            throw new Error("The parameter 'deviceIdentifier' cannot be null.");
-        else if (deviceIdentifier !== undefined)
+        if (deviceIdentifier !== undefined && deviceIdentifier !== null)
             url_ += "DeviceIdentifier=" + encodeURIComponent("" + deviceIdentifier) + "&";
         if (after === null)
             throw new Error("The parameter 'after' cannot be null.");
@@ -2628,14 +2594,12 @@ export class MediaClient {
      * @param skip (optional) The number of items to skip.
      * @return Media returned.
      */
-    getMedias(appId: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfMediaDto> {
+    getMedias(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfMediaDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -2766,7 +2730,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/apps/{appId}/media/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2782,9 +2746,7 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
-        if (bg === null)
-            throw new Error("The parameter 'bg' cannot be null.");
-        else if (bg !== undefined)
+        if (bg !== undefined && bg !== null)
             url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
@@ -2792,9 +2754,7 @@ export class MediaClient {
             url_ += "height=" + encodeURIComponent("" + height) + "&";
         if (quality !== undefined && quality !== null)
             url_ += "quality=" + encodeURIComponent("" + quality) + "&";
-        if (preset === null)
-            throw new Error("The parameter 'preset' cannot be null.");
-        else if (preset !== undefined)
+        if (preset !== undefined && preset !== null)
             url_ += "preset=" + encodeURIComponent("" + preset) + "&";
         if (mode !== undefined && mode !== null)
             url_ += "mode=" + encodeURIComponent("" + mode) + "&";
@@ -2932,7 +2892,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download2(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/asset/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -2948,9 +2908,7 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
-        if (bg === null)
-            throw new Error("The parameter 'bg' cannot be null.");
-        else if (bg !== undefined)
+        if (bg !== undefined && bg !== null)
             url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
@@ -2958,9 +2916,7 @@ export class MediaClient {
             url_ += "height=" + encodeURIComponent("" + height) + "&";
         if (quality !== undefined && quality !== null)
             url_ += "quality=" + encodeURIComponent("" + quality) + "&";
-        if (preset === null)
-            throw new Error("The parameter 'preset' cannot be null.");
-        else if (preset !== undefined)
+        if (preset !== undefined && preset !== null)
             url_ += "preset=" + encodeURIComponent("" + preset) + "&";
         if (mode !== undefined && mode !== null)
             url_ += "mode=" + encodeURIComponent("" + mode) + "&";
@@ -3040,7 +2996,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    download3(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    download3(appId: string, fileName: string, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/{appId}/{fileName}?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
@@ -3056,9 +3012,7 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
-        if (bg === null)
-            throw new Error("The parameter 'bg' cannot be null.");
-        else if (bg !== undefined)
+        if (bg !== undefined && bg !== null)
             url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
@@ -3066,9 +3020,7 @@ export class MediaClient {
             url_ += "height=" + encodeURIComponent("" + height) + "&";
         if (quality !== undefined && quality !== null)
             url_ += "quality=" + encodeURIComponent("" + quality) + "&";
-        if (preset === null)
-            throw new Error("The parameter 'preset' cannot be null.");
-        else if (preset !== undefined)
+        if (preset !== undefined && preset !== null)
             url_ += "preset=" + encodeURIComponent("" + preset) + "&";
         if (mode !== undefined && mode !== null)
             url_ += "mode=" + encodeURIComponent("" + mode) + "&";
@@ -3147,7 +3099,7 @@ export class MediaClient {
      * @param emptyOnFailure (optional) True, to return an empty image on failure.
      * @return Media returned.
      */
-    proxyImage(url?: string | undefined, cache?: number | undefined, download?: number | undefined, bg?: string | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
+    proxyImage(url?: string | undefined, cache?: number | undefined, download?: number | undefined, bg?: string | null | undefined, width?: number | null | undefined, height?: number | null | undefined, quality?: number | null | undefined, preset?: string | null | undefined, mode?: ResizeMode | null | undefined, focusX?: number | null | undefined, focusY?: number | null | undefined, force?: boolean | undefined, emptyOnFailure?: boolean | undefined): Promise<FileResponse> {
         let url_ = this.baseUrl + "/api/assets/proxy?";
         if (url === null)
             throw new Error("The parameter 'url' cannot be null.");
@@ -3161,9 +3113,7 @@ export class MediaClient {
             throw new Error("The parameter 'download' cannot be null.");
         else if (download !== undefined)
             url_ += "download=" + encodeURIComponent("" + download) + "&";
-        if (bg === null)
-            throw new Error("The parameter 'bg' cannot be null.");
-        else if (bg !== undefined)
+        if (bg !== undefined && bg !== null)
             url_ += "bg=" + encodeURIComponent("" + bg) + "&";
         if (width !== undefined && width !== null)
             url_ += "width=" + encodeURIComponent("" + width) + "&";
@@ -3171,9 +3121,7 @@ export class MediaClient {
             url_ += "height=" + encodeURIComponent("" + height) + "&";
         if (quality !== undefined && quality !== null)
             url_ += "quality=" + encodeURIComponent("" + quality) + "&";
-        if (preset === null)
-            throw new Error("The parameter 'preset' cannot be null.");
-        else if (preset !== undefined)
+        if (preset !== undefined && preset !== null)
             url_ += "preset=" + encodeURIComponent("" + preset) + "&";
         if (mode !== undefined && mode !== null)
             url_ += "mode=" + encodeURIComponent("" + mode) + "&";
@@ -3257,24 +3205,20 @@ export class LogsClient {
      * @param skip (optional) The number of items to skip.
      * @return Log entries returned.
      */
-    getLogs(appId: string, systems?: string[] | null | undefined, userId?: string | undefined, eventCode?: number | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfLogEntryDto> {
+    getLogs(appId: string, systems?: string[] | null | undefined, userId?: string | null | undefined, eventCode?: number | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfLogEntryDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/logs?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
         if (systems !== undefined && systems !== null)
             systems && systems.forEach(item => { url_ += "Systems=" + encodeURIComponent("" + item) + "&"; });
-        if (userId === null)
-            throw new Error("The parameter 'userId' cannot be null.");
-        else if (userId !== undefined)
+        if (userId !== undefined && userId !== null)
             url_ += "UserId=" + encodeURIComponent("" + userId) + "&";
         if (eventCode === null)
             throw new Error("The parameter 'eventCode' cannot be null.");
         else if (eventCode !== undefined)
             url_ += "EventCode=" + encodeURIComponent("" + eventCode) + "&";
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -3345,16 +3289,14 @@ export class EventsClient {
      * @param skip (optional) The number of items to skip.
      * @return Events returned.
      */
-    getEvents(appId: string, channels?: string[] | null | undefined, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfEventDto> {
+    getEvents(appId: string, channels?: string[] | null | undefined, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfEventDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/events?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
         if (channels !== undefined && channels !== null)
             channels && channels.forEach(item => { url_ += "Channels=" + encodeURIComponent("" + item) + "&"; });
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -3902,14 +3844,12 @@ export class EmailTemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Channel templates returned.
      */
-    getTemplates(appId: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/email-templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -4418,14 +4358,12 @@ export class MessagingTemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Channel templates returned.
      */
-    getTemplates(appId: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/messaging-templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -4934,14 +4872,12 @@ export class SmsTemplatesClient {
      * @param skip (optional) The number of items to skip.
      * @return Channel templates returned.
      */
-    getTemplates(appId: string, query?: string | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
+    getTemplates(appId: string, query?: string | null | undefined, take?: number | undefined, skip?: number | undefined): Promise<ListResponseDtoOfChannelTemplateDto> {
         let url_ = this.baseUrl + "/api/apps/{appId}/sms-templates?";
         if (appId === undefined || appId === null)
             throw new Error("The parameter 'appId' must be defined.");
         url_ = url_.replace("{appId}", encodeURIComponent("" + appId));
-        if (query === null)
-            throw new Error("The parameter 'query' cannot be null.");
-        else if (query !== undefined)
+        if (query !== undefined && query !== null)
             url_ += "query=" + encodeURIComponent("" + query) + "&";
         if (take === null)
             throw new Error("The parameter 'take' cannot be null.");
@@ -6725,9 +6661,9 @@ export interface EmailPreviewErrorDto {
     /** The error message. */
     message: string;
     /** The line number. */
-    line: number;
+    lineNumber: number;
     /** The line column. */
-    column: number;
+    linePosition: number;
 }
 
 export interface EmailPreviewRequestDto {

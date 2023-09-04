@@ -40,7 +40,7 @@ export const EmailTextEditor = (props: EmailTextEditorProps) => {
         onChange(event.target.value);
     });
 
-    const error = emailPreview.rendering.errors?.find(x => !x.line || x.line < 0);
+    const error = emailPreview.rendering.errors?.find(x => !x.lineNumber || x.lineNumber < 0);
 
     return (
         <div className='email-editor white'>

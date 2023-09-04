@@ -155,8 +155,8 @@ export const EmailHtmlTextEditor = (props: EmailHtmlTextEditorProps) => {
                     return [];
                 }
 
-                return errors.map(({ message, line }) => {
-                    const from = CodeMirror.Pos(line! - 1, 1);
+                return errors.map(({ message, lineNumber }) => {
+                    const from = CodeMirror.Pos(lineNumber! - 1, 1);
 
                     return { message, severity: 'error', from, to: from };
                 });

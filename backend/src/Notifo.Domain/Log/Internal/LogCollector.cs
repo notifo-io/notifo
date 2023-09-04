@@ -78,12 +78,18 @@ public sealed class LogCollector
                 return;
             }
 
-            commands = updateQueue.Select(x => (x.Key, x.Value, now)).ToList();
+            commands = new List<(LogWrite, int, Instant)>();
+
+            // Use a normal loop to avoid the allocations of the closure.
+            foreach (var (key, value) in updateQueue)
+            {
+                commands.Add((key, value, now));
+            }
+
+            updateQueue.Clear();
         }
         finally
         {
-            updateQueue.Clear();
-
             readerWriterLock.ExitWriteLock();
         }
 

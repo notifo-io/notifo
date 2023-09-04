@@ -6,6 +6,7 @@
 // ==========================================================================
 
 using Notifo.Domain.Channels.Email;
+using Notifo.Infrastructure.Reflection;
 
 namespace Notifo.Areas.Api.Controllers.ChannelTemplates.Dtos;
 
@@ -19,17 +20,15 @@ public sealed class EmailPreviewErrorDto
     /// <summary>
     /// The line number.
     /// </summary>
-    public int Line { get; set; }
+    public int LineNumber { get; set; }
 
     /// <summary>
     /// The line column.
     /// </summary>
-    public int Column { get; set; }
+    public int LinePosition { get; set; }
 
     public static EmailPreviewErrorDto FromDomainObject(EmailFormattingError source)
     {
-        var error = source.Error;
-
-        return new EmailPreviewErrorDto { Message = error.Message, Column = error.Column, Line = error.Line };
+        return SimpleMapper.Map(source.Error, new EmailPreviewErrorDto());
     }
 }
