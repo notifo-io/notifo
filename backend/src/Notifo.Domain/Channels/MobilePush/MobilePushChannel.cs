@@ -281,6 +281,7 @@ public sealed class MobilePushChannel : SchedulingChannelBase<MobilePushJob, Mob
         {
             Subject = notification.Formatting?.Subject,
             Body = notification.Formatting?.Body,
+            ConfirmLink = notification.Formatting?.ConfirmLink,
             ConfirmText = notification.Formatting?.ConfirmText,
             ConfirmUrl = notification.ComputeConfirmUrl(Providers.MobilePush, job.ConfigurationId),
             Data = notification.Data,

@@ -6283,6 +6283,8 @@ export interface NotificationFormattingDto {
     subject: LocalizedText;
     /** The optional body with one entry per language. */
     body?: LocalizedText | undefined;
+    /** The optional confirm link with one entry per language. */
+    confirmlink?: LocalizedText | undefined;
     /** The optional confirm text with one entry per language. */
     confirmText?: LocalizedText | undefined;
     /** The optional small image with one entry per language. */
@@ -6390,6 +6392,8 @@ export interface UserNotificationBaseDto {
     linkUrl?: string | undefined;
     /** The link text. */
     linkText?: string | undefined;
+    /** The link after the confirm button. */
+    confirmLink?: string | undefined;
     /** The text for the confirm button. */
     confirmText?: string | undefined;
     /** The tracking url that needs to be invoked to mark the notification as confirmed. */

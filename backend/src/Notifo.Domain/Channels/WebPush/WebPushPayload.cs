@@ -20,6 +20,9 @@ public sealed class WebPushPayload
     [JsonPropertyName("cu")]
     public string? ConfirmUrl { get; set; }
 
+    [JsonPropertyName("cl")]
+    public string? ConfirmLink { get; set; }
+
     [JsonPropertyName("ct")]
     public string? ConfirmText { get; set; }
 
@@ -61,7 +64,6 @@ public sealed class WebPushPayload
         SimpleMapper.Map(notification.Formatting, result);
 
         // Compute the tracking links afterwards because the mapping would override it.
-        result.ConfirmText = notification.Formatting.ConfirmText;
         result.ConfirmUrl = notification.ComputeConfirmUrl(Providers.WebPush, configurationId);
         result.TrackSeenUrl = notification.ComputeTrackSeenUrl(Providers.WebPush, configurationId);
         result.TrackDeliveredUrl = notification.ComputeTrackDeliveredUrl(Providers.WebPush, configurationId);

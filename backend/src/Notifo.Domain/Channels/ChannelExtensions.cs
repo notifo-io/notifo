@@ -22,16 +22,6 @@ public static class ChannelExtensions
         return trackingLink;
     }
 
-    public static string? ConfirmText(this BaseUserNotification notification)
-    {
-        return notification.Formatting.ConfirmText;
-    }
-
-    public static string? ConfirmUrl(this BaseUserNotification notification)
-    {
-        return notification.ConfirmUrl;
-    }
-
     public static string? ImageSmall(this BaseUserNotification notification, IImageFormatter imageFormatter, string preset)
     {
         return imageFormatter.AddPreset(notification.Formatting.ImageSmall, preset);

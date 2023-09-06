@@ -61,6 +61,7 @@ public static class NotificationFormatting
         return new NotificationFormatting<string>
         {
             Body = source.Body,
+            ConfirmLink = source.ConfirmLink,
             ConfirmMode = source.ConfirmMode,
             ConfirmText = source.ConfirmText,
             ImageLarge = source.ImageLarge,
@@ -76,6 +77,7 @@ public static class NotificationFormatting
         return new NotificationFormatting<LocalizedText>
         {
             Body = Merged(source.Body, other?.Body),
+            ConfirmLink = Merged(source.ConfirmLink, other?.ConfirmLink),
             ConfirmMode = source.ConfirmMode ?? other?.ConfirmMode,
             ConfirmText = Merged(source.ConfirmText, other?.ConfirmText),
             ImageLarge = Merged(source.ImageLarge, other?.ImageLarge),
@@ -91,6 +93,7 @@ public static class NotificationFormatting
         return new NotificationFormatting<LocalizedText>
         {
             Body = source.Body?.Clone(),
+            ConfirmLink = source.ConfirmLink?.Clone(),
             ConfirmMode = source.ConfirmMode,
             ConfirmText = source.ConfirmText?.Clone(),
             ImageLarge = source.ImageLarge?.Clone(),
@@ -108,6 +111,7 @@ public static class NotificationFormatting
         var result = new NotificationFormatting<TOut>
         {
             Body = transform(formatting.Body),
+            ConfirmLink = transform(formatting.ConfirmLink),
             ConfirmMode = formatting.ConfirmMode,
             ConfirmText = transform(formatting.ConfirmText),
             ImageLarge = transform(formatting.ImageLarge),

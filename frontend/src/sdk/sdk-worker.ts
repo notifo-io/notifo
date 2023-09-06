@@ -24,16 +24,24 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotificationDto, parse
         }
 
         if (event.action === 'confirm') {
+            if (notification.confirmLink && self.clients.openWindow) {
+                const promise = self.clients.openWindow(notification.confirmLink);
+                
+                event.waitUntil(promise);
+            }
+
             if (notification.confirmUrl) {
                 const promise = fetch(notification.confirmUrl);
 
                 event.waitUntil(promise);
             }
-        } else if (notification.linkUrl && self.clients.openWindow) {
-            const promise = self.clients.openWindow(notification.linkUrl);
+        } else {
+            if (notification.linkUrl && self.clients.openWindow) {
+                const promise = self.clients.openWindow(notification.linkUrl);
 
-            event.notification.close();
-            event.waitUntil(promise);
+                event.notification.close();
+                event.waitUntil(promise);
+            }
         }
     });
 
@@ -68,7 +76,7 @@ import { apiDeleteWebPush, apiPostWebPush, logWarn, NotifoNotificationDto, parse
 
     self.addEventListener('push', event => {
         if (event.data) {
-            const notification: NotifoNotificationDto = parseShortNotification(event.data.json());
+            const notification = parseShortNotification(event.data.json());
 
             const promise = showNotification(self, notification);
 
@@ -127,8 +135,9 @@ async function showNotification(self: ServiceWorkerGlobalScope, notification: No
     options.tag = notification.id;
 
     if (notification.confirmUrl && notification.confirmText && !notification.isConfirmed) {
-        options.actions = [{ action: 'confirm', title: notification.confirmText }];
         options.requireInteraction = true;
+        options.actions ||= [];
+        options.actions.push({ action: 'confirm', title: notification.confirmText });
     }
 
     if (notification.body) {

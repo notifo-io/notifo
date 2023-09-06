@@ -78,6 +78,11 @@ public abstract class UserNotificationBaseDto
     public string? LinkText { get; set; }
 
     /// <summary>
+    /// The link after the confirm button.
+    /// </summary>
+    public string? ConfirmLink { get; set; }
+
+    /// <summary>
     /// The text for the confirm button.
     /// </summary>
     public string? ConfirmText { get; set; }

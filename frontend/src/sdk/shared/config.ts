@@ -6,7 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
-import { isNumber, isObject, isString, isUndefined, logWarn } from './utils';
+import { isFunction, isNumber, isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     en: enUS,
@@ -196,6 +196,10 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
         logWarn('init.userLanguage must be a string if defined.');
     }
 
+    if (!isFunctionOption(options.onNotification)) {
+        logWarn('init.onNotification must be a function if defined.');
+    }
+
     if (!isLocaleOption(options.locale)) {
         logWarn(`init.locale must be a valid locale. Allowed: ${Object.keys(SUPPORTED_LOCALES).join(',')}`);
         options.locale = undefined!;
@@ -304,6 +308,10 @@ function isStringOption(value: any) {
     return !value || isString(value);
 }
 
+function isFunctionOption(value: any) {
+    return !value || isFunction(value);
+}
+
 function isEnumOption(value: any, allowed: ReadonlyArray<string>) {
     return !value || allowed.indexOf(value) >= 0;
 }
@@ -370,12 +378,18 @@ export interface SDKConfig {
     // All needed texts.
     texts: Texts<string>;
 
+    // Shown when the notification is confirmed.
+    onConfirm?: (notification: any) => void;
+
     // A callback that is invoked when a notification is retrieved.
     onNotification?: (notification: any) => void;
 }
 
 export interface SubscribeOptions {
     existingWorker?: true;
+
+    // The render function.
+    onSubscribeDialog?: (config: SDKConfig, allow: () => void, deny: () => void) => void;
 }
 
 type OptionMainStyle = 'message' | 'chat' | 'chat_filled' | 'notifo';

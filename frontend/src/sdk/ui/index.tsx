@@ -6,7 +6,7 @@
  */
 
 import { render } from 'preact';
-import { buildNotificationsOptions, buildTopicOptions, isString, loadStyle, logError, NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
+import { buildNotificationsOptions, buildTopicOptions, isFunction, isString, loadStyle, logError, NotificationsOptions, SDKConfig, SubscribeOptions, TopicOptions } from '@sdk/shared';
 
 import { renderNotificationsUI, renderTopicUI, renderWebPushUI } from './components';
 
@@ -47,7 +47,7 @@ export module UI {
         renderTopicUI(element, topic, options, config);
     }
 
-    export async function askForWebPush(config: SDKConfig): Promise<boolean> {
+    export async function askForWebPush(config: SDKConfig, options?: SubscribeOptions): Promise<boolean> {
         if (config.styleUrl) {
             await loadStyle(config.styleUrl);
         }
@@ -88,22 +88,25 @@ export module UI {
 
             const doAllow = () => {
                 resolve(true);
-
-                destroy(element);
+                release(element);
             };
 
             const doDeny = () => {
                 resolve(false);
+                release(element);
 
                 denied();
-                destroy(element);
             };
 
-            renderWebPushUI(element, config, doAllow, doDeny);
+            if (isFunction(options?.onSubscribeDialog)) {
+                options?.onSubscribeDialog(config, doAllow, doDeny);
+            } else {
+                renderWebPushUI(element, config, doAllow, doDeny);
+            }
         });
     }
 
-    export function destroy(elementOrId: string | HTMLElement) {
+    export function release(elementOrId: string | HTMLElement) {
         const element = findElement(elementOrId);
 
         if (!element) {

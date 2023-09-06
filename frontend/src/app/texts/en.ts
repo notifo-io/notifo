@@ -57,6 +57,8 @@ export const EN = {
             Inherit: '-',
         },
         confirm: 'Confirm',
+        confirmLink: 'Confirm Link',
+        confirmLinkHints: 'The URL that will be opened after the button has been pressed.',
         confirmMode: 'Confirm Mode',
         confirmModeHints: 'In Explicit mode a button will be shown to confirm the notification.',
         confirmModes: {

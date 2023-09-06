@@ -10,6 +10,7 @@ using Notifo.Areas.Api.Controllers.Tracking.Dtos;
 using Notifo.Domain;
 using Notifo.Domain.Apps;
 using Notifo.Domain.UserNotifications;
+using Notifo.Infrastructure;
 
 namespace Notifo.Areas.Api.Controllers.Tracking;
 
@@ -76,22 +77,29 @@ public sealed class TrackingController : Controller
             return View();
         }
 
+        static bool TryGetLink(string? url, string id, out IActionResult result)
+        {
+            result = null!;
+
+            if (url == null || !Uri.IsWellFormedUriString(url, UriKind.Absolute))
+            {
+                return false;
+            }
+
+            result = new RedirectResult(url.AppendQueries("id", id));
+            return true;
+        }
+
+        if (TryGetLink(notification.Formatting.ConfirmLink, id, out var redirect))
+        {
+            return redirect;
+        }
+
         var app = await appStore.GetCachedAsync(notification.AppId, HttpContext.RequestAborted);
 
-        if (app?.ConfirmUrl != null && Uri.IsWellFormedUriString(app.ConfirmUrl, UriKind.Absolute))
+        if (TryGetLink(app?.ConfirmUrl, id, out redirect))
         {
-            var url = app.ConfirmUrl!;
-
-            if (url.Contains('?', StringComparison.OrdinalIgnoreCase))
-            {
-                url += $"&id={id}";
-            }
-            else
-            {
-                url += $"?id={id}";
-            }
-
-            return Redirect(url);
+            return redirect;
         }
 
         return View();

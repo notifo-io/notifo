@@ -45,6 +45,7 @@ public static class UserNotificationExtensions
         message.Data =
             new Dictionary<string, string>()
                 .WithNonEmpty("id", source.NotificationId.ToString())
+                .WithNonEmpty("confirmLink", source.ConfirmLink)
                 .WithNonEmpty("confirmText", source.ConfirmText)
                 .WithNonEmpty("confirmUrl", source.ConfirmUrl)
                 .WithNonEmpty("isConfirmed", source.IsConfirmed.ToString())

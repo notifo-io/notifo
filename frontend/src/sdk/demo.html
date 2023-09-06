@@ -126,7 +126,11 @@
             apiUrl: '/',
 
             onNotification: (notification) => {
-                console.log(JSON.stringify(notification));
+                console.log(`Received: ${JSON.stringify(notification, 0, 2)}`);
+            },
+
+            onConfirm: (notification) => {
+                console.log(`Confirmed: ${JSON.stringify(notification, 0, 2)}`);
             },
 
             linkTarget: '_blank',

@@ -14283,6 +14283,12 @@ namespace Notifo.SDK
         public LocalizedText Body { get; set; }
 
         /// <summary>
+        /// The optional confirm link with one entry per language.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("confirmlink", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public LocalizedText Confirmlink { get; set; }
+
+        /// <summary>
         /// The optional confirm text with one entry per language.
         /// </summary>
         [Newtonsoft.Json.JsonProperty("confirmText", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -14756,6 +14762,12 @@ namespace Notifo.SDK
         /// </summary>
         [Newtonsoft.Json.JsonProperty("linkText", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string LinkText { get; set; }
+
+        /// <summary>
+        /// The link after the confirm button.
+        /// </summary>
+        [Newtonsoft.Json.JsonProperty("confirmLink", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ConfirmLink { get; set; }
 
         /// <summary>
         /// The text for the confirm button.

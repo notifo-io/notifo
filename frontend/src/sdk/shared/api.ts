@@ -43,6 +43,9 @@ export interface NotifoNotificationDto {
     // The confirm url.
     confirmUrl?: string;
 
+    // The confirm link.
+    confirmLink?: string;
+
     // The confirm text.
     confirmText?: string;
 
@@ -129,6 +132,7 @@ export function parseShortNotification(value: any): NotifoNotificationDto {
     return {
         id: value.id,
         body: value.nb,
+        confirmLink: value.cl,
         confirmText: value.ct,
         confirmUrl: value.cu,
         imageLarge: value.il,

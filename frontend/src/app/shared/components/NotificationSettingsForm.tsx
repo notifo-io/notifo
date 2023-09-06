@@ -71,6 +71,9 @@ export module NotificationsForm {
                 <Forms.LocalizedText name={`${field}.linkText`} {...props} picker={PICK_TEXT}
                     label={texts.common.linkText} hints={texts.common.linkTextHints}  />
 
+                <Forms.LocalizedText name={`${field}.confirmLink`} {...props} picker={PICK_TEXT}
+                    label={texts.common.confirmLink} hints={texts.common.confirmLinkHints} />
+
                 <Forms.LocalizedText name={`${field}.confirmText`} {...props} picker={PICK_TEXT}
                     label={texts.common.confirmText} hints={texts.common.confirmTextHints} />
 

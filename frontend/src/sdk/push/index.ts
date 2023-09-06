@@ -19,11 +19,10 @@ export module PUSH {
         }
 
         const serviceWorker = await registerServiceWorker(config, options);
-
-        const simpleConfig = buildConfig(config);
+        const serviceConfig = buildConfig(config);
 
         if (serviceWorker.active) {
-            serviceWorker.active.postMessage({ type: 'subscribe', config: simpleConfig });
+            serviceWorker.active.postMessage({ type: 'subscribe', config: serviceConfig });
         }
     }
 
@@ -34,11 +33,10 @@ export module PUSH {
         }
 
         const serviceWorker = await navigator.serviceWorker.ready;
-
-        const simpleConfig = buildConfig(config);
+        const serviceConfig = buildConfig(config);
 
         if (serviceWorker.active) {
-            serviceWorker.active.postMessage({ type: 'unsubscribe', config: simpleConfig });
+            serviceWorker.active.postMessage({ type: 'unsubscribe', config: serviceConfig });
         }
     }
 
@@ -108,7 +106,6 @@ async function registerServiceWorker(config: SDKConfig, options?: SubscribeOptio
         return await navigator.serviceWorker.ready;
     } else {
         const serviceWorker = await navigator.serviceWorker.register(config.serviceWorkerUrl);
-
         await serviceWorker.update();
 
         return serviceWorker;

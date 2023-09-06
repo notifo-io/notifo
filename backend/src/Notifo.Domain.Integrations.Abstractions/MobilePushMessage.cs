@@ -19,6 +19,8 @@ public sealed class MobilePushMessage : BaseMessage
 
     public string? Body { get; init; }
 
+    public string? ConfirmLink { get; init; }
+
     public string? ConfirmText { get; init; }
 
     public string? ConfirmUrl { get; init; }

@@ -67,6 +67,11 @@ public sealed class WebPushChannel : SchedulingChannelBase<WebPushJob, WebPushCh
     public override async Task SendAsync(UserNotification notification, ChannelContext context,
         CancellationToken ct)
     {
+        if (context.IsUpdate)
+        {
+            return;
+        }
+
         if (!context.Configuration.TryGetValue(Endpoint, out var endpoint))
         {
             // Old configuration without a mobile push token.

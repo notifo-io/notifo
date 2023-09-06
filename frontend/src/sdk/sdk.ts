@@ -38,11 +38,11 @@ const instance = {
                     break;
                 }
                 case 'hide-notifications': {
-                    queueJobs.enqueue((() => UI.destroy(args[1])));
+                    queueJobs.enqueue((() => UI.release(args[1])));
                     break;
                 }
                 case 'hide-topic': {
-                    queueJobs.enqueue((() => UI.destroy(args[1])));
+                    queueJobs.enqueue((() => UI.release(args[1])));
                     break;
                 }
                 case 'show-notifications': {
@@ -77,7 +77,7 @@ const instance = {
                             return Promise.resolve(false);
                         }
 
-                        if (await PUSH.isPending() && !await UI.askForWebPush(queueInit.config)) {
+                        if (await PUSH.isPending() && !await UI.askForWebPush(queueInit.config, args[1])) {
                             return false;
                         }
 

@@ -13,6 +13,8 @@ public sealed class NotificationFormatting<TText> where TText : class
 
     public TText? Body { get; set; }
 
+    public TText? ConfirmLink { get; set; }
+
     public TText? ConfirmText { get; set; }
 
     public TText? ImageSmall { get; set; }

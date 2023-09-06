@@ -28,6 +28,11 @@ public sealed class NotificationFormattingDto
     public LocalizedText? Body { get; set; }
 
     /// <summary>
+    /// The optional confirm link with one entry per language.
+    /// </summary>
+    public LocalizedText? ConfirmLink { get; set; }
+
+    /// <summary>
     /// The optional confirm text with one entry per language.
     /// </summary>
     public LocalizedText? ConfirmText { get; set; }

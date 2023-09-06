@@ -62,6 +62,18 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
     const inView = useInView(ref, modal);
 
+    const target = useMemo(() => {
+        if (config.linkTarget) {
+            return config.linkTarget;
+        }
+
+        if (!notification.linkUrl || getHostName(notification.linkUrl) === window.location.host) {
+            return '_self';
+        }
+
+        return '_blank';
+    }, [config.linkTarget, notification.linkUrl]);
+
     const doSee = useCallback(async () => {
         if (!onSeen) {
             return;
@@ -92,7 +104,11 @@ export const NotificationItem = (props: NotificationItemProps) => {
         } catch {
             setMarkConfirm('Failed');
         }
-    }, [notification, onConfirm]);
+
+        if (notification.confirmLink) {
+            window.open(notification.confirmLink, target);
+        }
+    }, [notification, onConfirm, target]);
 
     const doDelete = useCallback(async () => {
         if (!onDelete) {
@@ -131,18 +147,6 @@ export const NotificationItem = (props: NotificationItemProps) => {
 
         return formatDistanceToNow(parseISO(notification.created), { locale });
     }, [config.locale, notification.created]);
-
-    const target = useMemo(() => {
-        if (config.linkTarget) {
-            return config.linkTarget;
-        }
-
-        if (!notification.linkUrl || getHostName(notification.linkUrl) === window.location.host) {
-            return '_self';
-        }
-
-        return '_blank';
-    }, [config.linkTarget, notification.linkUrl]);
 
     return (
         <div class='notifo-notification' ref={setRef} onClick={doSee}>
