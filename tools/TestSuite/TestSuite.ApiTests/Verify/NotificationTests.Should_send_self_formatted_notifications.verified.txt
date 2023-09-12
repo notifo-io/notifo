@@ -7,6 +7,7 @@
     silent: false,
     body: ,
     linkUrl: ,
-    linkText: 
+    linkText: ,
+    confirmLink: 
   }
 ]
