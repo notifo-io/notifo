@@ -16,7 +16,7 @@ public static class OpenNotificationsServiceExtensions
 {
     public static IServiceCollection AddIntegrationOpenNotifications(this IServiceCollection services, IConfiguration config)
     {
-        var options = config.GetSection("os").Get<OpenNotificationsOptions>();
+        var options = config.GetSection("on").Get<OpenNotificationsOptions>();
 
         if (options?.Services != null)
         {
