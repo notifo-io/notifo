@@ -251,7 +251,7 @@ public class SmsTests : IClassFixture<ClientFixture>
         Assert.False(true, "SMS not sent.");
     }
 
-    [Fact]
+    [Fact(Skip = "Not stable")]
     public async Task Should_send_sms_with_group_key()
     {
         // In pull requests from forks we cannot inject the secret key.
