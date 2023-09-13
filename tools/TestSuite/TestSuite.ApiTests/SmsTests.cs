@@ -358,8 +358,6 @@ public class SmsTests : IClassFixture<ClientFixture>
 
         await _.Client.Events.PostEventsAsync(app_0.Id, publishRequest);
 
-        var subjectMore = "+ 2 more";
-
 
         // Get SMS status
         await AssertDeliveredAsync(subjectId3, 2);
