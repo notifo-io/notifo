@@ -23,10 +23,7 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
 
     protected OpenNotificationsIntegrationBase(string fullName, string providerName, ProviderInfoDto providerInfo, IOpenNotificationsClient client)
     {
-        var capabilities = new HashSet<string>
-        {
-            "Open Notifications"
-        };
+        var capabilities = new HashSet<string>();
 
         if (providerInfo.Type == ProviderInfoDtoType.Sms)
         {
@@ -37,6 +34,8 @@ public abstract class OpenNotificationsIntegrationBase : IIntegration
         {
             capabilities.Add(Providers.Email);
         }
+
+        capabilities.Add("Open Notifications");
 
         var hasSummaryProperty = providerInfo.Properties.Any(x => x.Value.Summary);
 

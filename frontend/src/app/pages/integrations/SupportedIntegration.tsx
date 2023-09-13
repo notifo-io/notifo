@@ -29,11 +29,11 @@ export const SupportedIntegration = React.memo((props: SupportedIntegrationProps
     };
 
     return (
-        <Card className='integration-card' onClick={doAdd}>
+        <Card className='integration-card available' onClick={doAdd}>
             <CardBody>
                 <Row noGutters>
                     <Col className='col-image'>
-                        <IntegrationImage  definition={definition} type={type} />
+                        <IntegrationImage definition={definition} type={type} />
                     </Col>
 
                     <Col>
@@ -44,10 +44,6 @@ export const SupportedIntegration = React.memo((props: SupportedIntegrationProps
                                 <Badge key={capability} color='secondary' className='mr-1' pill>{capability}</Badge>
                             ))}
                         </div>
-
-                        <small>
-                            {definition.description}
-                        </small>
                     </Col>
                 </Row>
             </CardBody>

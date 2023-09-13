@@ -127,7 +127,7 @@
     <value>Email address {0} is already used by another app.</value>
   </data>
   <data name="Email_AdditionalFromEmailsDescription" xml:space="preserve">
-    <value>Comma or line-separated list of additional email-addresses</value>
+    <value>Comma or line-separated list of additional email-addresses.</value>
   </data>
   <data name="Email_AdditionalFromEmailsLabel" xml:space="preserve">
     <value>Email Addresses</value>
@@ -163,13 +163,13 @@
     <value>Project ID</value>
   </data>
   <data name="Firebase_SilentAndroidDescription" xml:space="preserve">
-    <value>Send silent notifications to Android</value>
+    <value>Send silent notifications to Android.</value>
   </data>
   <data name="Firebase_SilentAndroidLabel" xml:space="preserve">
     <value>Silent (Android)</value>
   </data>
   <data name="Firebase_SilentIOSDescription" xml:space="preserve">
-    <value>Send silent notifications to iOS</value>
+    <value>Send silent notifications to iOS.</value>
   </data>
   <data name="Firebase_SilentIOSLabel" xml:space="preserve">
     <value>Silent (iOS)</value>
@@ -280,7 +280,7 @@
     <value>Host</value>
   </data>
   <data name="SMTP_Name" xml:space="preserve">
-    <value>Custom SMTP Server</value>
+    <value>SMTP Server</value>
   </data>
   <data name="SMTP_PasswordHints" xml:space="preserve">
     <value>Password for your SMTP server.</value>

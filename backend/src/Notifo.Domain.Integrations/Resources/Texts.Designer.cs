@@ -88,7 +88,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Comma or line-separated list of additional email-addresses.
+        ///   Looks up a localized string similar to Comma or line-separated list of additional email-addresses..
         /// </summary>
         internal static string Email_AdditionalFromEmailsDescription {
             get {
@@ -196,7 +196,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Send silent notifications to Android.
+        ///   Looks up a localized string similar to Send silent notifications to Android..
         /// </summary>
         internal static string Firebase_SilentAndroidDescription {
             get {
@@ -214,7 +214,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Send silent notifications to iOS.
+        ///   Looks up a localized string similar to Send silent notifications to iOS..
         /// </summary>
         internal static string Firebase_SilentIOSDescription {
             get {
@@ -547,7 +547,7 @@ namespace Notifo.Domain.Integrations.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Custom SMTP Server.
+        ///   Looks up a localized string similar to SMTP Server.
         /// </summary>
         internal static string SMTP_Name {
             get {

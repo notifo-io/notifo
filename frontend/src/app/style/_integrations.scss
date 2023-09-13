@@ -6,9 +6,16 @@
     display: inline-block;
     margin-bottom: 1rem;
     margin-right: 1rem;
-    min-height: 13.5rem;
     vertical-align: top;
     width: 20rem;
+
+    & {
+        min-height: 13.5rem;
+    }
+
+    &.available {
+        min-height: 9rem;
+    }
 
     h4 {
         margin-bottom: 0;

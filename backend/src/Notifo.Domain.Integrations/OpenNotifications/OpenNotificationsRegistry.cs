@@ -5,7 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using Notifo.Infrastructure.Timers;
@@ -16,9 +15,19 @@ namespace Notifo.Domain.Integrations.OpenNotifications;
 
 public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroundProcess
 {
-    private readonly ConcurrentDictionary<string, IIntegration> integrations = new ConcurrentDictionary<string, IIntegration>();
+    private static readonly HashSet<string> ProvidersToIgnore = new HashSet<string>
+    {
+        "aws-email",
+        "mailjet",
+        "mailjet-smtp",
+        "messagebird-sms",
+        "smtp",
+        "twilio-sms",
+    };
+
     private readonly IEnumerable<IOpenNotificationsClient> clients;
     private readonly ILogger<OpenNotificationsRegistry> log;
+    private Dictionary<string, IIntegration> integrations = new Dictionary<string, IIntegration>();
     private CompletionTimer timer;
 
     public IEnumerable<IIntegration> Integrations => integrations.Values;
@@ -63,24 +72,38 @@ public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroun
 
             var providers = await client.Providers.GetProvidersAsync(request, ct);
 
-            foreach (var (name, providerInfo) in providers.Providers)
-            {
-                var fullName = $"{client.Name}_{name}";
-
-                if (providerInfo.Type == ProviderInfoDtoType.Sms)
-                {
-                    integrations.TryAdd(fullName, new OpenNotificationsSmsIntegration(fullName, name, providerInfo, client));
-                }
-                else if (providerInfo.Type == ProviderInfoDtoType.Email)
-                {
-                    integrations.TryAdd(fullName, new OpenNotificationsEmailIntegration(fullName, name, providerInfo, client));
-                }
-            }
+            integrations = BuildIntegrations(client, providers);
         }
         catch (Exception ex)
         {
             log.LogWarning(ex, "Failed to query providers from {name}", client.Name);
         }
+    }
+
+    private static Dictionary<string, IIntegration> BuildIntegrations(IOpenNotificationsClient client, GetProvidersResponseDto providers)
+    {
+        var newIntegrations = new Dictionary<string, IIntegration>();
+
+        foreach (var (name, providerInfo) in providers.Providers)
+        {
+            if (ProvidersToIgnore.Contains(name))
+            {
+                continue;
+            }
+
+            var fullName = $"{client.Name}_{name}";
+
+            if (providerInfo.Type == ProviderInfoDtoType.Sms)
+            {
+                newIntegrations.TryAdd(fullName, new OpenNotificationsSmsIntegration(fullName, name, providerInfo, client));
+            }
+            else if (providerInfo.Type == ProviderInfoDtoType.Email)
+            {
+                newIntegrations.TryAdd(fullName, new OpenNotificationsEmailIntegration(fullName, name, providerInfo, client));
+            }
+        }
+
+        return newIntegrations;
     }
 
     public bool TryGetIntegration(string type, [MaybeNullWhen(false)] out IIntegration integration)
