@@ -35,7 +35,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
     public IEnumerable<IntegrationDefinition> Definitions
     {
-        get => integrationRegistries.SelectMany(x => x.Integrations).Select(x => x.Definition);
+        get => integrationRegistries.SelectMany(x => x.Integrations).Select(x => x.Definition).OrderBy(x => x.Title);
     }
 
     public IntegrationManager(
