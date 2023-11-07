@@ -26,7 +26,7 @@ export interface UserDetailsProps {
 export const UserDetails = (props: UserDetailsProps) => {
     const { appId, user } = props;
     
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     
     const doPublish = useEventCallback(() => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${user.id}` } }));

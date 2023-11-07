@@ -1,3 +1,10 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+ */
+
 import { flip, size, useFloating } from '@floating-ui/react-dom';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -41,7 +48,7 @@ export class OverlayController {
     }
 }
 
-export interface OverlayDropdownProps {
+export interface OverlayDropdownProps extends React.PropsWithChildren {
     // The placement relative to the button.
     placement?: 'left' | 'right';
 
@@ -56,9 +63,6 @@ export interface OverlayDropdownProps {
 
     // True to close manually.
     closeManually?: boolean;
-
-    // The children.
-    children: React.ReactNode;
 }
 
 export const OverlayDropdown = (props: OverlayDropdownProps) => {
@@ -79,7 +83,7 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
         controller?.updateOpen(show);
     }, [controller, show]);
 
-    const { x, y, reference, floating, strategy, update, refs } = useFloating({
+    const { x, y, strategy, update, refs } = useFloating({
         placement: placement === 'left' ?
             'bottom-start' :
             'bottom-end',
@@ -124,7 +128,7 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
     }, [controller]);
 
     const doClose = useEventCallback((event: MouseEvent) => {
-        if (event.target && !refs.reference.current?.['contains'](event.target as any)) {
+        if (event.target && !(refs.reference.current as any)?.['contains'](event.target as any)) {
             setTimeout(() => {
                 setShow(false);
             });
@@ -145,7 +149,7 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
 
     return (
         <>
-            <span className={classNames('overlay-target', { open: show })} ref={reference} onClick={doOpen}>
+            <span className={classNames('overlay-target', { open: show })} ref={refs.setReference} onClick={doOpen}>
                 {button}
             </span>
 
@@ -153,7 +157,7 @@ export const OverlayDropdown = (props: OverlayDropdownProps) => {
                 <>
                     {ReactDOM.createPortal(
                         <ClickOutside isActive={true} onClickOutside={doClose}>
-                            <div className='overlay' ref={floating} onClick={doCloseAuto} style={{ position: strategy, left: x ?? 0, top: y ?? 0, maxHeight, maxWidth }}>
+                            <div className='overlay' ref={refs.setFloating} onClick={doCloseAuto} style={{ position: strategy, left: x ?? 0, top: y ?? 0, maxHeight, maxWidth }}>
                                 {children}
                             </div>
                         </ClickOutside>,

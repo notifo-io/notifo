@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { ChannelCounterRow } from './ChannelCounterRow';
 
-export default {
+const meta: Meta<typeof ChannelCounterRow> = {
     component: ChannelCounterRow,
     argTypes: {
         channel: {
@@ -23,54 +23,56 @@ export default {
             },
         },
     },
-} as ComponentMeta<typeof ChannelCounterRow>;
-
-const Template = (args: any) => {
-    return (
-        <table style={{ width: 400, tableLayout: 'fixed' }}>
-            <ChannelCounterRow {...args} />
-        </table>
-    );
-};
-
-export const Default = Template.bind({});
-
-Default['args'] = {
-    channel: 'email',
-    counters: {
-        email_handled: 100,
-        email_failed: 20,
-        email_attempt: 400,
+    render: args => {
+        return (
+            <table style={{ width: 400, tableLayout: 'fixed' }}>
+                <ChannelCounterRow {...args} />
+            </table>
+        );
     },
 };
 
-export const NoFailed = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof ChannelCounterRow>;
 
-NoFailed['args'] = {
-    channel: 'email',
-    counters: {
-        email_handled: 100,
-        email_attempt: 400,
+export const Default: Story = {
+    args: {
+        channel: 'email',
+        counters: {
+            email_handled: 100,
+            email_failed: 20,
+            email_attempt: 400,
+        },
     },
 };
 
-export const NoAttempt = Template.bind({});
-
-NoAttempt['args'] = {
-    channel: 'email',
-    counters: {
-        email_handled: 100,
-        email_failed: 20,
+export const NoFailed: Story = {
+    args: {
+        channel: 'email',
+        counters: {
+            email_handled: 100,
+            email_attempt: 400,
+        },
     },
 };
 
-export const LargeValues = Template.bind({});
+export const NoAttempt: Story = {
+    args: {
+        channel: 'email',
+        counters: {
+            email_handled: 100,
+            email_failed: 20,
+        },
+    },
+};
 
-LargeValues['args'] = {
-    channel: 'email',
-    counters: {
-        email_handled: 100000,
-        email_failed: 20000000,
-        email_attempt: 40000000000,
+export const LargeValues: Story = {
+    args: {
+        channel: 'email',
+        counters: {
+            email_handled: 100000,
+            email_failed: 20000000,
+            email_attempt: 40000000000,
+        },
     },
 };

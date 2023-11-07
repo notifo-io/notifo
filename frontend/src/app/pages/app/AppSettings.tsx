@@ -39,7 +39,7 @@ export interface AppSettingsProps {
 export const AppSettings = (props: AppSettingsProps) => {
     const { appDetails } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const languages = useCore(x => x.languages);
     const upserting = useApps(x => x.upserting);
     const upsertingError = useApps(x => x.upsertingError);
@@ -52,7 +52,7 @@ export const AppSettings = (props: AppSettingsProps) => {
         dispatch(upsertApp({ appId: appDetails.id, params }));
     });
     
-    const form = useForm<UpsertAppDto>({ resolver: yupResolver(FormSchema), defaultValues: appDetails, mode: 'onChange' });
+    const form = useForm<UpsertAppDto>({ resolver: yupResolver<any>(FormSchema), defaultValues: appDetails, mode: 'onChange' });
 
     React.useEffect(() => {
         form.reset(appDetails);

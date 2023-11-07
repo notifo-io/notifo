@@ -22,7 +22,7 @@ export interface TemplateListProps {
 export const TemplatesList = (props: TemplateListProps) => {
     const { onOpen } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const selectedTemplateCode = useTemplates(x => x.currentTemplateCode);

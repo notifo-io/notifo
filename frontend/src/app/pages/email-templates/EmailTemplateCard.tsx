@@ -6,19 +6,15 @@
  */
 
 import * as React from 'react';
-import { match, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { Confirm, FormatDate, Icon, IFrame, OverlayDropdown, useEventCallback } from '@app/framework';
 import { ChannelTemplateDto, Clients } from '@app/service';
 import { texts } from '@app/texts';
-import { combineUrl } from '@sdk/shared';
 
 export interface EmailTemplateCardProps {
     // The app id.
     appId: string;
-
-    // The match.
-    match: match;
 
     // The template.
     template: ChannelTemplateDto;
@@ -28,7 +24,7 @@ export interface EmailTemplateCardProps {
 }
 
 export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
-    const { appId, onDelete, match, template } = props;
+    const { appId, onDelete, template } = props;
 
     const [preview, setPreview] = React.useState<string | null>(null);
 
@@ -46,10 +42,8 @@ export const EmailTemplateCard = (props: EmailTemplateCardProps) => {
         onDelete(template);
     });
 
-    const url = combineUrl(match.url, template.id);
-
     return (
-        <NavLink className='card-link' to={url}>
+        <NavLink className='card-link' to={template.id}>
             <Card className='email-template'>
                 <div className='email-template-preview'>
                     <IFrame scrolling="no" html={preview} />

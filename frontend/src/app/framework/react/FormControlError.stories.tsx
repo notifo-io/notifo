@@ -5,30 +5,32 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { FormControlError } from './FormControlError';
 
-export default {
+const meta: Meta<typeof FormControlError> = {
     component: FormControlError,
     argTypes: {
         error: {
             control: 'text',
         },
     },
-} as ComponentMeta<typeof FormControlError>;
-
-const Template = (args: any) => {
-    return (
-        <div style={{ paddingTop: 20 }}>
-            <FormControlError {...args} />
-        </div>
-    );
+    render: args => {
+        return (
+            <div style={{ paddingTop: 20 }}>
+                <FormControlError {...args} />
+            </div>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof FormControlError>;
 
-Default['args'] = {
-    error: 'Error',
-    touched: true,
+export const Default: Story = {
+    args: {
+        error: 'Error',
+        touched: true,
+    },
 };

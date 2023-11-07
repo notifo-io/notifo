@@ -21,7 +21,7 @@ export interface ContributorsProps {
 export const Contributors = (props: ContributorsProps) => {
     const { appDetails } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const [email, setEmail] = React.useState('');
     const contributorsError = useApps(x => x.contributorsError);
     const contributorsUpdating = useApps(x => x.contributorsUpdating);

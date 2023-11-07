@@ -27,7 +27,7 @@ export const ChannelCounterRow = React.memo((props: ChannelCounterRowProps) => {
     return (
         <tr key={channel}>
             <td>
-                <Icon type={channel as any} /> {texts.notificationSettings[channel].name}
+                <Icon type={channel as any} /> {(texts.notificationSettings as any)[channel].name}
             </td>
             <td>
                 {Numbers.formatNumber(counterHandled || 0)}

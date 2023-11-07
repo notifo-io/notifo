@@ -30,7 +30,7 @@ export interface AppDialogProps {
 export const AppDialog = (props: AppDialogProps) => {
     const { onClose } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const creating = useApps(x => x.creating);
     const creatingError = useApps(x => x.creatingError);
     const [wasCreating, setWasCreating] = React.useState(false);
@@ -55,7 +55,7 @@ export const AppDialog = (props: AppDialogProps) => {
         dispatch(createApp({ params }));
     });
     
-    const form = useForm<CreateAppParams>({ resolver: yupResolver(FormSchema), mode: 'onChange' });
+    const form = useForm<CreateAppParams>({ resolver: yupResolver<any>(FormSchema), mode: 'onChange' });
     
     return (
         <Modal isOpen={true} toggle={onClose}>

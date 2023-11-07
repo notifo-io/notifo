@@ -108,9 +108,9 @@ const instance = {
 };
 
 function setup() {
-    const commands = window['notifo'];
+    const commands = (window as any)['notifo'];
 
-    window['notifo'] = instance;
+    (window as any)['notifo'] = instance;
 
     if (isArray(commands)) {
         for (const command of commands) {

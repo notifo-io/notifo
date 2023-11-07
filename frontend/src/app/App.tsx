@@ -6,13 +6,13 @@
  */
 
 import * as React from 'react';
-import { Redirect, Route, Switch } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import { ToastContainer } from 'react-toastify';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { ErrorBoundary } from '@app/framework';
-import { InternalPage } from '@app/pages/InternalPage';
 import { RouteWhenPrivate } from '@app/shared/components';
 import { useLogin } from '@app/state';
+import { InternalPage } from './pages/InternalPage';
 import { AuthenticationPage } from './pages/authentication/AuthenticationPage';
 
 export const App = () => {
@@ -20,20 +20,21 @@ export const App = () => {
 
     return (
         <ErrorBoundary>
-            <Switch>
-                <RouteWhenPrivate path='/app' isAuthenticated={isAuthenticated}
-                    component={InternalPage} />
-
-                <Route path='/authentication'>
-                    <AuthenticationPage />
-                </Route>
-
-                <Route render={() =>
-                    <Redirect to='/app' />
+            <Routes>
+                <Route path='/app/*' element={
+                    <RouteWhenPrivate isAuthenticated={isAuthenticated}>
+                        <InternalPage />
+                    </RouteWhenPrivate>
                 } />
-            </Switch>
 
-            <ReactTooltip place='top' effect='solid' />
+                <Route path='/authentication'
+                    element={<AuthenticationPage />} />
+
+                <Route index
+                    element={<Navigate to='/app' />} />
+            </Routes>
+
+            <ReactTooltip place='top' />
 
             <ToastContainer position='bottom-right' />
         </ErrorBoundary>

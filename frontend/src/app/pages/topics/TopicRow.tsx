@@ -6,7 +6,6 @@
  */
 
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
 import { Confirm, Icon } from '@app/framework';
 import { TopicDto } from '@app/service';
@@ -38,10 +37,6 @@ export const TopicRow = React.memo((props: TopicRowProps) => {
         onEdit,
         topic,
     } = props;
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     const doDelete = () => {
         onDelete && onDelete(topic);

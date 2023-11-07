@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": false,
+    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "incremental": true,
     "importHelpers": true,
@@ -16,9 +17,9 @@
     "noImplicitThis": true,
     "removeComments": false,
     "sourceMap": true,
+    "skipLibCheck": true,
     "strict": true,
     "strictNullChecks": true,
-    "suppressImplicitAnyIndexErrors": true,
     "target": "es5",
     "paths": {
       "@app*": [

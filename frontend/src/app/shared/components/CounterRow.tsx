@@ -13,7 +13,7 @@ import { CHANNELS } from './../utils/model';
 import { ChannelCounterRow } from './ChannelCounterRow';
 import { StatisticsLabel } from './StatisticsLabel';
 
-export interface CounterRowProps {
+export interface CounterRowProps extends React.PropsWithChildren {
     // The counters.
     counters: { [key: string]: number };
 
@@ -22,9 +22,6 @@ export interface CounterRowProps {
 
     // The number of columns.
     columnCount: number;
-
-    // The children.
-    children: React.ReactElement[] | React.ReactElement | null;
 }
 
 export const CounterRow = React.memo((props: CounterRowProps) => {

@@ -5,20 +5,23 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { PasswordInput } from './PasswordInput';
 
-export default {
+const meta: Meta<typeof PasswordInput> = {
     component: PasswordInput,
-} as ComponentMeta<typeof PasswordInput>;
-
-const Template = (args: any) => {
-    const [value, setValue] = React.useState('Password');
-
-    return (
-        <PasswordInput {...args} value={value} onChange={ev => setValue(ev.target.value)} />
-    );
+    render: args => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [value, setValue] = React.useState('Password');
+    
+        return (
+            <PasswordInput {...args} value={value} onChange={ev => setValue(ev.target.value)} />
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof PasswordInput>;
+
+export const Default: Story = {};

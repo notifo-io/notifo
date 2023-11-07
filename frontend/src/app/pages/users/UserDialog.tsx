@@ -26,7 +26,7 @@ export interface UserDialogProps {
 export const UserDialog = (props: UserDialogProps) => {
     const { onClose } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const coreLanguages = useCore(x => x.languages);

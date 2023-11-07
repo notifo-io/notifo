@@ -46,7 +46,7 @@
                 position: absolute;
                 z-index: 10000;
 
-                @media (max-width: 600px) {
+                @media (0 <= width <= 600px) {
                     @include fixed(20px, 20px, 20px, 20px);
 
                     .notifo-modal-panel {

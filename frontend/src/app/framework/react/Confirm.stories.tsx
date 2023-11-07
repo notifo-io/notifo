@@ -5,35 +5,37 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Button } from 'reactstrap';
 import { Confirm } from './Confirm';
 
-export default {
+const meta: Meta<typeof Confirm> = {
     component: Confirm,
-} as ComponentMeta<typeof Confirm>;
-
-const Template = (args: any) => {
-    return (
-        <Confirm {...args}>
-            {({ onClick }) => (
-                <Button onClick={onClick} color='danger' outline>Delete?</Button>
-            )}
-        </Confirm>
-    );
+    render: args => {
+        return (
+            <Confirm {...args}>
+                {({ onClick }) => (
+                    <Button onClick={onClick} color='danger' outline>Delete?</Button>
+                )}
+            </Confirm>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof Confirm>;
 
-Default['args'] = {
-    title: 'Delete item',
-    text: null,
+export const Default: Story = {
+    args: {
+        title: 'Delete item',
+        text: undefined,
+    },
 };
 
-export const WithText = Template.bind({});
-
-WithText['args'] = {
-    title: 'Delete item',
-    text: 'Do you want to delete the item?',
+export const WithText: Story = {
+    args: {
+        title: 'Delete item',
+        text: 'Do you want to delete the item?',
+    },
 };

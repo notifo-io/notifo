@@ -7,21 +7,17 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Route, RouteProps } from 'react-router';
 import { loginStart } from '@app/state';
 
-export interface RouteWhenPrivateProps {
+export interface RouteWhenPrivateProps extends React.PropsWithChildren {
     // The current auth state.
     isAuthenticated: boolean;
-
-    // The component to render when the user is not authenticated.
-    component: React.ComponentType<any>;
 }
 
-export const RouteWhenPrivate = (props: RouteWhenPrivateProps & RouteProps) => {
-    const { component: Component, isAuthenticated, ...routeProps } = props;
+export const RouteWhenPrivate = (props: RouteWhenPrivateProps) => {
+    const { children, isAuthenticated } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
 
     React.useEffect(() => {
         if (!isAuthenticated) {
@@ -33,7 +29,5 @@ export const RouteWhenPrivate = (props: RouteWhenPrivateProps & RouteProps) => {
         return null;
     }
 
-    return (
-        <Route {...routeProps} render={p => <Component {...p} />} />
-    );
+    return children;
 };

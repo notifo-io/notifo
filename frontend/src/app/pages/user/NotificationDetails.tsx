@@ -38,7 +38,7 @@ export const NotificationDetails = (props: NotificationDetailsProps) => {
                                 {texts.common.via}
                             </td>
                             <td>
-                                {texts.notificationSettings[key]?.title}
+                                {(texts.notificationSettings as any)[key]?.title}
                             </td>
                             <td>
                                 {texts.common.after}
@@ -76,7 +76,7 @@ export const NotificationDetails = (props: NotificationDetailsProps) => {
                     {Object.entries(notification.channels).map(([key, channel]) =>
                         <tr key={key}>
                             <td>
-                                {texts.notificationSettings[key]?.title}
+                                {(texts.notificationSettings as any)[key]?.title}
                             </td>
                             <td>
                                 <FormatDate format='Ppp' date={channel.firstDelivered} />

@@ -7,7 +7,6 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { Code, FormatDate, Icon } from '@app/framework';
 import { UserNotificationDetailsDto } from '@app/service';
@@ -23,10 +22,6 @@ export const NotificationRow = React.memo((props: NotificationRowProps) => {
     const { notification } = props;
 
     const [isOpen, setIsOpen] = React.useState(0);
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
     
     const nonWebStatus = Object.entries(props.notification.channels).filter(x => x[0] !== 'web').map(x => x[1]);
     const numSkipped = nonWebStatus.filter(x => !!Object.values(x.status).find(x => x.status === 'Skipped')).length;

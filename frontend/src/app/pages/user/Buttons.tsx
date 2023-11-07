@@ -63,7 +63,7 @@ export const ButtonEmail = ({ user }: { user: UserDto }) => {
 };
 
 export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const [isOpen, setIsOpen] = useBoolean();
 
     const doDelete = useEventCallback((endpoint: string) => {
@@ -126,7 +126,7 @@ export const ButtonWebPush = ({ appId, user }: { appId: string; user: UserDto })
 };
 
 export const ButtonMobilePush = ({ appId, user }: { appId: string; user: UserDto }) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const [isOpen, setIsOpen] = useBoolean();
 
     const doDelete = useEventCallback((token: string) => {

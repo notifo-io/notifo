@@ -33,7 +33,7 @@ export const MediaPicker = (props: MediaPickerProps) => {
         onSelected,
     } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const medias = useMedia(x => x.media);

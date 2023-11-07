@@ -24,11 +24,11 @@ export class Store<TState, TAction extends { type: string } = { type: string } &
         private state: TState,
         private readonly reducer: StoreRecucer<TState, TAction>,
     ) {
-        const extension = window['__REDUX_DEVTOOLS_EXTENSION__'];
+        const extension = (window as any)['__REDUX_DEVTOOLS_EXTENSION__'];
 
         if (extension) {
             this.devTools = extension.connect({
-                name: window['title'] ? `${window['title']} Notifo SDK` : 'Notifo SDK',
+                name: (window as any)['title'] ? `${(window as any)['title']} Notifo SDK` : 'Notifo SDK',
                 features: {
                     jump: true,
                 },

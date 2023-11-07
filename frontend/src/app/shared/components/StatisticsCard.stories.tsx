@@ -5,56 +5,58 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { StatisticsCard } from './StatisticsCard';
 
-export default {
+const meta: Meta<typeof StatisticsCard> = {
     component: StatisticsCard,
-} as ComponentMeta<typeof StatisticsCard>;
-
-const Template = (args: any) => {
-    return (
-        <>
-            <div style={{ width: 200 }}>
-                <StatisticsCard {...args} />
-            </div>
-            <div style={{ width: 300, marginTop: 10 }}>
-                <StatisticsCard {...args} />
-            </div>
-        </>
-    );
+    render: args => {
+        return (
+            <>
+                <div style={{ width: 200 }}>
+                    <StatisticsCard {...args} />
+                </div>
+                <div style={{ width: 300, marginTop: 10 }}>
+                    <StatisticsCard {...args} />
+                </div>
+            </>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof StatisticsCard>;
 
-Default['args'] = {
-    attempt: 100,
-    failed: 10,
-    icon: 'email',
-    summary: 10,
-    summaryLabel: 'Sent',
-    title: 'Emails',
+export const Default: Story = {
+    args: {
+        attempt: 100,
+        failed: 10,
+        icon: 'email' as any,
+        summary: 10,
+        summaryLabel: 'Sent',
+        title: 'Emails',
+    },
 };
 
-export const SummaryOnly = Template.bind({});
-
-SummaryOnly['args'] = {
-    summary: 10,
+export const SummaryOnly: Story = {
+    args: {
+        summary: 10,
+    },
 };
 
-export const SummaryLabelOnly = Template.bind({});
-
-SummaryLabelOnly['args'] = {
-    summary: 10,
-    summaryLabel: 'Sent',
+export const SummaryLabelOnly: Story = {
+    args: {
+        summary: 10,
+        summaryLabel: 'Sent',
+    },
 };
 
-export const NoDetails = Template.bind({});
-
-NoDetails['args'] = {
-    icon: 'email',
-    summary: 10,
-    summaryLabel: 'Sent',
-    title: 'Emails',
+export const NoDetails: Story = {
+    args: {
+        icon: 'email' as any,
+        summary: 10,
+        summaryLabel: 'Sent',
+        title: 'Emails',
+    },
 };

@@ -63,10 +63,7 @@ export interface OptionsFormProps<T> extends FormEditorProps {
     options: FormEditorOption<T>[];
 }
 
-export interface FormRowProps extends FormEditorProps {
-    // The children.
-    children: React.ReactNode;
-}
+export interface FormRowProps extends FormEditorProps, React.PropsWithChildren {}
 
 export interface LocalizedFormProps extends FormEditorProps {
     // The available languages.

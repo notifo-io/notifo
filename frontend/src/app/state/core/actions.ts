@@ -7,7 +7,7 @@
 
 import { createReducer } from '@reduxjs/toolkit';
 import { Clients } from '@app/service';
-import { createApiThunk } from '../shared';
+import { createApiThunk } from './../shared';
 import { CoreState } from './state';
 
 export const loadTimezones = createApiThunk('core/timezones', async () => {

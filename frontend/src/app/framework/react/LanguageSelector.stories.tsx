@@ -5,11 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { LanguageSelector } from './LanguageSelector';
 
-export default {
+const meta: Meta<typeof LanguageSelector> = {
     component: LanguageSelector,
     argTypes: {
         languages: {
@@ -18,43 +17,40 @@ export default {
             },
         },
     },
-} as ComponentMeta<typeof LanguageSelector>;
-
-const Template = (args: any) => {
-    return (
-        <LanguageSelector {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof LanguageSelector>;
 
-Default['args'] = {
-    languages: [
-        'de',
-        'en',
-        'it',
-    ],
-    language: 'en',
+export const Default: Story = {
+    args: {
+        languages: [
+            'de',
+            'en',
+            'it',
+        ],
+        language: 'en',
+    },
 };
 
-export const Single = Template.bind({});
-
-Single['args'] = {
-    languages: [
-        'en',
-    ],
-    language: 'en',
+export const Single: Story = {
+    args: {
+        languages: [
+            'en',
+        ],
+        language: 'en',
+    },
 };
 
-export const Many = Template.bind({});
-
-Many['args'] = {
-    languages: [
-        'de',
-        'en',
-        'it',
-        'es',
-        'sv',
-    ],
-    language: 'en',
+export const Many: Story = {
+    args: {
+        languages: [
+            'de',
+            'en',
+            'it',
+            'es',
+            'sv',
+        ],
+        language: 'en',
+    },
 };

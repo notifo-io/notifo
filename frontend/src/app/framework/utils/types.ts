@@ -112,11 +112,11 @@ export module Types {
 
             return result as any;
         } else if (Types.isObject(lhs)) {
-            const result = {};
+            const result: Record<string, any> = {};
 
             for (const key in any) {
                 if (any.hasOwnProperty(key)) {
-                    result[key] = clone(lhs[key]);
+                    result[key] = clone((lhs as any)[key]);
                 }
             }
 
@@ -177,7 +177,7 @@ export module Types {
         return false;
     }
 
-    export function mergeInto(target: object, source: object) {
+    export function mergeInto(target: Record<string, any>, source: Record<string, any>) {
         if (!Types.isObject(target) || !Types.isObject(source)) {
             return source;
         }

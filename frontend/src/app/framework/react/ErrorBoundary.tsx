@@ -8,10 +8,7 @@
 import * as React from 'react';
 import { texts } from '@app/texts';
 
-export interface ErrorBoundaryProps {
-    // The children.
-    children: React.ReactNode;
-
+export interface ErrorBoundaryProps extends React.PropsWithChildren {
     // True if silent.
     silent?: boolean;
 }

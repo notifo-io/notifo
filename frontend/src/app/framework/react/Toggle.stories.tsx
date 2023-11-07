@@ -5,41 +5,45 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Toggle } from './Toggle';
 
-export default {
+const meta: Meta<typeof Toggle> = {
     component: Toggle,
     argTypes: {
         value: {
             control: 'boolean',
         },
     },
-} as ComponentMeta<typeof Toggle>;
-
-const Template = (args: any) => {
-    const [value, setValue] = React.useState(true);
-
-    React.useEffect(() => {
-        setValue(args.value);
-    }, [args.value]);
-
-    return (
-        <Toggle {...args} value={value} onChange={setValue} />
-    );
+    render: args => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [value, setValue] = React.useState<string | boolean | undefined>(false);
+    
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        React.useEffect(() => {
+            setValue(args.value);
+        }, [args.value]);
+    
+        return (
+            <Toggle {...args} value={value} onChange={setValue} />
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof Toggle>;
 
-export const Disabled = Template.bind({});
+export const Default: Story = {};
 
-Disabled['args'] = {
-    disabled: true,
+export const Disabled: Story = {
+    args: {
+        disabled: true,
+    },
 };
 
-export const Labelled = Template.bind({});
-
-Labelled['args'] = {
-    label: 'My Label',
+export const Labelled: Story = {
+    args: {
+        label: 'My Label',
+    },
 };

@@ -6,17 +6,13 @@
  */
 
 import * as React from 'react';
-import { match, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { Confirm, FormatDate, Icon, OverlayDropdown, useEventCallback } from '@app/framework';
 import { ChannelTemplateDto } from '@app/service';
 import { texts } from '@app/texts';
-import { combineUrl } from '@sdk/shared';
 
 export interface SmsTemplateCardProps {
-    // The match.
-    match: match;
-
     // The template.
     template: ChannelTemplateDto;
 
@@ -25,16 +21,14 @@ export interface SmsTemplateCardProps {
 }
 
 export const SmsTemplateCard = (props: SmsTemplateCardProps) => {
-    const { onDelete, match, template } = props;
+    const { onDelete, template } = props;
 
     const doDelete = useEventCallback(() => {
         onDelete(template);
     });
 
-    const url = combineUrl(match.url, template.id);
-
     return (
-        <NavLink className='card-link' to={url}>
+        <NavLink className='card-link' to={template.id}>
             <Card className='sms-template'>
                 <CardBody>
                     {template.name ? (

@@ -8,7 +8,7 @@
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
+import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Card, CardBody, Col, Form, Row } from 'reactstrap';
@@ -20,15 +20,14 @@ import { texts } from '@app/texts';
 type FormValues = { name?: string; primary: boolean; languages: { [key: string]: string } };
 
 export const SmsTemplatePage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
     const loadingTemplate = useSmsTemplates(x => x.loadingTemplate);
     const loadingTemplateError = useSmsTemplates(x => x.loadingTemplateError);
-    const match = useRouteMatch();
     const template = useSmsTemplates(x => x.template);
-    const templateId = match.params['templateId'];
+    const templateId = useParams().templateId!;
     const updating = useSmsTemplates(x => x.updating);
     const updatingError = useSmsTemplates(x => x.updatingError);
     const [language, setLanguage] = React.useState(appLanguages[0]);
@@ -50,7 +49,7 @@ export const SmsTemplatePage = () => {
     }, [updatingError]);
 
     const doSave = useEventCallback((values: FormValues) => {
-        const update = { ...values, languages: {} };
+        const update = { ...values, languages: {} as Record<string, any> };
 
         if (values?.languages) {
             for (const key of Object.keys(values.languages)) {

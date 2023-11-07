@@ -16,7 +16,7 @@ import { deleteMedia, loadMedia, uploadMedia, useApp, useMedia } from '@app/stat
 import { texts } from '@app/texts';
 
 export const MediaPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const media = useMedia(x => x.media);

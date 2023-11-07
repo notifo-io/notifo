@@ -5,20 +5,22 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Logo } from './Logo';
 
-export default {
+const meta: Meta<typeof Logo> = {
     component: Logo,
-} as ComponentMeta<typeof Logo>;
-
-const Template = (args: any) => {
-    return (
-        <div style={{ width: 100, padding: 10, background: 'black' }}>
-            <Logo {...args} />
-        </div>
-    );
+    render: () => {
+        return (
+            <div style={{ width: 100, padding: 10, background: 'black' }}>
+                <Logo />
+            </div>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof Logo>;
+
+export const Default: Story = {};

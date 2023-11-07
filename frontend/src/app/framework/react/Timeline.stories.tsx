@@ -5,36 +5,42 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Timeline, TimelineItem } from './Timeline';
 
-export default {
+const meta: Meta<typeof Timeline> = {
     component: Timeline,
-} as ComponentMeta<typeof Timeline>;
-
-const Template = (args: any) => {
-    return (
-        <div style={{ background: 'white', padding: '4rem' }}>
-            <Timeline {...args} />
-        </div>
-    );
+    render: args => {
+        return (
+            <div style={{ background: 'white', padding: '4rem' }}>
+                <Timeline {...args} />
+            </div>
+        );
+    },
 };
 
-const items: TimelineItem[] = [];
+export default meta;
+type Story = StoryObj<typeof Timeline>;
 
-for (let i = 0; i < 10; i++) {
-    items.push({ date: (new Date().getTime() / 1000) + (i * 4123), text: `Text ${i}` });
+export const Empty: Story = {
+    args: {
+        items: null,
+    },
+};
+
+export const Default: Story = {
+    args: {
+        items: buildItems(10),
+    },
+};
+
+function buildItems(count: number) {
+    const items: TimelineItem[] = [];
+    
+    for (let i = 0; i < count; i++) {
+        items.push({ date: (new Date().getTime() / 1000) + (i * 4123), text: `Text ${i}` });
+    }
+
+    return items;
 }
-
-export const Empty = Template.bind({});
-
-Empty['args'] = {
-    items: null,
-};
-
-export const Default = Template.bind({});
-
-Default['args'] = {
-    items,
-};

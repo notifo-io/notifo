@@ -50,7 +50,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         type,
     } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const upserting = useIntegrations(x => x.upserting);
     const upsertingError = useIntegrations(x => x.upsertingError);
     const wasUpserting = React.useRef(false);
@@ -146,7 +146,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
                 },
             };
         } else {
-            const properties = {};
+            const properties: Record<string, any> = {};
 
             for (const property of definition.properties) {
                 properties[property.name] = property.defaultValue;
@@ -160,7 +160,7 @@ export const IntegrationDialog = (props: IntegrationDialogProps) => {
         }
     }, [configured, definition.properties]);
 
-    const form = useForm<UpdateIntegrationDto>({ resolver: yupResolver(schema), defaultValues: initialValues, mode: 'onChange' });
+    const form = useForm<UpdateIntegrationDto>({ resolver: yupResolver<any>(schema), defaultValues: initialValues, mode: 'onChange' });
 
     return (
         <Modal isOpen={true} size='lg' className='integration-dialog' backdrop={false} toggle={onClose}>

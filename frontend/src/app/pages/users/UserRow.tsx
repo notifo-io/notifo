@@ -6,11 +6,9 @@
  */
 
 import * as React from 'react';
-import { match } from 'react-router';
 import { NavLink } from 'react-router-dom';
-import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
-import { combineUrl, Confirm, FormatDate, Icon } from '@app/framework';
+import { Confirm, FormatDate, Icon } from '@app/framework';
 import { UserDto } from '@app/service';
 import { CounterRow } from '@app/shared/components';
 import { texts } from '@app/texts';
@@ -18,9 +16,6 @@ import { texts } from '@app/texts';
 export interface UserRowProps {
     // The user.
     user: UserDto;
-
-    // The match.
-    match: match;
 
     // True to show all counters.
     showCounters?: boolean;
@@ -38,16 +33,11 @@ export interface UserRowProps {
 export const UserRow = React.memo((props: UserRowProps) => {
     const { 
         showCounters, 
-        match, 
         onDelete,
         onEdit,
         onPublish,
         user,
     } = props;
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     const doDelete = () => {
         onDelete && onDelete(user);
@@ -61,23 +51,21 @@ export const UserRow = React.memo((props: UserRowProps) => {
         onPublish && onPublish(user);
     };
 
-    const url = combineUrl(match.url, user.id);
-
     return (
         <CounterRow counters={user.counters} columnCount={6} showCounters={showCounters}>
             <tr className='list-item-summary'>
                 <td>
-                    <NavLink to={url}>
+                    <NavLink to={user.id}>
                         <span className='truncate mono'>{user.id}</span>
                     </NavLink>
                 </td>
                 <td>
-                    <NavLink to={url}>
+                    <NavLink to={user.id}>
                         <span className='truncate'>{user.fullName}</span>
                     </NavLink>
                 </td>
                 <td>
-                    <NavLink to={url}>
+                    <NavLink to={user.id}>
                         <span className='truncate'>{user.emailAddress}</span>
                     </NavLink>
                 </td>

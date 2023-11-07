@@ -18,7 +18,7 @@ import { PublishDto } from '@app/service';
 import { Forms, NotificationsForm, TemplateInput, TemplateVariantsInput } from '@app/shared/components';
 import { loadTemplates, publish, togglePublishDialog, useApp, usePublish, useTemplates } from '@app/state';
 import { texts } from '@app/texts';
-import { NotificationPreview } from '../templates/NotificationPreview';
+import { NotificationPreview } from './../templates/NotificationPreview';
 
 const FormSchema = Yup.object({
     // Required topic name
@@ -31,7 +31,7 @@ const FormSchema = Yup.object({
 
     // Template code is required when templated.
     templateCode: Yup.string()
-        .when('templated', (other: boolean, schema: Yup.StringSchema) =>
+        .when('templated', ([other], schema: Yup.StringSchema) =>
             (other ? schema.requiredI18n() : schema),
         )
         .label(texts.common.templateCode),
@@ -46,7 +46,7 @@ const FormSchema = Yup.object({
 
     // Subject is required when not templated.
     preformatted: Yup.object()
-        .when('templated', (other: boolean, schema: Yup.ObjectSchema<any>) =>
+        .when('templated', ([other], schema: Yup.ObjectSchema<any>) =>
             (other ? schema : schema.shape({ subject: Yup.object().label(texts.common.subject).atLeastOneStringI18n() })),
         )
         .label(texts.common.formatting),
@@ -70,7 +70,7 @@ export const PublishDialog = () => {
 };
 
 const PublishDialogInner = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
@@ -122,7 +122,7 @@ const PublishDialogInner = () => {
         return Types.clone(dialogValues || {}) as any;
     }, [dialogValues]);
 
-    const form = useForm<PublishForms>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+    const form = useForm<PublishForms>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={doCloseForm} className={classNames('publish-modal', { ['fullscreen-mode']: viewFullscreen })}>

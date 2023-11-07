@@ -5,15 +5,15 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { AsyncThunkPayloadCreator, createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { buildError } from '@app/framework';
 
 export const selectApp = createAction<{ appId: string | undefined }>('apps/select');
 
-export function createApiThunk<Returned, ThunkArg = void>(typePrefix: string, payloadCreator: AsyncThunkPayloadCreator<Returned, ThunkArg, any>) {
+export function createApiThunk<Returned, ThunkArg = void>(typePrefix: string, payloadCreator: (arg: ThunkArg) => Promise<Returned>) {
     return createAsyncThunk<Returned, ThunkArg>(typePrefix, async (arg, thunkApi) => {
         try {
-            const result = await payloadCreator(arg, thunkApi);
+            const result = await payloadCreator(arg);
 
             return result;
         } catch (err: any) {

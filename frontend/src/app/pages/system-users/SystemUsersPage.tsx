@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListSearch, Loader, Query, useBooleanObj, useEventCallback } from '@app/framework';
 import { SystemUserDto } from '@app/service';
@@ -18,15 +17,11 @@ import { SystemUserDialog } from './SystemUserDialog';
 import { SystemUserRow } from './SystemUserRow';
 
 export const SystemUsersPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const dialogEdit = useBooleanObj();
     const dialogNew = useBooleanObj();
     const systemUsers = useSystemUsers(x => x.systemUsers);
     const [currentSystemUser, setCurrentSystemUser] = React.useState<SystemUserDto>();
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     React.useEffect(() => {
         dispatch(loadSystemUsers({}));

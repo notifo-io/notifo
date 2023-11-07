@@ -143,7 +143,7 @@ export const NotificationItem = (props: NotificationItemProps) => {
             return null;
         }
 
-        const locale = SUPPORTED_LOCALES[config.locale];
+        const locale = (SUPPORTED_LOCALES as any)[config.locale];
 
         return formatDistanceToNow(parseISO(notification.created), { locale });
     }, [config.locale, notification.created]);

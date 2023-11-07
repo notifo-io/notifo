@@ -449,7 +449,7 @@ export async function apiRegister(config: SDKConfig) {
         throw new Error('Request failed with {response.statusCode}');
     }
 
-    const result: object = await response.json();
+    const result: Record<string, any> = await response.json();
 
     for (const key in result) {
         if (!result[key]) {

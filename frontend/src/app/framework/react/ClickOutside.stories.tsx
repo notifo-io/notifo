@@ -5,27 +5,29 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Card, CardBody } from 'reactstrap';
 import { ClickOutside } from './ClickOutside';
 
-export default {
+const meta: Meta<typeof ClickOutside> = {
     component: ClickOutside,
-} as ComponentMeta<typeof ClickOutside>;
-
-const Template = (args: any) => {
-    return (
-        <ClickOutside {...args}>
-            <Card>
-                <CardBody>Inner</CardBody>
-            </Card>
-        </ClickOutside>
-    );
+    render: args => {
+        return (
+            <ClickOutside {...args}>
+                <Card>
+                    <CardBody>Inner</CardBody>
+                </Card>
+            </ClickOutside>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof ClickOutside>;
 
-Default['args'] = {
-    isActive: true,
+export const Default: Story = {
+    args: {
+        isActive: true,
+    },
 };

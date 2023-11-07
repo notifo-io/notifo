@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListMultiFilter, ListSearch, Loader, Query, useEventCallback, useSavedState } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
@@ -18,20 +17,16 @@ import { EventRow } from './EventRow';
 
 const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook').map(value => ({
     value,
-    label: texts.notificationSettings[value]?.name || value,
+    label: (texts.notificationSettings as any)[value]?.name || value,
 }));
 
 export const EventsPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const events = useEvents(x => x.events);
     const [showCounters, setshowCounters] = useSavedState(false, 'show.counters');
     const [channels, setChannels] = React.useState<string[]>([]);
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     React.useEffect(() => {
         dispatch(loadEvents(appId, {}, undefined, channels));

@@ -26,7 +26,7 @@ type SelectedIntegration = {
 const DEFAULTS: any = {};
 
 export const IntegrationsPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const configured = useIntegrations(x => x.configured || DEFAULTS);

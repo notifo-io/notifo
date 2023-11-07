@@ -88,10 +88,10 @@ export module Clients {
                 const user = await userManager.getUser();
 
                 init.headers = init.headers || {};
-                init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
+                (init.headers as any)['Authorization'] = `${user?.token_type} ${user?.access_token}`;
             } catch (error) {
                 if (init.headers) {
-                    delete init.headers['Authorization'];
+                    delete (init.headers as any)['Authorization'];
                 }
             }
 
@@ -102,10 +102,10 @@ export module Clients {
                     const user = await AuthService.getUserManager().signinSilent();
 
                     init.headers = init.headers || {};
-                    init.headers['Authorization'] = `${user?.token_type} ${user?.access_token}`;
+                    (init.headers as any)['Authorization'] = `${user?.token_type} ${user?.access_token}`;
                 } catch (error) {
                     if (init.headers) {
-                        delete init.headers['Authorization'];
+                        delete (init.headers as any)['Authorization'];
                     }
                 }
 

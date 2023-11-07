@@ -5,13 +5,33 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Icon, IconType } from './Icon';
 
-export default {
+const meta: Meta<typeof Icon> = {
     component: Icon,
-} as ComponentMeta<typeof Icon>;
+    render: () => {
+        return (
+            <>
+                {ALLICONS.map(icon =>
+                    <div style={{ margin: 10, width: 100, display: 'inline-block' }} className='text-center'>
+                        <Icon type={icon} />
+
+                        <small className='truncate'>
+                            {icon}
+                        </small>
+                    </div>,
+                )}
+            </>
+        );
+    },
+};
+
+export default meta;
+type Story = StoryObj<typeof Icon>;
+
+export const Default: Story = {};
 
 const ALLICONS: IconType[] = [
     'add',
@@ -50,19 +70,3 @@ const ALLICONS: IconType[] = [
     'sms',
     'spinner',
 ];
-
-export const Default = () => {
-    return (
-        <>
-            {ALLICONS.map(icon =>
-                <div style={{ margin: 10, width: 100, display: 'inline-block' }} className='text-center'>
-                    <Icon type={icon} />
-
-                    <small className='truncate'>
-                        {icon}
-                    </small>
-                </div>,
-            )}
-        </>
-    );
-};

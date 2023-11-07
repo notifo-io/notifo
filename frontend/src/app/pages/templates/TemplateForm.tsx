@@ -52,7 +52,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
         template,
     } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
@@ -72,7 +72,7 @@ export const TemplateForm = (props: TemplateFormProps) => {
         return Types.clone(template || {});
     }, [template]);
 
-    const form = useForm<TemplateDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+    const form = useForm<TemplateDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
 
     return (
         <FormProvider {...form}>
