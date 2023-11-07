@@ -224,6 +224,11 @@ export const EN = {
         with: 'with',
         yes: 'Yes',
     },
+    demo: {
+        featureButton: 'The default notification button.',
+        featureSubscribe: (topic: string, icon: string) => `Subscribing to \`${topic}\` with \`${icon}\` icon.`,
+        title: 'Notifo Demo Page',
+    },
     emailTemplates: {
         bodyHtml: 'HTML Body',
         bodyHtmlValid: 'HTML Body is required and must be a valid template',

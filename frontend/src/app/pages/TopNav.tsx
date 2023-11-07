@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useLocation } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Nav, Navbar, NavItem } from 'reactstrap';
 import { Marker, useBoolean, useEventCallback } from '@app/framework';
@@ -17,8 +16,7 @@ import { texts } from '@app/texts';
 
 export const TopNav = () => {
     const dispatch = useDispatch<any>();
-    const location = useLocation();
-    const userEntity = useLogin(x => x.user)!;
+    const userInfo = useLogin(x => x.user)!;
     const userProfile = useLogin(x => x.profile);
     const [isOpen, setIsOpen] = useBoolean();
 
@@ -28,7 +26,7 @@ export const TopNav = () => {
 
     return (
         <Navbar dark fixed='top' color='primary'>
-            <NavLink to={location.pathname} className='navbar-brand'>
+            <NavLink to='/' className='navbar-brand'>
                 <Logo />
             </NavLink>
 
@@ -55,7 +53,7 @@ export const TopNav = () => {
                         <DropdownItem onClick={setIsOpen.off} href='/account/profile' target='_blank'>
                             <div>{texts.common.welcome},</div>
 
-                            <strong>{userEntity.name}</strong>
+                            <strong>{userInfo.name}</strong>
                         </DropdownItem>
 
                         <DropdownItem divider />
@@ -64,7 +62,7 @@ export const TopNav = () => {
                             {texts.common.profileSettings}
                         </DropdownItem>
 
-                        {userEntity.roles.find(x => x?.toUpperCase() === 'ADMIN') &&
+                        {userInfo.roles.find(x => x?.toUpperCase() === 'ADMIN') &&
                             <NavLink onClick={setIsOpen.off} to='/system-users' className='dropdown-item'>
                                 {texts.systemUsers.header}
                             </NavLink>

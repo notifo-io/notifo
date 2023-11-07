@@ -30,7 +30,7 @@ export const Integrated = (props: IntegratedProps) => {
             // The profile is manage dby the normal settings
             hideProfile: true,
         }]);
-    }, [ token]);
+    }, [token]);
 
     return (
         <div id='notifo-button'></div>

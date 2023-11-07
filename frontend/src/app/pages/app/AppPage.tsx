@@ -5,10 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import classNames from 'classnames';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Route, Routes, useLocation, useParams, useResolvedPath } from 'react-router';
+import { Navigate, Route, Routes, useLocation, useParams, useResolvedPath } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
 import { Icon, useBoolean, useEventCallback } from '@app/framework';
@@ -32,7 +31,7 @@ import { UsersPage } from './../users/UsersPage';
 import { AppDashboardPage } from './AppDashboardPage';
 import { AppSettingsPage } from './AppSettingsPage';
 
-const DesignItem = () => {
+const NavDesign = () => {
     const [isOpen, setIsOpen] = useBoolean();
     const parent = useResolvedPath('').pathname;
     const path = useLocation().pathname;
@@ -80,7 +79,7 @@ const DesignItem = () => {
     );
 };
 
-const MoreItem = () => {
+const NavMore = () => {
     const [isOpen, setIsOpen] = useBoolean();
     const parent = useResolvedPath('').pathname;
     const path = useLocation().pathname;
@@ -153,26 +152,25 @@ export const AppPage = () => {
         <main>
             <Nav vertical className='sidebar'>
                 <NavItem>
-                    <NavLink className={n => classNames('nav-link', { active: n.isActive })} to=''>
+                    <NavLink className='nav-link' to='home'>
                         <Icon type='dashboard' /> <span>{texts.common.dashboard}</span>
                     </NavLink>
                 </NavItem>
 
                 <NavItem>
-                    <NavLink className={n => classNames('nav-link', { active: n.isActive })} to='users'>
+                    <NavLink className='nav-link' to='users'>
                         <Icon type='person' /> <span>{texts.users.header}</span>
                     </NavLink>
                 </NavItem>
 
                 <NavItem>
-                    <NavLink className={n => classNames('nav-link', { active: n.isActive })} to='events'>
+                    <NavLink className='nav-link' to='events'>
                         <Icon type='message' /> <span>{texts.events.header}</span>
                     </NavLink>
                 </NavItem>
 
-                <DesignItem />
-
-                <MoreItem />
+                <NavDesign />
+                <NavMore />
 
                 <NavItem className='nav-publish'>
                     <NavItemLink className='nav-link' onClick={doPublish}>
@@ -230,8 +228,11 @@ export const AppPage = () => {
                 <Route path='topics'
                     element={<TopicsPage />} />
 
-                <Route path='*'
+                <Route path='home'
                     element={<AppDashboardPage />} />
+
+                <Route path='*'
+                    element={<Navigate to='home' />} />
             </Routes>
 
             <PublishDialog />

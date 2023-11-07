@@ -8,6 +8,7 @@
     "@floating-ui/react-dom": "^2.0.2",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.3.2",
+    "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "@marker.io/browser": "^0.19.0",
     "@microsoft/signalr": "^7.0.12",
     "@preact/preset-vite": "^2.6.0",
@@ -16,7 +17,7 @@
     "classnames": "^2.3.2",
     "codemirror": "5.65.0",
     "core-js": "3.33.2",
-    "create-react-context": "0.3.0",
+    "coverage-istanbul-loader": "^3.0.5",
     "date-fns": "2.30.0",
     "emoji-mart": "^5.5.2",
     "history": "^5.3.0",
@@ -100,7 +101,6 @@
     "html-loader": "4.2.0",
     "html-webpack-plugin": "5.5.3",
     "ignore-loader": "0.1.2",
-    "istanbul-instrumenter-loader": "3.0.1",
     "jasmine-core": "5.1.1",
     "karma": "6.4.2",
     "karma-chrome-launcher": "3.2.0",
@@ -120,7 +120,7 @@
     "raw-loader": "4.0.2",
     "reset-scss": "1.0.0",
     "rimraf": "5.0.5",
-    "sass": "^1.69.5",
+    "sass": "1.64.2",
     "sass-lint": "1.13.1",
     "sass-lint-webpack": "1.0.4",
     "sass-loader": "13.3.2",
@@ -142,5 +142,8 @@
     "webpack-bundle-analyzer": "4.9.1",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "4.15.1"
+  },
+  "overrides": {
+    "autoprefixer": "10.4.5"
   }
 }

@@ -859,6 +859,23 @@ div {
 }
 
 //
+// Demo
+//
+.demo {
+    &-container {
+        max-width: 700px;
+    }
+
+    &-logo {
+        height: 40px;
+    }
+
+    &-text p {
+        margin-bottom: 0
+    }
+}
+
+//
 // Sidebar
 //
 @mixin build-active {

@@ -14,6 +14,7 @@ import { RouteWhenPrivate } from '@app/shared/components';
 import { useLogin } from '@app/state';
 import { InternalPage } from './pages/InternalPage';
 import { AuthenticationPage } from './pages/authentication/AuthenticationPage';
+import { DemoPage } from './pages/user/DemoPage';
 
 export const App = () => {
     const isAuthenticated = useLogin(x => !!x.user);
@@ -29,6 +30,9 @@ export const App = () => {
 
                 <Route path='/authentication'
                     element={<AuthenticationPage />} />
+
+                <Route path='/demo/:userId'
+                    element={<DemoPage />} />
 
                 <Route index
                     element={<Navigate to='/app' />} />
