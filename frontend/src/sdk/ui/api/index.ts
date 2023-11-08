@@ -10,7 +10,7 @@ import { PollingConnection } from './polling-connection';
 import { SafeConnection } from './safe-connection';
 import { SignalRConnection } from './signalr-connection';
 
-export { Connection } from './connection';
+export type { Connection } from './connection';
 
 export function buildConnection(config: SDKConfig) {
     if (config.connectionMode === 'SignalR') {

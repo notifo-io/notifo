@@ -5,11 +5,10 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { ListPager } from './ListPager';
 
-export default {
+const meta: Meta<typeof ListPager> = {
     component: ListPager,
     argTypes: {
         list: {
@@ -18,55 +17,41 @@ export default {
             },
         },
     },
-} as ComponentMeta<typeof ListPager>;
-
-const Template = (args: any) => {
-    return (
-        <ListPager {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof ListPager>;
 
-Default['args'] = {
-    list: {
-        items: buildItems(5),
-        total: 100,
-        pageSize: 10,
-        page: 5,
+export const Default: Story = {
+    args: {
+        list: {
+            items: buildItems(5),
+            total: 100,
+            pageSize: 10,
+            page: 5,
+        },
     },
 };
 
-export const First = Template.bind({});
-
-First['args'] = {
-    list: {
-        items: buildItems(5),
-        total: 100,
-        pageSize: 10,
-        page: 0,
+export const First: Story = {
+    args: {
+        list: {
+            items: buildItems(5),
+            total: 100,
+            pageSize: 10,
+            page: 0,
+        },
     },
 };
 
-export const Last = Template.bind({});
-
-Last['args'] = {
-    list: {
-        items: buildItems(5),
-        total: 100,
-        pageSize: 10,
-        page: 9,
-    },
-};
-
-export const NoTotal = Template.bind({});
-
-NoTotal['args'] = {
-    list: {
-        items: buildItems(20),
-        total: 0,
-        pageSize: 10,
-        page: 9,
+export const Last: Story = {
+    args: {
+        list: {
+            items: buildItems(20),
+            total: 0,
+            pageSize: 10,
+            page: 9,
+        },
     },
 };
 

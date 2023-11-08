@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
 import { FormError, Icon, Loader, useBooleanObj } from '@app/framework';
 import { selectApp, useApps } from '@app/state';
@@ -15,10 +15,9 @@ import { texts } from '@app/texts';
 import { AppDialog } from './AppDialog';
 
 export const AppsPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const apps = useApps(x => x.apps);
     const appDialog = useBooleanObj();
-    const match = useRouteMatch();
 
     React.useEffect(() => {
         dispatch(selectApp({ appId: undefined }));
@@ -49,7 +48,7 @@ export const AppsPage = () => {
             {apps.items &&
                 <div>
                     {apps.items.map(app => (
-                        <Link key={app.id} to={`${match.path}/${app.id}`} className='d-inline-block'>
+                        <Link key={app.id} to={app.id} className='d-inline-block'>
                             <Card className='app-card'>
                                 <CardBody>
                                     {app.name ? (

@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListPager, ListSearch, Loader, Query, useBooleanObj, useEventCallback } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
@@ -27,17 +26,13 @@ export interface SubscriptionsProps {
 export const Subscriptions = (props: SubscriptionsProps) => {
     const { onSwitch, userId } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const dialogEdit = useBooleanObj();
     const dialogNew = useBooleanObj();
     const subscriptions = useSubscriptions(x => x.subscriptions);
     const [editSubscription, setEditSubscription] = React.useState<SubscriptionDto>();
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     React.useEffect(() => {
         dispatch(loadSubscriptions(appId, userId, {}));

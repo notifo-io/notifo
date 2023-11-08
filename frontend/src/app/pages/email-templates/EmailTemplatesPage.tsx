@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { Button, Col, Label, Row } from 'reactstrap';
 import { FormError, Icon, Loader, useEventCallback } from '@app/framework';
@@ -17,14 +16,13 @@ import { texts } from '@app/texts';
 import { EmailTemplateCard } from './EmailTemplateCard';
 
 export const EmailTemplatesPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const creating = useEmailTemplates(x => x.creating);
     const creatingError = useEmailTemplates(x => x.creatingError);
     const deletingError = useEmailTemplates(x => x.deletingError);
     const emailTemplates = useEmailTemplates(x => x.templates);
-    const match = useRouteMatch();
 
     React.useEffect(() => {
         dispatch(loadEmailTemplates(appId));
@@ -73,7 +71,7 @@ export const EmailTemplatesPage = () => {
             {emailTemplates.items &&
                 <>
                     {emailTemplates.items.map(template => (
-                        <EmailTemplateCard key={template.id} template={template} appId={appId} match={match}
+                        <EmailTemplateCard key={template.id} template={template} appId={appId}
                             onDelete={doDelete}
                         />
                     ))}

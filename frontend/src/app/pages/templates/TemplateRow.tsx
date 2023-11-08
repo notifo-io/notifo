@@ -7,7 +7,6 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
 import { Confirm, Icon, useEventCallback } from '@app/framework';
 import { TemplateDto } from '@app/service';
@@ -38,10 +37,6 @@ export const TemplateRow = React.memo((props: TemplateRowProps) => {
         selected,
         template,
     } = props;
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     const doDelete = useEventCallback(() => {
         onDelete && onDelete(template);

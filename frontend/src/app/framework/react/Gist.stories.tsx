@@ -5,22 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { Gist } from './Gist';
 
-export default {
+const meta: Meta<typeof Gist> = {
     component: Gist,
-} as ComponentMeta<typeof Gist>;
-
-const Template = (args: any) => {
-    return (
-        <Gist {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof Gist>;
 
-Default['args'] = {
-    id: '07c756be819ba30f83a27775cdd78dc2',
+export const Default: Story = {
+    args: {
+        id: '07c756be819ba30f83a27775cdd78dc2',
+    },
 };

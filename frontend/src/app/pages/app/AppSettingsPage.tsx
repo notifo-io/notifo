@@ -12,7 +12,7 @@ import { AppSettings } from './AppSettings';
 import { Contributors } from './Contributors';
 
 export const AppSettingsPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appDetails = useApps(x => x.app);

@@ -859,6 +859,23 @@ div {
 }
 
 //
+// Demo
+//
+.demo {
+    &-container {
+        max-width: 700px;
+    }
+
+    &-logo {
+        height: 40px;
+    }
+
+    &-text p {
+        margin-bottom: 0
+    }
+}
+
+//
 // Sidebar
 //
 @mixin build-active {
@@ -893,7 +910,7 @@ div {
     .nav-publish {
         @include absolute(null, 0, 0, 0);
 
-        @media (max-height: 590px) {
+        @media (0 <= height <= 590px) {
             display: none;
         }
     }

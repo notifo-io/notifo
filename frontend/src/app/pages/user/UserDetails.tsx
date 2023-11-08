@@ -26,7 +26,7 @@ export interface UserDetailsProps {
 export const UserDetails = (props: UserDetailsProps) => {
     const { appId, user } = props;
     
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     
     const doPublish = useEventCallback(() => {
         dispatch(togglePublishDialog({ open: true, values: { topic: `users/${user.id}` } }));
@@ -42,7 +42,7 @@ export const UserDetails = (props: UserDetailsProps) => {
                 </Col>
 
                 <Col xs='auto'>
-                    <a className='btn btn-secondary-link' target='_blank' href={`/demo.html?userToken=${user.apiKey}`}>
+                    <a className='btn btn-secondary-link' target='_blank' href={`/demo/${user.apiKey}`}>
                         <Icon type='code' /> {texts.common.demo}
                     </a>
                 </Col>

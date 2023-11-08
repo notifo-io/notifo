@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Route, Switch, useRouteMatch } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { ErrorBoundary } from '@app/framework';
 import { loadApps, loadLanguages, loadMjmlSchema, loadProfile, loadTimezones } from '@app/state';
 import { TopNav } from './TopNav';
@@ -16,8 +16,7 @@ import { AppsPage } from './apps/AppsPage';
 import { SystemUsersPage } from './system-users/SystemUsersPage';
 
 export const InternalPage = () => {
-    const dispatch = useDispatch();
-    const match = useRouteMatch();
+    const dispatch = useDispatch<any>();
 
     React.useEffect(() => {
         dispatch(loadProfile());
@@ -32,19 +31,16 @@ export const InternalPage = () => {
             <TopNav />
 
             <ErrorBoundary>
-                <Switch>
-                    <Route path={`${match.path}/system-users`}>
-                        <SystemUsersPage />
-                    </Route>
+                <Routes>
+                    <Route path='system-users'
+                        element={<SystemUsersPage />} />
 
-                    <Route path={`${match.path}/:appId`}>
-                        <AppPage />
-                    </Route>
+                    <Route path=':appId/*'
+                        element={<AppPage />} />
 
-                    <Route path={match.path} exact>
-                        <AppsPage />
-                    </Route>
-                </Switch>
+                    <Route path='*'
+                        element={<AppsPage />} />
+                </Routes>
             </ErrorBoundary>
         </>
     );

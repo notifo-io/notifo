@@ -200,7 +200,7 @@ export module NotificationsForm {
                             {texts.common.via}
                         </Col>
                         <Col>
-                            {texts.notificationSettings[channel].title}
+                            {(texts.notificationSettings as any)[channel].title}
                         </Col>
                         <Col className='rules-label' xs='auto'>
                             {texts.common.when}

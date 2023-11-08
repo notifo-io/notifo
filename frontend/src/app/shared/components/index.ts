@@ -17,7 +17,6 @@ export * from './MediaPicker';
 export * from './MessagingTemplateInput';
 export * from './NotificationSettingsForm';
 export * from './RouteWhenPrivate';
-export * from './RouteWhenPublic';
 export * from './SmsTemplateInput';
 export * from './StatisticsCard';
 export * from './StatisticsLabel';

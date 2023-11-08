@@ -5,29 +5,25 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { Code } from './Code';
 
-export default {
+const meta: Meta<typeof Code> = {
     component: Code,
-} as ComponentMeta<typeof Code>;
-
-const Template = (args: any) => {
-    return (
-        <Code {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof Code>;
 
-Default['args'] = {
-    value: 'Sample Code',
+export const Default: Story = {
+    args: {
+        value: 'Sample Code',
+    },
 };
 
-export const AutoHeight = Template.bind({});
-
-AutoHeight['args'] = {
-    value: 'Sample Code',
-    autoHeight: true,
+export const AutoHeight: Story = {
+    args: {
+        value: 'Sample Code',
+        autoHeight: true,
+    },
 };

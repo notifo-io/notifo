@@ -8,7 +8,7 @@
 import { createReducer } from '@reduxjs/toolkit';
 import { listThunk, Query } from '@app/framework';
 import { Clients, EventDto } from '@app/service';
-import { selectApp } from '../shared';
+import { selectApp } from './../shared';
 import { EventsState } from './state';
 
 const list = listThunk<EventsState, EventDto>('events', 'events', async params => {

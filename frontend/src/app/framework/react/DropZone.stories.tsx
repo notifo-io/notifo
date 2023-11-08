@@ -5,18 +5,14 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { DropZone } from './DropZone';
 
-export default {
+const meta: Meta<typeof DropZone> = {
     component: DropZone,
-} as ComponentMeta<typeof DropZone>;
-
-const Template = (args: any) => {
-    return (
-        <DropZone {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof DropZone>;
+
+export const Default: Story = {};

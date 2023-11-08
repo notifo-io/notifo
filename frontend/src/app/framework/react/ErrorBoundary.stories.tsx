@@ -5,18 +5,29 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
 
-export default {
+type CustomArgs = React.ComponentProps<typeof ErrorBoundary> & { withError?: boolean };
+
+const meta: Meta<CustomArgs> = {
     component: ErrorBoundary,
     argTypes: {
         withError: {
             control: 'boolean',
         },
+    } as any,
+    render: args => {
+        return (
+            <ErrorBoundary {...args}>
+                {args.withError &&
+                    <Inner />
+                }
+            </ErrorBoundary>
+        );
     },
-} as ComponentMeta<typeof ErrorBoundary>;
+};
 
 const Inner = () => {
     React.useEffect(() => {
@@ -26,24 +37,18 @@ const Inner = () => {
     return null;
 };
 
-const Template = (args: any) => {
-    return (
-        <ErrorBoundary {...args}>
-            {args.withError &&
-                <Inner />
-            }
-        </ErrorBoundary>
-    );
+export default meta;
+type Story = StoryObj<CustomArgs>;
+
+export const Default: Story = {
+    args: {
+        withError: false,
+    },
 };
 
-export const Default = Template.bind({});
 
-Default['args'] = {
-    withError: false,
-};
-
-export const WithError = Template.bind({});
-
-WithError['args'] = {
-    withError: true,
+export const WithError: Story = {
+    args: {
+        withError: true,
+    },
 };

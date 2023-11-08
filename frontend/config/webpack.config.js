@@ -196,6 +196,9 @@ module.exports = function (env) {
             headers: {
                 'Access-Control-Allow-Origin': '*',
             },
+            client: {
+                overlay: false,
+            },
             historyApiFallback: true,
         },
     };
@@ -218,16 +221,6 @@ module.exports = function (env) {
                 chunks: ['notifo-sdk', 'app'],
                 chunksSortMode: 'manual',
                 template: 'src/app/index.html',
-            }),
-        );
-
-        config.plugins.push(
-            new plugins.HtmlWebpackPlugin({
-                filename: 'demo.html',
-                hash: true,
-                chunks: ['app', 'notifo-sdk'],
-                chunksSortMode: 'manual',
-                template: 'src/sdk/demo.html',
             }),
         );
 

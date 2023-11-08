@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
+import { useParams } from 'react-router';
 import { Button, Card, CardBody, Col, Row } from 'reactstrap';
 import { Icon, Loader, useBooleanObj } from '@app/framework';
 import { CounterCards } from '@app/shared/components';
@@ -19,18 +19,17 @@ import { Subscriptions } from './Subscriptions';
 import { UserDetails } from './UserDetails';
 
 export const UserPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const dialogEdit = useBooleanObj();
     const loading = useUsers(x => x.loadingUser);
-    const match = useRouteMatch();
     const user = useUsers(x => x.user)!;
-    const userId = match.params['userId'];
+    const userId = useParams().userId!;
     const [activeTab, setActiveTab] = React.useState('notifications');
 
     React.useEffect(() => {
-        dispatch(loadUser({ appId, userId }));
+        dispatch(loadUser({ appId, userId }) as any);
     }, [dispatch, appId, userId]);
 
     return (

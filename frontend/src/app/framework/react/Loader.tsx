@@ -7,7 +7,7 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import ExternalLoader from 'react-loader-spinner';
+import { ThreeDots } from 'react-loader-spinner';
 import { useBoolean } from './hooks';
 
 export interface LoaderProps {
@@ -54,11 +54,11 @@ export const Loader = React.memo((props: LoaderProps) => {
 
     return small ? (
         <small className={classNames(className, 'loader')}>
-            <ExternalLoader width={16} height={16} type='ThreeDots' color={color} /> {text}
+            <ThreeDots width={16} height={16} color={color} /> {text}
         </small>
     ) : (
         <span className={classNames(className, 'loader')}>
-            <ExternalLoader width={26} height={26} type='ThreeDots' color={color} /> {text}
+            <ThreeDots width={26} height={26} color={color} /> {text}
         </span>
     );
 });

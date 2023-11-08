@@ -7,10 +7,12 @@
 
 import { EN } from './en';
 
+const navigatorAny = navigator as any;
+
 let userLanguage: string =
     localStorage.getItem('language') ||
     navigator.language ||
-    navigator['userLanguage'];
+    navigatorAny['userLanguage'];
 
 if (userLanguage) {
     userLanguage = userLanguage.substring(0, 2);

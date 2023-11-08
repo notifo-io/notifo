@@ -5,22 +5,18 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { ApiValue } from './ApiValue';
 
-export default {
+const meta: Meta<typeof ApiValue> = {
     component: ApiValue,
-} as ComponentMeta<typeof ApiValue>;
-
-const Template = (args: any) => {
-    return (
-        <ApiValue {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof ApiValue>;
 
-Default['args'] = {
-    value: 'API Key',
+export const Default: Story = {
+    args: {
+        value: 'API Key',
+    },
 };

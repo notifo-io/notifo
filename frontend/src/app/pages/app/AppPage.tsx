@@ -7,45 +7,51 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Route, Switch, useLocation, useRouteMatch } from 'react-router';
-import { match, NavLink } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useParams, useResolvedPath } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { Dropdown, DropdownMenu, DropdownToggle, Nav, NavItem, NavLink as NavItemLink } from 'reactstrap';
-import { combineUrl, Icon, useBoolean, useEventCallback } from '@app/framework';
+import { Icon, useBoolean, useEventCallback } from '@app/framework';
 import { selectApp, togglePublishDialog, useApp, useApps } from '@app/state';
 import { texts } from '@app/texts';
-import { MessagingTemplatePage } from '../messaging-templates/MessagingTemplatePage';
-import { MessagingTemplatesPage } from '../messaging-templates/MessagingTemplatesPage';
-import { SmsTemplatePage } from '../sms-templates/SmsTemplatePage';
-import { SmsTemplatesPage } from '../sms-templates/SmsTemplatesPage';
-import { TopicsPage } from '../topics/TopicsPage';
 import { EmailTemplatePage } from './../email-templates/EmailTemplatePage';
 import { EmailTemplatesPage } from './../email-templates/EmailTemplatesPage';
 import { EventsPage } from './../events/EventsPage';
 import { IntegrationsPage } from './../integrations/IntegrationsPage';
 import { LogPage } from './../log/LogPage';
 import { MediaPage } from './../media/MediaPage';
+import { MessagingTemplatePage } from './../messaging-templates/MessagingTemplatePage';
+import { MessagingTemplatesPage } from './../messaging-templates/MessagingTemplatesPage';
 import { PublishDialog } from './../publish/PublishDialog';
+import { SmsTemplatePage } from './../sms-templates/SmsTemplatePage';
+import { SmsTemplatesPage } from './../sms-templates/SmsTemplatesPage';
 import { TemplatesPage } from './../templates/TemplatesPage';
+import { TopicsPage } from './../topics/TopicsPage';
 import { UserPage } from './../user/UserPage';
 import { UsersPage } from './../users/UsersPage';
 import { AppDashboardPage } from './AppDashboardPage';
 import { AppSettingsPage } from './AppSettingsPage';
 
-const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
+const NavDesign = () => {
     const [isOpen, setIsOpen] = useBoolean();
+    const parent = useResolvedPath('').pathname;
+    const path = useLocation().pathname;
 
-    const urlToEmailTemplates = combineUrl(match.url, 'email-templates');
-    const urlToMedia = combineUrl(match.url, 'media');
-    const urlToMessagingTemplates = combineUrl(match.url, 'messaging-templates');
-    const urlToSmsTemplates = combineUrl(match.url, 'sms-templates');
-    const urlToTemplates = combineUrl(match.url, 'templates');
+    const isActive = React.useMemo(() => {
+        let location = path;
 
-    const isActive =
-        path.startsWith(urlToEmailTemplates) ||
-        path.startsWith(urlToMedia) ||
-        path.startsWith(urlToMessagingTemplates) ||
-        path.startsWith(urlToSmsTemplates) ||
-        path.startsWith(urlToTemplates);
+        if (location.startsWith(parent)) {
+            location = location.substring(parent.length);
+        }
+
+        const result =
+            location.startsWith('/media') ||
+            location.startsWith('/templates') ||
+            location.startsWith('/sms-templates') ||
+            location.startsWith('/mail-templates') ||
+            location.startsWith('/messaging-templates');
+
+        return result;
+    }, [parent, path]);
 
     return (
         <Dropdown nav direction='right' isOpen={isOpen} toggle={setIsOpen.toggle} active={isActive}>
@@ -53,19 +59,19 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
                 <Icon type='create' /> <span>{texts.common.design}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToMedia} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='media' onClick={setIsOpen.off}>
                     <Icon type='photo_size_select_actual' /> <span>{texts.media.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToTemplates} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='templates' onClick={setIsOpen.off}>
                     <Icon type='file_copy' /> <span>{texts.templates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToSmsTemplates} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='sms-templates' onClick={setIsOpen.off}>
                     <Icon type='sms' /> <span>{texts.smsTemplates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToEmailTemplates} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='email-templates' onClick={setIsOpen.off}>
                     <Icon type='mail_outline' /> <span>{texts.emailTemplates.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToMessagingTemplates} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='messaging-templates' onClick={setIsOpen.off}>
                     <Icon type='messaging' /> <span>{texts.messagingTemplates.header}</span>
                 </NavLink>
             </DropdownMenu>
@@ -73,19 +79,26 @@ const DesignItem = ({ match, path }: { match: match<{}>; path: string }) => {
     );
 };
 
-const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
+const NavMore = () => {
     const [isOpen, setIsOpen] = useBoolean();
+    const parent = useResolvedPath('').pathname;
+    const path = useLocation().pathname;
 
-    const urlToLog = combineUrl(match.url, 'log');
-    const urlToIntegrations = combineUrl(match.url, 'integrations');
-    const urlToSettings = combineUrl(match.url, 'settings');
-    const urlToTopics = combineUrl(match.url, 'topics');
+    const isActive = React.useMemo(() => {
+        let location = path;
 
-    const isActive =
-        path.startsWith(urlToLog) ||
-        path.startsWith(urlToIntegrations) ||
-        path.startsWith(urlToSettings) ||
-        path.startsWith(urlToTopics);
+        if (location.startsWith(parent)) {
+            location = location.substring(parent.length);
+        }
+
+        const result =
+            location.startsWith('/integrations') ||
+            location.startsWith('/topics') ||
+            location.startsWith('/settings') ||
+            location.startsWith('/log');
+
+        return result;
+    }, [parent, path]);
 
     return (
         <Dropdown nav direction='right' isOpen={isOpen} toggle={setIsOpen.toggle} active={isActive}>
@@ -93,16 +106,16 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
                 <Icon type='settings' /> <span>{texts.common.more}</span>
             </DropdownToggle>
             <DropdownMenu>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToIntegrations} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='integrations' onClick={setIsOpen.off}>
                     <Icon type='extension' /> <span>{texts.integrations.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToTopics} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='topics' onClick={setIsOpen.off}>
                     <Icon type='topic' /> <span>{texts.topics.header}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToSettings} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='settings' onClick={setIsOpen.off}>
                     <Icon type='settings' /> <span>{texts.common.settings}</span>
                 </NavLink>
-                <NavLink activeClassName='active' className='dropdown-item' to={urlToLog} onClick={setIsOpen.off}>
+                <NavLink className='dropdown-item' to='log' onClick={setIsOpen.off}>
                     <Icon type='history' /> <span>{texts.log.header}</span>
                 </NavLink>
             </DropdownMenu>
@@ -111,11 +124,9 @@ const MoreItem = ({ match, path }: { match: match<{}>; path: string }) => {
 };
 
 export const AppPage = () => {
-    const dispatch = useDispatch();
-    const match = useRouteMatch();
-    const location = useLocation();
+    const dispatch = useDispatch<any>();
     const app = useApp();
-    const appId = match.params['appId'];
+    const appId = useParams().appId!;
     const loading = useApps(x => x.apps.isLoading);
     const [appSelected, setAppSelected] = React.useState(false);
 
@@ -141,26 +152,25 @@ export const AppPage = () => {
         <main>
             <Nav vertical className='sidebar'>
                 <NavItem>
-                    <NavLink activeClassName='active' className='nav-link' to={match.url} exact>
+                    <NavLink className='nav-link' to='home'>
                         <Icon type='dashboard' /> <span>{texts.common.dashboard}</span>
                     </NavLink>
                 </NavItem>
 
                 <NavItem>
-                    <NavLink activeClassName='active' className='nav-link' to={combineUrl(match.url, 'users')}>
+                    <NavLink className='nav-link' to='users'>
                         <Icon type='person' /> <span>{texts.users.header}</span>
                     </NavLink>
                 </NavItem>
 
                 <NavItem>
-                    <NavLink activeClassName='active' className='nav-link' to={combineUrl(match.url, 'events')}>
+                    <NavLink className='nav-link' to='events'>
                         <Icon type='message' /> <span>{texts.events.header}</span>
                     </NavLink>
                 </NavItem>
 
-                <DesignItem match={match} path={location.pathname} />
-
-                <MoreItem match={match} path={location.pathname} />
+                <NavDesign />
+                <NavMore />
 
                 <NavItem className='nav-publish'>
                     <NavItemLink className='nav-link' onClick={doPublish}>
@@ -169,71 +179,61 @@ export const AppPage = () => {
                 </NavItem>
             </Nav>
 
-            <Switch>
-                <Route path={combineUrl(match.url, 'users/:userId/')}>
-                    <UserPage />
-                </Route>
+            <Routes>
+                <Route path='users/:userId/*'
+                    element={<UserPage />} />
 
-                <Route path={combineUrl(match.url, 'users/')} exact>
-                    <UsersPage />
-                </Route>
+                <Route path='users'
+                    element={<UsersPage />} />
 
-                <Route path={combineUrl(match.url, 'events/')} exact>
-                    <EventsPage />
-                </Route>
+                <Route path='events'
+                    element={<EventsPage />} />
 
-                <Route path={combineUrl(match.url, 'templates/')} exact>
-                    <TemplatesPage />
-                </Route>
+                <Route path='templates'
+                    element={<TemplatesPage />} />
 
-                <Route path={combineUrl(match.url, 'media/')} exact>
-                    <MediaPage />
-                </Route>
+                <Route path='media'
+                    element={<MediaPage />} />
 
-                <Route path={combineUrl(match.url, 'email-templates/')} exact>
-                    <EmailTemplatesPage />
-                </Route>
+                <Route path='email-templates'
+                    element={<EmailTemplatesPage />} />
 
-                <Route path={combineUrl(match.url, 'email-templates/:templateId/')} exact>
-                    <EmailTemplatePage />
-                </Route>
+                <Route path='email-templates/:templateId/'
+                    element={<EmailTemplatePage />} />
 
-                <Route path={combineUrl(match.url, 'sms-templates/')} exact>
-                    <SmsTemplatesPage />
-                </Route>
+                <Route path='sms-templates/'
+                    element={<SmsTemplatesPage />} />
 
-                <Route path={combineUrl(match.url, 'sms-templates/:templateId/')} exact>
-                    <SmsTemplatePage />
-                </Route>
+                <Route path='sms-templates/:templateId/'
+                    element={<SmsTemplatePage />} />
 
-                <Route path={combineUrl(match.url, 'messaging-templates/')} exact>
-                    <MessagingTemplatesPage />
-                </Route>
+                <Route path='messaging-templates'
+                    element={<SmsTemplatePage />} />
 
-                <Route path={combineUrl(match.url, 'messaging-templates/:templateId/')} exact>
-                    <MessagingTemplatePage />
-                </Route>
+                <Route path='messaging-templates/:templateId/'
+                    element={<MessagingTemplatePage />} />
 
-                <Route path={combineUrl(match.url, 'log/:userId?')} exact>
-                    <LogPage />
-                </Route>
+                <Route path='messaging-templates'
+                    element={<MessagingTemplatesPage />} />
 
-                <Route path={combineUrl(match.url, 'integrations/')} exact>
-                    <IntegrationsPage />
-                </Route>
+                <Route path='log/:userId?'
+                    element={<LogPage />} />
 
-                <Route path={combineUrl(match.url, 'settings/')} exact>
-                    <AppSettingsPage />
-                </Route>
+                <Route path='integrations'
+                    element={<IntegrationsPage />} />
 
-                <Route path={combineUrl(match.url, 'topics/')} exact>
-                    <TopicsPage />
-                </Route>
+                <Route path='settings'
+                    element={<AppSettingsPage />} />
 
-                <Route render={() =>
-                    <AppDashboardPage />
-                } />
-            </Switch>
+                <Route path='topics'
+                    element={<TopicsPage />} />
+
+                <Route path='home'
+                    element={<AppDashboardPage />} />
+
+                <Route path='*'
+                    element={<Navigate to='home' />} />
+            </Routes>
 
             <PublishDialog />
         </main>

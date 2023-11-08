@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ActionReducerMapBuilder, createAction, Dispatch } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, AnyAction, createAction, Dispatch } from '@reduxjs/toolkit';
 import { buildError, ErrorInfo, Types } from './../utils';
 
 export interface ListState<T, TExtra = any> extends Query {
@@ -81,7 +81,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
     const actionRejected = createAction<ActionRejectedType>(`${name}/rejected`);
 
     const loadAction = (arg: ListArg) => {
-        return async (dispatch: Dispatch, getState: () => any) => {
+        const action = async (dispatch: Dispatch, getState: () => any) => {
             const state = getState()[prefix][key] as ListState<T>;
 
             if (state.isLoading) {
@@ -125,11 +125,13 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
                 dispatch(actionRejected({ error }));
             }
         };
+
+        return action as any as AnyAction;
     };
 
     const initialize = (builder: ActionReducerMapBuilder<T>) => {
         builder.addCase(actionPending, (state, action) => {
-            const list = state[key] as ListState<TItem>;
+            const list = (state as any)[key] as ListState<TItem>;
             const loaded = Types.isArray(list.items);
 
             const { request, reset } = action.payload;
@@ -148,7 +150,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
         });
 
         builder.addCase(actionFulfilled, (state, action) => {
-            const list = state[key] as ListState<TItem>;
+            const list = (state as any)[key] as ListState<TItem>;
 
             const { extra, items, total } = action.payload;
 
@@ -165,7 +167,7 @@ export function listThunk<T, TItem, TExtra = any>(prefix: string, key: string, l
         });
 
         builder.addCase(actionRejected, (state, action) => {
-            const list = state[key] as ListState<TItem>;
+            const list = (state as any)[key] as ListState<TItem>;
 
             const { error } = action.payload;
 

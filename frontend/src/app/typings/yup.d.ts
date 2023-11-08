@@ -27,7 +27,7 @@ declare module 'yup' {
         minI18n(value: number): NumberSchema;
     }
 
-    interface ObjectSchema<TShape, TContext, TIn> {
-        atLeastOneStringI18n(): ObjectSchema<TShape, TContext, TIn>;
+    interface ObjectSchema<TIn, TContext, TDefault, TFlags> {
+        atLeastOneStringI18n(): ObjectSchema<TIn, TContext, TDefault, TFlags>;
     }
 }

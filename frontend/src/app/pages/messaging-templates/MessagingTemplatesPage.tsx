@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
 import { toast } from 'react-toastify';
 import { Button, Col, Label, Row } from 'reactstrap';
 import { FormError, Icon, Loader, useEventCallback } from '@app/framework';
@@ -17,13 +16,12 @@ import { texts } from '@app/texts';
 import { MessagingTemplateCard } from './MessagingTemplateCard';
 
 export const MessagingTemplatesPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const creating = useMessagingTemplates(x => x.creating);
     const creatingError = useMessagingTemplates(x => x.creatingError);
     const deletingError = useMessagingTemplates(x => x.deletingError);
-    const match = useRouteMatch();
     const messagingTemplates = useMessagingTemplates(x => x.templates);
 
     React.useEffect(() => {
@@ -73,7 +71,7 @@ export const MessagingTemplatesPage = () => {
             {messagingTemplates.items &&
                 <>
                     {messagingTemplates.items.map(template => (
-                        <MessagingTemplateCard key={template.id} template={template} match={match}
+                        <MessagingTemplateCard key={template.id} template={template}
                             onDelete={doDelete}
                         />
                     ))}

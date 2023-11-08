@@ -7,8 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
-import ReactTooltip from 'react-tooltip';
+import { useParams } from 'react-router';
 import { Button, Card, CardBody, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListMultiFilter, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { TableFooter } from '@app/shared/components';
@@ -19,21 +18,16 @@ import { LogEntryRow } from './LogEntryRow';
 
 const SYSTEMS = [...CHANNELS, 'System'].map(value => ({
     value,
-    label: texts.notificationSettings[value]?.name || value,
+    label: (texts.notificationSettings as any)[value]?.name || value,
 }));
 
 export const LogPage = () => {
-    const dispatch = useDispatch();
-    const match = useRouteMatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const logEntries = useLog(x => x.entries);
-    const userId = match.params['userId'];
+    const userId = useParams().userId!;
     const [systems, setSystems] = React.useState<string[]>([]);
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     React.useEffect(() => {
         dispatch(loadLog(appId, {}, false, systems, userId));

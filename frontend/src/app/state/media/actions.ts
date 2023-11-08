@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { Middleware } from 'redux';
 import { formatError, listThunk, Query } from '@app/framework';
 import { Clients, MediaDto } from '@app/service';
-import { createApiThunk, selectApp } from '../shared';
+import { createApiThunk, selectApp } from './../shared';
 import { MediaState } from './state';
 
 const list = listThunk<MediaState, MediaDto>('media', 'media', async params => {

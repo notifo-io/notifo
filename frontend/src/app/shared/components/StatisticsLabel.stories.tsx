@@ -5,45 +5,48 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { StatisticsLabel } from './StatisticsLabel';
 
-export default {
+const meta: Meta<typeof StatisticsLabel> = {
     component: StatisticsLabel,
-} as ComponentMeta<typeof StatisticsLabel>;
-
-const Template = (args: any) => {
-    return (
-        <div style={{ width: 200 }}>
-            <StatisticsLabel {...args} />
-        </div>
-    );
+    render: args => {
+        return (
+            <div style={{ width: 200 }}>
+                <StatisticsLabel {...args} />
+            </div>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof StatisticsLabel>;
 
-Default['args'] = {
-    icon: 'email',
-    name: 'Emails',
-    total: 10,
-    totalAttempt: 100,
-    totalFailed: 5,
+export const Default: Story = {
+    args: {
+        icon: 'email' as any,
+        name: 'Emails',
+        total: 10,
+        totalAttempt: 100,
+        totalFailed: 5,
+    },
 };
 
-export const SummaryOnly = Template.bind({});
-
-SummaryOnly['args'] = {
-    icon: 'email',
-    name: 'Emails',
-    total: 10,
+export const SummaryOnly: Story = {
+    args: {
+        icon: 'email' as any,
+        name: 'Emails',
+        total: 10,
+        totalFailed: undefined,
+    },
 };
 
-export const NoIcon = Template.bind({});
-
-NoIcon['args'] = {
-    name: 'Emails',
-    total: 10,
-    totalAttempt: 100,
-    totalFailed: 5,
+export const NoIcon: Story = {
+    args: {
+        name: 'Emails',
+        total: 10,
+        totalAttempt: 100,
+        totalFailed: 5,
+    },
 };

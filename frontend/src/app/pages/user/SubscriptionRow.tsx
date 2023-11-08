@@ -6,7 +6,6 @@
  */
 
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
 import { Confirm, Icon } from '@app/framework';
 import { SubscriptionDto } from '@app/service';
@@ -28,10 +27,6 @@ export interface SubscriptionRowProps {
 
 export const SubscriptionRow = React.memo((props: SubscriptionRowProps) => {
     const { onDelete, onEdit, onPublish, subscription } = props;
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     const doDelete = () => {
         onDelete && onDelete(subscription);

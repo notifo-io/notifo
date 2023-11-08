@@ -40,7 +40,7 @@ export const Picker = (props: PickerProps) => {
 
     const [openPicker, setOpenPicker] = React.useState(0);
 
-    const { x, y, reference, floating, strategy, update } = useFloating({
+    const { x, y, strategy, update, refs } = useFloating({
         placement: 'bottom-end',
         middleware: [
             flip(),
@@ -103,7 +103,7 @@ export const Picker = (props: PickerProps) => {
     return (
         <>
             <OverlayDropdown placement='right' button={
-                <Button type='button' color='link' className='input-btn' innerRef={reference}>
+                <Button type='button' color='link' className='input-btn' innerRef={refs.setReference}>
                     <Icon className='rotate' type='add_circle' />
                 </Button>
             }>
@@ -140,7 +140,7 @@ export const Picker = (props: PickerProps) => {
                 <>
                     {ReactDOM.createPortal(
                         <ClickOutside isActive={true} onClickOutside={doClose}>
-                            <div className='overlay emojis' ref={floating} style={{ position: strategy, top: y || 0, left: x || 0 }}>
+                            <div className='overlay emojis' ref={refs.setFloating} style={{ position: strategy, top: y || 0, left: x || 0 }}>
                                 <EmojiPicker data={EmojiData} onEmojiSelect={doSelectEmoji} />
                             </div>
                         </ClickOutside>,

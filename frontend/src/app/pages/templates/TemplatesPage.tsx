@@ -13,7 +13,7 @@ import { TemplateForm } from './TemplateForm';
 import { TemplatesList } from './TemplatesList';
 
 export const TemplatesPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;

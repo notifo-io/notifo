@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
+import { useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Col, Label, Row } from 'reactstrap';
@@ -19,8 +19,7 @@ import { EmailTemplate } from './EmailTemplate';
 import { EmailTemplateName } from './EmailTemplateName';
 
 export const EmailTemplatePage = () => {
-    const dispatch = useDispatch();
-    const match = useRouteMatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
@@ -28,7 +27,7 @@ export const EmailTemplatePage = () => {
     const loadingTemplate = useEmailTemplates(x => x.loadingTemplate);
     const loadingTemplateError = useEmailTemplates(x => x.loadingTemplateError);
     const template = useEmailTemplates(x => x.template);
-    const templateId = match.params['templateId'];
+    const templateId = useParams().templateId!;
     const updating = useEmailTemplates(x => x.updating);
     const updatingError = useEmailTemplates(x => x.updatingError);
     const upserting = useEmailTemplates(x => x.creatingLanguage || x.deletingLanguage || x.updatingLanguage);

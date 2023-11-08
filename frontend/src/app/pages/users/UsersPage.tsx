@@ -7,8 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { useRouteMatch } from 'react-router';
-import ReactTooltip from 'react-tooltip';
 import { Button, Col, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListSearch, Loader, Query, useBooleanObj, useEventCallback, useSavedState } from '@app/framework';
 import { UserDto } from '@app/service';
@@ -19,19 +17,14 @@ import { UserDialog } from './UserDialog';
 import { UserRow } from './UserRow';
 
 export const UsersPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const dialogEdit = useBooleanObj();
     const dialogNew = useBooleanObj();
-    const match = useRouteMatch();
     const users = useUsers(x => x.users);
     const [currentUser, setCurrentUser] = React.useState<UserDto>();
     const [showCounters, setShowCounters] = useSavedState(false, 'show.counters');
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     React.useEffect(() => {
         dispatch(loadUsers(appId, {}));
@@ -131,10 +124,12 @@ export const UsersPage = () => {
                     {users.items &&
                         <>
                             {users.items.map(user => (
-                                <UserRow key={user.id} user={user} match={match} showCounters={showCounters}
+                                <UserRow key={user.id}
+                                    showCounters={showCounters}
                                     onPublish={doPublish}
                                     onDelete={doDelete}
                                     onEdit={doEdit}
+                                    user={user}
                                 />
                             ))}
                         </>

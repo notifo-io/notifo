@@ -24,7 +24,7 @@ export interface EmailTemplateNameProps {
 export const EmailTemplateName = (props: EmailTemplateNameProps) => {
     const { appId, template } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const [name, setName] = React.useState<string>();
 
     React.useEffect(() => {

@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { Provider } from 'react-redux';
@@ -13,7 +13,7 @@ import { Col, Form, Input, Row } from 'reactstrap';
 import { applyMiddleware, createStore, MiddlewareAPI } from 'redux';
 import { NotificationsForm } from './NotificationSettingsForm';
 
-export default {
+const meta: Meta<typeof NotificationsForm.Formatting> = {
     component: NotificationsForm.Formatting,
     argTypes: {
         languages: {
@@ -32,25 +32,6 @@ export default {
             },
         },
     },
-} as ComponentMeta<any>;
-
-const FormattingTemplate = (args: NotificationsForm.FormattingProps) => {
-    const form = useForm();
-
-    return (
-        <Row>
-            <Col>
-                <FormProvider {...form}>
-                    <Form>
-                        <NotificationsForm.Formatting {...args} />
-                    </Form>
-                </FormProvider>
-            </Col>
-            <Col>
-                <Input readOnly style={{ height: 600 }} type='textarea' value={JSON.stringify(form.watch(), undefined, 2)} />
-            </Col>
-        </Row>
-    );
 };
 
 function noopMiddleware(store: MiddlewareAPI) {
@@ -89,6 +70,55 @@ const store = createStore(x => x!,
     applyMiddleware(noopMiddleware),
 );
 
+export default meta;
+type Story = StoryObj<typeof NotificationsForm.Formatting>;
+
+const FormattingTemplate = (args: NotificationsForm.FormattingProps) => {
+    const form = useForm();
+
+    return (
+        <Row>
+            <Col>
+                <FormProvider {...form}>
+                    <Form>
+                        <NotificationsForm.Formatting {...args} />
+                    </Form>
+                </FormProvider>
+            </Col>
+            <Col>
+                <Input readOnly style={{ height: 600 }} type='textarea' value={JSON.stringify(form.watch(), undefined, 2)} />
+            </Col>
+        </Row>
+    );
+};
+
+export const Formatting: Story = {
+    args: {
+        field: 'formatting',
+        language: 'de',
+        languages: [
+            'de',
+            'it',
+            'en',
+        ],
+    },
+    render: FormattingTemplate,
+};
+
+export const FormattingDisabled: Story = {
+    args: {
+        field: 'formatting',
+        language: 'de',
+        languages: [
+            'de',
+            'it',
+            'en',
+        ],
+        disabled: true,
+    },
+    render: FormattingTemplate,
+};
+
 const SettingsTemplate = (args: NotificationsForm.SettingsProps) => {
     const form = useForm();
 
@@ -110,6 +140,33 @@ const SettingsTemplate = (args: NotificationsForm.SettingsProps) => {
     );
 };
 
+export const Settings: Story = {
+    args: {
+        field: 'settings',
+        language: 'de',
+        languages: [
+            'de',
+            'it',
+            'en',
+        ],
+    },
+    render: SettingsTemplate,
+};
+
+export const SettingsDisabled: Story = {
+    args: {
+        field: 'settings',
+        language: 'de',
+        languages: [
+            'de',
+            'it',
+            'en',
+        ],
+        disabled: true,
+    },
+    render: SettingsTemplate,
+};
+
 const SchedulingTemplate = (args: NotificationsForm.SchedulingProps) => {
     const form = useForm();
 
@@ -129,77 +186,29 @@ const SchedulingTemplate = (args: NotificationsForm.SchedulingProps) => {
     );
 };
 
-export const Formatting = FormattingTemplate.bind({});
-
-Formatting['args'] = {
-    field: 'formatting',
-    language: 'de',
-    languages: [
-        'de',
-        'it',
-        'en',
-    ],
+export const Scheduling: Story = {
+    args: {
+        field: 'scheduling',
+        language: 'de',
+        languages: [
+            'de',
+            'it',
+            'en',
+        ],
+    },
+    render: SchedulingTemplate,
 };
 
-export const FormattingDisabled = FormattingTemplate.bind({});
-
-FormattingDisabled['args'] = {
-    field: 'formatting',
-    language: 'de',
-    languages: [
-        'de',
-        'it',
-        'en',
-    ],
-    disabled: true,
-};
-
-export const Settings = SettingsTemplate.bind({});
-
-Settings['args'] = {
-    field: 'settings',
-    language: 'de',
-    languages: [
-        'de',
-        'it',
-        'en',
-    ],
-};
-
-export const SettingsDisabled = SettingsTemplate.bind({});
-
-SettingsDisabled['args'] = {
-    field: 'settings',
-    language: 'de',
-    languages: [
-        'de',
-        'it',
-        'en',
-    ],
-    disabled: true,
-};
-
-export const Scheduling = SchedulingTemplate.bind({});
-
-Scheduling['args'] = {
-    field: 'scheduling',
-    language: 'de',
-    languages: [
-        'de',
-        'it',
-        'en',
-    ],
-};
-
-export const SchedulingDisabled = SchedulingTemplate.bind({});
-
-SchedulingDisabled['args'] = {
-    field: 'scheduling',
-    language: 'de',
-    languages: [
-        'de',
-        'it',
-        'en',
-    ],
-    disabled: true,
+export const SchedulingDisabled: Story = {
+    args: {
+        field: 'scheduling',
+        language: 'de',
+        languages: [
+            'de',
+            'it',
+            'en',
+        ],
+        disabled: true,
+    },
+    render: SchedulingTemplate,
 };

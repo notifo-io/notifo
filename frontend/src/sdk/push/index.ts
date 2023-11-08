@@ -48,11 +48,11 @@ export module PUSH {
 }
 
 function buildConfig(config: SDKConfig) {
-    const clonedConfig = {};
+    const clonedConfig: Record<string, any> = {};
 
     for (const key in config) {
         if (config.hasOwnProperty(key)) {
-            const value = config[key];
+            const value = (config as any)[key];
 
             if (!isFunction(value)) {
                 clonedConfig[key] = value;

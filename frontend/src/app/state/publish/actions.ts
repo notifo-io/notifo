@@ -8,7 +8,7 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 import { ErrorInfo } from '@app/framework';
 import { Clients, PublishDto } from '@app/service';
-import { createApiThunk } from '../shared';
+import { createApiThunk } from './../shared';
 import { PublishState } from './state';
 
 export const togglePublishDialog = createAction<{ open: boolean; values?: Partial<PublishDto> }>('publish/dialog');

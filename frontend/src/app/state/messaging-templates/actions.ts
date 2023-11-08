@@ -9,7 +9,7 @@ import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { ErrorInfo, formatError, listThunk, Query } from '@app/framework';
 import { ChannelTemplateDto, Clients, UpdateChannelTemplateDtoOfMessagingTemplateDto } from '@app/service';
-import { createApiThunk, selectApp } from '../shared';
+import { createApiThunk, selectApp } from './../shared';
 import { MessagingTemplatesState } from './state';
 
 const list = listThunk<MessagingTemplatesState, ChannelTemplateDto>('messagingTemplates', 'templates', async params => {

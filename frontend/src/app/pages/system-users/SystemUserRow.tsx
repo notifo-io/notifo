@@ -6,7 +6,6 @@
  */
 
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Button } from 'reactstrap';
 import {  Confirm, Icon } from '@app/framework';
 import { SystemUserDto } from '@app/service';
@@ -40,10 +39,6 @@ export const SystemUserRow = React.memo((props: SystemUserRowProps) => {
         onUnlock,
         user,
     } = props;
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     const doDelete = () => {
         onDelete && onDelete(user);

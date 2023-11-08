@@ -13,7 +13,7 @@ import { texts } from '@app/texts';
 import { FormEditorOption, FormEditorProps, Forms } from './Forms';
 
 export const MessagingTemplateInput = (props: FormEditorProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const templates = useMessagingTemplates(x => x.templates);

@@ -6,7 +6,6 @@
  */
 
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Icon, IconType, Numbers, Types } from '@app/framework';
 import { texts } from '@app/texts';
 
@@ -35,10 +34,6 @@ export const StatisticsLabel = React.memo((props: StatisticsLabelProps) => {
         totalFailed,
         totalAttempt,
     } = props;
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     return (
         <span className='statistics-label' data-tip={texts.common.statisticsLabelFn(name)}>

@@ -5,12 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
-import * as React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { MediaDto } from '@app/service';
 import { MediaCard } from './MediaCard';
 
-export default {
+const meta: Meta<typeof MediaCard> = {
     component: MediaCard,
     argTypes: {
         media: {
@@ -19,48 +18,45 @@ export default {
             },
         },
     },
-} as ComponentMeta<typeof MediaCard>;
-
-const Template = (args: any) => {
-    return (
-        <MediaCard {...args} />
-    );
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof MediaCard>;
 
-Default['args'] = {
-    media: {
-        mimeType: 'image/png',
-        fileName: 'Image.png',
-        fileInfo: '1000x600px',
-        fileSize: 11233333,
-        type: 'Image',
-        url: 'https://picsum.photos/id/237/200/152',
-    } as MediaDto,
+export const Default: Story = {
+    args: {
+        media: {
+            mimeType: 'image/png',
+            fileName: 'Image.png',
+            fileInfo: '1000x600px',
+            fileSize: 11233333,
+            type: 'Image',
+            url: 'https://picsum.photos/id/237/200/152',
+        } as MediaDto,
+    },
 };
 
-export const SmallerImage = Template.bind({});
-
-SmallerImage['args'] = {
-    media: {
-        mimeType: 'image/png',
-        fileName: 'Image.png',
-        fileInfo: '1000x600px',
-        fileSize: 11233333,
-        type: 'Image',
-        url: 'https://picsum.photos/id/237/100/150',
-    } as MediaDto,
+export const SmallerImage: Story = {
+    args: {
+        media: {
+            mimeType: 'image/png',
+            fileName: 'Image.png',
+            fileInfo: '1000x600px',
+            fileSize: 11233333,
+            type: 'Image',
+            url: 'https://picsum.photos/id/237/100/150',
+        } as MediaDto,
+    },
 };
 
-export const NoImage = Template.bind({});
-
-NoImage['args'] = {
-    media: {
-        mimeType: 'image/png',
-        fileName: 'Image.png',
-        fileInfo: '1000x600px',
-        fileSize: 11233333,
-        type: 'Image',
-    } as MediaDto,
+export const NoImage: Story = {
+    args: {
+        media: {
+            mimeType: 'image/png',
+            fileName: 'Image.png',
+            fileInfo: '1000x600px',
+            fileSize: 11233333,
+            type: 'Image',
+        } as MediaDto,
+    },
 };

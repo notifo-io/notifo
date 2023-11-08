@@ -7,7 +7,6 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, Col, Nav, NavItem, NavLink, Row, Table } from 'reactstrap';
 import { FormError, Icon, ListMultiFilter, ListPager, ListSearch, Loader, Query, useEventCallback } from '@app/framework';
 import { CHANNELS } from '@app/shared/utils/model';
@@ -17,7 +16,7 @@ import { NotificationRow } from './NotificationRow';
 
 const NON_WEBHOOKS = CHANNELS.filter(x => x !== 'webhook').map(value => ({
     value,
-    label: texts.notificationSettings[value]?.name || value,
+    label: (texts.notificationSettings as any)[value]?.name || value,
 }));
 
 export interface NotificationsProps {
@@ -31,15 +30,11 @@ export interface NotificationsProps {
 export const Notifications = (props: NotificationsProps) => {
     const { onSwitch, userId } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const notifications = useNotifications(x => x.notifications);
     const [channels, setChannels] = React.useState<string[]>([]);
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     React.useEffect(() => {
         dispatch(loadNotifications(appId, userId, {}, undefined, channels));

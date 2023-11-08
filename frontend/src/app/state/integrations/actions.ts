@@ -9,7 +9,7 @@ import { createReducer, Middleware } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import { ErrorInfo, formatError } from '@app/framework';
 import { Clients, CreateIntegrationDto, UpdateIntegrationDto } from '@app/service';
-import { createApiThunk, selectApp } from '../shared';
+import { createApiThunk, selectApp } from './../shared';
 import { IntegrationsState } from './state';
 
 export const loadIntegrations = createApiThunk('integrations/load',

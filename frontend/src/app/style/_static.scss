@@ -12,7 +12,7 @@ $width: 500px;
         overflow-y: auto;
         width: $width;
 
-        @media (max-width: 1000px) {
+        @media (0 <= width <= 1000px) {
             width: 100%;
         }
 
@@ -36,7 +36,7 @@ $width: 500px;
         overflow-x: hidden;
         overflow-y: hidden;
 
-        @media (max-width: 1000px) {
+        @media (0 <= width <= 1000px) {
             display: none;
         }
 

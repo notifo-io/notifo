@@ -136,7 +136,7 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
     },
 };
 
-const IS_DEV = global['window'] && (window.location.host.indexOf('localhost:3002') >= 0 || window.location.host.indexOf('localhost:5002') >= 0);
+const IS_DEV = typeof window !== 'undefined' && (window.location.host.indexOf('localhost:3002') >= 0 || window.location.host.indexOf('localhost:5002') >= 0);
 
 export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | undefined) {
     const options: SDKConfig = <any>{ ...opts || {} };
@@ -233,7 +233,7 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
 
     for (const key of TextKeys) {
         if (!isString(options.texts[key]) || !options.texts[key]) {
-            options.texts[key] = DefaultTexts[key][options.locale];
+            options.texts[key] = (DefaultTexts as any)[key][options.locale];
         }
     }
 
@@ -364,7 +364,7 @@ export interface SDKConfig {
     linkTarget?: string;
 
     // An object of allowed channels.
-    allowedChannels: {};
+    allowedChannels: Record<string, boolean>;
 
     // True when profile can be edited.
     allowProfile: boolean;
@@ -452,6 +452,8 @@ type Texts<T> = {
     webpushConfirmText: T;
     webpushConfirmTitle: T;
     webpushTopics: T;
+
+    [key: string]: T;
 };
 
 const TextKeys: ReadonlyArray<keyof Texts<any>> = [

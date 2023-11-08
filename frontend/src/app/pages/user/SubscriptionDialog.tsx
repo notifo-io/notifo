@@ -37,7 +37,7 @@ export interface SubscriptionDialogProps {
 export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
     const { onClose, subscription, userId } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const upserting = useSubscriptions(x => x.upserting);
@@ -64,7 +64,7 @@ export const SubscriptionDialog = (props: SubscriptionDialogProps) => {
         return Types.clone(subscription || { topicPrefix: '' }) as any;
     }, [subscription]);
 
-    const form = useForm<SubscriptionDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+    const form = useForm<SubscriptionDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
 
     return (
         <Modal isOpen={true} size='lg' toggle={onClose}>

@@ -7,11 +7,11 @@
 
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import { Route, Switch, useRouteMatch } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { loginDone, logoutDone } from '@app/state';
 
 export const LoginCallbackPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
 
     React.useEffect(() => {
         dispatch(loginDone());
@@ -21,26 +21,23 @@ export const LoginCallbackPage = () => {
 };
 
 export const LogoutCallbackPage = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
 
     React.useEffect(() => {
-        dispatch(logoutDone());
+        dispatch(logoutDone() as any);
     }, [dispatch]);
 
     return <></>;
 };
 
 export const AuthenticationPage = () => {
-    const match = useRouteMatch();
-
     return (
-        <Switch>
-            <Route path={`${match.path}/login-callback`} exact>
-                <LoginCallbackPage />
-            </Route>
-            <Route path={`${match.path}/logout-callback`} exact>
-                <LogoutCallbackPage />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route path='login-callback'
+                element={<LoginCallbackPage />} />
+
+            <Route path='logout-callback'
+                element={<LogoutCallbackPage />} />
+        </Routes>
     );
 };

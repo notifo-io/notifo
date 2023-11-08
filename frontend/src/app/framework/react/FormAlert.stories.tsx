@@ -5,41 +5,44 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { FormAlert } from './FormAlert';
 
-export default {
+const meta: Meta<typeof FormAlert> = {
     component: FormAlert,
     argTypes: {
-        error: {
+        text: {
             control: 'text',
         },
     },
-} as ComponentMeta<typeof FormAlert>;
-
-const Template = (args: any) => {
-    return (
-        <div style={{ paddingTop: 20 }}>
-            <FormAlert {...args} />
-        </div>
-    );
+    render: args =>{
+        return (
+            <div style={{ paddingTop: 20 }}>
+                <FormAlert {...args} />
+            </div>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof FormAlert>;
 
-Default['args'] = {
-    text: 'Name cannot be changed later.',
+export const Default: Story = {
+    args: {
+        text: 'Name cannot be changed later.',
+    },
 };
 
-export const Multline = Template.bind({});
-
-Multline['args'] = {
-    text: 'Name cannot be changed later.\n\nPlease be careful.',
+export const Multline: Story = {
+    args: {
+        text: 'Name cannot be changed later.\n\nPlease be careful.',
+    },
 };
 
-export const Lists = Template.bind({});
 
-Lists['args'] = {
-    text: 'Name cannot be changed later.\n\n* List Item 1.\n* List Item2\n* List Item 3',
+export const Lists: Story = {
+    args: {
+        text: 'Name cannot be changed later.\n\n* List Item 1.\n* List Item2\n* List Item 3',
+    },
 };

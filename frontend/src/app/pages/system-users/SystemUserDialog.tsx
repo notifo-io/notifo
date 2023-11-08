@@ -43,7 +43,7 @@ const ROLES = [{
 export const SystemUserDialog = (props: SystemUserDialogProps) => {
     const { onClose, user } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const upserting = useSystemUsers(x => x.upserting);
     const upsertingError = useSystemUsers(x => x.upsertingError);
     const [wasUpserting, setWasUpserting] = React.useState(false);
@@ -70,7 +70,7 @@ export const SystemUserDialog = (props: SystemUserDialogProps) => {
         return result;
     }, [user]);
 
-    const form = useForm<UpdateSystemUserDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+    const form = useForm<UpdateSystemUserDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>

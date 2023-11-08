@@ -42,7 +42,7 @@ export interface TopicDialogProps {
 export const TopicDialog = (props: TopicDialogProps) => {
     const { onClose, scope, topic } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const app = useApp()!;
     const appId = app.id;
     const appLanguages = app.languages;
@@ -79,7 +79,7 @@ export const TopicDialog = (props: TopicDialogProps) => {
         return result;
     }, [topic]);
 
-    const form = useForm<UpsertTopicDto>({ resolver: yupResolver(FormSchema), defaultValues, mode: 'onChange' });
+    const form = useForm<UpsertTopicDto>({ resolver: yupResolver<any>(FormSchema), defaultValues, mode: 'onChange' });
 
     return (
         <Modal isOpen={true} size='lg' backdrop={false} toggle={onClose}>
@@ -117,7 +117,7 @@ export const TopicDialog = (props: TopicDialogProps) => {
 
                             {CHANNELS.map(channel =>
                                 <Forms.Select key={channel} name={`channels.${channel}`}
-                                    label={texts.notificationSettings[channel].title} options={ALLOWED_MODES} />,
+                                    label={(texts.notificationSettings as any)[channel].title} options={ALLOWED_MODES} />,
                             )}
                         </fieldset>
 

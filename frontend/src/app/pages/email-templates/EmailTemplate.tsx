@@ -61,7 +61,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         template,
     } = props;
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<any>();
     const creatingLanguage = useEmailTemplates(x => x.creatingLanguage);
     const creatingLanguageError = useEmailTemplates(x => x.creatingLanguageError);
     const deletingLanguage = useEmailTemplates(x => x.deletingLanguage);
@@ -103,7 +103,7 @@ export const EmailTemplate = (props: EmailTemplateProps) => {
         dispatch(updateEmailTemplateLanguage({ appId, id, language, template: params }));
     });
 
-    const form = useForm<EmailTemplateDto>({ resolver: yupResolver(FormSchema), defaultValues: template, mode: 'onChange' });
+    const form = useForm<EmailTemplateDto>({ resolver: yupResolver<any>(FormSchema), defaultValues: template, mode: 'onChange' });
 
     React.useEffect(() => {
         form.reset(template);

@@ -5,11 +5,11 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { ComponentMeta } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import * as React from 'react';
 import { Loader } from './Loader';
 
-export default {
+const meta: Meta<typeof Loader> = {
     component: Loader,
     args: {
         visible: true,
@@ -19,26 +19,28 @@ export default {
             control: 'boolean',
         },
     },
-} as ComponentMeta<typeof Loader>;
-
-const Template = (args: any) => {
-    const background = args.light ? 'black' : 'white';
-
-    return (
-        <div style={{ background, border: '1px solid #eee', padding: '10px 20px' }}>
-            <Loader {...args} />
-        </div>
-    );
+    render: args => {
+        const background = args.light ? 'black' : 'white';
+    
+        return (
+            <div style={{ background, border: '1px solid #eee', padding: '10px 20px' }}>
+                <Loader {...args} />
+            </div>
+        );
+    },
 };
 
-export const Default = Template.bind({});
+export default meta;
+type Story = StoryObj<typeof Loader>;
 
-Default['args'] = {
-    small: false,
+export const Default: Story = {
+    args: {
+        small: false,
+    },
 };
 
-export const Small = Template.bind({});
-
-Small['args'] = {
-    small: true,
+export const Small: Story = {
+    args: {
+        small: true,
+    },
 };

@@ -7,7 +7,6 @@
 
 import classNames from 'classnames';
 import * as React from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Button, Card, CardBody, CardFooter } from 'reactstrap';
 import { Confirm, Icon, useBoolean } from '@app/framework';
 import { MediaDto } from '@app/service';
@@ -40,10 +39,6 @@ export const MediaCard = React.memo((props: MediaCardProps) => {
     React.useEffect(() => {
         setVisible.on();
     }, [media.url, setVisible]);
-
-    React.useEffect(() => {
-        ReactTooltip.rebuild();
-    });
 
     const doDelete = () => {
         onDelete && onDelete(media);
