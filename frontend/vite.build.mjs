@@ -1,19 +1,25 @@
+/*
+ * Notifo.io
+ *
+ * @license
+ * Copyright (c) Sebastian Stehle. All rights reserved.
+ */
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { rimraf } from 'rimraf';
 import { build } from 'vite';
 import defaultConfig from './vite.config.mjs';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const dirName = fileURLToPath(new URL('.', import.meta.url));
 
 const inputs = [{
-    ['app']: path.resolve(__dirname, 'index.html'),
+    ['app']: path.resolve(dirName, 'index.html'),
     // The notifo SKD is also used by our app. Therefore we build it together.
-    ['notifo-sdk']: path.resolve(__dirname, 'src/sdk/sdk.ts'),
+    ['notifo-sdk']: path.resolve(dirName, 'src/sdk/sdk.ts'),
 }, {
     // Build the worker separately so that it does not get any file
-    ['notifo-sdk-worker']: path.resolve(__dirname, 'src/sdk/sdk-worker.ts'),
+    ['notifo-sdk-worker']: path.resolve(dirName, 'src/sdk/sdk-worker.ts'),
 }];
 
 async function buildPackages() {
@@ -47,9 +53,9 @@ async function buildPackages() {
                         },
                     },
                 },
-                // We empty once.
-                emptyOutDir: false,
                 chunkSizeWarningLimit: 2000,
+                // We empty the out directory before all builds.
+                emptyOutDir: false,
             },
             configFile: false,
             ...defaultConfig,

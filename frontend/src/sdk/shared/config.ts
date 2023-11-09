@@ -6,7 +6,7 @@
  */
 
 import { de, enUS } from 'date-fns/locale';
-import { isFunction, isNumber, isObject, isString, isUndefined, logWarn } from './utils';
+import { isDev, isFunction, isNumber, isObject, isString, isUndefined, logWarn } from './utils';
 
 export const SUPPORTED_LOCALES = {
     en: enUS,
@@ -136,8 +136,6 @@ const DefaultTexts: Texts<{ de: string; en: string }> = {
     },
 };
 
-const IS_DEV = typeof window !== 'undefined' && (window.location.host.indexOf('localhost:3002') >= 0 || window.location.host.indexOf('localhost:5002') >= 0);
-
 export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | undefined) {
     const options: SDKConfig = <any>{ ...opts || {} };
 
@@ -163,7 +161,7 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
         options.styleUrl = undefined!;
     }
 
-    if (!options.styleUrl && !IS_DEV) {
+    if (!options.styleUrl && !isDev()) {
         options.styleUrl = `${options.apiUrl}/build/notifo-sdk.css`;
     }
 
@@ -173,7 +171,7 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
     }
 
     if (!options.serviceWorkerUrl) {
-        options.serviceWorkerUrl = IS_DEV ? '/src/sdk/sdk-worker.ts' : '/notifo-sw.js';
+        options.serviceWorkerUrl = '/notifo-sw.js';
     }
 
     if (!isStringOption(options.userToken)) {
