@@ -9,6 +9,7 @@
     "lib": ["es6", "dom", "WebWorker"],
     "moduleResolution": "node",
     "module": "es2015",
+    "noEmit": true,
     "noEmitHelpers": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,

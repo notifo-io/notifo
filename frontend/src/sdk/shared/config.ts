@@ -173,7 +173,7 @@ export function buildSDKConfig(opts: SDKConfig, scriptLocation: string | null | 
     }
 
     if (!options.serviceWorkerUrl) {
-        options.serviceWorkerUrl = IS_DEV ? '/src/notifo-sdk-worker.js' : '/notifo-sw.js';
+        options.serviceWorkerUrl = IS_DEV ? '/src/sdk/sdk-worker.ts' : '/notifo-sw.js';
     }
 
     if (!isStringOption(options.userToken)) {
