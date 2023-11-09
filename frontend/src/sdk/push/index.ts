@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import { isFunction, logError, logWarn, SDKConfig, SubscribeOptions } from '@sdk/shared';
+import { isDev, isFunction, logError, logWarn, SDKConfig, SubscribeOptions } from '@sdk/shared';
 
 export module PUSH {
     export async function subscribe(config: SDKConfig, options?: SubscribeOptions) {
@@ -105,7 +105,11 @@ async function registerServiceWorker(config: SDKConfig, options?: SubscribeOptio
 
         return await navigator.serviceWorker.ready;
     } else {
-        const serviceWorker = await navigator.serviceWorker.register(config.serviceWorkerUrl);
+        const serviceWorker =
+            isDev() ?
+                await navigator.serviceWorker.register('/src/sdk/sdk-worker.ts', { type: 'module' }) :
+                await navigator.serviceWorker.register(config.serviceWorkerUrl);
+
         await serviceWorker.update();
 
         return serviceWorker;
