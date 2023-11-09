@@ -47,13 +47,11 @@
   "scripts": {
     "start": "vite",
     "test": "vitest watch",
-    "test:coverage": "karma start karma.coverage.conf.js",
+    "test:coverage": "vitest run --coverage --browser.name=chromium --browser.provider=playwright --browser.headless",
     "test:clean": "rimraf _test-output",
     "lint": "eslint src/**/*.ts[x]",
     "lint:fix": "eslint src/**/*.ts[x] --fix",
     "build": "node vite.build.mjs",
-    "build:clean": "rimraf wwwroot/build",
-    "build:analyze": "node --max_old_space_size=4096 node_modules/webpack/bin/webpack.js --config config/webpack.config.js --env production --env analyze",
     "build-storybook": "storybook build",
     "storybook": "storybook dev -p 6006"
   },
