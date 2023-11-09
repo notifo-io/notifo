@@ -48,7 +48,9 @@ WORKDIR /src
 COPY frontend/package*.json /tmp/
 
 # Install Node packages 
-RUN cd /tmp && npm install --loglevel=error
+RUN cd /tmp \
+ && npm install --loglevel=error \
+ && npx playwright install
 
 COPY frontend .
 
