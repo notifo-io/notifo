@@ -5,8 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
-
 export const Logo = () => {
     return (
         <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 403.2 403.2'>

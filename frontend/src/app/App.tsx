@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 import { Tooltip as ReactTooltip } from 'react-tooltip';

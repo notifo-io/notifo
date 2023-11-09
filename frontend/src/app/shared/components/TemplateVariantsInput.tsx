@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { useFieldArray } from 'react-hook-form';
 import { Button, Col, Row } from 'reactstrap';
 import { Icon } from '@app/framework';

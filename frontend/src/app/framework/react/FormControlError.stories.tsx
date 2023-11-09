@@ -6,7 +6,6 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import * as React from 'react';
 import { FormControlError } from './FormControlError';
 
 const meta: Meta<typeof FormControlError> = {

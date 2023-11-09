@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
+/** @jsximportsource preact */
 import { useEffect, useState } from 'preact/hooks';
 
 const IS_SUPPORTED = !!window['IntersectionObserver'];

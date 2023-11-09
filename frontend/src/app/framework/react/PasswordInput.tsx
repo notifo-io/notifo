@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { Button, Input, InputProps } from 'reactstrap';
 import { useBoolean } from './hooks';
 

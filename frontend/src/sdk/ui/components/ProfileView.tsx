@@ -5,7 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
+/** @jsximportsource preact */
 import { Fragment, h } from 'preact';
 import { useCallback, useEffect } from 'preact/hooks';
 import { NotificationsOptions, SDKConfig, sendToBoolean, setUserChannel, UpdateProfileDto } from '@sdk/shared';

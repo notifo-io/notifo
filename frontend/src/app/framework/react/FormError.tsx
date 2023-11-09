@@ -6,7 +6,6 @@
  */
 
 import classNames from 'classnames';
-import * as React from 'react';
 import { Alert } from 'reactstrap';
 import { ErrorDetails, ErrorInfo, formatError, isError, Types } from '@app/framework/utils';
 

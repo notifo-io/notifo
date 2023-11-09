@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { Input, InputGroup } from 'reactstrap';
 
 export interface ApiValueProps {

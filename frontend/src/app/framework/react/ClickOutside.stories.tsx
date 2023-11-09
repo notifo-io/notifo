@@ -6,7 +6,6 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import * as React from 'react';
 import { Card, CardBody } from 'reactstrap';
 import { ClickOutside } from './ClickOutside';
 

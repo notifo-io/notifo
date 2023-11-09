@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Badge, Card, CardBody, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { Confirm, FormatDate, Icon, OverlayDropdown, useEventCallback } from '@app/framework';
