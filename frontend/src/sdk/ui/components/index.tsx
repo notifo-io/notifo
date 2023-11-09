@@ -5,9 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { h, render } from 'preact';
+/** @jsximportsource preact */
+import { render } from 'preact';
 import { NotificationsOptions, SDKConfig, TopicOptions } from '@sdk/shared';
 import { NotificationsUI } from './NotificationsUI';
 import { TopicUI } from './TopicUI';

@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { Table } from 'reactstrap';
 import { FormatDate } from '@app/framework';
 import { UserNotificationChannelDto, UserNotificationDetailsDto } from '@app/service';

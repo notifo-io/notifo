@@ -5,9 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { h } from 'preact';
+/** @jsximportsource preact */
 import { useEffect } from 'preact/hooks';
 import { isUndefined, SDKConfig, TopicOptions } from '@sdk/shared';
 import { loadSubscriptions, useDispatch, useStore } from '@sdk/ui/model';

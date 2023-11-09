@@ -7,7 +7,6 @@
 
 // tslint:disable: quotemark
 
-import * as React from 'react';
 import Split from 'react-split';
 import { Alert } from 'reactstrap';
 import { IFrame } from '@app/framework';

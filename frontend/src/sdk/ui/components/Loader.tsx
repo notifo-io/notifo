@@ -5,9 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { h } from 'preact';
+/** @jsximportsource preact */
 import { useEffect, useState } from 'preact/hooks';
 import { Icon } from './Icon';
 

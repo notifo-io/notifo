@@ -6,7 +6,6 @@
  */
 
 import classNames from 'classnames';
-import * as React from 'react';
 import { Button, Col, Row } from 'reactstrap';
 import { useEventCallback } from './hooks';
 

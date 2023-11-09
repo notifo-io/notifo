@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { FormatDate } from './FormatDate';
 
 export interface TimelineItem {

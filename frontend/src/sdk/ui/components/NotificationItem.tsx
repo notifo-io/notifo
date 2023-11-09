@@ -5,10 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/** @jsximportsource preact */
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 import { getHostName, NotificationsOptions, NotifoNotificationDto, SDKConfig, SUPPORTED_LOCALES, withPreset } from '@sdk/shared';
 import { Icon } from './Icon';

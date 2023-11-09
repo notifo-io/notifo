@@ -5,9 +5,8 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Fragment, h } from 'preact';
+/** @jsximportsource preact */
+import { Fragment } from 'preact';
 import { useCallback } from 'preact/hooks';
 import { NotificationsOptions, NotifoNotificationDto, SDKConfig } from '@sdk/shared';
 import { Connection } from '@sdk/ui/api';

@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Button, Col, FormGroup, Label, Row } from 'reactstrap';

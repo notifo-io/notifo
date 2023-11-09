@@ -6,7 +6,6 @@
  */
 
 import classNames from 'classnames';
-import * as React from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Popover, PopoverBody, Table } from 'reactstrap';
 import { ApiValue, ClickOutside, FormatDate, Icon, useBoolean, useEventCallback } from '@app/framework';

@@ -6,7 +6,6 @@
  */
 
 import classNames from 'classnames';
-import * as React from 'react';
 import { ErrorInfo, formatError, isError, isErrorVisible, Types } from '@app/framework/utils';
 
 export interface FormControlErrorProps {

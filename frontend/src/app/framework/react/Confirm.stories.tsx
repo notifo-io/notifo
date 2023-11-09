@@ -6,7 +6,6 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import * as React from 'react';
 import { Button } from 'reactstrap';
 import { Confirm } from './Confirm';
 

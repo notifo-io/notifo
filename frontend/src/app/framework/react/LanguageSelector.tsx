@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { Button, ButtonGroup, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
 import { OverlayDropdown } from './OverlayDropdown';
 

@@ -6,7 +6,6 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import * as React from 'react';
 import { FormAlert } from './FormAlert';
 
 const meta: Meta<typeof FormAlert> = {

@@ -6,7 +6,6 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react';
-import * as React from 'react';
 import { Table } from 'reactstrap';
 import { CounterRow } from './CounterRow';
 

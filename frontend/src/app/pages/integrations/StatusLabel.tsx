@@ -5,7 +5,6 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-import * as React from 'react';
 import { Badge } from 'reactstrap';
 import { IntegrationStatus } from '@app/service';
 import { texts } from '@app/texts';

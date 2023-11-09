@@ -5,9 +5,7 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { h } from 'preact';
+/** @jsximportsource preact */
 import { useCallback } from 'preact/hooks';
 import { SubscriptionDto, TopicOptions } from '@sdk/shared';
 import { Icon } from './Icon';

@@ -5,9 +5,9 @@
  * Copyright (c) Sebastian Stehle. All rights reserved.
  */
 
-/** @jsx h */
+/** @jsximportsource preact */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Fragment, h } from 'preact';
+import { Fragment } from 'preact';
 import { useCallback, useEffect } from 'preact/hooks';
 import { SDKConfig, setSubscriptionChannel, setTopic, SubscriptionsDto } from '@sdk/shared';
 import { loadSubscriptions, loadTopics, subscribe, useDispatch, useStore } from '@sdk/ui/model';
