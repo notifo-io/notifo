@@ -206,7 +206,7 @@ public sealed partial class IntegratedAppService :
             return;
         }
 
-        properties ??= new NotificationProperties();
+        properties ??= [];
         properties["app"] = app.Name;
 
         var publish = new EventMessage

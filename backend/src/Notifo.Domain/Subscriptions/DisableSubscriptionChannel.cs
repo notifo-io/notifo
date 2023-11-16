@@ -24,7 +24,7 @@ public sealed class DisableSubscriptionChannel : SubscriptionCommand
             Send = ChannelSend.NotSending
         };
 
-        var newSettings = new ChannelSettings(target.TopicSettings ?? new ChannelSettings())
+        var newSettings = new ChannelSettings(target.TopicSettings ?? [])
         {
             [Channel] = newSetting
         };

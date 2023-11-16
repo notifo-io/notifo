@@ -84,7 +84,7 @@ public sealed class TimerConsumer<T>
     {
         try
         {
-            await onSuccess(new List<T> { job }, false, default);
+            await onSuccess([job], false, default);
         }
         catch (Exception ex)
         {

@@ -47,10 +47,9 @@ public sealed class JsonReadonlyListConverterFactory : JsonConverterFactory
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
         var concreteType = typeof(Converter<>).MakeGenericType(
-            new Type[]
-            {
+            [
                 typeToConvert.GetGenericArguments()[0]
-            });
+            ]);
 
         var converter = (JsonConverter)Activator.CreateInstance(concreteType)!;
 

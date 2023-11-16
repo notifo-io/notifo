@@ -65,7 +65,7 @@ public static class ReadonlyDictionary
     {
         if (source == null)
         {
-            return new Dictionary<TKey, TValue>();
+            return [];
         }
 
         return new Dictionary<TKey, TValue>(source);

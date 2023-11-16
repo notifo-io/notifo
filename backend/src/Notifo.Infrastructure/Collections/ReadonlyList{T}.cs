@@ -11,7 +11,7 @@ namespace Notifo.Infrastructure.Collections;
 
 public class ReadonlyList<T> : ReadOnlyCollection<T>, IEquatable<ReadonlyList<T>>
 {
-    private static readonly List<T> EmptyInner = new List<T>();
+    private static readonly List<T> EmptyInner = [];
 
     public ReadonlyList()
         : base(EmptyInner)

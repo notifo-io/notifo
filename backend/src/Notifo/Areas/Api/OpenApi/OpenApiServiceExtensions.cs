@@ -48,7 +48,7 @@ public static class OpenApiServiceExtensions
         });
     }
 
-    private static ITypeMapper CreateStringMap<T>(string? format = null)
+    private static PrimitiveTypeMapper CreateStringMap<T>(string? format = null)
     {
         return new PrimitiveTypeMapper(typeof(T), schema =>
         {

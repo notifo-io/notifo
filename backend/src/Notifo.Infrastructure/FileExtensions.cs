@@ -12,13 +12,13 @@ namespace Notifo.Infrastructure;
 public static class FileExtensions
 {
     private static readonly string[] Extensions =
-    {
+    [
         "bytes",
         "kB",
         "MB",
         "GB",
         "TB"
-    };
+    ];
 
     public static string ToReadableSize(this int value)
     {

@@ -47,7 +47,7 @@ public static class ReadonlyList
     {
         if (source == null)
         {
-            return new List<T>();
+            return [];
         }
 
         return new List<T>(source);

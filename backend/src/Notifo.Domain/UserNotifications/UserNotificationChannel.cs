@@ -13,7 +13,7 @@ public sealed record UserNotificationChannel
 {
     public ChannelSetting Setting { get; init; } = new ChannelSetting();
 
-    public Dictionary<Guid, ChannelSendInfo> Status { get; init; } = new Dictionary<Guid, ChannelSendInfo>();
+    public Dictionary<Guid, ChannelSendInfo> Status { get; init; } = [];
 
     public Instant? FirstConfirmed { get; set; }
 

@@ -78,7 +78,7 @@ public sealed class LogCollector
                 return;
             }
 
-            commands = new List<(LogWrite, int, Instant)>();
+            commands = [];
 
             // Use a normal loop to avoid the allocations of the closure.
             foreach (var (key, value) in updateQueue)

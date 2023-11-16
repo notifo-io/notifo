@@ -121,12 +121,8 @@ public sealed class ProfileModel : PageModelBase<ProfileModel>
 
     private async Task AddLoginAsync(string id)
     {
-        var loginInfo = await SignInManager.GetExternalLoginInfoAsync(id);
-
-        if (loginInfo == null)
-        {
-            throw new ValidationException(T["ExternalLoginError"]);
-        }
+        var loginInfo = await SignInManager.GetExternalLoginInfoAsync(id)
+            ?? throw new ValidationException(T["ExternalLoginError"]);
 
         var email = loginInfo.Principal.FindFirst(ClaimTypes.Email)?.Value;
 

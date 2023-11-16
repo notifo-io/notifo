@@ -34,7 +34,7 @@ public class CounterCollectorTests
         {
             var key = i.ToString(CultureInfo.InvariantCulture);
 
-            await longDelay.AddAsync(key, new CounterMap());
+            await longDelay.AddAsync(key, []);
         }
 
         await longDelay.DisposeAsync();
@@ -50,7 +50,7 @@ public class CounterCollectorTests
         {
             var key = i.ToString(CultureInfo.InvariantCulture);
 
-            await sut.AddAsync(key, new CounterMap());
+            await sut.AddAsync(key, []);
         }
 
         A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>._, default))
@@ -69,7 +69,7 @@ public class CounterCollectorTests
         {
             var key = "1";
 
-            await sut.AddAsync(key, new CounterMap());
+            await sut.AddAsync(key, []);
         }
 
         A.CallTo(() => store.BatchWriteAsync(A<List<(string, CounterMap)>>._, default))

@@ -68,12 +68,8 @@ public static class ReflectionExtensions
 
     public static string GetManifestResourceString(this Assembly assembly, string resourceName)
     {
-        var stream = assembly.GetManifestResourceStream(resourceName);
-
-        if (stream == null)
-        {
-            throw new ArgumentException("Resource not found.", nameof(resourceName));
-        }
+        var stream = assembly.GetManifestResourceStream(resourceName)
+            ?? throw new ArgumentException("Resource not found.", nameof(resourceName));
 
         using (stream)
         {

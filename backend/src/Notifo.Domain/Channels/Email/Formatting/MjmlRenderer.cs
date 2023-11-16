@@ -10,6 +10,7 @@ using Mjml.Net.Validators;
 using Notifo.Domain.Resources;
 using Notifo.Domain.Utils;
 using Notifo.Infrastructure;
+using MjmlInternalRenderer = Mjml.Net.MjmlRenderer;
 
 namespace Notifo.Domain.Channels.Email.Formatting;
 
@@ -25,7 +26,7 @@ internal static class MjmlRenderer
         Validator = StrictValidator.Instance,
     };
 
-    private static readonly IMjmlRenderer Renderer = new Mjml.Net.MjmlRenderer();
+    private static readonly MjmlInternalRenderer Renderer = new MjmlInternalRenderer();
 
     public static (string? Html, List<TemplateError>? Errors) Render(string? mjml, bool strict)
     {

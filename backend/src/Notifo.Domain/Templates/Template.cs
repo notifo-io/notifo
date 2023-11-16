@@ -20,5 +20,5 @@ public sealed record Template(string AppId, string Code, Instant Created)
 
     public NotificationFormatting<LocalizedText> Formatting { get; init; } = new NotificationFormatting<LocalizedText>();
 
-    public ChannelSettings Settings { get; init; } = new ChannelSettings();
+    public ChannelSettings Settings { get; init; } = [];
 }

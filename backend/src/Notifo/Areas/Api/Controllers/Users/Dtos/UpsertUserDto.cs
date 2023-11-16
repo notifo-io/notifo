@@ -6,7 +6,6 @@
 // ==========================================================================
 
 using Notifo.Areas.Api.OpenApi;
-using Notifo.Domain;
 using Notifo.Domain.Users;
 using Notifo.Infrastructure.Collections;
 using Notifo.Infrastructure.Reflection;
@@ -79,7 +78,7 @@ public sealed class UpsertUserDto
 
         if (Settings != null)
         {
-            result.Settings = new ChannelSettings();
+            result.Settings = [];
 
             foreach (var (key, value) in Settings)
             {

@@ -239,12 +239,12 @@ public sealed class UserNotificationService : IUserNotificationService, ISchedul
     public async Task HandleAsync(ConfirmMessage message,
         CancellationToken ct)
     {
-        var notifications = await userNotificationsStore.TrackConfirmedAsync(new[] { message.Token }, ct);
+        var notifications = await userNotificationsStore.TrackConfirmedAsync([message.Token], ct);
 #pragma warning disable CA1826 // Do not use Enumerable methods on indexable collections
         var notification = notifications.FirstOrDefault().Item1;
 #pragma warning restore CA1826 // Do not use Enumerable methods on indexable collections
 
-        if (notification == null || !notification.Channels.Any())
+        if (notification == null || notification.Channels.Count == 0)
         {
             return;
         }

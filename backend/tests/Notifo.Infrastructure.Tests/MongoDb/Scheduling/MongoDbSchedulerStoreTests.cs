@@ -37,7 +37,7 @@ public class MongoDbSchedulerStoreTests : IClassFixture<MongoDbSchedulerStoreFix
         var dequeued = await _.Store.DequeueAsync(time, default);
 
         Assert.NotNull(dequeued);
-        Assert.Equal(new List<int> { 1 }, dequeued!.GetAllJobs());
+        Assert.Equal([1], dequeued!.GetAllJobs());
 
         var dequeuedAgain = await _.Store.DequeueAsync(time, default);
 
@@ -60,7 +60,7 @@ public class MongoDbSchedulerStoreTests : IClassFixture<MongoDbSchedulerStoreFix
         var dequeued = await _.Store.DequeueAsync(now.Plus(delay2), default);
 
         Assert.NotNull(dequeued);
-        Assert.Equal(new List<int> { 3, 4 }, dequeued!.GetAllJobs());
+        Assert.Equal([3, 4], dequeued!.GetAllJobs());
     }
 
     [Fact]
@@ -79,6 +79,6 @@ public class MongoDbSchedulerStoreTests : IClassFixture<MongoDbSchedulerStoreFix
         var dequeued = await _.Store.DequeueAsync(now.Plus(delay2), default);
 
         Assert.NotNull(dequeued);
-        Assert.Equal(new List<int> { 4 }, dequeued!.GetAllJobs());
+        Assert.Equal([4], dequeued!.GetAllJobs());
     }
 }

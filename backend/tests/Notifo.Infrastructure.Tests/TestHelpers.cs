@@ -117,7 +117,9 @@ public static class TestHelpers
 
     public static T Deserialize<T>(string value, JsonConverter converter)
     {
+#pragma warning disable CA1869 // Cache and reuse 'JsonSerializerOptions' instances
         var options = new JsonSerializerOptions();
+#pragma warning restore CA1869 // Cache and reuse 'JsonSerializerOptions' instances
 
         options.Converters.Add(converter);
 

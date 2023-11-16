@@ -21,7 +21,7 @@ internal sealed class EmailContext
 
     public LiquidContext Liquid { get; private init; }
 
-    public List<EmailFormattingError> Errors { get; } = new List<EmailFormattingError>();
+    public List<EmailFormattingError> Errors { get; } = [];
 
     public List<EmailJob> Jobs { get; private init; }
 

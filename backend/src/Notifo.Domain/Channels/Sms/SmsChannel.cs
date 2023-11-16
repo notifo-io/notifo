@@ -213,7 +213,7 @@ public sealed class SmsChannel : SchedulingChannelBase<SmsJob, SmsChannel>, ICal
 
         foreach (var job in jobs.SkipLast(1))
         {
-            lastJob.Notification.ChildNotifications ??= new List<SimpleNotification>();
+            lastJob.Notification.ChildNotifications ??= [];
             lastJob.Notification.ChildNotifications.Add(job.Notification);
         }
 

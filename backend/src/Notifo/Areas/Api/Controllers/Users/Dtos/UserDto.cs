@@ -16,7 +16,7 @@ namespace Notifo.Areas.Api.Controllers.Users.Dtos;
 
 public sealed class UserDto
 {
-    private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+    private static readonly Dictionary<string, long> EmptyCounters = [];
 
     /// <summary>
     /// The id of the user.
@@ -86,7 +86,7 @@ public sealed class UserDto
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
+    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = [];
 
     /// <summary>
     /// The statistics counters.
@@ -96,12 +96,12 @@ public sealed class UserDto
     /// <summary>
     /// The mobile push tokens.
     /// </summary>
-    public List<MobilePushTokenDto> MobilePushTokens { get; set; } = new List<MobilePushTokenDto>();
+    public List<MobilePushTokenDto> MobilePushTokens { get; set; } = [];
 
     /// <summary>
     /// The web push subscriptions.
     /// </summary>
-    public List<WebPushSubscriptionDto> WebPushSubscriptions { get; set; } = new List<WebPushSubscriptionDto>();
+    public List<WebPushSubscriptionDto> WebPushSubscriptions { get; set; } = [];
 
     /// <summary>
     /// The supported user properties.

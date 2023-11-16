@@ -19,7 +19,7 @@ public sealed class SubscriptionDto
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    public Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = new Dictionary<string, ChannelSettingDto>();
+    public Dictionary<string, ChannelSettingDto> TopicSettings { get; set; } = [];
 
     /// <summary>
     /// The scheduling settings.

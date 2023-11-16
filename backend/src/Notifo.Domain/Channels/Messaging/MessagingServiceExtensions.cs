@@ -27,7 +27,7 @@ public static class MessagingServiceExtensions
 
         services.AddScheduler<MessagingJob>(Providers.Messaging, new SchedulerOptions
         {
-            ExecutionRetries = Array.Empty<int>()
+            ExecutionRetries = []
         });
     }
 }

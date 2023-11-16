@@ -29,6 +29,6 @@ public sealed class ValidationError
 
         this.message = message;
 
-        this.propertyNames = propertyNames ?? Array.Empty<string>();
+        this.propertyNames = propertyNames ?? [];
     }
 }

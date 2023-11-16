@@ -53,7 +53,7 @@ public sealed class LiquidNotification : LiquidNotificationBase
                     imagePresetSmall,
                     imagePresetLarge,
                     imageFormatter)).ToArray()
-            ?? Array.Empty<LiquidChildNotification>();
+            ?? [];
     }
 
     public LiquidNotification(

@@ -179,7 +179,7 @@ public sealed class DefaultUserService : IUserService
             await userManager.CreateAsync(user).Throw(log);
 
             values ??= new UserValues();
-            values.Roles ??= new HashSet<string>();
+            values.Roles ??= [];
 
             if (string.IsNullOrWhiteSpace(values.DisplayName))
             {
@@ -378,12 +378,7 @@ public sealed class DefaultUserService : IUserService
 
         var user = await userManager.FindByIdAsync(id);
 
-        if (user == null)
-        {
-            throw new DomainObjectNotFoundException(id);
-        }
-
-        return user;
+        return user ?? throw new DomainObjectNotFoundException(id);
     }
 
     private Task<IUser[]> ResolveAsync(IEnumerable<IdentityUser> users)

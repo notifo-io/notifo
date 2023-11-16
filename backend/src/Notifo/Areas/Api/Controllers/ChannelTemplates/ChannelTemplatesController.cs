@@ -60,12 +60,9 @@ public abstract class ChannelTemplatesController<T, TDto> : BaseController where
     {
         var template = await channelTemplateStore.GetAsync(appId, id, HttpContext.RequestAborted);
 
-        if (template == null)
-        {
-            throw new DomainObjectNotFoundException(id);
-        }
-
-        return ChannelTemplateDetailsDto<TDto>.FromDomainObject(template, ToDto);
+        return template == null
+            ? throw new DomainObjectNotFoundException(id)
+            : ChannelTemplateDetailsDto<TDto>.FromDomainObject(template, ToDto);
     }
 
     /// <summary>

@@ -42,7 +42,7 @@ public sealed class UserNotificationChannelDto
     {
         var result = SimpleMapper.Map(source, new UserNotificationChannelDto
         {
-            Status = new Dictionary<Guid, ChannelSendInfoDto>()
+            Status = []
         });
 
         if (source.Setting != null)

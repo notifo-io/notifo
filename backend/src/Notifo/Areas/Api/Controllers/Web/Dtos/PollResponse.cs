@@ -14,7 +14,7 @@ public sealed class PollResponse
 {
     public Instant ContinuationToken { get; set; }
 
-    public List<UserNotificationDto> Notifications { get; } = new List<UserNotificationDto>();
+    public List<UserNotificationDto> Notifications { get; } = [];
 
     public List<Guid>? Deletions { get; set; }
 }

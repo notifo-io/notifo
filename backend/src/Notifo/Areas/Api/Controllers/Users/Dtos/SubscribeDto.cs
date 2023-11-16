@@ -43,9 +43,9 @@ public sealed class SubscribeDto
             Topic = new TopicId(TopicPrefix)
         };
 
-        if (TopicSettings?.Any() == true)
+        if (TopicSettings?.Count > 0)
         {
-            result.TopicSettings = new ChannelSettings();
+            result.TopicSettings = [];
 
             foreach (var (key, value) in TopicSettings)
             {

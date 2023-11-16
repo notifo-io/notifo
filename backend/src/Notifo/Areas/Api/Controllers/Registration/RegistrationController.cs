@@ -41,7 +41,7 @@ public sealed class RegistrationController : BaseController
 
             var user = await Mediator.SendAsync(userCommand, HttpContext.RequestAborted);
 
-            if (request.Topics?.Any() == true)
+            if (request.Topics?.Length > 0)
             {
                 var command = new Subscribe
                 {

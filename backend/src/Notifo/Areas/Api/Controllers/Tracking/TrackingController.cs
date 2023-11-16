@@ -114,7 +114,7 @@ public sealed class TrackingController : Controller
             request?.DeviceIdentifier);
     }
 
-    private IActionResult TrackingPixel()
+    private FileStreamResult TrackingPixel()
     {
         var stream = typeof(TrackingController).Assembly.GetManifestResourceStream("Notifo.Areas.Api.Controllers.Tracking.TrackingPixel.png")!;
 

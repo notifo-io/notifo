@@ -27,7 +27,7 @@ public sealed class UserNotificationFactoryTests
     private readonly App app;
     private readonly User user = new User("1", "1", default);
     private readonly Instant now = SystemClock.Instance.GetCurrentInstant();
-    private readonly IUserNotificationFactory sut;
+    private readonly UserNotificationFactory sut;
 
     public UserNotificationFactoryTests()
     {
@@ -275,7 +275,7 @@ public sealed class UserNotificationFactoryTests
                     {
                         Send = ChannelSend.NotSending
                     },
-                    Status = new Dictionary<Guid, ChannelSendInfo>()
+                    Status = []
                 },
 
                 [Providers.MobilePush] = new UserNotificationChannel
@@ -284,7 +284,7 @@ public sealed class UserNotificationFactoryTests
                     {
                         DelayInSeconds = 100
                     },
-                    Status = new Dictionary<Guid, ChannelSendInfo>()
+                    Status = []
                 }
             });
     }

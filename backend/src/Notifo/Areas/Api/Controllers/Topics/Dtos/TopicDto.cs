@@ -15,7 +15,7 @@ namespace Notifo.Areas.Api.Controllers.Topics.Dtos;
 
 public sealed class TopicDto
 {
-    private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+    private static readonly Dictionary<string, long> EmptyCounters = [];
 
     /// <summary>
     /// The topic path.

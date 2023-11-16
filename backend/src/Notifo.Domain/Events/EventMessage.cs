@@ -40,7 +40,7 @@ public sealed class EventMessage
 
     public Dictionary<string, double>? TemplateVariants { get; set; }
 
-    public ChannelSettings Settings { get; set; } = new ChannelSettings();
+    public ChannelSettings Settings { get; set; } = [];
 
     public NotificationFormatting<LocalizedText>? Formatting { get; set; }
 

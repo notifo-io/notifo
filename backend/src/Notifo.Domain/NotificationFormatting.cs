@@ -52,7 +52,7 @@ public static class NotificationFormatting
     {
         return text =>
         {
-            return text?.Format(properties!) ?? new LocalizedText();
+            return text?.Format(properties!) ?? [];
         };
     }
 

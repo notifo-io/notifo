@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Reflection;
 using Notifo.Infrastructure.Reflection.Internal;
 
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
 #pragma warning disable RECS0108 // Warns about static fields in generic types
 
 namespace Notifo.Infrastructure.Reflection;
@@ -40,7 +41,7 @@ public static class SimpleMapper
         {
             var method = CreateMethod.MakeGenericMethod(typeof(TSource), typeof(TTarget), valueType);
 
-            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, new object?[] { sourceProperty, targetProperty })!;
+            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, [sourceProperty, targetProperty])!;
         }
 
         private static IPropertyMapper<TSource, TTarget> CreateCore<TSource, TTarget, TValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
@@ -80,7 +81,7 @@ public static class SimpleMapper
         {
             var method = CreateMethod.MakeGenericMethod(typeof(TSource), typeof(TTarget), valueType);
 
-            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, new object?[] { sourceProperty, targetProperty })!;
+            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, [sourceProperty, targetProperty])!;
         }
 
         private static IPropertyMapper<TSource, TTarget> CreateCore<TSource, TTarget, TValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
@@ -120,7 +121,7 @@ public static class SimpleMapper
         {
             var method = CreateMethod.MakeGenericMethod(typeof(TSource), typeof(TTarget), valueType);
 
-            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, new object?[] { sourceProperty, targetProperty })!;
+            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, [sourceProperty, targetProperty])!;
         }
 
         private static IPropertyMapper<TSource, TTarget> CreateCore<TSource, TTarget, TValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty) where TValue : struct
@@ -172,7 +173,7 @@ public static class SimpleMapper
         {
             var method = CreateMethod.MakeGenericMethod(typeof(TSource), typeof(TTarget), sourceType, targetType);
 
-            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, new object?[] { sourceProperty, targetProperty })!;
+            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, [sourceProperty, targetProperty])!;
         }
 
         private static IPropertyMapper<TSource, TTarget> CreateCore<TSource, TTarget, TSourceValue, TTargetValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty)
@@ -226,7 +227,7 @@ public static class SimpleMapper
         {
             var method = CreateMethod.MakeGenericMethod(typeof(TSource), typeof(TTarget), sourceType, targetType);
 
-            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, new object?[] { sourceProperty, targetProperty, typeConverter })!;
+            return (IPropertyMapper<TSource, TTarget>)method.Invoke(null, [sourceProperty, targetProperty, typeConverter])!;
         }
 
         private static IPropertyMapper<TSource, TTarget> CreateCore<TSource, TTarget, TSourceValue, TTargetValue>(PropertyInfo sourceProperty, PropertyInfo targetProperty, TypeConverter typeConverter)
@@ -273,7 +274,7 @@ public static class SimpleMapper
 
     private static class ClassMapper<TSource, TTarget> where TSource : class where TTarget : class
     {
-        private static readonly List<IPropertyMapper<TSource, TTarget>> Mappers = new List<IPropertyMapper<TSource, TTarget>>();
+        private static readonly List<IPropertyMapper<TSource, TTarget>> Mappers = [];
 
         static ClassMapper()
         {

@@ -25,7 +25,7 @@ public sealed partial class HttpIntegration : IIntegration
     {
         EditorLabel = Texts.Webhook_MethodLabel,
         EditorDescription = Texts.Webhook_MethodHints,
-        AllowedValues = new[] { "POST", "GET", "PATCH", "PUT", "DELETE" },
+        AllowedValues = ["POST", "GET", "PATCH", "PUT", "DELETE"],
         IsRequired = false,
     };
 

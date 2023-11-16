@@ -18,10 +18,10 @@ namespace Notifo.Domain.Channels.Email.Formatting;
 public sealed class MjmlSchema
 {
     [JsonPropertyName("!top")]
-    public List<string> Top { get; } = new List<string>();
+    public List<string> Top { get; } = [];
 
     [JsonIgnore]
-    public Dictionary<string, MjmlSchemaElement> Elements { get; } = new Dictionary<string, MjmlSchemaElement>();
+    public Dictionary<string, MjmlSchemaElement> Elements { get; } = [];
 
     [JsonExtensionData]
     public Dictionary<string, object> ExtraData
@@ -79,7 +79,7 @@ public sealed class MjmlSchema
 public sealed class MjmlSchemaElement
 {
     [JsonPropertyName("attrs")]
-    public Dictionary<string, List<string>?> Attributes { get; } = new Dictionary<string, List<string>?>();
+    public Dictionary<string, List<string>?> Attributes { get; } = [];
 
     [JsonPropertyName("children")]
     public List<string>? Children { get; set; }

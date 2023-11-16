@@ -133,7 +133,7 @@ public class IntegrationPropertyTests
 
             var property = new IntegrationProperty("key", PropertyType.Text)
             {
-                AllowedValues = new[] { "allowed" }
+                AllowedValues = ["allowed"]
             };
 
             Assert.Throws<ValidationException>(() => property.GetString(source));
@@ -152,7 +152,7 @@ public class IntegrationPropertyTests
 
             var property = new IntegrationProperty("key", PropertyType.Text)
             {
-                AllowedValues = new[] { "allowed" }
+                AllowedValues = ["allowed"]
             };
 
             Assert.Equal("allowed", property.GetString(source));
@@ -171,7 +171,7 @@ public class IntegrationPropertyTests
                 IsRequired = true,
                 MaxLength = 4,
                 MinLength = 4,
-                AllowedValues = new[] { "1234" },
+                AllowedValues = ["1234"],
                 Pattern = "^[0-9]+$"
             };
 

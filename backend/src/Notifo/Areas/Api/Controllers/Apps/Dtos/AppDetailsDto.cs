@@ -15,7 +15,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
 
 public sealed class AppDetailsDto
 {
-    private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+    private static readonly Dictionary<string, long> EmptyCounters = [];
 
     /// <summary>
     /// The id of the app.
@@ -71,7 +71,7 @@ public sealed class AppDetailsDto
     {
         var result = SimpleMapper.Map(source, new AppDetailsDto
         {
-            Contributors = new List<AppContributorDto>()
+            Contributors = []
         });
 
         if (userId != null && source.Contributors.TryGetValue(userId, out var userRole))

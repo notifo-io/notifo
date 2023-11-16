@@ -46,7 +46,7 @@ public sealed partial class MessageBirdWhatsAppIntegration : IMessagingSender, I
             templateName,
             message.UserLanguage,
             context.WebhookUrl.AppendQueries("reference", message.TrackingToken),
-            new[] { message.Text });
+            [message.Text]);
 
         var client = GetClient(context);
 
