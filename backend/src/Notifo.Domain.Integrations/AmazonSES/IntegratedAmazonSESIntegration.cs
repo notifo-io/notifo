@@ -21,6 +21,7 @@ namespace Notifo.Domain.Integrations.AmazonSES;
 
 public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializable, IEmailSender
 {
+    private static readonly char[] EmailSeparators = ['\n', ',', ';'];
     private readonly IKeyValueStore keyValueStore;
     private readonly SmtpIntegration emailSender;
     private readonly AmazonSESOptions emailOptions;
@@ -311,7 +312,7 @@ public sealed class IntegratedAmazonSESIntegration : IIntegration, IInitializabl
             yield break;
         }
 
-        var emails = additionalEmails.Split(new[] { '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+        var emails = additionalEmails.Split(EmailSeparators, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (var email in emails)
         {

@@ -58,7 +58,7 @@ public sealed class ProfileDto
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
+    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = [];
 
     public static ProfileDto FromDomainObject(User source, App app)
     {

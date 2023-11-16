@@ -197,7 +197,7 @@ public class MongoDbSubscriptionRepositoryTests : IClassFixture<MongoDbSubscript
             AppId = appId,
             UserId = userId,
             TopicPrefix = topicPrefix,
-            TopicSettings = new ChannelSettings()
+            TopicSettings = []
         };
 
         if (sendEmail)

@@ -55,7 +55,7 @@ public sealed class UserNotificationDetailsDto : UserNotificationBaseDto
             result.FirstConfirmed = HandledInfoDto.FromDomainObject(source.FirstConfirmed);
         }
 
-        result.Channels = new Dictionary<string, UserNotificationChannelDto>();
+        result.Channels = [];
 
         if (source.Channels != null)
         {

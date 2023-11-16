@@ -234,7 +234,7 @@ public sealed class MessagingChannel : SchedulingChannelBase<MessagingJob, Messa
 
         foreach (var job in jobs.SkipLast(1))
         {
-            lastJob.Notification.ChildNotifications ??= new List<SimpleNotification>();
+            lastJob.Notification.ChildNotifications ??= [];
             lastJob.Notification.ChildNotifications.Add(job.Notification);
         }
 

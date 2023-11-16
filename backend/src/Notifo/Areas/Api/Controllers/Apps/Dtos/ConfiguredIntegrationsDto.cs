@@ -26,7 +26,7 @@ public sealed class ConfiguredIntegrationsDto
     {
         var result = new ConfiguredIntegrationsDto
         {
-            Configured = new Dictionary<string, ConfiguredIntegrationDto>()
+            Configured = []
         };
 
         if (source.Integrations != null)
@@ -37,7 +37,7 @@ public sealed class ConfiguredIntegrationsDto
             }
         }
 
-        result.Supported = new Dictionary<string, IntegrationDefinitionDto>();
+        result.Supported = [];
 
         foreach (var definition in integrationManager.Definitions)
         {

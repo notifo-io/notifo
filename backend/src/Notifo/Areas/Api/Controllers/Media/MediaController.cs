@@ -138,7 +138,7 @@ public sealed class MediaController : MediaBaseController
         return NoContent();
     }
 
-    private static AssetFile CreateFile(IFormFile file)
+    private static DelegateAssetFile CreateFile(IFormFile file)
     {
         if (string.IsNullOrWhiteSpace(file?.ContentType))
         {

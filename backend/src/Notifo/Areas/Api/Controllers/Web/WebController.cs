@@ -120,7 +120,7 @@ public sealed class WebController : BaseController
         {
             if (notification.IsDeleted)
             {
-                response.Deletions ??= new List<Guid>();
+                response.Deletions ??= [];
                 response.Deletions.Add(notification.Id);
             }
             else

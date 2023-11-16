@@ -152,7 +152,7 @@ public sealed class NotificationsController : BaseController
         {
             var token = ParseToken(request.Confirmed, request);
 
-            await userNotificationService.TrackConfirmedAsync(new[] { token });
+            await userNotificationService.TrackConfirmedAsync([token]);
         }
 
         if (request.Seen?.Length > 0)

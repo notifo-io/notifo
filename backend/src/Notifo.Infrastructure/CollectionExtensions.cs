@@ -157,7 +157,7 @@ public static class CollectionExtensions
 
         if (array1 == null || array1.Length == 0)
         {
-            return array2 ?? Array.Empty<T>();
+            return array2 ?? [];
         }
 
         var result = new T[array1.Length + array2.Length];

@@ -58,7 +58,7 @@ public sealed class NotificationHub : Hub
         {
             var token = ParseToken(request.Confirmed, request);
 
-            await userNotificationService.TrackConfirmedAsync(new[] { token });
+            await userNotificationService.TrackConfirmedAsync([token]);
         }
 
         if (request.Seen?.Length > 0)

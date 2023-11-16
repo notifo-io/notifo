@@ -30,7 +30,7 @@ public class UserEventPublisherTests
     private readonly ITemplateStore templateStore = A.Fake<ITemplateStore>();
     private readonly IUserStore userStore = A.Fake<IUserStore>();
     private readonly Randomizer randomizer = A.Fake<Randomizer>();
-    private readonly List<UserEventMessage> publishedUserEvents = new List<UserEventMessage>();
+    private readonly List<UserEventMessage> publishedUserEvents = [];
     private readonly UserEventPublisher sut;
 
     public UserEventPublisherTests()
@@ -130,7 +130,7 @@ public class UserEventPublisherTests
     {
         var @event = CreateMinimumEvent();
 
-        @event.Properties = new NotificationProperties();
+        @event.Properties = [];
 
         var subscriptions = new[]
         {
@@ -198,7 +198,7 @@ public class UserEventPublisherTests
             new Subscription
             {
                 TopicPrefix = "updates/sport",
-                TopicSettings = new ChannelSettings(),
+                TopicSettings = [],
                 UserId = "123"
             }
         };
@@ -320,7 +320,7 @@ public class UserEventPublisherTests
             {
                 AppId = @event.AppId,
                 TopicPrefix = "updates/sport",
-                TopicSettings = new ChannelSettings(),
+                TopicSettings = [],
                 UserId = "123"
             }
         };
@@ -360,7 +360,7 @@ public class UserEventPublisherTests
             {
                 AppId = @event.AppId,
                 TopicPrefix = "updates/sport",
-                TopicSettings = new ChannelSettings(),
+                TopicSettings = [],
                 UserId = "123"
             },
             new Subscription
@@ -424,7 +424,7 @@ public class UserEventPublisherTests
             {
                 AppId = @event.AppId,
                 TopicPrefix = "updates/sport",
-                TopicSettings = new ChannelSettings(),
+                TopicSettings = [],
                 UserId = "123"
             }
         };
@@ -507,7 +507,7 @@ public class UserEventPublisherTests
         userEventMessage.EventId = @event.Id;
         userEventMessage.Formatting ??= @event.Formatting!;
         userEventMessage.Properties ??= @event.Properties;
-        userEventMessage.Settings ??= new ChannelSettings();
+        userEventMessage.Settings ??= [];
         userEventMessage.Silent = @event.Silent;
         userEventMessage.Topic ??= @event.Topic;
 

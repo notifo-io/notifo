@@ -14,7 +14,7 @@ namespace Notifo.Areas.Api.Controllers.Apps.Dtos;
 
 public sealed class AppDto
 {
-    private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
+    private static readonly Dictionary<string, long> EmptyCounters = [];
 
     /// <summary>
     /// The id of the app.

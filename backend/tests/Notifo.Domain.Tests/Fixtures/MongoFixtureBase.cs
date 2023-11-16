@@ -94,12 +94,7 @@ public static class MongoRunnerProvider
 
         private IMongoRunner GetRunner()
         {
-            if (underlyingMongoRunner == null)
-            {
-                throw new ObjectDisposedException(nameof(IMongoRunner));
-            }
-
-            return underlyingMongoRunner;
+            return underlyingMongoRunner ?? throw new ObjectDisposedException(nameof(IMongoRunner));
         }
 
         public void Dispose()

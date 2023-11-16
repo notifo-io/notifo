@@ -17,5 +17,5 @@ public sealed class NamedEmailTemplate
 
     public Instant LastUpdate { get; init; }
 
-    public Dictionary<string, EmailTemplate> Languages { get; init; } = new Dictionary<string, EmailTemplate>();
+    public Dictionary<string, EmailTemplate> Languages { get; init; } = [];
 }

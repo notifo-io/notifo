@@ -20,7 +20,7 @@ public class MobilePushJobTests
         {
             App = null!,
             AppId = null!,
-            Configuration = new SendConfiguration(),
+            Configuration = [],
             ConfigurationId = Guid.NewGuid(),
             IsUpdate = false,
             Setting = new ChannelSetting(),

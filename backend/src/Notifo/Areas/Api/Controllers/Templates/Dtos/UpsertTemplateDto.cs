@@ -49,7 +49,7 @@ public sealed class UpsertTemplateDto
 
         if (Settings != null)
         {
-            result.Settings = new ChannelSettings();
+            result.Settings = [];
 
             foreach (var (key, value) in Settings)
             {

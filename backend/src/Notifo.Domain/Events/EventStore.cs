@@ -59,7 +59,7 @@ public sealed class EventStore : IEventStore, ICounterTarget, IDisposable
 
         var @event = SimpleMapper.Map(request, new Event());
 
-        @event.Counters = new CounterMap();
+        @event.Counters = [];
 
         return eventRepository.InsertAsync(@event, ct);
     }

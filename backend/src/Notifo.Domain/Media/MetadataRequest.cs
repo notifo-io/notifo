@@ -13,7 +13,7 @@ public sealed class MetadataRequest
 {
     public AssetFile File { get; set; }
 
-    public MediaMetadata Metadata { get; } = new MediaMetadata();
+    public MediaMetadata Metadata { get; } = [];
 
     public MediaType Type { get; set; }
 }

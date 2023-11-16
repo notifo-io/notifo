@@ -39,7 +39,7 @@ public static class PreviewData
         {
             App = App,
             AppId = App.Id,
-            Configuration = new SendConfiguration(),
+            Configuration = [],
             ConfigurationId = default,
             IsUpdate = false,
             Setting = new ChannelSetting(),
@@ -62,8 +62,8 @@ public static class PreviewData
                 {
                     Subject = "A notification with children"
                 },
-                ChildNotifications = new List<SimpleNotification>
-                {
+                ChildNotifications =
+                [
                     new SimpleNotification
                     {
                         Formatting = new NotificationFormatting<string>
@@ -77,8 +77,8 @@ public static class PreviewData
                         {
                             Subject = "Child Notification 2"
                         }
-                    }
-                }
+                    },
+                ]
             },
             new UserNotification
             {

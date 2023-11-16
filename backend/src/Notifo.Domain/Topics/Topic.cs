@@ -22,11 +22,11 @@ public sealed record Topic(string AppId, string Path, Instant Created)
 
     public bool ShowAutomatically { get; init; }
 
-    public LocalizedText Name { get; init; } = new LocalizedText();
+    public LocalizedText Name { get; init; } = [];
 
-    public LocalizedText Description { get; init; } = new LocalizedText();
+    public LocalizedText Description { get; init; } = [];
 
     public ReadonlyDictionary<string, TopicChannel> Channels { get; init; } = ReadonlyDictionary.Empty<string, TopicChannel>();
 
-    public CounterMap Counters { get; init; } = new CounterMap();
+    public CounterMap Counters { get; init; } = [];
 }

@@ -11,7 +11,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb;
 
 internal sealed class TrackingChange
 {
-    private readonly Dictionary<string, UpdateDefinition<UserNotification>> changes = new Dictionary<string, UpdateDefinition<UserNotification>>();
+    private readonly Dictionary<string, UpdateDefinition<UserNotification>> changes = [];
 
     public UserNotification Notification { get; init; }
 

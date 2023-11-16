@@ -17,7 +17,7 @@ namespace Benchmarks;
 [SimpleJob]
 public class EmailFormatterBenchmarks
 {
-    private readonly IEmailFormatter emailFormatterLiquid = new EmailFormatterLiquid(A.Fake<IImageFormatter>(), A.Fake<IEmailUrl>());
+    private readonly EmailFormatterLiquid emailFormatterLiquid = new EmailFormatterLiquid(A.Fake<IImageFormatter>(), A.Fake<IEmailUrl>());
     private readonly EmailTemplate emailTemplateLiquid;
 
     public EmailFormatterBenchmarks()

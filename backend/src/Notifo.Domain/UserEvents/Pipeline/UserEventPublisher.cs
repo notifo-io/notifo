@@ -32,10 +32,10 @@ public sealed class UserEventPublisher : IUserEventPublisher
     };
 
     private static readonly string[] UserTopicPrefixex =
-    {
+    [
         "users/",
         "user/"
-    };
+    ];
 
     private readonly ICounterService counters;
     private readonly IEventStore eventStore;

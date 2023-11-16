@@ -13,7 +13,7 @@ public sealed class SchedulerOptions
 
     public int MaxParallelism { get; set; } = Environment.ProcessorCount;
 
-    public int[] ExecutionRetries { get; set; } = { 5000, 10000, 30000, 60000 };
+    public int[] ExecutionRetries { get; set; } = [5000, 10000, 30000, 60000];
 
     public bool ExecuteInline { get; set; } = true;
 

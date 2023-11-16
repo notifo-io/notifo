@@ -74,7 +74,7 @@ public abstract class SchedulingChannelBase<TJob, T> : ChannelBase<T>, ISchedule
                 }
                 else
                 {
-                    unhandledJobs ??= new List<TJob>();
+                    unhandledJobs ??= [];
                     unhandledJobs.Add(job);
                 }
             }

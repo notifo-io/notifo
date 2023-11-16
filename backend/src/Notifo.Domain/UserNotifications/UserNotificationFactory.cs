@@ -81,7 +81,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
 
             if (child != null)
             {
-                notification.ChildNotifications ??= new List<SimpleNotification>();
+                notification.ChildNotifications ??= [];
                 notification.ChildNotifications.Add(child);
             }
         }
@@ -146,7 +146,7 @@ public sealed class UserNotificationFactory : IUserNotificationFactory
 
     private static void ConfigureSettings(UserNotification notification, UserEventMessage userEvent, User user)
     {
-        notification.Channels = new Dictionary<string, UserNotificationChannel>();
+        notification.Channels = [];
 
         OverrideBy(notification, user.Settings);
         OverrideBy(notification, userEvent.Settings);

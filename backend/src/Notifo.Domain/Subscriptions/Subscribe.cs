@@ -56,12 +56,8 @@ public sealed class Subscribe : SubscriptionCommand
     private static async Task CheckWhitelistAsync(IUserStore userStore, Subscription subscription,
         CancellationToken ct)
     {
-        var user = await userStore.GetCachedAsync(subscription.AppId, subscription.UserId, ct);
-
-        if (user == null)
-        {
-            throw new DomainObjectNotFoundException(subscription.UserId);
-        }
+        var user = await userStore.GetCachedAsync(subscription.AppId, subscription.UserId, ct)
+            ?? throw new DomainObjectNotFoundException(subscription.UserId);
 
         if (user.AllowedTopics == null)
         {

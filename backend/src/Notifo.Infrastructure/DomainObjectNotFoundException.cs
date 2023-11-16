@@ -5,8 +5,6 @@
 //  All rights reserved. Licensed under the MIT license.
 // ==========================================================================
 
-using System.Runtime.Serialization;
-
 namespace Notifo.Infrastructure;
 
 [Serializable]
@@ -16,11 +14,6 @@ public class DomainObjectNotFoundException : DomainObjectException
 
     public DomainObjectNotFoundException(string id, Exception? inner = null)
         : base(FormatMessage(id), id, ValidationError, inner)
-    {
-    }
-
-    protected DomainObjectNotFoundException(SerializationInfo info, StreamingContext context)
-        : base(info, context)
     {
     }
 

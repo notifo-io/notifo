@@ -27,7 +27,7 @@ public static class SmsServiceExtensions
 
         services.AddScheduler<SmsJob>(Providers.Sms, new SchedulerOptions
         {
-            ExecutionRetries = Array.Empty<int>()
+            ExecutionRetries = []
         });
     }
 }

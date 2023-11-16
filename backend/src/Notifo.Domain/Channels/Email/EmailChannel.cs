@@ -209,7 +209,7 @@ public sealed class EmailChannel : SchedulingChannelBase<EmailJob, EmailChannel>
 
         if (errors?.Count > 0 || message == null)
         {
-            errors ??= new List<EmailFormattingError>();
+            errors ??= [];
 
             if (errors.Count == 0)
             {

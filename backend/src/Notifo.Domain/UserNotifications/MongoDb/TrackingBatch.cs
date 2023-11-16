@@ -14,7 +14,7 @@ namespace Notifo.Domain.UserNotifications.MongoDb;
 
 public sealed class TrackingBatch
 {
-    private readonly Dictionary<Guid, TrackingChange> pendingChanges = new Dictionary<Guid, TrackingChange>();
+    private readonly Dictionary<Guid, TrackingChange> pendingChanges = [];
     private readonly IMongoCollection<UserNotification> collection;
 
     public TrackingBatch(IMongoCollection<UserNotification> collection)

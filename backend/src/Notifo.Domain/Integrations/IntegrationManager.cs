@@ -103,7 +103,7 @@ public sealed class IntegrationManager : IIntegrationManager, IBackgroundProcess
 
             if (!property.IsValid(input, out var error))
             {
-                errors ??= new List<ValidationError>();
+                errors ??= [];
                 errors.Add(new ValidationError(error, property.Name));
             }
         }

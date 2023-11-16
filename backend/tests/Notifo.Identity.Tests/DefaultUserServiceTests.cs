@@ -316,10 +316,10 @@ public class DefaultUserServiceTests
     {
         var update = new UserValues
         {
-            Roles = new HashSet<string>
-            {
+            Roles =
+            [
                 "admin"
-            }
+            ]
         };
 
         var identity = CreateIdentity(found: true);
@@ -335,7 +335,7 @@ public class DefaultUserServiceTests
     {
         var update = new UserValues
         {
-            Roles = new HashSet<string>()
+            Roles = []
         };
 
         var identity = CreateIdentity(found: true);

@@ -58,10 +58,10 @@ public sealed class UserCreator : IInitializable
                             {
                                 var values = new UserValues
                                 {
-                                    Roles = new HashSet<string>
-                                    {
+                                    Roles =
+                                    [
                                         user.Role
-                                    }
+                                    ]
                                 };
 
                                 await userService.UpdateAsync(existing.Id, values, ct: ct);

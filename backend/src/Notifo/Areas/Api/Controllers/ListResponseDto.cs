@@ -12,7 +12,7 @@ public class ListResponseDto<T>
     /// <summary>
     /// The items.
     /// </summary>
-    public List<T> Items { get; set; } = new List<T>();
+    public List<T> Items { get; set; } = [];
 
     /// <summary>
     /// The total number of items.

@@ -62,7 +62,7 @@ public sealed record ChannelSetting
 
         if (source.Properties?.Count > 0)
         {
-            Properties ??= new NotificationProperties();
+            Properties ??= [];
 
             foreach (var (key, value) in source.Properties)
             {

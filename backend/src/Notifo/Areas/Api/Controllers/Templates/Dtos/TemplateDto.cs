@@ -36,7 +36,7 @@ public sealed class TemplateDto
     /// <summary>
     /// Notification settings per channel.
     /// </summary>
-    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = new Dictionary<string, ChannelSettingDto>();
+    public Dictionary<string, ChannelSettingDto> Settings { get; set; } = [];
 
     public static TemplateDto FromDomainObject(Template source)
     {

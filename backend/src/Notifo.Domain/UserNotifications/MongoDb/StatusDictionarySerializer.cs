@@ -7,7 +7,6 @@
 
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
-using Notifo.Domain.Channels;
 using Notifo.Infrastructure;
 
 namespace Notifo.Domain.UserNotifications.MongoDb;
@@ -22,7 +21,7 @@ public sealed class StatusDictionarySerializer : ClassSerializerBase<Dictionary<
 
         foreach (var (key, value) in deserialized)
         {
-            value.Configuration ??= new SendConfiguration();
+            value.Configuration ??= [];
 
             if (Guid.TryParse(key, out var parsedId))
             {

@@ -34,5 +34,5 @@ public sealed record App(string Id, Instant Created)
 
     public ReadonlyDictionary<string, ConfiguredIntegration> Integrations { get; init; } = ReadonlyDictionary.Empty<string, ConfiguredIntegration>();
 
-    public CounterMap? Counters { get; init; } = new CounterMap();
+    public CounterMap? Counters { get; init; } = [];
 }

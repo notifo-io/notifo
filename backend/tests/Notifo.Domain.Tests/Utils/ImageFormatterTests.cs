@@ -12,7 +12,7 @@ namespace Notifo.Domain.Utils;
 public class ImageFormatterTests
 {
     private readonly IUrlGenerator urlGenerator = A.Fake<IUrlGenerator>();
-    private readonly IImageFormatter sut;
+    private readonly ImageFormatter sut;
 
     public ImageFormatterTests()
     {

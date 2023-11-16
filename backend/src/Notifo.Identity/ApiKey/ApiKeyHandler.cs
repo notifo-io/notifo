@@ -29,8 +29,8 @@ public sealed class ApiKeyHandler : AuthenticationHandler<ApiKeyOptions>
     private readonly IUserStore userStore;
 
     public ApiKeyHandler(IAppStore appStore, IUserStore userStore,
-            IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
-        : base(options, logger, encoder, clock)
+            IOptionsMonitor<ApiKeyOptions> options, ILoggerFactory logger, UrlEncoder encoder)
+        : base(options, logger, encoder)
     {
         this.appStore = appStore;
         this.userStore = userStore;

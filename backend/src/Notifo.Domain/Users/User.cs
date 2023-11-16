@@ -35,21 +35,21 @@ public sealed record User(string AppId, string Id, Instant Created)
 
     public Instant LastUpdate { get; init; }
 
-    public ReadonlyList<string> AllowedTopics { get; init; } = ReadonlyList.Empty<string>();
+    public ReadonlyList<string> AllowedTopics { get; init; } = [];
 
     public ReadonlyDictionary<string, string> Properties { get; init; } = ReadonlyDictionary.Empty<string, string>();
 
     public ReadonlyDictionary<string, string>? SystemProperties { get; init; }
 
-    public ReadonlyList<MobilePushToken> MobilePushTokens { get; init; } = ReadonlyList.Empty<MobilePushToken>();
+    public ReadonlyList<MobilePushToken> MobilePushTokens { get; init; } = [];
 
-    public ReadonlyList<WebPushSubscription> WebPushSubscriptions { get; init; } = ReadonlyList.Empty<WebPushSubscription>();
+    public ReadonlyList<WebPushSubscription> WebPushSubscriptions { get; init; } = [];
 
     public Scheduling? Scheduling { get; init; }
 
-    public ChannelSettings Settings { get; init; } = new ChannelSettings();
+    public ChannelSettings Settings { get; init; } = [];
 
-    public CounterMap Counters { get; init; } = new CounterMap();
+    public CounterMap Counters { get; init; } = [];
 
     public static string BuildId(string appId, string userId)
     {

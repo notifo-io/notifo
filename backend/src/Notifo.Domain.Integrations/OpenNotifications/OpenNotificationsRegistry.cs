@@ -15,19 +15,19 @@ namespace Notifo.Domain.Integrations.OpenNotifications;
 
 public sealed class OpenNotificationsRegistry : IIntegrationRegistry, IBackgroundProcess
 {
-    private static readonly HashSet<string> ProvidersToIgnore = new HashSet<string>
-    {
+    private static readonly HashSet<string> ProvidersToIgnore =
+    [
         "aws-email",
         "mailjet",
         "mailjet-smtp",
         "messagebird-sms",
         "smtp",
         "twilio-sms",
-    };
+    ];
 
     private readonly IEnumerable<IOpenNotificationsClient> clients;
     private readonly ILogger<OpenNotificationsRegistry> log;
-    private Dictionary<string, IIntegration> integrations = new Dictionary<string, IIntegration>();
+    private Dictionary<string, IIntegration> integrations = [];
     private CompletionTimer timer;
 
     public IEnumerable<IIntegration> Integrations => integrations.Values;

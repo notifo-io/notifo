@@ -102,9 +102,9 @@ public sealed class PublishDto
             result.Formatting = Preformatted.ToDomainObject();
         }
 
-        if (Settings?.Any() == true)
+        if (Settings?.Count > 0)
         {
-            result.Settings = new ChannelSettings();
+            result.Settings = [];
 
             foreach (var (key, value) in Settings)
             {

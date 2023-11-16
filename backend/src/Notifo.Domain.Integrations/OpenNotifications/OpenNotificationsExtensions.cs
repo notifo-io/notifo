@@ -89,7 +89,7 @@ public static class OpenNotificationsExtensions
 
         static string[] GetPropertyNames(ErrorDto x)
         {
-            return x.Field != null ? new[] { x.Field } : Array.Empty<string>();
+            return x.Field != null ? new[] { x.Field } : [];
         }
     }
 }

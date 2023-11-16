@@ -47,7 +47,7 @@ public sealed class ChannelTemplateDetailsDto<T>
     {
         var result = SimpleMapper.Map(source, new ChannelTemplateDetailsDto<T>());
 
-        result.Languages = new Dictionary<string, T>();
+        result.Languages = [];
 
         if (source.Languages != null)
         {

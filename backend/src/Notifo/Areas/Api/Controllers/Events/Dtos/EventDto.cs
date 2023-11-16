@@ -14,9 +14,9 @@ namespace Notifo.Areas.Api.Controllers.Events.Dtos;
 
 public sealed class EventDto
 {
-    private static readonly Dictionary<string, long> EmptyCounters = new Dictionary<string, long>();
-    private static readonly Dictionary<string, string> EmptyProperties = new Dictionary<string, string>();
-    private static readonly Dictionary<string, ChannelSettingDto> EmptySettings = new Dictionary<string, ChannelSettingDto>();
+    private static readonly Dictionary<string, long> EmptyCounters = [];
+    private static readonly Dictionary<string, string> EmptyProperties = [];
+    private static readonly Dictionary<string, ChannelSettingDto> EmptySettings = [];
 
     /// <summary>
     /// The id of the event.
@@ -87,7 +87,7 @@ public sealed class EventDto
     {
         var result = SimpleMapper.Map(source, new EventDto
         {
-            Settings = new Dictionary<string, ChannelSettingDto>()
+            Settings = []
         });
 
         result.Properties = source.Properties ?? EmptyProperties;
@@ -113,7 +113,7 @@ public sealed class EventDto
 
         if (source.Settings?.Count > 0)
         {
-            result.Settings = new Dictionary<string, ChannelSettingDto>();
+            result.Settings = [];
 
             foreach (var (key, value) in source.Settings)
             {

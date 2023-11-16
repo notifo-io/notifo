@@ -39,12 +39,7 @@ public sealed class MessageBirdClient : IMessageBirdClient
         {
             var result = await httpClient.GetFromJsonAsync<ConversationResponse>($"https://conversations.messagebird.com/v1/messages/{id}", ct);
 
-            if (result == null)
-            {
-                throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
-            }
-
-            return result;
+            return result ?? throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
         }
     }
 
@@ -160,12 +155,9 @@ public sealed class MessageBirdClient : IMessageBirdClient
         using (var httpClient = httpClientFactory())
         {
             var response = await httpClient.PostAsJsonAsync("https://conversations.messagebird.com/v1/send", request, ct);
-            var result = await response.Content.ReadFromJsonAsync<ConversationResponse>((JsonSerializerOptions?)null, ct);
 
-            if (result == null)
-            {
-                throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
-            }
+            var result = await response.Content.ReadFromJsonAsync<ConversationResponse>((JsonSerializerOptions?)null, ct)
+                ?? throw new HttpIntegrationException<MessageBirdError>("Failed to deserialize response.");
 
             var error = result.Errors?.FirstOrDefault() ?? result.Error;
 
