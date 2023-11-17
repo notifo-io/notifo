@@ -51,7 +51,7 @@ Before you install it, try it out at https://app.notifo.io
 
 docker images are available: https://hub.docker.com/r/squidex/notifo, you can try the [docker-compose](deployment/docker-compose/docker-compose.yml) file.
 
-Read more about the intallation in the [wiki](https://github.com/notifo-io/notifo/wiki/Installation).
+Read more about the installation in the [wiki](https://github.com/notifo-io/notifo/wiki/Installation).
 
 ### How to configure it
 
